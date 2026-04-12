@@ -37,7 +37,7 @@ export default function VarianceChart() {
       },
       {
         label: 'Budget Target ($)',
-        data: deals.slice(0, 5).map(d => d.financials.ARV * 0.7 || 80000), // Mock budget line based loosely on margin
+        data: deals.slice(0, 5).map(d => (d.financials.estimatedARV || 0) * 0.7 || 80000), // Mock budget line based loosely on margin
         backgroundColor: '#e5e7eb', // Light gray
         borderRadius: 4,
       },

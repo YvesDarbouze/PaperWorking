@@ -52,6 +52,7 @@ export interface PropertyDeal {
   createdAt: Date;
   updatedAt: Date;
   ownerUid: string; // The person who created the deal
+  documentHubFolderId?: string; // Google Drive folder link for compliance hub
 }
 
 export interface DealMember {
@@ -145,6 +146,7 @@ export interface DealFinancials {
   costs: CostEntry[]; // Ledger of costs
   
   // Evaluation & Capital Financing
+  loanAmount?: number; // Hard money loan amount
   loanInterestRate?: number; // e.g., 12 for 12%
   loanOriginationPoints?: number; // Upfront percentage cost of loan value
   estimatedTimelineDays?: number; // Estimation for holding costs
@@ -152,6 +154,8 @@ export interface DealFinancials {
   inspections?: InspectionItem[]; // Virtual Inspection Estimate vs Actual
 
   // Phase 6 Field Management
+  projectedRehabCost?: number; // Budget target for rehab
+  maxOffer?: number; // Maximum allowable purchase price (70% rule output)
   rehabTasks?: RehabTask[];
   permits?: BuildingPermit[];
 
@@ -199,14 +203,7 @@ export interface ClosingPortalState {
   assignedLawyerUid?: string;
 }
 
-// Phase 6: Rehab & Execution
-export interface RehabTask {
-  id: string;
-  name: string;
-  status: 'pending' | 'in_progress' | 'completed';
-  assignedToUid?: string;
-  category: string;
-}
+// Phase 6: Rehab & Execution (primary definition at line 107)
 
 export interface Permit {
   id: string;

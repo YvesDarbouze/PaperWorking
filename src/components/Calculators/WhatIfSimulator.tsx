@@ -12,7 +12,7 @@ export default function WhatIfSimulator() {
 
   if (!currentDeal?.financials) return null;
 
-  const baselineTimeline = currentDeal.financials.projectedTimelineMonths || 0;
+  const baselineTimeline = currentDeal.financials.estimatedTimelineDays || 0;
   
   // Compute naive margin diff for presentation
   // Because 'metrics' represents the aggregated state, changing 'offset' instantly

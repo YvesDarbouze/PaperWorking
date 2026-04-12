@@ -59,7 +59,7 @@ export default function EquityPayoutManager() {
             </div>
 
             {/* Investor List */}
-            {investors.length === 0 ? (
+            {(investors?.length ?? 0) === 0 ? (
                <div className="py-6 text-center text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
                   No fractional investors found on the cap table for this asset. Operating 100% Sponsor Equity.
                </div>
@@ -75,7 +75,7 @@ export default function EquityPayoutManager() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                       {investors.map(inv => {
+                       {investors?.map(inv => {
                          const pTarget = payouts.find(p => p.investorId === inv.id);
                          const payoutAmount = pTarget ? pTarget.amount : 0;
 

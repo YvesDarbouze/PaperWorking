@@ -12,7 +12,7 @@ import * as admin from 'firebase-admin';
  * but standalone scripts (e.g. seed.ts) must load dotenv manually.
  */
 
-function initAdmin() {
+function ensureInitialized() {
   if (admin.apps.length) return;
 
   const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -35,9 +35,17 @@ function initAdmin() {
   });
 }
 
-initAdmin();
+// Lazy getters — only initialize when first accessed at runtime, not during build
+export const adminDb = new Proxy({} as admin.firestore.Firestore, {
+  get(_target, prop) {
+    ensureInitialized();
+    return (admin.firestore() as any)[prop];
+  }
+});
 
-const adminDb = admin.firestore();
-const adminAuth = admin.auth();
-
-export { adminDb, adminAuth };
+export const adminAuth = new Proxy({} as admin.auth.Auth, {
+  get(_target, prop) {
+    ensureInitialized();
+    return (admin.auth() as any)[prop];
+  }
+});

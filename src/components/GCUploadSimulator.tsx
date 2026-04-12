@@ -25,7 +25,8 @@ export default function GCUploadSimulator() {
       description: 'Concrete pour and leveling',
       amount: 15200,
       approved: false, // GC cannot approve costs, only PM/LI
-      dateAdded: new Date().toISOString()
+      addedBy: 'gc_simulator',
+      createdAt: new Date()
     };
 
     const docRef = doc(db, 'deals', targetDeal.id);

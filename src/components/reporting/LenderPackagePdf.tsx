@@ -20,6 +20,8 @@ export default function LenderPackagePdf() {
 
     // Simulate async WebWorker rendering payload
     setTimeout(() => {
+      try {
+      const doc = new jsPDF();
       
       // Header
       doc.setFontSize(22);

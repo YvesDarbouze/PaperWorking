@@ -4,6 +4,7 @@ import { ApplicationUser } from '@/types/schema';
 const mockLawyers: ApplicationUser[] = [
   {
     uid: 'lawyer_001',
+    organizationId: 'org_zanelaw',
     email: 'robert.zane@zanelaw.com',
     displayName: 'Robert Zane, Esq.',
     subscriptionPlan: 'Lawyer Lead-Gen',
@@ -13,6 +14,7 @@ const mockLawyers: ApplicationUser[] = [
   },
   {
     uid: 'lawyer_002',
+    organizationId: 'org_pearsonhardman',
     email: 'jessica.pearson@pearsonhardman.com',
     displayName: 'Jessica Pearson, Esq.',
     subscriptionPlan: 'Lawyer Lead-Gen',
@@ -22,6 +24,7 @@ const mockLawyers: ApplicationUser[] = [
   },
   {
     uid: 'lawyer_003',
+    organizationId: 'org_pearsonhardman',
     email: 'harvey.specter@pearsonhardman.com',
     displayName: 'Harvey Specter, Esq.',
     subscriptionPlan: 'Lawyer Lead-Gen',

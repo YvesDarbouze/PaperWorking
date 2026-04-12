@@ -2,107 +2,133 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // --- HELPERS ---
-    
-    // Returns the User document data
-    function getUserData() {
+
+    // ─── Helper Functions ──────────────────────────────────────────────
+    // Get the authenticated user's profile document
+    function getUserDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
-    
-    // Check if the user is a Lead Investor or Admin
-    function isLeadInvestorOrAdmin() {
-      let role = getUserData().role;
-      return role == 'Lead Investor' || role == 'Admin';
+
+    // Check if the caller is a member of the deal and return their role
+    function getDealRole(dealId) {
+      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
+      return deal.members[request.auth.uid].role;
     }
 
-    // Check if the user is a General Contractor
-    function isContractor() {
-      return getUserData().role == 'General Contractor';
+    // Check if user is a member of the deal at all
+    function isDealMember(dealId) {
+      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
+      return request.auth.uid in deal.members;
     }
 
-    // --- RULES ---
+    // Check if user belongs to the same organization as the deal
+    function isInDealOrg(dealId) {
+      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
+      let user = getUserDoc();
+      return user.organizationId == deal.organizationId;
+    }
 
-    // Default deny all
+    // Role hierarchy checks — returns true if user's deal role is in the allowed set
+    function hasRole(dealId, allowedRoles) {
+      return isDealMember(dealId) && (getDealRole(dealId) in allowedRoles);
+    }
+
+    // ─── Organizations ─────────────────────────────────────────────────
+    // Only the organization owner can write; members can read their own org.
+    match /organizations/{orgId} {
+      allow read: if request.auth != null
+                  && getUserDoc().organizationId == orgId;
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if request.auth != null
+                    && resource.data.ownerUid == request.auth.uid;
+      allow delete: if false; // Orgs are never client-deleted
+    }
+
+    // ─── Users ─────────────────────────────────────────────────────────
+    // Users can read/write their own profile. No cross-user reads.
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false; // User docs are never client-deleted
+    }
+
+    // ─── Deals ─────────────────────────────────────────────────────────
+    // Only deal members within the same org can read.
+    // Only Lead Investor and General Contractor can write.
+    // Only Lead Investor can delete.
+    match /deals/{dealId} {
+      allow read: if request.auth != null
+                  && isDealMember(dealId)
+                  && isInDealOrg(dealId);
+
+      allow create: if request.auth != null
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && request.resource.data.organizationId == getUserDoc().organizationId;
+
+      allow update: if request.auth != null
+                    && hasRole(dealId, ['Lead Investor', 'General Contractor'])
+                    && isInDealOrg(dealId);
+
+      allow delete: if request.auth != null
+                    && hasRole(dealId, ['Lead Investor']);
+
+      // ─── Ledger Items (Sub-Collection) ─────────────────────────────
+      // All deal members can read. Only finance-authorized roles can write.
+      match /ledgerItems/{itemId} {
+        allow read: if request.auth != null
+                    && isDealMember(dealId)
+                    && isInDealOrg(dealId);
+
+        // Lead Investor, General Contractor, and Accountant can create items
+        allow create: if request.auth != null
+                      && hasRole(dealId, ['Lead Investor', 'General Contractor', 'Accountant'])
+                      && request.resource.data.organizationId == getUserDoc().organizationId;
+
+        // Only Lead Investor and Accountant can approve/reject (update)
+        allow update: if request.auth != null
+                      && hasRole(dealId, ['Lead Investor', 'Accountant']);
+
+        // Only Lead Investor can delete ledger items
+        allow delete: if request.auth != null
+                      && hasRole(dealId, ['Lead Investor']);
+      }
+
+      // ─── Private Financials (Sub-Collection) ───────────────────────
+      // This is the True Field-Level Security workaround.
+      // Only Lead Investor, Accountant, and Lender can read.
+      // Only server-side (Admin SDK) should write — but we allow Lead Investor
+      // as a fallback for the Engine Room recalculation.
+      match /privateFinancials/{docId} {
+        allow read: if request.auth != null
+                    && hasRole(dealId, ['Lead Investor', 'Accountant', 'Lender'])
+                    && isInDealOrg(dealId);
+
+        allow write: if request.auth != null
+                     && hasRole(dealId, ['Lead Investor']);
+      }
+    }
+
+    // ─── Waitlist (Landing Page Lead Capture) ──────────────────────────
+    // Anyone can add their email; nobody can read/update/delete.
+    match /waitlist/{entryId} {
+      allow create: if true;
+      allow read, update, delete: if false;
+    }
+
+    // ─── Audit Log ─────────────────────────────────────────────────────
+    // Immutable append-only log. Only server should write, but we allow
+    // authenticated creates. No reads, updates, or deletes from client.
+    match /auditLog/{logId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
+    }
+
+    // ─── Default: Deny All ─────────────────────────────────────────────
+    // Any collection not explicitly matched above is locked.
     match /{document=**} {
       allow read, write: if false;
     }
-
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      // Writing/Subscription assignment should be done via secure backend/Stripe webhooks
-      allow write: if false; 
-    }
-
-    // Property Deals Isolation Logic
-    match /deals/{dealId} {
-      
-      // 1. Multi-Tenant Read Authorization
-      // A user is granted Read access if Deal belongs to their Org OR they are assigned
-      allow read: if request.auth != null && (
-        getUserData().organizationId == resource.data.organizationId ||
-        (request.auth.uid in resource.data.assignedUsers)
-      );
-
-      // Deal creation: Any authenticated & active user can create natively for their Organization
-      allow create: if request.auth != null && 
-                    request.resource.data.organizationId == getUserData().organizationId &&
-                    request.resource.data.ownerUid == request.auth.uid;
-
-      // Updating a deal
-      allow update: if request.auth != null && (
-        getUserData().organizationId == resource.data.organizationId ||
-        (request.auth.uid in resource.data.assignedUsers)
-      ) && (
-        // Prevent illicit phase updates unless Lead Investor / Admin
-        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['currentPhase'])) ||
-        isLeadInvestorOrAdmin()
-      );
-                    
-      // Deletion is strictly reserved for the owner
-      allow delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
-
-
-      // ==========================================
-      // SUBCOLLECTIONS 
-      // ==========================================
-
-      // 2. Ledger Items Rules
-      match /ledgerItems/{itemId} {
-        
-        // Let Orgs Read their ledgers
-        allow read: if request.auth != null && (
-          // In production, pulling the parent deal doc here might trigger multiple reads, 
-          // but we mapped organizationId downstream on to LedgerItem specifically to simplify this check!
-          getUserData().organizationId == resource.data.organizationId
-        );
-
-        // General Contractor Receipt Creation
-        allow create: if request.auth != null && (
-          (isContractor() && request.resource.data.type == 'receipt') ||
-          isLeadInvestorOrAdmin()
-        );
-
-        // Draw Request Approvals
-        allow update: if request.auth != null && (
-          // If status mutates to Approved, mandate Lead Investor role
-          ((request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) && request.resource.data.status == 'Approved') ? isLeadInvestorOrAdmin() : true)
-        ) && getUserData().organizationId == resource.data.organizationId;
-        
-        allow delete: if request.auth != null && isLeadInvestorOrAdmin();
-      }
-
-      // 3. Private Financials Rules
-      // This is the workaround solving Field-Level Read Restrictions for Net Profit & Capital!
-      match /privateFinancials/{docId} {
-        
-        // Specifically block Contractors from reading or manipulating this isolated subcollection whatsoever. 
-        allow read, write: if request.auth != null && 
-                           !isContractor() &&
-                           getUserData().organizationId == get(/databases/$(database)/documents/deals/$(dealId)).data.organizationId;
-      }
-
-    }
-    
   }
 }

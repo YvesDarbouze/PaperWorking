@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDealStore } from '@/store/dealStore';
-import { PropertyDeal, PendingReceipt } from '@/types/schema';
+import { PropertyDeal, PendingReceipt, CostEntry } from '@/types/schema';
 import { CheckCircle, XCircle, AlertTriangle, Paperclip, CheckSquare, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { verifyContingencyBuffer } from '@/lib/contingencyEnforcer';
 import toast from 'react-hot-toast';
@@ -22,14 +22,14 @@ export default function TriageQueue() {
         }
 
         // Move from Triage to Master Ledger
-        const newCostEntry = {
+        const newCostEntry: CostEntry = {
             id: receipt.id,
             description: `[Triage] ${receipt.budgetLineItem}`,
             amount: receipt.amount,
             approved: true,
             addedBy: receipt.submittedByUid,
             createdAt: new Date(),
-            category: receipt.budgetLineItem // Custom extension for display purposes
+            category: receipt.budgetLineItem as CostEntry['category']
         };
 
         const existingCosts = deal.financials.costs || [];
@@ -93,7 +93,7 @@ export default function TriageQueue() {
                                    <div key={receipt.id} className={`flex flex-col md:flex-row p-6 gap-6 ${isBreach ? 'bg-red-50/30' : ''}`}>
                                        {/* Image Viewer */}
                                        <div className="md:w-1/3 bg-gray-100 rounded-lg aspect-auto flex items-center justify-center relative overflow-hidden border border-gray-200 min-h-[200px]">
-                                            <img src="https://images.unsplash.com/photo-1621217032731-bf55c7075253?auto=format&fit=crop&q=80&w=400" alt="Receipt Mock" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                                            <img src="https://images.unsplash.com/photo-1621217032731-bf55c7075253?auto=format&fit=crop&q=80&w=400" alt="Receipt Mock" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" />
                                             <div className="z-10 absolute bottom-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded flex items-center">
                                                <Paperclip className="w-3 h-3 mr-1"/> Attached Evidence
                                             </div>
@@ -164,6 +164,7 @@ export default function TriageQueue() {
                       </div>
                   )}
                </div>
+            </div>
             </div>
             
             <div className="lg:col-span-1 space-y-6">

@@ -21,6 +21,7 @@ export default function CapitalEvaluationPage() {
     if (!currentDeal) {
       const mockDeal: PropertyDeal = {
         id: 'mock_eval_deal',
+        organizationId: 'mock_org',
         propertyName: 'SFH 123 Evaluated St',
         address: '123 Evaluated St',
         status: 'Lead',
@@ -32,7 +33,7 @@ export default function CapitalEvaluationPage() {
           purchasePrice: 155000,
           estimatedARV: 260000,
           costs: [
-            { id: '1', amount: 35000, description: 'Mock Repairs', addedBy: 'sys', approved: true, createdAt: new Date(), category: 'Repairs' }
+            { id: '1', amount: 35000, description: 'Mock Repairs', addedBy: 'sys', approved: true, createdAt: new Date(), category: 'Other' }
           ],
           loanAmount: 200000,
           loanInterestRate: 10,

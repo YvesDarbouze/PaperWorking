@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Logo from '@/components/brand/Logo';
 
 import PricingCards from '@/components/pricing/PricingCards';
 import FeatureComparisonTable from '@/components/pricing/FeatureComparisonTable';
@@ -53,9 +54,7 @@ export default function PricingPage() {
       {/* Header — matches landing page nav */}
       <header className="sticky top-0 z-50 w-full bg-dashboard/90 backdrop-blur-md border-b border-phase-1">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Link href="/" className="text-xl font-bold tracking-tight text-black flex items-center">
-            Paper<span className="font-light text-phase-3">Working</span>
-          </Link>
+          <Logo href="/" size="sm" />
           <div className="flex items-center space-x-6">
             <Link href="/dashboard" className="text-sm font-medium text-phase-3 hover:text-black transition-colors">
               Log In
@@ -117,8 +116,9 @@ export default function PricingPage() {
       {/* Footer — matches landing page */}
       <footer className="bg-dashboard py-12">
          <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-phase-3">
-            <div className="mb-4 md:mb-0">
-               <span className="font-bold text-black">Paper</span>Working © {new Date().getFullYear()}
+            <div className="mb-4 md:mb-0 flex items-center">
+               <Logo size="sm" />
+               <span className="ml-2">© {new Date().getFullYear()}</span>
             </div>
             <div className="flex space-x-8">
                <Link href="#" className="hover:text-black transition-colors">Privacy Policy</Link>

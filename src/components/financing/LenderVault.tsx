@@ -56,6 +56,7 @@ export default function LenderVault() {
             </li>
           ))}
         </ul>
+      ) : (
         <p className="text-sm text-gray-500 mb-6 italic">No pre-approval documents uploaded yet.</p>
       )}
 

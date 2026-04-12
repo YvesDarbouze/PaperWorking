@@ -40,6 +40,7 @@ export default function DashboardPage() {
     const setDeals = useDealStore.getState().setDeals;
     const newDeal = {
        id: mockId,
+       organizationId: 'demo_org',
        propertyName: mockAddr,
        address: "123 Guided Tour St",
        status: "Lead" as const,

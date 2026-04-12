@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-02-24.acacia',
-});
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
+  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+}
 
 // Mapping of generic plans to hypothetical Stripe Price IDs
 const PLAN_PRICE_MAP: Record<string, string> = {
@@ -14,6 +16,7 @@ const PLAN_PRICE_MAP: Record<string, string> = {
 
 export async function POST(request: Request) {
   try {
+    const stripe = getStripe();
     const { plan, userId, userEmail } = await request.json();
 
     if (!PLAN_PRICE_MAP[plan]) {

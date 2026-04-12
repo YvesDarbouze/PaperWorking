@@ -1,159 +1,251 @@
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Search, FileSignature, HardHat, LogOut } from "lucide-react";
-import VideoPlaceholder from "@/components/landing/VideoPlaceholder";
-import LifecycleCard from "@/components/landing/LifecycleCard";
-import FAQAccordion from "@/components/landing/FAQAccordion";
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
+import { ArrowRight, CheckCircle, Loader2, Menu, X } from 'lucide-react';
+import { db } from '@/lib/firebase/config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import Logo from '@/components/brand/Logo';
+import FeatureGrid from '@/components/landing/FeatureGrid';
+import ProcessTimeline from '@/components/landing/ProcessTimeline';
+
+/* ═══════════════════════════════════════════════════════════════
+   PaperWorking — Landing Page (B2B SaaS)
+   
+   Clerky-inspired: #f2f2f2 base, monochrome, high-trust.
+   ═══════════════════════════════════════════════════════════════ */
 
 export default function Home() {
-  const faqItems = [
-    {
-      question: "How does the subscription model work?",
-      answer: "We offer tailored tiers depending on your operational volume. The 'Individual' tier supports up to 5 concurrent properties, while the 'Team' tier allows unlimited properties and delegated sub-accounts for General Contractors and Agents. Lawyers may join via the 'Lawyer Lead-Gen' tier to access closing artifact boards."
-    },
-    {
-      question: "What is the Engine Room and who has access?",
-      answer: "The Engine Room is the central financial ledger and ROI compliance matrix. To maintain data integrity and strict privacy boundaries, access is heavily masked. Only Lead Investors and designated Accountants can view the ROI metrics and full document hub. Subcontractors and General Contractors are routed solely to the Triage Queue for task management."
-    },
-    {
-      question: "How is documentation verified during the lifecycle?",
-      answer: "During Phase 5 (The Closing Room), Title Insurance, Closing Disclosures, and Wiring Instructions must be uploaded. A designated Lawyer must manually verify these artifacts inside the platform before the system permits any capital outlays or property stage advancements into Renovation."
+  /* ─── Mobile nav state ─── */
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  /* ─── Waitlist form state ─── */
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  /* ─── Sticky nav scroll shadow ─── */
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  /* ─── Submit to Firestore waitlist collection ─── */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setStatus('error');
+      setErrorMsg('Please enter a valid work email.');
+      return;
     }
-  ];
+
+    setStatus('loading');
+    try {
+      await addDoc(collection(db, 'waitlist'), {
+        email: trimmed,
+        source: 'hero',
+        createdAt: serverTimestamp(),
+      });
+      setStatus('success');
+      setEmail('');
+    } catch (err) {
+      console.error('Waitlist write failed:', err);
+      setStatus('error');
+      setErrorMsg('Something went wrong. Please try again.');
+    }
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f2f2f2] font-sans text-gray-900 selection:bg-gray-200">
-      
-      {/* 1. Global Navigation (Sticky) */}
-      <header className="sticky top-0 z-50 w-full bg-[#f2f2f2]/90 backdrop-blur-md border-b border-gray-200">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Link href="/" className="text-xl font-bold tracking-tight text-black flex items-center">
-            Paper<span className="font-light text-gray-500">Working</span>
-          </Link>
-          <div className="flex items-center space-x-6">
-            <Link href="/dashboard" className="text-sm font-medium text-gray-500 hover:text-black transition-colors">
+    <div className="min-h-screen flex flex-col">
+      {/* ═══════════════════════════════════════════════════════
+          GLOBAL NAVIGATION — Sticky
+          ═══════════════════════════════════════════════════════ */}
+      <header
+        className={`sticky top-0 z-50 transition-all duration-200 ${
+          scrolled
+            ? 'bg-pw-bg/90 backdrop-blur-md border-b border-pw-border shadow-sm'
+            : 'bg-pw-bg border-b border-transparent'
+        }`}
+      >
+        <nav className="mx-auto max-w-6xl px-6 lg:px-8 h-16 flex items-center justify-between">
+          {/* Logo */}
+          <Logo href="/" size="sm" className="text-pw-fg" />
+
+          {/* Desktop CTA */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Link
+              href="/dashboard"
+              className="px-4 py-2 text-sm font-medium text-pw-muted hover:text-pw-fg transition-colors"
+            >
               Log In
             </Link>
-            <Link 
-              href="/pricing" 
-              className="px-5 py-2.5 text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors shadow-sm"
+            <Link
+              href="#waitlist"
+              className="px-5 py-2.5 text-sm font-medium bg-pw-black text-pw-white hover:bg-pw-fg transition-colors"
             >
-              Get Started
+              Start Free Trial
             </Link>
           </div>
-        </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 -mr-2 text-pw-fg hover:text-pw-black"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </nav>
+
+        {/* Mobile overlay */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-pw-border bg-pw-bg px-6 py-6 space-y-4">
+            <Link
+              href="/dashboard"
+              className="block w-full text-center py-3 text-sm font-medium text-pw-muted hover:text-pw-fg border border-pw-border transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Log In
+            </Link>
+            <Link
+              href="#waitlist"
+              className="block w-full text-center py-3 text-sm font-medium bg-pw-black text-pw-white hover:bg-pw-fg transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Start Free Trial
+            </Link>
+          </div>
+        )}
       </header>
 
-      <main className="flex-1 w-full">
-        {/* 2. Section 1: The Hero */}
-        <section className="pt-24 pb-20 sm:pt-32 sm:pb-24 border-b border-gray-200">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="max-w-2xl">
-                <h1 className="text-5xl font-medium tracking-tight text-black sm:text-6xl text-balance leading-tight">
-                  The Operational Engine for Real Estate Investors.
-                </h1>
-                <p className="mt-6 text-lg text-gray-600 max-w-xl leading-relaxed">
-                  PaperWorking organizes the Real Estate Investment process to make property flipping simple, organized, and professional. Consolidate your capital network, reporting, and contractors into a singular, high-trust ledger.
-                </p>
-                <div className="mt-10 flex items-center gap-x-6">
-                  <Link
-                    href="/pricing"
-                    className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-medium text-white bg-black hover:bg-gray-800 transition-colors focus:outline-none"
-                  >
-                    View Pricing
-                  </Link>
-                  <Link
-                    href="/dashboard"
-                    className="group inline-flex items-center justify-center px-6 py-3.5 text-sm font-medium text-black hover:text-gray-600 transition-colors focus:outline-none"
-                  >
-                    Start Your First Deal
-                    <ArrowRight className="ml-2 h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                  </Link>
-                </div>
-              </div>
-              <div className="w-full">
-                 <VideoPlaceholder />
+      {/* ═══════════════════════════════════════════════════════
+          HERO SECTION
+          ═══════════════════════════════════════════════════════ */}
+      <main className="flex-1">
+        <section className="relative py-24 sm:py-32 lg:py-40">
+          <div className="mx-auto max-w-6xl px-6 lg:px-8">
+            <div className="max-w-2xl">
+              {/* Eyebrow */}
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-pw-muted mb-6">
+                Built for real estate teams
+              </p>
+
+              {/* H1 */}
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-pw-fg leading-[1.08] text-balance">
+                The Operational Engine for Real Estate Investors.
+              </h1>
+
+              {/* Supporting copy */}
+              <p className="mt-6 text-lg sm:text-xl text-pw-muted leading-relaxed max-w-xl">
+                Replace spreadsheets, shared drives, and email chains with one
+                secure platform. PaperWorking automates document workflows,
+                enforces role-based access, and gives every team member exactly
+                what they need to close deals faster.
+              </p>
+
+              {/* ─── Waitlist Form ─── */}
+              <div id="waitlist" className="mt-10 max-w-md scroll-mt-24">
+                {status === 'success' ? (
+                  <div className="flex items-center space-x-3 py-4 px-5 bg-pw-surface border border-pw-border">
+                    <CheckCircle className="w-5 h-5 text-pw-fg shrink-0" />
+                    <p className="text-sm font-medium text-pw-fg">
+                      You&apos;re on the list. We&apos;ll reach out soon.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1 relative">
+                        <input
+                          ref={inputRef}
+                          type="email"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (status === 'error') setStatus('idle');
+                          }}
+                          placeholder="Enter your work email"
+                          className={`w-full px-4 py-3 text-sm bg-pw-surface border focus:outline-none transition-colors ${
+                            status === 'error'
+                              ? 'border-red-400 focus:border-red-500'
+                              : 'border-pw-border focus:border-pw-fg'
+                          }`}
+                          disabled={status === 'loading'}
+                          aria-label="Work email address"
+                        />
+                        {status === 'error' && (
+                          <p className="absolute -bottom-5 left-0 text-xs text-red-500">
+                            {errorMsg}
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={status === 'loading'}
+                        className="px-6 py-3 text-sm font-medium bg-pw-black text-pw-white hover:bg-pw-fg transition-colors disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer shrink-0"
+                      >
+                        {status === 'loading' ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
+                            <span>Start Your First Deal Free</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                    <p className="text-xs text-pw-subtle">
+                      14-day free trial · No credit card required · SOC 2 compliant
+                    </p>
+                  </form>
+                )}
               </div>
             </div>
           </div>
         </section>
-
-        {/* 3. Section 2: The Value Proposition */}
-        <section className="py-24 bg-white border-b border-gray-200">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
-             <h2 className="text-sm font-medium leading-7 text-gray-400 uppercase tracking-widest mb-4">
-                Crowdfund & Find
-             </h2>
-             <p className="mx-auto max-w-3xl text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance leading-tight">
-                Scale your portfolio by unifying your Private Network, Lawyers, and General Contractors strictly under one roof.
-             </p>
-             <p className="mx-auto mt-6 max-w-2xl text-base text-gray-500 leading-relaxed">
-                Stop chasing email threads for Wiring Instructions. Instantly list target properties, securely crowdfund capital from fractional investors, and actively manage escrow disbursements all without leaving your Dashboard.
-             </p>
-          </div>
-        </section>
-
-        {/* 4. Section 3: The 4-Phase Lifecycle Preview */}
-        <section className="py-24 bg-[#f2f2f2] border-b border-gray-200">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl mb-16">
-              The Matrix Protocol.
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border border-gray-200 shadow-sm bg-white">
-               <LifecycleCard 
-                 number="1" 
-                 title="Find & Fund" 
-                 description="Analyze targets with integrated ARV projectors and source liquidity directly from fractional private investors."
-                 icon={<Search className="w-4 h-4" />}
-               />
-               <LifecycleCard 
-                 number="2" 
-                 title="Acquisition" 
-                 description="Enter the Closing Room. Strict RBAC ensures proper legal review of titles and disclosures before funds unlock."
-                 icon={<FileSignature className="w-4 h-4" />}
-               />
-               <LifecycleCard 
-                 number="3" 
-                 title="Renovation" 
-                 description="Contractors submit digital receipts to the Triage Queue for rapid draw requests against the project ledger."
-                 icon={<HardHat className="w-4 h-4" />}
-               />
-               <LifecycleCard 
-                 number="4" 
-                 title="Exit Strategy" 
-                 description="Execute the final sale or BRRRR refinance. Automated dynamic cascades disperse equity distributions seamlessly."
-                 icon={<LogOut className="w-4 h-4" />}
-               />
-            </div>
-          </div>
-        </section>
-
-        {/* 5. Section 4: The Dynamic FAQ */}
-        <section className="py-24 bg-white border-b border-gray-200">
-          <div className="mx-auto max-w-3xl px-6 lg:px-8">
-            <h2 className="text-3xl font-medium tracking-tight text-black mb-12">
-              Common Questions.
-            </h2>
-            <FAQAccordion items={faqItems} />
-          </div>
-        </section>
-
       </main>
 
-      {/* 6. Section 5: The Footer */}
-      <footer className="bg-[#f2f2f2] py-12">
-         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
-            <div className="mb-4 md:mb-0">
-               <span className="font-bold text-black">Paper</span>Working © {new Date().getFullYear()}
-            </div>
-            <div className="flex space-x-8">
-               <Link href="#" className="hover:text-black transition-colors">Privacy Policy</Link>
-               <Link href="#" className="hover:text-black transition-colors">Terms of Service</Link>
-               <Link href="#" className="hover:text-black transition-colors">Contact</Link>
-               <Link href="/dashboard" className="text-black font-medium hover:text-gray-600 transition-colors">Log In</Link>
-            </div>
-         </div>
+      {/* ═══════════════════════════════════════════════════════
+          'AHA' SECTION BREAK
+          ═══════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-20 border-t border-pw-border">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 text-center">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-pw-fg leading-tight text-balance">
+            Stop tracking half-million dollar deals on spreadsheets.
+          </h2>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          FEATURE GRID — 2x2 Scannable Blocks
+          ═══════════════════════════════════════════════════════ */}
+      <FeatureGrid />
+
+      {/* ═══════════════════════════════════════════════════════
+          PROCESS TIMELINE — Find → Acquire → Renovate → Exit
+          ═══════════════════════════════════════════════════════ */}
+      <ProcessTimeline />
+
+      {/* ═══════════════════════════════════════════════════════
+          FOOTER — Minimal
+          ═══════════════════════════════════════════════════════ */}
+      <footer className="py-8 border-t border-pw-border">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center text-xs text-pw-muted space-y-3 sm:space-y-0">
+          <div className="flex items-center">
+            <Logo size="sm" className="text-pw-fg" />
+            <span className="ml-2 text-pw-muted">© {new Date().getFullYear()}</span>
+          </div>
+          <div className="flex space-x-6">
+            <Link href="#" className="hover:text-pw-fg transition-colors">Privacy</Link>
+            <Link href="#" className="hover:text-pw-fg transition-colors">Terms</Link>
+            <Link href="#" className="hover:text-pw-fg transition-colors">Contact</Link>
+          </div>
+        </div>
       </footer>
     </div>
   );

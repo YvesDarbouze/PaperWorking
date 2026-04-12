@@ -16,8 +16,8 @@ export default function CostOfCapital() {
   useEffect(() => {
     if (currentDeal?.financials) {
       setInterestRate(currentDeal.financials.loanInterestRate?.toString() || '');
-      setPoints(currentDeal.financials.loanPoints?.toString() || '');
-      setTimeline(currentDeal.financials.projectedTimelineMonths?.toString() || '');
+      setPoints(currentDeal.financials.loanOriginationPoints?.toString() || '');
+      setTimeline(currentDeal.financials.estimatedTimelineDays?.toString() || '');
     }
   }, [currentDeal]);
 
@@ -25,8 +25,8 @@ export default function CostOfCapital() {
     if (!currentDeal) return;
     updateDealFinancials(currentDeal.id, {
       loanInterestRate: parseFloat(interestRate) || 0,
-      loanPoints: parseFloat(points) || 0,
-      projectedTimelineMonths: parseFloat(timeline) || 0,
+      loanOriginationPoints: parseFloat(points) || 0,
+      estimatedTimelineDays: parseFloat(timeline) || 0,
     });
   };
 

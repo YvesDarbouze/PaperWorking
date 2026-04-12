@@ -6,7 +6,14 @@ import { FieldValue } from 'firebase-admin/firestore';
 /**
  * Validates the caller via the supplied ID Token and returns user data
  */
-async function verifyActionAuth(idToken: string) {
+interface VerifiedUser {
+  uid: string;
+  role: string;
+  organizationId: string;
+  [key: string]: unknown;
+}
+
+async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
   if (!idToken) throw new Error('Missing authentication token.');
   try {
     const decodedToken = await adminAuth.verifyIdToken(idToken);
@@ -15,8 +22,8 @@ async function verifyActionAuth(idToken: string) {
     
     if (!userSnap.exists) throw new Error('User profile not found in database.');
     
-    const userData = userSnap.data();
-    return { uid: decodedToken.uid, ...userData };
+    const userData = userSnap.data() as Record<string, unknown>;
+    return { uid: decodedToken.uid, ...userData } as VerifiedUser;
   } catch (err) {
     console.error('Server Action Auth Error:', err);
     throw new Error('Unauthorized');

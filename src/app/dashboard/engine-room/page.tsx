@@ -6,11 +6,11 @@ import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, Chev
 import { useAllDealsSync } from '@/hooks/useAllDealsSync';
 
 // Phase 4 Components
-import CostOfCapital from '@/components/calculators/CostOfCapital';
-import HoldingCostClock from '@/components/calculators/HoldingCostClock';
-import SeventyPercentRule from '@/components/calculators/SeventyPercentRule';
-import VirtualInspection from '@/components/calculators/VirtualInspection';
-import WhatIfSimulator from '@/components/calculators/WhatIfSimulator';
+import CostOfCapital from '@/components/Calculators/CostOfCapital';
+import HoldingCostClock from '@/components/Calculators/HoldingCostClock';
+import SeventyPercentRule from '@/components/Calculators/SeventyPercentRule';
+import VirtualInspection from '@/components/Calculators/VirtualInspection';
+import WhatIfSimulator from '@/components/Calculators/WhatIfSimulator';
 import LenderVault from '@/components/financing/LenderVault';
 
 // Phase 8 Components
@@ -27,7 +27,7 @@ type Tab = 'cash' | 'triage' | 'ledger' | 'compliance' | 'valuation';
 export default function EngineRoomPage() {
   useAllDealsSync();
   
-  const userRole = 'Lead Investor'; // MOCK: Should pull from AuthContext
+  const userRole: string = 'Lead Investor'; // MOCK: Should pull from AuthContext
   const isFinanceTeam = userRole === 'Lead Investor' || userRole === 'Accountant';
   const isContractor = userRole === 'Subcontractor' || userRole === 'General Contractor';
   
@@ -291,6 +291,7 @@ export default function EngineRoomPage() {
             <div>
               <h3 className="text-lg font-medium">Compliance & Universal Document Hub</h3>
               <p className="text-sm text-gray-500">Auto-generated Google Drive directories linked to verified deals.</p>
+            </div>
             
             <div className="grid grid-cols-2 gap-4 mt-4">
               {deals.map(deal => (

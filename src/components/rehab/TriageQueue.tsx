@@ -1,0 +1,174 @@
+import React, { useState } from 'react';
+import { useDealStore } from '@/store/dealStore';
+import { PropertyDeal, PendingReceipt } from '@/types/schema';
+import { CheckCircle, XCircle, AlertTriangle, Paperclip, CheckSquare, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
+import { verifyContingencyBuffer } from '@/lib/contingencyEnforcer';
+import toast from 'react-hot-toast';
+import ESignAction from '@/components/shared/ESignAction';
+import TeamChatWidget from '@/components/shared/TeamChatWidget';
+
+export default function TriageQueue() {
+    const deals = useDealStore(state => state.deals);
+    const updateRehabModule = useDealStore(state => state.updateRehabModule);
+    const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+
+    const handleApproveReceipt = (deal: PropertyDeal, receipt: PendingReceipt) => {
+        // Enforce Contingency Buffer
+        const validation = verifyContingencyBuffer(deal, receipt);
+        
+        if (!validation.canApprove) {
+            toast.error(`CONTINGENCY BREACH: This approval forces the budget over the 15% buffer constraint by $${validation.exceedsBy.toLocaleString()}.`, { duration: 6000, icon: '🛑' });
+            return;
+        }
+
+        // Move from Triage to Master Ledger
+        const newCostEntry = {
+            id: receipt.id,
+            description: `[Triage] ${receipt.budgetLineItem}`,
+            amount: receipt.amount,
+            approved: true,
+            addedBy: receipt.submittedByUid,
+            createdAt: new Date(),
+            category: receipt.budgetLineItem // Custom extension for display purposes
+        };
+
+        const existingCosts = deal.financials.costs || [];
+        updateDealFinancials(deal.id, { costs: [...existingCosts, newCostEntry] });
+
+        // Remove from Triage Queue
+        const updatedPending = (deal.rehab?.pendingReceipts || []).filter(r => r.id !== receipt.id);
+        updateRehabModule(deal.id, { pendingReceipts: updatedPending });
+        
+        toast.success(`Expense Approved & Posted to global ledger.`);
+    };
+
+    const handleRejectReceipt = (deal: PropertyDeal, receipt: PendingReceipt) => {
+        const updatedPending = (deal.rehab?.pendingReceipts || []).filter(r => r.id !== receipt.id);
+        // Instead of deleting, tracking it as rejected is better for audit logs, but we will remove it for demo brevity
+        updateRehabModule(deal.id, { pendingReceipts: updatedPending });
+        toast('Expense Rejected and purged from Triage.', { icon: '🗑️' });
+    };
+
+    const pendingReceiptsData = deals.flatMap(deal => 
+        (deal.rehab?.pendingReceipts || []).map(r => ({ receipt: r, deal }))
+    ).filter(data => data.receipt.status === 'pending');
+
+
+    const [isSyncingGcal, setIsSyncingGcal] = useState(false);
+
+    const handleGcalSync = () => {
+        setIsSyncingGcal(true);
+        toast.loading('Syncing inspection schedule to Google Calendar...', { id: 'gcal' });
+        setTimeout(() => {
+            toast.success('Synced to Google Calendar!', { id: 'gcal' });
+            setIsSyncingGcal(false);
+        }, 1500);
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+               <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                   <h3 className="text-lg font-medium">Contingency Triage Matrix</h3>
+                   <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                       {pendingReceiptsData.length} Action Required
+                   </span>
+               </div>
+               
+               <div className="p-0">
+                  {pendingReceiptsData.length === 0 ? (
+                      <div className="p-12 text-center text-gray-400">
+                          <CheckSquare className="w-12 h-12 mx-auto mb-3 text-green-300 opacity-50" />
+                          <p>The Triage Queue is clear.</p>
+                      </div>
+                  ) : (
+                      <div className="divide-y divide-gray-100">
+                           {pendingReceiptsData.map(({ receipt, deal }) => {
+                               const validation = verifyContingencyBuffer(deal, receipt);
+                               const isDanger = validation.projectedTotal > validation.rehabBudgetBase; // Passed baseline but under buffer
+                               const isBreach = !validation.canApprove;
+
+                               return (
+                                   <div key={receipt.id} className={`flex flex-col md:flex-row p-6 gap-6 ${isBreach ? 'bg-red-50/30' : ''}`}>
+                                       {/* Image Viewer */}
+                                       <div className="md:w-1/3 bg-gray-100 rounded-lg aspect-auto flex items-center justify-center relative overflow-hidden border border-gray-200 min-h-[200px]">
+                                            <img src="https://images.unsplash.com/photo-1621217032731-bf55c7075253?auto=format&fit=crop&q=80&w=400" alt="Receipt Mock" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                                            <div className="z-10 absolute bottom-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded flex items-center">
+                                               <Paperclip className="w-3 h-3 mr-1"/> Attached Evidence
+                                            </div>
+                                       </div>
+
+                                       {/* Data Validation Side */}
+                                       <div className="md:w-2/3 flex flex-col pl-4">
+                                           <div className="flex justify-between items-start">
+                                               <div>
+                                                   <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">{deal.propertyName}</p>
+                                                   <h4 className="text-xl font-bold text-gray-900">${receipt.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+                                                   <p className="text-sm text-gray-600 border border-gray-200 bg-gray-50 px-2 py-0.5 rounded inline-block mt-2">{receipt.budgetLineItem}</p>
+                                               </div>
+                                               
+                                               <div className="text-right">
+                                                   <p className="text-xs text-gray-500">Submitted by: <span className="font-medium text-gray-700">General Contractor</span></p>
+                                                   <p className="text-[10px] text-gray-400 mt-1">{new Date(receipt.submittedAt).toLocaleString()}</p>
+                                               </div>
+                                           </div>
+
+                                           {/* Buffer Intelligence */}
+                                           <div className="mt-6">
+                                               <div className="flex justify-between text-xs mb-1">
+                                                   <span className="text-gray-600">Base Budget: ${validation.rehabBudgetBase.toLocaleString()}</span>
+                                                   <span className="text-gray-600 flex items-center"><AlertTriangle className="w-3 h-3 mr-1 text-orange-400"/> Max Buffer: ${validation.rehabBudgetBuffered.toLocaleString()}</span>
+                                               </div>
+                                               <div className="w-full bg-gray-200 rounded-full h-2">
+                                                   <div 
+                                                       className={`h-2 rounded-full ${isBreach ? 'bg-red-500' : isDanger ? 'bg-orange-400' : 'bg-blue-500'}`} 
+                                                       style={{ width: `${Math.min(100, (validation.projectedTotal / validation.rehabBudgetBuffered) * 100)}%` }}></div>
+                                               </div>
+                                               <p className={`text-xs mt-2 font-medium ${isBreach ? 'text-red-600' : isDanger ? 'text-orange-600' : 'text-gray-500'}`}>
+                                                   {isBreach 
+                                                       ? `WARNING: Exceeds Contingency Enforcer by $${validation.exceedsBy.toLocaleString()}` 
+                                                       : isDanger 
+                                                       ? `CAUTION: Tapping into 15% Contingency Escrow (${(((validation.projectedTotal-validation.rehabBudgetBase)/(validation.rehabBudgetBuffered-validation.rehabBudgetBase))*100).toFixed(1)}% utilized)` 
+                                                       : 'Safe: Operates within original scope parameters.'}
+                                               </p>
+                                           </div>
+
+                                           {/* Triage Action Constraints */}
+                                           <div className="mt-auto pt-6 flex flex-col gap-3">
+                                               <div className="flex gap-3">
+                                                   <button onClick={() => handleApproveReceipt(deal, receipt)} disabled={isBreach} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
+                                                       <CheckCircle className="w-4 h-4 mr-2" /> Approve & Post
+                                                   </button>
+                                                   <button onClick={() => handleRejectReceipt(deal, receipt)} className="flex-x bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
+                                                       <XCircle className="w-4 h-4 mr-2" /> Reject
+                                                   </button>
+                                               </div>
+                                               
+                                               <div className="flex items-center gap-3 mt-1 pt-3 border-t border-gray-100">
+                                                    <ESignAction 
+                                                        documentName={`Lien Waiver - ${receipt.budgetLineItem}`}
+                                                        signeeRole="General Contractor"
+                                                        onSigned={() => {}} 
+                                                    />
+                                                    <button onClick={handleGcalSync} disabled={isSyncingGcal} className="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50">
+                                                        {isSyncingGcal ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <CalendarIcon className="w-3.5 h-3.5" />}
+                                                        Sync GCal
+                                                    </button>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               );
+                           })}
+                      </div>
+                  )}
+               </div>
+            </div>
+            
+            <div className="lg:col-span-1 space-y-6">
+                <TeamChatWidget dealId={pendingReceiptsData[0]?.deal?.id || 'triage'} />
+            </div>
+        </div>
+    );
+}

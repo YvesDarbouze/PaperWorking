@@ -1,0 +1,108 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- HELPERS ---
+    
+    // Returns the User document data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Check if the user is a Lead Investor or Admin
+    function isLeadInvestorOrAdmin() {
+      let role = getUserData().role;
+      return role == 'Lead Investor' || role == 'Admin';
+    }
+
+    // Check if the user is a General Contractor
+    function isContractor() {
+      return getUserData().role == 'General Contractor';
+    }
+
+    // --- RULES ---
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // Writing/Subscription assignment should be done via secure backend/Stripe webhooks
+      allow write: if false; 
+    }
+
+    // Property Deals Isolation Logic
+    match /deals/{dealId} {
+      
+      // 1. Multi-Tenant Read Authorization
+      // A user is granted Read access if Deal belongs to their Org OR they are assigned
+      allow read: if request.auth != null && (
+        getUserData().organizationId == resource.data.organizationId ||
+        (request.auth.uid in resource.data.assignedUsers)
+      );
+
+      // Deal creation: Any authenticated & active user can create natively for their Organization
+      allow create: if request.auth != null && 
+                    request.resource.data.organizationId == getUserData().organizationId &&
+                    request.resource.data.ownerUid == request.auth.uid;
+
+      // Updating a deal
+      allow update: if request.auth != null && (
+        getUserData().organizationId == resource.data.organizationId ||
+        (request.auth.uid in resource.data.assignedUsers)
+      ) && (
+        // Prevent illicit phase updates unless Lead Investor / Admin
+        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['currentPhase'])) ||
+        isLeadInvestorOrAdmin()
+      );
+                    
+      // Deletion is strictly reserved for the owner
+      allow delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+
+
+      // ==========================================
+      // SUBCOLLECTIONS 
+      // ==========================================
+
+      // 2. Ledger Items Rules
+      match /ledgerItems/{itemId} {
+        
+        // Let Orgs Read their ledgers
+        allow read: if request.auth != null && (
+          // In production, pulling the parent deal doc here might trigger multiple reads, 
+          // but we mapped organizationId downstream on to LedgerItem specifically to simplify this check!
+          getUserData().organizationId == resource.data.organizationId
+        );
+
+        // General Contractor Receipt Creation
+        allow create: if request.auth != null && (
+          (isContractor() && request.resource.data.type == 'receipt') ||
+          isLeadInvestorOrAdmin()
+        );
+
+        // Draw Request Approvals
+        allow update: if request.auth != null && (
+          // If status mutates to Approved, mandate Lead Investor role
+          ((request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) && request.resource.data.status == 'Approved') ? isLeadInvestorOrAdmin() : true)
+        ) && getUserData().organizationId == resource.data.organizationId;
+        
+        allow delete: if request.auth != null && isLeadInvestorOrAdmin();
+      }
+
+      // 3. Private Financials Rules
+      // This is the workaround solving Field-Level Read Restrictions for Net Profit & Capital!
+      match /privateFinancials/{docId} {
+        
+        // Specifically block Contractors from reading or manipulating this isolated subcollection whatsoever. 
+        allow read, write: if request.auth != null && 
+                           !isContractor() &&
+                           getUserData().organizationId == get(/databases/$(database)/documents/deals/$(dealId)).data.organizationId;
+      }
+
+    }
+    
+  }
+}

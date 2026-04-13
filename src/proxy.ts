@@ -25,7 +25,7 @@ const PROTECTED_ROUTES = ['/dashboard'];
 // Routes that authenticated users should NOT see
 const AUTH_ROUTES = ['/login', '/register', '/forgot-password'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const isAuthenticated = !!sessionCookie;

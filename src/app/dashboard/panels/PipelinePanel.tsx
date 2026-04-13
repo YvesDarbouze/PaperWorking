@@ -15,9 +15,11 @@ import VarianceChart from '@/components/dashboard/VarianceChart';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 
 /* ── Command Center Modules (lazy-loaded) ── */
+const VelocityOverheadKPI = lazy(() => import('@/components/dashboard/VelocityOverheadKPI'));
 const GlobalTodoEngine = lazy(() => import('@/components/dashboard/GlobalTodoEngine'));
 const DealGroomingAlerts = lazy(() => import('@/components/dashboard/DealGroomingAlerts'));
 const OfferLetterQuickAction = lazy(() => import('@/components/dashboard/OfferLetterQuickAction'));
+const YearlyPortfolioPerformance = lazy(() => import('@/components/dashboard/YearlyPortfolioPerformance'));
 const SettingsDrawer = lazy(() => import('./SettingsDrawer'));
 
 /* ═══════════════════════════════════════════════════════
@@ -164,6 +166,21 @@ export default function PipelinePanel() {
                   </div>
                </div>
 
+               {/* ═══ Velocity & Overhead KPI Strip ═══ */}
+               <Suspense fallback={
+                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                   {Array.from({ length: 5 }).map((_, i) => (
+                     <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse min-h-[120px]">
+                       <div className="h-3 bg-gray-100 rounded w-2/3 mb-3" />
+                       <div className="h-6 bg-gray-100 rounded w-1/2 mb-2" />
+                       <div className="h-2 bg-gray-50 rounded w-full" />
+                     </div>
+                   ))}
+                 </div>
+               }>
+                 <VelocityOverheadKPI deals={deals} />
+               </Suspense>
+
                {/* ═══ Intelligence Grid: To-Do + Grooming ═══ */}
                <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  <Suspense fallback={
@@ -264,6 +281,20 @@ export default function PipelinePanel() {
                    <p className="text-[11px] text-gray-500 mt-2">Properties currently moving through your 4-Phase Operational Matrix.</p>
                  </div>
                </section>
+
+               {/* ═══ Yearly Portfolio Performance (Autopsy Aggregator) ═══ */}
+               <Suspense fallback={
+                 <div className="rounded-2xl border border-gray-200 bg-white p-8 animate-pulse">
+                   <div className="h-4 bg-gray-100 rounded w-1/3 mb-4" />
+                   <div className="grid grid-cols-6 gap-2.5">
+                     {Array.from({ length: 6 }).map((_, i) => (
+                       <div key={i} className="h-20 bg-gray-50 rounded-xl" />
+                     ))}
+                   </div>
+                 </div>
+               }>
+                 <YearlyPortfolioPerformance deals={deals} />
+               </Suspense>
 
                {/* ═══ Active Pipeline ═══ */}
                <section className="pt-4">

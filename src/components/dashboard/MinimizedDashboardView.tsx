@@ -1,154 +1,251 @@
-import React, { useState } from 'react';
+'use client';
+
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PropertyDeal } from '@/types/schema';
-import { Building2, Search, FileSignature, HardHat, LogOut, ArrowRight, Info } from 'lucide-react';
-import { useUserStore } from '@/store/userStore';
+import { usePanelContext, LaneDef } from './HorizontalPanelShell';
+import {
+  Search, FileSignature, HardHat, LogOut, Building2,
+  X,
+} from 'lucide-react';
+import DealFolder from './DealFolder';
+
+/* ═══════════════════════════════════════════════════════
+   MinimizedDashboardView — Board Overlay
+
+   Full-screen bird's-eye overlay showing all property deals
+   distributed across the 5 Kanban phase columns.
+
+   • Desktop: 5-column grid (one per phase)
+   • Mobile:  vertically-stacked accordion columns
+   • Tapping a deal → expanded mode at the relevant lane
+   ═══════════════════════════════════════════════════════ */
 
 interface MinimizedDashboardViewProps {
   deals: PropertyDeal[];
   onSelectDeal: (dealId: string) => void;
 }
 
-const getPhaseIcon = (status: string) => {
+/* ─── Map deal status → lane index ─── */
+function statusToLaneIndex(status: string): number {
   switch (status) {
-    case 'Lead': return <Search className="w-4 h-4" />;
-    case 'Under Contract': return <FileSignature className="w-4 h-4" />;
-    case 'Renovating': return <HardHat className="w-4 h-4" />;
-    case 'Listed': return <LogOut className="w-4 h-4" />;
-    case 'Sold': return <LogOut className="w-4 h-4 text-green-600" />;
-    default: return <Building2 className="w-4 h-4" />;
+    case 'Lead':             return 0; // Pipeline
+    case 'Under Contract':   return 1; // Evaluation
+    case 'Renovating':       return 2; // Closing
+    case 'Listed':           return 3; // Engine
+    case 'Sold':             return 4; // Exit
+    default:                 return 0;
   }
-};
+}
 
-const getStatusBadge = (status: string) => {
-  const base = "px-2.5 py-1 rounded-sm text-[11px] font-mono uppercase tracking-widest border";
+function getPhaseIcon(status: string) {
   switch (status) {
-    case 'Lead': return `${base} bg-gray-50 border-gray-200 text-gray-600`;
-    case 'Under Contract': return `${base} bg-gray-50 border-gray-200 text-gray-600`;
-    case 'Renovating': return `${base} bg-gray-50 border-gray-200 text-gray-600`;
-    case 'Listed': return `${base} bg-gray-50 border-gray-200 text-gray-600`;
-    case 'Sold': return `${base} bg-gray-100 border-gray-200 text-gray-800`;
-    default: return `${base} bg-gray-50 border-gray-200 text-gray-600`;
+    case 'Lead':           return <Search className="w-3.5 h-3.5" />;
+    case 'Under Contract': return <FileSignature className="w-3.5 h-3.5" />;
+    case 'Renovating':     return <HardHat className="w-3.5 h-3.5" />;
+    case 'Listed':         return <LogOut className="w-3.5 h-3.5" />;
+    case 'Sold':           return <LogOut className="w-3.5 h-3.5 text-green-600" />;
+    default:               return <Building2 className="w-3.5 h-3.5" />;
   }
-};
+}
+
+/* ─── Phase accent colors for column headers ───
+   Monochromatic ramp: Dashboard → Phase 1 → Phase 2 → Phase 3 → Phase 4 */
+const PHASE_ACCENTS = [
+  'bg-dashboard text-phase-4 border-phase-1',     // Pipeline  (#f2f2f2)
+  'bg-phase-1 text-phase-4 border-phase-2',       // Evaluation (#cccccc)
+  'bg-phase-2 text-white border-phase-3',          // Closing   (#a5a5a5)
+  'bg-phase-3 text-white border-phase-4',          // Engine    (#7f7f7f)
+  'bg-phase-4 text-white border-phase-4',          // Exit      (#595959)
+];
 
 export default function MinimizedDashboardView({ deals, onSelectDeal }: MinimizedDashboardViewProps) {
-  const [expandedDealId, setExpandedDealId] = useState<string | null>(null);
-  const { onboardingStep, completeOnboarding } = useUserStore();
+  const { lanes, scrollToPanel, setViewMode } = usePanelContext();
 
-  const toggleExpand = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedDealId(prev => prev === id ? null : id);
-    
-    if (onboardingStep === 4) {
-       completeOnboarding();
-    }
+  /* Bucket deals into lanes */
+  const buckets: PropertyDeal[][] = lanes.map(() => []);
+  deals.forEach((deal) => {
+    const idx = statusToLaneIndex(deal.status);
+    buckets[idx].push(deal);
+  });
+
+  const handleDealClick = (deal: PropertyDeal) => {
+    const laneIdx = statusToLaneIndex(deal.status);
+    scrollToPanel(laneIdx);
+    setViewMode('expanded');
+    onSelectDeal(deal.id);
+  };
+
+  const handleClose = () => {
+    setViewMode('expanded');
   };
 
   return (
-    <div className="w-full mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex justify-between items-end mb-6 px-2">
+    <motion.div
+      className="board-overlay pt-20 px-4 sm:px-6 lg:px-8 pb-8"
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
+    >
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-6 flex items-center justify-between">
         <div>
-           <h2 className="text-2xl font-light tracking-tight text-gray-900">Active Pipeline</h2>
-           <p className="text-sm text-gray-500 mt-1">Select a property to enter the Lifecycle Framework.</p>
+          <h2 className="text-2xl font-light tracking-tight text-gray-900">Board View</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            All {deals.length} deal{deals.length !== 1 ? 's' : ''} across your workflow
+          </p>
+        </div>
+        <button
+          onClick={handleClose}
+          className="p-2 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition"
+          aria-label="Close board view"
+        >
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+
+      {/* ── Desktop: 5-column grid ── */}
+      <div className="hidden md:grid max-w-7xl mx-auto grid-cols-5 gap-3">
+        {lanes.map((lane, colIdx) => (
+          <BoardColumn
+            key={lane.id}
+            lane={lane}
+            deals={buckets[colIdx]}
+            accent={PHASE_ACCENTS[colIdx]}
+            onDealClick={handleDealClick}
+          />
+        ))}
+      </div>
+
+      {/* ── Mobile: stacked accordion ── */}
+      <div className="md:hidden max-w-lg mx-auto space-y-3">
+        {lanes.map((lane, colIdx) => (
+          <MobileColumn
+            key={lane.id}
+            lane={lane}
+            deals={buckets[colIdx]}
+            accent={PHASE_ACCENTS[colIdx]}
+            onDealClick={handleDealClick}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Desktop Column ─── */
+function BoardColumn({
+  lane,
+  deals,
+  accent,
+  onDealClick,
+}: {
+  lane: LaneDef;
+  deals: PropertyDeal[];
+  accent: string;
+  onDealClick: (deal: PropertyDeal) => void;
+}) {
+  return (
+    <div className="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden">
+      {/* Column header */}
+      <div className={`px-4 py-3 border-b ${accent}`}>
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-widest">
+            {lane.shortLabel}
+          </span>
+          <span className="text-[10px] font-mono bg-white/60 px-2 py-0.5 rounded-full">
+            {deals.length}
+          </span>
         </div>
       </div>
-      
-      <div className="bg-white border border-gray-200 shadow-sm overflow-hidden">
+
+      {/* Deal cards */}
+      <div className="flex-1 p-2.5 space-y-2 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto">
         {deals.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 text-sm">No active deals found. Add a target property.</div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {deals.map((deal, index) => {
-              const isRent = deal.financials?.exitStrategyType === 'Rent';
-              // Simple heuristic to display health
-              const purchase = deal.financials?.purchasePrice || 0;
-              const hasHealthMap = purchase > 0;
-              
-              return (
-                <div 
-                  key={deal.id}
-                  className={`group flex flex-col border-b border-gray-100 last:border-b-0 hover:bg-gray-50/80 transition-colors relative ${onboardingStep === 4 && index === 0 ? 'ring-4 ring-indigo-500/50 bg-indigo-50/50 z-10' : ''}`}
-                >
-                  {onboardingStep === 4 && index === 0 && (
-                     <div className="absolute -top-12 left-10 bg-indigo-600 text-white text-xs px-4 py-2 rounded-lg shadow-lg flex items-center animate-bounce whitespace-nowrap z-50">
-                        <Info className="w-4 h-4 mr-2" /> Click the property row to horizontally expand the financial snapshot!
-                        <div className="absolute -bottom-1.5 left-10 w-3 h-3 bg-indigo-600 rotate-45"></div>
-                     </div>
-                  )}
-                  {/* Main Row Header */}
-                  <div 
-                     onClick={(e) => toggleExpand(deal.id, e)}
-                     className="flex flex-col md:flex-row md:items-center justify-between p-6 cursor-pointer"
-                  >
-                      <div className="flex items-center space-x-4 mb-4 md:mb-0 w-full md:w-1/3">
-                        <div className="w-10 h-10 rounded-full bg-[#f2f2f2] border border-gray-200 flex items-center justify-center text-gray-600 group-hover:bg-white group-hover:border-gray-300 transition-colors">
-                          {getPhaseIcon(deal.status)}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-medium text-gray-900 leading-none">{deal.propertyName}</h3>
-                          <p className="text-sm text-gray-500 mt-1 truncate max-w-[250px]">{deal.address}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex-1 flex justify-start md:justify-center mb-4 md:mb-0">
-                        <span className={getStatusBadge(deal.status)}>{deal.status}</span>
-                      </div>
-
-                      <div className="w-full md:w-1/3 flex items-center justify-between md:justify-end space-x-8">
-                        {hasHealthMap && (
-                          <div className="text-left md:text-right">
-                            <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">
-                              {isRent ? 'Est. Monthly Flow' : 'Est. Total Value'}
-                            </p>
-                            <p className="text-lg font-light text-gray-900">
-                              {isRent && deal.financials.projectedMonthlyRent 
-                                ? `$${deal.financials.projectedMonthlyRent.toLocaleString()}/mo` 
-                                : `$${(deal.financials?.estimatedARV || deal.financials?.purchasePrice || 0).toLocaleString()}`}
-                            </p>
-                          </div>
-                        )}
-                        <div className={`p-1 rounded-full transition-transform duration-300 ${expandedDealId === deal.id ? 'rotate-90 bg-gray-200' : 'rotate-0 bg-transparent'}`}>
-                            <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-black transition-colors" />
-                        </div>
-                      </div>
-                  </div>
-
-                  {/* Inline Expanded Quick Context Panel */}
-                  {expandedDealId === deal.id && (
-                      <div className="w-full bg-white border-t border-gray-100 p-6 flex flex-col md:flex-row gap-8 animate-in slide-in-from-top-2 fade-in duration-300">
-                         {/* Financials Tab Snapshot */}
-                         <div className="flex-1">
-                            <h4 className="text-xs uppercase tracking-widest font-bold text-gray-400 mb-3">Snapshot: Financials</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                               <div className="bg-[#f9f9f9] rounded-lg p-3">
-                                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Purchase Limit</p>
-                                  <p className="text-sm font-semibold text-gray-900">${(deal.financials.maxOffer || 0).toLocaleString()}</p>
-                               </div>
-                               <div className="bg-[#f9f9f9] rounded-lg p-3">
-                                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Projected Dev Costs</p>
-                                  <p className="text-sm font-semibold text-gray-900">${(deal.financials.projectedRehabCost || 0).toLocaleString()}</p>
-                               </div>
-                            </div>
-                         </div>
-
-                         {/* Action Center */}
-                         <div className="w-full md:w-1/3 flex flex-col justify-end">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); onSelectDeal(deal.id); }}
-                              className="w-full flex items-center justify-center p-4 bg-black text-white hover:bg-gray-800 rounded-lg text-sm font-medium transition shadow-md group"
-                            >
-                               Enter Engine Room <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                            <p className="text-[10px] text-gray-400 text-center mt-2">Dives into granular ledger & lifecycle phases.</p>
-                         </div>
-                      </div>
-                  )}
-                </div>
-              );
-            })}
+          <div className="h-20 flex items-center justify-center text-[11px] text-gray-400 italic">
+            No deals
           </div>
+        ) : (
+          deals.map((deal) => (
+            <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
+          ))
         )}
       </div>
     </div>
+  );
+}
+
+/* ─── Mobile Accordion Column ─── */
+function MobileColumn({
+  lane,
+  deals,
+  accent,
+  onDealClick,
+}: {
+  lane: LaneDef;
+  deals: PropertyDeal[];
+  accent: string;
+  onDealClick: (deal: PropertyDeal) => void;
+}) {
+  const [isOpen, setIsOpen] = React.useState(deals.length > 0);
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full px-4 py-3 flex items-center justify-between text-left border-b ${accent}`}
+      >
+        <span className="text-[11px] font-bold uppercase tracking-widest">
+          {lane.label}
+        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono bg-white/60 px-2 py-0.5 rounded-full">
+            {deals.length}
+          </span>
+          <motion.div
+            animate={{ rotate: isOpen ? 90 : 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-current"
+          >
+            ›
+          </motion.div>
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="p-3 space-y-2">
+              {deals.length === 0 ? (
+                <p className="text-[11px] text-gray-400 italic text-center py-3">No deals in this phase</p>
+              ) : (
+                deals.map((deal) => (
+                  <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ─── Deal Card (delegates to standardized DealFolder) ─── */
+function DealCard({ deal, onClick }: { deal: PropertyDeal; onClick: () => void }) {
+  return (
+    <DealFolder
+      deal={deal}
+      size="sm"
+      showPrice
+      onClick={onClick}
+    />
   );
 }

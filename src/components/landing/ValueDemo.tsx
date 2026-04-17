@@ -74,9 +74,9 @@ function MessyDocument() {
             </div>
             {/* Red "X" marks and scribbles */}
             <div className="flex items-center gap-2 text-phase-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest">Missing: 3 fields</span>
-              <span className="text-[10px]">•</span>
-              <span className="text-[10px] font-bold uppercase tracking-widest">Illegible: 2 entries</span>
+              <span className="text-xs font-bold uppercase tracking-widest">Missing: 3 fields</span>
+              <span className="text-xs">•</span>
+              <span className="text-xs font-bold uppercase tracking-widest">Illegible: 2 entries</span>
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@ function ProcessingAnimation() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-phase-2">
+          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-phase-2">
             <span>Processing document…</span>
             <span className="tabular-nums">{progress}%</span>
           </div>
@@ -139,7 +139,7 @@ function ProcessingAnimation() {
                   : 'border-transparent bg-transparent opacity-0 translate-y-2'
               }`}
             >
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">{field.label}</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-2">{field.label}</span>
               <span className="text-xs font-medium text-phase-4">{field.value}</span>
             </div>
           ))}
@@ -158,9 +158,9 @@ function CleanDashboard() {
           <div className="px-4 py-2.5 border-b border-dashboard bg-dashboard flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <CheckCircle className="w-3.5 h-3.5 text-phase-4" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">Deal Created</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Deal Created</span>
             </div>
-            <span className="text-[10px] text-phase-2">Auto-populated</span>
+            <span className="text-xs text-phase-2">Auto-populated</span>
           </div>
 
           {/* Clean structured data */}
@@ -174,7 +174,7 @@ function CleanDashboard() {
               { label: 'Est. ROI', value: '34.2%' },
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">{row.label}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-phase-2">{row.label}</span>
                 <span className="text-xs font-medium text-phase-4 tabular-nums">{row.value}</span>
               </div>
             ))}
@@ -184,9 +184,9 @@ function CleanDashboard() {
           <div className="px-4 py-2.5 bg-dashboard border-t border-phase-1 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-1.5 h-1.5 bg-phase-4 rounded-full" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">Phase 1 — Find & Fund</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Phase 1 — Find & Fund</span>
             </div>
-            <span className="text-[10px] text-phase-4 font-bold">Active</span>
+            <span className="text-xs text-phase-4 font-bold">Active</span>
           </div>
         </div>
       </div>
@@ -233,7 +233,7 @@ export default function ValueDemo() {
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">{step.label}</span>
+                <span className="text-xs font-bold uppercase tracking-widest hidden sm:inline">{step.label}</span>
               </button>
               {i < steps.length - 1 && (
                 <ArrowRight className="w-3 h-3 text-phase-2 mx-1 hidden sm:block" />

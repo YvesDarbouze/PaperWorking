@@ -58,7 +58,7 @@ export default function FeaturesGrid() {
     <section className="py-24 bg-dashboard border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Core Capabilities
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">

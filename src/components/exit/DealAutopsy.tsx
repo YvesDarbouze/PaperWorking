@@ -191,7 +191,7 @@ function MetricRow({
         </div>
         <div>
           <p className="text-xs font-medium text-gray-300">{label}</p>
-          {target && <p className="text-[9px] text-gray-500 mt-0.5">Target: {target}</p>}
+          {target && <p className="text-xs text-gray-500 mt-0.5">Target: {target}</p>}
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
   const isSold = deal.status === 'Sold';
 
   return (
-    <div className="bg-[#111] border border-gray-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+    <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/5 rounded-full blur-3xl" />
 
@@ -227,11 +227,11 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           <BarChart3 className="w-3 h-3 mr-2" /> Project Autopsy
         </h3>
         {isSold ? (
-          <span className="text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-900/40 border border-emerald-700 text-emerald-400">
+          <span className="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-900/40 border border-emerald-700 text-emerald-400">
             Finalized
           </span>
         ) : (
-          <span className="text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-900/40 border border-amber-700 text-amber-400">
+          <span className="text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-900/40 border border-amber-700 text-amber-400">
             Projected
           </span>
         )}
@@ -281,7 +281,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
       </div>
 
       {/* Summary bar */}
-      <div className="mt-5 pt-4 border-t border-gray-800/50 flex items-center justify-between text-[10px] text-gray-500">
+      <div className="mt-5 pt-4 border-t border-gray-800/50 flex items-center justify-between text-xs text-gray-500">
         <span>
           Total Project Costs: <span className="text-gray-300 font-mono">${autopsy.totalProjectCosts.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
         </span>

@@ -52,6 +52,7 @@ export default function RegisterPage() {
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
+    mode: 'onChange',
     defaultValues: {
       fullName: '',
       email: '',

@@ -193,7 +193,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
 
               {/* Step 1: Select Deal */}
               <div>
-                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                   1. Select Deal
                 </label>
                 {eligibleDeals.length === 0 ? (
@@ -222,7 +222,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
                           <p className="text-sm font-medium text-gray-800 truncate">
                             {shortAddress(deal.address || deal.propertyName)}
                           </p>
-                          <p className="text-[10px] text-gray-400">
+                          <p className="text-xs text-gray-400">
                             {deal.prospects?.length || 0} prospect{(deal.prospects?.length || 0) !== 1 ? 's' : ''}
                           </p>
                         </div>
@@ -236,7 +236,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
               {/* Step 2: Select Prospect (expands under selected deal) */}
               {selectedDeal && selectedDeal.prospects && (
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
                     2. Select Prospect
                   </label>
                   <div className="space-y-1.5">
@@ -255,11 +255,11 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
                           <p className="text-sm font-medium text-gray-800 truncate">
                             {prospect.address}
                           </p>
-                          <p className="text-[10px] text-gray-400">
+                          <p className="text-xs text-gray-400">
                             Asking: ${prospect.askingPrice.toLocaleString()} · Max Offer: ${prospect.maxOffer.toLocaleString()}
                           </p>
                         </div>
-                        <span className="text-[9px] font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                        <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
                           {prospect.status}
                         </span>
                       </button>
@@ -271,7 +271,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
               {/* Step 3: Offer Details */}
               {selectedProspect && !generated && (
                 <div className="space-y-4">
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest">
                     3. Offer Details
                   </label>
 
@@ -387,7 +387,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
               {generated && selectedProspect && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <label className="block text-[10px] font-bold text-green-600 uppercase tracking-widest">
+                    <label className="block text-xs font-bold text-green-600 uppercase tracking-widest">
                       ✓ Letter Generated
                     </label>
                     <div className="flex gap-2">

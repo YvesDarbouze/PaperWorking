@@ -20,8 +20,8 @@ const benefits = [
     visual: (
       <div className="bg-white border border-phase-1 p-6 space-y-3 w-full">
         <div className="flex items-center justify-between pb-3 border-b border-dashboard">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Document Queue</span>
-          <span className="text-[10px] font-bold text-phase-4">3 auto-routed</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Document Queue</span>
+          <span className="text-xs font-bold text-phase-4">3 auto-routed</span>
         </div>
         {['Title Insurance → Lawyer Review', 'Closing Disclosure → Lead Investor', 'Wiring Instructions → Escrow Agent'].map((item, i) => (
           <div key={i} className="flex items-center justify-between py-2 border-b border-dashboard last:border-0">
@@ -29,7 +29,7 @@ const benefits = [
               <div className={`w-1.5 h-1.5 ${i === 0 ? 'bg-phase-4' : 'bg-phase-2'}`} />
               <span className="text-xs text-phase-4">{item}</span>
             </div>
-            <span className={`text-[10px] font-bold uppercase tracking-widest ${i === 0 ? 'text-phase-4' : 'text-phase-2'}`}>
+            <span className={`text-xs font-bold uppercase tracking-widest ${i === 0 ? 'text-phase-4' : 'text-phase-2'}`}>
               {i === 0 ? 'In Review' : i === 1 ? 'Pending' : 'Queued'}
             </span>
           </div>
@@ -47,28 +47,28 @@ const benefits = [
     visual: (
       <div className="bg-white border border-phase-1 p-6 w-full">
         <div className="flex items-center justify-between pb-3 border-b border-dashboard mb-4">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Validation Report</span>
-          <span className="text-[10px] font-bold text-phase-4">2 flags</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Validation Report</span>
+          <span className="text-xs font-bold text-phase-4">2 flags</span>
         </div>
         <div className="space-y-3">
           <div className="p-3 bg-dashboard border border-phase-1">
             <div className="flex items-center space-x-2 mb-1">
               <div className="w-1.5 h-1.5 bg-phase-4" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-4">Mismatch Detected</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-4">Mismatch Detected</span>
             </div>
             <p className="text-xs text-phase-3">Purchase price on HUD-1 ($420,000) differs from contract ($425,000)</p>
           </div>
           <div className="p-3 bg-dashboard border border-phase-1">
             <div className="flex items-center space-x-2 mb-1">
               <div className="w-1.5 h-1.5 bg-phase-2" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Missing Field</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Missing Field</span>
             </div>
             <p className="text-xs text-phase-3">Seller entity EIN not provided on closing disclosure</p>
           </div>
           <div className="p-3 border border-phase-1 opacity-60">
             <div className="flex items-center space-x-2">
               <div className="w-1.5 h-1.5 bg-phase-1" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">12 fields passed</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-2">12 fields passed</span>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@ const benefits = [
     visual: (
       <div className="bg-white border border-phase-1 p-6 w-full">
         <div className="pb-3 border-b border-dashboard mb-4">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Access Matrix</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Access Matrix</span>
         </div>
         <div className="space-y-2">
           {[
@@ -98,8 +98,8 @@ const benefits = [
             <div key={row.role} className="flex items-center justify-between py-2 border-b border-dashboard last:border-0">
               <span className="text-xs font-medium text-phase-4">{row.role}</span>
               <div className="flex items-center space-x-3">
-                <span className="text-[10px] text-phase-2">{row.access.join(' · ')}</span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-phase-4 bg-dashboard px-2 py-0.5">
+                <span className="text-xs text-phase-2">{row.access.join(' · ')}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-phase-4 bg-dashboard px-2 py-0.5">
                   {row.level}
                 </span>
               </div>
@@ -116,7 +116,7 @@ export default function BenefitsZigZag() {
     <section className="py-24 bg-white border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-20">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Core Outcomes
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
@@ -140,7 +140,7 @@ export default function BenefitsZigZag() {
                 <div className={`${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
                   <div className="flex items-center space-x-2 mb-4">
                     <Icon className="w-4 h-4 text-phase-3" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-phase-2">
+                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-phase-2">
                       {benefit.outcome}
                     </span>
                   </div>
@@ -153,7 +153,7 @@ export default function BenefitsZigZag() {
                   {/* Stat callout */}
                   <div className="inline-flex items-center space-x-3 border border-phase-1 px-4 py-3">
                     <span className="text-3xl font-medium text-black tabular-nums">{benefit.stat}</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2 max-w-[100px] leading-tight">
+                    <span className="text-xs font-bold uppercase tracking-widest text-phase-2 max-w-[100px] leading-tight">
                       {benefit.statLabel}
                     </span>
                   </div>

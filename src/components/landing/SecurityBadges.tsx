@@ -34,7 +34,7 @@ export default function SecurityBadges() {
     <section className="bg-white border-t border-phase-1" aria-label="Security certifications">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8">
         {/* Title */}
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-6">
+        <p className="text-center text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-6">
           Enterprise-Grade Security
         </p>
 
@@ -54,7 +54,7 @@ export default function SecurityBadges() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-black">{badge.label}</p>
-                  <p className="text-[10px] text-phase-3 mt-0.5">{badge.detail}</p>
+                  <p className="text-xs text-phase-3 mt-0.5">{badge.detail}</p>
                 </div>
               </div>
             );
@@ -62,7 +62,7 @@ export default function SecurityBadges() {
         </div>
 
         {/* Fine print */}
-        <p className="text-center text-[10px] text-phase-2 mt-4">
+        <p className="text-center text-xs text-phase-2 mt-4">
           All data encrypted at rest (AES-256) and in transit (TLS 1.3). Annual SOC 2 Type II audit by independent third party.
         </p>
       </div>

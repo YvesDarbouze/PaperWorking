@@ -30,11 +30,11 @@ export default function TeamChatWidget({ dealId }: TeamChatWidgetProps) {
        <div className="flex-1 p-3 overflow-y-auto space-y-3 bg-slate-50">
           {messages.map(m => (
              <div key={m.id} className={`flex flex-col ${m.author === 'You' ? 'items-end' : 'items-start'}`}>
-                <span className="text-[10px] text-gray-500 font-bold mb-0.5">{m.author}</span>
+                <span className="text-xs text-gray-500 font-bold mb-0.5">{m.author}</span>
                 <div className={`px-3 py-2 rounded-xl text-sm max-w-[85%] ${m.author === 'You' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'}`}>
                    {m.text}
                 </div>
-                <span className="text-[9px] text-gray-400 mt-0.5">{m.time}</span>
+                <span className="text-xs text-gray-400 mt-0.5">{m.time}</span>
              </div>
           ))}
        </div>

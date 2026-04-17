@@ -18,7 +18,7 @@ interface DealListInlineProps {
 }
 
 const getStatusBadge = (status: string) => {
-  const base = "px-2.5 py-1 rounded-sm text-[11px] font-mono uppercase tracking-widest border";
+  const base = "px-2.5 py-1 rounded-sm text-sm font-mono uppercase tracking-widest border";
   return `${base} bg-gray-50 border-gray-200 text-gray-600`;
 };
 

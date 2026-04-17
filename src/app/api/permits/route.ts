@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
  * When pinged, this rapidly toggles any "Pending" building permits to "Approved",
  * mimicking the polling of external government ledger systems.
  */
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   // Simulate network querying latency
   await new Promise(resolve => setTimeout(resolve, 1400));

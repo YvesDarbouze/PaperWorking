@@ -6,52 +6,50 @@ import { verifyContingencyBuffer } from '@/lib/contingencyEnforcer';
 import toast from 'react-hot-toast';
 import ESignAction from '@/components/shared/ESignAction';
 import TeamChatWidget from '@/components/shared/TeamChatWidget';
+import { dealsService } from '@/lib/firebase/deals';
 
 export default function TriageQueue() {
     const deals = useDealStore(state => state.deals);
-    const updateRehabModule = useDealStore(state => state.updateRehabModule);
-    const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+    const ledgerItems = useDealStore(state => state.ledgerItems);
 
-    const handleApproveReceipt = (deal: PropertyDeal, receipt: PendingReceipt) => {
+    const handleApproveReceipt = async (deal: PropertyDeal, item: any) => {
         // Enforce Contingency Buffer
-        const validation = verifyContingencyBuffer(deal, receipt);
+        const validation = verifyContingencyBuffer(deal, item);
         
         if (!validation.canApprove) {
             toast.error(`CONTINGENCY BREACH: This approval forces the budget over the 15% buffer constraint by $${validation.exceedsBy.toLocaleString()}.`, { duration: 6000, icon: '🛑' });
             return;
         }
 
-        // Move from Triage to Master Ledger
-        const newCostEntry: CostEntry = {
-            id: receipt.id,
-            description: `[Triage] ${receipt.budgetLineItem}`,
-            amount: receipt.amount,
-            approved: true,
-            addedBy: receipt.submittedByUid,
-            createdAt: new Date(),
-            category: receipt.budgetLineItem as CostEntry['category']
-        };
-
-        const existingCosts = deal.financials.costs || [];
-        updateDealFinancials(deal.id, { costs: [...existingCosts, newCostEntry] });
-
-        // Remove from Triage Queue
-        const updatedPending = (deal.rehab?.pendingReceipts || []).filter(r => r.id !== receipt.id);
-        updateRehabModule(deal.id, { pendingReceipts: updatedPending });
-        
-        toast.success(`Expense Approved & Posted to global ledger.`);
+        try {
+            await dealsService.updateLedgerItem(deal.id, item.id, { 
+                status: 'Approved',
+                updatedAt: new Date()
+            });
+            toast.success(`Expense Approved & Posted to global ledger.`);
+        } catch (error) {
+            toast.error('Failed to update ledger item.');
+        }
     };
 
-    const handleRejectReceipt = (deal: PropertyDeal, receipt: PendingReceipt) => {
-        const updatedPending = (deal.rehab?.pendingReceipts || []).filter(r => r.id !== receipt.id);
-        // Instead of deleting, tracking it as rejected is better for audit logs, but we will remove it for demo brevity
-        updateRehabModule(deal.id, { pendingReceipts: updatedPending });
-        toast('Expense Rejected and purged from Triage.', { icon: '🗑️' });
+    const handleRejectReceipt = async (dealId: string, itemId: string) => {
+        try {
+            await dealsService.updateLedgerItem(dealId, itemId, { 
+                status: 'Rejected',
+                updatedAt: new Date()
+            });
+            toast('Expense Rejected and purged from Triage.', { icon: '🗑️' });
+        } catch (error) {
+            toast.error('Failed to reject item.');
+        }
     };
 
-    const pendingReceiptsData = deals.flatMap(deal => 
-        (deal.rehab?.pendingReceipts || []).map(r => ({ receipt: r, deal }))
-    ).filter(data => data.receipt.status === 'pending');
+    const pendingReceiptsData = deals.flatMap(deal => {
+        const items = ledgerItems[deal.id] || [];
+        return items
+          .filter(item => item.status === 'Pending')
+          .map(item => ({ receipt: item, deal }));
+    });
 
 
     const [isSyncingGcal, setIsSyncingGcal] = useState(false);
@@ -103,14 +101,14 @@ export default function TriageQueue() {
                                        <div className="md:w-2/3 flex flex-col pl-4">
                                            <div className="flex justify-between items-start">
                                                <div>
-                                                   <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">{deal.propertyName}</p>
+                                                   <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{deal.propertyName}</p>
                                                    <h4 className="text-xl font-bold text-gray-900">${receipt.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
                                                    <p className="text-sm text-gray-600 border border-gray-200 bg-gray-50 px-2 py-0.5 rounded inline-block mt-2">{receipt.budgetLineItem}</p>
                                                </div>
                                                
                                                <div className="text-right">
                                                    <p className="text-xs text-gray-500">Submitted by: <span className="font-medium text-gray-700">General Contractor</span></p>
-                                                   <p className="text-[10px] text-gray-400 mt-1">{new Date(receipt.submittedAt).toLocaleString()}</p>
+                                                   <p className="text-xs text-gray-400 mt-1">{new Date(receipt.submittedAt).toLocaleString()}</p>
                                                </div>
                                            </div>
 
@@ -137,12 +135,12 @@ export default function TriageQueue() {
                                            {/* Triage Action Constraints */}
                                            <div className="mt-auto pt-6 flex flex-col gap-3">
                                                <div className="flex gap-3">
-                                                   <button onClick={() => handleApproveReceipt(deal, receipt)} disabled={isBreach} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
-                                                       <CheckCircle className="w-4 h-4 mr-2" /> Approve & Post
-                                                   </button>
-                                                   <button onClick={() => handleRejectReceipt(deal, receipt)} className="flex-x bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
-                                                       <XCircle className="w-4 h-4 mr-2" /> Reject
-                                                   </button>
+                                                    <button onClick={() => handleApproveReceipt(deal, receipt)} disabled={isBreach} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
+                                                        <CheckCircle className="w-4 h-4 mr-2" /> Approve & Post
+                                                    </button>
+                                                    <button onClick={() => handleRejectReceipt(deal.id, receipt.id)} className="flex-x bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
+                                                        <XCircle className="w-4 h-4 mr-2" /> Reject
+                                                    </button>
                                                </div>
                                                
                                                <div className="flex items-center gap-3 mt-1 pt-3 border-t border-gray-100">

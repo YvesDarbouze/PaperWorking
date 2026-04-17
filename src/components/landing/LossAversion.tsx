@@ -42,7 +42,7 @@ export default function LossAversion() {
     <section className="py-24 bg-white border-b border-phase-1">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
         <div className="text-center mb-16">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             The Cost of Doing Nothing
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
@@ -58,18 +58,18 @@ export default function LossAversion() {
           {/* Header */}
           <div className="grid grid-cols-3 border-b border-phase-1">
             <div className="p-4 sm:p-5 bg-dashboard">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Category</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Category</span>
             </div>
             <div className="p-4 sm:p-5 bg-dashboard border-l border-phase-1">
               <div className="flex items-center space-x-2">
                 <X className="w-3.5 h-3.5 text-phase-3" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">Manual Process</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Manual Process</span>
               </div>
             </div>
             <div className="p-4 sm:p-5 bg-black border-l border-phase-4">
               <div className="flex items-center space-x-2">
                 <Check className="w-3.5 h-3.5 text-white" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white">PaperWorking</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-white">PaperWorking</span>
               </div>
             </div>
           </div>
@@ -85,13 +85,13 @@ export default function LossAversion() {
               {/* Manual — pain */}
               <div className="p-4 sm:p-5 bg-white border-l border-phase-1">
                 <span className="text-sm font-medium text-phase-3">{row.manual.label}</span>
-                <p className="text-[10px] text-phase-2 mt-1 hidden sm:block">{row.manual.detail}</p>
+                <p className="text-xs text-phase-2 mt-1 hidden sm:block">{row.manual.detail}</p>
               </div>
 
               {/* PaperWorking — gain */}
               <div className="p-4 sm:p-5 bg-dashboard border-l border-phase-1">
                 <span className="text-sm font-bold text-black">{row.pw.label}</span>
-                <p className="text-[10px] text-phase-3 mt-1 hidden sm:block">{row.pw.detail}</p>
+                <p className="text-xs text-phase-3 mt-1 hidden sm:block">{row.pw.detail}</p>
               </div>
             </div>
           ))}

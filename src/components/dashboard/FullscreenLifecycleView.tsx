@@ -7,6 +7,9 @@ import { useDealStore } from '@/store/dealStore';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import Phase4Outcome from '@/components/exit/Phase4Outcome';
 import toast from 'react-hot-toast';
+import { usePermissions } from '@/hooks/usePermissions';
+import { dealsService } from '@/lib/firebase/deals';
+import { transitionDealPhase } from '@/lib/services/dealStateMachine';
 
 interface FullscreenLifecycleViewProps {
   dealId: string;
@@ -14,14 +17,16 @@ interface FullscreenLifecycleViewProps {
 }
 
 const PHASES = [
-  { id: 1, title: 'Find & Fund', bg: 'bg-[#cccccc]' },
-  { id: 2, title: 'Acquisition', bg: 'bg-[#a5a5a5]' },
-  { id: 3, title: 'Renovation', bg: 'bg-[#7f7f7f]' },
-  { id: 4, title: 'Outcome Strategy', bg: 'bg-[#595959]' },
+  { id: 1, title: 'Find & Fund', bg: 'bg-pw-subtle' },
+  { id: 2, title: 'Acquisition', bg: 'bg-pw-muted' },
+  { id: 3, title: 'Renovation', bg: 'bg-pw-muted' },
+  { id: 4, title: 'Outcome Strategy', bg: 'bg-pw-muted' },
 ];
 
 export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLifecycleViewProps) {
+  const { isLead, role } = usePermissions();
   const deals = useDealStore(state => state.deals);
+  const ledgerItems = useDealStore(state => state.ledgerItems);
   const deal = deals.find(d => d.id === dealId);
   const [currentPhase, setCurrentPhase] = useState(1);
 
@@ -52,6 +57,37 @@ export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLi
              <h3 className="text-xl font-medium tracking-tight mix-blend-color-burn">{deal.propertyName}</h3>
              <p className="text-xs font-mono uppercase tracking-widest opacity-60 mix-blend-color-burn">Lifecycle View</p>
           </div>
+          
+          <div className="ml-8 pl-8 border-l border-white/10 flex items-center space-x-3">
+             <div className="flex flex-col items-end mr-4">
+                <span className="text-xs font-bold text-black/40 uppercase tracking-widest">Current Status</span>
+                <span className="text-xs font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded uppercase tracking-tighter">{deal.status}</span>
+             </div>
+             <button 
+               onClick={async () => {
+                  const nextMap: Record<string, string> = {
+                     'Sourcing': 'Under Contract',
+                     'Under Contract': 'Rehab',
+                     'Rehab': 'Listed',
+                     'Listed': 'Sold',
+                     'Sold': 'Rented'
+                  };
+                  const nextPhase = nextMap[deal.status];
+                  if (nextPhase) {
+                     try {
+                        await transitionDealPhase(deal.id, nextPhase as any);
+                        toast.success(`Deal advanced to ${nextPhase}`);
+                     } catch (e) {
+                        toast.error('Failed to transition phase');
+                     }
+                  }
+               }}
+               className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center space-x-2"
+             >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Advance Phase</span>
+             </button>
+          </div>
        </header>
 
        {/* Swipe / Click Edges */}
@@ -80,7 +116,7 @@ export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLi
              >
                 {currentPhase === 1 && <StaticPhase1 deal={deal} />}
                 {currentPhase === 2 && <StaticPhase2 deal={deal} />}
-                {currentPhase === 3 && <StaticPhase3 deal={deal} />}
+                {currentPhase === 3 && <StaticPhase3 deal={deal} ledgerItems={ledgerItems[deal.id] || []} canAdd={isLead || role === 'General Contractor'} />}
                 {currentPhase === 4 && <Phase4Outcome dealId={dealId} />}
              </motion.div>
           </AnimatePresence>
@@ -97,6 +133,10 @@ export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLi
 }
 
 /* --- Placeholder Components to Fulfill Viewport Constraints --- */
+
+const RefreshCw = ({ className }: { className: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+);
 
 function StaticPhase1({ deal }: { deal: PropertyDeal }) {
   return (
@@ -130,25 +170,37 @@ function StaticPhase2({ deal }: { deal: PropertyDeal }) {
   );
 }
 
-function StaticPhase3({ deal }: { deal: PropertyDeal }) {
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
-  const [isLedgerExpanded, setIsLedgerExpanded] = useState(false);
+interface StaticPhase3Props {
+  deal: PropertyDeal;
+  ledgerItems: any[];
+  canAdd: boolean;
+}
 
-  const addMockExpense = () => {
-    toast.success('Simulated $5,000 plumbing expense added to ledger.');
-    const updatedCosts = [...(deal.financials.costs || []), {
-      id: Math.random().toString(),
-      description: 'Plumbing Retrofit',
-      amount: 5000,
-      approved: true,
-      addedBy: 'User',
-      createdAt: new Date()
-    }];
-    updateDealFinancials(deal.id, { costs: updatedCosts });
+function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
+  const [isLedgerExpanded, setIsLedgerExpanded] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+
+  const addRealExpense = async () => {
+    setIsAdding(true);
+    try {
+      await dealsService.addLedgerItem(deal.id, {
+        description: 'Sub-collection Field Update',
+        amount: 2500,
+        status: 'Pending',
+        category: 'Maintenance',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      toast.success('Real sub-collection ledger item added!');
+    } catch (error) {
+       toast.error('Failed to add ledger item.');
+    } finally {
+       setIsAdding(false);
+    }
   };
 
-  const costs = deal.financials.costs || [];
-  const totalRehab = costs.reduce((acc, c) => acc + c.amount, 0) || 0; 
+  const costs = ledgerItems.length > 0 ? ledgerItems : (deal.financials.costs || []);
+  const totalRehab = costs.filter(c => c.status === 'Approved' || c.approved).reduce((acc, c) => acc + c.amount, 0) || 0; 
 
   const plumbing = costs.filter(c => c.description.toLowerCase().includes('plumbing')).reduce((acc, c) => acc + c.amount, 0);
   const electrical = costs.filter(c => c.description.toLowerCase().includes('electrical')).reduce((acc, c) => acc + c.amount, 0);
@@ -168,7 +220,7 @@ function StaticPhase3({ deal }: { deal: PropertyDeal }) {
           {/* Top Level Summary (Always Visible) */}
           <div className="w-full flex justify-between items-center mb-6">
              <div>
-               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center">
+               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
                   Live Approved Rehab Spend
                </p>
@@ -176,14 +228,20 @@ function StaticPhase3({ deal }: { deal: PropertyDeal }) {
                  ${totalRehab.toLocaleString()} <span className="text-sm text-gray-400 ml-2">/ ${deal.financials.projectedRehabCost?.toLocaleString()} bgt</span>
                </p>
              </div>
-             <button onClick={addMockExpense} className="bg-white text-black text-sm font-medium px-5 py-2.5 rounded-md hover:bg-gray-200 transition shadow-sm">
-                Add $5k Expense
-             </button>
+             {canAdd && (
+                <button 
+                  onClick={addRealExpense} 
+                  disabled={isAdding}
+                  className="bg-white text-black text-sm font-medium px-5 py-2.5 rounded-md hover:bg-gray-200 transition shadow-sm disabled:opacity-50"
+                >
+                   {isAdding ? 'Syncing...' : 'Add Field Entry ($2.5k)'}
+                </button>
+              )}
           </div>
 
           {/* Scalable Visual Indicator: Horizontal Distribution Bar */}
           <div className="w-full mb-6">
-             <div className="flex justify-between text-[10px] text-gray-400 uppercase tracking-widest mb-2 font-medium">
+             <div className="flex justify-between text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">
                <span>Cost Distribution</span>
              </div>
              <div className="w-full h-3 bg-gray-800 rounded-full flex overflow-hidden">
@@ -192,13 +250,13 @@ function StaticPhase3({ deal }: { deal: PropertyDeal }) {
                 <div style={{ width: `${generalPrc}%` }} className="bg-gray-400 transition-all duration-500"></div>
              </div>
              <div className="flex space-x-6 mt-3">
-                <div className="flex items-center text-[10px] text-gray-300">
+                <div className="flex items-center text-xs text-gray-300">
                   <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div> Plumbing ({plumbingPrc.toFixed(0)}%)
                 </div>
-                <div className="flex items-center text-[10px] text-gray-300">
+                <div className="flex items-center text-xs text-gray-300">
                   <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div> Electrical ({electricalPrc.toFixed(0)}%)
                 </div>
-                <div className="flex items-center text-[10px] text-gray-300">
+                <div className="flex items-center text-xs text-gray-300">
                   <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div> General ({generalPrc.toFixed(0)}%)
                 </div>
              </div>
@@ -217,18 +275,21 @@ function StaticPhase3({ deal }: { deal: PropertyDeal }) {
              {/* Granular Table (Disclosed on Demand) */}
              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isLedgerExpanded ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'}`}>
                 {costs.length > 0 ? (
-                  <div className="bg-[#111] rounded-lg border border-gray-800 overflow-y-auto max-h-80">
+                  <div className="bg-pw-black rounded-lg border border-gray-800 overflow-y-auto max-h-80">
                      <table className="w-full text-left text-sm">
-                       <thead className="bg-[#1a1a1a] text-gray-400 text-[10px] uppercase tracking-widest sticky top-0">
+                       <thead className="bg-pw-black text-gray-400 text-xs uppercase tracking-widest sticky top-0">
                          <tr>
                             <th className="px-4 py-3 font-medium">Description</th>
                             <th className="px-4 py-3 font-medium">Cost</th>
                          </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-800">
-                         {costs.map((c, i) => (
-                           <tr key={i} className="hover:bg-[#151515] transition-colors">
-                             <td className="px-4 py-3 text-gray-300">{c.description}</td>
+                         {costs.slice(0, 15).map((c, i) => (
+                           <tr key={i} className="hover:bg-pw-black transition-colors">
+                             <td className="px-4 py-3 text-gray-300">
+                               {c.description}
+                               {c.status && <span className={`ml-2 text-xs px-1 py-0.5 rounded ${c.status === 'Approved' ? 'bg-green-900/40 text-green-400' : 'bg-orange-900/40 text-orange-400'}`}>{c.status}</span>}
+                             </td>
                              <td className="px-4 py-3 text-white font-medium">${c.amount.toLocaleString()}</td>
                            </tr>
                          ))}

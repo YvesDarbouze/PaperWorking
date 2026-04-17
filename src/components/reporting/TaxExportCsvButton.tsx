@@ -16,24 +16,58 @@ export default function TaxExportCsvButton() {
       let rowCount = 0;
 
       deals.forEach(deal => {
+        // 1. Core Rehab/Operating Costs
         const approvedCosts = deal.financials?.costs?.filter(c => c.approved) || [];
         approvedCosts.forEach(cost => {
-          const dateString = cost.createdAt ? new Date(cost.createdAt).toISOString().split('T')[0] : 'N/A';
-          // Sanitize fields for CSV (remove commas)
-          const propertyName = `"${deal.propertyName.replace(/"/g, '""')}"`;
-          const description = `"${cost.description.replace(/"/g, '""')}"`;
-          
           csvRows.push([
-            dateString,
-            propertyName,
+            cost.createdAt ? new Date(cost.createdAt).toISOString().split('T')[0] : 'N/A',
+            `"${deal.propertyName.replace(/"/g, '""')}"`,
             deal.status,
             cost.category || 'Other',
-            description,
+            `"${cost.description.replace(/"/g, '""')}"`,
             cost.amount.toString(),
             cost.addedBy || 'N/A'
           ]);
           rowCount++;
         });
+
+        // 2. Acquisition Cost Basis Ledger
+        if (deal.costBasisLedger) {
+          const cb = deal.costBasisLedger;
+          const allAcquisition = [
+            ...(cb.directAcquisition || []),
+            ...(cb.financing || []),
+            ...(cb.preClosing || [])
+          ];
+          allAcquisition.forEach(item => {
+            csvRows.push([
+              item.paidAt ? new Date(item.paidAt).toISOString().split('T')[0] : 'N/A',
+              `"${deal.propertyName.replace(/"/g, '""')}"`,
+              deal.status,
+              'Acquisition/Capitalized',
+              `"${item.label.replace(/"/g, '""')}"`,
+              item.amount.toString(),
+              'System'
+            ]);
+            rowCount++;
+          });
+        }
+
+        // 3. Exit Costs Ledger
+        if (deal.exitCosts) {
+          deal.exitCosts.forEach(item => {
+            csvRows.push([
+              item.paidAt ? new Date(item.paidAt).toISOString().split('T')[0] : 'N/A',
+              `"${deal.propertyName.replace(/"/g, '""')}"`,
+              deal.status,
+              `Exit - ${item.category}`,
+              `"${item.label.replace(/"/g, '""')}"`,
+              item.amount.toString(),
+              'System'
+            ]);
+            rowCount++;
+          });
+        }
       });
 
       if (rowCount === 0) {

@@ -53,7 +53,7 @@ export default function LeadCapture() {
     <section className="py-20 bg-black">
       <div className="mx-auto max-w-3xl px-6 lg:px-8 text-center">
         {/* Tag */}
-        <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-3 mb-6">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-3 mb-6">
           Be First In Line
         </p>
 
@@ -91,7 +91,7 @@ export default function LeadCapture() {
                 disabled={status === 'loading'}
               />
               {status === 'error' && (
-                <p className="absolute -bottom-5 left-0 text-[10px] text-phase-2">{errorMsg}</p>
+                <p className="absolute -bottom-5 left-0 text-xs text-phase-2">{errorMsg}</p>
               )}
             </div>
             <button
@@ -114,7 +114,7 @@ export default function LeadCapture() {
         {/* Divider */}
         <div className="flex items-center justify-center my-8 max-w-lg mx-auto">
           <div className="flex-1 h-px bg-phase-3" />
-          <span className="px-4 text-[10px] text-phase-3 uppercase tracking-widest">or continue with</span>
+          <span className="px-4 text-xs text-phase-3 uppercase tracking-widest">or continue with</span>
           <div className="flex-1 h-px bg-phase-3" />
         </div>
 
@@ -143,7 +143,7 @@ export default function LeadCapture() {
           </button>
         </div>
 
-        <p className="mt-8 text-[10px] text-phase-3">
+        <p className="mt-8 text-xs text-phase-3">
           By signing up you agree to our{' '}
           <a href="#" className="underline hover:text-phase-2 transition-colors">Terms of Service</a>
           {' '}and{' '}

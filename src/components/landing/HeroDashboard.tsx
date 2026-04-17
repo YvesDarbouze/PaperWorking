@@ -57,7 +57,7 @@ function MetricCard({ label, value, change, positive, icon, delay }: MetricCardP
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">{label}</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-phase-2">{label}</span>
         <div className="w-6 h-6 bg-dashboard flex items-center justify-center">
           {icon}
         </div>
@@ -90,9 +90,9 @@ export default function HeroDashboard() {
       <div className="flex items-center justify-between px-5 py-3 border-b border-dashboard bg-dashboard">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-phase-4"></div>
-          <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">Portfolio Overview</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-phase-3">Portfolio Overview</span>
         </div>
-        <span className="text-[10px] text-phase-2 font-medium">Live · Q2 2026</span>
+        <span className="text-xs text-phase-2 font-medium">Live · Q2 2026</span>
       </div>
 
       {/* Metrics Grid */}
@@ -134,8 +134,8 @@ export default function HeroDashboard() {
       {/* Mini Bar Chart */}
       <div className="px-5 py-4 border-t border-dashboard">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2">Monthly Disbursements</span>
-          <span className="text-[10px] text-phase-3 font-medium">Last 12 months</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Monthly Disbursements</span>
+          <span className="text-xs text-phase-3 font-medium">Last 12 months</span>
         </div>
         <div className="flex items-end gap-1.5 h-12">
           {bars.map((height, i) => (
@@ -150,8 +150,8 @@ export default function HeroDashboard() {
           ))}
         </div>
         <div className="flex justify-between mt-1.5">
-          <span className="text-[9px] text-phase-2">May</span>
-          <span className="text-[9px] text-phase-2">Apr</span>
+          <span className="text-xs text-phase-2">May</span>
+          <span className="text-xs text-phase-2">Apr</span>
         </div>
       </div>
 
@@ -161,14 +161,14 @@ export default function HeroDashboard() {
           <div className="flex items-center space-x-3">
             <div className="flex -space-x-1.5">
               {[1,2,3].map(i => (
-                <div key={i} className="w-5 h-5 bg-phase-1 border border-white flex items-center justify-center text-[8px] font-bold text-phase-3">
+                <div key={i} className="w-5 h-5 bg-phase-1 border border-white flex items-center justify-center text-xs font-bold text-phase-3">
                   {String.fromCharCode(64 + i)}
                 </div>
               ))}
             </div>
-            <span className="text-[10px] text-phase-3 font-medium">3 team members active</span>
+            <span className="text-xs text-phase-3 font-medium">3 team members active</span>
           </div>
-          <span className="text-[10px] text-phase-4 font-bold cursor-pointer hover:text-black transition-colors">
+          <span className="text-xs text-phase-4 font-bold cursor-pointer hover:text-black transition-colors">
             View All →
           </span>
         </div>

@@ -160,7 +160,7 @@ export default function FieldManagerPage() {
                <h2 className="text-lg font-semibold text-gray-800">Rehab Timeline</h2>
              </div>
              {rehabTasks.some(t => t.escrowDrawRequested) && (
-               <span className="px-2 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full border border-green-200">
+               <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200">
                  ACTIVE ESCROW DRAWS
                </span>
              )}
@@ -180,14 +180,14 @@ export default function FieldManagerPage() {
                    
                    <div>
                      <p className={`text-sm font-semibold ${task.status === 'Complete' ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</p>
-                     <p className="text-[10px] uppercase tracking-wider text-gray-500 font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
+                     <p className="text-xs uppercase tracking-wider text-gray-500 font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
                    </div>
                  </div>
 
                  {task.status !== 'Complete' && (
                     <button 
                       onClick={() => handleTaskCompletion(task.id)}
-                      className="ml-2 text-[10px] px-3 py-1.5 bg-gray-900 text-white font-bold rounded hover:bg-gray-800 active:scale-95 shadow-sm"
+                      className="ml-2 text-xs px-3 py-1.5 bg-gray-900 text-white font-bold rounded hover:bg-gray-800 active:scale-95 shadow-sm"
                     >
                       MARK DONE
                     </button>

@@ -1,47 +1,57 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — Global Design System
+   PaperWorking — ANTIGRAVITY DESIGN SYSTEM
    
-   Clerky-inspired B2B SaaS aesthetic.
-   Base: #f2f2f2 · Monochrome · High-trust · Minimalist.
+   High-tech · Minimalist · High-contrast · Utilitarian
+   Baseline: Antigravity IDE (VS Code Fork)
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── Core Palette ─── */
-  --pw-black:     #0a0a0a;
+  /* ─── Core Palette (Antigravity Baseline) ─── */
+  --pw-black:     #000000;
   --pw-white:     #ffffff;
-  --pw-bg:        #f2f2f2;
+  --pw-bg:        #ffffff;
   --pw-surface:   #ffffff;
-  --pw-border:    #d4d4d4;
-  --pw-muted:     #737373;
-  --pw-subtle:    #a3a3a3;
-  --pw-fg:        #262626;
+  --pw-border:    #1a1a1b; /* Sharp, subtle grid lines */
+  --pw-muted:     #666666;
+  --pw-subtle:    #999999;
+  --pw-fg:        #000000;
+  --pw-accent:    #4285F4; /* Google Blue */
 
-  /* ─── WCAG AA Contrast Pairs ───
-     --pw-fg on --pw-bg     = 12.6:1  ✓ AAA
-     --pw-muted on --pw-bg  = 4.6:1   ✓ AA
-     --pw-fg on --pw-white  = 15.4:1  ✓ AAA
-     --pw-muted on --pw-white = 5.4:1 ✓ AA
-     --pw-white on --pw-black = 19.2:1 ✓ AAA  */
+  /* ─── Modular Spacing (Rigid) ─── */
+  --spacing-unit: 4px;
 }
 
 /* ─── Tailwind v4 @theme ─── */
 @theme inline {
-  --color-pw-black:   #0a0a0a;
+  --color-pw-black:   #000000;
   --color-pw-white:   #ffffff;
-  --color-pw-bg:      #f2f2f2;
+  --color-pw-bg:      #ffffff;
   --color-pw-surface: #ffffff;
-  --color-pw-border:  #d4d4d4;
-  --color-pw-muted:   #737373;
-  --color-pw-subtle:  #a3a3a3;
-  --color-pw-fg:      #262626;
+  --color-pw-border:  #1a1a1b;
+  --color-pw-muted:   #666666;
+  --color-pw-subtle:  #999999;
+  --color-pw-fg:      #141415;
+  --color-pw-accent:  #4285F4;
 
-  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  /* ─── Font System ─── */
+  --font-sans: var(--font-inter), "Inter", "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+
+  /* ─── Radius Liquidation ─── */
+  --radius-none: 0px;
+  --radius-sm:   0px;
+  --radius-md:   0px;
+  --radius-lg:   0px;
+  --radius-xl:   0px;
+  --radius-2xl:  0px;
+  --radius-3xl:  0px;
+  --radius-full: 0px;
 }
 
 /* ═══════════════════════════════════════════════════════
-   Base Reset
+   Base Reset & Antigravity Enforcement
    ═══════════════════════════════════════════════════════ */
 
 body {
@@ -51,29 +61,77 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Universal Rounding Liquidation */
+*, *::before, *::after {
+  border-radius: 0 !important;
+}
+
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 4.5rem;
 }
 
-/* ─── Focus ring ─── */
+/* ─── Focus States (Utilitarian) ─── */
 *:focus-visible {
-  outline: 2px solid var(--pw-black);
-  outline-offset: 2px;
+  outline: 2px solid var(--pw-accent);
+  outline-offset: 1px;
 }
 
-/* ─── Selection ─── */
+/* ─── Custom Selection ─── */
 ::selection {
-  background: var(--pw-border);
+  background: var(--pw-black);
+  color: var(--pw-white);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Antigravity Utility Classes
+   ═══════════════════════════════════════════════════════ */
+
+/* Rigid Grid Container */
+.ag-grid {
+  display: grid;
+  border-top: 1px solid var(--pw-border);
+  border-left: 1px solid var(--pw-border);
+}
+.ag-grid-cell {
+  border-right: 1px solid var(--pw-border);
+  border-bottom: 1px solid var(--pw-border);
+  padding: 1.5rem;
+}
+
+/* Utilitarian Button */
+.ag-button {
+  background: var(--pw-black);
+  color: var(--pw-white);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+  border: 1px solid var(--pw-black);
+}
+.ag-button:hover {
+  background: var(--pw-white);
   color: var(--pw-black);
 }
-
-/* ─── Placeholder ─── */
-::placeholder {
-  color: var(--pw-subtle);
+.ag-button-secondary {
+  background: transparent;
+  color: var(--pw-black);
+  border: 1px solid var(--pw-border);
 }
 
-/* ─── Lazy-loaded images ─── */
-img[loading="lazy"] {
-  content-visibility: auto;
+/* Monospace Ledger Data */
+.ag-data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Technical Label */
+.ag-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--pw-subtle);
 }

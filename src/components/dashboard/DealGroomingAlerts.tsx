@@ -183,18 +183,18 @@ export default function DealGroomingAlerts({ deals, onNavigateToDeal }: DealGroo
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-gray-400" />
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
               Deal Grooming
             </p>
           </div>
           {criticalCt > 0 && (
-            <span className="flex items-center gap-1 text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
+            <span className="flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
               {criticalCt} critical
             </span>
           )}
         </div>
-        <p className="text-[11px] text-gray-400 mt-0.5">
+        <p className="text-sm text-gray-400 mt-0.5">
           {alerts.length === 0 ? 'All deals healthy — no action needed.' : `${alerts.length} item${alerts.length > 1 ? 's' : ''} need attention.`}
         </p>
       </div>
@@ -224,17 +224,17 @@ export default function DealGroomingAlerts({ deals, onNavigateToDeal }: DealGroo
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
                     <DealFolderIcon status={alert.dealStatus} size={14} />
-                    <span className="text-[10px] text-gray-500 truncate">
+                    <span className="text-xs text-gray-500 truncate">
                       {alert.dealAddress}
                     </span>
-                    <span className={`text-[8px] font-bold uppercase tracking-widest ${sev.text} flex-shrink-0`}>
+                    <span className={`text-xs font-bold uppercase tracking-widest ${sev.text} flex-shrink-0`}>
                       {sev.label}
                     </span>
                   </div>
-                  <p className={`text-[12px] font-medium ${sev.text}`}>
+                  <p className={`text-sm font-medium ${sev.text}`}>
                     {alert.title}
                   </p>
-                  <p className="text-[10px] text-gray-500 mt-0.5 leading-relaxed">
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
                     {alert.description}
                   </p>
                 </div>

@@ -56,15 +56,15 @@ export default function VirtualInspection() {
       {/* Tracker Overview */}
       <div className="grid grid-cols-3 gap-4 mb-6 text-sm text-center">
          <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-            <span className="block text-gray-500 uppercase tracking-widest text-[10px] mb-1">Total Estimated</span>
+            <span className="block text-gray-500 uppercase tracking-widest text-xs mb-1">Total Estimated</span>
             <span className="font-semibold text-gray-900">${totalEst.toLocaleString()}</span>
          </div>
          <div className="bg-gray-50 p-3 rounded-lg border border-gray-100">
-            <span className="block text-gray-500 uppercase tracking-widest text-[10px] mb-1">Total Actual</span>
+            <span className="block text-gray-500 uppercase tracking-widest text-xs mb-1">Total Actual</span>
             <span className="font-semibold text-gray-900">${totalAct.toLocaleString()}</span>
          </div>
          <div className={`p-3 rounded-lg border ${variance > 0 ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-700'}`}>
-            <span className="block uppercase tracking-widest text-[10px] mb-1 opacity-70">Variance</span>
+            <span className="block uppercase tracking-widest text-xs mb-1 opacity-70">Variance</span>
             <span className="font-semibold">${Math.abs(variance).toLocaleString()} {variance > 0 ? 'Over' : 'Under'}</span>
          </div>
       </div>
@@ -79,11 +79,11 @@ export default function VirtualInspection() {
                   <span className="font-medium text-gray-900 w-1/3 truncate">{item.category}</span>
                   <div className="flex items-center space-x-4 w-2/3 justify-end">
                      <div className="text-right">
-                        <span className="block text-[10px] uppercase text-gray-400">Est</span>
+                        <span className="block text-xs uppercase text-gray-400">Est</span>
                         <span className="text-gray-600">${item.estimatedCost.toLocaleString()}</span>
                      </div>
                      <div className="text-right">
-                        <span className="block text-[10px] uppercase text-gray-400">Act</span>
+                        <span className="block text-xs uppercase text-gray-400">Act</span>
                         <span className="text-gray-900 font-medium">${item.actualCost.toLocaleString()}</span>
                      </div>
                      <button onClick={() => handleRemove(item.id)} className="text-gray-300 hover:text-red-500 transition-colors ml-2">

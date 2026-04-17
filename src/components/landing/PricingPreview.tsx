@@ -67,7 +67,7 @@ export default function PricingPreview() {
     <section id="pricing-preview" className="py-24 bg-white border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-12">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Simple Pricing
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
@@ -102,7 +102,7 @@ export default function PricingPreview() {
             Annual
           </span>
           {/* Savings badge */}
-          <span className={`ml-3 text-[10px] font-bold uppercase tracking-widest px-2 py-1 transition-all duration-300 ${
+          <span className={`ml-3 text-xs font-bold uppercase tracking-widest px-2 py-1 transition-all duration-300 ${
             isAnnual
               ? 'bg-black text-white opacity-100 translate-y-0'
               : 'bg-phase-1 text-phase-2 opacity-0 -translate-y-1'
@@ -123,7 +123,7 @@ export default function PricingPreview() {
               {/* Plan name */}
               <div className="mb-6">
                 {plan.highlight && (
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2 mb-2 block">
+                  <span className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-2 block">
                     Most Popular
                   </span>
                 )}
@@ -154,7 +154,7 @@ export default function PricingPreview() {
                   </span>
                 )}
                 {plan.monthly !== null && isAnnual && (
-                  <p className={`text-[10px] mt-1 transition-all duration-300 ${
+                  <p className={`text-xs mt-1 transition-all duration-300 ${
                     plan.highlight ? 'text-phase-2' : 'text-phase-2'
                   }`}>
                     Billed annually at ${(plan.annual! * 12).toLocaleString()}

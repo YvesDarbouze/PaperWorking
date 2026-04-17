@@ -42,8 +42,8 @@ const SIZE_MAP: Record<FolderSize, {
   labelSize: string; subSize: string;
   gap: string; pad: string;
 }> = {
-  sm: { svgW: 28, svgH: 22, labelSize: 'text-[11px]', subSize: 'text-[9px]',  gap: 'gap-2',   pad: 'p-2'   },
-  md: { svgW: 36, svgH: 28, labelSize: 'text-sm',      subSize: 'text-[11px]', gap: 'gap-3',   pad: 'p-3'   },
+  sm: { svgW: 28, svgH: 22, labelSize: 'text-sm', subSize: 'text-xs',  gap: 'gap-2',   pad: 'p-2'   },
+  md: { svgW: 36, svgH: 28, labelSize: 'text-sm',      subSize: 'text-sm', gap: 'gap-3',   pad: 'p-3'   },
   lg: { svgW: 48, svgH: 38, labelSize: 'text-base',    subSize: 'text-xs',     gap: 'gap-3.5', pad: 'p-4'   },
 };
 

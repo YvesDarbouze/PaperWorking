@@ -79,7 +79,7 @@ export default function LenderVault() {
               <div key={idx} className="flex items-center justify-between p-3 border border-gray-100 rounded-md bg-gray-50">
                  <div className="flex items-center space-x-3">
                    <div className="w-8 h-8 rounded bg-gray-200 flex items-center justify-center flex-shrink-0">
-                     <span className="text-[10px] font-bold text-gray-500">PDF</span>
+                     <span className="text-xs font-bold text-gray-500">PDF</span>
                    </div>
                    <p className="text-sm font-medium text-gray-700 truncate">{doc.name}</p>
                  </div>

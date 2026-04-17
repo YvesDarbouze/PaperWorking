@@ -28,7 +28,7 @@ export default function AuthLayout({
       style={{ backgroundColor: '#f2f2f2' }}
     >
       {/* ─── Logo Lockup ─── */}
-      <div className="mb-8 text-[#0a0a0a]">
+      <div className="mb-8 text-pw-black">
         <Logo href="/" size="md" />
       </div>
 

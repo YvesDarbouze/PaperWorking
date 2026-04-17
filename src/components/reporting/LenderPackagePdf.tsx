@@ -60,10 +60,24 @@ export default function LenderPackagePdf() {
         const pPrice = deal.financials.actualSalePrice || 0;
         const buyerComm = pPrice * ((deal.financials.buyersAgentCommission || 0)/100);
         const sellerComm = pPrice * ((deal.financials.sellersAgentCommission || 0)/100);
-        const cc = deal.financials.finalClosingCosts || 0;
-        const totalBurden = purchasePrice + actualRehabSpend; // Using actual spend since it's realized
+        const basicClosingCosts = deal.financials.finalClosingCosts || 0;
         
-        const netProceeds = pPrice - buyerComm - sellerComm - cc;
+        let ledgerExitCosts = 0;
+        deal.exitCosts?.forEach(ec => {
+          if (ec.isPercentage && ec.percentageRate) {
+            ledgerExitCosts += (ec.percentageRate / 100) * pPrice;
+          } else {
+            ledgerExitCosts += ec.amount;
+          }
+        });
+
+        const totalBurden = purchasePrice + actualRehabSpend + (deal.costBasisLedger ? [
+          ...(deal.costBasisLedger.directAcquisition || []),
+          ...(deal.costBasisLedger.financing || []),
+          ...(deal.costBasisLedger.preClosing || [])
+        ].reduce((s, i) => s + i.amount, 0) : 0);
+        
+        const netProceeds = pPrice - buyerComm - sellerComm - basicClosingCosts - ledgerExitCosts;
         const realizedProfit = netProceeds - totalBurden;
         const realROI = totalBurden > 0 ? (realizedProfit / totalBurden) * 100 : 0;
         

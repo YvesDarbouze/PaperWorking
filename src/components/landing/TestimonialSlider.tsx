@@ -87,7 +87,7 @@ export default function TestimonialSlider() {
     <section className="py-24 bg-white border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             What Teams Are Saying
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
@@ -119,7 +119,7 @@ export default function TestimonialSlider() {
 
               {/* Attribution */}
               <p className="text-sm font-bold text-black">{t.name}</p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-phase-2 mt-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">
                 {t.role} at {t.company}
               </p>
             </div>

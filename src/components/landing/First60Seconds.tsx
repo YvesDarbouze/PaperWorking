@@ -56,7 +56,7 @@ export default function First60Seconds() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             No Onboarding Required
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl mb-4">
@@ -75,11 +75,11 @@ export default function First60Seconds() {
             <div className="flex items-center justify-between px-5 py-2.5 border-b border-dashboard bg-dashboard">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-phase-4" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">PaperWorking Dashboard</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-phase-3">PaperWorking Dashboard</span>
               </div>
               <div className="flex items-center space-x-4">
-                <span className="text-[10px] text-phase-2">y@massters.io</span>
-                <div className="w-5 h-5 bg-phase-1 flex items-center justify-center text-[8px] font-bold text-phase-3">YD</div>
+                <span className="text-xs text-phase-2">y@massters.io</span>
+                <div className="w-5 h-5 bg-phase-1 flex items-center justify-center text-xs font-bold text-phase-3">YD</div>
               </div>
             </div>
 
@@ -87,22 +87,22 @@ export default function First60Seconds() {
             <div className="flex min-h-[350px] sm:min-h-[420px]">
               {/* Sidebar */}
               <div className="w-44 border-r border-dashboard bg-dashboard/50 p-3 space-y-1 hidden sm:block">
-                <div className="px-3 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest">
+                <div className="px-3 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest">
                   + New Deal
                 </div>
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
                   Pipeline
                 </div>
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
                   Engine Room
                 </div>
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
                   Triage Queue
                 </div>
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
                   Closing Room
                 </div>
-                <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
                   Team Settings
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function First60Seconds() {
                 {/* Pipeline header */}
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-sm font-bold text-black">Deal Pipeline</h3>
-                  <span className="text-[10px] text-phase-2">3 active deals</span>
+                  <span className="text-xs text-phase-2">3 active deals</span>
                 </div>
 
                 {/* Mini pipeline cards */}
@@ -125,8 +125,8 @@ export default function First60Seconds() {
                     <div key={deal.address} className="border border-phase-1 p-3 hover:bg-dashboard transition-colors">
                       <p className="text-xs font-medium text-black mb-1">{deal.address}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-phase-2">{deal.phase}</span>
-                        <span className="text-[10px] text-phase-3 tabular-nums">{deal.price}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-phase-2">{deal.phase}</span>
+                        <span className="text-xs text-phase-3 tabular-nums">{deal.price}</span>
                       </div>
                     </div>
                   ))}
@@ -134,18 +134,18 @@ export default function First60Seconds() {
 
                 {/* Document drop zone */}
                 <div className="border-2 border-dashed border-phase-1 p-6 text-center mb-5 hover:border-phase-2 transition-colors">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-phase-2 mb-1">Drop Documents Here</p>
-                  <p className="text-[9px] text-phase-2">PDF, DOCX, or image files</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-1">Drop Documents Here</p>
+                  <p className="text-xs text-phase-2">PDF, DOCX, or image files</p>
                 </div>
 
                 {/* ROI Widget */}
                 <div className="flex items-center justify-between border border-phase-1 p-3">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2 block">Portfolio ROI</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-phase-2 block">Portfolio ROI</span>
                     <span className="text-lg font-medium text-black tabular-nums">34.2%</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-phase-2 block">Total Deployed</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-phase-2 block">Total Deployed</span>
                     <span className="text-lg font-medium text-black tabular-nums">$847K</span>
                   </div>
                 </div>
@@ -171,7 +171,7 @@ export default function First60Seconds() {
                   aria-label={spot.label}
                 >
                   <span className="absolute inset-0 bg-black/10 animate-ping" style={{ animationDuration: '2s' }} />
-                  <span className="relative w-6 h-6 bg-black text-white flex items-center justify-center text-[10px] font-bold shadow-md z-10">
+                  <span className="relative w-6 h-6 bg-black text-white flex items-center justify-center text-xs font-bold shadow-md z-10">
                     {spot.step}
                   </span>
                 </button>
@@ -179,7 +179,7 @@ export default function First60Seconds() {
                 {/* Tooltip */}
                 {isActive && (
                   <div className="absolute left-10 top-0 w-56 bg-black text-white p-4 shadow-xl z-20 animate-in fade-in duration-200">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-1">
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-1">
                       Step {spot.step}
                     </p>
                     <p className="text-sm font-bold mb-2">{spot.label}</p>

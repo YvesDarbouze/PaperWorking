@@ -202,11 +202,11 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-gray-400" />
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
               Global To-Do Engine
             </p>
           </div>
-          <span className="text-[10px] font-mono text-gray-400">
+          <span className="text-xs font-mono text-gray-400">
             {tasks.length} task{tasks.length !== 1 ? 's' : ''}
           </span>
         </div>
@@ -221,7 +221,7 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
             <button
               key={tab.key}
               onClick={() => setActiveFilter(tab.key)}
-              className={`px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider rounded-md border transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-md border transition-all ${
                 activeFilter === tab.key
                   ? 'bg-gray-900 text-white border-gray-900'
                   : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
@@ -229,7 +229,7 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] ${
+                <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs ${
                   activeFilter === tab.key ? 'bg-white/20' : 'bg-gray-200'
                 }`}>
                   {tab.count}
@@ -259,15 +259,15 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
 
               {/* Task content */}
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-gray-800 truncate group-hover:text-black">
+                <p className="text-sm font-medium text-gray-800 truncate group-hover:text-black">
                   {task.label}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[10px] text-gray-400 truncate">
+                  <span className="text-xs text-gray-400 truncate">
                     {task.dealAddress}
                   </span>
                   {task.assignee && (
-                    <span className="flex items-center gap-1 text-[10px] text-gray-400">
+                    <span className="flex items-center gap-1 text-xs text-gray-400">
                       <User2 className="w-2.5 h-2.5" />
                       {task.assignee}
                     </span>
@@ -276,12 +276,12 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
               </div>
 
               {/* Urgency badge */}
-              <span className={`text-[9px] font-semibold uppercase tracking-wider px-2 py-1 rounded border flex-shrink-0 ${URGENCY_STYLE[task.urgency]}`}>
+              <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded border flex-shrink-0 ${URGENCY_STYLE[task.urgency]}`}>
                 {URGENCY_LABEL[task.urgency]}
               </span>
 
               {/* Category pill */}
-              <span className="text-[9px] font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded hidden sm:inline-block flex-shrink-0">
+              <span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded hidden sm:inline-block flex-shrink-0">
                 {task.category}
               </span>
             </button>

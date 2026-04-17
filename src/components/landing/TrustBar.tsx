@@ -23,7 +23,7 @@ export default function TrustBar() {
   return (
     <section className="py-10 border-b border-phase-1 bg-white">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <p className="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-8">
+        <p className="text-center text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-8">
           Trusted by teams across the real estate lifecycle
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 sm:gap-x-14">
@@ -35,7 +35,7 @@ export default function TrustBar() {
             >
               {/* Logo Mark */}
               <div className="w-8 h-8 bg-phase-4 group-hover:bg-black flex items-center justify-center transition-colors duration-300">
-                <span className="text-[10px] font-bold text-white tracking-tight">
+                <span className="text-xs font-bold text-white tracking-tight">
                   {logo.initials}
                 </span>
               </div>
@@ -44,7 +44,7 @@ export default function TrustBar() {
                 <span className="text-xs font-bold text-phase-4 group-hover:text-black tracking-tight transition-colors duration-300">
                   {logo.name}
                 </span>
-                <p className="text-[8px] font-bold uppercase tracking-[0.15em] text-phase-2 group-hover:text-phase-3 transition-colors duration-300">
+                <p className="text-xs font-bold uppercase tracking-[0.15em] text-phase-2 group-hover:text-phase-3 transition-colors duration-300">
                   {logo.tagline}
                 </p>
               </div>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useDealStore } from '@/store/dealStore';
@@ -13,6 +13,8 @@ export function useDealSync(dealId: string) {
   const currentDeal = useDealStore((state) => state.currentDeal);
   const clearDeal = useDealStore((state) => state.clearDeal);
 
+  const prevCostsLengthRef = useRef<number>(currentDeal?.financials.costs.length || 0);
+
   useEffect(() => {
     if (!dealId) return;
 
@@ -26,11 +28,13 @@ export function useDealSync(dealId: string) {
         
         // Optional: Alert the user if there is a new update
         // We compare existing tasks vs incoming tasks to determine if Contractor marked "Done".
-        // Example logic:
-        if (currentDeal && currentDeal.financials.costs.length < dealData.financials.costs.length) {
+        // Using a ref avoids adding currentDeal to the dependency array and causing infinite listener re-attachment.
+        const newLength = dealData.financials.costs.length;
+        if (prevCostsLengthRef.current < newLength) {
            console.log(`Notification: GC Added a new receipt/cost!`);
            // Here you could fire a toast notification UI depending on your library (e.g. react-hot-toast)
         }
+        prevCostsLengthRef.current = newLength;
 
         setDeal(dealData);
       } else {
@@ -41,5 +45,5 @@ export function useDealSync(dealId: string) {
     });
 
     return () => unsubscribe();
-  }, [dealId, setDeal, clearDeal]); // Excluded currentDeal to prevent infinite listener re-attachment
+  }, [dealId, setDeal, clearDeal]);
 }

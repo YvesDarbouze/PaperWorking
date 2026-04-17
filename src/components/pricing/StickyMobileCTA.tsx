@@ -33,7 +33,7 @@ export default function StickyMobileCTA({ visible, planName, price, onSelect }: 
       <div className="flex items-center justify-between px-5 py-3.5 max-w-lg mx-auto">
         {/* Plan Info */}
         <div className="min-w-0 mr-4">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-phase-2 truncate">
+          <p className="text-xs font-bold uppercase tracking-widest text-phase-2 truncate">
             Recommended
           </p>
           <p className="text-sm font-semibold text-phase-4 truncate">

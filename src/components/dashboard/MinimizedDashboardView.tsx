@@ -151,10 +151,10 @@ function BoardColumn({
       {/* Column header */}
       <div className={`px-4 py-3 border-b ${accent}`}>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-bold uppercase tracking-widest">
+          <span className="text-sm font-bold uppercase tracking-widest">
             {lane.shortLabel}
           </span>
-          <span className="text-[10px] font-mono bg-white/60 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
             {deals.length}
           </span>
         </div>
@@ -163,7 +163,7 @@ function BoardColumn({
       {/* Deal cards */}
       <div className="flex-1 p-2.5 space-y-2 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto">
         {deals.length === 0 ? (
-          <div className="h-20 flex items-center justify-center text-[11px] text-gray-400 italic">
+          <div className="h-20 flex items-center justify-center text-sm text-gray-400 italic">
             No deals
           </div>
         ) : (
@@ -196,11 +196,11 @@ function MobileColumn({
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full px-4 py-3 flex items-center justify-between text-left border-b ${accent}`}
       >
-        <span className="text-[11px] font-bold uppercase tracking-widest">
+        <span className="text-sm font-bold uppercase tracking-widest">
           {lane.label}
         </span>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-mono bg-white/60 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
             {deals.length}
           </span>
           <motion.div
@@ -224,7 +224,7 @@ function MobileColumn({
           >
             <div className="p-3 space-y-2">
               {deals.length === 0 ? (
-                <p className="text-[11px] text-gray-400 italic text-center py-3">No deals in this phase</p>
+                <p className="text-sm text-gray-400 italic text-center py-3">No deals in this phase</p>
               ) : (
                 deals.map((deal) => (
                   <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />

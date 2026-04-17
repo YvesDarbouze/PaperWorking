@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
+import AnnouncementBanner from "@/components/marketing/AnnouncementBanner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,6 +33,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full`}>
       <body className="min-h-full flex flex-col font-sans antialiased">
         <AuthProvider>
+          <AnnouncementBanner />
           {children}
         </AuthProvider>
       </body>

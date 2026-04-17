@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
@@ -16,8 +16,19 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
    Email/Password + Google SSO.
    ═══════════════════════════════════════════════════════ */
 
+
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-pw-white" />}>
+      <LoginPageInner />
+    </Suspense>
+  );
+}
+
+function LoginPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
   const { login, loginWithGoogle, error: authError, clearError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +40,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: 'onChange',
     defaultValues: { email: '', password: '' },
   });
 
@@ -37,7 +49,7 @@ export default function LoginPage() {
     clearError();
     try {
       await login(data.email, data.password);
-      router.push('/dashboard');
+      router.push(redirectTo);
     } catch {
       // Error is set via AuthContext
     } finally {
@@ -50,7 +62,7 @@ export default function LoginPage() {
     clearError();
     try {
       await loginWithGoogle();
-      router.push('/dashboard');
+      router.push(redirectTo);
     } catch {
       // Error is set via AuthContext
     } finally {

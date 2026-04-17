@@ -7,6 +7,7 @@ const mockLawyers: ApplicationUser[] = [
     organizationId: 'org_zanelaw',
     email: 'robert.zane@zanelaw.com',
     displayName: 'Robert Zane, Esq.',
+    orgRole: 'Lead Investor',
     subscriptionPlan: 'Lawyer Lead-Gen',
     subscriptionStatus: 'active',
     createdAt: new Date(),
@@ -17,6 +18,7 @@ const mockLawyers: ApplicationUser[] = [
     organizationId: 'org_pearsonhardman',
     email: 'jessica.pearson@pearsonhardman.com',
     displayName: 'Jessica Pearson, Esq.',
+    orgRole: 'Lead Investor',
     subscriptionPlan: 'Lawyer Lead-Gen',
     subscriptionStatus: 'active',
     createdAt: new Date(),
@@ -27,6 +29,7 @@ const mockLawyers: ApplicationUser[] = [
     organizationId: 'org_pearsonhardman',
     email: 'harvey.specter@pearsonhardman.com',
     displayName: 'Harvey Specter, Esq.',
+    orgRole: 'Lead Investor',
     subscriptionPlan: 'Lawyer Lead-Gen',
     subscriptionStatus: 'inactive', // Should be filtered out
     createdAt: new Date(),

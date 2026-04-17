@@ -1,11 +1,12 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — Firebase Client Configuration
    
-   Initializes Firebase App, Firestore, and Auth.
+   Initializes Firebase App, Firestore, Auth, and Storage.
    Auth persistence is set to browserLocalPersistence so 
    sessions survive tab/browser closes — users must 
    manually log out to end their session.
@@ -24,6 +25,7 @@ const firebaseConfig = {
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 // Directive 7: Explicitly set browserLocalPersistence.
 // This ensures the user remains logged in even after closing 
@@ -34,4 +36,4 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export { app, db, auth };
+export { app, db, auth, storage };

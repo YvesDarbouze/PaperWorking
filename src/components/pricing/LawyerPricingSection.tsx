@@ -65,7 +65,7 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
           >
             Join the Network <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
           </button>
-          <p className="text-[10px] text-phase-2 mt-2.5 font-medium uppercase tracking-widest">Cancel any time</p>
+          <p className="text-xs text-phase-2 mt-2.5 font-medium uppercase tracking-widest">Cancel any time</p>
         </div>
       </div>
     </div>

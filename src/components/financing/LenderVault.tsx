@@ -82,7 +82,7 @@ export default function LenderVault() {
                     <label className="flex items-center justify-between cursor-pointer p-2 hover:bg-gray-100 rounded-md transition">
                         <span className="text-sm font-medium text-gray-700 flex flex-col">
                             Roll Points Into Loan
-                            <span className="text-[10px] text-gray-500 font-normal mt-0.5">Subtracts from upfront Cash-to-Close</span>
+                            <span className="text-xs text-gray-500 font-normal mt-0.5">Subtracts from upfront Cash-to-Close</span>
                         </span>
                         <div className="relative">
                             <input type="checkbox" className="sr-only" checked={rollPoints} onChange={() => setRollPoints(!rollPoints)} />
@@ -94,7 +94,7 @@ export default function LenderVault() {
                     <label className="flex items-center justify-between cursor-pointer p-2 hover:bg-gray-100 rounded-md transition">
                         <span className="text-sm font-medium text-gray-700 flex flex-col">
                             Utilize Seller Concessions
-                            <span className="text-[10px] text-gray-500 font-normal mt-0.5">Credits closing costs heavily</span>
+                            <span className="text-xs text-gray-500 font-normal mt-0.5">Credits closing costs heavily</span>
                         </span>
                         <div className="relative">
                             <input type="checkbox" className="sr-only" checked={sellerConcessions} onChange={() => setSellerConcessions(!sellerConcessions)} />
@@ -104,7 +104,7 @@ export default function LenderVault() {
                     </label>
                 </div>
                 { (rollPoints || sellerConcessions) && (
-                   <div className="flex items-start text-[10px] text-indigo-700 bg-indigo-50 p-2 rounded border border-indigo-100">
+                   <div className="flex items-start text-xs text-indigo-700 bg-indigo-50 p-2 rounded border border-indigo-100">
                       <Info className="w-3 h-3 mr-1.5 flex-shrink-0 mt-px" />
                       Math has been internally adjusted. Check the Engine Room for final Cash-to-Close figures.
                    </div>

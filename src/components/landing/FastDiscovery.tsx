@@ -92,7 +92,7 @@ export default function FastDiscovery() {
     <section className="py-24 bg-dashboard border-b border-phase-1">
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <div className="text-center mb-12">
-          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Intuitive Navigation
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
@@ -124,7 +124,7 @@ export default function FastDiscovery() {
               {searchTime !== null && (
                 <div className="flex items-center space-x-1 shrink-0 ml-3">
                   <Clock className="w-3 h-3 text-phase-2" />
-                  <span className="text-[10px] font-bold tabular-nums text-phase-3">
+                  <span className="text-xs font-bold tabular-nums text-phase-3">
                     {searchTime < 1 ? '<1' : searchTime.toFixed(0)}ms
                   </span>
                 </div>
@@ -145,12 +145,12 @@ export default function FastDiscovery() {
                       <FileText className="w-4 h-4 text-phase-2 shrink-0" />
                       <div className="min-w-0">
                         <p className="text-xs font-medium text-black truncate">{doc.name}</p>
-                        <p className="text-[10px] text-phase-2 mt-0.5">{doc.type} · {doc.date}</p>
+                        <p className="text-xs text-phase-2 mt-0.5">{doc.type} · {doc.date}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-1 shrink-0 ml-3">
                       <CheckCircle className="w-3 h-3 text-phase-3" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-phase-3">
+                      <span className="text-xs font-bold uppercase tracking-widest text-phase-3">
                         {doc.status}
                       </span>
                     </div>
@@ -169,7 +169,7 @@ export default function FastDiscovery() {
 
           {/* Try it prompt */}
           <div className="flex items-center justify-center mt-4 space-x-3">
-            <span className="text-[10px] text-phase-2">Try:</span>
+            <span className="text-xs text-phase-2">Try:</span>
             {['closing', 'Bergen', 'appraisal', 'wiring'].map((term) => (
               <button
                 key={term}
@@ -178,7 +178,7 @@ export default function FastDiscovery() {
                   performSearch(term);
                   inputRef.current?.focus();
                 }}
-                className="text-[10px] font-bold uppercase tracking-widest text-phase-3 border border-phase-1 px-2 py-1 hover:border-phase-3 hover:text-black transition-colors cursor-pointer"
+                className="text-xs font-bold uppercase tracking-widest text-phase-3 border border-phase-1 px-2 py-1 hover:border-phase-3 hover:text-black transition-colors cursor-pointer"
               >
                 {term}
               </button>

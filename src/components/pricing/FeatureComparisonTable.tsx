@@ -111,12 +111,12 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
       <div className="min-w-[580px] border border-phase-1 bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-dashboard text-[10px] sm:text-xs uppercase tracking-widest text-phase-3 font-bold border-b border-phase-1">
+            <tr className="bg-dashboard text-xs sm:text-xs uppercase tracking-widest text-phase-3 font-bold border-b border-phase-1">
               <th className="py-5 px-4 sm:px-6 font-semibold">Platform Feature</th>
               {tierColumns.map(({ key, label, price }) => (
                 <th key={key} className={`py-5 px-3 sm:px-6 font-semibold text-center w-28 sm:w-36 ${key === 'team' ? 'bg-phase-1/30' : ''}`}>
                   {label}
-                  <span className="block text-[10px] text-phase-2 font-medium mt-0.5 normal-case tracking-normal">{price}</span>
+                  <span className="block text-xs text-phase-2 font-medium mt-0.5 normal-case tracking-normal">{price}</span>
                 </th>
               ))}
             </tr>
@@ -162,7 +162,7 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
             `}
           >
             {cta}
-            <span className="block text-[10px] font-medium mt-0.5 opacity-60 normal-case">{label} · {price}</span>
+            <span className="block text-xs font-medium mt-0.5 opacity-60 normal-case">{label} · {price}</span>
           </button>
         ))}
       </div>

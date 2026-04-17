@@ -82,7 +82,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-end sm:items-center bg-black/80 backdrop-blur-sm p-0 sm:p-4 selection:bg-emerald-500/30 font-sans">
-      <div className="bg-[#0a0a0a] text-white w-full max-w-6xl h-[90vh] sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative border border-gray-800">
+      <div className="bg-pw-black text-white w-full max-w-6xl h-[90vh] sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative border border-gray-800">
         
         {/* Header */}
         <div className="border-b border-gray-800 bg-black/80 p-5 flex justify-between items-center sticky top-0 z-10">
@@ -105,7 +105,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
             <div className="lg:col-span-5 space-y-8">
               
               {/* Visual Identity Block */}
-              <div className="bg-[#111] border border-gray-800 rounded-2xl p-6 relative overflow-hidden">
+              <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 relative overflow-hidden">
                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full blur-2xl"></div>
                  <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase mb-4 flex items-center"><Camera className="w-3 h-3 mr-2" /> Staging & Inventory</h3>
                  
@@ -133,7 +133,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
               </div>
 
               {/* Closing Fee Trigger Setup */}
-              <div className="bg-[#111] border border-gray-800 rounded-2xl p-6 relative">
+              <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 relative">
                  <div className="flex justify-between items-center mb-4">
                    <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase flex items-center"><DollarSign className="w-3 h-3 mr-2" /> Final Capital Mechanics</h3>
                    <label className="flex items-center space-x-2 cursor-pointer">
@@ -154,14 +154,14 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[10px] uppercase tracking-wider text-gray-500 block mb-1">Buyer Comm.</label>
+                        <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Buyer Comm.</label>
                         <div className="relative">
                           <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
                           <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
                         </div>
                       </div>
                       <div>
-                        <label className="text-[10px] uppercase tracking-wider text-gray-500 block mb-1">Seller Comm.</label>
+                        <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Seller Comm.</label>
                         <div className="relative">
                           <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
                           <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
@@ -190,7 +190,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
                
                {/* MLS / Listing Live Preview Pane */}
                {currentDeal.status === 'Listed' || currentDeal.status === 'Sold' ? (
-                  <div className="mt-6 border border-gray-800 rounded-xl bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
+                  <div className="mt-6 border border-gray-800  bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition duration-500 flex flex-col items-center justify-center">
                         <div className="bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex items-center space-x-3 mb-2">
                            <CheckCircle className={`w-4 h-4 ${currentDeal.status === 'Sold' ? 'text-red-500' : 'text-emerald-500'}`} />
@@ -204,7 +204,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
                      </div>
                   </div>
                ) : (
-                  <div className="mt-6 border border-gray-800 border-dashed rounded-xl h-48 flex items-center justify-center flex-col text-gray-600 bg-black/20">
+                  <div className="mt-6 border border-gray-800 border-dashed  h-48 flex items-center justify-center flex-col text-gray-600 bg-black/20">
                      <BadgePercent className="w-8 h-8 mb-2 opacity-50" />
                      <p className="text-sm font-medium">Awaiting Listing Deployment</p>
                      <p className="text-xs mt-1">Upload Staging Images & MLS Link to syndicate.</p>

@@ -31,7 +31,7 @@ export default function DealProgressTracker({ currentPhase }: DealProgressTracke
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isActive ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] scale-110' : isCompleted ? 'bg-emerald-500 border-emerald-400 text-white' : 'bg-slate-800 border-slate-700 text-slate-500'}`}>
                          {isCompleted ? <CheckCircle className="w-5 h-5"/> : isActive ? <MapPin className="w-4 h-4" /> : <span className="text-xs font-bold">{idx + 1}</span>}
                       </div>
-                      <span className={`text-[10px] mt-1.5 font-bold uppercase tracking-wider ${isActive ? 'text-indigo-300' : isCompleted ? 'text-emerald-400' : 'text-slate-500'}`}>
+                      <span className={`text-xs mt-1.5 font-bold uppercase tracking-wider ${isActive ? 'text-indigo-300' : isCompleted ? 'text-emerald-400' : 'text-slate-500'}`}>
                          {phase}
                       </span>
                    </div>

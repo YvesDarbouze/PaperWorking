@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { PropertyDeal } from '@/types/schema';
 import { useDealStore } from '@/store/dealStore';
-import { RefreshCw, DollarSign, Percent, TrendingUp } from 'lucide-react';
+import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout } from 'lucide-react';
+import ProfessionalListingDashboard from '@/components/listing/ProfessionalListingDashboard';
 
 interface Phase4OutcomeProps {
   dealId: string;
@@ -15,6 +16,7 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
   const financials = deal?.financials;
 
   const [strategy, setStrategy] = useState<'Sell'|'Rent'>(financials?.exitStrategyType || 'Sell');
+  const [viewMode, setViewMode] = useState<'Financials' | 'Listing'>('Financials');
 
   // Sell States
   const [salePrice, setSalePrice] = useState(financials?.actualSalePrice?.toString() || financials?.estimatedARV?.toString() || '0');
@@ -82,11 +84,29 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
   return (
     <div className="w-full h-full flex flex-col p-8 sm:p-12 animate-in fade-in slide-in-from-bottom-8">
       
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-300/30 pb-6 mb-8">
-         <h2 className="text-3xl font-light text-white tracking-tight flex items-center">
-            {strategy === 'Sell' ? 'Flip Strategy' : 'Hold Protocol'}
-         </h2>
-         <div className="flex bg-black/20 p-1 rounded-lg mt-4 sm:mt-0">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-300/30 pb-6 mb-8 gap-4">
+         <div className="flex flex-col">
+            <h2 className="text-3xl font-light text-white tracking-tight flex items-center">
+               {strategy === 'Sell' ? 'Flip Strategy' : 'Hold Protocol'}
+            </h2>
+            <div className="flex items-center space-x-4 mt-2">
+               <button 
+                  onClick={() => setViewMode('Financials')}
+                  className={`text-xs font-bold uppercase tracking-widest flex items-center space-x-1.5 transition-opacity ${viewMode === 'Financials' ? 'text-white' : 'text-white/40 hover:text-white'}`}
+               >
+                  <DollarSign className="w-3 h-3" />
+                  <span>Financial Core</span>
+               </button>
+               <button 
+                  onClick={() => setViewMode('Listing')}
+                  className={`text-xs font-bold uppercase tracking-widest flex items-center space-x-1.5 transition-opacity ${viewMode === 'Listing' ? 'text-white' : 'text-white/40 hover:text-white'}`}
+               >
+                  <Sparkles className="w-3 h-3" />
+                  <span>Professional Listing</span>
+               </button>
+            </div>
+         </div>
+         <div className="flex bg-black/20 p-1 rounded-lg">
             <button 
                onClick={() => handleToggle('Sell')}
                className={`px-6 py-2 text-sm font-medium rounded-md transition-all ${strategy === 'Sell' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white'}`}
@@ -102,7 +122,14 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
          </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      {viewMode === 'Listing' ? (
+        <div className="flex-1 overflow-y-auto bg-white/10 rounded-3xl p-8 backdrop-blur-xl border border-white/5">
+           <ProfessionalListingDashboard deal={deal} />
+        </div>
+      ) : (
+        <>
+        {/* Original Financials Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         
         {/* Left Column: Form Inputs */}
         <div className="space-y-6">
@@ -203,7 +230,9 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
            </div>
         </div>
 
-      </div>
+        </div>
+        </>
+      )}
     </div>
   );
 }

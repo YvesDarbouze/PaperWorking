@@ -224,7 +224,7 @@ function KPITile({
           <div className="p-1 rounded-md bg-gray-100/80">
             {icon}
           </div>
-          <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{label}</p>
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
         </div>
         {band && BAND_ICON[band]}
       </div>
@@ -234,7 +234,7 @@ function KPITile({
         {value}
       </h4>
       {target && (
-        <p className="text-[9px] text-gray-400 mt-1">Target: {target}</p>
+        <p className="text-xs text-gray-400 mt-1">Target: {target}</p>
       )}
     </div>
   );
@@ -286,10 +286,10 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
               <Calendar className="w-4 h-4 text-gray-400" />
             </div>
             <div>
-              <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
                 Yearly Portfolio Performance
               </h3>
-              <p className="text-[10px] text-gray-400 mt-0.5">
+              <p className="text-xs text-gray-400 mt-0.5">
                 {allTime.count} completed exit{allTime.count !== 1 ? 's' : ''} · All-time net: <span className={`font-mono font-medium ${allTime.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                   {allTime.profit >= 0 ? '' : '-'}${Math.abs(allTime.profit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
@@ -313,7 +313,7 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl font-light text-gray-900 tracking-tight">{ym.year}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                     {ym.dealCount} flip{ym.dealCount !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -370,7 +370,7 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
                   {/* Per-deal breakdown table */}
                   {ym.deals.length > 1 && (
                     <div className="mt-4 rounded-lg border border-gray-100 overflow-hidden">
-                      <table className="w-full text-[11px]">
+                      <table className="w-full text-sm">
                         <thead>
                           <tr className="bg-gray-50/80 text-gray-400 uppercase tracking-wider">
                             <th className="py-2 px-3 text-left font-medium">Property</th>

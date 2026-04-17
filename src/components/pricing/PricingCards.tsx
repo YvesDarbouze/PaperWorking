@@ -156,7 +156,7 @@ function SavingsPill({
 
   return (
     <span
-      className={`inline-flex items-center text-[10px] uppercase tracking-wider font-bold bg-phase-4 text-white px-2.5 py-1 transition-all duration-300 ease-out ${
+      className={`inline-flex items-center text-xs uppercase tracking-wider font-bold bg-phase-4 text-white px-2.5 py-1 transition-all duration-300 ease-out ${
         visible
           ? 'opacity-100 translate-x-0 scale-100'
           : 'opacity-0 -translate-x-2 scale-95 pointer-events-none'
@@ -198,7 +198,7 @@ export default function PricingCards({
             }`}
           >
             Annual
-            <span className="ml-2 text-[10px] uppercase tracking-wider text-phase-4 font-bold bg-dashboard border border-phase-1 px-2 py-0.5">
+            <span className="ml-2 text-xs uppercase tracking-wider text-phase-4 font-bold bg-dashboard border border-phase-1 px-2 py-0.5">
               Save 20%
             </span>
           </button>
@@ -228,7 +228,7 @@ export default function PricingCards({
             >
               {/* ── Anchor Badge ── */}
               {tier.isAnchored && tier.anchorBadge && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-[10px] font-bold uppercase tracking-widest px-5 py-1.5 whitespace-nowrap">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-xs font-bold uppercase tracking-widest px-5 py-1.5 whitespace-nowrap">
                   {tier.anchorBadge}
                 </div>
               )}
@@ -276,7 +276,7 @@ export default function PricingCards({
                   <p className="text-xs text-phase-3 italic leading-relaxed">
                     {tier.socialProof.quote}
                   </p>
-                  <p className="text-[10px] text-phase-2 font-medium mt-1">
+                  <p className="text-xs text-phase-2 font-medium mt-1">
                     {tier.socialProof.author}
                   </p>
                 </div>
@@ -300,13 +300,13 @@ export default function PricingCards({
               </button>
 
               {/* ── CTA Microcopy ── */}
-              <p className="text-center text-[10px] text-phase-2 font-medium uppercase tracking-widest mt-2.5">
+              <p className="text-center text-xs text-phase-2 font-medium uppercase tracking-widest mt-2.5">
                 {tier.ctaMicrocopy}
               </p>
 
               {/* ── Feature List ── */}
               <div className="mt-8 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-phase-2 mb-5">
+                <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-5">
                   {tier.id === 'team'
                     ? 'Everything in Individual, plus:'
                     : 'Includes'}
@@ -331,7 +331,7 @@ export default function PricingCards({
 
                       {/* ── Loss Aversion Microcopy ── */}
                       {!feature.included && feature.lossAversion && (
-                        <p className="text-[11px] text-phase-2 italic mt-1 ml-7 leading-snug">
+                        <p className="text-sm text-phase-2 italic mt-1 ml-7 leading-snug">
                           {feature.lossAversion}
                         </p>
                       )}

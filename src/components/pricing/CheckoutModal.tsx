@@ -117,7 +117,7 @@ function CheckoutForm({ planIdentifier, onClose }: CheckoutModalProps) {
              {loading ? 'Authorizing...' : `Subscribe to ${planIdentifier}`}
              {!loading && <ArrowRight className="w-4 h-4 ml-2" />}
           </button>
-          <p className="text-[10px] text-center text-phase-2 mt-4 leading-relaxed max-w-xs mx-auto">
+          <p className="text-xs text-center text-phase-2 mt-4 leading-relaxed max-w-xs mx-auto">
              By subscribing, you agree to our Terms of Service and Privacy Policy. Your card will be stored securely via Stripe.
           </p>
        </div>

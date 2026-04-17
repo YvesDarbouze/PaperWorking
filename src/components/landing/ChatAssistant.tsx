@@ -1,82 +1,43 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
+import { useChat } from 'ai/react';
 
 /**
  * ChatAssistant
  *
  * Floating action button (bottom-right) that opens a PaperWorking Assistant
- * chat window. Pre-seeded with a greeting prompt. Strict PaperWorking palette.
+ * chat window. Powered by Gemini + MCP Tools via /api/chat.
  */
-
-interface Message {
-  id: number;
-  role: 'assistant' | 'user';
-  text: string;
-}
-
-const INITIAL_MESSAGES: Message[] = [
-  {
-    id: 1,
-    role: 'assistant',
-    text: 'Have a document you need to automate? Ask me how.',
-  },
-];
-
-const DEMO_RESPONSES: Record<string, string> = {
-  closing: 'Great question! PaperWorking can auto-route closing disclosures, title insurance forms, and wiring instructions to the right team member the moment they\'re uploaded. Want to see a live demo?',
-  document: 'Upload any PDF, DOCX, or image — our AI extracts key fields like purchase price, property address, and party names in under 12 seconds. No manual data entry required.',
-  price: 'We offer three tiers: Starter ($79/mo), Professional ($149/mo), and Enterprise (custom). All plans include a 14-day free trial with no credit card required.',
-  team: 'You can invite unlimited team members. Each person gets role-based access — contractors see the Triage Queue, lawyers see the Closing Room, and lead investors see everything.',
-  security: 'Every action is logged to an immutable audit trail. Role-based access ensures each team member sees only what they need. All data is encrypted at rest and in transit.',
-};
-
-function getResponse(input: string): string {
-  const lower = input.toLowerCase();
-  for (const [key, response] of Object.entries(DEMO_RESPONSES)) {
-    if (lower.includes(key)) return response;
-  }
-  return 'That\'s a great question! Our team can walk you through that use case. Click "Get Started" to book a personalized demo, or ask me about document automation, pricing, team access, or security.';
-}
 
 export default function ChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
-  const [input, setInput] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/chat',
+    initialMessages: [
+      {
+        id: 'welcome',
+        role: 'assistant',
+        content: 'Have a document you need to automate? Ask me about your deals or subscription.',
+      },
+    ],
+  });
+  
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const idCounter = useRef(2);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, isTyping]);
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isOpen]);
-
-  const handleSend = useCallback(() => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-
-    const userMsg: Message = { id: idCounter.current++, role: 'user', text: trimmed };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput('');
-    setIsTyping(true);
-
-    // Simulate AI response delay
-    setTimeout(() => {
-      const botMsg: Message = { id: idCounter.current++, role: 'assistant', text: getResponse(trimmed) };
-      setMessages((prev) => [...prev, botMsg]);
-      setIsTyping(false);
-    }, 800 + Math.random() * 600);
-  }, [input]);
 
   return (
     <>
@@ -113,7 +74,7 @@ export default function ChatAssistant() {
           </div>
           <div>
             <p className="text-sm font-bold text-white">PaperWorking Assistant</p>
-            <p className="text-[10px] text-phase-2">Always online</p>
+            <p className="text-xs text-phase-2">Connected to Project Data</p>
           </div>
         </div>
 
@@ -136,14 +97,14 @@ export default function ChatAssistant() {
                     ? 'bg-white border border-phase-1 text-phase-4'
                     : 'bg-black text-white'
                 }`}>
-                  {msg.text}
+                  {msg.content}
                 </div>
               </div>
             </div>
           ))}
 
           {/* Typing indicator */}
-          {isTyping && (
+          {isLoading && (
             <div className="flex justify-start">
               <div className="flex items-start space-x-2">
                 <div className="w-6 h-6 shrink-0 flex items-center justify-center mt-0.5 bg-black">
@@ -164,23 +125,20 @@ export default function ChatAssistant() {
         {/* Input */}
         <div className="px-4 py-3 border-t border-phase-1 bg-white shrink-0">
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
+            onSubmit={handleSubmit}
             className="flex items-center space-x-2"
           >
             <input
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about document automation..."
+              onChange={handleInputChange}
+              placeholder="Query deals or status..."
               className="flex-1 text-xs bg-dashboard border border-phase-1 px-3 py-2.5 text-phase-4 placeholder:text-phase-2 focus:outline-none focus:border-phase-3 transition-colors"
             />
             <button
               type="submit"
-              disabled={!input.trim()}
+              disabled={!input.trim() || isLoading}
               className="w-9 h-9 bg-black flex items-center justify-center text-white hover:bg-phase-4 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer shrink-0"
               aria-label="Send message"
             >

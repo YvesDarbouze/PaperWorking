@@ -29,7 +29,7 @@ export default function FinalCTA() {
         {/* Urgency tag */}
         <div className="inline-flex items-center space-x-2 mb-8">
           <span className="w-2 h-2 bg-black animate-pulse" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-phase-3">
+          <span className="text-xs font-bold uppercase tracking-[0.25em] text-phase-3">
             Limited Early Access
           </span>
         </div>
@@ -51,15 +51,15 @@ export default function FinalCTA() {
         <div className="grid grid-cols-3 gap-0 border border-phase-1 mb-10 max-w-lg mx-auto">
           <div className="py-4 px-3 border-r border-phase-1">
             <p className="text-2xl font-medium text-black">12hrs</p>
-            <p className="text-[10px] text-phase-2 mt-1">Saved per week</p>
+            <p className="text-xs text-phase-2 mt-1">Saved per week</p>
           </div>
           <div className="py-4 px-3 border-r border-phase-1">
             <p className="text-2xl font-medium text-black">3.2×</p>
-            <p className="text-[10px] text-phase-2 mt-1">Faster closings</p>
+            <p className="text-xs text-phase-2 mt-1">Faster closings</p>
           </div>
           <div className="py-4 px-3">
             <p className="text-2xl font-medium text-black">$4.8K</p>
-            <p className="text-[10px] text-phase-2 mt-1">Monthly savings</p>
+            <p className="text-xs text-phase-2 mt-1">Monthly savings</p>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ export default function FinalCTA() {
           </Link>
         </div>
 
-        <p className="mt-6 text-[10px] text-phase-2">
+        <p className="mt-6 text-xs text-phase-2">
           Free for 14 days · No credit card required · Cancel anytime
         </p>
       </div>

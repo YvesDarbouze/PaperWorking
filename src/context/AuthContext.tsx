@@ -11,7 +11,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════
@@ -28,6 +28,7 @@ import { auth, db } from '@/lib/firebase/config';
 
 interface AuthContextType {
   user: User | null;
+  profile: any | null;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
@@ -68,6 +69,7 @@ async function syncSessionCookie(user: User | null) {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,9 +77,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
+      
+      let profileUnsubscribe: (() => void) | null = null;
+
+      if (firebaseUser) {
+        // Fetch Firestore profile to get Role and Organization info in real-time
+        const docRef = doc(db, 'users', firebaseUser.uid);
+        profileUnsubscribe = onSnapshot(docRef, (snap) => {
+          if (snap.exists()) {
+            setProfile(snap.data());
+          }
+        });
+      } else {
+        setProfile(null);
+      }
+      
       setLoading(false);
       // Sync server-side session cookie for middleware protection
       await syncSessionCookie(firebaseUser);
+
+      return () => {
+        if (profileUnsubscribe) profileUnsubscribe();
+      };
     });
     return () => unsubscribe();
   }, []);
@@ -117,7 +138,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setError(null);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const { user: loggedInUser } = await signInWithEmailAndPassword(auth, email, password);
+      // Explicitly sync the session cookie BEFORE returning
+      // so the caller can safely navigate to /dashboard
+      await syncSessionCookie(loggedInUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -174,8 +198,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           updatedAt: serverTimestamp(),
         });
       }
-      // Returning users: doc exists, no write needed
-      // Directive 41: Cookie is auto-synced via onAuthStateChanged → syncSessionCookie
+      // Explicitly sync the session cookie BEFORE returning
+      await syncSessionCookie(googleUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -207,6 +231,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        profile,
         loading,
         error,
         login,

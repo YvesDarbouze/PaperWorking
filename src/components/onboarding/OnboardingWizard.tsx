@@ -1,59 +1,89 @@
+'use client';
+
 import React, { useState } from 'react';
 import { useUserStore } from '@/store/userStore';
-import { Building2, Users, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Building2, Users, ArrowRight, Info, ShieldAlert } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 export default function OnboardingWizard() {
-  const { onboardingStep, setNextStep } = useUserStore();
+  const { onboardingStep, setNextStep, completeOnboarding } = useUserStore();
+  const { user } = useAuth();
+  
+  const [isDeploying, setIsDeploying] = useState(false);
   const [orgName, setOrgName] = useState('');
   const [market, setMarket] = useState('');
   const [teamEmail, setTeamEmail] = useState('');
   const [teamRole, setTeamRole] = useState('Accountant');
 
+  const handleFinish = async () => {
+    if (!user) return;
+    setIsDeploying(true);
+    try {
+      await completeOnboarding(user.uid, { name: orgName, market: market });
+      toast.success('ENVIRONMENT_DEPLOYED. Sensor sync successful.');
+    } catch (error) {
+       toast.error('DEPLOYMENT_FAILURE — Verify credentials.');
+    } finally {
+       setIsDeploying(false);
+    }
+  };
+
   if (onboardingStep > 2) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white max-w-md w-full mx-4 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-pw-black/95 animate-in fade-in duration-500 px-6 backdrop-blur-xl">
+      <div className="bg-pw-white max-w-xl w-full border border-pw-border shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden animate-in zoom-in-95 duration-700">
         
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-100 h-1.5 line-height-none">
-           <div className={`h-1.5 bg-indigo-600 transition-all duration-500 ease-out ${onboardingStep === 1 ? 'w-1/3' : 'w-2/3'}`}></div>
+        {/* Antigravity Segmented Progress Bar */}
+        <div className="w-full flex h-2 bg-pw-bg border-b border-pw-border">
+           <div className={`h-full bg-pw-accent transition-all duration-1000 ease-in-out ${onboardingStep === 1 ? 'w-1/2' : 'w-full'}`}></div>
+           <div className={`h-full border-l border-pw-border w-1/2`}></div>
         </div>
 
         {onboardingStep === 1 && (
-          <div className="p-8">
-            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
-               <Building2 className="w-6 h-6 text-indigo-600" />
-            </div>
-            <h2 className="text-2xl font-light tracking-tight text-gray-900 mb-2">Set up your Organization</h2>
-            <p className="text-sm text-gray-500 mb-8">Before we deploy your ledger, we need context. What entity are we managing?</p>
+          <div className="p-16">
+            <header className="flex items-center justify-between mb-16">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 bg-pw-black flex items-center justify-center border border-pw-black">
+                   <Building2 className="w-6 h-6 text-pw-accent" />
+                </div>
+                <div>
+                   <p className="text-xs font-black text-pw-muted uppercase tracking-[0.5em] mb-1">PHASE_01</p>
+                   <h3 className="text-sm font-black text-pw-black uppercase tracking-[0.2em]">INITIALIZE_ENTITY</h3>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-xs font-black text-pw-accent uppercase tracking-widest font-mono">01/02</span>
+              </div>
+            </header>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Entity / LLC Name</label>
+            <div className="space-y-12 mb-20">
+              <div className="space-y-4">
+                <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Institutional Designation (LLC/CORP)</label>
                 <input 
                   type="text"
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                  placeholder="e.g. Apex Holdings LLC"
+                  className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                  placeholder="INPUT_ENTITY_NAME..."
                   required
                 />
               </div>
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Primary Market</label>
+              <div className="space-y-4">
+                <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Market Vector Analysis</label>
                 <select 
                    value={market}
                    onChange={(e) => setMarket(e.target.value)}
-                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                   className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
                    required
                 >
-                   <option value="" disabled>Select a market...</option>
-                   <option value="FL">Florida</option>
-                   <option value="TX">Texas</option>
-                   <option value="OH">Ohio</option>
-                   <option value="NY">New York</option>
-                   <option value="OTHER">Other</option>
+                   <option value="" disabled>SELECT_MARKET_DOMAIN...</option>
+                   <option value="FL">SECTOR_FL (FLORIDA)</option>
+                   <option value="TX">SECTOR_TX (TEXAS)</option>
+                   <option value="OH">SECTOR_OH (OHIO)</option>
+                   <option value="NY">SECTOR_NY (NEW YORK)</option>
+                   <option value="OTHER">EXTERNAL_DOMAINS</option>
                 </select>
               </div>
             </div>
@@ -61,57 +91,70 @@ export default function OnboardingWizard() {
             <button 
                onClick={setNextStep}
                disabled={!orgName || !market}
-               className="w-full mt-8 bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium text-sm transition-colors flex justify-center items-center group"
+               className="w-full bg-pw-black hover:bg-pw-accent disabled:opacity-20 text-pw-white text-sm font-black py-6 uppercase tracking-[0.4em] transition-all flex justify-center items-center group border border-pw-black"
             >
-               Continue <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+               <span>CONTINUE_SEQUENCE</span>
+               <ArrowRight className="w-5 h-5 ml-6 group-hover:translate-x-3 transition-transform" />
             </button>
           </div>
         )}
 
         {onboardingStep === 2 && (
-          <div className="p-8">
-            <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
-               <Users className="w-6 h-6 text-indigo-600" />
-            </div>
-            <h2 className="text-2xl font-light tracking-tight text-gray-900 mb-2">Build your Core Team</h2>
-            <p className="text-sm text-gray-500 mb-8">PaperWorking is a multiplayer environment. Let's invite your first critical SME.</p>
+          <div className="p-16">
+            <header className="flex items-center justify-between mb-16">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 bg-pw-black flex items-center justify-center border border-pw-black">
+                   <Users className="w-6 h-6 text-pw-accent" />
+                </div>
+                <div>
+                   <p className="text-xs font-black text-pw-muted uppercase tracking-[0.5em] mb-1">PHASE_02</p>
+                   <h3 className="text-sm font-black text-pw-black uppercase tracking-[0.2em]">SME_AUTH_DELEGATION</h3>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-xs font-black text-pw-accent uppercase tracking-widest font-mono">02/02</span>
+              </div>
+            </header>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Team Member Email</label>
+            <div className="space-y-12 mb-20">
+              <div className="space-y-4">
+                <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Stakeholder Identity (Email)</label>
                 <input 
                   type="email"
                   value={teamEmail}
                   onChange={(e) => setTeamEmail(e.target.value)}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
-                  placeholder="name@company.com"
+                  className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                  placeholder="OPERATOR_SIGNAL@LLC.IO"
                   required
                 />
               </div>
-              <div>
-                <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Role Authorization</label>
+              <div className="space-y-4">
+                <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Role Access Token</label>
                 <select 
                    value={teamRole}
                    onChange={(e) => setTeamRole(e.target.value)}
-                   className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors"
+                   className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
                 >
-                   <option value="Accountant">Accountant (Ledger Viewer)</option>
-                   <option value="General Contractor">General Contractor (Ops Manager)</option>
-                   <option value="Real Estate Agent">Real Estate Agent (Listing Config)</option>
+                   <option value="Accountant">ACCOUNTANT (LEDGER_READ_ONLY)</option>
+                   <option value="General Contractor">GC (OPERATIONAL_CONTROL)</option>
+                   <option value="Real Estate Agent">AGENT (LISTING_AUDIT_AUTH)</option>
                 </select>
               </div>
             </div>
 
             <button 
-               onClick={setNextStep}
-               disabled={!teamEmail}
-               className="w-full mt-8 bg-black hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium text-sm transition-colors flex justify-center items-center group"
+               onClick={handleFinish}
+               disabled={!teamEmail || isDeploying}
+               className="w-full bg-pw-black hover:bg-pw-accent disabled:opacity-20 text-pw-white text-sm font-black py-6 uppercase tracking-[0.4em] transition-all flex justify-center items-center group border border-pw-black"
             >
-               Deploy Ledger Environment <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+               <span>{isDeploying ? 'SYNCHRONIZING_LEDGER...' : 'DEPLOY_ENVIRONMENT'}</span>
+               {!isDeploying && <ArrowRight className="w-5 h-5 ml-6 group-hover:translate-x-3 transition-transform" />}
             </button>
-            <div className="text-center mt-4">
-               <button onClick={setNextStep} className="text-xs text-gray-400 hover:text-gray-600 font-medium">
-                  Skip for now
+            
+            <div className="text-center mt-12 flex items-center justify-center gap-3 grayscale opacity-30 hover:opacity-100 transition-all">
+               <ShieldAlert className="w-3 h-3" />
+               <button onClick={handleFinish} disabled={isDeploying} className="text-xs font-black text-pw-muted hover:text-pw-black uppercase tracking-[0.3em] transition-all cursor-crosshair">
+                  {isDeploying ? 'LOCKING_INDEX...' : 'SKIP_TO_LOCAL_AUDIT'}
                </button>
             </div>
           </div>

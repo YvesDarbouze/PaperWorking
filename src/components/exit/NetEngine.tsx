@@ -22,7 +22,7 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: PropertyDea
   const finalClosingCosts = deal.financials?.finalClosingCosts || 0;
 
   return (
-    <div className="bg-[#111111] border border-gray-800 rounded-2xl overflow-hidden shadow-2xl mt-8">
+    <div className="bg-pw-black border border-gray-800 rounded-2xl overflow-hidden shadow-2xl mt-8">
       <div className="p-6 border-b border-gray-800 flex items-center justify-between bg-black/40">
          <div className="flex items-center space-x-3">
            <div className="p-2 bg-emerald-500/20 rounded-lg">
@@ -61,19 +61,19 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: PropertyDea
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-black/30 rounded-xl border border-gray-800 text-sm">
            
            <div>
-             <p className="text-gray-500 font-mono text-[10px] uppercase mb-1">{isBrrrr ? 'Refi Value (75% LTV)' : 'Gross Proceeds'}</p>
+             <p className="text-gray-500 font-mono text-xs uppercase mb-1">{isBrrrr ? 'Refi Value (75% LTV)' : 'Gross Proceeds'}</p>
              <p className="text-white font-medium">${proceeds.toLocaleString()}</p>
            </div>
            <div>
-             <p className="text-red-400/70 font-mono text-[10px] uppercase mb-1">Total Rehab</p>
+             <p className="text-red-400/70 font-mono text-xs uppercase mb-1">Total Rehab</p>
              <p className="text-white font-medium">-${totalApprovedRehab.toLocaleString()}</p>
            </div>
            <div>
-             <p className="text-red-400/70 font-mono text-[10px] uppercase mb-1">Capital & Holding</p>
+             <p className="text-red-400/70 font-mono text-xs uppercase mb-1">Capital & Holding</p>
              <p className="text-white font-medium">-${(capitalCost + holdingCost).toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
            </div>
            <div>
-             <p className="text-red-400/70 font-mono text-[10px] uppercase mb-1">Commissions & Fees</p>
+             <p className="text-red-400/70 font-mono text-xs uppercase mb-1">Commissions & Fees</p>
              <p className="text-white font-medium">-${(actualCommissions + finalClosingCosts).toLocaleString()}</p>
            </div>
         </div>

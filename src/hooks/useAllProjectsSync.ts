@@ -1,15 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
-import { useDealStore } from '@/store/dealStore';
-import { PropertyDeal, LedgerItem } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
+import { Project, LedgerItem } from '@/types/schema';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 
 export function useAllDealsSync() {
-  const setDeals = useDealStore((state) => state.setDeals);
-  const setLedgerItems = useDealStore((state) => state.setLedgerItems);
-  const currentDeal = useDealStore((state) => state.currentDeal);
+  const setDeals = useProjectStore((state) => state.setDeals);
+  const setLedgerItems = useProjectStore((state) => state.setLedgerItems);
+  const currentProject = useProjectStore((state) => state.currentProject);
   const { profile } = useAuth();
 
   // Track counts to trigger notifications
@@ -19,13 +19,13 @@ export function useAllDealsSync() {
   useEffect(() => {
     if (!profile?.organizationId || profile.organizationId === 'org_placeholder') return;
 
-    const dealsRef = collection(db, 'deals');
-    const q = query(dealsRef, where('organizationId', '==', profile.organizationId));
+    const projectsRef = collection(db, 'projects');
+    const q = query(projectsRef, where('organizationId', '==', profile.organizationId));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const liveDeals: PropertyDeal[] = [];
+      const liveDeals: Project[] = [];
       snapshot.forEach((doc) => {
-        liveDeals.push({ id: doc.id, ...doc.data() } as PropertyDeal);
+        liveDeals.push({ id: doc.id, ...doc.data() } as Project);
       });
       setDeals(liveDeals);
     }, (error) => {
@@ -37,9 +37,9 @@ export function useAllDealsSync() {
 
   // 2. Sync Active Deal's Ledger (Sub-collection)
   useEffect(() => {
-    if (!currentDeal?.id) return;
+    if (!currentProject?.id) return;
 
-    const ledgerRef = collection(db, 'deals', currentDeal.id, 'ledgerItems');
+    const ledgerRef = collection(db, 'projects', currentProject.id, 'ledgerItems');
     const q = query(ledgerRef, orderBy('createdAt', 'desc'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -51,7 +51,7 @@ export function useAllDealsSync() {
       } as LedgerItem));
       
       const newCount = items.length;
-      const prevCount = prevLedgerCounts.current[currentDeal.id] || 0;
+      const prevCount = prevLedgerCounts.current[currentProject.id] || 0;
 
       // Notification Logic: New Receipt Uploaded
       if (newCount > prevCount && prevCount > 0) {
@@ -61,12 +61,12 @@ export function useAllDealsSync() {
          });
       }
       
-      prevLedgerCounts.current[currentDeal.id] = newCount;
-      setLedgerItems(currentDeal.id, items);
+      prevLedgerCounts.current[currentProject.id] = newCount;
+      setLedgerItems(currentProject.id, items);
     }, (error) => {
       console.error("Ledger Sync Error: ", error);
     });
 
     return () => unsubscribe();
-  }, [currentDeal?.id, setLedgerItems]);
+  }, [currentProject?.id, setLedgerItems]);
 }

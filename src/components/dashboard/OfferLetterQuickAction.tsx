@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useMemo, useRef } from 'react';
-import { PropertyDeal, ProspectProperty, OfferLetter } from '@/types/schema';
-import { useDealStore } from '@/store/dealStore';
+import { Project, ProspectProperty, OfferLetter } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
 import { DealFolderIcon } from './DealFolder';
 import {
   FileText, X, ChevronDown,
@@ -24,7 +24,7 @@ import {
    ═══════════════════════════════════════════════════════════════ */
 
 interface OfferLetterQuickActionProps {
-  deals: PropertyDeal[];
+  projects: Project[];
 }
 
 interface OfferFormData {
@@ -54,19 +54,19 @@ function shortAddress(address: string): string {
   return comma > 0 ? address.slice(0, comma) : address;
 }
 
-export default function OfferLetterQuickAction({ deals }: OfferLetterQuickActionProps) {
+export default function OfferLetterQuickAction({ projects }: OfferLetterQuickActionProps) {
   const [open, setOpen] = useState(false);
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [selectedProspectId, setSelectedProspectId] = useState<string | null>(null);
   const [form, setForm] = useState<OfferFormData>(INITIAL_FORM);
   const [generated, setGenerated] = useState(false);
   const letterRef = useRef<HTMLDivElement>(null);
-  const updateProspects = useDealStore(s => s.updateProspects);
+  const updateProspects = useProjectStore(s => s.updateProspects);
 
-  // Filter to only deals in the "Lead" (Find & Fund) phase with prospects
+  // Filter to only projects in the "Lead" (Find & Fund) phase with prospects
   const eligibleDeals = useMemo(
-    () => deals.filter(d => d.status === 'Lead' && d.prospects && d.prospects.length > 0),
-    [deals]
+    () => projects.filter(d => d.status === 'Lead' && d.prospects && d.prospects.length > 0),
+    [projects]
   );
 
   const selectedDeal = eligibleDeals.find(d => d.id === selectedDealId);
@@ -157,10 +157,10 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
       {/* Trigger Button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center space-x-2 px-5 py-3 rounded-md font-medium transition shadow-sm bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300"
+        className="flex items-center justify-center space-x-3 px-6 py-4 border-2 border-pw-black bg-pw-white text-pw-black font-black uppercase tracking-[0.2em] text-[10px] hover:bg-pw-black hover:text-pw-white transition-all shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
       >
         <FileText className="w-4 h-4" />
-        <span>Offer Letter</span>
+        <span>Action: Generate_Offer</span>
       </button>
 
       {/* Slide-out Drawer */}
@@ -175,14 +175,14 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
           {/* Drawer panel */}
           <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Drawer header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between px-8 py-6 bg-pw-black border-b border-pw-black">
               <div>
-                <h2 className="text-lg font-medium text-gray-900">Generate Offer Letter</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Quick-action for Find & Fund prospects</p>
+                <h2 className="text-xl font-black text-pw-white uppercase tracking-tighter">Offer_Letter_System</h2>
+                <p className="text-[9px] text-pw-accent font-bold mt-1 uppercase tracking-[0.3em]">PROXIMITY_ACTION_PROTOCOL</p>
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition"
+                className="p-2 bg-pw-white text-pw-black hover:bg-pw-accent transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -198,7 +198,7 @@ export default function OfferLetterQuickAction({ deals }: OfferLetterQuickAction
                 </label>
                 {eligibleDeals.length === 0 ? (
                   <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-4 text-center">
-                    No deals in Find & Fund phase with prospects.
+                    No projects in Find & Fund phase with prospects.
                   </p>
                 ) : (
                   <div className="space-y-1.5">

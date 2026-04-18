@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { CheckCircle, UploadCloud, ClipboardList, Camera, AlertCircle, X, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import TeamChatWidget from '@/components/shared/TeamChatWidget';
 
 interface ProjectFieldManagerProps {
-  dealId: string;
+  projectId: string;
   onClose: () => void;
 }
 
-export default function ProjectFieldManager({ dealId, onClose }: ProjectFieldManagerProps) {
-  const deals = useDealStore(state => state.deals);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+export default function ProjectFieldManager({ projectId, onClose }: ProjectFieldManagerProps) {
+  const projects = useProjectStore(state => state.projects);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
 
-  const currentDeal = deals.find(d => d.id === dealId);
+  const currentProject = projects.find(d => d.id === projectId);
 
   const [receiptAmount, setReceiptAmount] = useState('');
   const [receiptCategory, setReceiptCategory] = useState<any>('Plumbing');
   const [isUploading, setIsUploading] = useState(false);
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
-  const rehabTasks = currentDeal.financials?.rehabTasks || [
+  const rehabTasks = currentProject.financials?.rehabTasks || [
     { id: 't1', title: 'Demo & Teardown', category: 'Other', status: 'In Progress', estimatedCost: 3500 },
     { id: 't2', title: 'Rough Plumbing', category: 'Plumbing', status: 'Pending', estimatedCost: 8500 },
     { id: 't3', title: 'Electrical Rewiring', category: 'Electrical', status: 'Pending', estimatedCost: 6500 },
@@ -49,11 +49,11 @@ export default function ProjectFieldManager({ dealId, onClose }: ProjectFieldMan
         category: receiptCategory,
         receiptUrl: 'https://mock-image-server.dev/receipt_scan.jpg',
         status: 'Pending Triage' as any,
-        propertyName: currentDeal.propertyName
+        propertyName: currentProject.propertyName
       };
 
-      const currentCosts = currentDeal.financials.costs || [];
-      updateDealFinancials(currentDeal.id, {
+      const currentCosts = currentProject.financials.costs || [];
+      updateProjectFinancials(currentProject.id, {
         costs: [...currentCosts, mockCostEntry]
       });
 
@@ -76,7 +76,7 @@ export default function ProjectFieldManager({ dealId, onClose }: ProjectFieldMan
       return t;
     });
 
-    updateDealFinancials(currentDeal.id, { rehabTasks: updatedTasks });
+    updateProjectFinancials(currentProject.id, { rehabTasks: updatedTasks });
     toast.success('Task finished! After-photo attached. Escrow Draw Request sent to Lender.', { duration: 4000, icon: '🏦' });
   };
 
@@ -91,7 +91,7 @@ export default function ProjectFieldManager({ dealId, onClose }: ProjectFieldMan
         <div className="bg-white border-b border-gray-100 p-5 flex justify-between items-center sticky top-[72px] z-10">
           <div>
             <h1 className="text-xl font-bold tracking-tight text-gray-900">Field Manager</h1>
-            <p className="text-xs text-gray-500 font-medium truncate sm:w-auto w-[200px]">{currentDeal.address}</p>
+            <p className="text-xs text-gray-500 font-medium truncate sm:w-auto w-[200px]">{currentProject.address}</p>
           </div>
           <button 
             onClick={onClose} 
@@ -216,7 +216,7 @@ export default function ProjectFieldManager({ dealId, onClose }: ProjectFieldMan
           
           {/* Right Column: Chat integration */}
           <div className="space-y-6 mt-6 lg:mt-0">
-             <TeamChatWidget dealId={dealId} />
+             <TeamChatWidget projectId={projectId} />
           </div>
         </div>
       </div>

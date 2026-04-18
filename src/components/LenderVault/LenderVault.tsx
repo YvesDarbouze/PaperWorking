@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Lock, FileUp, Eye, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function LenderVault() {
-  const currentDeal = useDealStore(state => state.currentDeal);
+  const currentProject = useProjectStore(state => state.currentProject);
   const [documents, setDocuments] = useState<{name: string, status: 'pending' | 'verified'}[]>([
     { name: 'Pre-Approval Letter.pdf', status: 'pending' }
   ]);
@@ -14,7 +14,7 @@ export default function LenderVault() {
   // Note: in a true application this reads from the authenticated session context
   const [userRole, setUserRole] = useState<'Lead Investor' | 'Lender'>('Lead Investor'); 
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
   const handleUpload = () => {
     toast.success('Document uploaded to Vault');

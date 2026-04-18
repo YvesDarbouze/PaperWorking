@@ -2,17 +2,18 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PropertyDeal } from '@/types/schema';
-import { useDealStore } from '@/store/dealStore';
+import { Project } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
+import PhaseBadge from '../ui/PhaseBadge';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import Phase4Outcome from '@/components/exit/Phase4Outcome';
 import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
-import { dealsService } from '@/lib/firebase/deals';
+import { projectsService } from '@/lib/firebase/projects';
 import { transitionDealPhase } from '@/lib/services/dealStateMachine';
 
 interface FullscreenLifecycleViewProps {
-  dealId: string;
+  projectId: string;
   onExit: () => void;
 }
 
@@ -23,11 +24,11 @@ const PHASES = [
   { id: 4, title: 'Outcome Strategy', bg: 'bg-pw-muted' },
 ];
 
-export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLifecycleViewProps) {
+export default function FullscreenLifecycleView({ projectId, onExit }: FullscreenLifecycleViewProps) {
   const { isLead, role } = usePermissions();
-  const deals = useDealStore(state => state.deals);
-  const ledgerItems = useDealStore(state => state.ledgerItems);
-  const deal = deals.find(d => d.id === dealId);
+  const projects = useProjectStore(state => state.projects);
+  const ledgerItems = useProjectStore(state => state.ledgerItems);
+  const deal = projects.find(d => d.id === projectId);
   const [currentPhase, setCurrentPhase] = useState(1);
 
   if (!deal) {
@@ -61,7 +62,7 @@ export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLi
           <div className="ml-8 pl-8 border-l border-white/10 flex items-center space-x-3">
              <div className="flex flex-col items-end mr-4">
                 <span className="text-xs font-bold text-black/40 uppercase tracking-widest">Current Status</span>
-                <span className="text-xs font-bold text-gray-900 bg-white/40 px-2 py-0.5 rounded uppercase tracking-tighter">{deal.status}</span>
+                <PhaseBadge status={deal.status} />
              </div>
              <button 
                onClick={async () => {
@@ -117,7 +118,7 @@ export default function FullscreenLifecycleView({ dealId, onExit }: FullscreenLi
                 {currentPhase === 1 && <StaticPhase1 deal={deal} />}
                 {currentPhase === 2 && <StaticPhase2 deal={deal} />}
                 {currentPhase === 3 && <StaticPhase3 deal={deal} ledgerItems={ledgerItems[deal.id] || []} canAdd={isLead || role === 'General Contractor'} />}
-                {currentPhase === 4 && <Phase4Outcome dealId={dealId} />}
+                {currentPhase === 4 && <Phase4Outcome projectId={projectId} />}
              </motion.div>
           </AnimatePresence>
        </div>
@@ -138,7 +139,7 @@ const RefreshCw = ({ className }: { className: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
 );
 
-function StaticPhase1({ deal }: { deal: PropertyDeal }) {
+function StaticPhase1({ deal }: { deal: Project }) {
   return (
     <div className="w-full max-w-2xl bg-white/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20">
        <h1 className="text-4xl font-light text-gray-900 mb-4">Phase 1: Find & Fund</h1>
@@ -151,7 +152,7 @@ function StaticPhase1({ deal }: { deal: PropertyDeal }) {
   );
 }
 
-function StaticPhase2({ deal }: { deal: PropertyDeal }) {
+function StaticPhase2({ deal }: { deal: Project }) {
   return (
     <div className="w-full max-w-2xl bg-white/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
        <h1 className="text-4xl font-light text-gray-900 mb-4 text-center">Phase 2: Acquisition</h1>
@@ -171,7 +172,7 @@ function StaticPhase2({ deal }: { deal: PropertyDeal }) {
 }
 
 interface StaticPhase3Props {
-  deal: PropertyDeal;
+  deal: Project;
   ledgerItems: any[];
   canAdd: boolean;
 }
@@ -183,7 +184,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   const addRealExpense = async () => {
     setIsAdding(true);
     try {
-      await dealsService.addLedgerItem(deal.id, {
+      await projectsService.addLedgerItem(deal.id, {
         description: 'Sub-collection Field Update',
         amount: 2500,
         status: 'Pending',

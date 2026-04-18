@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import {
   TrendingUp, BarChart3, Receipt, DollarSign,
   Clock, CheckCircle, AlertTriangle,
@@ -73,7 +73,7 @@ interface AutopsyMetrics {
 /**
  * Compute all autopsy metrics for a single deal.
  */
-function computeAutopsy(deal: PropertyDeal): AutopsyMetrics {
+function computeAutopsy(deal: Project): AutopsyMetrics {
   const fin = deal.financials;
   const pp = fin?.purchasePrice || 0;
 
@@ -209,7 +209,7 @@ function MetricRow({
 /* ─── Main Component ─── */
 
 interface DealAutopsyProps {
-  deal: PropertyDeal;
+  deal: Project;
 }
 
 export default function DealAutopsy({ deal }: DealAutopsyProps) {

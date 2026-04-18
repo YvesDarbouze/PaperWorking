@@ -9,28 +9,26 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
 
-    // Check if the caller is a member of the deal and return their role
-    function getDealRole(dealId) {
-      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
-      return deal.members[request.auth.uid].role;
+    // Check if the caller is a member of the project and return their role
+    function getProjectRole(projectId) {
+      let project = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return project.members[request.auth.uid].role;
     }
 
-    // Check if user is a member of the deal at all
-    function isDealMember(dealId) {
-      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
-      return request.auth.uid in deal.members;
+    // Check if user is a member of the project at all
+    function isProjectMember(projectId) {
+      let project = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return request.auth.uid in project.members;
     }
 
-    // Check if user belongs to the same organization as the deal
-    function isInDealOrg(dealId) {
-      let deal = get(/databases/$(database)/documents/deals/$(dealId)).data;
-      let user = getUserDoc();
-      return user.organizationId == deal.organizationId;
+    // Check if user belongs to the same organization as the project
+    function isInProjectOrg(data) {
+      return request.auth != null && data.organizationId == getUserDoc().organizationId;
     }
 
-    // Role hierarchy checks — returns true if user's deal role is in the allowed set
-    function hasRole(dealId, allowedRoles) {
-      return isDealMember(dealId) && (getDealRole(dealId) in allowedRoles);
+    // Role hierarchy checks — returns true if user's project role is in the allowed set
+    function hasRole(projectId, allowedRoles) {
+      return isProjectMember(projectId) && (getProjectRole(projectId) in allowedRoles);
     }
 
     // ─── Organizations ─────────────────────────────────────────────────
@@ -54,45 +52,42 @@ service cloud.firestore {
       allow delete: if false; // User docs are never client-deleted
     }
 
-    // ─── Deals ─────────────────────────────────────────────────────────
-    // Only deal members within the same org can read.
+    // ─── Projects ──────────────────────────────────────────────────────
+    // Only project members within the same org can read.
     // Only Lead Investor and General Contractor can write.
     // Only Lead Investor can delete.
-    match /deals/{dealId} {
+    match /projects/{projectId} {
       allow read: if request.auth != null
-                  && isDealMember(dealId)
-                  && isInDealOrg(dealId);
+                  && isInProjectOrg(resource.data);
 
       allow create: if request.auth != null
-                    && request.resource.data.ownerUid == request.auth.uid
-                    && request.resource.data.organizationId == getUserDoc().organizationId;
+                    && request.resource.data.ownerUid == request.auth.uid;
 
       allow update: if request.auth != null
-                    && hasRole(dealId, ['Lead Investor', 'General Contractor'])
-                    && isInDealOrg(dealId);
+                    && hasRole(projectId, ['Lead Investor', 'General Contractor'])
+                    && isInProjectOrg(projectId);
 
       allow delete: if request.auth != null
-                    && hasRole(dealId, ['Lead Investor']);
+                    && hasRole(projectId, ['Lead Investor']);
 
       // ─── Ledger Items (Sub-Collection) ─────────────────────────────
-      // All deal members can read. Only finance-authorized roles can write.
+      // All project members can read. Only finance-authorized roles can write.
       match /ledgerItems/{itemId} {
         allow read: if request.auth != null
-                    && isDealMember(dealId)
-                    && isInDealOrg(dealId);
+                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Lead Investor, General Contractor, and Accountant can create items
         allow create: if request.auth != null
-                      && hasRole(dealId, ['Lead Investor', 'General Contractor', 'Accountant'])
+                      && hasRole(projectId, ['Lead Investor', 'General Contractor', 'Accountant'])
                       && request.resource.data.organizationId == getUserDoc().organizationId;
 
         // Only Lead Investor and Accountant can approve/reject (update)
         allow update: if request.auth != null
-                      && hasRole(dealId, ['Lead Investor', 'Accountant']);
+                      && hasRole(projectId, ['Lead Investor', 'Accountant']);
 
         // Only Lead Investor can delete ledger items
         allow delete: if request.auth != null
-                      && hasRole(dealId, ['Lead Investor']);
+                      && hasRole(projectId, ['Lead Investor']);
       }
 
       // ─── Private Financials (Sub-Collection) ───────────────────────
@@ -102,11 +97,10 @@ service cloud.firestore {
       // as a fallback for the Engine Room recalculation.
       match /privateFinancials/{docId} {
         allow read: if request.auth != null
-                    && hasRole(dealId, ['Lead Investor', 'Accountant', 'Lender'])
-                    && isInDealOrg(dealId);
+                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if request.auth != null
-                     && hasRole(dealId, ['Lead Investor']);
+                     && hasRole(projectId, ['Lead Investor']);
       }
     }
 

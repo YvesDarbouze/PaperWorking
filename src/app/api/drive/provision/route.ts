@@ -11,7 +11,7 @@ import { FieldValue } from 'firebase-admin/firestore';
  * the resulting folder URLs back to the Deal document in Firestore.
  * 
  * POST /api/drive/provision
- * Body: { idToken: string, dealId: string, propertyAddress: string }
+ * Body: { idToken: string, projectId: string, propertyAddress: string }
  */
 
 // Sub-folders to create inside each property folder
@@ -47,12 +47,12 @@ async function createFolder(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { idToken, dealId, propertyAddress } = body;
+    const { idToken, projectId, propertyAddress } = body;
 
     // ── Authentication ──────────────────────────────────────────
-    if (!idToken || !dealId || !propertyAddress) {
+    if (!idToken || !projectId || !propertyAddress) {
       return NextResponse.json(
-        { error: 'Missing required fields: idToken, dealId, propertyAddress' },
+        { error: 'Missing required fields: idToken, projectId, propertyAddress' },
         { status: 400 }
       );
     }
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     const uid = decodedToken.uid;
 
     // Verify the deal exists and belongs to this user's organization
-    const dealRef = adminDb.collection('deals').doc(dealId);
+    const dealRef = adminDb.collection('projects').doc(projectId);
     const dealSnap = await dealRef.get();
 
     if (!dealSnap.exists) {
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      dealId,
+      projectId,
       driveFolders,
     });
   } catch (error: any) {

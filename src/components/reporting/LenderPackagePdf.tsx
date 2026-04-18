@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { FileDown, FileText, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
 
 export default function LenderPackagePdf() {
-  const deals = useDealStore(state => state.deals);
+  const projects = useProjectStore(state => state.projects);
   const [selectedDealId, setSelectedDealId] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGeneratePdf = () => {
     if (!selectedDealId) return toast.error("Select a deal to generate a package.");
-    const deal = deals.find(d => d.id === selectedDealId);
+    const deal = projects.find(d => d.id === selectedDealId);
     if (!deal) return;
 
     setIsGenerating(true);
@@ -151,7 +151,7 @@ export default function LenderPackagePdf() {
            className="border border-gray-300 rounded-lg text-sm p-2 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none min-w-[200px]"
          >
            <option value="" disabled>Select Property...</option>
-           {deals.map(d => (
+           {projects.map(d => (
               <option key={d.id} value={d.id}>{d.propertyName} ({d.status})</option>
            ))}
          </select>

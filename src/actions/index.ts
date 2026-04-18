@@ -34,7 +34,7 @@ async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
  * APPROVE LEDGER ITEM
  * Safely updates an isolated ledger receipt and atomically recalculates the parent Deal ROI
  */
-export async function approveLedgerItem(idToken: string, dealId: string, itemId: string) {
+export async function approveLedgerItem(idToken: string, projectId: string, itemId: string) {
   const user = await verifyActionAuth(idToken);
   
   // Restriction: Must be an Admin or Accountant (or Lead Investor)
@@ -43,7 +43,7 @@ export async function approveLedgerItem(idToken: string, dealId: string, itemId:
     throw new Error('Insufficient privileges to approve financial lines.');
   }
 
-  const dealRef = adminDb.collection('deals').doc(dealId);
+  const dealRef = adminDb.collection('projects').doc(projectId);
   const ledgerItemRef = dealRef.collection('ledgerItems').doc(itemId);
 
   return adminDb.runTransaction(async (transaction) => {
@@ -111,7 +111,7 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
   // Base configuration guarantees the timeline clock initiates safely server-side
   const serverTime = FieldValue.serverTimestamp();
   
-  const dealDoc = adminDb.collection('deals').doc(); // Auto-generates ID
+  const dealDoc = adminDb.collection('projects').doc(); // Auto-generates ID
   
   const newDeal = {
     id: dealDoc.id,
@@ -146,5 +146,5 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
   };
 
   await dealDoc.set(newDeal);
-  return { success: true, dealId: dealDoc.id };
+  return { success: true, projectId: dealDoc.id };
 }

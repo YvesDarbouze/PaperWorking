@@ -12,11 +12,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "PaperWorking — The Operational Engine for Real Estate Investors",
   description:
-    "Automate document workflows, enforce role-based access, and close deals 3× faster. PaperWorking replaces spreadsheets, shared drives, and manual processes with one secure platform built for real estate teams.",
+    "Automate document workflows, enforce role-based access, and close projects 3× faster. PaperWorking replaces spreadsheets, shared drives, and manual processes with one secure platform built for real estate teams.",
   openGraph: {
     title: "PaperWorking — The Operational Engine for Real Estate Investors",
     description:
-      "Automate document workflows, enforce role-based access, and close deals 3× faster.",
+      "Automate document workflows, enforce role-based access, and close projects 3× faster.",
     siteName: "PaperWorking",
     type: "website",
   },

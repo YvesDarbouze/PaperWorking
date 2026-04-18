@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { RoleGuard } from '@/components/RoleGuard';
 import { UploadCloud, FileText, CheckCircle2, Sliders, Info } from 'lucide-react';
 
 export default function LenderVault() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
-  const updateDealFinancials = useDealStore((state) => state.updateDealFinancials);
+  const currentProject = useProjectStore((state) => state.currentProject);
+  const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
   const [uploading, setUploading] = useState(false);
   const [rollPoints, setRollPoints] = useState(false);
   const [sellerConcessions, setSellerConcessions] = useState(false);
@@ -15,10 +15,10 @@ export default function LenderVault() {
   // MOCK: Should pull from AuthContext
   const userRole = 'Lead Investor'; 
 
-  const docs = currentDeal?.financials?.preApprovalDocuments || [];
+  const docs = currentProject?.financials?.preApprovalDocuments || [];
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.length || !currentDeal) return;
+    if (!e.target.files?.length || !currentProject) return;
     
     setUploading(true);
     // Simulate a network upload to Firebase Storage
@@ -27,14 +27,14 @@ export default function LenderVault() {
       // In reality, this would be a real URL returned from Storage
       const newDocs = [...docs, `https://mock-storage.com/${fileName}`];
       
-      updateDealFinancials(currentDeal.id, {
+      updateProjectFinancials(currentProject.id, {
         preApprovalDocuments: newDocs
       });
       setUploading(false);
     }, 1500);
   };
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">

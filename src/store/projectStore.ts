@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { PropertyDeal, CostEntry, DealFinancials, DealTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument } from '@/types/schema';
+import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
 
    Architecture:
    ─────────────
-   1. Portfolio-level metrics (across ALL deals)
-   2. Per-deal derived metrics (activeDealMetrics) for the currentDeal
+   1. Portfolio-level metrics (across ALL projects)
+   2. Per-deal derived metrics (activeProjectMetrics) for the currentProject
    3. Explicit cross-panel dispatch actions
    4. Zustand persist middleware → localStorage survival
 
@@ -16,7 +16,7 @@ import { PropertyDeal, CostEntry, DealFinancials, DealTeamMember, FractionalInve
    ──────────────────────
    EvaluationPanel → dispatches purchasePrice, holdingCosts, closingCostsBuy
    EnginePanel     → dispatches renovationCosts (sum of approved costs)
-   ExitPanel       → READS combined state via activeDealMetrics (no mutations)
+   ExitPanel       → READS combined state via activeProjectMetrics (no mutations)
 
    Net Profit Formula (auto-derived):
    ───────────────────────────────────
@@ -25,7 +25,7 @@ import { PropertyDeal, CostEntry, DealFinancials, DealTeamMember, FractionalInve
    ═══════════════════════════════════════════════════════════════ */
 
 // ─── Portfolio-Level Metrics ─────────────────────────────────
-interface DealMetrics {
+interface ProjectMetrics {
   totalApprovedCosts: number;
   totalPendingCosts: number;
   projectedProfit: number;
@@ -45,9 +45,9 @@ interface DealMetrics {
 }
 
 // ─── Per-Deal Derived Metrics ────────────────────────────────
-// Auto-calculated whenever currentDeal or its financials change.
+// Auto-calculated whenever currentProject or its financials change.
 // Consumed by ExitPanel / NetEngine without re-deriving locally.
-interface ActiveDealMetrics {
+interface ActiveProjectMetrics {
   purchasePrice: number;
   renovationCosts: number;         // Sum of all approved CostEntries + inspection actuals
   closingCostsBuy: number;         // Capital cost (origination points)
@@ -62,60 +62,60 @@ interface ActiveDealMetrics {
 }
 
 // ─── Store Interface ─────────────────────────────────────────
-interface DealState {
-  deals: PropertyDeal[];
-  currentDeal: PropertyDeal | null;
-  ledgerItems: Record<string, LedgerItem[]>; // dealId -> items
-  metrics: DealMetrics;
-  activeDealMetrics: ActiveDealMetrics;
+interface ProjectState {
+  projects: Project[];
+  currentProject: Project | null;
+  ledgerItems: Record<string, LedgerItem[]>; // projectId -> items
+  metrics: ProjectMetrics;
+  activeProjectMetrics: ActiveProjectMetrics;
 
   whatIfOffsetMonths: number;
 
   // Core Actions
-  setDeals: (deals: PropertyDeal[]) => void;
-  setLedgerItems: (dealId: string, items: LedgerItem[]) => void;
-  setDeal: (deal: PropertyDeal) => void;
+  setDeals: (projects: Project[]) => void;
+  setLedgerItems: (projectId: string, items: LedgerItem[]) => void;
+  setDeal: (deal: Project) => void;
   clearDeal: () => void;
   setWhatIfOffset: (months: number) => void;
 
   // Cross-Panel Financial Dispatch
-  updateDealFinancials: (dealId: string, updates: Partial<DealFinancials>) => void;
-  updateClosingRoom: (dealId: string, updates: Partial<PropertyDeal['closingRoom']>) => void;
-  updateRehabModule: (dealId: string, updates: Partial<PropertyDeal['rehab']>) => void;
-  updateDealTeam: (dealId: string, team: DealTeamMember[]) => void;
-  updateInvestors: (dealId: string, investors: FractionalInvestor[]) => void;
+  updateProjectFinancials: (projectId: string, updates: Partial<ProjectFinancials>) => void;
+  updateClosingRoom: (projectId: string, updates: Partial<Project['closingRoom']>) => void;
+  updateRehabModule: (projectId: string, updates: Partial<Project['rehab']>) => void;
+  updateDealTeam: (projectId: string, team: ProjectTeamMember[]) => void;
+  updateInvestors: (projectId: string, investors: FractionalInvestor[]) => void;
 
   // Find & Fund Actions
-  updateHistoricalProperties: (dealId: string, properties: HistoricalProperty[]) => void;
-  updateProspects: (dealId: string, prospects: ProspectProperty[]) => void;
-  updatePledges: (dealId: string, pledges: FundingPledge[]) => void;
+  updateHistoricalProperties: (projectId: string, properties: HistoricalProperty[]) => void;
+  updateProspects: (projectId: string, prospects: ProspectProperty[]) => void;
+  updatePledges: (projectId: string, pledges: FundingPledge[]) => void;
 
   // Acquisition & Due Diligence Actions
-  updateCostBasis: (dealId: string, ledger: CostBasisLedger) => void;
-  updateRoleDocuments: (dealId: string, docs: RoleLinkedDocument[]) => void;
+  updateCostBasis: (projectId: string, ledger: CostBasisLedger) => void;
+  updateRoleDocuments: (projectId: string, docs: RoleLinkedDocument[]) => void;
 
   // Rehab Expansion Actions
-  updateRehabExpenses: (dealId: string, expenses: RehabExpense[]) => void;
-  updateHoldingCosts: (dealId: string, costs: HoldingCostEntry[]) => void;
-  updateSiteVisitLogs: (dealId: string, logs: SiteVisitLog[]) => void;
+  updateRehabExpenses: (projectId: string, expenses: RehabExpense[]) => void;
+  updateHoldingCosts: (projectId: string, costs: HoldingCostEntry[]) => void;
+  updateSiteVisitLogs: (projectId: string, logs: SiteVisitLog[]) => void;
 
   // Closing Settlement Actions
-  updateClosingChecklist: (dealId: string, items: ClosingChecklistItem[]) => void;
-  updateExitCosts: (dealId: string, costs: ExitCostLineItem[]) => void;
+  updateClosingChecklist: (projectId: string, items: ClosingChecklistItem[]) => void;
+  updateExitCosts: (projectId: string, costs: ExitCostLineItem[]) => void;
 
   // Financial Statement Generator Actions
-  updateSettlementDocuments: (dealId: string, docs: SettlementDocument[]) => void;
+  updateSettlementDocuments: (projectId: string, docs: SettlementDocument[]) => void;
 
   // Recalculation (fires automatically on every mutation)
   recalculateMetrics: () => void;
   
   // Selectors
-  getSelectedDeal: () => PropertyDeal | null;
-  getLedgerItemsForDeal: (dealId: string) => LedgerItem[];
+  getSelectedDeal: () => Project | null;
+  getLedgerItemsForDeal: (projectId: string) => LedgerItem[];
 }
 
 // ─── Default Values ──────────────────────────────────────────
-const initialMetrics: DealMetrics = {
+const initialMetrics: ProjectMetrics = {
   totalApprovedCosts: 0,
   totalPendingCosts: 0,
   projectedProfit: 0,
@@ -132,7 +132,7 @@ const initialMetrics: DealMetrics = {
   soldProjects: 0,
 };
 
-const initialActiveDealMetrics: ActiveDealMetrics = {
+const initialActiveProjectMetrics: ActiveProjectMetrics = {
   purchasePrice: 0,
   renovationCosts: 0,
   closingCostsBuy: 0,
@@ -150,14 +150,14 @@ const initialActiveDealMetrics: ActiveDealMetrics = {
 // Encapsulates the exact formula:
 //   NetProfit = SalePrice - (PurchasePrice + ClosingCostsBuy/Sell
 //               + RenovationCosts + HoldingCosts)
-function deriveActiveDealMetrics(deal: PropertyDeal | null, whatIfOffsetMonths: number): ActiveDealMetrics {
-  if (!deal) return initialActiveDealMetrics;
+function deriveActiveProjectMetrics(deal: Project | null, whatIfOffsetMonths: number): ActiveProjectMetrics {
+  if (!deal) return initialActiveProjectMetrics;
 
   const purchasePrice = deal.financials?.purchasePrice || 0;
 
   // ─── Renovation Costs (sum of all approved ledger entries from sub-collection)
   let renovationCosts = 0;
-  const items = useDealStore.getState().ledgerItems[deal.id] || [];
+  const items = useProjectStore.getState().ledgerItems[deal.id] || [];
   
   items.forEach(item => {
     if (item.status === 'Approved') {
@@ -248,14 +248,14 @@ function deriveActiveDealMetrics(deal: PropertyDeal | null, whatIfOffsetMonths: 
 }
 
 // ─── Zustand Store with Persist Middleware ────────────────────
-export const useDealStore = create<DealState>()(
+export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => ({
-      deals: [],
-      currentDeal: null,
+      projects: [],
+      currentProject: null,
       ledgerItems: {},
       metrics: initialMetrics,
-      activeDealMetrics: initialActiveDealMetrics,
+      activeProjectMetrics: initialActiveProjectMetrics,
       whatIfOffsetMonths: 0,
 
       // ─── What-If Simulator ───────────────────────────────
@@ -265,46 +265,46 @@ export const useDealStore = create<DealState>()(
       },
 
       // ─── Portfolio Actions ───────────────────────────────
-      setDeals: (deals) => {
-        set({ deals });
-        const { currentDeal } = get();
-        if (currentDeal) {
-          const u = deals.find(d => d.id === currentDeal.id);
-          if (u) set({ currentDeal: u });
+      setDeals: (projects) => {
+        set({ projects });
+        const { currentProject } = get();
+        if (currentProject) {
+          const u = projects.find(d => d.id === currentProject.id);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
 
-      setLedgerItems: (dealId, items) => {
+      setLedgerItems: (projectId, items) => {
         set((state) => ({
           ledgerItems: {
             ...state.ledgerItems,
-            [dealId]: items
+            [projectId]: items
           }
         }));
         get().recalculateMetrics();
       },
 
       setDeal: (deal) => {
-        set({ currentDeal: deal });
+        set({ currentProject: deal });
         // Immediately derive metrics for the newly selected deal
         const { whatIfOffsetMonths } = get();
-        set({ activeDealMetrics: deriveActiveDealMetrics(deal, whatIfOffsetMonths) });
+        set({ activeProjectMetrics: deriveActiveProjectMetrics(deal, whatIfOffsetMonths) });
       },
 
       clearDeal: () => {
-        set({ currentDeal: null, activeDealMetrics: initialActiveDealMetrics });
+        set({ currentProject: null, activeProjectMetrics: initialActiveProjectMetrics });
       },
 
       // ─── Cross-Panel Financial Dispatch ──────────────────
       // EvaluationPanel dispatches: purchasePrice, loanAmount, loanInterestRate, etc.
       // EnginePanel dispatches: costs (approved), rehab tasks, permit status
       // ExitPanel dispatches: actualSalePrice, commissions, finalClosingCosts
-      updateDealFinancials: (dealId, updates) => {
-        const { deals, currentDeal } = get();
+      updateProjectFinancials: (projectId, updates) => {
+        const { projects, currentProject } = get();
 
-        const updatedDeals = deals.map(d => {
-          if (d.id === dealId) {
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
             return {
               ...d,
               financials: {
@@ -316,42 +316,42 @@ export const useDealStore = create<DealState>()(
           return d;
         });
 
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
 
-      updateClosingRoom: (dealId, updates) => {
-        const { deals, currentDeal } = get();
+      updateClosingRoom: (projectId, updates) => {
+        const { projects, currentProject } = get();
 
-        const updatedDeals = deals.map(d => {
-          if (d.id === dealId) {
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
             return {
               ...d,
               closingRoom: {
                 ...d.closingRoom,
                 ...updates
-              } as PropertyDeal['closingRoom']
+              } as Project['closingRoom']
             };
           }
           return d;
         });
 
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateRehabModule: (dealId, updates) => {
-        const { deals, currentDeal } = get();
+      updateRehabModule: (projectId, updates) => {
+        const { projects, currentProject } = get();
 
-        const updatedDeals = deals.map(d => {
-          if (d.id === dealId) {
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
             const defaultRehab = {
               baseBudget: 0,
               contingencyBufferPercentage: 0.15,
@@ -365,184 +365,184 @@ export const useDealStore = create<DealState>()(
               rehab: {
                 ...(d.rehab || defaultRehab),
                 ...updates
-              } as PropertyDeal['rehab']
+              } as Project['rehab']
             };
           }
           return d;
         });
 
-        set({ deals: updatedDeals });
+        set({ projects: updatedDeals });
 
         // Auto-update metrics whenever rehab state changes
         get().recalculateMetrics();
 
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateDealTeam: (dealId, team) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, dealTeam: team } : d
+      updateDealTeam: (projectId, team) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, dealTeam: team } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateInvestors: (dealId, investors) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, fractionalInvestors: investors } : d
+      updateInvestors: (projectId, investors) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, fractionalInvestors: investors } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
       // ─── Find & Fund Actions ───────────────────────────────
-      updateHistoricalProperties: (dealId, properties) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, historicalProperties: properties } : d
+      updateHistoricalProperties: (projectId, properties) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, historicalProperties: properties } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateProspects: (dealId, prospects) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, prospects } : d
+      updateProspects: (projectId, prospects) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, prospects } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updatePledges: (dealId, pledges) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, pledges } : d
+      updatePledges: (projectId, pledges) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, pledges } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
       // ─── Acquisition & Due Diligence Mutations ─────────
-      updateCostBasis: (dealId, ledger) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, costBasisLedger: ledger } : d
+      updateCostBasis: (projectId, ledger) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, costBasisLedger: ledger } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateRoleDocuments: (dealId, docs) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, roleLinkedDocuments: docs } : d
+      updateRoleDocuments: (projectId, docs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, roleLinkedDocuments: docs } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
       // ─── Rehab Expansion Mutations ────────────────────
-      updateRehabExpenses: (dealId, expenses) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, rehabExpenses: expenses } : d
+      updateRehabExpenses: (projectId, expenses) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, rehabExpenses: expenses } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
 
-      updateHoldingCosts: (dealId, costs) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, holdingCosts: costs } : d
+      updateHoldingCosts: (projectId, costs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, holdingCosts: costs } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
 
-      updateSiteVisitLogs: (dealId, logs) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, siteVisitLogs: logs } : d
+      updateSiteVisitLogs: (projectId, logs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, siteVisitLogs: logs } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
       // ─── Closing Settlement Mutations ────────────────────
-      updateClosingChecklist: (dealId, items) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, closingChecklist: items } : d
+      updateClosingChecklist: (projectId, items) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, closingChecklist: items } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
       },
 
-      updateExitCosts: (dealId, costs) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, exitCosts: costs } : d
+      updateExitCosts: (projectId, costs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, exitCosts: costs } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
 
       // ─── Financial Statement Generator Mutations ─────────
-      updateSettlementDocuments: (dealId, docs) => {
-        const { deals, currentDeal } = get();
-        const updatedDeals = deals.map(d =>
-          d.id === dealId ? { ...d, settlementDocuments: docs } : d
+      updateSettlementDocuments: (projectId, docs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, settlementDocuments: docs } : d
         );
-        set({ deals: updatedDeals });
-        if (currentDeal?.id === dealId) {
-          const u = updatedDeals.find(d => d.id === dealId);
-          if (u) set({ currentDeal: u });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
         }
         get().recalculateMetrics();
       },
@@ -551,13 +551,13 @@ export const useDealStore = create<DealState>()(
       // Fires on EVERY financial mutation across any panel.
       // Produces both portfolio-level AND per-deal derived metrics.
       recalculateMetrics: () => {
-        const { deals, currentDeal, ledgerItems, whatIfOffsetMonths } = get();
+        const { projects, currentProject, ledgerItems, whatIfOffsetMonths } = get();
 
         let totalApprovedCosts = 0;
         let totalPendingCosts = 0;
         let totalInvestment = 0;
         let totalProfit = 0;
-        let activeProjects = deals.length;
+        let activeProjects = projects.length;
         let totalCapitalCosts = 0;
         let totalHoldingCosts = 0;
 
@@ -570,7 +570,7 @@ export const useDealStore = create<DealState>()(
         let totalInvestedCapitalRealized = 0;
         let soldProjects = 0;
 
-        deals.forEach(deal => {
+        projects.forEach(deal => {
           let dealApprovedCost = 0;
           let dealPendingCost = 0;
 
@@ -624,7 +624,7 @@ export const useDealStore = create<DealState>()(
           const loanAmount = deal.financials?.loanAmount || purchasePrice + dealApprovedCost;
           const capitalCost = loanAmount * points;
 
-          // What IF Simulator manipulates the timeline across active deals
+          // What IF Simulator manipulates the timeline across active projects
           const timelineMonths = Math.max(0, (deal.financials?.estimatedTimelineDays || 0) / 30 + whatIfOffsetMonths);
           const timelineYears = timelineMonths / 12;
 
@@ -665,7 +665,7 @@ export const useDealStore = create<DealState>()(
         }
 
         // ─── Per-Deal Derived Metrics ────────────────────────
-        const activeDealMetrics = deriveActiveDealMetrics(currentDeal, whatIfOffsetMonths);
+        const activeProjectMetrics = deriveActiveProjectMetrics(currentProject, whatIfOffsetMonths);
 
         set({
           metrics: {
@@ -684,31 +684,31 @@ export const useDealStore = create<DealState>()(
             averageRealizedROI,
             soldProjects
           },
-          activeDealMetrics,
+          activeProjectMetrics,
         });
       },
 
-      getSelectedDeal: () => get().currentDeal,
-      getLedgerItemsForDeal: (dealId) => get().ledgerItems[dealId] || [],
+      getSelectedDeal: () => get().currentProject,
+      getLedgerItemsForDeal: (projectId) => get().ledgerItems[projectId] || [],
     }),
     {
-      name: 'pw-deal-store',
+      name: 'pw-project-store',
       storage: createJSONStorage(() => localStorage),
       // Only persist financial data, not transient UI state.
       // Dates are serialized as strings by JSON.stringify; the panels
       // already defensive-cast them via `new Date(...)`.
       partialize: (state) => ({
-        deals: state.deals,
-        currentDeal: state.currentDeal,
+        projects: state.projects,
+        currentProject: state.currentProject,
         whatIfOffsetMonths: state.whatIfOffsetMonths,
       }),
       // Hydration merge: keep version-safe defaults for newly added fields
       merge: (persistedState, currentState) => {
-        const persisted = persistedState as Partial<DealState>;
+        const persisted = persistedState as Partial<ProjectState>;
         return {
           ...currentState,
-          deals: persisted.deals ?? currentState.deals,
-          currentDeal: persisted.currentDeal ?? currentState.currentDeal,
+          projects: persisted.projects ?? currentState.projects,
+          currentProject: persisted.currentProject ?? currentState.currentProject,
           whatIfOffsetMonths: persisted.whatIfOffsetMonths ?? currentState.whatIfOffsetMonths,
         };
       },
@@ -718,11 +718,11 @@ export const useDealStore = create<DealState>()(
 
 // ─── Typed Selectors (zero-overhead subscriptions) ───────────
 // Use these in panels for surgical re-renders:
-//   const netProfit = useDealStore(selectActiveDealNetProfit);
-export const selectActiveDealMetrics = (s: DealState) => s.activeDealMetrics;
-export const selectActiveDealNetProfit = (s: DealState) => s.activeDealMetrics.netProfit;
-export const selectActiveDealROI = (s: DealState) => s.activeDealMetrics.roi;
-export const selectActiveDealRenovationCosts = (s: DealState) => s.activeDealMetrics.renovationCosts;
-export const selectPortfolioMetrics = (s: DealState) => s.metrics;
-export const selectCurrentDeal = (s: DealState) => s.currentDeal;
-export const selectDeals = (s: DealState) => s.deals;
+//   const netProfit = useProjectStore(selectActiveDealNetProfit);
+export const selectActiveProjectMetrics = (s: ProjectState) => s.activeProjectMetrics;
+export const selectActiveDealNetProfit = (s: ProjectState) => s.activeProjectMetrics.netProfit;
+export const selectActiveDealROI = (s: ProjectState) => s.activeProjectMetrics.roi;
+export const selectActiveDealRenovationCosts = (s: ProjectState) => s.activeProjectMetrics.renovationCosts;
+export const selectPortfolioMetrics = (s: ProjectState) => s.metrics;
+export const selectCurrentDeal = (s: ProjectState) => s.currentProject;
+export const selectDeals = (s: ProjectState) => s.projects;

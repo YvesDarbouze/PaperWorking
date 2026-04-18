@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
-import { PropertyDeal, PendingReceipt, CostEntry } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
+import { Project, PendingReceipt, CostEntry } from '@/types/schema';
 import { CheckCircle, XCircle, AlertTriangle, Paperclip, CheckSquare, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { verifyContingencyBuffer } from '@/lib/contingencyEnforcer';
 import toast from 'react-hot-toast';
 import ESignAction from '@/components/shared/ESignAction';
 import TeamChatWidget from '@/components/shared/TeamChatWidget';
-import { dealsService } from '@/lib/firebase/deals';
+import { projectsService } from '@/lib/firebase/projects';
 
 export default function TriageQueue() {
-    const deals = useDealStore(state => state.deals);
-    const ledgerItems = useDealStore(state => state.ledgerItems);
+    const projects = useProjectStore(state => state.projects);
+    const ledgerItems = useProjectStore(state => state.ledgerItems);
 
-    const handleApproveReceipt = async (deal: PropertyDeal, item: any) => {
+    const handleApproveReceipt = async (deal: Project, item: any) => {
         // Enforce Contingency Buffer
         const validation = verifyContingencyBuffer(deal, item);
         
@@ -22,7 +22,7 @@ export default function TriageQueue() {
         }
 
         try {
-            await dealsService.updateLedgerItem(deal.id, item.id, { 
+            await projectsService.updateLedgerItem(deal.id, item.id, { 
                 status: 'Approved',
                 updatedAt: new Date()
             });
@@ -32,9 +32,9 @@ export default function TriageQueue() {
         }
     };
 
-    const handleRejectReceipt = async (dealId: string, itemId: string) => {
+    const handleRejectReceipt = async (projectId: string, itemId: string) => {
         try {
-            await dealsService.updateLedgerItem(dealId, itemId, { 
+            await projectsService.updateLedgerItem(projectId, itemId, { 
                 status: 'Rejected',
                 updatedAt: new Date()
             });
@@ -44,7 +44,7 @@ export default function TriageQueue() {
         }
     };
 
-    const pendingReceiptsData = deals.flatMap(deal => {
+    const pendingReceiptsData = projects.flatMap(deal => {
         const items = ledgerItems[deal.id] || [];
         return items
           .filter(item => item.status === 'Pending')
@@ -166,7 +166,7 @@ export default function TriageQueue() {
             </div>
             
             <div className="lg:col-span-1 space-y-6">
-                <TeamChatWidget dealId={pendingReceiptsData[0]?.deal?.id || 'triage'} />
+                <TeamChatWidget projectId={pendingReceiptsData[0]?.deal?.id || 'triage'} />
             </div>
         </div>
     );

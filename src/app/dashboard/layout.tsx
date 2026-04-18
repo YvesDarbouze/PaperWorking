@@ -6,15 +6,17 @@ import { AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { usePanelContext, PanelProvider, LaneDef } from '@/components/dashboard/HorizontalPanelShell';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
+import Link from 'next/link';
 import PhaseNav from '@/components/dashboard/PhaseNav';
 import LaneIndicator from '@/components/dashboard/LaneIndicator';
 import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardView';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 /* ═══════════════════════════════════════════════════════
    Dashboard Layout — Persistent Kanban Navigation Shell
@@ -73,9 +75,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (loading || !user) return <DashboardSkeleton />;
 
   return (
-    <Suspense fallback={<DashboardSkeleton />}>
-      <DashboardLayoutInner user={user}>{children}</DashboardLayoutInner>
-    </Suspense>
+    <ErrorBoundary name="Dashboard Layout">
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardLayoutInner user={user}>{children}</DashboardLayoutInner>
+      </Suspense>
+    </ErrorBoundary>
   );
 }
 
@@ -111,13 +115,23 @@ function DashboardLayoutInner({ children, user }: { children: React.ReactNode; u
             <div className="flex items-center gap-3 flex-shrink-0">
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold text-white"
-                title={user.displayName || user.email || 'User'}
+                role="img"
+                aria-label={`Signed in as ${user.displayName || user.email || 'User'}`}
               >
-                {(user.displayName?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                <span aria-hidden="true">
+                  {(user.displayName?.[0] || user.email?.[0] || 'U').toUpperCase()}
+                </span>
               </div>
-              <span className="hidden text-sm font-medium text-gray-700 lg:inline">
+              <span className="hidden text-sm font-medium text-gray-700 lg:inline" aria-hidden="true">
                 {user.displayName || user.email}
               </span>
+              <Link
+                href="/dashboard/settings/billing"
+                className="hidden lg:inline-flex items-center text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors px-2 py-1"
+                title="Billing & Subscription"
+              >
+                Billing
+              </Link>
               <LogoutButton compact />
             </div>
           </div>
@@ -141,13 +155,13 @@ function DashboardLayoutInner({ children, user }: { children: React.ReactNode; u
 /* ─── Board overlay reads viewMode from context ─── */
 function BoardOverlay() {
   const { viewMode } = usePanelContext();
-  const deals = useDealStore((state) => state.deals);
+  const projects = useProjectStore((state) => state.projects);
 
   return (
     <AnimatePresence>
       {viewMode === 'minimized' && (
         <MinimizedDashboardView
-          deals={deals}
+          projects={projects}
           onSelectDeal={() => {}} // Deal selection handled via scrollToPanel inside the component
         />
       )}

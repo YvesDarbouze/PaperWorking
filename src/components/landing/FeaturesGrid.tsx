@@ -11,7 +11,7 @@ import React from 'react';
 const features = [
   {
     title: 'Deal Pipeline Tracker',
-    copy: 'Every property lives inside a unified pipeline board—visible from your Dashboard sidebar. Drag deals across phases, flag bottlenecks, and never lose track of where capital sits.',
+    copy: 'Every property lives inside a unified pipeline board—visible from your Dashboard sidebar. Drag projects across phases, flag bottlenecks, and never lose track of where capital sits.',
     icon: (
       <svg viewBox="0 0 32 32" fill="none" className="w-7 h-7">
         <rect x="2" y="6" width="8" height="20" rx="1" stroke="currentColor" strokeWidth="1.5" />

@@ -1,28 +1,20 @@
 'use client';
 
 import React from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import { ArrowRight } from 'lucide-react';
 import DealFolder from './DealFolder';
 
 /* ═══════════════════════════════════════════════════════
    DealListInline — Lightweight deal list for Pipeline panel
 
-   Shows active deals in a simple table-like layout.
+   Shows active projects in a simple table-like layout.
    The full board overlay is rendered at the layout level.
    ═══════════════════════════════════════════════════════ */
 
-interface DealListInlineProps {
-  deals: PropertyDeal[];
-  onSelectDeal: (dealId: string) => void;
-}
+import PhaseBadge from '../ui/PhaseBadge';
 
-const getStatusBadge = (status: string) => {
-  const base = "px-2.5 py-1 rounded-sm text-sm font-mono uppercase tracking-widest border";
-  return `${base} bg-gray-50 border-gray-200 text-gray-600`;
-};
-
-export default function DealListInline({ deals, onSelectDeal }: DealListInlineProps) {
+export default function DealListInline({ projects, onSelectDeal }: DealListInlineProps) {
   return (
     <div className="w-full mx-auto">
       <div className="flex justify-between items-end mb-6 px-2">
@@ -33,11 +25,11 @@ export default function DealListInline({ deals, onSelectDeal }: DealListInlinePr
       </div>
 
       <div className="bg-white border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-        {deals.length === 0 ? (
-          <div className="p-12 text-center text-gray-400 text-sm">No active deals found. Add a target property.</div>
+        {projects.length === 0 ? (
+          <div className="p-12 text-center text-gray-400 text-sm">No active projects found. Add a target property.</div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {deals.map((deal) => {
+            {projects.map((deal) => {
               const purchase = deal.financials?.purchasePrice || 0;
               const isRent = deal.financials?.exitStrategyType === 'Rent';
 
@@ -56,7 +48,7 @@ export default function DealListInline({ deals, onSelectDeal }: DealListInlinePr
 
                   {/* ── Right-side metadata ── */}
                   <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0 ml-4">
-                    <span className={getStatusBadge(deal.status)}>{deal.status}</span>
+                    <PhaseBadge status={deal.status} />
                     {purchase > 0 && (
                       <span className="text-sm font-light text-gray-700 hidden sm:inline">
                         {isRent && deal.financials.projectedMonthlyRent

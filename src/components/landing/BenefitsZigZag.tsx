@@ -12,7 +12,7 @@ import { Clock, ShieldCheck, TrendingDown } from 'lucide-react';
 const benefits = [
   {
     outcome: 'Time Saved',
-    headline: 'Close deals 3× faster with automated document workflows.',
+    headline: 'Close projects 3× faster with automated document workflows.',
     body: 'Every closing disclosure, title insurance form, and wiring instruction auto-routes to the right team member the moment it\'s uploaded. No more chasing signatures across email threads — the system handles sequencing so your team stays focused on deal-making.',
     stat: '72%',
     statLabel: 'less time spent on admin',

@@ -19,7 +19,7 @@ export default function ChatAssistant() {
       {
         id: 'welcome',
         role: 'assistant',
-        content: 'Have a document you need to automate? Ask me about your deals or subscription.',
+        content: 'Have a document you need to automate? Ask me about your projects or subscription.',
       },
     ],
   });
@@ -133,7 +133,7 @@ export default function ChatAssistant() {
               type="text"
               value={input}
               onChange={handleInputChange}
-              placeholder="Query deals or status..."
+              placeholder="Query projects or status..."
               className="flex-1 text-xs bg-dashboard border border-phase-1 px-3 py-2.5 text-phase-4 placeholder:text-phase-2 focus:outline-none focus:border-phase-3 transition-colors"
             />
             <button

@@ -20,7 +20,7 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
         <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-2">Also on PaperWorking</p>
         <h2 className="text-3xl font-medium tracking-tight text-black">Appraisers & Inspectors.</h2>
         <p className="text-sm text-phase-3 mt-2 max-w-lg mx-auto">
-          Get matched with investors who need pre-purchase inspections and certified appraisals on active deals.
+          Get matched with investors who need pre-purchase inspections and certified appraisals on active projects.
         </p>
       </div>
 

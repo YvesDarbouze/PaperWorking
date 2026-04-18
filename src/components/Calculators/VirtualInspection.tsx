@@ -1,20 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { ClipboardCheck, Plus, Trash2 } from 'lucide-react';
 
 export default function VirtualInspection() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
-  const updateDealFinancials = useDealStore((state) => state.updateDealFinancials);
+  const currentProject = useProjectStore((state) => state.currentProject);
+  const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
 
   const [category, setCategory] = useState('');
   const [estimated, setEstimated] = useState('');
   const [actual, setActual] = useState('');
 
-  if (!currentDeal?.financials) return null;
+  if (!currentProject?.financials) return null;
 
-  const inspections = currentDeal.financials.inspections || [];
+  const inspections = currentProject.financials.inspections || [];
 
   const handleAdd = () => {
     if (!category.trim()) return;
@@ -27,7 +27,7 @@ export default function VirtualInspection() {
       loggedBy: 'current-uid', // Mock
     };
 
-    updateDealFinancials(currentDeal.id, {
+    updateProjectFinancials(currentProject.id, {
       inspections: [...inspections, newItem]
     });
 
@@ -37,7 +37,7 @@ export default function VirtualInspection() {
   };
 
   const handleRemove = (id: string) => {
-    updateDealFinancials(currentDeal.id, {
+    updateProjectFinancials(currentProject.id, {
       inspections: inspections.filter((i) => i.id !== id)
     });
   };

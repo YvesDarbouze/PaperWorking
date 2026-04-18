@@ -36,7 +36,7 @@ const tiers: PlanTier[] = [
   {
     id: 'individual',
     name: 'Individual',
-    tagline: 'Solo investors tracking deals and managing rehab budgets independently.',
+    tagline: 'Solo investors tracking projects and managing rehab budgets independently.',
     monthlyPrice: 59,
     annualPrice: 499,
     ctaLabel: 'Start free trial',
@@ -71,7 +71,7 @@ const tiers: PlanTier[] = [
     isAnchored: true,
     anchorBadge: 'Most teams choose Team',
     socialProof: {
-      quote: '"We closed 3 more deals in Q1 just by having everyone in the same workspace."',
+      quote: '"We closed 3 more projects in Q1 just by having everyone in the same workspace."',
       author: '— J. Rivera, Valor Capital Partners',
     },
     features: [

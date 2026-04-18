@@ -1,8 +1,65 @@
 // PaperWorking Project Schema
 
+// ── Deal Phase System ─────────────────────────────────────────
+
+export type DealPhaseKey =
+  | 'Sourcing'
+  | 'Under Contract'
+  | 'Rehab'
+  | 'Listed'
+  | 'Sold'
+  | 'Rented';
+
+export interface DealPhaseDefinition {
+  key: DealPhaseKey;
+  label: string;
+  order: number;
+  allowedTransitions: DealPhaseKey[];
+  // Document types that must be verified before advancing to the next phase
+  requiredDocuments: DocumentCategory[];
+  // Human-readable gate conditions; all must be met to unlock the transition
+  completionGate: string[];
+}
+
+// ── Unified Transaction Ledger ────────────────────────────────
+// Single canonical type spanning Firestore LedgerItems and
+// Prisma PayoutWaterfall records. Used by reporting, PDF export,
+// and the financial sync service.
+
+export type LedgerEntryType =
+  | 'acquisition'   // Purchase price, title fees, origination
+  | 'rehab'         // Materials, labor, permits
+  | 'holding'       // Monthly recurring: taxes, insurance, interest
+  | 'closing'       // Buyer/seller closing costs, commissions
+  | 'payout';       // Equity distribution, lender repayment, agent fees
+
+export interface TransactionLedger {
+  id: string;
+  projectId: string;
+  organizationId: string;
+  ledgerType: LedgerEntryType;
+  description: string;
+  // Positive = income/credit; negative = expense/debit
+  amount: number;
+  category: string;
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Settled';
+  payeeName?: string;
+  payeeRole?: Role;
+  submittedByUid: string;
+  approvedByUid?: string;
+  approvedAt?: Date;
+  receiptUrl?: string;
+  // Cross-system references for the dual-DB architecture
+  linkedFirestoreItemId?: string;   // → Firestore LedgerItem.id
+  linkedPrismaWaterfallId?: string; // → Prisma PayoutWaterfall.id
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
 // 1. Roles Definition
 export type Role =
   | 'Lead Investor'      // Admin (Read/Write all)
+  | 'Platform Admin'     // PaperWorking Site-wide Admin
   | 'Admin'              // Co-admin designated by account holder
   | 'General Contractor' // PM (Read/Write all except sensitive financial settings)
   | 'Real Estate Agent'  // Contributor (Read all, Edit status/timeline)
@@ -13,8 +70,8 @@ export type Role =
 // 1.1 Organization-Level Role (Account Holder Self-ID)
 export type OrgRole = 'Lead Investor' | 'Admin';
 
-// 1.2 Deal-Specific Team Roles (non-investor professionals)
-export type DealRole =
+// 1.2 Project-Specific Team Roles (non-investor professionals)
+export type ProjectRole =
   | 'Real Estate Agent'
   | 'Loan Officer/Broker'
   | 'Loan Processor'
@@ -26,9 +83,9 @@ export type DealRole =
 
 // 1.3 External Access Permissions (per-stakeholder gate)
 export interface ExternalAccessPermission {
-  canView: boolean;   // Can view deal details and financials
-  canUpload: boolean; // Can upload documents (appraisals, reports) to the deal
-  canComment: boolean; // Can leave comments/notes on deal tasks
+  canView: boolean;   // Can view project details and financials
+  canUpload: boolean; // Can upload documents (appraisals, reports) to the project
+  canComment: boolean; // Can leave comments/notes on project tasks
 }
 
 // 1.4 Internal Account Role (within an organization)
@@ -41,7 +98,7 @@ export interface OrgTeamMember {
   email: string;
   displayName: string;
   internalRole: InternalRole;
-  assignedDealIds: string[]; // Deals this member leads (Deal Lead only)
+  assignedProjectIds: string[]; // Projects this member leads (Project Lead only)
   invitedAt: Date;
   status: 'active' | 'invited' | 'removed';
 }
@@ -71,7 +128,7 @@ export interface ApplicationUser {
   subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Lawyer Lead-Gen';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
   inviteToken?: string; // Populated when user arrived via crowdfund invitation
-  invitedToDealId?: string; // Deal they were invited to join
+  invitedToProjectId?: string; // Project they were invited to join
   createdAt: Date;
   updatedAt: Date;
 }
@@ -88,13 +145,13 @@ export interface FractionalInvestor {
   confirmedAt?: Date;
 }
 
-// 2.5 Deal-Specific Team Member (non-investor professionals)
-export interface DealTeamMember {
+// 2.5 Project-Specific Team Member (non-investor professionals)
+export interface ProjectTeamMember {
   id: string;
   uid?: string; // null if invited but not yet registered
   email: string;
   displayName: string;
-  dealRole: DealRole;
+  projectRole: ProjectRole;
   permissions: ExternalAccessPermission; // Granular access gates
   assignedAt: Date;
   status: 'active' | 'invited' | 'removed';
@@ -103,8 +160,8 @@ export interface DealTeamMember {
 // 2.6 Crowdfunding Invitation
 export interface CrowdfundInvitation {
   id: string;
-  dealId: string;
-  dealName: string;
+  projectId: string;
+  projectName: string;
   email: string;
   proposedEquityPercent: number;
   proposedAmount: number;
@@ -218,7 +275,7 @@ export interface RoleLinkedDocument {
   category: DocumentCategory;
   fileName: string;
   fileUrl?: string;         // Upload URL (mock for now)
-  linkedRole: DealRole;     // Which roster role is responsible
+  linkedRole: ProjectRole;     // Which roster role is responsible
   uploadedByUid?: string;
   uploadedByName?: string;
   uploadedAt?: Date;
@@ -228,18 +285,19 @@ export interface RoleLinkedDocument {
   notes: string;
 }
 
-// 3. Deal Container Schema
-export interface PropertyDeal {
+// 3. Project Container Schema
+export interface Project {
   id: string; // Document ID
-  organizationId: string; // REQUIRED: Maps deal to exactly one tenant for B2B data isolation
+  organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
   address: string;
+  squareFootage?: number; // Core metric for sqft-based reporting
   status: 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold';
-  members: Record<string, DealMember>; // Map of user UIDs to their role in the deal
-  financials: DealFinancials;
+  members: Record<string, ProjectMember>; // Map of user UIDs to their role in the project
+  financials: ProjectFinancials;
   closingRoom?: ClosingRoom;
   fractionalInvestors?: FractionalInvestor[]; // Phase 8 addition
-  dealTeam?: DealTeamMember[]; // Phase 9: Deal-specific professional assignments
+  projectTeam?: ProjectTeamMember[]; // Phase 9: Project-specific professional assignments
   historicalProperties?: HistoricalProperty[]; // Find & Fund: Track Record Ledger
   prospects?: ProspectProperty[]; // Find & Fund: Active Prospecting Board
   pledges?: FundingPledge[]; // Find & Fund: Investor Pledges
@@ -248,11 +306,11 @@ export interface PropertyDeal {
   createdAt: Date;
   updatedAt: Date;
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
-  ownerUid: string; // The person who created the deal
+  ownerUid: string; // The person who created the project
   documentHubFolderId?: string; // Google Drive folder link for compliance hub
 }
 
-export interface DealMember {
+export interface ProjectMember {
   uid: string;
   role: Role;
   joinedAt: Date;
@@ -271,11 +329,11 @@ export interface CostEntry {
   status?: 'Pending Triage' | 'Approved' | 'Rejected'; // Escrow ledger state
 }
 
-// Sub-Collection Model: deals/{dealId}/ledgerItems/{itemId}
+// Sub-Collection Model: projects/{projectId}/ledgerItems/{itemId}
 // Replaces flat arrays for massive transaction scalability
 export interface LedgerItem {
   id: string; // Sub-document ID
-  dealId: string; // Reference to parent deal
+  projectId: string; // Reference to parent project
   organizationId: string; // Partitions sub-collection records globally against B2B leakage
   type: 'expense' | 'receipt' | 'budget_line';
   category: 'Plumbing' | 'Electrical' | 'Framing' | 'HVAC' | 'Foundation' | 'General' | 'Other';
@@ -288,10 +346,11 @@ export interface LedgerItem {
   updatedAt?: Date;
 }
 
-// Sub-Collection Model: deals/{dealId}/privateFinancials/summary
+// Sub-Collection Model: projects/{projectId}/privateFinancials/summary
 // Securely isolates sensitive aggregate data from Contractor-level reads.
 // Firestore cannot redact individual fields on a document read, so this
 // sub-collection is the structural workaround for True Field-Level Security.
+// Access via: projects/{projectId}/privateFinancials/summary
 export interface PrivateFinancials {
   netProfit: number; // Realized or projected net profit
   costOfCapital: number; // Total financing burden (interest + origination)
@@ -337,7 +396,7 @@ export interface ClosingRoom {
   chainOfTitleStatus: 'pending' | 'verified' | 'failed';
 }
 
-export interface DealFinancials {
+export interface ProjectFinancials {
   purchasePrice: number;
   estimatedARV: number; // After-Repair Value
   costs: CostEntry[]; // Ledger of costs
@@ -377,9 +436,9 @@ export interface ExitAssets {
   mlsListingLink?: string;
 }
 
-// Updating Deal Model to include Exit Assets
+// Updating Project Model to include Exit Assets
 declare module './schema' {
-  interface PropertyDeal {
+  interface Project {
     exitAssets?: ExitAssets;
   }
 }
@@ -522,7 +581,7 @@ export type SettlementDocumentType = 'HUD-1' | 'Closing Disclosure';
 
 export interface SettlementDocument {
   id: string;
-  dealId: string;
+  projectId: string;
   type: SettlementDocumentType;
   fileName: string;
   fileUrl?: string;
@@ -541,19 +600,19 @@ export interface SettlementDocument {
   notes: string;
 }
 
-// Update PropertyDeal internally via merging later, or expand here:
-// Specifically, we add the portal onto PropertyDeal itself so the Kanban handles it natively.
+// Update Project internally via merging later, or expand here:
+// Specifically, we add the portal onto Project itself so the Kanban handles it natively.
 declare module './schema' {
-  interface PropertyDeal {
+  interface Project {
     stateCode?: string; // e.g. FL, TX
     closingPortal?: ClosingPortalState;
     rehab?: RehabModule;
     // NOTE: privateFinancials lives as a SUB-COLLECTION, not an inline field.
-    // Access via: deals/{dealId}/privateFinancials/summary
+    // Access via: projects/{projectId}/privateFinancials/summary
     // This ensures Contractors are blocked at the Firestore Rules level.
     currentPhase?: number; // 1-4, only Admin/Lead Investor can mutate
     assignedUsers?: string[]; // UID array for cross-org guest access
-    holdingCostClockStart?: Date; // Server-timestamped on deal creation
+    holdingCostClockStart?: Date; // Server-timestamped on project creation
     rehabExpenses?: RehabExpense[]; // Rehab: Separate expense ledger
     holdingCosts?: HoldingCostEntry[]; // Rehab: Recurring monthly costs
     siteVisitLogs?: SiteVisitLog[]; // Rehab: Field logistics
@@ -614,7 +673,7 @@ export type MessageType = 'EMAIL_INBOUND' | 'EMAIL_OUTBOUND' | 'INTERNAL_COMMENT
 
 export interface CommunicationMessage {
   id: string;
-  dealId: string;
+  projectId: string;
   organizationId: string;
   threadId: string;
   senderUid?: string;
@@ -629,8 +688,8 @@ export interface CommunicationMessage {
 }
 
 export interface CommunicationThread {
-  id: string; // Typically the base Deal ID or a derived hash
-  dealId: string;
+  id: string; // Typically the base Project ID or a derived hash
+  projectId: string;
   organizationId: string;
   lastMessageAt: Date;
   participants: string[]; // Email addresses or UIDs
@@ -661,7 +720,7 @@ export interface VendorProfile {
 
 export interface VendorRequest {
   id: string;
-  dealId: string;
+  projectId: string;
   vendorUid: string;
   status: RequestStatus;
   requestedAt: Date;
@@ -674,11 +733,73 @@ export interface VendorRequest {
 export interface VendorReview {
   id: string;
   vendorUid: string;
-  dealId: string;
+  projectId: string;
   investorUid: string;
   rating: number; // 1-5
   speedRating: number;
   accuracyRating: number;
   feedback: string;
   createdAt: Date;
+}
+
+// ── Engine Room: Document Hub ────────────────────────────
+
+export type DealDocumentCategory =
+  | 'Offer Letter'
+  | 'Signed Deed'
+  | 'Lender Form'
+  | 'Inspection Report'
+  | 'Insurance Binder'
+  | 'Purchase Agreement'
+  | 'Other';
+
+export type ESignStatus =
+  | 'Not Required'
+  | 'Awaiting Signature'
+  | 'Signed'
+  | 'Declined';
+
+export interface DealDocument {
+  id: string;
+  projectId: string;
+  category: DealDocumentCategory;
+  fileName: string;
+  fileUrl?: string;
+  fileSize?: number;
+  mimeType?: string;
+  uploadedByUid: string;
+  uploadedByName: string;
+  uploadedAt: Date;
+  eSignStatus: ESignStatus;
+  eSignRequestedAt?: Date;
+  eSignedAt?: Date;
+  eSignedByName?: string;
+  notes?: string;
+}
+
+// ── Engine Room: CRM Contact Manager ────────────────────
+
+export type ContactRole =
+  | 'Lawyer'
+  | 'Real Estate Agent'
+  | 'Lender / Bank'
+  | 'Appraiser'
+  | 'Title Company'
+  | 'Insurance Agent'
+  | 'Other';
+
+export interface CRMContact {
+  id: string;
+  organizationId: string;
+  role: ContactRole;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  companyName?: string;
+  licenseNumber?: string;
+  assignedProjectIds: string[];
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

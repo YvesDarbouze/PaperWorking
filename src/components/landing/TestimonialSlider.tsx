@@ -17,7 +17,7 @@ const testimonials = [
     initials: 'DC',
     role: 'Managing Partner',
     company: 'Apex Capital Group',
-    quote: 'We closed 14 deals last quarter without a single data entry error — something that cost us $38K the year before.',
+    quote: 'We closed 14 projects last quarter without a single data entry error — something that cost us $38K the year before.',
     stars: 5,
   },
   {

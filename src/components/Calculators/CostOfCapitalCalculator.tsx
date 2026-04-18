@@ -1,21 +1,21 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Calculator } from 'lucide-react';
 
 export default function CostOfCapitalCalculator() {
-  const currentDeal = useDealStore(state => state.currentDeal);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+  const currentProject = useProjectStore(state => state.currentProject);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
 
-  const [loanAmount, setLoanAmount] = useState(currentDeal?.financials?.loanAmount || 0);
-  const [interestRate, setInterestRate] = useState(currentDeal?.financials?.loanInterestRate || 0);
-  const [points, setPoints] = useState(currentDeal?.financials?.loanOriginationPoints || 0);
+  const [loanAmount, setLoanAmount] = useState(currentProject?.financials?.loanAmount || 0);
+  const [interestRate, setInterestRate] = useState(currentProject?.financials?.loanInterestRate || 0);
+  const [points, setPoints] = useState(currentProject?.financials?.loanOriginationPoints || 0);
 
-  if (!currentDeal) return <div className="text-sm text-gray-500">Please select a deal to calculate capital costs.</div>;
+  if (!currentProject) return <div className="text-sm text-gray-500">Please select a deal to calculate capital costs.</div>;
 
   const handleCalculate = () => {
-    updateDealFinancials(currentDeal.id, {
+    updateProjectFinancials(currentProject.id, {
       loanAmount: Number(loanAmount),
       loanInterestRate: Number(interestRate),
       loanOriginationPoints: Number(points)

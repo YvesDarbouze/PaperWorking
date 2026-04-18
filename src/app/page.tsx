@@ -20,7 +20,7 @@ export default function Home() {
   const [activePlanSelection, setActivePlanSelection] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-pw-bg">
       {/* 1. Global Navigation */}
       <MarketingNavbar />
       
@@ -35,12 +35,12 @@ export default function Home() {
         <ValuePropGrid />
 
         {/* 5. Process Lifecycle — Visual Timeline */}
-        <div id="process" className="bg-gray-50/50">
+        <div id="process" className="bg-pw-bg">
            <ProcessTimeline />
         </div>
 
         {/* 6. Pricing Section — High-Trust Context */}
-        <section id="pricing" className="scroll-mt-20 py-24 sm:py-32 bg-white">
+        <section id="pricing" className="scroll-mt-20 py-24 sm:py-32 bg-pw-bg">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="text-center mb-20">
               <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mb-6">

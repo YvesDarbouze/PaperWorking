@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { PropertyDeal } from '@/types/schema';
-import { useDealStore } from '@/store/dealStore';
+import { Project } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
 import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout } from 'lucide-react';
 import ProfessionalListingDashboard from '@/components/listing/ProfessionalListingDashboard';
 
 interface Phase4OutcomeProps {
-  dealId: string;
+  projectId: string;
 }
 
-export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
-  const deals = useDealStore(state => state.deals);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
+  const projects = useProjectStore(state => state.projects);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
   
-  const deal = deals.find(d => d.id === dealId);
+  const deal = projects.find(d => d.id === projectId);
   const financials = deal?.financials;
 
   const [strategy, setStrategy] = useState<'Sell'|'Rent'>(financials?.exitStrategyType || 'Sell');
@@ -34,7 +34,7 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
 
   useEffect(() => {
     // Auto-save on unmount or blur ideally, but for this UX prototype, let's keep it syncing
-    updateDealFinancials(dealId, {
+    updateProjectFinancials(projectId, {
       exitStrategyType: strategy,
       actualSalePrice: Number(salePrice),
       buyersAgentCommission: Number(agentCommissions) / 2, // split for simplicity 
@@ -48,7 +48,7 @@ export default function Phase4Outcome({ dealId }: Phase4OutcomeProps) {
     });
   }, [
     strategy, salePrice, agentCommissions, closingCosts, projectedRent, 
-    vacancyRate, maintenance, propMgmt, longTermMortgage, dealId, updateDealFinancials
+    vacancyRate, maintenance, propMgmt, longTermMortgage, projectId, updateProjectFinancials
   ]);
 
   if (!deal || !financials) return null;

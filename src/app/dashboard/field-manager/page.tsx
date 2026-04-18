@@ -1,16 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { CheckCircle, UploadCloud, ClipboardList, Camera, AlertCircle, ArrowLeft, Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
 export default function FieldManagerPage() {
-  const deals = useDealStore(state => state.deals);
-  const currentDeal = useDealStore(state => state.currentDeal);
-  const setDeal = useDealStore(state => state.setDeal);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
+  const projects = useProjectStore(state => state.projects);
+  const currentProject = useProjectStore(state => state.currentProject);
+  const setDeal = useProjectStore(state => state.setDeal);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
 
   const [receiptAmount, setReceiptAmount] = useState('');
   const [receiptCategory, setReceiptCategory] = useState<any>('Plumbing');
@@ -18,17 +18,17 @@ export default function FieldManagerPage() {
 
   // Auto-select a renovating deal if possible
   useEffect(() => {
-    if (deals.length > 0 && !currentDeal) {
-      const activeRehab = deals.find(d => d.status === 'Renovating') || deals[0];
+    if (projects.length > 0 && !currentProject) {
+      const activeRehab = projects.find(d => d.status === 'Renovating') || projects[0];
       setDeal(activeRehab);
     }
-  }, [deals, currentDeal, setDeal]);
+  }, [projects, currentProject, setDeal]);
 
-  if (!currentDeal) {
+  if (!currentProject) {
     return <div className="p-8 text-center text-gray-400">No active properties available for Field Management.</div>;
   }
 
-  const rehabTasks = currentDeal.financials.rehabTasks || [
+  const rehabTasks = currentProject.financials.rehabTasks || [
     { id: 't1', title: 'Demo & Teardown', category: 'Other', status: 'In Progress', estimatedCost: 3500 },
     { id: 't2', title: 'Rough Plumbing', category: 'Plumbing', status: 'Pending', estimatedCost: 8500 },
     { id: 't3', title: 'Electrical Rewiring', category: 'Electrical', status: 'Pending', estimatedCost: 6500 },
@@ -57,8 +57,8 @@ export default function FieldManagerPage() {
         status: 'Pending Triage' as any
       };
 
-      const currentCosts = currentDeal.financials.costs || [];
-      updateDealFinancials(currentDeal.id, {
+      const currentCosts = currentProject.financials.costs || [];
+      updateProjectFinancials(currentProject.id, {
         costs: [...currentCosts, mockCostEntry]
       });
 
@@ -81,7 +81,7 @@ export default function FieldManagerPage() {
       return t;
     });
 
-    updateDealFinancials(currentDeal.id, { rehabTasks: updatedTasks });
+    updateProjectFinancials(currentProject.id, { rehabTasks: updatedTasks });
     toast.success('Task finished! After-photo attached. Escrow Draw Request sent to Lender.', { duration: 4000, icon: '🏦' });
   };
 
@@ -94,7 +94,7 @@ export default function FieldManagerPage() {
         </Link>
         <div>
           <h1 className="text-xl font-bold tracking-tight text-gray-900">Field Manager</h1>
-          <p className="text-xs text-gray-500 font-medium truncate w-[250px]">{currentDeal.address}</p>
+          <p className="text-xs text-gray-500 font-medium truncate w-[250px]">{currentProject.address}</p>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import { DealFolderIcon } from './DealFolder';
 import {
   AlertCircle, AlertTriangle, Info,
@@ -11,8 +11,8 @@ import {
 /* ═══════════════════════════════════════════════════════════════
    DealGroomingAlerts — Logic-Based Deal Health Monitor
 
-   Scans all active deals against a ruleset and emits alerts
-   for deals that need attention ("grooming"). Each alert maps
+   Scans all active projects against a ruleset and emits alerts
+   for projects that need attention ("grooming"). Each alert maps
    to a specific corrective action and links to the deal.
 
    Rules:
@@ -25,7 +25,7 @@ type AlertSeverity = 'critical' | 'action' | 'warning';
 
 interface GroomingAlert {
   id: string;
-  dealId: string;
+  projectId: string;
   dealAddress: string;
   dealStatus: string;
   title: string;
@@ -42,9 +42,9 @@ function shortAddress(address: string): string {
 /**
  * Core grooming rules — each rule scans a deal and may push alerts.
  */
-function evaluateDeal(deal: PropertyDeal, alerts: GroomingAlert[]): void {
+function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
   const addr = shortAddress(deal.address || deal.propertyName);
-  const base = { dealId: deal.id, dealAddress: addr, dealStatus: deal.status };
+  const base = { projectId: deal.id, dealAddress: addr, dealStatus: deal.status };
 
   // ── Rule 1: Missing Financials ──────────────────────────
   // Purchase price is 0 and the deal has moved past Lead
@@ -154,57 +154,60 @@ function evaluateDeal(deal: PropertyDeal, alerts: GroomingAlert[]): void {
 
 /* ─── Severity styling ─── */
 const SEVERITY_CONFIG: Record<AlertSeverity, { border: string; bg: string; text: string; dot: string; label: string }> = {
-  critical: { border: 'border-red-200', bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500', label: 'Critical' },
-  action:   { border: 'border-amber-200', bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500', label: 'Action' },
-  warning:  { border: 'border-yellow-200', bg: 'bg-yellow-50', text: 'text-yellow-700', dot: 'bg-yellow-500', label: 'Warning' },
+  critical: { border: 'border-pw-black', bg: 'bg-pw-black text-white', text: 'text-white', dot: 'bg-white', label: 'Priority' },
+  action:   { border: 'border-pw-border/50', bg: 'bg-pw-bg text-pw-black', text: 'text-pw-black', dot: 'bg-pw-black', label: 'Required' },
+  warning:  { border: 'border-pw-border/20', bg: 'bg-pw-bg/50 text-pw-muted', text: 'text-pw-muted', dot: 'bg-pw-muted', label: 'Monitor' },
 };
 
 interface DealGroomingAlertsProps {
-  deals: PropertyDeal[];
-  onNavigateToDeal: (dealId: string) => void;
+  projects: Project[];
+  onNavigateToDeal: (projectId: string) => void;
 }
 
-export default function DealGroomingAlerts({ deals, onNavigateToDeal }: DealGroomingAlertsProps) {
+export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealGroomingAlertsProps) {
   const alerts = useMemo(() => {
     const collected: GroomingAlert[] = [];
-    deals.forEach(d => evaluateDeal(d, collected));
-    // Sort by severity: critical → action → warning
+    projects.forEach(d => evaluateDeal(d, collected));
     const order: Record<AlertSeverity, number> = { critical: 0, action: 1, warning: 2 };
     collected.sort((a, b) => order[a.severity] - order[b.severity]);
     return collected;
-  }, [deals]);
+  }, [projects]);
 
   const criticalCt = alerts.filter(a => a.severity === 'critical').length;
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
+    <div className="ag-card bg-pw-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col h-full min-h-[500px]">
       {/* Header */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-gray-400" />
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              Deal Grooming
-            </p>
+      <div className="px-8 py-10 flex items-center justify-between border-b border-pw-border/10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-pw-black" />
+              <p className="ag-label opacity-60">Deal Hygiene</p>
+            </div>
+            <h3 className="text-3xl font-light text-pw-black tracking-tighter">Grooming Portal</h3>
           </div>
           {criticalCt > 0 && (
-            <span className="flex items-center gap-1 text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full border border-red-200">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              {criticalCt} critical
-            </span>
+            <div className="bg-pw-black px-4 py-2 rounded-full flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="text-[10px] font-bold text-white tracking-widest uppercase">
+                {criticalCt} Critical
+              </span>
+            </div>
           )}
-        </div>
-        <p className="text-sm text-gray-400 mt-0.5">
-          {alerts.length === 0 ? 'All deals healthy — no action needed.' : `${alerts.length} item${alerts.length > 1 ? 's' : ''} need attention.`}
+      </div>
+
+      <div className="px-8 py-5 border-b border-pw-border/10 bg-pw-bg/20">
+        <p className="text-[10px] font-bold text-pw-muted/60 uppercase tracking-[0.2em] leading-none">
+          {alerts.length === 0 ? 'System State: Optimal' : `${alerts.length} Anomalies Resolved`}
         </p>
       </div>
 
       {/* Alerts list */}
-      <div className="flex-1 overflow-y-auto max-h-[320px] px-4 pb-4 space-y-2">
+      <div className="flex-1 overflow-y-auto px-6 py-8 space-y-4">
         {alerts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-gray-300">
-            <Info className="w-8 h-8 mb-2 stroke-1" />
-            <p className="text-xs text-gray-400">Portfolio is healthy</p>
+          <div className="flex flex-col items-center justify-center py-24 text-pw-muted opacity-40">
+            <Info className="w-12 h-12 mb-4 stroke-[1px]" />
+            <p className="text-sm font-medium">Protocol Nominal.</p>
           </div>
         ) : (
           alerts.map(alert => {
@@ -212,35 +215,35 @@ export default function DealGroomingAlerts({ deals, onNavigateToDeal }: DealGroo
             return (
               <button
                 key={alert.id}
-                onClick={() => onNavigateToDeal(alert.dealId)}
-                className={`w-full flex items-start gap-3 p-3 rounded-xl border ${sev.border} ${sev.bg} text-left hover:shadow-sm transition-all group`}
+                onClick={() => onNavigateToDeal(alert.projectId)}
+                className={`w-full flex items-start gap-6 p-6 rounded-3xl border transition-all duration-300 group hover:scale-[1.01] hover:shadow-lg shadow-pw-black/5 ${sev.border} ${alert.severity === 'critical' ? 'bg-pw-black text-white' : 'bg-pw-surface'}`}
               >
                 {/* Severity icon */}
-                <div className={`mt-0.5 p-1.5 rounded-lg bg-white/80 ${sev.text} flex-shrink-0`}>
+                <div className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${alert.severity === 'critical' ? 'bg-white/10 text-white' : 'bg-pw-bg text-pw-black group-hover:bg-pw-black group-hover:text-white'}`}>
                   {alert.icon}
                 </div>
 
                 {/* Alert content */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <DealFolderIcon status={alert.dealStatus} size={14} />
-                    <span className="text-xs text-gray-500 truncate">
-                      {alert.dealAddress}
-                    </span>
-                    <span className={`text-xs font-bold uppercase tracking-widest ${sev.text} flex-shrink-0`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className={`text-[9px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${alert.severity === 'critical' ? 'border-white/20 text-white' : 'border-pw-border/50 text-pw-muted'}`}>
                       {sev.label}
                     </span>
+                    <span className={`text-[10px] font-medium uppercase tracking-widest truncate opacity-40`}>
+                      {alert.dealAddress}
+                    </span>
                   </div>
-                  <p className={`text-sm font-medium ${sev.text}`}>
+                  <p className={`text-lg font-medium tracking-tight leading-tight`}>
                     {alert.title}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                  <p className={`text-xs mt-2 font-normal leading-relaxed opacity-60 line-clamp-2`}>
                     {alert.description}
                   </p>
                 </div>
 
-                {/* CTA */}
-                <ArrowRight className="w-3.5 h-3.5 text-gray-300 group-hover:text-gray-500 mt-1 flex-shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                <div className="shrink-0 opacity-0 group-hover:opacity-40 transition-opacity self-center">
+                   <ArrowRight className="w-5 h-5" />
+                </div>
               </button>
             );
           })

@@ -17,9 +17,9 @@ const plans = [
     name: 'Starter',
     monthly: 79,
     annual: 63,
-    description: 'For solo operators managing 1–5 active deals.',
+    description: 'For solo operators managing 1–5 active projects.',
     features: [
-      'Up to 5 active deals',
+      'Up to 5 active projects',
       'Single-user access',
       'Document upload & extraction',
       'Deal Pipeline view',
@@ -34,7 +34,7 @@ const plans = [
     annual: 119,
     description: 'For growing teams that need collaboration and reporting.',
     features: [
-      'Unlimited active deals',
+      'Unlimited active projects',
       'Up to 10 team members',
       'Role-based access control',
       'Engine Room ledger',

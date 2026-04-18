@@ -9,21 +9,21 @@ import {
   signOut,
   sendPasswordResetEmail,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — AuthContext (Phase 2)
+   PaperWorking — AuthContext (Phase 2.1)
    
    Single source of truth for Firebase Authentication.
    Provides:
      • user / loading / error state
      • login / register / logout / resetPassword actions
-     • Google SSO via signInWithPopup
+     • Social SSO: Google & Facebook
      • Automatic server-side session cookie sync
-       (HttpOnly cookie set via /api/auth/session)
    ═══════════════════════════════════════════════════════ */
 
 interface AuthContextType {
@@ -34,12 +34,36 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+/**
+ * Ensures a user document exists in Firestore for social sign-ins.
+ * Does not overwrite existing roles or org IDs for returning users.
+ */
+async function provisionSocialUser(user: User) {
+  const userDocRef = doc(db, 'users', user.uid);
+  const userDocSnap = await getDoc(userDocRef);
+
+  if (!userDocSnap.exists()) {
+    await setDoc(userDocRef, {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || 'User',
+      role: 'Lead Investor',
+      organizationId: `org_${user.uid.slice(0, 8)}`,
+      subscriptionPlan: 'None',
+      subscriptionStatus: 'inactive',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
+}
 
 /**
  * Syncs the Firebase ID token to a server-side HttpOnly cookie.
@@ -114,7 +138,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return 'Please enter a valid email address.';
       case 'auth/user-disabled':
         return 'This account has been disabled. Contact support.';
-      // Directive 29: Unify login errors to prevent email enumeration
       case 'auth/user-not-found':
       case 'auth/wrong-password':
       case 'auth/invalid-credential':
@@ -123,7 +146,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return 'An account with this email already exists.';
       case 'auth/weak-password':
         return 'Password must be at least 8 characters.';
-      // Directive 30: Account lockout message
       case 'auth/too-many-requests':
         return 'Account temporarily locked due to multiple failed attempts. Try resetting your password.';
       case 'auth/network-request-failed':
@@ -139,8 +161,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const { user: loggedInUser } = await signInWithEmailAndPassword(auth, email, password);
-      // Explicitly sync the session cookie BEFORE returning
-      // so the caller can safely navigate to /dashboard
       await syncSessionCookie(loggedInUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
@@ -153,14 +173,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
 
-      // Directive 22: Post-registration — write user doc with default role
-      // and placeholder organizationId
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
         email: newUser.email,
         displayName,
-        role: 'Lead Investor', // Default RBAC role
-        organizationId: `org_${newUser.uid.slice(0, 8)}`, // Placeholder — replaced during onboarding
+        role: 'Lead Investor', 
+        organizationId: `org_${newUser.uid.slice(0, 8)}`,
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
         createdAt: serverTimestamp(),
@@ -177,29 +195,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const provider = new GoogleAuthProvider();
       const { user: googleUser } = await signInWithPopup(auth, provider);
-
-      // Directive 40: SSO Database Sync
-      // Check if user document exists — only create for first-time sign-ins
-      // so we never overwrite a returning user's role or org assignment
-      const userDocRef = doc(db, 'users', googleUser.uid);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (!userDocSnap.exists()) {
-        // First-time Google sign-in — provision user document
-        await setDoc(userDocRef, {
-          uid: googleUser.uid,
-          email: googleUser.email,
-          displayName: googleUser.displayName || 'User',
-          role: 'Lead Investor', // Default RBAC role
-          organizationId: `org_${googleUser.uid.slice(0, 8)}`,
-          subscriptionPlan: 'None',
-          subscriptionStatus: 'inactive',
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-        });
-      }
-      // Explicitly sync the session cookie BEFORE returning
+      await provisionSocialUser(googleUser);
       await syncSessionCookie(googleUser);
+    } catch (err: any) {
+      setError(getAuthErrorMessage(err.code));
+      throw err;
+    }
+  };
+
+  const loginWithFacebook = async () => {
+    setError(null);
+    try {
+      const provider = new FacebookAuthProvider();
+      const { user: fbUser } = await signInWithPopup(auth, provider);
+      await provisionSocialUser(fbUser);
+      await syncSessionCookie(fbUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -210,7 +220,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       await signOut(auth);
-      // Cookie is cleared by syncSessionCookie via onAuthStateChanged
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -237,6 +246,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         loginWithGoogle,
+        loginWithFacebook,
         logout,
         resetPassword,
         clearError,

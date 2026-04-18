@@ -1,10 +1,10 @@
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { DownloadCloud, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function TaxExportCsvButton() {
-  const deals = useDealStore(state => state.deals);
+  const projects = useProjectStore(state => state.projects);
 
   const handleExportCsv = () => {
     try {
@@ -15,7 +15,7 @@ export default function TaxExportCsvButton() {
 
       let rowCount = 0;
 
-      deals.forEach(deal => {
+      projects.forEach(deal => {
         // 1. Core Rehab/Operating Costs
         const approvedCosts = deal.financials?.costs?.filter(c => c.approved) || [];
         approvedCosts.forEach(cost => {

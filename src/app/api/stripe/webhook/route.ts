@@ -47,74 +47,97 @@ export async function POST(request: Request) {
       // =========================================================
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-
         const userId = session.client_reference_id || session.metadata?.userId;
         const plan = session.metadata?.plan;
 
         if (userId && plan) {
-          await adminDb.collection('users').doc(userId).update({
+          const userDoc = await adminDb.collection('users').doc(userId).get();
+          const organizationId = userDoc.data()?.organizationId;
+
+          const batch = adminDb.batch();
+          batch.update(adminDb.collection('users').doc(userId), {
             subscriptionPlan: plan,
             subscriptionStatus: 'active',
             stripeCustomerId: session.customer as string,
             updatedAt: FieldValue.serverTimestamp(),
           });
+
+          if (organizationId) {
+            batch.update(adminDb.collection('organizations').doc(organizationId), {
+              subscriptionPlan: plan,
+              subscriptionStatus: 'active',
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+          }
+          await batch.commit();
         }
         break;
       }
 
-      // =========================================================
-      // INVOICE PAID — Recurring billing success (renewals)
-      // =========================================================
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         const stripeCustomerId = invoice.customer as string;
-
-        // Skip the very first invoice (already handled by checkout.session.completed)
         if (invoice.billing_reason === 'subscription_create') break;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          await adminDb.collection('users').doc(uid).update({
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const organizationId = userDoc.data()?.organizationId;
+
+          const batch = adminDb.batch();
+          batch.update(adminDb.collection('users').doc(uid), {
             subscriptionStatus: 'active',
             updatedAt: FieldValue.serverTimestamp(),
           });
-          console.log(`[Stripe Webhook] Renewed subscription for user ${uid}`);
-        } else {
-          console.warn(`[Stripe Webhook] No user found for Stripe customer ${stripeCustomerId}`);
+
+          if (organizationId) {
+            batch.update(adminDb.collection('organizations').doc(organizationId), {
+              subscriptionStatus: 'active',
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+          }
+          await batch.commit();
         }
         break;
       }
 
-      // =========================================================
-      // SUBSCRIPTION DELETED — Revoke SaaS access immediately
-      // =========================================================
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          await adminDb.collection('users').doc(uid).update({
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const organizationId = userDoc.data()?.organizationId;
+
+          const batch = adminDb.batch();
+          batch.update(adminDb.collection('users').doc(uid), {
             subscriptionStatus: 'canceled',
             subscriptionPlan: 'None',
             updatedAt: FieldValue.serverTimestamp(),
           });
-          console.log(`[Stripe Webhook] Revoked access for user ${uid}`);
-        } else {
-          console.warn(`[Stripe Webhook] No user found for Stripe customer ${stripeCustomerId}`);
+
+          if (organizationId) {
+            batch.update(adminDb.collection('organizations').doc(organizationId), {
+              subscriptionStatus: 'canceled',
+              subscriptionPlan: 'None',
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+          }
+          await batch.commit();
         }
         break;
       }
 
-      // =========================================================
-      // SUBSCRIPTION UPDATED — Handle downgrades / payment failures
-      // =========================================================
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const organizationId = userDoc.data()?.organizationId;
+
           const statusMap: Record<string, string> = {
             active: 'active',
             past_due: 'past_due',
@@ -123,11 +146,19 @@ export async function POST(request: Request) {
           };
           const mappedStatus = statusMap[subscription.status] || 'inactive';
 
-          await adminDb.collection('users').doc(uid).update({
+          const batch = adminDb.batch();
+          batch.update(adminDb.collection('users').doc(uid), {
             subscriptionStatus: mappedStatus,
             updatedAt: FieldValue.serverTimestamp(),
           });
-          console.log(`[Stripe Webhook] Updated subscription status to '${mappedStatus}' for user ${uid}`);
+
+          if (organizationId) {
+            batch.update(adminDb.collection('organizations').doc(organizationId), {
+              subscriptionStatus: mappedStatus,
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+          }
+          await batch.commit();
         }
         break;
       }

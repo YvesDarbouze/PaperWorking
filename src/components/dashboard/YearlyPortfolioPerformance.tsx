@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import {
   Calendar, TrendingUp, BarChart3, Receipt,
   DollarSign, Clock, CheckCircle, AlertTriangle,
@@ -12,7 +12,7 @@ import {
    YearlyPortfolioPerformance — Aggregated Annual Health Report
 
    Master view that aggregates autopsy data from ALL completed
-   deals, grouped by exit year. Shows portfolio-level versions of
+   projects, grouped by exit year. Shows portfolio-level versions of
    the 5 autopsy metrics plus average profit per flip.
 
    Designed for light-themed Pipeline Command Center integration.
@@ -53,7 +53,7 @@ const BAND_ICON: Record<Band, React.ReactNode> = {
 
 /* ─── Per-Deal Computed Raw Values ─── */
 interface DealSnapshot {
-  dealId: string;
+  projectId: string;
   propertyName: string;
   year: number;
   grossSalePrice: number;
@@ -80,15 +80,15 @@ interface YearMetrics {
   acquisitionCostPct: number;
   avgProfitPerFlip: number;
   avgDOM: number;
-  deals: DealSnapshot[];
+  projects: DealSnapshot[];
 }
 
 /**
- * Process all completed deals into year-grouped metrics.
+ * Process all completed projects into year-grouped metrics.
  */
-function computeYearlyMetrics(deals: PropertyDeal[]): YearMetrics[] {
-  // Only sold deals with soldDate
-  const soldDeals = deals.filter(d =>
+function computeYearlyMetrics(projects: Project[]): YearMetrics[] {
+  // Only sold projects with soldDate
+  const soldDeals = projects.filter(d =>
     d.status === 'Sold' && d.financials?.soldDate
   );
 
@@ -146,7 +146,7 @@ function computeYearlyMetrics(deals: PropertyDeal[]): YearMetrics[] {
     const year = sold.getFullYear();
 
     return {
-      dealId: deal.id,
+      projectId: deal.id,
       propertyName: deal.propertyName,
       year,
       grossSalePrice,
@@ -190,7 +190,7 @@ function computeYearlyMetrics(deals: PropertyDeal[]): YearMetrics[] {
       acquisitionCostPct: totalPP > 0 ? (totalSC / totalPP) * 100 : 0,
       avgProfitPerFlip: yearDeals.length > 0 ? totalNet / yearDeals.length : 0,
       avgDOM: yearDeals.length > 0 ? Math.round(totalDOM / yearDeals.length) : 0,
-      deals: yearDeals,
+      projects: yearDeals,
     });
   });
 
@@ -243,11 +243,11 @@ function KPITile({
 /* ─── Main Component ─── */
 
 interface YearlyPortfolioPerformanceProps {
-  deals: PropertyDeal[];
+  projects: Project[];
 }
 
-export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPerformanceProps) {
-  const yearlyData = useMemo(() => computeYearlyMetrics(deals), [deals]);
+export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolioPerformanceProps) {
+  const yearlyData = useMemo(() => computeYearlyMetrics(projects), [projects]);
 
   const [expandedYear, setExpandedYear] = useState<number | null>(
     yearlyData.length > 0 ? yearlyData[0].year : null
@@ -259,7 +259,7 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
         <BarChart3 className="w-8 h-8 text-gray-300 mx-auto mb-3" />
         <p className="text-sm text-gray-500 font-medium">No Completed Exits</p>
         <p className="text-xs text-gray-400 mt-1">
-          Post-mortem metrics will appear here once deals reach the &lsquo;Sold&rsquo; status in the Exit Hub.
+          Post-mortem metrics will appear here once projects reach the &lsquo;Sold&rsquo; status in the Exit Hub.
         </p>
       </div>
     );
@@ -368,7 +368,7 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
                   </div>
 
                   {/* Per-deal breakdown table */}
-                  {ym.deals.length > 1 && (
+                  {ym.projects.length > 1 && (
                     <div className="mt-4 rounded-lg border border-gray-100 overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>
@@ -381,12 +381,12 @@ export default function YearlyPortfolioPerformance({ deals }: YearlyPortfolioPer
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
-                          {ym.deals.map((d: DealSnapshot) => {
+                          {ym.projects.map((d: DealSnapshot) => {
                             const dealGPM = d.grossSalePrice > 0
                               ? (d.netProfit / d.grossSalePrice) * 100
                               : 0;
                             return (
-                              <tr key={d.dealId} className="hover:bg-gray-50/50 transition-colors">
+                              <tr key={d.projectId} className="hover:bg-gray-50/50 transition-colors">
                                 <td className="py-2 px-3 text-gray-700 font-medium">{d.propertyName}</td>
                                 <td className="py-2 px-3 text-right text-gray-500 font-mono">
                                   ${d.grossSalePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}

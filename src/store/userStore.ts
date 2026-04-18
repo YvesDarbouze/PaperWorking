@@ -32,8 +32,8 @@ interface UserState {
   addTeamMember: (member: OrgTeamMember) => void;
   removeTeamMember: (memberId: string) => void;
   updateMemberRole: (memberId: string, role: InternalRole) => void;
-  assignMemberToDeal: (memberId: string, dealId: string) => void;
-  unassignMemberFromDeal: (memberId: string, dealId: string) => void;
+  assignMemberToDeal: (memberId: string, projectId: string) => void;
+  unassignMemberFromDeal: (memberId: string, projectId: string) => void;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -62,7 +62,7 @@ export const useUserStore = create<UserState>((set, get) => ({
       await usersService.persistOnboarding(userId, orgData);
       set({ 
         isNewUser: false, 
-        onboardingStep: 5 
+        onboardingStep: 3 
       });
     } catch (error) {
        console.error('Critical Store Sync Failure:', error);
@@ -105,23 +105,23 @@ export const useUserStore = create<UserState>((set, get) => ({
     });
   },
 
-  assignMemberToDeal: (memberId, dealId) => {
+  assignMemberToDeal: (memberId, projectId) => {
     const { teamMembers } = get();
     set({
       teamMembers: teamMembers.map(m =>
         m.id === memberId
-          ? { ...m, assignedDealIds: [...new Set([...m.assignedDealIds, dealId])] }
+          ? { ...m, assignedProjectIds: [...new Set([...m.assignedProjectIds, projectId])] }
           : m
       ),
     });
   },
 
-  unassignMemberFromDeal: (memberId, dealId) => {
+  unassignMemberFromDeal: (memberId, projectId) => {
     const { teamMembers } = get();
     set({
       teamMembers: teamMembers.map(m =>
         m.id === memberId
-          ? { ...m, assignedDealIds: m.assignedDealIds.filter(id => id !== dealId) }
+          ? { ...m, assignedProjectIds: m.assignedProjectIds.filter(id => id !== projectId) }
           : m
       ),
     });

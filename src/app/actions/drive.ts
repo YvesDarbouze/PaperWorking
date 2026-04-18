@@ -10,13 +10,13 @@ import { adminDb } from '@/lib/firebase/admin';
  * create a new folder structurally mapping to the specified Property,
  * and binding the new folderId to the Deal object in Firestore.
  */
-export async function createPropertyDriveFolder(dealId: string, propertyName: string, ownerEmail: string) {
+export async function createPropertyDriveFolder(projectId: string, propertyName: string, ownerEmail: string) {
   try {
     // 1. Authenticate with Google Drive using a Service Account Key
     // Must be provided in env logic as GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY
     if (!process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY) {
       console.warn('Google Drive Service Account Key missing. Mocking success for Document Hub layout.');
-      return { success: true, folderId: 'mock_google_drive_folder_' + dealId };
+      return { success: true, folderId: 'mock_google_drive_folder_' + projectId };
     }
 
     const credentials = JSON.parse(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY);
@@ -30,7 +30,7 @@ export async function createPropertyDriveFolder(dealId: string, propertyName: st
 
     // 2. Create the unified Hub Directory
     const folderMetadata = {
-      name: `Property: ${propertyName} - ${dealId}`,
+      name: `Property: ${propertyName} - ${projectId}`,
       mimeType: 'application/vnd.google-apps.folder',
       // Optional: Set a Master 'Properties' parent folder via parents: [MASTER_FOLDER_ID]
     };
@@ -57,7 +57,7 @@ export async function createPropertyDriveFolder(dealId: string, propertyName: st
     });
 
     // 4. Update the Firestore Document with the external Hub pointer
-    await adminDb.collection('deals').doc(dealId).update({
+    await adminDb.collection('projects').doc(projectId).update({
       documentHubFolderId: folderId,
       updatedAt: new Date()
     });

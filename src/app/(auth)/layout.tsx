@@ -24,39 +24,33 @@ export default function AuthLayout({
 }) {
   return (
     <div
-      className="flex min-h-screen flex-col items-center justify-center px-4 py-12"
-      style={{ backgroundColor: '#f2f2f2' }}
+      className="flex min-h-screen flex-col items-center justify-center px-6 py-12 bg-pw-bg"
     >
       {/* ─── Logo Lockup ─── */}
-      <div className="mb-8 text-pw-black">
+      <div className="mb-12">
         <Logo href="/" size="md" />
       </div>
 
-      {/* ─── Auth Card Container ─── */}
+      {/* ─── Auth Card Container (Antigravity v2 Geometry) ─── */}
       <div
-        className="w-full max-w-[420px] rounded-xl border px-8 py-10 shadow-sm"
-        style={{
-          backgroundColor: '#ffffff',
-          borderColor: '#d4d4d4',
-        }}
+        className="w-full max-w-[460px] rounded-[48px] bg-pw-surface border border-pw-border/10 px-10 py-12 shadow-[0_40px_100px_rgba(0,0,0,0.03)] animate-in fade-in zoom-in-95 duration-700"
       >
         {children}
       </div>
 
       {/* ─── Footer ─── */}
-      <p
-        className="mt-8 text-center text-xs"
-        style={{ color: '#737373' }}
-      >
-        © {new Date().getFullYear()} PaperWorking, Inc. ·{' '}
-        <Link href="/privacy" className="underline hover:text-black">
-          Privacy
-        </Link>{' '}
-        ·{' '}
-        <Link href="/terms" className="underline hover:text-black">
-          Terms
-        </Link>
-      </p>
+      <div className="mt-12 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-pw-muted opacity-40">
+        <p>
+          © {new Date().getFullYear()} PaperWorking Infrastructure ·{' '}
+          <Link href="/privacy" className="hover:text-pw-black transition-colors">
+            Privacy
+          </Link>{' '}
+          / {' '}
+          <Link href="/terms" className="hover:text-pw-black transition-colors">
+            Terms
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

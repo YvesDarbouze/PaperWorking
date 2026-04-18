@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import { Banknote, TrendingUp, CalendarDays, Activity } from 'lucide-react';
 import { calculateNetEngine } from '@/lib/math/calculatorUtils';
 
-export default function NetEngine({ deal, isBrrrr = false }: { deal: PropertyDeal, isBrrrr?: boolean }) {
+export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, isBrrrr?: boolean }) {
   if (!deal) return null;
 
   const {

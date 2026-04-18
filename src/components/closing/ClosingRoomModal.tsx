@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PropertyDeal, ApplicationUser } from '@/types/schema';
-import { useDealStore } from '@/store/dealStore';
+import { Project, ApplicationUser } from '@/types/schema';
+import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
@@ -14,14 +14,14 @@ const mockFileUpload = () => {
 };
 
 interface ClosingRoomProps {
-    dealId: string;
+    projectId: string;
     onClose: () => void;
 }
 
-export default function ClosingRoomModal({ dealId, onClose }: ClosingRoomProps) {
-    const deals = useDealStore(state => state.deals);
-    const updateClosingRoom = useDealStore(state => state.updateClosingRoom);
-    const deal = deals.find(d => d.id === dealId);
+export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProps) {
+    const projects = useProjectStore(state => state.projects);
+    const updateClosingRoom = useProjectStore(state => state.updateClosingRoom);
+    const deal = projects.find(d => d.id === projectId);
 
     const [isPinging, setIsPinging] = useState(false);
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
@@ -39,7 +39,7 @@ export default function ClosingRoomModal({ dealId, onClose }: ClosingRoomProps) 
          setIsSearchingLawyers(false);
        };
        discoverLawyers();
-    }, [dealId, deal]);
+    }, [projectId, deal]);
 
     if (!deal) return null;
 

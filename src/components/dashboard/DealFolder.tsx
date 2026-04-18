@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════════
    DealFolder — Standardized Visual Deal Identifier
@@ -19,7 +19,7 @@ import { PropertyDeal } from '@/types/schema';
 type FolderSize = 'sm' | 'md' | 'lg';
 
 interface DealFolderProps {
-  deal: PropertyDeal;
+  deal: Project;
   size?: FolderSize;
   showPrice?: boolean;
   showStatus?: boolean;
@@ -29,11 +29,15 @@ interface DealFolderProps {
 
 /* ─── Phase accent map ─── */
 const STATUS_COLOR: Record<string, string> = {
-  Lead:             '#cccccc',
-  'Under Contract': '#a5a5a5',
-  Renovating:       '#7f7f7f',
-  Listed:           '#595959',
-  Sold:             '#404040',
+  Lead:             '#F2F2F2',
+  Sourcing:         '#F2F2F2',
+  'Under Contract': '#CCCCCC',
+  Renovating:       '#A5A5A5',
+  Rehab:            '#A5A5A5',
+  Listed:           '#7F7F7F',
+  Sold:             '#595959',
+  Rented:           '#595959',
+  Closed:           '#595959',
 };
 
 /* ─── Size scale tokens ─── */

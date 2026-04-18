@@ -1,53 +1,78 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — ANTIGRAVITY DESIGN SYSTEM
+   PaperWorking — ANTIGRAVITY v2 DESIGN SYSTEM
    
-   High-tech · Minimalist · High-contrast · Utilitarian
-   Baseline: Antigravity IDE (VS Code Fork)
+   Minimalist · Airy · Grayscale · High-Touch
+   Baseline: antigravity.google
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── Core Palette (Antigravity Baseline) ─── */
-  --pw-black:     #000000;
-  --pw-white:     #ffffff;
-  --pw-bg:        #ffffff;
+  /* ─── Antigravity Grayscale Palette ─── */
+  --pw-bg:        #f2f2f2; /* Sourcing - Lightest */
   --pw-surface:   #ffffff;
-  --pw-border:    #1a1a1b; /* Sharp, subtle grid lines */
-  --pw-muted:     #666666;
-  --pw-subtle:    #999999;
-  --pw-fg:        #000000;
-  --pw-accent:    #4285F4; /* Google Blue */
+  --pw-border:    #cccccc; /* Contract */
+  --pw-muted:     #a5a5a5; /* Rehab */
+  --pw-subtle:    #7f7f7f; /* Listed */
+  --pw-fg:        #595959; /* Closed - Darkest foreground */
+  --pw-black:     #595959;
+  --pw-white:     #ffffff;
+  --pw-accent:    #595959;
 
-  /* ─── Modular Spacing (Rigid) ─── */
-  --spacing-unit: 4px;
+  --phase-sourcing: #f2f2f2;
+  --phase-contract: #cccccc;
+  --phase-rehab:    #a5a5a5;
+  --phase-listed:   #7f7f7f;
+  --phase-closed:   #595959;
+
+  --spacing-unit: 8px; /* Increased for 'Air' aesthetic */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pw-bg:        #121212;
+    --pw-surface:   #1e1e1e;
+    --pw-border:    #333333;
+    --pw-muted:     #71717a;
+    --pw-subtle:    #a1a1aa;
+    --pw-fg:        #f4f4f5;
+    --pw-black:     #ffffff;
+    --pw-white:     #121212;
+    --pw-accent:    #ffffff;
+  }
 }
 
 /* ─── Tailwind v4 @theme ─── */
 @theme inline {
-  --color-pw-black:   #000000;
-  --color-pw-white:   #ffffff;
-  --color-pw-bg:      #ffffff;
-  --color-pw-surface: #ffffff;
-  --color-pw-border:  #1a1a1b;
-  --color-pw-muted:   #666666;
-  --color-pw-subtle:  #999999;
-  --color-pw-fg:      #141415;
-  --color-pw-accent:  #4285F4;
+  --color-pw-black:   var(--pw-black);
+  --color-pw-white:   var(--pw-white);
+  --color-pw-bg:      var(--pw-bg);
+  --color-pw-surface: var(--pw-surface);
+  --color-pw-border:  var(--pw-border);
+  --color-pw-muted:   var(--pw-muted);
+  --color-pw-subtle:  var(--pw-subtle);
+  --color-pw-fg:      var(--pw-fg);
+  --color-pw-accent:  var(--pw-accent);
+
+  /* ─── Deal Lifecycle Phases ─── */
+  --color-phase-sourcing: #f2f2f2;
+  --color-phase-contract: #cccccc;
+  --color-phase-rehab:    #a5a5a5;
+  --color-phase-listed:   #7f7f7f;
+  --color-phase-closed:   #595959;
 
   /* ─── Font System ─── */
-  --font-sans: var(--font-inter), "Inter", "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
+  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
-  /* ─── Radius Liquidation ─── */
-  --radius-none: 0px;
-  --radius-sm:   0px;
-  --radius-md:   0px;
-  --radius-lg:   0px;
-  --radius-xl:   0px;
-  --radius-2xl:  0px;
-  --radius-3xl:  0px;
-  --radius-full: 0px;
+  /* ─── Antigravity Radius — Soft & Large ─── */
+  --radius-sm:   12px;
+  --radius-md:   24px;
+  --radius-lg:   40px;
+  --radius-xl:   60px;
+  --radius-2xl:  80px;
+  --radius-3xl:  100px;
+  --radius-full: 9999px;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -57,23 +82,22 @@
 body {
   background-color: var(--pw-bg);
   color: var(--pw-fg);
+  font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  letter-spacing: -0.022em; /* Antigravity tight tracking */
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Universal Rounding Liquidation */
-*, *::before, *::after {
-  border-radius: 0 !important;
+  line-height: 1.5;
 }
 
 html {
   scroll-behavior: smooth;
+  font-size: 16px;
 }
 
-/* ─── Focus States (Utilitarian) ─── */
+/* ─── Focus States (Antigravity Round) ─── */
 *:focus-visible {
   outline: 2px solid var(--pw-accent);
-  outline-offset: 1px;
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
 }
 
 /* ─── Custom Selection ─── */
@@ -86,52 +110,75 @@ html {
    Antigravity Utility Classes
    ═══════════════════════════════════════════════════════ */
 
-/* Rigid Grid Container */
-.ag-grid {
-  display: grid;
-  border-top: 1px solid var(--pw-border);
-  border-left: 1px solid var(--pw-border);
-}
-.ag-grid-cell {
-  border-right: 1px solid var(--pw-border);
-  border-bottom: 1px solid var(--pw-border);
-  padding: 1.5rem;
-}
-
-/* Utilitarian Button */
+/* Antigravity Pill Button */
 .ag-button {
   background: var(--pw-black);
   color: var(--pw-white);
-  padding: 0.75rem 1.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  transition: all 0.2s ease;
-  border: 1px solid var(--pw-black);
+  padding: 1rem 2.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: none; /* Antigravity uses sentence case often */
+  letter-spacing: -0.01em;
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
+
 .ag-button:hover {
-  background: var(--pw-white);
-  color: var(--pw-black);
+  transform: scale(1.02) translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
+
 .ag-button-secondary {
-  background: transparent;
-  color: var(--pw-black);
+  background: var(--pw-surface);
+  color: var(--pw-fg);
   border: 1px solid var(--pw-border);
 }
 
-/* Monospace Ledger Data */
-.ag-data {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+/* Soft Card */
+.ag-card {
+  background: var(--pw-surface);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-/* Technical Label */
+/* Technical Label (Refined) */
 .ag-label {
-  font-size: 10px;
-  font-weight: 800;
+  font-size: 11px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--pw-subtle);
+  letter-spacing: 0.1em;
+  color: var(--pw-muted);
 }
+
+/* ═══════════════════════════════════════════════════════
+   Antigravity Motion
+   ═══════════════════════════════════════════════════════ */
+
+.reveal-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealUp 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes revealUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
+
+/* Hide scrollbar while keeping scroll functionality */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

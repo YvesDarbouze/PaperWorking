@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -21,16 +21,16 @@ ChartJS.register(
 );
 
 export default function VarianceReportChart() {
-  const deals = useDealStore(state => state.deals);
+  const projects = useProjectStore(state => state.projects);
 
-  const labels = deals.map(d => d.propertyName);
+  const labels = projects.map(d => d.propertyName);
 
-  const estimatedCosts = deals.map(d => {
+  const estimatedCosts = projects.map(d => {
     // If we have a base budget, use it. Otherwise, assume 0.
     return d.rehab?.baseBudget || 0;
   });
 
-  const actualCosts = deals.map(d => {
+  const actualCosts = projects.map(d => {
     // Sum only approved costs to see real expenditures vs budget
     const approvedCosts = d.financials?.costs?.filter(c => c.approved) || [];
     return approvedCosts.reduce((acc, curr) => acc + curr.amount, 0);
@@ -99,7 +99,7 @@ export default function VarianceReportChart() {
     }
   };
 
-  // If no deals have costs or rehab budgets, show placeholder
+  // If no projects have costs or rehab budgets, show placeholder
   const hasData = estimatedCosts.some(v => v > 0) || actualCosts.some(v => v > 0);
 
   return (

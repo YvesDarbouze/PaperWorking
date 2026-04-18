@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import { usePanelContext, LaneDef } from './HorizontalPanelShell';
 import {
   Search, FileSignature, HardHat, LogOut, Building2,
@@ -13,7 +13,7 @@ import DealFolder from './DealFolder';
 /* ═══════════════════════════════════════════════════════
    MinimizedDashboardView — Board Overlay
 
-   Full-screen bird's-eye overlay showing all property deals
+   Full-screen bird's-eye overlay showing all property projects
    distributed across the 5 Kanban phase columns.
 
    • Desktop: 5-column grid (one per phase)
@@ -22,8 +22,8 @@ import DealFolder from './DealFolder';
    ═══════════════════════════════════════════════════════ */
 
 interface MinimizedDashboardViewProps {
-  deals: PropertyDeal[];
-  onSelectDeal: (dealId: string) => void;
+  projects: Project[];
+  onSelectDeal: (projectId: string) => void;
 }
 
 /* ─── Map deal status → lane index ─── */
@@ -59,17 +59,17 @@ const PHASE_ACCENTS = [
   'bg-phase-4 text-white border-phase-4',          // Exit      (#595959)
 ];
 
-export default function MinimizedDashboardView({ deals, onSelectDeal }: MinimizedDashboardViewProps) {
+export default function MinimizedDashboardView({ projects, onSelectDeal }: MinimizedDashboardViewProps) {
   const { lanes, scrollToPanel, setViewMode } = usePanelContext();
 
-  /* Bucket deals into lanes */
-  const buckets: PropertyDeal[][] = lanes.map(() => []);
-  deals.forEach((deal) => {
+  /* Bucket projects into lanes */
+  const buckets: Project[][] = lanes.map(() => []);
+  projects.forEach((deal) => {
     const idx = statusToLaneIndex(deal.status);
     buckets[idx].push(deal);
   });
 
-  const handleDealClick = (deal: PropertyDeal) => {
+  const handleDealClick = (deal: Project) => {
     const laneIdx = statusToLaneIndex(deal.status);
     scrollToPanel(laneIdx);
     setViewMode('expanded');
@@ -93,7 +93,7 @@ export default function MinimizedDashboardView({ deals, onSelectDeal }: Minimize
         <div>
           <h2 className="text-2xl font-light tracking-tight text-gray-900">Board View</h2>
           <p className="text-sm text-gray-500 mt-0.5">
-            All {deals.length} deal{deals.length !== 1 ? 's' : ''} across your workflow
+            All {projects.length} deal{projects.length !== 1 ? 's' : ''} across your workflow
           </p>
         </div>
         <button
@@ -111,7 +111,7 @@ export default function MinimizedDashboardView({ deals, onSelectDeal }: Minimize
           <BoardColumn
             key={lane.id}
             lane={lane}
-            deals={buckets[colIdx]}
+            projects={buckets[colIdx]}
             accent={PHASE_ACCENTS[colIdx]}
             onDealClick={handleDealClick}
           />
@@ -124,7 +124,7 @@ export default function MinimizedDashboardView({ deals, onSelectDeal }: Minimize
           <MobileColumn
             key={lane.id}
             lane={lane}
-            deals={buckets[colIdx]}
+            projects={buckets[colIdx]}
             accent={PHASE_ACCENTS[colIdx]}
             onDealClick={handleDealClick}
           />
@@ -137,14 +137,14 @@ export default function MinimizedDashboardView({ deals, onSelectDeal }: Minimize
 /* ─── Desktop Column ─── */
 function BoardColumn({
   lane,
-  deals,
+  projects,
   accent,
   onDealClick,
 }: {
   lane: LaneDef;
-  deals: PropertyDeal[];
+  projects: Project[];
   accent: string;
-  onDealClick: (deal: PropertyDeal) => void;
+  onDealClick: (deal: Project) => void;
 }) {
   return (
     <div className="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden">
@@ -155,19 +155,19 @@ function BoardColumn({
             {lane.shortLabel}
           </span>
           <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
-            {deals.length}
+            {projects.length}
           </span>
         </div>
       </div>
 
       {/* Deal cards */}
       <div className="flex-1 p-2.5 space-y-2 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto">
-        {deals.length === 0 ? (
+        {projects.length === 0 ? (
           <div className="h-20 flex items-center justify-center text-sm text-gray-400 italic">
-            No deals
+            No projects
           </div>
         ) : (
-          deals.map((deal) => (
+          projects.map((deal) => (
             <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
           ))
         )}
@@ -179,16 +179,16 @@ function BoardColumn({
 /* ─── Mobile Accordion Column ─── */
 function MobileColumn({
   lane,
-  deals,
+  projects,
   accent,
   onDealClick,
 }: {
   lane: LaneDef;
-  deals: PropertyDeal[];
+  projects: Project[];
   accent: string;
-  onDealClick: (deal: PropertyDeal) => void;
+  onDealClick: (deal: Project) => void;
 }) {
-  const [isOpen, setIsOpen] = React.useState(deals.length > 0);
+  const [isOpen, setIsOpen] = React.useState(projects.length > 0);
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
@@ -201,7 +201,7 @@ function MobileColumn({
         </span>
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
-            {deals.length}
+            {projects.length}
           </span>
           <motion.div
             animate={{ rotate: isOpen ? 90 : 0 }}
@@ -223,10 +223,10 @@ function MobileColumn({
             className="overflow-hidden"
           >
             <div className="p-3 space-y-2">
-              {deals.length === 0 ? (
-                <p className="text-sm text-gray-400 italic text-center py-3">No deals in this phase</p>
+              {projects.length === 0 ? (
+                <p className="text-sm text-gray-400 italic text-center py-3">No projects in this phase</p>
               ) : (
-                deals.map((deal) => (
+                projects.map((deal) => (
                   <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />
                 ))
               )}
@@ -239,7 +239,7 @@ function MobileColumn({
 }
 
 /* ─── Deal Card (delegates to standardized DealFolder) ─── */
-function DealCard({ deal, onClick }: { deal: PropertyDeal; onClick: () => void }) {
+function DealCard({ deal, onClick }: { deal: Project; onClick: () => void }) {
   return (
     <DealFolder
       deal={deal}

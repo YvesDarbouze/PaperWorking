@@ -21,7 +21,7 @@ const phases: Phase[] = [
   {
     number: 1,
     label: 'Find',
-    description: 'Source and evaluate deals with real-time market data.',
+    description: 'Source and evaluate projects with real-time market data.',
   },
   {
     number: 2,

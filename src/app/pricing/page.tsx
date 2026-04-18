@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Logo from '@/components/brand/Logo';
 
@@ -41,7 +41,7 @@ export default function PricingPage() {
   const recommendedPlanLabel = `${recommendedPlan} ${isAnnual ? 'Annual' : 'Monthly'}`;
 
   return (
-    <div className="min-h-screen bg-dashboard font-sans text-phase-4 selection:bg-phase-1 relative">
+    <div className="min-h-screen bg-pw-bg font-sans text-pw-fg selection:bg-pw-black selection:text-pw-white relative">
       
       {/* Dynamic Checkout Overlay */}
       {activePlanSelection && (
@@ -52,38 +52,37 @@ export default function PricingPage() {
       )}
 
       {/* Header — matches landing page nav */}
-      <header className="sticky top-0 z-50 w-full bg-dashboard/90 backdrop-blur-md border-b border-phase-1">
+      <header className="sticky top-0 z-50 w-full bg-pw-bg/90 backdrop-blur-md border-b border-pw-border">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
           <Logo href="/" size="sm" />
           <div className="flex items-center space-x-6">
-            <Link href="/dashboard" className="text-sm font-medium text-phase-3 hover:text-black transition-colors">
+            <Link href="/dashboard" className="text-sm font-medium text-pw-muted hover:text-pw-black transition-colors">
               Log In
             </Link>
-            <Link 
-              href="/pricing" 
-              className="px-5 py-2.5 text-sm font-medium text-white bg-black hover:bg-phase-4 transition-colors shadow-sm"
+            <button
+               className="ag-button !py-2 !px-6"
             >
               Get Started
-            </Link>
+            </button>
           </div>
         </div>
       </header>
 
       <main className="w-full">
         {/* Hero */}
-        <section className="pt-24 pb-16 sm:pt-32 sm:pb-20 border-b border-phase-1">
+        <section className="pt-24 pb-16 sm:pt-32 sm:pb-20 border-b border-pw-border">
           <div className="mx-auto max-w-4xl text-center px-6 lg:px-8">
-             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight text-black leading-tight text-balance">
+             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-pw-black leading-tight text-balance">
                Institutional scalability.<br className="hidden sm:block"/> Uncompromised execution.
              </h1>
-             <p className="mt-6 text-lg text-phase-3 max-w-2xl mx-auto leading-relaxed">
+             <p className="mt-8 text-lg text-pw-muted max-w-2xl mx-auto leading-relaxed">
                Deploy the exact infrastructure you need to execute, track, and close your acquisitions. Choose the tier that matches your operational scale.
              </p>
           </div>
         </section>
 
         {/* Pricing Cards */}
-        <section className="py-20 bg-white border-b border-phase-1">
+        <section className="py-20 bg-pw-bg border-b border-pw-border">
            <PricingCards 
               isAnnual={isAnnual} 
               onToggleAnnual={setIsAnnual} 
@@ -93,38 +92,38 @@ export default function PricingPage() {
         </section>
 
         {/* Social Proof Bar */}
-        <section className="py-16 bg-dashboard border-b border-phase-1">
+        <section className="py-16 bg-pw-bg border-b border-pw-border">
            <SocialProofBar />
         </section>
 
         {/* Feature Comparison with Progressive Disclosure + Tooltips */}
-        <section className="py-20 bg-white border-b border-phase-1">
+        <section className="py-20 bg-pw-bg border-b border-pw-border">
            <FeatureComparisonTable onSelectPlan={setActivePlanSelection} />
         </section>
 
         {/* Professional Verticals: Appraisers/Inspectors */}
-        <section className="py-20 bg-dashboard border-b border-phase-1">
+        <section className="py-20 bg-pw-bg border-b border-pw-border">
            <ProfessionalPricingSection onSelectPlan={setActivePlanSelection} />
         </section>
 
         {/* Accordion FAQ */}
-        <section className="py-20 bg-white border-b border-phase-1">
+        <section className="py-20 bg-pw-bg border-b border-pw-border">
            <PricingFAQ />
         </section>
       </main>
 
       {/* Footer — matches landing page */}
-      <footer className="bg-dashboard py-12">
-         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-phase-3">
+      <footer className="bg-pw-bg py-12">
+         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-pw-muted">
             <div className="mb-4 md:mb-0 flex items-center">
                <Logo size="sm" />
                <span className="ml-2">© {new Date().getFullYear()}</span>
             </div>
-            <div className="flex space-x-8">
-               <Link href="#" className="hover:text-black transition-colors">Privacy Policy</Link>
-               <Link href="#" className="hover:text-black transition-colors">Terms of Service</Link>
-               <Link href="#" className="hover:text-black transition-colors">Contact</Link>
-               <Link href="/dashboard" className="text-black font-medium hover:text-phase-3 transition-colors">Log In</Link>
+            <div className="flex space-x-8 text-[11px] font-bold uppercase tracking-widest">
+               <Link href="#" className="hover:text-pw-black transition-colors">Privacy Policy</Link>
+               <Link href="#" className="hover:text-pw-black transition-colors">Terms of Service</Link>
+               <Link href="#" className="hover:text-pw-black transition-colors">Contact</Link>
+               <Link href="/dashboard" className="text-pw-black hover:text-pw-muted transition-colors">Log In</Link>
             </div>
          </div>
       </footer>

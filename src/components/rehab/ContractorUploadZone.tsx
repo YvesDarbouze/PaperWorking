@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Upload, DollarSign, List, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PendingReceipt } from '@/types/schema';
@@ -24,13 +24,13 @@ const CATEGORIES = [
 ];
 
 interface ContractorUploadZoneProps {
-    dealId: string;
+    projectId: string;
 }
 
-export default function ContractorUploadZone({ dealId }: ContractorUploadZoneProps) {
-    const updateRehabModule = useDealStore(state => state.updateRehabModule);
-    const deals = useDealStore(state => state.deals);
-    const deal = deals.find(d => d.id === dealId);
+export default function ContractorUploadZone({ projectId }: ContractorUploadZoneProps) {
+    const updateRehabModule = useProjectStore(state => state.updateRehabModule);
+    const projects = useProjectStore(state => state.projects);
+    const deal = projects.find(d => d.id === projectId);
 
     const [amount, setAmount] = useState<string>('');
     const [lineItem, setLineItem] = useState<string>('');

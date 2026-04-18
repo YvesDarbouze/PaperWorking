@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { MessageSquare, Send, AtSign } from 'lucide-react';
 
 interface TeamChatWidgetProps {
-  dealId: string;
+  projectId: string;
 }
 
-export default function TeamChatWidget({ dealId }: TeamChatWidgetProps) {
+export default function TeamChatWidget({ projectId }: TeamChatWidgetProps) {
   const [messages, setMessages] = useState([
      { id: 1, author: 'Lead Investor', role: 'admin', text: 'Checked the structural reports. We are holding tight until framing passes.', time: '10:00 AM' },
      { id: 2, author: 'General Contractor', role: 'contractor', text: '@LeadInvestor I uploaded the lien waivers to the Triage Queue for the foundation pour.', time: '11:15 AM' }

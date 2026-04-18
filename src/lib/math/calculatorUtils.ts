@@ -1,4 +1,4 @@
-import { PropertyDeal, FractionalInvestor } from '@/types/schema';
+import { Project, FractionalInvestor } from '@/types/schema';
 
 /**
  * Validates the viability of a deal via the standard 70% rule.
@@ -19,7 +19,7 @@ export function calculateSeventyPercentRule(arv: number, rehabCosts: number, pur
  * Generates the full Profitability Net Engine calculations.
  * Accounts for extreme timelines, commissions, and holding cost projections.
  */
-export function calculateNetEngine(deal: PropertyDeal, isBrrrr: boolean = false) {
+export function calculateNetEngine(deal: Project, isBrrrr: boolean = false) {
   const purchasePrice = deal.financials?.purchasePrice || 0;
   
   let totalApprovedRehab = 0;
@@ -87,7 +87,7 @@ export function calculateNetEngine(deal: PropertyDeal, isBrrrr: boolean = false)
 /**
  * Computes individual investor disbursements from a waterfall calculation block.
  */
-export function calculateEquityPayout(deal: PropertyDeal | undefined) {
+export function calculateEquityPayout(deal: Project | undefined) {
   let isSold = false;
   let targetProfit = 0;
   let calculationStatus = 'No Deal Selected';

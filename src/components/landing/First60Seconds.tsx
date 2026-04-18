@@ -112,7 +112,7 @@ export default function First60Seconds() {
                 {/* Pipeline header */}
                 <div className="flex items-center justify-between mb-5">
                   <h3 className="text-sm font-bold text-black">Deal Pipeline</h3>
-                  <span className="text-xs text-phase-2">3 active deals</span>
+                  <span className="text-xs text-phase-2">3 active projects</span>
                 </div>
 
                 {/* Mini pipeline cards */}

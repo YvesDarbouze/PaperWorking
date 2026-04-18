@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
-import { useDealStore, selectActiveDealMetrics } from '@/store/dealStore';
-import { Camera, Link as LinkIcon, DollarSign, Percent, CheckCircle, ExternalLink, BadgePercent } from 'lucide-react';
+import { useProjectStore, selectActiveProjectMetrics } from '@/store/projectStore';
+import { Camera, Link as LinkIcon, DollarSign, Percent, ExternalLink, Target } from 'lucide-react';
 import toast from 'react-hot-toast';
 import NetEngine from '@/components/exit/NetEngine';
+import ProfitVarianceCard from '@/components/dashboard/ProfitVarianceCard';
 
 const StagingVendorManager = lazy(() => import('@/components/exit/StagingVendorManager'));
 const PhotographyUploadManager = lazy(() => import('@/components/exit/PhotographyUploadManager'));
@@ -12,57 +13,59 @@ const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
 
 /* ═══════════════════════════════════════════════════════
    Exit Panel — Lane 4 (The Exit Hub)
-
-   Dark-themed panel for final sale execution.
-   Extracted from /dashboard/exit-hub/page.tsx.
-   Removed its own <header> since the layout header handles nav.
+   
+   Final disposition protocol. High-fidelity Dark mode 
+   optimized for financial realization and asset staging.
    ═══════════════════════════════════════════════════════ */
 
 export default function ExitPanel() {
-  const deals = useDealStore(state => state.deals);
-  const currentDeal = useDealStore(state => state.currentDeal);
-  const setDeal = useDealStore(state => state.setDeal);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
-  const setDeals = useDealStore(state => state.setDeals);
-  const dealMetrics = useDealStore(selectActiveDealMetrics);
+  const projects = useProjectStore(state => state.projects);
+  const currentProject = useProjectStore(state => state.currentProject);
+  const setDeal = useProjectStore(state => state.setDeal);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
+  const setDeals = useProjectStore(state => state.setDeals);
+  const dealMetrics = useProjectStore(selectActiveProjectMetrics);
 
-  // States for Real Estate Agent actions
+  // Local UI States (Stored in DOLLARS for human editing)
   const [mlsLink, setMlsLink] = useState('');
   const [imageCount, setImageCount] = useState(0);
-
-  // States for final financial hooks
   const [actualSale, setActualSale] = useState('');
   const [buyerComm, setBuyerComm] = useState('3.0');
   const [sellerComm, setSellerComm] = useState('3.0');
   const [closingCosts, setClosingCosts] = useState('0');
 
   useEffect(() => {
-    // Attempt default to a Listed/Sold deal
-    if (deals.length > 0 && !currentDeal) {
-      const exitTarget = deals.find(d => d.status === 'Listed' || d.status === 'Sold') || deals[0];
+    if (projects.length > 0 && !currentProject) {
+      const exitTarget = projects.find(d => d.status === 'Listed' || d.status === 'Sold') || projects[0];
       setDeal(exitTarget);
     }
-  }, [deals, currentDeal, setDeal]);
+  }, [projects, currentProject, setDeal]);
 
-  // Load existing data if present
   useEffect(() => {
-    if (currentDeal) {
-      setMlsLink(currentDeal.exitAssets?.mlsListingLink || '');
-      setImageCount(currentDeal.exitAssets?.stagingImages?.length || 0);
-      setActualSale(currentDeal.financials?.actualSalePrice?.toString() || currentDeal.financials?.estimatedARV?.toString() || '');
-      setBuyerComm(currentDeal.financials?.buyersAgentCommission?.toString() || '3.0');
-      setSellerComm(currentDeal.financials?.sellersAgentCommission?.toString() || '3.0');
-      setClosingCosts(currentDeal.financials?.finalClosingCosts?.toString() || '0');
+    if (currentProject) {
+      setMlsLink(currentProject.exitAssets?.mlsListingLink || '');
+      setImageCount(currentProject.exitAssets?.stagingImages?.length || 0);
+      
+      // Convert CENTS from store to DOLLARS for UI
+      setActualSale(((currentProject.financials?.actualSalePrice || currentProject.financials?.estimatedARV || 0) / 100).toString());
+      setBuyerComm(currentProject.financials?.buyersAgentCommission?.toString() || '3.0');
+      setSellerComm(currentProject.financials?.sellersAgentCommission?.toString() || '3.0');
+      setClosingCosts(((currentProject.financials?.finalClosingCosts || 0) / 100).toString());
     }
-  }, [currentDeal]);
+  }, [currentProject]);
 
-  if (!currentDeal) {
-    return <div className="p-8 text-center text-gray-500 bg-pw-black h-full flex items-center justify-center">No properties available for The Exit Phase.</div>;
+  if (!currentProject) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-pw-bg text-pw-black opacity-30">
+        <Target className="w-12 h-12 mb-4" />
+        <p className="font-black uppercase tracking-[0.3em] text-xs">Awaiting_Exit_Entity</p>
+      </div>
+    );
   }
 
   const handleUpdateListing = () => {
-    const updatedDeals = deals.map(d => {
-      if (d.id === currentDeal.id) {
+    const updatedDeals = projects.map(d => {
+      if (d.id === currentProject.id) {
          return {
            ...d,
            status: 'Listed' as any,
@@ -76,194 +79,201 @@ export default function ExitPanel() {
       return d;
     });
     setDeals(updatedDeals);
-    toast.success('Property pushed to ACTIVE LISTING status!', { icon: '🏡', style: { background: '#333', color: '#fff' }});
+    toast.success('DEBUT: Property synchronized with MLS.', { 
+       style: { background: 'black', color: 'white', border: '1px solid #333' }
+    });
   };
 
   const handleExecuteSale = () => {
-    updateDealFinancials(currentDeal.id, {
-       actualSalePrice: Number(actualSale),
+    // Convert DOLLARS back to CENTS for Store
+    updateProjectFinancials(currentProject.id, {
+       actualSalePrice: Math.round(Number(actualSale) * 100),
        buyersAgentCommission: Number(buyerComm),
        sellersAgentCommission: Number(sellerComm),
-       finalClosingCosts: Number(closingCosts),
+       finalClosingCosts: Math.round(Number(closingCosts) * 100),
        soldDate: new Date()
     });
     
-    // Globally move status to Sold
-    const updatedDeals = deals.map(d => {
-       if (d.id === currentDeal.id) {
+    const updatedDeals = projects.map(d => {
+       if (d.id === currentProject.id) {
           return { ...d, status: 'Sold' as any };
        }
        return d;
     });
     setDeals(updatedDeals);
-    toast.success('SALE EXECUTED! The Net Engine has recorded the transaction.', { icon: '💰', style: { background: '#10b981', color: '#fff' }});
+    toast.success('PROTOCOL_COMPLETE: Asset realized.', { 
+       icon: '💎',
+       style: { background: '#10b981', color: 'white' }
+    });
   };
 
   return (
-    <div className="bg-pw-black text-white selection:bg-emerald-500/30 font-sans h-full">
+    <div className="bg-pw-bg text-pw-black selection:bg-pw-accent/30 min-h-full">
        
-       {/* Compact dark sub-header (inside the panel, not the layout header) */}
-       <div className="border-b border-gray-800 bg-black/50 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+       {/* High-Fidelity Tactical Header */}
+       <div className="border-b-2 border-pw-black bg-pw-white px-8 py-6 flex items-center justify-between sticky top-0 z-50">
           <div>
-             <h1 className="text-2xl font-light tracking-wide text-gray-200">The Exit Hub</h1>
-             <p className="text-xs text-gray-500 mt-0.5">Final disposition & capital realization engine</p>
+             <div className="flex items-center gap-2 mb-1">
+                <div className="w-2 h-2 bg-pw-black"></div>
+                <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">The_Exit_Hub</h1>
+             </div>
+             <p className="text-[10px] font-black text-pw-muted uppercase tracking-[0.4em]">Final.Disposition.Protocol_v5.2</p>
           </div>
           
           <select 
-              className="bg-transparent text-sm border border-gray-700 rounded-full px-4 py-1.5 focus:outline-none focus:border-emerald-500 font-medium text-gray-300"
-              value={currentDeal.id}
+              className="bg-pw-black text-pw-white text-[10px] font-black uppercase tracking-widest border border-pw-black px-6 py-3 focus:outline-none hover:bg-pw-accent transition-colors"
+              value={currentProject.id}
               onChange={(e) => {
-                 const t = deals.find(d => d.id === e.target.value);
+                 const t = projects.find(d => d.id === e.target.value);
                  if (t) setDeal(t);
               }}
           >
-             {deals.map(d => (
-               <option key={d.id} value={d.id} className="bg-gray-900">{d.propertyName} • {d.status}</option>
+             {projects.map(d => (
+               <option key={d.id} value={d.id}>{d.propertyName} [ {d.status} ]</option>
              ))}
           </select>
        </div>
 
-       <div className="max-w-6xl mx-auto px-6 py-10">
+       <div className="max-w-7xl mx-auto px-8 py-12">
 
-          {/* ─── Cross-Panel Financial Summary ─── */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-            {[
-              { label: 'Purchase Price', value: dealMetrics.purchasePrice },
-              { label: 'Renovation', value: dealMetrics.renovationCosts },
-              { label: 'Holding Costs', value: dealMetrics.holdingCosts },
-              { label: 'Closing (Buy/Sell)', value: dealMetrics.closingCostsBuy + dealMetrics.closingCostsSell },
-              { label: 'Net Profit', value: dealMetrics.netProfit, highlight: true },
-            ].map(({ label, value, highlight }) => (
-              <div key={label} className={`p-3 rounded-lg border ${highlight ? 'border-emerald-700 bg-emerald-900/30' : 'border-gray-800 bg-black/40'}`}>
-                <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">{label}</p>
-                <p className={`text-lg font-light font-mono ${highlight ? (value >= 0 ? 'text-emerald-400' : 'text-red-400') : 'text-white'}`}>
-                  {value >= 0 ? '' : '-'}${Math.abs(value).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-              </div>
-            ))}
+          {/* ─── Hero Intelligence: Profit Variance ─── */}
+          <div className="mb-12 shadow-2xl">
+            <ProfitVarianceCard 
+              projectedProfit={dealMetrics.netProfit} // Current derived profit is projected until status=Sold
+              actualProfit={currentProject.status === 'Sold' ? Math.round(Number(actualSale) * 100) : dealMetrics.netProfit} 
+            />
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
              
-             {/* Left Column: Real Estate Agent Controls */}
-             <div className="lg:col-span-5 space-y-8">
+             {/* Left Column: Tactical Control */}
+             <div className="lg:col-span-5 space-y-10">
                 
-                {/* Visual Identity Block */}
-                <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-                   <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full blur-2xl"></div>
-                   <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase mb-4 flex items-center"><Camera className="w-3 h-3 mr-2" /> Staging & Inventory</h3>
+                {/* Visual Packaging Block */}
+                <div className="bg-pw-white border border-pw-border p-8 relative overflow-hidden group">
+                   <div className="flex items-center justify-between mb-8 pb-4 border-b border-pw-border">
+                      <h3 className="text-xs font-black tracking-[0.3em] text-pw-black uppercase flex items-center">
+                        <Camera className="w-3.5 h-3.5 mr-2" /> Asset_Packaging
+                      </h3>
+                      <span className="text-[10px] font-bold text-pw-muted">STAGING_v4</span>
+                   </div>
                    
-                   <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                     Real Estate Agents log in here. Upload your ultra-high-resolution staging photography to dynamically inject collateral into the public MLS and external landing pages.
+                   <p className="text-[10px] font-bold text-pw-muted uppercase leading-relaxed mb-8 tracking-wider">
+                     Integrate high-resolution staging assets and syndicate coordinates to global market endpoints.
                    </p>
 
-                   <div className="space-y-4">
-                      <div>
-                        <label className="text-xs text-gray-500 block mb-1">Photography Assets Uploaded</label>
-                        <div className="flex items-center space-x-3">
-                           <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-black border border-gray-700 rounded-lg p-2 w-20 text-center focus:border-emerald-500 focus:outline-none" />
-                           <span className="text-sm text-gray-500">.JPG / .PNG / .MP4 Virtual Tours</span>
+                   <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="p-4 border border-pw-border bg-pw-bg">
+                          <label className="text-[9px] font-black text-pw-muted uppercase block mb-2 tracking-widest">Inventory_Count</label>
+                          <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none ag-data" />
+                        </div>
+                        <div className="flex items-center p-4">
+                           <span className="text-[10px] font-bold text-pw-muted uppercase leading-tight tracking-widest opacity-50">.RAW / .4K_MP4 Virtual_Space</span>
                         </div>
                       </div>
 
-                      <div>
-                        <label className="text-xs text-gray-500 block mb-1">Live MLS Link</label>
-                        <div className="relative">
-                           <LinkIcon className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
-                           <input type="url" placeholder="https://zillow.com/homedetails/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-black border border-gray-700 rounded-lg py-2 pl-9 pr-3 w-full text-sm focus:border-emerald-500 focus:outline-none" />
+                      <div className="p-4 border border-pw-border bg-pw-bg">
+                        <label className="text-[9px] font-black text-pw-muted uppercase block mb-2 tracking-widest">Syndication_Link [MLS]</label>
+                        <div className="relative flex items-center">
+                           <LinkIcon className="w-3.5 h-3.5 text-pw-muted mr-3" />
+                           <input type="url" placeholder="EX: https://zillow.com/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-transparent text-xs font-mono font-bold w-full focus:outline-none" />
                         </div>
                       </div>
                       
-                      <button onClick={handleUpdateListing} className="w-full mt-4 bg-white text-black font-semibold text-sm py-2.5 rounded-lg hover:bg-gray-200 transition active:scale-95 flex justify-center items-center">
-                         <span>Go Live (Market Status)</span>
+                      <button onClick={handleUpdateListing} className="w-full bg-pw-black text-pw-white font-black text-[10px] py-4 uppercase tracking-[0.4em] hover:bg-pw-accent transition-all active:scale-95 border border-pw-black">
+                         Sync_Market_Status
                       </button>
                    </div>
                 </div>
 
-                 {/* Staging Vendor Manager */}
-                 <Suspense fallback={<div className="h-48 bg-pw-black rounded-2xl animate-pulse" />}>
+                 <Suspense fallback={<div className="h-48 bg-pw-surface animate-pulse border border-pw-border" />}>
                    <StagingVendorManager />
                  </Suspense>
 
-                 {/* Professional Photography Uploads */}
-                 <Suspense fallback={<div className="h-48 bg-pw-black rounded-2xl animate-pulse" />}>
+                 <Suspense fallback={<div className="h-48 bg-pw-surface animate-pulse border border-pw-border" />}>
                    <PhotographyUploadManager />
                  </Suspense>
 
-                 {/* Closing Fee Trigger Setup */}
-                <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 shadow-2xl relative">
-                   <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase mb-4 flex items-center"><DollarSign className="w-3 h-3 mr-2" /> Final Capital Mechanics</h3>
+                 {/* Execution Protocol */}
+                <div className="bg-pw-surface border-4 border-pw-black p-8 relative">
+                   <div className="flex items-center gap-2 mb-8">
+                      <DollarSign className="w-4 h-4 text-pw-accent" />
+                      <h3 className="text-xs font-black tracking-[0.3em] text-pw-black uppercase">Settlement_Protocol</h3>
+                   </div>
                    
-                   <div className="space-y-5">
-                      <div>
-                        <label className="text-xs text-gray-500 block mb-1">Gross Sale Trigger ($)</label>
-                        <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-3 w-full text-lg font-light tracking-wide focus:border-emerald-500 focus:outline-none" />
+                   <div className="space-y-6">
+                      <div className="p-4 border border-pw-border bg-pw-white">
+                        <label className="text-[9px] font-black text-pw-muted uppercase block mb-2 tracking-widest">Gross_Settlement_Value [$]</label>
+                        <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter" />
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Buyer&apos;s Agent Comm.</label>
-                          <div className="relative">
-                            <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                            <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="p-4 border border-pw-border bg-pw-white">
+                          <label className="text-[9px] font-black text-pw-muted uppercase block mb-1 tracking-widest leading-none">Buyer_Comm (%)</label>
+                          <div className="flex items-center">
+                            <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
+                            <Percent className="w-3.5 h-3.5 text-pw-muted" />
                           </div>
                         </div>
-                        <div>
-                          <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Seller&apos;s Agent Comm.</label>
-                          <div className="relative">
-                            <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                            <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
+                        <div className="p-4 border border-pw-border bg-pw-white">
+                          <label className="text-[9px] font-black text-pw-muted uppercase block mb-1 tracking-widest leading-none">Seller_Comm (%)</label>
+                          <div className="flex items-center">
+                            <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
+                            <Percent className="w-3.5 h-3.5 text-pw-muted" />
                           </div>
                         </div>
                       </div>
 
-                      <div>
-                        <label className="text-xs text-gray-500 block mb-1">Final Closing & Concessions ($)</label>
-                        <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm focus:border-emerald-500 focus:outline-none" />
+                      <div className="p-4 border border-pw-border bg-pw-white">
+                        <label className="text-[9px] font-black text-pw-muted uppercase block mb-2 tracking-widest">Final_Concessions + Costs [$]</label>
+                        <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
                       </div>
 
-                      <div className="pt-2">
-                        <button onClick={handleExecuteSale} className="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-lg hover:bg-emerald-500 transition active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]">
-                           Execute Final Sale
-                        </button>
-                      </div>
+                      <button onClick={handleExecuteSale} className="w-full bg-pw-black text-pw-white font-black text-xs py-5 uppercase tracking-[0.5em] hover:bg-pw-accent transition-all active:scale-95 shadow-[8px_8px_0px_rgba(0,0,0,0.1)] hover:shadow-none border-2 border-pw-black">
+                         Execute_Final_Sale
+                      </button>
                    </div>
                 </div>
 
              </div>
 
-             {/* Right Column: The Net Engine Output */}
-             <div className="lg:col-span-7">
-                <NetEngine deal={currentDeal} />
+             {/* Right Column: Mathematical Realization */}
+             <div className="lg:col-span-7 space-y-10">
+                <NetEngine deal={currentProject} />
                 
-                {/* MLS / Listing Live Preview Pane */}
-                {currentDeal.status === 'Listed' || currentDeal.status === 'Sold' ? (
-                   <div className="mt-6 border border-gray-800  bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition duration-500 flex flex-col items-center justify-center">
-                         <div className="bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex items-center space-x-3 mb-2">
-                            <CheckCircle className={`w-4 h-4 ${currentDeal.status === 'Sold' ? 'text-red-500' : 'text-emerald-500'}`} />
-                            <span className="font-semibold text-white tracking-widest uppercase text-sm">Property is {currentDeal.status}</span>
+                {/* Market Status Visualization */}
+                <div className="border border-pw-black bg-pw-white overflow-hidden relative">
+                   <div className="flex h-56 w-full items-center justify-center bg-pw-bg relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-1000"></div>
+                      <div className="absolute inset-0 bg-pw-black/20"></div>
+                      
+                      <div className="relative z-10 flex flex-col items-center">
+                         <div className="bg-pw-black px-8 py-4 border border-pw-white/10 flex items-center space-x-4 mb-4 shadow-2xl">
+                            <div className={`w-2 h-2 rounded-full animate-pulse ${currentProject.status === 'Sold' ? 'bg-pw-accent' : 'bg-green-400'}`} />
+                            <span className="font-black text-pw-white tracking-[0.4em] uppercase text-xs">Entity_Status: {currentProject.status}</span>
                          </div>
-                         {currentDeal.exitAssets?.mlsListingLink && (
-                           <a href={currentDeal.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center transition">
-                             View Staging MLS <ExternalLink className="w-3 h-3 ml-1" />
+                         
+                         {currentProject.exitAssets?.mlsListingLink && (
+                           <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="bg-pw-white border border-pw-black px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-pw-white transition-all flex items-center">
+                             Audit_MLS_Listing <ExternalLink className="w-3 h-3 ml-2" />
                            </a>
+                         )}
+                         
+                         {(currentProject.status !== 'Listed' && currentProject.status !== 'Sold') && (
+                            <div className="text-center">
+                               <p className="text-[10px] font-black text-pw-black uppercase tracking-widest opacity-60">Awaiting_Market_Injection</p>
+                            </div>
                          )}
                       </div>
                    </div>
-                ) : (
-                   <div className="mt-6 border border-gray-800 border-dashed  h-48 flex items-center justify-center flex-col text-gray-600 bg-black/20">
-                      <BadgePercent className="w-8 h-8 mb-2 opacity-50" />
-                      <p className="text-sm font-medium">Awaiting Listing Deployment</p>
-                      <p className="text-xs mt-1">Upload Staging Images & MLS Link to syndicate.</p>
-                   </div>
-                )}
+                </div>
 
-                {/* Project Autopsy — Individual Deal Health */}
-                <Suspense fallback={<div className="mt-6 h-64 bg-pw-black rounded-2xl animate-pulse" />}>
-                  <div className="mt-6">
-                    <DealAutopsy deal={currentDeal} />
-                  </div>
+                {/* Final Post-Mortem Analytics */}
+                <Suspense fallback={<div className="h-96 bg-pw-surface animate-pulse" />}>
+                   <div className="border border-pw-border p-1">
+                      <DealAutopsy deal={currentProject} />
+                   </div>
                 </Suspense>
              </div>
 

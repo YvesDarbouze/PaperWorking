@@ -1,18 +1,18 @@
 'use client';
 
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { SlidersHorizontal, AlertCircle, TrendingDown } from 'lucide-react';
 
 export default function WhatIfSimulator() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
-  const offset = useDealStore((state) => state.whatIfOffsetMonths);
-  const setOffset = useDealStore((state) => state.setWhatIfOffset);
-  const metrics = useDealStore((state) => state.metrics);
+  const currentProject = useProjectStore((state) => state.currentProject);
+  const offset = useProjectStore((state) => state.whatIfOffsetMonths);
+  const setOffset = useProjectStore((state) => state.setWhatIfOffset);
+  const metrics = useProjectStore((state) => state.metrics);
 
-  if (!currentDeal?.financials) return null;
+  if (!currentProject?.financials) return null;
 
-  const baselineTimeline = currentDeal.financials.estimatedTimelineDays || 0;
+  const baselineTimeline = currentProject.financials.estimatedTimelineDays || 0;
   
   // Compute naive margin diff for presentation
   // Because 'metrics' represents the aggregated state, changing 'offset' instantly

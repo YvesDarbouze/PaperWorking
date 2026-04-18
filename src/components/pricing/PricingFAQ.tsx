@@ -32,7 +32,7 @@ const faqItems: FAQItem[] = [
   {
     question: 'What happens if I downgrade or cancel? Will I lose my data?',
     answer:
-      'No. Downgrading your plan does not delete any historical data. Your deals, ledger entries, financial reports, and uploaded documents are fully preserved and remain accessible at your new plan level. If you cancel entirely, your data is retained for 90 days. During that window, you can export everything (CSV or PDF) or reactivate your account to pick up exactly where you left off.',
+      'No. Downgrading your plan does not delete any historical data. Your projects, ledger entries, financial reports, and uploaded documents are fully preserved and remain accessible at your new plan level. If you cancel entirely, your data is retained for 90 days. During that window, you can export everything (CSV or PDF) or reactivate your account to pick up exactly where you left off.',
   },
   {
     question: 'Is there a free trial?',

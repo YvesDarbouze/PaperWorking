@@ -1,25 +1,25 @@
 'use client';
 
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Calculator, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { calculateSeventyPercentRule } from '@/lib/math/calculatorUtils';
 
 export default function SeventyPercentRule() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
-  const updateDealFinancials = useDealStore((state) => state.updateDealFinancials);
+  const currentProject = useProjectStore((state) => state.currentProject);
+  const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
 
-  if (!currentDeal?.financials) return null;
+  if (!currentProject?.financials) return null;
 
-  const arv = currentDeal.financials.estimatedARV || 0;
+  const arv = currentProject.financials.estimatedARV || 0;
   
   // Rehab Costs
   let rehabCosts = 0;
-  currentDeal.financials.costs?.forEach(cost => rehabCosts += cost.amount);
-  const inspectionsCost = currentDeal.financials.inspections?.reduce((acc, curr) => acc + curr.estimatedCost, 0) || 0;
+  currentProject.financials.costs?.forEach(cost => rehabCosts += cost.amount);
+  const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + curr.estimatedCost, 0) || 0;
   rehabCosts += inspectionsCost;
 
-  const purchasePrice = currentDeal.financials.purchasePrice || 0;
+  const purchasePrice = currentProject.financials.purchasePrice || 0;
   
   const { MAO: maximumAllowableOffer, isSetup, isOverbought, variance } = calculateSeventyPercentRule(arv, rehabCosts, purchasePrice);
 

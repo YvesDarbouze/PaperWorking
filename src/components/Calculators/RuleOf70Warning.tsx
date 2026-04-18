@@ -1,15 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 export default function RuleOf70Warning() {
-  const currentDeal = useDealStore(state => state.currentDeal);
+  const currentProject = useProjectStore(state => state.currentProject);
   
-  if (!currentDeal?.financials) return null;
+  if (!currentProject?.financials) return null;
 
-  const { purchasePrice, estimatedARV, costs } = currentDeal.financials;
+  const { purchasePrice, estimatedARV, costs } = currentProject.financials;
   
   const estimatedRepairs = costs.reduce((sum, cost) => sum + cost.amount, 0); // we sum up costs, ideally this would be isolated estimated repair cost
   const maxAllowableOffer = (estimatedARV * 0.70) - estimatedRepairs;

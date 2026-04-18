@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Users, AlertCircle, DollarSign, Wallet } from 'lucide-react';
 import { calculateEquityPayout } from '@/lib/math/calculatorUtils';
 
 export default function EquityPayoutManager() {
-  const deals = useDealStore(state => state.deals);
+  const projects = useProjectStore(state => state.projects);
   const [selectedDealId, setSelectedDealId] = useState<string>('');
 
-  const deal = deals.find(d => d.id === selectedDealId);
+  const deal = projects.find(d => d.id === selectedDealId);
 
   const { isSold, targetProfit, calculationStatus, payouts, investors } = calculateEquityPayout(deal);
 
@@ -25,7 +25,7 @@ export default function EquityPayoutManager() {
            className="border border-gray-300 rounded-lg text-sm p-2 bg-gray-50 focus:ring-2 focus:ring-emerald-500 focus:outline-none min-w-[200px]"
          >
            <option value="" disabled>Select Property...</option>
-           {deals.map(d => (
+           {projects.map(d => (
               <option key={d.id} value={d.id}>{d.propertyName} ({d.status})</option>
            ))}
          </select>

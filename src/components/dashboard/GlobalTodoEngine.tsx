@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { PropertyDeal } from '@/types/schema';
+import { Project } from '@/types/schema';
 import { DealFolderIcon } from './DealFolder';
 import {
   CheckCircle2, Circle, Clock, AlertTriangle,
@@ -28,7 +28,7 @@ type FilterTab = 'all' | 'overdue' | 'action';
 
 interface AggregatedTask {
   id: string;
-  dealId: string;
+  projectId: string;
   dealAddress: string;
   dealStatus: string;
   label: string;
@@ -49,7 +49,7 @@ function shortAddress(address: string): string {
 /**
  * Resolves the most relevant team member name for a given task type.
  */
-function resolveAssignee(deal: PropertyDeal, taskType: string): string | null {
+function resolveAssignee(deal: Project, taskType: string): string | null {
   // Check deal team first
   if (deal.dealTeam?.length) {
     const roleMap: Record<string, string[]> = {
@@ -74,14 +74,14 @@ function resolveAssignee(deal: PropertyDeal, taskType: string): string | null {
 }
 
 /**
- * Core aggregation: scan all deals and emit tasks.
+ * Core aggregation: scan all projects and emit tasks.
  */
-function aggregateTasks(deals: PropertyDeal[]): AggregatedTask[] {
+function aggregateTasks(projects: Project[]): AggregatedTask[] {
   const tasks: AggregatedTask[] = [];
 
-  deals.forEach(deal => {
+  projects.forEach(deal => {
     const addr = shortAddress(deal.address || deal.propertyName);
-    const base = { dealId: deal.id, dealAddress: addr, dealStatus: deal.status };
+    const base = { projectId: deal.id, dealAddress: addr, dealStatus: deal.status };
 
     // ── Rehab Tasks (Pending / In Progress) ──
     deal.financials?.rehabTasks?.forEach(task => {
@@ -165,27 +165,27 @@ function aggregateTasks(deals: PropertyDeal[]): AggregatedTask[] {
   return tasks;
 }
 
-/* ─── Urgency badge colors ─── */
+/* ─── Urgency badge style ─── */
 const URGENCY_STYLE: Record<TaskUrgency, string> = {
-  overdue:  'bg-red-50 text-red-700 border-red-200',
-  action:   'bg-amber-50 text-amber-700 border-amber-200',
-  upcoming: 'bg-gray-50 text-gray-600 border-gray-200',
+  overdue:  'bg-pw-black text-white shadow-sm',
+  action:   'bg-pw-bg text-pw-black border border-pw-border/50 shadow-sm',
+  upcoming: 'bg-pw-bg text-pw-muted border border-pw-border/20',
 };
 
 const URGENCY_LABEL: Record<TaskUrgency, string> = {
-  overdue:  'Overdue',
-  action:   'Action Needed',
-  upcoming: 'Upcoming',
+  overdue:  'Urgent',
+  action:   'Ready',
+  upcoming: 'Queued',
 };
 
 interface GlobalTodoEngineProps {
-  deals: PropertyDeal[];
-  onNavigateToDeal: (dealId: string) => void;
+  projects: Project[];
+  onNavigateToDeal: (projectId: string) => void;
 }
 
-export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodoEngineProps) {
+export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalTodoEngineProps) {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
-  const tasks = useMemo(() => aggregateTasks(deals), [deals]);
+  const tasks = useMemo(() => aggregateTasks(projects), [projects]);
 
   const filtered = useMemo(() => {
     if (activeFilter === 'all') return tasks;
@@ -196,41 +196,44 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
   const actionCt = tasks.filter(t => t.urgency === 'action').length;
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col">
+    <div className="ag-card bg-pw-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col h-full min-h-[500px]">
       {/* Header */}
-      <div className="px-5 pt-5 pb-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-gray-400" />
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-              Global To-Do Engine
-            </p>
+      <div className="px-8 py-10 flex items-center justify-between border-b border-pw-border/10">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-pw-black" />
+              <p className="ag-label opacity-60">Task Rollup</p>
+            </div>
+            <h3 className="text-3xl font-light text-pw-black tracking-tighter">Action Engine</h3>
           </div>
-          <span className="text-xs font-mono text-gray-400">
-            {tasks.length} task{tasks.length !== 1 ? 's' : ''}
-          </span>
-        </div>
+          <div className="bg-pw-bg px-4 py-2 rounded-full border border-pw-border/50">
+            <span className="text-[10px] font-bold text-pw-black tracking-widest uppercase">
+              {tasks.length} Active Nodes
+            </span>
+          </div>
+      </div>
 
+      <div className="px-8 py-6">
         {/* Filter tabs */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-3">
           {[
-            { key: 'all' as FilterTab, label: 'All', count: tasks.length },
-            { key: 'overdue' as FilterTab, label: 'Overdue', count: overdueCt },
-            { key: 'action' as FilterTab, label: 'Action', count: actionCt },
+            { key: 'all' as FilterTab, label: 'Full Stream', count: tasks.length },
+            { key: 'overdue' as FilterTab, label: 'Urgent', count: overdueCt },
+            { key: 'action' as FilterTab, label: 'Pending', count: actionCt },
           ].map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveFilter(tab.key)}
-              className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded-md border transition-all ${
+              className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full border transition-all duration-300 ${
                 activeFilter === tab.key
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                  ? 'bg-pw-black text-pw-white border-pw-black shadow-lg shadow-pw-black/10'
+                  : 'bg-pw-bg text-pw-muted border-pw-border/30 hover:border-pw-black hover:text-pw-black'
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
-                <span className={`ml-1.5 px-1.5 py-0.5 rounded-full text-xs ${
-                  activeFilter === tab.key ? 'bg-white/20' : 'bg-gray-200'
+                <span className={`ml-2 font-medium opacity-60 ${
+                  activeFilter === tab.key ? 'text-pw-white' : 'text-pw-black'
                 }`}>
                   {tab.count}
                 </span>
@@ -241,51 +244,50 @@ export default function GlobalTodoEngine({ deals, onNavigateToDeal }: GlobalTodo
       </div>
 
       {/* Task list */}
-      <div className="flex-1 overflow-y-auto max-h-[320px] divide-y divide-gray-100">
+      <div className="flex-1 overflow-y-auto px-4 pb-8">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-            <Circle className="w-8 h-8 mb-2 stroke-1" />
-            <p className="text-xs">No tasks in this category</p>
+          <div className="flex flex-col items-center justify-center py-24 text-pw-muted opacity-40">
+            <Circle className="w-12 h-12 mb-4 stroke-[1px]" />
+            <p className="text-sm font-medium">All tasks verified.</p>
           </div>
         ) : (
-          filtered.map(task => (
-            <button
-              key={task.id}
-              onClick={() => onNavigateToDeal(task.dealId)}
-              className="w-full flex items-center gap-3 px-5 py-3 text-left hover:bg-gray-50/80 transition-colors group"
-            >
-              {/* Folder icon */}
-              <DealFolderIcon status={task.dealStatus} size={18} />
-
-              {/* Task content */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-800 truncate group-hover:text-black">
-                  {task.label}
-                </p>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs text-gray-400 truncate">
-                    {task.dealAddress}
-                  </span>
-                  {task.assignee && (
-                    <span className="flex items-center gap-1 text-xs text-gray-400">
-                      <User2 className="w-2.5 h-2.5" />
-                      {task.assignee}
-                    </span>
-                  )}
+          <div className="space-y-2">
+            {filtered.map(task => (
+              <button
+                key={task.id}
+                onClick={() => onNavigateToDeal(task.projectId)}
+                className="w-full flex items-center gap-6 px-4 py-6 text-left rounded-2xl hover:bg-pw-bg/50 transition-all duration-300 group border border-transparent hover:border-pw-border/10"
+              >
+                {/* Folder icon */}
+                <div className="shrink-0 transition-transform group-hover:scale-110 duration-500">
+                  <DealFolderIcon status={task.dealStatus} size={22} />
                 </div>
-              </div>
 
-              {/* Urgency badge */}
-              <span className={`text-xs font-semibold uppercase tracking-wider px-2 py-1 rounded border flex-shrink-0 ${URGENCY_STYLE[task.urgency]}`}>
-                {URGENCY_LABEL[task.urgency]}
-              </span>
+                {/* Task content */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-medium text-pw-black tracking-tight group-hover:text-black transition-colors">
+                    {task.label}
+                  </p>
+                  <div className="flex items-center gap-4 mt-1.5">
+                    <span className="text-xs text-pw-muted font-normal truncate opacity-60">
+                      {task.dealAddress}
+                    </span>
+                    {task.assignee && (
+                      <span className="flex items-center gap-1.5 text-xs text-pw-muted font-medium opacity-40 bg-pw-bg px-2 py-0.5 rounded-full">
+                        <User2 className="w-3 h-3" />
+                        {task.assignee}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-              {/* Category pill */}
-              <span className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded hidden sm:inline-block flex-shrink-0">
-                {task.category}
-              </span>
-            </button>
-          ))
+                {/* Urgency badge */}
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full flex-shrink-0 transition-all ${URGENCY_STYLE[task.urgency]}`}>
+                  {URGENCY_LABEL[task.urgency]}
+                </span>
+              </button>
+            ))}
+          </div>
         )}
       </div>
     </div>

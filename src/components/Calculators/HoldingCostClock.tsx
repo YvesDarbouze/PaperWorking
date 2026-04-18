@@ -1,28 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Clock } from 'lucide-react';
 
 export default function HoldingCostClock() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
+  const currentProject = useProjectStore((state) => state.currentProject);
   const [burnedToday, setBurnedToday] = useState<number>(0);
   const [dailyBurn, setDailyBurn] = useState<number>(0);
 
   useEffect(() => {
-    if (!currentDeal?.financials) return;
+    if (!currentProject?.financials) return;
     
     // Calculate daily burn based on loan amount & interest rate
     let dealApprovedCost = 0;
-    currentDeal.financials.costs?.forEach(cost => {
+    currentProject.financials.costs?.forEach(cost => {
       if (cost.approved) dealApprovedCost += cost.amount;
     });
     
-    const inspectionsCost = currentDeal.financials.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
+    const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
     dealApprovedCost += inspectionsCost;
 
-    const purchasePrice = currentDeal.financials.purchasePrice || 0;
-    const interestRate = (currentDeal.financials.loanInterestRate || 0) / 100;
+    const purchasePrice = currentProject.financials.purchasePrice || 0;
+    const interestRate = (currentProject.financials.loanInterestRate || 0) / 100;
 
     const loanAmount = purchasePrice + dealApprovedCost;
     const costPerYear = loanAmount * interestRate;
@@ -44,9 +44,9 @@ export default function HoldingCostClock() {
 
     return () => clearInterval(interval);
 
-  }, [currentDeal]);
+  }, [currentProject]);
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl text-white relative overflow-hidden">

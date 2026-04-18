@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Percent, Banknote } from 'lucide-react';
 
 export default function CostOfCapital() {
-  const currentDeal = useDealStore((state) => state.currentDeal);
-  const updateDealFinancials = useDealStore((state) => state.updateDealFinancials);
+  const currentProject = useProjectStore((state) => state.currentProject);
+  const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
 
   // Local state for responsive input buffering
   const [interestRate, setInterestRate] = useState<string>('');
@@ -14,23 +14,23 @@ export default function CostOfCapital() {
   const [timeline, setTimeline] = useState<string>('');
 
   useEffect(() => {
-    if (currentDeal?.financials) {
-      setInterestRate(currentDeal.financials.loanInterestRate?.toString() || '');
-      setPoints(currentDeal.financials.loanOriginationPoints?.toString() || '');
-      setTimeline(currentDeal.financials.estimatedTimelineDays?.toString() || '');
+    if (currentProject?.financials) {
+      setInterestRate(currentProject.financials.loanInterestRate?.toString() || '');
+      setPoints(currentProject.financials.loanOriginationPoints?.toString() || '');
+      setTimeline(currentProject.financials.estimatedTimelineDays?.toString() || '');
     }
-  }, [currentDeal]);
+  }, [currentProject]);
 
   const handleSave = () => {
-    if (!currentDeal) return;
-    updateDealFinancials(currentDeal.id, {
+    if (!currentProject) return;
+    updateProjectFinancials(currentProject.id, {
       loanInterestRate: parseFloat(interestRate) || 0,
       loanOriginationPoints: parseFloat(points) || 0,
       estimatedTimelineDays: parseFloat(timeline) || 0,
     });
   };
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">

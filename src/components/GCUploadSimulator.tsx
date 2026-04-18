@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { CostEntry } from '@/types/schema';
@@ -9,13 +9,13 @@ import { UploadCloud } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function GCUploadSimulator() {
-  const deals = useDealStore(state => state.deals);
+  const projects = useProjectStore(state => state.projects);
 
   const simulateGCUpload = async () => {
     // Pick the first accessible deal or mock if none
-    const targetDeal = deals[0];
+    const targetDeal = projects[0];
     if (!targetDeal) {
-      toast.error('No deals available to simulate upload.');
+      toast.error('No projects available to simulate upload.');
       return;
     }
 
@@ -29,7 +29,7 @@ export default function GCUploadSimulator() {
       createdAt: new Date()
     };
 
-    const docRef = doc(db, 'deals', targetDeal.id);
+    const docRef = doc(db, 'projects', targetDeal.id);
     toast.loading('Simulating General Contractor action...', { id: 'gc-sim' });
 
     try {

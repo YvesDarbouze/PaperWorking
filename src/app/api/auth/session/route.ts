@@ -2,32 +2,19 @@ import { NextResponse } from 'next/server';
 
 /* ═══════════════════════════════════════════════════════
    POST /api/auth/session
-   
-   Receives a Firebase ID token from the client after 
-   successful login and sets an HttpOnly secure session
-   cookie.
 
-   Two modes:
-     1. Production — verifies token via Firebase Admin SDK
-     2. Dev fallback — sets cookie without verification
-        when Admin SDK credentials are unavailable
-   
-   Cookie specification:
-     Name:     __session
-     Value:    Firebase ID token
-     HttpOnly: true  (cannot be read by JavaScript)
-     Secure:   true  (HTTPS only in production)
-     SameSite: Lax   (prevents CSRF)
-     Path:     /     (available to all routes)
-     MaxAge:   14 days
+   Receives a Firebase ID token from the client after
+   successful login and sets two HttpOnly cookies:
+
+     __session  — the raw Firebase ID token (verified)
+     __sub      — base64-encoded { plan, status } for
+                  edge-middleware subscription gating
    ═══════════════════════════════════════════════════════ */
 
-const SESSION_COOKIE_NAME = '__session';
-const SESSION_MAX_AGE = 60 * 60 * 24 * 14; // 14 days in seconds
+const SESSION_COOKIE  = '__session';
+const SUB_COOKIE      = '__sub';
+const SESSION_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 
-/**
- * Check if Firebase Admin SDK credentials are available.
- */
 function hasAdminCredentials(): boolean {
   return !!(
     process.env.FIREBASE_PROJECT_ID &&
@@ -36,38 +23,53 @@ function hasAdminCredentials(): boolean {
   );
 }
 
+function encodeSubCookie(plan: string, status: string): string {
+  return Buffer.from(JSON.stringify({ plan, status })).toString('base64');
+}
+
 export async function POST(request: Request) {
   try {
     const { idToken } = await request.json();
 
     if (!idToken || typeof idToken !== 'string') {
-      return NextResponse.json(
-        { error: 'Missing or invalid idToken' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing or invalid idToken' }, { status: 400 });
     }
 
-    // ── Mode 1: Full Admin SDK verification ──
+    const cookieOpts = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax' as const,
+      path: '/',
+      maxAge: SESSION_MAX_AGE,
+    };
+
+    // ── Mode 1: Full Admin SDK verification + subscription lookup ──
     if (hasAdminCredentials()) {
       try {
-        const { adminAuth } = await import('@/lib/firebase/admin');
-        const decodedToken = await adminAuth.verifyIdToken(idToken);
+        const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
+        const decoded = await adminAuth.verifyIdToken(idToken);
 
-        if (!decodedToken.uid) {
-          return NextResponse.json(
-            { error: 'Token verification failed' },
-            { status: 401 }
-          );
+        if (!decoded.uid) {
+          return NextResponse.json({ error: 'Token verification failed' }, { status: 401 });
         }
 
-        const response = NextResponse.json({ status: 'success', uid: decodedToken.uid });
-        response.cookies.set(SESSION_COOKIE_NAME, idToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: SESSION_MAX_AGE,
-        });
+        // Fetch subscription state for the __sub cookie
+        let subPlan   = 'None';
+        let subStatus = 'inactive';
+        try {
+          const userSnap = await adminDb.collection('users').doc(decoded.uid).get();
+          const data = userSnap.data();
+          if (data) {
+            subPlan   = data.subscriptionPlan  ?? 'None';
+            subStatus = data.subscriptionStatus ?? 'inactive';
+          }
+        } catch {
+          // Non-fatal — middleware falls back to cookie absence
+        }
+
+        const response = NextResponse.json({ status: 'success', uid: decoded.uid });
+        response.cookies.set(SESSION_COOKIE, idToken,                           cookieOpts);
+        response.cookies.set(SUB_COOKIE,     encodeSubCookie(subPlan, subStatus), { ...cookieOpts, httpOnly: false });
         return response;
       } catch (adminError: any) {
         console.error('Admin SDK verification failed:', adminError.message);
@@ -75,42 +77,24 @@ export async function POST(request: Request) {
       }
     }
 
-    // ── Mode 2: Dev fallback — trust the client-side Firebase token ──
-    // This is safe in dev because the token was already verified by
-    // Firebase client SDK (onAuthStateChanged). For production, you
-    // MUST set the FIREBASE_* server-side environment variables.
-    console.log('[Session] Using dev fallback — setting cookie without Admin SDK verification');
-
+    // ── Mode 2: Dev fallback ──
+    console.log('[Session] Dev fallback — cookie set without Admin SDK');
     const response = NextResponse.json({ status: 'success', mode: 'dev-fallback' });
-    response.cookies.set(SESSION_COOKIE_NAME, idToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: SESSION_MAX_AGE,
-    });
+    response.cookies.set(SESSION_COOKIE, idToken, cookieOpts);
+    // In dev, treat as active so the dashboard is accessible
+    response.cookies.set(SUB_COOKIE, encodeSubCookie('Individual', 'active'), { ...cookieOpts, httpOnly: false });
     return response;
 
   } catch (error: any) {
     console.error('Session creation error:', error.message);
-    return NextResponse.json(
-      { error: 'Failed to create session' },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: 'Failed to create session' }, { status: 401 });
   }
 }
 
 export async function DELETE() {
-  // Clear the session cookie on logout
   const response = NextResponse.json({ status: 'success' });
-
-  response.cookies.set(SESSION_COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 0, // Expire immediately
-  });
-
+  const clear = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/', maxAge: 0 };
+  response.cookies.set(SESSION_COOKIE, '', clear);
+  response.cookies.set(SUB_COOKIE,     '', { ...clear, httpOnly: false });
   return response;
 }

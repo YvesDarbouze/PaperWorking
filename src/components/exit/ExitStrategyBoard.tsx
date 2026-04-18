@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useDealStore } from '@/store/dealStore';
+import { useProjectStore } from '@/store/projectStore';
 import { Camera, Link as LinkIcon, DollarSign, Percent, CheckCircle, ExternalLink, BadgePercent, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import NetEngine from '@/components/exit/NetEngine';
+import PhaseBadge from '../ui/PhaseBadge';
 
 interface ExitStrategyBoardProps {
-  dealId: string;
+  projectId: string;
   onClose: () => void;
 }
 
-export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoardProps) {
-  const deals = useDealStore(state => state.deals);
-  const updateDealFinancials = useDealStore(state => state.updateDealFinancials);
-  const setDeals = useDealStore(state => state.setDeals);
+export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBoardProps) {
+  const projects = useProjectStore(state => state.projects);
+  const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
+  const setDeals = useProjectStore(state => state.setDeals);
 
-  const currentDeal = deals.find(d => d.id === dealId);
+  const currentProject = projects.find(d => d.id === projectId);
 
   // States for Real Estate Agent actions
   const [mlsLink, setMlsLink] = useState('');
@@ -29,21 +30,21 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
 
   // Load existing data if present
   useEffect(() => {
-    if (currentDeal) {
-      setMlsLink(currentDeal.exitAssets?.mlsListingLink || '');
-      setImageCount(currentDeal.exitAssets?.stagingImages?.length || 0);
-      setActualSale(currentDeal.financials?.actualSalePrice?.toString() || currentDeal.financials?.estimatedARV?.toString() || '');
-      setBuyerComm(currentDeal.financials?.buyersAgentCommission?.toString() || '3.0');
-      setSellerComm(currentDeal.financials?.sellersAgentCommission?.toString() || '3.0');
-      setClosingCosts(currentDeal.financials?.finalClosingCosts?.toString() || '0');
+    if (currentProject) {
+      setMlsLink(currentProject.exitAssets?.mlsListingLink || '');
+      setImageCount(currentProject.exitAssets?.stagingImages?.length || 0);
+      setActualSale(currentProject.financials?.actualSalePrice?.toString() || currentProject.financials?.estimatedARV?.toString() || '');
+      setBuyerComm(currentProject.financials?.buyersAgentCommission?.toString() || '3.0');
+      setSellerComm(currentProject.financials?.sellersAgentCommission?.toString() || '3.0');
+      setClosingCosts(currentProject.financials?.finalClosingCosts?.toString() || '0');
     }
-  }, [currentDeal]);
+  }, [currentProject]);
 
-  if (!currentDeal) return null;
+  if (!currentProject) return null;
 
   const handleUpdateListing = () => {
-    const updatedDeals = deals.map(d => {
-      if (d.id === currentDeal.id) {
+    const updatedDeals = projects.map(d => {
+      if (d.id === currentProject.id) {
          return {
            ...d,
            status: 'Listed' as any,
@@ -61,7 +62,7 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
   };
 
   const handleExecuteSale = () => {
-    updateDealFinancials(currentDeal.id, {
+    updateProjectFinancials(currentProject.id, {
        actualSalePrice: Number(actualSale),
        buyersAgentCommission: Number(buyerComm),
        sellersAgentCommission: Number(sellerComm),
@@ -70,8 +71,8 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
     });
     
     // Globally move status to Sold (or 'Refinanced' logically, mapped to Sold locally)
-    const updatedDeals = deals.map(d => {
-       if (d.id === currentDeal.id) {
+    const updatedDeals = projects.map(d => {
+       if (d.id === currentProject.id) {
           return { ...d, status: 'Sold' as any };
        }
        return d;
@@ -88,9 +89,9 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
         <div className="border-b border-gray-800 bg-black/80 p-5 flex justify-between items-center sticky top-0 z-10">
           <div>
             <h2 className="text-xl font-light tracking-wide text-gray-200 flex items-center">
-              The Exit Strategy Board <span className="ml-3 text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full uppercase tracking-widest">{currentDeal.status}</span>
+              The Exit Strategy Board <PhaseBadge status={currentProject.status} className="ml-3" />
             </h2>
-            <p className="text-xs text-gray-500 mt-1">{currentDeal.propertyName} • {currentDeal.address}</p>
+            <p className="text-xs text-gray-500 mt-1">{currentProject.propertyName} • {currentProject.address}</p>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition text-gray-400">
              <X className="w-5 h-5"/>
@@ -186,18 +187,18 @@ export default function ExitStrategyBoard({ dealId, onClose }: ExitStrategyBoard
 
             {/* Right Column: The Net Engine Output */}
             <div className="lg:col-span-7">
-               <NetEngine deal={currentDeal} isBrrrr={isBrrrr} />
+               <NetEngine deal={currentProject} isBrrrr={isBrrrr} />
                
                {/* MLS / Listing Live Preview Pane */}
-               {currentDeal.status === 'Listed' || currentDeal.status === 'Sold' ? (
+               {currentProject.status === 'Listed' || currentProject.status === 'Sold' ? (
                   <div className="mt-6 border border-gray-800  bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
                      <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition duration-500 flex flex-col items-center justify-center">
                         <div className="bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex items-center space-x-3 mb-2">
-                           <CheckCircle className={`w-4 h-4 ${currentDeal.status === 'Sold' ? 'text-red-500' : 'text-emerald-500'}`} />
-                           <span className="font-semibold text-white tracking-widest uppercase text-sm">Property is {currentDeal.status}</span>
+                           <CheckCircle className={`w-4 h-4 ${currentProject.status === 'Sold' ? 'text-red-500' : 'text-emerald-500'}`} />
+                           <span className="font-semibold text-white tracking-widest uppercase text-sm">Property is {currentProject.status}</span>
                         </div>
-                        {currentDeal.exitAssets?.mlsListingLink && (
-                          <a href={currentDeal.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center transition">
+                        {currentProject.exitAssets?.mlsListingLink && (
+                          <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center transition">
                             View Staging MLS <ExternalLink className="w-3 h-3 ml-1" />
                           </a>
                         )}

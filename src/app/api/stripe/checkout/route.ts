@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { adminAuth } from '@/lib/firebase/admin';
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
@@ -7,44 +8,82 @@ function getStripe() {
   return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
 }
 
-// Mapping of generic plans to hypothetical Stripe Price IDs
-const PLAN_PRICE_MAP: Record<string, string> = {
-  'Individual': process.env.STRIPE_PRICE_INDIVIDUAL || 'price_123',
-  'Team': process.env.STRIPE_PRICE_TEAM || 'price_456',
-  'Lawyer Lead-Gen': process.env.STRIPE_PRICE_LAWYER || 'price_789',
+// Map plan + interval → Stripe Price ID env var
+const PRICE_MAP: Record<string, { monthly: string; annual: string }> = {
+  'Individual': {
+    monthly: process.env.STRIPE_PRICE_INDIVIDUAL_MONTHLY || process.env.STRIPE_PRICE_INDIVIDUAL || '',
+    annual:  process.env.STRIPE_PRICE_INDIVIDUAL_ANNUAL  || '',
+  },
+  'Investor Team': {
+    monthly: process.env.STRIPE_PRICE_TEAM_MONTHLY || process.env.STRIPE_PRICE_TEAM || '',
+    annual:  process.env.STRIPE_PRICE_TEAM_ANNUAL  || '',
+  },
+  'Team': {
+    monthly: process.env.STRIPE_PRICE_TEAM_MONTHLY || process.env.STRIPE_PRICE_TEAM || '',
+    annual:  process.env.STRIPE_PRICE_TEAM_ANNUAL  || '',
+  },
+  'Lawyer': {
+    monthly: process.env.STRIPE_PRICE_LAWYER_MONTHLY || process.env.STRIPE_PRICE_LAWYER || '',
+    annual:  process.env.STRIPE_PRICE_LAWYER_ANNUAL  || '',
+  },
+};
+
+// Canonical plan names stored in Firestore metadata
+const CANONICAL_PLAN: Record<string, string> = {
+  'Individual':    'Individual',
+  'Investor Team': 'Team',
+  'Team':          'Team',
+  'Lawyer':        'Lawyer Lead-Gen',
 };
 
 export async function POST(request: Request) {
   try {
     const stripe = getStripe();
-    const { plan, userId, userEmail } = await request.json();
+    const { plan, billingInterval = 'monthly', userId, userEmail, idToken } = await request.json();
 
-    if (!PLAN_PRICE_MAP[plan]) {
-      return NextResponse.json({ error: 'Invalid plan selected.' }, { status: 400 });
+    if (!plan || !userId) {
+      return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
+
+    // Verify the caller owns the account they're subscribing
+    if (idToken) {
+      try {
+        const decoded = await adminAuth.verifyIdToken(idToken);
+        if (decoded.uid !== userId) {
+          return NextResponse.json({ error: 'Token / user mismatch.' }, { status: 401 });
+        }
+      } catch {
+        return NextResponse.json({ error: 'Invalid auth token.' }, { status: 401 });
+      }
+    }
+
+    const interval: 'monthly' | 'annual' = billingInterval === 'annual' ? 'annual' : 'monthly';
+    const priceId = PRICE_MAP[plan]?.[interval];
+
+    if (!priceId) {
+      return NextResponse.json(
+        { error: `No Stripe Price ID configured for "${plan}" (${interval}). Set the env var.` },
+        { status: 400 }
+      );
+    }
+
+    const canonicalPlan = CANONICAL_PLAN[plan] ?? plan;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price: PLAN_PRICE_MAP[plan],
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
-      customer_email: userEmail,
-      client_reference_id: userId, // We'll use this in the webhook to know which user paid
-      metadata: {
-        userId,
-        plan
-      }
+      success_url: `${appUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url:  `${appUrl}/pricing?canceled=true`,
+      customer_email: userEmail ?? undefined,
+      client_reference_id: userId,
+      metadata: { userId, plan: canonicalPlan, billingInterval: interval },
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
-    console.error('Stripe Checkout Error:', error);
+    console.error('[Stripe Checkout]', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

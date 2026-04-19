@@ -24,7 +24,7 @@ function hasAdminCredentials(): boolean {
 }
 
 function encodeSubCookie(plan: string, status: string): string {
-  return Buffer.from(JSON.stringify({ plan, status })).toString('base64');
+  return btoa(JSON.stringify({ plan, status }));
 }
 
 export async function POST(request: Request) {

@@ -35,17 +35,18 @@ function ensureInitialized() {
   });
 }
 
-// Lazy getters — only initialize when first accessed at runtime, not during build
 export const adminDb = new Proxy({} as admin.firestore.Firestore, {
   get(_target, prop) {
     ensureInitialized();
-    return (admin.firestore() as any)[prop];
+    const val = (admin.firestore() as any)[prop];
+    return typeof val === 'function' ? val.bind(admin.firestore()) : val;
   }
 });
 
 export const adminAuth = new Proxy({} as admin.auth.Auth, {
   get(_target, prop) {
     ensureInitialized();
-    return (admin.auth() as any)[prop];
+    const val = (admin.auth() as any)[prop];
+    return typeof val === 'function' ? val.bind(admin.auth()) : val;
   }
 });

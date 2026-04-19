@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { processStatusChange } from '@/lib/services/mlsService';
+
+// Force dynamic rendering — Firebase Auth cannot initialize at build time
+export const dynamic = 'force-dynamic';
 
 /**
  * 🌉 Zillow Bridge Webhook Ingestion Endpoint
@@ -9,6 +11,8 @@ import { processStatusChange } from '@/lib/services/mlsService';
  */
 export async function POST(request: Request) {
   try {
+    // Dynamic import to prevent Firebase from initializing at build time
+    const { processStatusChange } = await import('@/lib/services/mlsService');
     const payload = await request.json();
     
     // Log incoming for debugging (optional in high-volume prod, but helpful for setup)

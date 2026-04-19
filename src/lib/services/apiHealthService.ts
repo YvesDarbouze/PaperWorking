@@ -49,7 +49,7 @@ class ApiHealthService {
 
     try {
       const raw = await redis.lrange(this.METRICS_STREAM_KEY, 0, count - 1);
-      return raw.map(item => JSON.parse(item));
+      return raw.map((item: string) => JSON.parse(item));
     } catch (error) {
       console.error('❌ [API HEALTH SERVICE] Failed to fetch history:', error);
       return [];

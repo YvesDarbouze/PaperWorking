@@ -28,14 +28,14 @@ interface Props {
 export default function DealTeamManager({ projectId }: Props) {
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
   const updateDealTeam = useProjectStore((s) => s.updateDealTeam);
-  const team = currentProject?.dealTeam || [];
+  const team = currentProject?.projectTeam || [];
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
 
   const getMemberForRole = (role: ProjectRole) =>
-    team.find((m) => m.dealRole === role && m.status !== 'removed');
+    team.find((m) => m.projectRole === role && m.status !== 'removed');
 
   const handleAssign = (role: ProjectRole) => {
     if (!inviteEmail.trim()) return;
@@ -44,7 +44,7 @@ export default function DealTeamManager({ projectId }: Props) {
       id: `tm_${Date.now()}`,
       email: inviteEmail.trim(),
       displayName: inviteName.trim() || inviteEmail.split('@')[0],
-      dealRole: role,
+      projectRole: role,
       permissions: { canView: true, canUpload: false, canComment: false },
       assignedAt: new Date(),
       status: 'invited',

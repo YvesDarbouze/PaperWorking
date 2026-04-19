@@ -36,7 +36,7 @@ export default function AccountTierSettings() {
       email: inviteEmail.trim(),
       displayName: inviteName.trim() || inviteEmail.split('@')[0],
       internalRole: 'Deal Lead',
-      assignedDealIds: [],
+      assignedProjectIds: [],
       invitedAt: new Date(),
       status: 'invited',
     };

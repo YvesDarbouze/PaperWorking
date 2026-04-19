@@ -1,4 +1,5 @@
-import { normalizeMLSData, processStatusChange } from '../mlsService';
+import { normalizeMLSData } from '../mlsShared';
+import { processStatusChange } from '../mlsService';
 import { projectsService } from '../../firebase/projects';
 import { transitionDealPhase } from '../dealStateMachine';
 import { bridgeWorkerService } from '../bridgeWorkerService';

@@ -1,5 +1,5 @@
 import { calculateSeventyPercentRule, calculateNetEngine, calculateEquityPayout } from '../../src/lib/math/calculatorUtils';
-import { PropertyDeal } from '../../src/types/schema';
+import { Project } from '../../src/types/schema';
 
 describe('calculatorUtils', () => {
 
@@ -29,26 +29,28 @@ describe('calculatorUtils', () => {
   });
 
   describe('calculateNetEngine', () => {
-    const defaultDeal: PropertyDeal = {
+    const defaultDeal = {
       id: 'deal-1',
       propertyName: 'Test Deal',
       address: '123 St',
       status: 'Under Contract',
       ownerUid: 'uid',
+      organizationId: 'org-1',
+      members: {},
       createdAt: new Date(),
       updatedAt: new Date(),
       financials: {
         purchasePrice: 200000,
         estimatedARV: 300000,
-        loanInterestRate: 12, // 12%
-        loanOriginationPoints: 2, // 2%
-        costs: [{ id: 'c1', description: 'roof', amount: 40000, approved: true }],
-        estimatedTimelineDays: 180, // 6 months hold time
+        loanInterestRate: 12,
+        loanOriginationPoints: 2,
+        costs: [{ id: 'c1', description: 'roof', amount: 40000, approved: true, addedBy: 'uid', createdAt: new Date() }],
+        estimatedTimelineDays: 180,
         buyersAgentCommission: 3,
         sellersAgentCommission: 3,
         finalClosingCosts: 5000
       }
-    };
+    } as unknown as Project;
 
     it('calculates total net profit with standard flips', () => {
       const result = calculateNetEngine(defaultDeal);
@@ -112,12 +114,14 @@ describe('calculatorUtils', () => {
   });
 
   describe('calculateEquityPayout', () => {
-    const mockDealWithInvestors: PropertyDeal = {
+    const mockDealWithInvestors = {
       id: 'payout-1',
       propertyName: 'Yield Property',
       address: '11 Profit St',
       status: 'Sold',
       ownerUid: 'uid',
+      organizationId: 'org-1',
+      members: {},
       createdAt: new Date(),
       updatedAt: new Date(),
       financials: {
@@ -126,13 +130,13 @@ describe('calculatorUtils', () => {
         buyersAgentCommission: 0,
         sellersAgentCommission: 0,
         finalClosingCosts: 0,
-        costs: [{ id: 'rc', description: 'rc', amount: 50000, approved: true }]
+        costs: [{ id: 'rc', description: 'rc', amount: 50000, approved: true, addedBy: 'uid', createdAt: new Date() }]
       },
       fractionalInvestors: [
-        { id: '1', name: 'LP 1', equityPercentage: 45, investedAmount: 45000, dateAdded: new Date() },
-        { id: '2', name: 'LP 2', equityPercentage: 20.5, investedAmount: 20500, dateAdded: new Date() }
+        { id: '1', name: 'LP 1', email: 'lp1@test.com', equityPercentage: 45, contributionAmount: 45000, status: 'confirmed' as const },
+        { id: '2', name: 'LP 2', email: 'lp2@test.com', equityPercentage: 20.5, contributionAmount: 20500, status: 'confirmed' as const }
       ]
-    };
+    } as unknown as Project;
 
     it('handles realized payout mapping accurately for decimals', () => {
       const { isSold, calculationStatus, targetProfit, payouts } = calculateEquityPayout(mockDealWithInvestors);

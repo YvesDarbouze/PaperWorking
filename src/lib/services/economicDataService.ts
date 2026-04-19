@@ -38,4 +38,3 @@ export class EconomicDataService {
 }
 
 export const economicDataService = new EconomicDataService();
- pocket

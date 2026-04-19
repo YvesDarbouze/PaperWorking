@@ -39,13 +39,13 @@ function OperationalDashboardContent() {
   const realTasks = projects.flatMap(deal => {
     const items = ledgerItems[deal.id] || [];
     return items
-      .filter(item => item.status === 'Pending' || item.status === 'Flagged')
+      .filter(item => item.status === 'Pending')
       .map(item => ({
         projectId: deal.id,
         propertyName: deal.propertyName,
         type: item.category || 'Maintenance',
         desc: item.description,
-        urgent: item.status === 'Flagged' || item.amount > 5000,
+        urgent: item.amount > 5000,
         amount: item.amount
       }));
   });

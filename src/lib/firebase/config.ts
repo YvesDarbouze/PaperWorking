@@ -1,12 +1,15 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth, browserLocalPersistence, setPersistence } from 'firebase/auth';
-import { getStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getAuth, browserLocalPersistence, setPersistence, type Auth } from 'firebase/auth';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — Firebase Client Configuration
    
-   Initializes Firebase App, Firestore, Auth, and Storage.
+   Lazy-initialized singletons via Proxy pattern.
+   Prevents Firebase from crashing during Next.js static 
+   page generation (SSG) when env vars are not available.
+   
    Auth persistence is set to browserLocalPersistence so 
    sessions survive tab/browser closes — users must 
    manually log out to end their session.
@@ -21,19 +24,55 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Singleton Firebase App
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
+// Internal cached instances
+let _app: FirebaseApp | null = null;
+let _db: Firestore | null = null;
+let _auth: Auth | null = null;
+let _storage: FirebaseStorage | null = null;
+let _persistenceSet = false;
 
-// Directive 7: Explicitly set browserLocalPersistence.
-// This ensures the user remains logged in even after closing 
-// the tab or browser. Only a manual logout will end the session.
-if (typeof window !== 'undefined') {
-  setPersistence(auth, browserLocalPersistence).catch((err) => {
-    console.error('Failed to set auth persistence:', err);
-  });
+function getFirebaseApp(): FirebaseApp {
+  if (!_app) {
+    _app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  }
+  return _app;
 }
 
-export { app, db, auth, storage };
+// Lazy getters — only initialize when first accessed at runtime, not during build
+export const app = new Proxy({} as FirebaseApp, {
+  get(_target, prop) {
+    return (getFirebaseApp() as any)[prop];
+  },
+});
+
+export const db = new Proxy({} as Firestore, {
+  get(_target, prop) {
+    if (!_db) _db = getFirestore(getFirebaseApp());
+    return (_db as any)[prop];
+  },
+});
+
+export const auth = new Proxy({} as Auth, {
+  get(_target, prop) {
+    if (!_auth) {
+      _auth = getAuth(getFirebaseApp());
+      // Directive 7: Explicitly set browserLocalPersistence.
+      // This ensures the user remains logged in even after closing
+      // the tab or browser. Only a manual logout will end the session.
+      if (typeof window !== 'undefined' && !_persistenceSet) {
+        _persistenceSet = true;
+        setPersistence(_auth, browserLocalPersistence).catch((err) => {
+          console.error('Failed to set auth persistence:', err);
+        });
+      }
+    }
+    return (_auth as any)[prop];
+  },
+});
+
+export const storage = new Proxy({} as FirebaseStorage, {
+  get(_target, prop) {
+    if (!_storage) _storage = getStorage(getFirebaseApp());
+    return (_storage as any)[prop];
+  },
+});

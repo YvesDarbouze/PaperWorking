@@ -114,7 +114,7 @@ export default function InternalHierarchy() {
         {activeMembers.map(member => {
           const meta = ROLE_META[member.internalRole];
           const isExpanded = expandedMember === member.id;
-          const assignedCount = member.assignedDealIds.length;
+          const assignedCount = member.assignedProjectIds.length;
 
           return (
             <div key={member.id}>
@@ -167,7 +167,7 @@ export default function InternalHierarchy() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {projects.map(deal => {
-                      const isAssigned = member.assignedDealIds.includes(deal.id);
+                      const isAssigned = member.assignedProjectIds.includes(deal.id);
                       return (
                         <button
                           key={deal.id}

@@ -1,3 +1,4 @@
+import { BridgeQueryBuilder } from '../utils/BridgeQueryBuilder';
 import { bridgeGuardrail } from './bridgeGuardrail';
 import { bridgeWorkerService } from './bridgeWorkerService';
 import type { BridgeProperty } from '../types/bridge';
@@ -6,6 +7,7 @@ import { projectsService } from '../firebase/projects';
 import { NormalizedProperty, normalizeMLSData, mapStatusToPhase } from './mlsShared';
 
 export type { NormalizedProperty };
+export { normalizeMLSData } from './mlsShared';
 
 /**
  * ── MLS Ingestion Service ──
@@ -140,7 +142,7 @@ export interface QuarterlyPerformanceSummary {
 export async function getQuarterlyPerformance(year: number, quarter: 1 | 2 | 3 | 4): Promise<QuarterlyPerformanceSummary> {
   const query = new BridgeQueryBuilder()
     .quarter(year, quarter)
-    .eq('StandardStatus', 'Closed')
+    .filter('StandardStatus', 'eq', 'Closed')
     .select(['ClosePrice']);
 
   console.log(`📡 [MLS SERVICE] Fetching quarterly performance for ${year} Q${quarter}...`);

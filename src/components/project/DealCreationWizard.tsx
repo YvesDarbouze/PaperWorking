@@ -10,7 +10,7 @@ import { MapPin, DollarSign, Target, Users, LayoutDashboard, Building2, Calendar
 interface DealCreationWizardProps {
   organizationId: string;
   onClose: () => void;
-  onSuccess: (projectId: string) => void;
+  onSuccess?: (projectId: string) => void;
 }
 
 const STEPS = [
@@ -77,7 +77,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
       }, organizationId);
 
       toast.success('DEAL_ACQUIRED and indexed correctly.');
-      onSuccess(projectId);
+      onSuccess?.(projectId);
     } catch (error) {
       toast.error('COMMIT_FAILURE: Ledger synchronization error.');
     } finally {

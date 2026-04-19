@@ -35,17 +35,17 @@ export default function VideoHero() {
         >
           <p className="inline-flex items-center space-x-4 px-6 py-2 border border-pw-white/20 text-pw-white text-xs font-black uppercase tracking-[0.4em] mb-12">
             <span className="w-2 h-2 bg-pw-accent" />
-            <span>OPERATIONAL BETA — PROTOCOL v1.0.4 ACTIVE</span>
+            <span>WELCOME TO PAPERWORKING.CO</span>
           </p>
           
           <h1 className="text-6xl sm:text-8xl lg:text-9xl font-black text-pw-white tracking-tighter leading-[0.85] mb-12 uppercase">
-            OPERATIONAL <br/>
-            ENGINE.
+            PROPERTY FLIPPING, <br/>
+            ORGANIZED.
           </h1>
 
           <p className="mx-auto max-w-3xl text-sm sm:text-base text-pw-subtle font-black uppercase tracking-[0.2em] leading-loose mb-16 px-6">
-            Standardize institutional real estate operations. <br className="hidden md:block"/>
-            Centralize financials. Automate audit-grade communication.
+            Paperworking organizes the Real Estate Investment process <br className="hidden md:block"/>
+            to make property flipping simple, organized, and professional.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
@@ -53,7 +53,7 @@ export default function VideoHero() {
               href="/register"
               className="group flex items-center space-x-4 bg-pw-white text-pw-black px-12 py-6 text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent hover:text-pw-white shadow-2xl"
             >
-              <span>DEPLOY LEDGER</span>
+              <span>START FLIPPING</span>
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
             </Link>
             
@@ -61,7 +61,7 @@ export default function VideoHero() {
               <div className="w-14 h-14 border border-pw-white flex items-center justify-center">
                  <Play className="w-5 h-5 fill-pw-white" />
               </div>
-              <span>WATCH SYSTEM AUDIT</span>
+              <span>WATCH EXPLAINER VIDEO</span>
             </button>
           </div>
         </motion.div>

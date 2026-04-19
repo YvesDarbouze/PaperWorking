@@ -8,17 +8,22 @@ import { z } from 'zod';
  * ledger items, and organization metrics.
  */
 
-const projectId = process.env.FIREBASE_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+function getDb(): admin.firestore.Firestore {
+  if (!admin.apps.length) {
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-if (!admin.apps.length && projectId && clientEmail && privateKey) {
-  admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  });
+    if (!projectId || !clientEmail || !privateKey) {
+      throw new Error('Firebase Admin credentials not available for MCP tools');
+    }
+
+    admin.initializeApp({
+      credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
+    });
+  }
+  return admin.firestore();
 }
-
-const db = admin.firestore();
 
 // ─── Tools ─────────────────────────────────────────────────────────
 
@@ -33,7 +38,7 @@ export const list_active_projects = {
     organizationId: z.string().describe('The organization ID to filter by.'),
   }),
   handler: async ({ organizationId }: { organizationId: string }) => {
-    const snapshot = await db.collection('projects')
+    const snapshot = await getDb().collection('projects')
       .where('organizationId', '==', organizationId)
       .get();
     
@@ -59,7 +64,7 @@ export const get_deal_metrics = {
     projectId: z.string().describe('The ID of the deal.'),
   }),
   handler: async ({ projectId }: { projectId: string }) => {
-    const summaryDoc = await db.collection('projects')
+    const summaryDoc = await getDb().collection('projects')
       .doc(projectId)
       .collection('privateFinancials')
       .doc('summary')
@@ -89,7 +94,7 @@ export const query_ledger = {
     category: z.string().optional().describe('Optional category filter (e.g., "Plumbing", "HVAC").'),
   }),
   handler: async ({ projectId, category }: { projectId: string, category?: string }) => {
-    let query: admin.firestore.Query = db.collection('projects').doc(projectId).collection('ledgerItems');
+    let query: admin.firestore.Query = getDb().collection('projects').doc(projectId).collection('ledgerItems');
     
     if (category) {
       query = query.where('category', '==', category);

@@ -103,12 +103,12 @@ export default function TriageQueue() {
                                                <div>
                                                    <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{deal.propertyName}</p>
                                                    <h4 className="text-xl font-bold text-gray-900">${receipt.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                                                   <p className="text-sm text-gray-600 border border-gray-200 bg-gray-50 px-2 py-0.5 rounded inline-block mt-2">{receipt.budgetLineItem}</p>
+                                                   <p className="text-sm text-gray-600 border border-gray-200 bg-gray-50 px-2 py-0.5 rounded inline-block mt-2">{receipt.description}</p>
                                                </div>
                                                
                                                <div className="text-right">
                                                    <p className="text-xs text-gray-500">Submitted by: <span className="font-medium text-gray-700">General Contractor</span></p>
-                                                   <p className="text-xs text-gray-400 mt-1">{new Date(receipt.submittedAt).toLocaleString()}</p>
+                                                   <p className="text-xs text-gray-400 mt-1">{new Date(receipt.createdAt).toLocaleString()}</p>
                                                </div>
                                            </div>
 
@@ -145,7 +145,7 @@ export default function TriageQueue() {
                                                
                                                <div className="flex items-center gap-3 mt-1 pt-3 border-t border-gray-100">
                                                     <ESignAction 
-                                                        documentName={`Lien Waiver - ${receipt.budgetLineItem}`}
+                                                        documentName={`Lien Waiver - ${receipt.description}`}
                                                         signeeRole="General Contractor"
                                                         onSigned={() => {}} 
                                                     />

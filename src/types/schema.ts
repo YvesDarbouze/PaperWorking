@@ -396,10 +396,37 @@ export interface ClosingRoom {
   chainOfTitleStatus: 'pending' | 'verified' | 'failed';
 }
 
+export type LeadSource =
+  | 'Wholesaler'
+  | 'MLS'
+  | 'REO'
+  | 'Direct Mail'
+  | 'Auction'
+  | 'Probate'
+  | 'Driving for Dollars'
+  | 'Referral';
+
+export interface ComparableSale {
+  id: string;
+  address: string;
+  soldPrice: number;
+  distanceMiles: number;
+  daysOnMarket: number;
+}
+
 export interface ProjectFinancials {
   purchasePrice: number;
   estimatedARV: number; // After-Repair Value
   costs: CostEntry[]; // Ledger of costs
+
+  // Phase 1 Deal Analyzer — Sourcing intelligence
+  acquisitionDate?: Date;          // Explicit close/acquisition date for timeline tracking
+  fixedAcquisitionCosts?: number; // Buy-side closing costs deducted in MAO formula
+  comparableSales?: ComparableSale[];
+  leadSource?: LeadSource;
+  sellerMotivation?: string;
+  emdAmount?: number;
+  emdGoHardDate?: Date;
   
   // Evaluation & Capital Financing
   loanAmount?: number; // Hard money loan amount
@@ -420,6 +447,7 @@ export interface ProjectFinancials {
   buyersAgentCommission?: number; // Represented as a percentage, e.g. 3 for 3%
   sellersAgentCommission?: number; // Represented as a percentage, e.g. 3 for 3%
   finalClosingCosts?: number; // Fixed dollar amount
+  listingDate?: Date;   // Date the property was listed on MLS — used for exact DOM calculation
   soldDate?: Date;
 
   // Phase 10 / UX Phase 4 Fork
@@ -803,3 +831,6 @@ export interface CRMContact {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Legacy alias — keeps older tests and scripts compatible with the renamed Project type
+export type PropertyDeal = Project;

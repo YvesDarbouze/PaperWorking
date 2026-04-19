@@ -44,7 +44,7 @@ describe('Bridge API Integration (Test Dataset)', () => {
     const testLat = 34.0522;
     const testLon = -118.2437;
     const query = new BridgeQueryBuilder()
-      .near('Coordinates', testLat, testLon, 100)
+      .near(testLat, testLon, 100)
       .top(5);
     
     const properties = await bridgeGuardrail.fetchAll(query, 1);

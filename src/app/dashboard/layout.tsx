@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useMemo, Suspense, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
@@ -10,6 +10,7 @@ import { useProjectStore } from '@/store/projectStore';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
 import Link from 'next/link';
+import { Mail, Calendar } from 'lucide-react';
 import PhaseNav from '@/components/dashboard/PhaseNav';
 import LaneIndicator from '@/components/dashboard/LaneIndicator';
 import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardView';
@@ -71,6 +72,13 @@ function DashboardSkeleton() {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login');
+    }
+  }, [loading, user, router]);
 
   if (loading || !user) return <DashboardSkeleton />;
 
@@ -112,6 +120,24 @@ function DashboardLayoutInner({ children, user }: { children: React.ReactNode; u
               <Logo href="/dashboard" size="sm" />
             </div>
             <PhaseNav />
+            <div className="flex items-center gap-6 mr-8">
+              <Link 
+                href="/dashboard/inbox" 
+                className="text-gray-500 hover:text-pw-black transition-all flex items-center gap-2"
+                title="Global Inbox"
+              >
+                <Mail className="w-5 h-5" />
+                <span className="hidden xl:inline text-xs font-black uppercase tracking-widest">Inbox</span>
+              </Link>
+              <Link 
+                href="/dashboard/calendar" 
+                className="text-gray-500 hover:text-pw-black transition-all flex items-center gap-2"
+                title="Asset Calendar"
+              >
+                <Calendar className="w-5 h-5" />
+                <span className="hidden xl:inline text-xs font-black uppercase tracking-widest">Timeline</span>
+              </Link>
+            </div>
             <div className="flex items-center gap-3 flex-shrink-0">
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold text-white"

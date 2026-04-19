@@ -27,10 +27,12 @@ const bridgeConfigSchema = z.object({
 });
 
 /**
- * Perform validation at module load time.
- * This effectively acts as a "Guardrail" for the server startup.
+ * Lazy-validated Bridge config.
+ * Validation is deferred to first access so the Next.js build
+ * doesn't crash when BRIDGE_* env vars aren't present during
+ * static page generation / route collection.
  */
-function validateBridgeConfig() {
+function validateBridgeConfig(): z.infer<typeof bridgeConfigSchema> {
   const env = {
     BRIDGE_CLIENT_ID: process.env.BRIDGE_CLIENT_ID,
     BRIDGE_CLIENT_SECRET: process.env.BRIDGE_CLIENT_SECRET,
@@ -45,7 +47,7 @@ function validateBridgeConfig() {
   const result = bridgeConfigSchema.safeParse(env);
 
   if (!result.success) {
-    const missingKeys = result.error.errors.map(err => err.path.join('.')).join(', ');
+    const missingKeys = result.error.issues.map(err => err.path.join('.')).join(', ');
     
     console.error('🛑 [FATAL] BRIDGE API MISCONFIGURATION DETECTED');
     console.error(`Missing or Invalid keys: ${missingKeys}`);
@@ -58,6 +60,24 @@ function validateBridgeConfig() {
   return result.data;
 }
 
-export const bridgeConfig = validateBridgeConfig();
+let _cachedConfig: z.infer<typeof bridgeConfigSchema> | null = null;
+
+/**
+ * Access Bridge config lazily. First call validates and caches;
+ * subsequent calls return the cached result instantly.
+ */
+export function getBridgeConfig(): z.infer<typeof bridgeConfigSchema> {
+  if (!_cachedConfig) {
+    _cachedConfig = validateBridgeConfig();
+  }
+  return _cachedConfig;
+}
+
+/** @deprecated Use getBridgeConfig() instead — kept for backward compat */
+export const bridgeConfig = new Proxy({} as z.infer<typeof bridgeConfigSchema>, {
+  get(_target, prop: string) {
+    return getBridgeConfig()[prop as keyof z.infer<typeof bridgeConfigSchema>];
+  },
+});
 
 export default bridgeConfig;

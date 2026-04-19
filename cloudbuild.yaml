@@ -1,36 +1,55 @@
 # Google Cloud Build configuration for PaperWorking
 steps:
+  # 0. Determine a build tag (SHORT_SHA may be empty when submitting locally)
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'set-tag'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ -z "${SHORT_SHA}" ]; then
+          echo "$(date +%Y%m%d-%H%M%S)" > /workspace/BUILD_TAG
+        else
+          echo "${SHORT_SHA}" > /workspace/BUILD_TAG
+        fi
+        echo "Build tag: $(cat /workspace/BUILD_TAG)"
+
   # 1. Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'build'
+    entrypoint: 'bash'
     args:
-      - 'build'
-      - '-t'
-      - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
-      - '-t'
-      - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest'
-      - '.'
+      - '-c'
+      - |
+        TAG=$(cat /workspace/BUILD_TAG)
+        docker build \
+          -t "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$${TAG}" \
+          -t "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest" \
+          .
 
   # 2. Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'push'
+    entrypoint: 'bash'
     args:
-      - 'push'
-      - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}'
-      - '--all-tags'
+      - '-c'
+      - |
+        docker push "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}" --all-tags
 
   # 3. Deploy to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    id: 'deploy'
+    entrypoint: 'bash'
     args:
-      - 'run'
-      - 'deploy'
-      - '${_SERVICE_NAME}'
-      - '--image'
-      - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
-      - '--region'
-      - '${_REGION}'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
+      - '-c'
+      - |
+        TAG=$(cat /workspace/BUILD_TAG)
+        gcloud run deploy ${_SERVICE_NAME} \
+          --image "us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$${TAG}" \
+          --region ${_REGION} \
+          --platform managed \
+          --allow-unauthenticated \
+          --update-secrets=FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest
 
 # Default values for substitutions
 substitutions:
@@ -40,5 +59,4 @@ substitutions:
   _REPOSITORY: 'cloud-run-source-deploy' 
 
 images:
-  - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:${SHORT_SHA}'
   - 'us-east4-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest'

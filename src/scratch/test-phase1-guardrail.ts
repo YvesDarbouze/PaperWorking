@@ -1,5 +1,5 @@
 import { BridgePropertySchema } from '../lib/types/bridge';
-import { normalizeMLSData } from '../lib/services/mlsService';
+import { normalizeMLSData } from '../lib/services/mlsShared';
 
 /**
  * 🧪 Phase 1 Verification Script

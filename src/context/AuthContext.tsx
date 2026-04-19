@@ -99,32 +99,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Listen to auth state changes + sync session cookie
   useEffect(() => {
+    let profileUnsubscribe: (() => void) | null = null;
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      // Clean up the previous user's profile listener before attaching a new one
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+        profileUnsubscribe = null;
+      }
+
       setUser(firebaseUser);
-      
-      let profileUnsubscribe: (() => void) | null = null;
 
       if (firebaseUser) {
         // Fetch Firestore profile to get Role and Organization info in real-time
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
-          if (snap.exists()) {
-            setProfile(snap.data());
-          }
+          if (snap.exists()) setProfile(snap.data());
         });
       } else {
         setProfile(null);
       }
-      
+
       setLoading(false);
       // Sync server-side session cookie for middleware protection
       await syncSessionCookie(firebaseUser);
-
-      return () => {
-        if (profileUnsubscribe) profileUnsubscribe();
-      };
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubscribe();
+      if (profileUnsubscribe) profileUnsubscribe();
+    };
   }, []);
 
   const clearError = () => setError(null);
@@ -184,6 +188,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      await syncSessionCookie(newUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;

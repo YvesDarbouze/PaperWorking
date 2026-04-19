@@ -30,7 +30,7 @@ async function runTests() {
   try {
      // This will fail the actual request, but we want to check the interceptor logic
      // if we had a debug mode. For now, we verify it doesn't throw.
-     const response = await apiClient.get('/{vDatasetId}/Properties');
+     await apiClient.get('/{vDatasetId}/Properties');
      console.log('📡 Response received (Check logs for URL transformation)');
   } catch (error: any) {
     // We expect a 401 or similar if the token is "your_server_token_here"
@@ -40,7 +40,7 @@ async function runTests() {
   // 3. Test Rate Limiter (Simulation)
   console.log('\n🔍 Testing Redis-backed Rate Limiter...');
   const status = await bridgeRateLimiter.getStatus();
-  console.log(`📊 Initial Status: ${status.currentCount} used, ${status.remaining} remaining.`);
+  console.log(`📊 Initial Status: ${status.hourly} used, ${5000 - status.hourly} remaining.`);
 
   console.log('⚡ Sending 5 rapid requests...');
   for (let i = 0; i < 5; i++) {
@@ -50,9 +50,9 @@ async function runTests() {
   }
 
   const newStatus = await bridgeRateLimiter.getStatus();
-  console.log(`📊 Post-Burst Status: ${newStatus.currentCount} used.`);
-  
-  if (newStatus.currentCount > status.currentCount) {
+  console.log(`📊 Post-Burst Status: ${newStatus.hourly} used.`);
+
+  if (newStatus.hourly > status.hourly) {
     console.log('✅ Success: Rate limiter is tracking requests in Redis.');
   }
 

@@ -1,63 +1,44 @@
-import { createMcpHandler } from "@vercel/mcp-adapter";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { 
-  list_active_projects, 
-  get_deal_metrics, 
-  query_ledger 
-} from "@/lib/mcp/firestore-tools";
-import { verify_subscription } from "@/lib/mcp/stripe-tools";
+import type { NextRequest } from 'next/server';
 
 /**
  * Catch-all MCP Route Handler
- * 
+ *
  * Supports dynamic transport selection via standard MCP protocols.
  * Integrated with PaperWorking deal pipeline and Stripe metrics.
+ * 
+ * Uses lazy initialization to avoid build-time crashes.
  */
 
-const server = new Server(
-  {
-    name: "paperworking-server",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
+let _handler: ((req: NextRequest) => Promise<Response>) | null = null;
+
+async function getHandler() {
+  if (!_handler) {
+    const { createMcpHandler } = await import("@vercel/mcp-adapter");
+    const { McpServer } = await import("@modelcontextprotocol/sdk/server/mcp.js");
+    const {
+      list_active_projects,
+      get_deal_metrics,
+      query_ledger,
+    } = await import("@/lib/mcp/firestore-tools");
+    const { verify_subscription } = await import("@/lib/mcp/stripe-tools");
+
+    const tools = [list_active_projects, get_deal_metrics, query_ledger, verify_subscription];
+
+    _handler = createMcpHandler((server: InstanceType<typeof McpServer>) => {
+      for (const tool of tools) {
+        server.tool(tool.name, tool.description, tool.schema.shape, tool.handler as any);
+      }
+    });
   }
-);
+  return _handler;
+}
 
-// ─── Register Tools ───────────────────────────────────────────────
+export async function GET(req: NextRequest) {
+  const handler = await getHandler();
+  return handler(req);
+}
 
-server.tool(
-  list_active_projects.name,
-  list_active_projects.description,
-  list_active_projects.schema,
-  list_active_projects.handler
-);
-
-server.tool(
-  get_deal_metrics.name,
-  get_deal_metrics.description,
-  get_deal_metrics.schema,
-  get_deal_metrics.handler
-);
-
-server.tool(
-  query_ledger.name,
-  query_ledger.description,
-  query_ledger.schema,
-  query_ledger.handler
-);
-
-server.tool(
-  verify_subscription.name,
-  verify_subscription.description,
-  verify_subscription.schema,
-  verify_subscription.handler
-);
-
-// ─── Export Final Handler ─────────────────────────────────────────
-
-// The [transport] catch-all route handles both GET (SSE) and POST (Messages)
-export const { GET, POST } = createMcpHandler(server);
-
+export async function POST(req: NextRequest) {
+  const handler = await getHandler();
+  return handler(req);
+}

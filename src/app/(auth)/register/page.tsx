@@ -1,3 +1,14 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
+import { useAuth } from '@/context/AuthContext';
+import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, User, X, CheckCircle2 } from 'lucide-react';
+
 export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError } = useAuth();

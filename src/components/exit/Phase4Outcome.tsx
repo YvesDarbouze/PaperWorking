@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout } from 'lucide-react';
 import ProfessionalListingDashboard from '@/components/listing/ProfessionalListingDashboard';
+
+const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
 
 interface Phase4OutcomeProps {
   projectId: string;
@@ -230,6 +232,13 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
            </div>
         </div>
 
+        </div>
+
+        {/* ── Deal Autopsy: locks all KPIs once status = Sold ── */}
+        <div className="mt-12">
+          <Suspense fallback={<div className="h-96 rounded-2xl bg-white/5 animate-pulse" />}>
+            <DealAutopsy deal={deal} />
+          </Suspense>
         </div>
         </>
       )}

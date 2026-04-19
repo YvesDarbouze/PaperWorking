@@ -40,7 +40,7 @@ const DOCUMENT_SLOTS: DocSlot[] = [
 ];
 
 function findRosterMember(dealTeam: ProjectTeamMember[] | undefined, role: ProjectRole): ProjectTeamMember | undefined {
-  return dealTeam?.find(m => m.dealRole === role && m.status === 'active');
+  return dealTeam?.find(m => m.projectRole === role && m.status === 'active');
 }
 
 function getStatusBadge(doc: RoleLinkedDocument | undefined) {
@@ -74,7 +74,7 @@ export default function DocumentVault() {
 
   // ── Simulated upload ──────────────────────────────
   const handleUpload = (slot: DocSlot) => {
-    const member = findRosterMember(currentProject?.dealTeam, slot.role);
+    const member = findRosterMember(currentProject?.projectTeam, slot.role);
     const newDoc: RoleLinkedDocument = {
       id: `doc-${Date.now()}`,
       category: slot.category,
@@ -154,7 +154,7 @@ export default function DocumentVault() {
           <div className="divide-y divide-gray-100">
             {DOCUMENT_SLOTS.map(slot => {
               const doc = docMap.get(slot.category);
-              const member = findRosterMember(currentProject?.dealTeam, slot.role);
+              const member = findRosterMember(currentProject?.projectTeam, slot.role);
               const status = getStatusBadge(doc);
 
               return (

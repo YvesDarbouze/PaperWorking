@@ -42,8 +42,8 @@ export const communicationService = {
               direction: message.type === 'EMAIL_INBOUND' ? 'IN' : 'OUT',
               fromAddress: message.senderEmail || 'system@paperworking.io',
               toAddress: 'multiple', // Simplified for log
-              subject: message.subject,
-              body: message.body,
+              subject: message.subject ?? '',
+              body: message.body || '',
               providerMessageId: message.providerMessageId,
               threadId: projectId, // Groups by projectId as default thread
             }

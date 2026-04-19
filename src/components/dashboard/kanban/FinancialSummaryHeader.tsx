@@ -12,24 +12,8 @@ export default function FinancialSummaryHeader() {
   const toggleTrackMode = useUIStore(state => state.toggleTrackMode);
   const viewMode = useUIStore(state => state.viewMode);
 
-  // Portfolio aggregates
-  const totalCapital = projects.reduce((acc, deal) => {
-    return acc + (deal.financials.purchasePrice || 0) + (deal.financials.projectedRehabCost || 0);
-  }, 0);
-
-  const avgROI = projects.length > 0
-    ? projects.reduce((acc, deal) => {
-        const m = computeFlipMetrics(deal);
-        return acc + m.roi;
-      }, 0) / projects.length
-    : 0;
-
-  const avgYield = projects.length > 0
-    ? projects.reduce((acc, deal) => {
-        const m = computeHoldMetrics(deal);
-        return acc + m.cashOnCashYield;
-      }, 0) / projects.length
-    : 0;
+  // Portfolio aggregates from store metrics
+  const portfolioMetrics = useProjectStore(state => state.metrics);
 
   const healthColors = {
     green: { dot: 'bg-green-500', text: 'text-green-700' },
@@ -47,10 +31,10 @@ export default function FinancialSummaryHeader() {
             <div className="flex flex-col">
               <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
                 <Banknote className="w-3 h-3 mr-1.5" />
-                Total Capital Deployed
+                Capital Deployed
               </div>
               <div className="text-2xl font-light text-gray-900 tracking-tight">
-                ${totalCapital.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                ${portfolioMetrics.totalInvestedCapitalRealized.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
@@ -59,10 +43,10 @@ export default function FinancialSummaryHeader() {
             <div className="flex flex-col">
               <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
                 <TrendingUp className="w-3 h-3 mr-1.5" />
-                {trackMode === 'FLIP' ? 'Est. Portfolio ROI' : 'Avg. Cash-on-Cash'}
+                Realized Profit
               </div>
-              <div className={`text-2xl font-light tracking-tight ${trackMode === 'FLIP' ? 'text-indigo-600' : 'text-emerald-600'}`}>
-                {(trackMode === 'FLIP' ? avgROI : avgYield).toFixed(1)}%
+              <div className={`text-2xl font-light tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                ${portfolioMetrics.totalRealizedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
@@ -71,10 +55,21 @@ export default function FinancialSummaryHeader() {
             <div className="flex flex-col">
               <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
                 <PieChart className="w-3 h-3 mr-1.5" />
-                Active Pipelines
+                Sales vs Losses
               </div>
-              <div className="text-2xl font-light text-gray-900 tracking-tight">
-                {projects.length}
+              <div className="flex items-baseline gap-3">
+                <div className="flex items-baseline gap-1.5">
+                  <span className={`text-2xl font-light tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    ${Math.abs(portfolioMetrics.totalRealizedProfit).toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase">Profit</span>
+                </div>
+                <div className="flex items-baseline gap-1.5 border-l border-gray-100 pl-3">
+                  <span className="text-sm font-black text-gray-900 tracking-tight">
+                    {portfolioMetrics.averageRealizedROI.toFixed(1)}%
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-bold uppercase whitespace-nowrap">Avg ROI</span>
+                </div>
               </div>
             </div>
           </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useProjectStore, selectActiveProjectMetrics } from '@/store/projectStore';
-import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle } from 'lucide-react';
+import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle, Cloud, Wrench } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -23,6 +23,7 @@ import TaxExportCsvButton from '@/components/reporting/TaxExportCsvButton';
 // Engine Room Integrations
 import DocumentHub from '@/components/engine/DocumentHub';
 import ContactManager from '@/components/engine/ContactManager';
+import GoogleDriveSync from '@/components/dashboard/GoogleDriveSync';
 
 // Financial Statement Generator (Phase 10)
 const ProfitAndLoss = lazy(() => import('@/components/reporting/ProfitAndLoss'));
@@ -30,6 +31,9 @@ const CashFlowStatement = lazy(() => import('@/components/reporting/CashFlowStat
 const BalanceSheet = lazy(() => import('@/components/reporting/BalanceSheet'));
 const SettlementDocPortal = lazy(() => import('@/components/reporting/SettlementDocPortal'));
 const StatementExporter = lazy(() => import('@/components/reporting/StatementExporter'));
+
+// Phase 3 Unified Rehab Tracker
+const RehabTracker = lazy(() => import('@/components/rehab/RehabTracker'));
 
 // Phase 6 Components
 import TriageQueue from '@/components/rehab/TriageQueue';
@@ -39,6 +43,7 @@ const ROIRenovationTasks = lazy(() => import('@/components/rehab/ROIRenovationTa
 const PermitTrackingChecklist = lazy(() => import('@/components/rehab/PermitTrackingChecklist'));
 
 // Phase 3 Expansion — Rehab Cost Track + Metrics + Field Logistics
+const HoldingTimeline = lazy(() => import('@/components/rehab/HoldingTimeline'));
 const RehabMetricsDashboard = lazy(() => import('@/components/rehab/RehabMetricsDashboard'));
 const RehabExpenseTracker = lazy(() => import('@/components/rehab/RehabExpenseTracker'));
 const HoldingCostTicker = lazy(() => import('@/components/rehab/HoldingCostTicker'));
@@ -51,7 +56,7 @@ const SiteVisitChecklist = lazy(() => import('@/components/rehab/SiteVisitCheckl
    Extracted from /dashboard/engine-room/page.tsx
    ═══════════════════════════════════════════════════════ */
 
-type Tab = 'cash' | 'triage' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts';
+type Tab = 'cash' | 'triage' | 'rehab' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts' | 'sync';
 type StatementSubTab = 'pl' | 'cashflow' | 'balance' | 'hud1';
 
 export default function EnginePanel() {
@@ -167,6 +172,15 @@ export default function EnginePanel() {
             )}
           </button>
 
+          <button
+            onClick={() => setActiveTab('rehab')}
+            className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
+              activeTab === 'rehab' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
+          >
+            <Wrench className="mr-2 h-4 w-4" /> Rehab Tracker
+          </button>
+
           {isFinanceTeam && (
             <>
               <button
@@ -229,6 +243,16 @@ export default function EnginePanel() {
               <UserCircle className="mr-2 h-4 w-4" /> Contacts
             </button>
           )}
+
+          {/* Google Drive Sync Placeholder */}
+          <button
+            onClick={() => setActiveTab('sync')}
+            className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
+              activeTab === 'sync' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+            }`}
+          >
+            <Cloud className="mr-2 h-4 w-4" /> Cloud Sync
+          </button>
         </nav>
       </div>
 
@@ -265,6 +289,13 @@ export default function EnginePanel() {
             
             <div className="mt-8">
                <WhatIfSimulator />
+            </div>
+
+            {/* Holding & Timeline — live cost basis clock */}
+            <div className="mt-8">
+              <Suspense fallback={<div className="h-64 border border-pw-border bg-pw-surface animate-pulse" />}>
+                <HoldingTimeline />
+              </Suspense>
             </div>
           </div>
         )}
@@ -306,6 +337,19 @@ export default function EnginePanel() {
            </div>
         )}
 
+        {activeTab === 'rehab' && (
+          <Suspense fallback={<div className="h-96 bg-gray-50 rounded-xl animate-pulse" />}>
+            {currentProject
+              ? <RehabTracker />
+              : (
+                <div className="p-12 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+                  Select an active property to load the Rehab Tracker.
+                </div>
+              )
+            }
+          </Suspense>
+        )}
+
         {activeTab === 'ledger' && (
           <div className="space-y-8">
             <VarianceReportChart />
@@ -325,7 +369,7 @@ export default function EnginePanel() {
                   </div>
                ) : (
                   <div className="divide-y divide-gray-200">
-                     {Object.values(groupedLedger).map((group) => (
+                     {(Object.values(groupedLedger) as { property: string; entries: typeof masterLedger; totalApproved: number; totalPending: number }[]).map((group) => (
                         <div key={group.property} className="bg-white">
                            {/* High-level summary row */}
                            <div 
@@ -477,6 +521,11 @@ export default function EnginePanel() {
         {/* Contact Manager */}
         {activeTab === 'contacts' && isLead && (
           <ContactManager />
+        )}
+
+        {/* Google Drive Sync */}
+        {activeTab === 'sync' && (
+          <GoogleDriveSync />
         )}
 
         {activeTab === 'valuation' && (

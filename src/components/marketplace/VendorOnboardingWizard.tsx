@@ -226,7 +226,7 @@ function SpecialityTypeCard({ icon, title, description, active, onClick }: {
   );
 }
 
-function InputField({ label, placeholder, value, onChange }: any) {
+function InputField({ label, placeholder, value, onChange }: { label: string; placeholder: string; value: string; onChange: (v: string) => void }) {
   return (
     <div>
       <label className="block text-xs font-black uppercase tracking-widest text-pw-subtle mb-3">{label}</label>

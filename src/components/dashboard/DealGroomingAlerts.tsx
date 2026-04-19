@@ -127,7 +127,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
   }
 
   // ── Rule 6: No Team Assigned ────────────────────────────
-  if ((!deal.dealTeam || deal.dealTeam.length === 0) && deal.status !== 'Lead') {
+  if ((!deal.projectTeam || deal.projectTeam.length === 0) && deal.status !== 'Lead') {
     alerts.push({
       ...base,
       id: `groom-team-${deal.id}`,

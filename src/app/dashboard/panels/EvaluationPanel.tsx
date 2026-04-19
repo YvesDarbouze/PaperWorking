@@ -10,6 +10,7 @@ import LenderVault from '@/components/LenderVault/LenderVault';
 import InspectionChecklist from '@/components/Inspection/InspectionChecklist';
 
 /* Phase-specific modules */
+const DealAnalyzer = lazy(() => import('@/components/evaluation/DealAnalyzer'));
 const MarketAnalysis = lazy(() => import('@/components/evaluation/MarketAnalysis'));
 const FundingSourceTracker = lazy(() => import('@/components/evaluation/FundingSourceTracker'));
 const SeventyPercentRule = lazy(() => import('@/components/Calculators/SeventyPercentRule'));
@@ -76,7 +77,12 @@ export default function EvaluationPanel() {
         </div>
       </div>
 
-      {/* ── Section 0: Operational Ledgers ── */}
+      {/* ── Section 0: Deal Analyzer ── */}
+      <Suspense fallback={shimmer}>
+        <DealAnalyzer />
+      </Suspense>
+
+      {/* ── Section 1: Operational Ledgers ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Suspense fallback={shimmer}>
           <div className="lg:col-span-1 border border-pw-border bg-pw-surface p-6">
@@ -95,7 +101,7 @@ export default function EvaluationPanel() {
         </Suspense>
       </div>
 
-      {/* ── Section 1: Deep Market Logic ── */}
+      {/* ── Section 2: Deep Market Logic ── */}
       <section className="space-y-6">
          <div className="flex items-center justify-between border-b border-pw-border pb-4">
             <h2 className="text-xs font-black text-pw-black uppercase tracking-[0.3em]">Institutional_Market_Analysis</h2>

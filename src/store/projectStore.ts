@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument } from '@/types/schema';
+import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
@@ -385,7 +385,7 @@ export const useProjectStore = create<ProjectState>()(
       updateDealTeam: (projectId, team) => {
         const { projects, currentProject } = get();
         const updatedDeals = projects.map(d =>
-          d.id === projectId ? { ...d, dealTeam: team } : d
+          d.id === projectId ? { ...d, projectTeam: team } : d
         );
         set({ projects: updatedDeals });
         if (currentProject?.id === projectId) {

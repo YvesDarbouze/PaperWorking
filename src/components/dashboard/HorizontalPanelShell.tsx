@@ -7,7 +7,7 @@ import React, {
   useCallback,
   useEffect,
 } from 'react';
-import { motion, useMotionValue, animate, PanInfo } from 'framer-motion';
+import { motion, useMotionValue, animate, PanInfo, MotionValue } from 'framer-motion';
 
 /* ═══════════════════════════════════════════════════════
    HorizontalPanelShell — Gesture-Driven Kanban Engine
@@ -152,7 +152,7 @@ export function PanelProvider({
 
 /* ─── Internal context for motion value ─── */
 const MotionXContext = createContext<{
-  x: ReturnType<typeof useMotionValue>;
+  x: MotionValue<number>;
   containerWidth: number;
   lanes: LaneDef[];
 }>({

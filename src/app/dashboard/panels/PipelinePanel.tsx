@@ -17,6 +17,8 @@ import FullscreenLifecycleView from '@/components/dashboard/FullscreenLifecycleV
 import OperationalDashboardView from '@/components/dashboard/OperationalDashboardView';
 import VarianceChart from '@/components/dashboard/VarianceChart';
 import DealCreationWizard from '@/components/project/DealCreationWizard';
+import InvestorInviteModal from '@/components/dashboard/InvestorInviteModal';
+import { UserPlus } from 'lucide-react';
 
 /* ── Command Center Modules (lazy-loaded) ── */
 const VelocityOverheadKPI = lazy(() => import('@/components/dashboard/VelocityOverheadKPI'));
@@ -51,6 +53,7 @@ export default function PipelinePanel() {
   const { isNewUser, hasActiveSubscription, onboardingStep, setNextStep } = useUserStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const handleAddDeal = () => {
     if (!user) return;
@@ -79,12 +82,18 @@ export default function PipelinePanel() {
       
       {/* Deal Creation Protocol (Wizard) */}
       {isWizardOpen && profile?.organizationId && (
-        <DealCreationWizard 
+        <DealCreationWizard
           organizationId={profile.organizationId}
           onClose={() => setIsWizardOpen(false)}
-          onSuccess={handleWizardSuccess}
+          onSuccess={() => setIsWizardOpen(false)}
         />
       )}
+
+      {/* Investor Invite Modal */}
+      <InvestorInviteModal 
+        isOpen={isInviteModalOpen} 
+        onClose={() => setIsInviteModalOpen(false)} 
+      />
 
       {/* Settings Drawer */}
       <Suspense fallback={null}>
@@ -130,15 +139,23 @@ export default function PipelinePanel() {
                            <div className="absolute -bottom-1 left-10 w-2 h-2 bg-pw-black rotate-45"></div>
                         </div>
                      )}
-                     <button 
+                      <button 
+                        onClick={() => setIsInviteModalOpen(true)}
+                        className="flex items-center gap-3 px-6 py-5 bg-white border border-pw-black text-pw-black text-sm font-black uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all shadow-sm"
+                      >
+                        <UserPlus className="w-5 h-5" />
+                        <span>Invite Investor</span>
+                      </button>
+
+                      <button 
                         onClick={handleAddDeal} 
                         aria-label="Add New Target Property"
                         className="ag-button px-10 py-5 text-base"
-                     >
+                      >
                         <Plus className="w-5 h-5 mr-3 transition-transform group-hover:rotate-90"/>
                         Add Target Property
-                     </button>
-                  </div>
+                      </button>
+                   </div>
                </div>
             </div>
 

@@ -4,7 +4,7 @@ import { Project, PendingReceipt } from '@/types/schema';
  * Validates if an expected receipt approval violates the 15% contingency 
  * enforcement buffer placed on top of the original planned rehab budget.
  */
-export function verifyContingencyBuffer(deal: Project, receiptToApprove: PendingReceipt): {
+export function verifyContingencyBuffer(deal: Project, receiptToApprove: { amount: number }): {
    canApprove: boolean;
    rehabBudgetBase: number;
    rehabBudgetBuffered: number;

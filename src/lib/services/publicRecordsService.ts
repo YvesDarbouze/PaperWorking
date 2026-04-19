@@ -1,10 +1,12 @@
 import apiClient from '../apiClient';
-import { 
-  BridgeParcelSchema, 
-  BridgeAssessmentSchema, 
+import {
+  BridgeParcelSchema,
+  BridgeAssessmentSchema,
   BridgePublicResponseSchema,
-  type BridgeParcel, 
-  type BridgeAssessment 
+  BridgeTransactionSchema,
+  type BridgeParcel,
+  type BridgeAssessment,
+  type BridgeTransaction,
 } from '../types/publicRecords';
 
 /**

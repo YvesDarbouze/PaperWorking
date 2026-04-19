@@ -58,7 +58,7 @@ export default function VarianceChart() {
            boxWidth: 6,
            boxHeight: 6,
            padding: 20,
-           font: { family: 'Inter', size: 10, weight: '600' as const },
+           font: { family: 'Inter', size: 10, weight: 600 },
            color: '#71717a'
         }
       },
@@ -68,7 +68,7 @@ export default function VarianceChart() {
         bodyColor: '#71717a',
         borderColor: 'rgba(0,0,0,0.05)',
         borderWidth: 1,
-        titleFont: { family: 'Inter', size: 12, weight: '600' as const },
+        titleFont: { family: 'Inter', size: 12, weight: 600 },
         bodyFont: { family: 'Inter', size: 11 },
         padding: 16,
         cornerRadius: 16,
@@ -85,7 +85,7 @@ export default function VarianceChart() {
            drawTicks: false,
         },
         ticks: {
-           font: { family: 'Inter', size: 9, weight: '500' as const },
+           font: { family: 'Inter', size: 9, weight: 500 },
            color: '#a1a1aa',
            padding: 10,
            callback: (value: any) => '$' + (value / 1000) + 'k'
@@ -95,7 +95,7 @@ export default function VarianceChart() {
       x: {
         grid: { display: false },
         ticks: {
-           font: { family: 'Inter', size: 9, weight: '500' as const },
+           font: { family: 'Inter', size: 9, weight: 500 },
            color: '#a1a1aa',
            padding: 10,
         },

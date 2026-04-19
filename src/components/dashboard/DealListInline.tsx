@@ -14,6 +14,11 @@ import DealFolder from './DealFolder';
 
 import PhaseBadge from '../ui/PhaseBadge';
 
+interface DealListInlineProps {
+  projects: Project[];
+  onSelectDeal: (dealId: string) => void;
+}
+
 export default function DealListInline({ projects, onSelectDeal }: DealListInlineProps) {
   return (
     <div className="w-full mx-auto">

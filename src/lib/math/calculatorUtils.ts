@@ -1,4 +1,4 @@
-import { Project, FractionalInvestor } from '@/types/schema';
+import { Project } from '@/types/schema';
 
 /**
  * Validates the viability of a deal via the standard 70% rule.
@@ -81,6 +81,131 @@ export function calculateNetEngine(deal: Project, isBrrrr: boolean = false) {
     netProfit,
     roi,
     annualizedIrr
+  };
+}
+
+// ─── Autopsy Metrics Shape ───────────────────────────────────
+export interface AutopsyMetrics {
+  // Inputs
+  grossSalePrice: number;
+  purchasePrice: number;
+  projectedRehabCost: number;   // estimatedARV-era budget target
+  actualRehabCost: number;      // sum of approved cost entries + rehab expenses
+  estimatedARV: number;
+  acquisitionCosts: number;     // buy-side closing + origination points
+  holdingCosts: number;         // recurring monthly costs accrued
+  sellClosingCosts: number;     // commissions + exit fees
+  totalCostBasis: number;       // sum of all five cost buckets above
+  loanAmount: number;
+  outOfPocketCash: number;      // totalCostBasis − loanAmount
+  // Core KPIs (locked once status = Sold)
+  netProfit: number;
+  roi: number;                  // % — Net Profit / Total Cost Basis
+  coc: number;                  // % — Net Profit / Out-of-Pocket Cash
+  profitMargin: number;         // % — Net Profit / Gross Sale Price
+  // Time metrics
+  dom: number | null;           // Days on Market (listingDate → soldDate)
+  holdDays: number | null;      // Total hold period (createdAt → soldDate)
+}
+
+/**
+ * Single canonical autopsy math function. Used by DealAutopsy component and
+ * the PDF generator. Derives all four KPIs required by the Phase 4 spec.
+ *
+ * All monetary values in the schema are stored as cents (integers). This
+ * function works in raw schema units — callers display with / 100 where needed.
+ * Note: purchasePrice and most fields here are already in dollars per ProjectFinancials.
+ */
+export function computeAutopsyMetrics(deal: Project): AutopsyMetrics {
+  const fin = deal.financials;
+  const purchasePrice = fin?.purchasePrice || 0;
+  const grossSalePrice = fin?.actualSalePrice || fin?.estimatedARV || 0;
+  const estimatedARV = fin?.estimatedARV || 0;
+  const projectedRehabCost = fin?.projectedRehabCost || 0;
+
+  // ── Actual Rehab Costs ──────────────────────────────────────
+  let actualRehabCost = 0;
+  fin?.costs?.forEach(c => { if (c.approved) actualRehabCost += c.amount; });
+  fin?.inspections?.forEach(i => { actualRehabCost += i.actualCost; });
+  deal.rehabExpenses?.forEach(e => { actualRehabCost += e.amount; });
+
+  // ── Buy-Side Acquisition Costs ──────────────────────────────
+  let acquisitionCosts = 0;
+  if (fin?.loanAmount && fin?.loanOriginationPoints) {
+    acquisitionCosts += fin.loanAmount * (fin.loanOriginationPoints / 100);
+  }
+  if (deal.costBasisLedger) {
+    const items = [
+      ...(deal.costBasisLedger.directAcquisition || []),
+      ...(deal.costBasisLedger.financing || []),
+      ...(deal.costBasisLedger.preClosing || []),
+    ];
+    items.forEach(item => { acquisitionCosts += item.amount; });
+  }
+
+  // ── Holding Costs ───────────────────────────────────────────
+  let holdingCosts = 0;
+  deal.holdingCosts?.forEach(hc => { holdingCosts += hc.monthlyAmount * hc.monthsPaid; });
+
+  // ── Sell-Side Closing Costs + Commissions ───────────────────
+  let sellClosingCosts = fin?.finalClosingCosts || 0;
+  const buyerCommDollar = grossSalePrice * ((fin?.buyersAgentCommission || 0) / 100);
+  const sellerCommDollar = grossSalePrice * ((fin?.sellersAgentCommission || 0) / 100);
+  sellClosingCosts += buyerCommDollar + sellerCommDollar;
+  deal.exitCosts?.forEach(ec => {
+    sellClosingCosts += ec.isPercentage && ec.percentageRate
+      ? grossSalePrice * (ec.percentageRate / 100)
+      : ec.amount;
+  });
+
+  // ── Totals ──────────────────────────────────────────────────
+  const totalCostBasis = purchasePrice + actualRehabCost + acquisitionCosts + holdingCosts + sellClosingCosts;
+  const loanAmount = fin?.loanAmount || 0;
+  const outOfPocketCash = Math.max(0, totalCostBasis - loanAmount);
+
+  // ── Core KPIs ───────────────────────────────────────────────
+  const netProfit = grossSalePrice - totalCostBasis;
+  const roi = totalCostBasis > 0 ? (netProfit / totalCostBasis) * 100 : 0;
+  const coc = outOfPocketCash > 0 ? (netProfit / outOfPocketCash) * 100 : roi;
+  const profitMargin = grossSalePrice > 0 ? (netProfit / grossSalePrice) * 100 : 0;
+
+  // ── Time Metrics ────────────────────────────────────────────
+  let holdDays: number | null = null;
+  let dom: number | null = null;
+
+  if (deal.createdAt && fin?.soldDate) {
+    const ms = new Date(fin.soldDate).getTime() - new Date(deal.createdAt).getTime();
+    holdDays = Math.max(1, Math.round(ms / 86_400_000));
+  }
+
+  if (fin?.listingDate && fin?.soldDate) {
+    // Exact DOM from schema dates
+    const ms = new Date(fin.soldDate).getTime() - new Date(fin.listingDate).getTime();
+    dom = Math.max(0, Math.round(ms / 86_400_000));
+  } else if (holdDays !== null) {
+    // Estimate: rehab occupies the first portion of the hold, remainder is market time
+    const rehabDays = fin?.estimatedTimelineDays || Math.round(holdDays * 0.7);
+    dom = Math.max(1, holdDays - rehabDays);
+  }
+
+  return {
+    grossSalePrice,
+    purchasePrice,
+    projectedRehabCost,
+    actualRehabCost,
+    estimatedARV,
+    acquisitionCosts,
+    holdingCosts,
+    sellClosingCosts,
+    totalCostBasis,
+    loanAmount,
+    outOfPocketCash,
+    netProfit,
+    roi,
+    coc,
+    profitMargin,
+    dom,
+    holdDays,
   };
 }
 

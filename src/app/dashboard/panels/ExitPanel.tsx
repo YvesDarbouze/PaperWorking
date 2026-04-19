@@ -46,11 +46,10 @@ export default function ExitPanel() {
       setMlsLink(currentProject.exitAssets?.mlsListingLink || '');
       setImageCount(currentProject.exitAssets?.stagingImages?.length || 0);
       
-      // Convert CENTS from store to DOLLARS for UI
-      setActualSale(((currentProject.financials?.actualSalePrice || currentProject.financials?.estimatedARV || 0) / 100).toString());
+      setActualSale((currentProject.financials?.actualSalePrice || currentProject.financials?.estimatedARV || 0).toString());
       setBuyerComm(currentProject.financials?.buyersAgentCommission?.toString() || '3.0');
       setSellerComm(currentProject.financials?.sellersAgentCommission?.toString() || '3.0');
-      setClosingCosts(((currentProject.financials?.finalClosingCosts || 0) / 100).toString());
+      setClosingCosts((currentProject.financials?.finalClosingCosts || 0).toString());
     }
   }, [currentProject]);
 
@@ -79,6 +78,10 @@ export default function ExitPanel() {
       return d;
     });
     setDeals(updatedDeals);
+    // Record the listing date for exact DOM calculation in the Autopsy
+    if (!currentProject.financials?.listingDate) {
+      updateProjectFinancials(currentProject.id, { listingDate: new Date() });
+    }
     toast.success('DEBUT: Property synchronized with MLS.', { 
        style: { background: 'black', color: 'white', border: '1px solid #333' }
     });
@@ -87,10 +90,10 @@ export default function ExitPanel() {
   const handleExecuteSale = () => {
     // Convert DOLLARS back to CENTS for Store
     updateProjectFinancials(currentProject.id, {
-       actualSalePrice: Math.round(Number(actualSale) * 100),
+       actualSalePrice: Number(actualSale),
        buyersAgentCommission: Number(buyerComm),
        sellersAgentCommission: Number(sellerComm),
-       finalClosingCosts: Math.round(Number(closingCosts) * 100),
+       finalClosingCosts: Number(closingCosts),
        soldDate: new Date()
     });
     

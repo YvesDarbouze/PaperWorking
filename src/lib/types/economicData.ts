@@ -27,4 +27,3 @@ export const ZGEconResponseSchema = z.object({
 
 export type MarketReport = z.infer<typeof MarketReportSchema>;
 export type ZGEconResponse = z.infer<typeof ZGEconResponseSchema>;
- pocket

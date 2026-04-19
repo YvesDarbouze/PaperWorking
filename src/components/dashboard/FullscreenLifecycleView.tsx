@@ -76,7 +76,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                   const nextPhase = nextMap[deal.status];
                   if (nextPhase) {
                      try {
-                        await transitionDealPhase(deal.id, nextPhase as any);
+                        await transitionDealPhase(deal.id, deal.status as any, nextPhase as any, 'system');
                         toast.success(`Deal advanced to ${nextPhase}`);
                      } catch (e) {
                         toast.error('Failed to transition phase');
@@ -184,11 +184,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   const addRealExpense = async () => {
     setIsAdding(true);
     try {
-      await projectsService.addLedgerItem(deal.id, {
+      await projectsService.addLedgerItem(deal.id, deal.organizationId || '', {
         description: 'Sub-collection Field Update',
         amount: 2500,
         status: 'Pending',
-        category: 'Maintenance',
+        category: 'General',
         createdAt: new Date(),
         updatedAt: new Date()
       });

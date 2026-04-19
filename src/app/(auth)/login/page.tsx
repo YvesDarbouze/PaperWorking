@@ -1,3 +1,14 @@
+'use client';
+
+import { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
+import { useAuth } from '@/context/AuthContext';
+import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
+
 export default function LoginPage() {
   return (
     <Suspense fallback={<div className="animate-pulse bg-pw-bg h-[400px] w-full rounded-[48px]" />}>
@@ -132,7 +143,7 @@ function LoginPageInner() {
         <div>
            <div className="flex justify-between items-center mb-3">
              <label className="ag-label opacity-60">Security Key</label>
-             <Link href="/forgot-password" size="sm" className="text-[10px] font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity">
+             <Link href="/forgot-password" className="text-[10px] font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity">
                 Forgot?
              </Link>
            </div>

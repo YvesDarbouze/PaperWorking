@@ -32,11 +32,11 @@ export class MlsPropertyService {
 
     while (nextUrl && pageCount < maxPages) {
       pageCount++;
-      const response = await this.fetchPage<T>(nextUrl);
-      
+      const response: ODataResponse<T> = await this.fetchPage<T>(nextUrl);
+
       results.push(...response.value);
-      
-      const nextLink = response['@odata.nextLink'];
+
+      const nextLink: string | undefined = response['@odata.nextLink'];
       
       if (nextLink) {
         console.log(`📄 Page ${pageCount} complete. Moving to next page...`);

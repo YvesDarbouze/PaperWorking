@@ -1,17 +1,20 @@
-import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
-import { aiTools } from '@/lib/mcp/ai-tools';
+import { streamText, convertToModelMessages } from 'ai';
 
 /**
  * PaperWorking Chat API (Gemini + MCP Tools)
- * 
- * Orchestrates the conversation between the user and Gemini,
+ *
+ * Orchestrates conversation between the user and Gemini,
  * enabling automated access to Firestore projects and Stripe data.
+ *
+ * Uses dynamic imports to prevent build-time crashes when API keys are absent.
  */
 
-export const maxDuration = 30; // 30 seconds for complex tool-calling loops
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  const { google } = await import('@ai-sdk/google');
+  const { aiTools } = await import('@/lib/mcp/ai-tools');
+
   const { messages } = await req.json();
 
   const result = streamText({
@@ -29,11 +32,10 @@ export async function POST(req: Request) {
       2. If a user asks for financial status, use 'get_deal_metrics'.
       3. Be professional and concise. Use a helpful but business-oriented tone.
       4. If you lack information, ask for the specific deal ID or organization ID.
-      5. Strictly follow the PaperWorking palette and brand voice (focused on transparency and efficiency).
     `,
-    messages,
+    messages: convertToModelMessages(messages),
     tools: aiTools,
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }

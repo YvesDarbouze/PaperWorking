@@ -12,9 +12,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { period: string } }
+  { params }: { params: Promise<{ period: string }> }
 ) {
-  const { period } = params;
+  const { period } = await params;
   const searchParams = request.nextUrl.searchParams;
   const orgId = searchParams.get('organizationId');
 

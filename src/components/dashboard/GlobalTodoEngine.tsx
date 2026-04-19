@@ -51,7 +51,7 @@ function shortAddress(address: string): string {
  */
 function resolveAssignee(deal: Project, taskType: string): string | null {
   // Check deal team first
-  if (deal.dealTeam?.length) {
+  if (deal.projectTeam?.length) {
     const roleMap: Record<string, string[]> = {
       'rehab':     ['General Contractor'],
       'receipt':   ['General Contractor'],
@@ -61,7 +61,7 @@ function resolveAssignee(deal: Project, taskType: string): string | null {
     };
     const targetRoles = roleMap[taskType] || [];
     for (const role of targetRoles) {
-      const member = deal.dealTeam.find(m => m.dealRole === role && m.status === 'active');
+      const member = deal.projectTeam.find((m: { projectRole: string; status: string; displayName: string }) => m.projectRole === role && m.status === 'active');
       if (member) return member.displayName;
     }
   }

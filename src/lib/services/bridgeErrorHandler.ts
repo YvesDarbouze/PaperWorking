@@ -26,7 +26,8 @@ export class BridgeErrorHandler {
     const axiosError = error as AxiosError;
     
     // 1. Deep Extraction: Catch Bridge OData v1.1.0 Error Format
-    const errorBody = axiosError.response?.data?.error || axiosError.response?.data || {};
+    const responseData = axiosError.response?.data as Record<string, any> | undefined;
+    const errorBody = responseData?.error || responseData || {};
     const code = errorBody.code || 'UNKNOWN_CODE';
     const message = errorBody.message || axiosError.message || 'Unknown Bridge API Error';
     const target = errorBody.target || 'UNSPECIFIED_TARGET';

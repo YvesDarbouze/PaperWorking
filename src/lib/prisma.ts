@@ -11,17 +11,34 @@ import { PrismaClient } from '@prisma/client'
 };
 
 const prismaClientSingleton = () => {
-  return new PrismaClient({
-    datasourceUrl: process.env.DATABASE_URL,
-  })
+  return new PrismaClient()
 }
 
 declare global {
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton()
+/**
+ * Lazy Prisma accessor — only initializes the PrismaClient
+ * when DATABASE_URL is available (i.e. at runtime, not build time).
+ */
+function getPrismaClient(): PrismaClient {
+  if (!globalThis.prisma) {
+    globalThis.prisma = prismaClientSingleton();
+  }
+  return globalThis.prisma;
+}
 
-export default prisma
+/**
+ * Default export uses a Proxy to defer PrismaClient construction
+ * until the first actual database call, preventing build-time crashes.
+ */
+const prisma: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop: string | symbol) {
+    return (getPrismaClient() as any)[prop];
+  },
+});
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+export { getPrismaClient, prisma };
+export default prisma;
+

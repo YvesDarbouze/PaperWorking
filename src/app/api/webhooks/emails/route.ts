@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
-import { inboundEmailHandler } from '@/lib/services/inboundEmailHandler';
+
+// Force dynamic rendering — Firebase Admin cannot initialize at build time
+export const dynamic = 'force-dynamic';
 
 /**
  * Inbound Email Webhook
@@ -7,6 +9,8 @@ import { inboundEmailHandler } from '@/lib/services/inboundEmailHandler';
  */
 export async function POST(request: Request) {
   try {
+    // Dynamic import to prevent Firebase from initializing at build time
+    const { inboundEmailHandler } = await import('@/lib/services/inboundEmailHandler');
     const payload = await request.json();
     
     // Normalize format for our handler

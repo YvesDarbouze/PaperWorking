@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "db:seed": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts"
+    "db:seed": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.0",
@@ -56,6 +57,7 @@
     "eslint-config-next": "16.2.3",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
+    "lightningcss": "^1.32.0",
     "prisma": "^7.7.0",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.9",

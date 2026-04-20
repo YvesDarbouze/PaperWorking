@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Epic 2: Deep Financial Reporting Models ──────────────────
+
+model DealFinancials {
+  id                String   @id @default(uuid())
+  organizationId    String
+  linkedDealId      String?  @unique // Reference to Firestore Project ID
+
+  // Stored in Cents (BigInt for institutional scale)
+  purchasePrice     BigInt   @default(0)
+  salePrice         BigInt   @default(0)
+  closingCosts      BigInt   @default(0)
+  renovationCosts   BigInt   @default(0)
+  holdingCosts      BigInt   @default(0)
+
+  // Payee Waterfall summary
+  totalPayouts      BigInt   @default(0)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  payouts           PayoutWaterfall[]
+
+  @@index([organizationId])
+}
+
+model PayoutWaterfall {
+  id                String   @id @default(uuid())
+  financialsId      String
+  payeeName         String
+  payeeRole         String   // e.g. 'Equity Partner', 'Lender', 'Agent', 'Contractor'
+  payoutAmount      BigInt   // cents
+  isConfirmed       Boolean  @default(false)
+  
+  // Link back to Firestore LedgerItem
+  linkedItemId      String?  @unique
+  status            String   @default("Pending") // Pending, Approved, Rejected
+  
+  createdAt         DateTime @default(now())
+  
+  financials        DealFinancials @relation(fields: [financialsId], references: [id], onDelete: Cascade)
+}
+
+model PhaseTransition {
+  id                String   @id @default(uuid())
+  linkedProjectId   String
+  fromPhase         String
+  toPhase           String
+  transitionDate    DateTime @default(now())
+  userUid           String
+  notes             String?
+  
+  @@index([linkedProjectId])
+}
+
+// ── Phase 4: Communication Models ────────────────────────────
+
+model CommunicationLog {
+  id                String   @id @default(uuid())
+  linkedProjectId   String
+  organizationId    String
+  
+  type              String   // 'EMAIL_INBOUND' | 'EMAIL_OUTBOUND' | 'INTERNAL_COMMENT'
+  direction         String   // 'IN' | 'OUT'
+  
+  fromAddress       String
+  toAddress         String
+  subject           String?
+  body              String
+  
+  providerMessageId String?  @unique // SendGrid/Postmark ID
+  threadId          String?  // Logical grouping for UI
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([linkedProjectId])
+  @@index([organizationId])
+  @@index([threadId])
+}
+
+// ── Bridge API Models ────────────────────────────────────────
+
+model Property {
+  id                    String   @id @default(uuid())
+  listingKey            String   @unique
+  listingId             String   @unique
+  
+  standardStatus        String?
+  listPrice             BigInt?  // cents
+  unparsedAddress       String?
+  
+  // Final Formula Requirements
+  bedroomsTotal         Int?
+  bathroomsFull         Int?
+  bathroomsHalf         Int?
+  livingArea            Int?
+  lotSizeAcres          Float?
+  yearBuilt             Int?
+  publicRemarks         String?
+  media                 String?  // JSON stringified Media array
+  
+  bridgeModificationTimestamp DateTime
+  
+  // Geospatial data (stored as string for SQLite compatibility)
+  coordinates           String?  // format: "POINT(lon lat)"
+  
+  // Licensing & Provenance
+  feedTypes             String?  // JSON stringified array ["IDX", "VOW"]
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([standardStatus])
+  @@index([bridgeModificationTimestamp])
+}
+
+model BridgeSyncState {
+  id                               String   @id @default("replication_watermark")
+  mostRecentModificationTimestamp  DateTime
+  updatedAt                        DateTime @updatedAt
+}

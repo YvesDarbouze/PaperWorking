@@ -1,24 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PROTECTED_PREFIX = '/dashboard';
 const AUTH_PATHS = new Set(['/login', '/register', '/forgot-password']);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = request.cookies.get('__session')?.value;
 
-  const isProtected = pathname.startsWith(PROTECTED_PREFIX);
-  const isAuthPath = AUTH_PATHS.has(pathname);
-
-  if (isProtected && !session) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  // Already authenticated — skip auth pages
-  if (isAuthPath && session) {
+  // Redirect already-authenticated users away from auth pages.
+  // Dashboard protection is handled client-side in dashboard/layout.tsx
+  // to avoid race conditions between Firebase Auth and the session cookie.
+  if (AUTH_PATHS.has(pathname) && session) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -26,5 +18,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/register', '/forgot-password'],
+  matcher: ['/login', '/register', '/forgot-password'],
 };

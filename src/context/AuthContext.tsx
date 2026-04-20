@@ -10,20 +10,26 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — AuthContext (Phase 2.1)
+   PaperWorking — AuthContext (Phase 2.2)
    
    Single source of truth for Firebase Authentication.
    Provides:
      • user / loading / error state
      • login / register / logout / resetPassword actions
-     • Social SSO: Google & Facebook
+     • Social SSO: Google & Facebook via Redirect (Rock Solid)
+     • Magic Link (Passwordless) Auth
      • Automatic server-side session cookie sync
+     • Robust Organization Context
    ═══════════════════════════════════════════════════════ */
 
 interface AuthContextType {
@@ -35,6 +41,8 @@ interface AuthContextType {
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
+  sendMagicLink: (email: string) => Promise<void>;
+  verifyMagicLink: (email: string, url: string) => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -82,7 +90,6 @@ async function syncSessionCookie(user: User | null) {
       console.error('Failed to sync session cookie:', err);
     }
   } else {
-    // User logged out — clear the server cookie
     try {
       await fetch('/api/auth/session', { method: 'DELETE' });
     } catch (err) {
@@ -97,12 +104,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Listen to auth state changes + sync session cookie
+  // 1. Check for Redirect Result on Mount
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+          await provisionSocialUser(result.user);
+          await syncSessionCookie(result.user);
+        }
+      })
+      .catch((err) => {
+        console.error('OAuth Redirect Error:', err);
+        setError(getAuthErrorMessage(err.code));
+      });
+  }, []);
+
+  // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
     let profileUnsubscribe: (() => void) | null = null;
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      // Clean up the previous user's profile listener before attaching a new one
       if (profileUnsubscribe) {
         profileUnsubscribe();
         profileUnsubscribe = null;
@@ -111,7 +132,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(firebaseUser);
 
       if (firebaseUser) {
-        // Fetch Firestore profile to get Role and Organization info in real-time
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
           if (snap.exists()) setProfile(snap.data());
@@ -120,9 +140,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null);
       }
 
-      setLoading(false);
-      // Sync server-side session cookie for middleware protection
-      await syncSessionCookie(firebaseUser);
+      try {
+        await syncSessionCookie(firebaseUser);
+      } finally {
+        setLoading(false);
+      }
     });
 
     return () => {
@@ -133,31 +155,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const clearError = () => setError(null);
 
-  /**
-   * Translates Firebase error codes into user-friendly messages.
-   */
   function getAuthErrorMessage(code: string): string {
     switch (code) {
-      case 'auth/invalid-email':
-        return 'Please enter a valid email address.';
-      case 'auth/user-disabled':
-        return 'This account has been disabled. Contact support.';
+      case 'auth/invalid-email': return 'Please enter a valid email address.';
+      case 'auth/user-disabled': return 'This account has been disabled. Contact support.';
       case 'auth/user-not-found':
       case 'auth/wrong-password':
-      case 'auth/invalid-credential':
-        return 'Invalid email or password.';
-      case 'auth/email-already-in-use':
-        return 'An account with this email already exists.';
-      case 'auth/weak-password':
-        return 'Password must be at least 8 characters.';
-      case 'auth/too-many-requests':
-        return 'Account temporarily locked due to multiple failed attempts. Try resetting your password.';
-      case 'auth/network-request-failed':
-        return 'Network error. Check your connection and try again.';
-      case 'auth/popup-closed-by-user':
-        return 'Sign-in popup was closed. Please try again.';
-      default:
-        return 'An unexpected error occurred. Please try again.';
+      case 'auth/invalid-credential': return 'Invalid email or password.';
+      case 'auth/email-already-in-use': return 'An account with this email already exists.';
+      case 'auth/weak-password': return 'Password must be at least 8 characters.';
+      case 'auth/too-many-requests': return 'Account temporarily locked. Try resetting your password.';
+      case 'auth/network-request-failed': return 'Network error. Check your connection.';
+      case 'auth/popup-closed-by-user': return 'Sign-in was cancelled. Please try again.';
+      case 'auth/redirect-cancelled-by-user': return 'Sign-in redirect was cancelled.';
+      default: return 'An unexpected error occurred. Please try again.';
     }
   }
 
@@ -176,7 +187,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
-
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
         email: newUser.email,
@@ -188,7 +198,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-
       await syncSessionCookie(newUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
@@ -200,9 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
-      const { user: googleUser } = await signInWithPopup(auth, provider);
-      await provisionSocialUser(googleUser);
-      await syncSessionCookie(googleUser);
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -213,11 +220,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const provider = new FacebookAuthProvider();
-      const { user: fbUser } = await signInWithPopup(auth, provider);
-      await provisionSocialUser(fbUser);
-      await syncSessionCookie(fbUser);
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      throw err;
+    }
+  };
+
+  const sendMagicLink = async (email: string) => {
+    setError(null);
+    try {
+      const actionCodeSettings = {
+        url: `${window.location.origin}/login/finish`,
+        handleCodeInApp: true,
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      window.localStorage.setItem('emailForSignIn', email);
+    } catch (err: any) {
+      setError(getAuthErrorMessage(err.code));
+      throw err;
+    }
+  };
+
+  const verifyMagicLink = async (email: string, url: string) => {
+    setError(null);
+    try {
+      if (isSignInWithEmailLink(auth, url)) {
+        const { user: magicUser } = await signInWithEmailLink(auth, email, url);
+        await provisionSocialUser(magicUser);
+        await syncSessionCookie(magicUser);
+        window.localStorage.removeItem('emailForSignIn');
+      } else {
+        throw new Error('Invalid magic link.');
+      }
+    } catch (err: any) {
+      setError(getAuthErrorMessage(err.code || ''));
       throw err;
     }
   };
@@ -253,6 +290,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         loginWithGoogle,
         loginWithFacebook,
+        sendMagicLink,
+        verifyMagicLink,
         logout,
         resetPassword,
         clearError,

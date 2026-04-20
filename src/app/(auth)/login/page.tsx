@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
-import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, Wand2, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
   return (
@@ -21,10 +21,32 @@ function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/dashboard';
-  const { login, loginWithGoogle, loginWithFacebook, error: authError, clearError } = useAuth();
+  
+  const {
+    login,
+    loginWithGoogle,
+    loginWithFacebook,
+    sendMagicLink,
+    error: authError,
+    clearError,
+    user,
+    loading,
+  } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace(redirectTo);
+    }
+  }, [user, loading, router, redirectTo]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
+  
+  // Magic Link State
+  const [loginMode, setLoginMode] = useState<'password' | 'magic-link'>('password');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [magicEmail, setMagicEmail] = useState('');
 
   const {
     register,
@@ -36,12 +58,28 @@ function LoginPageInner() {
     defaultValues: { email: '', password: '' },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {
+  const onSubmitPassword = async (data: LoginFormValues) => {
     setIsSubmitting(true);
     clearError();
     try {
       await login(data.email, data.password);
       router.push(redirectTo);
+    } catch {
+      // Error is set via AuthContext
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onSendMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!magicEmail) return;
+    
+    setIsSubmitting(true);
+    clearError();
+    try {
+      await sendMagicLink(magicEmail);
+      setMagicLinkSent(true);
     } catch {
       // Error is set via AuthContext
     } finally {
@@ -55,10 +93,8 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      router.push(redirectTo);
+      // We don't router.push here because signInWithRedirect fully navigates the user away!
     } catch {
-      // Error is set via AuthContext
-    } finally {
       setLoadingProvider(null);
     }
   };
@@ -87,7 +123,7 @@ function LoginPageInner() {
           type="button"
           onClick={() => handleSocialLogin('google')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group"
+          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >
           {loadingProvider === 'google' ? (
             <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
@@ -105,7 +141,7 @@ function LoginPageInner() {
           type="button"
           onClick={() => handleSocialLogin('facebook')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group"
+          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >
           {loadingProvider === 'facebook' ? (
             <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
@@ -117,66 +153,129 @@ function LoginPageInner() {
         </button>
       </div>
 
-      {/* ─── Divider ─── */}
-      <div className="relative mb-10 flex items-center gap-4">
-        <div className="flex-1 h-[1px] bg-pw-border/10" />
-        <p className="ag-label opacity-40">or use credentials</p>
-        <div className="flex-1 h-[1px] bg-pw-border/10" />
+      {/* ─── Mode Toggles ─── */}
+      <div className="flex bg-pw-bg/50 p-1 rounded-full mb-8">
+        <button
+          onClick={() => setLoginMode('password')}
+          className={`flex-1 h-10 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+            loginMode === 'password' ? 'bg-white shadow-sm text-pw-black' : 'text-pw-muted hover:text-pw-black'
+          }`}
+        >
+          Password
+        </button>
+        <button
+          onClick={() => setLoginMode('magic-link')}
+          className={`flex-1 h-10 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+            loginMode === 'magic-link' ? 'bg-white shadow-sm text-pw-black' : 'text-pw-muted hover:text-pw-black'
+          }`}
+        >
+          Magic Link
+        </button>
       </div>
 
-      {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div>
-          <label className="ag-label mb-3 block opacity-60">Corporate Email</label>
-          <div className="relative group">
-            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
-            <input
-              type="email"
-              {...register('email')}
-              placeholder="name@company.com"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
-            />
-          </div>
-          {errors.email && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest">{errors.email.message}</p>}
-        </div>
+      {/* ─── Forms ─── */}
+      <div className="relative overflow-hidden w-full transition-all duration-500 min-h-[220px]">
+        {loginMode === 'password' ? (
+          <form onSubmit={handleSubmit(onSubmitPassword)} className="space-y-6 absolute w-full animate-in fade-in slide-in-from-left-4 duration-300">
+            <div>
+              <label className="ag-label mb-3 block opacity-60">Corporate Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                <input
+                  type="email"
+                  {...register('email')}
+                  placeholder="name@company.com"
+                  className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                />
+              </div>
+              {errors.email && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest">{errors.email.message}</p>}
+            </div>
 
-        <div>
-           <div className="flex justify-between items-center mb-3">
-             <label className="ag-label opacity-60">Security Key</label>
-             <Link href="/forgot-password" className="text-[10px] font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity">
-                Forgot?
-             </Link>
-           </div>
-          <div className="relative group">
-            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
-            <input
-              type={showPassword ? 'text' : 'password'}
-              {...register('password')}
-              placeholder="Enter password"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
-            />
+            <div>
+              <div className="flex justify-between items-center mb-3">
+                <label className="ag-label opacity-60">Security Key</label>
+                <Link href="/forgot-password" className="text-[10px] font-bold uppercase tracking-widest opacity-20 hover:opacity-100 transition-opacity">
+                  Forgot?
+                </Link>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  {...register('password')}
+                  placeholder="Enter password"
+                  className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {errors.password && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest">{errors.password.message}</p>}
+            </div>
+
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+              type="submit"
+              disabled={isSubmitting || !!loadingProvider}
+              className="w-full h-14 bg-pw-black text-white rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 shadow-xl"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Authorize Access'}
             </button>
-          </div>
-          {errors.password && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest">{errors.password.message}</p>}
-        </div>
+          </form>
+        ) : (
+          <div className="absolute w-full animate-in fade-in slide-in-from-right-4 duration-300">
+            {magicLinkSent ? (
+              <div className="text-center p-8 bg-pw-bg/50 rounded-3xl border border-pw-border/10">
+                <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
+                <h3 className="font-medium text-pw-black mb-2 tracking-tight">Check your inbox</h3>
+                <p className="text-xs text-pw-muted leading-relaxed">
+                  We've sent a secure single-use login link to <strong className="text-pw-black">{magicEmail}</strong>.
+                </p>
+                <button 
+                  onClick={() => setMagicLinkSent(false)}
+                  className="mt-6 text-[10px] font-bold uppercase tracking-widest text-pw-muted hover:text-pw-black transition-colors"
+                >
+                  Use a different email
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={onSendMagicLink} className="space-y-6">
+                <div>
+                  <label className="ag-label mb-3 block opacity-60">Send Magic Link to</label>
+                  <div className="relative group">
+                    <Wand2 className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                    <input
+                      type="email"
+                      value={magicEmail}
+                      onChange={(e) => setMagicEmail(e.target.value)}
+                      placeholder="name@company.com"
+                      required
+                      className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                    />
+                  </div>
+                  <p className="mt-3 ml-6 text-[10px] uppercase tracking-widest text-pw-muted leading-relaxed max-w-[280px]">
+                    We'll email you a secure link so you can sign in without a password.
+                  </p>
+                </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting || !!loadingProvider}
-          className="w-full h-14 bg-pw-black text-white rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 shadow-xl"
-        >
-          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Authorize Access'}
-        </button>
-      </form>
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !!loadingProvider || !magicEmail}
+                  className="w-full h-14 bg-pw-black text-white rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 shadow-xl"
+                >
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send Magic Link'}
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ─── Signup Footer ─── */}
-      <div className="mt-12 text-center pt-8 border-t border-pw-border/10">
+      <div className="mt-14 text-center pt-8 border-t border-pw-border/10">
         <p className="text-xs text-pw-muted">
           New to the platform?{' '}
           <Link href="/register" className="text-pw-black font-bold hover:underline transition-all">

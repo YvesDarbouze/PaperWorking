@@ -11,7 +11,14 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, User, X, CheckCircle2 } 
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError } = useAuth();
+  const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError, user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,10 +77,9 @@ export default function RegisterPage() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      router.push('/dashboard');
+      // signInWithRedirect navigates the browser away; the useEffect above
+      // handles the redirect to /dashboard when the user returns.
     } catch {
-      // Error is set via AuthContext
-    } finally {
       setLoadingProvider(null);
     }
   };

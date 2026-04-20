@@ -15,3 +15,26 @@ env:
     value: "--max-old-space-size=4096"
     availability:
       - BUILD
+
+  # ─── Firebase Admin SDK (server-side token verification) ───────────────
+  # Non-sensitive — safe to store as plain values
+  - variable: FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - RUNTIME
+
+  # Sensitive — stored in Google Secret Manager.
+  # Create with: gcloud secrets create FIREBASE_CLIENT_EMAIL --data-file=-
+  # then paste: firebase-adminsdk-XXXXX@paperworking-97055.iam.gserviceaccount.com
+  - variable: FIREBASE_CLIENT_EMAIL
+    secret: FIREBASE_CLIENT_EMAIL
+    availability:
+      - RUNTIME
+
+  # Sensitive — stored in Google Secret Manager.
+  # Create with: gcloud secrets create FIREBASE_PRIVATE_KEY --data-file=-
+  # then paste the full PEM key (actual newlines are fine in Secret Manager)
+  - variable: FIREBASE_PRIVATE_KEY
+    secret: FIREBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME

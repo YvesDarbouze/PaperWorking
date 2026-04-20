@@ -63,6 +63,10 @@
     "ts-jest": "^29.4.9",
     "typescript": "^5"
   },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "lightningcss-linux-arm64-gnu": "1.32.0"
+  },
   "overrides": {
     "mcp-handler": {
       "@modelcontextprotocol/sdk": "$@modelcontextprotocol/sdk"

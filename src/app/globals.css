@@ -11,13 +11,13 @@
   /* ─── Antigravity Grayscale Palette ─── */
   --pw-bg:        #f2f2f2; /* Sourcing - Lightest */
   --pw-surface:   #ffffff;
-  --pw-border:    #cccccc; /* Contract */
+  --pw-border:    #e8eaed; /* Subtle border — matches Antigravity card edges */
   --pw-muted:     #a5a5a5; /* Rehab */
   --pw-subtle:    #7f7f7f; /* Listed */
   --pw-fg:        #595959; /* Closed - Darkest foreground */
-  --pw-black:     #595959;
+  --pw-black:     #0d0d0d; /* Near-black — Antigravity primary button & headings */
   --pw-white:     #ffffff;
-  --pw-accent:    #595959;
+  --pw-accent:    #1a73e8; /* Google blue — status labels, links */
 
   --phase-sourcing: #f2f2f2;
   --phase-contract: #cccccc;
@@ -65,8 +65,8 @@
   --color-phase-findandfund: var(--phase-findandfund);
   --color-phase-findandfund-accent: var(--phase-findandfund-accent);
 
-  /* ─── Font System ─── */
-  --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;
+  /* ─── Font System — DM Sans (closest to Google Sans used on antigravity.google) ─── */
+  --font-sans: "DM Sans", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
   /* ─── Antigravity Radius — Soft & Large ─── */
@@ -87,9 +87,18 @@ body {
   background-color: var(--pw-bg);
   color: var(--pw-fg);
   font-feature-settings: "cv02", "cv03", "cv04", "ss01";
-  letter-spacing: -0.022em; /* Antigravity tight tracking */
+  letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+}
+
+/* Antigravity heading weights & tracking */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--pw-black);
+  line-height: 1.15;
 }
 
 html {
@@ -114,34 +123,45 @@ html {
    Antigravity Utility Classes
    ═══════════════════════════════════════════════════════ */
 
-/* Antigravity Pill Button */
+/* ── Antigravity Primary Pill Button ── */
+/* Black pill, white text — matches "Download for Apple Silicon", "Download" on antigravity.google */
 .ag-button {
   background: var(--pw-black);
-  color: var(--pw-white);
-  padding: 1rem 2.5rem;
+  color: #ffffff;
+  padding: 0.75rem 1.75rem;
   border-radius: var(--radius-full);
-  font-size: 0.875rem;
+  font-size: 0.9375rem;   /* 15px */
   font-weight: 500;
-  text-transform: none; /* Antigravity uses sentence case often */
   letter-spacing: -0.01em;
-  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  line-height: 1.4;
   border: 1px solid transparent;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   justify-content: center;
   cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .ag-button:hover {
-  transform: scale(1.02) translateY(-1px);
-  filter: brightness(1.1);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  opacity: 0.88;
+  transform: translateY(-1px);
 }
 
+.ag-button:active {
+  transform: scale(0.97);
+}
+
+/* ── Antigravity Secondary Pill Button ── */
+/* Light gray pill, dark text — matches "Download for Intel", "Get plan", "Explore use cases" */
 .ag-button-secondary {
-  background: var(--pw-surface);
-  color: var(--pw-fg);
-  border: 1px solid var(--pw-border);
+  background: #ebebeb;
+  color: var(--pw-black);
+  border: 1px solid transparent;
+}
+
+.ag-button-secondary:hover {
+  background: #e0e0e0;
 }
 
 /* Soft Card */

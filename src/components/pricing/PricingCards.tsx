@@ -176,29 +176,29 @@ export default function PricingCards({
 }: PricingCardsProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
-      {/* ── Billing Toggle ── */}
+      {/* ── Billing Toggle — Antigravity pill selector ── */}
       <div className="flex justify-center mb-14">
-        <div className="flex items-center p-1 bg-phase-1">
+        <div className="flex items-center p-1 bg-[#ebebeb] rounded-full">
           <button
             onClick={() => onToggleAnnual(false)}
-            className={`px-6 py-2.5 text-sm font-medium transition-all ${
+            className={`px-6 py-2 text-sm font-medium rounded-full transition-all ${
               !isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
+                ? 'bg-white shadow-sm text-[#0d0d0d]'
+                : 'text-[#595959] hover:text-[#0d0d0d]'
             }`}
           >
             Monthly
           </button>
           <button
             onClick={() => onToggleAnnual(true)}
-            className={`flex items-center px-6 py-2.5 text-sm font-medium transition-all ${
+            className={`flex items-center px-6 py-2 text-sm font-medium rounded-full transition-all ${
               isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
+                ? 'bg-white shadow-sm text-[#0d0d0d]'
+                : 'text-[#595959] hover:text-[#0d0d0d]'
             }`}
           >
             Annual
-            <span className="ml-2 text-xs uppercase tracking-wider text-phase-4 font-bold bg-dashboard border border-phase-1 px-2 py-0.5">
+            <span className="ml-2 text-xs font-semibold text-[#1a73e8] px-2 py-0.5 bg-blue-50 rounded-full">
               Save 20%
             </span>
           </button>
@@ -208,33 +208,31 @@ export default function PricingCards({
       {/* ── 3-Column Cards Grid ── */}
       <div
         ref={cardsRef}
-        className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-phase-1 bg-white shadow-sm"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6"
       >
         {tiers.map((tier, tierIdx) => {
           const price = isAnnual ? tier.annualPrice : tier.monthlyPrice;
           const period = isAnnual ? '/yr' : '/mo';
           const planLabel = `${tier.name} ${isAnnual ? 'Annual' : 'Monthly'}`;
-          const isLast = tierIdx === tiers.length - 1;
+
+          /* Status labels matching Antigravity: "Generally Available", "Recommended", "Coming soon" */
+          const statusLabels = ['Generally Available', 'Recommended', 'Coming soon'];
 
           return (
             <div
               key={tier.id}
               className={`
-                p-8 flex flex-col transition-all duration-300
-                ${!isLast ? 'border-r border-phase-1 md:border-r' : ''}
-                ${tier.isAnchored ? 'bg-dashboard relative' : 'bg-white'}
-                border-b md:border-b-0 border-phase-1
+                p-8 flex flex-col rounded-2xl transition-all duration-300 relative
+                ${tier.isAnchored ? 'bg-[#f8f9fa]' : 'bg-white border border-[#e8eaed]'}
               `}
             >
-              {/* ── Anchor Badge ── */}
-              {tier.isAnchored && tier.anchorBadge && (
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black text-white text-xs font-bold uppercase tracking-widest px-5 py-1.5 whitespace-nowrap">
-                  {tier.anchorBadge}
-                </div>
-              )}
+              {/* ── Status Label (blue, like "Recommended" on Antigravity) ── */}
+              <p className="text-sm font-medium text-[#1a73e8] mb-3">
+                {statusLabels[tierIdx]}
+              </p>
 
               {/* ── Plan Name ── */}
-              <h3 className="text-xl font-bold text-black tracking-tight">
+              <h3 className="text-2xl font-bold tracking-tight" style={{ color: '#0d0d0d' }}>
                 {tier.name}
               </h3>
 
@@ -245,10 +243,10 @@ export default function PricingCards({
 
               {/* ── Price ── */}
               <div className="mt-8 mb-1">
-                <span className="text-5xl font-medium text-black tracking-tight tabular-nums">
+                <span className="text-5xl font-semibold tracking-tight tabular-nums" style={{ color: '#0d0d0d' }}>
                   <AnimatedPrice value={price} />
                 </span>
-                <span className="text-sm font-medium text-phase-2 ml-1">
+                <span className="text-sm font-medium text-phase-3 ml-1">
                   {period}
                 </span>
               </div>
@@ -264,7 +262,7 @@ export default function PricingCards({
 
               {/* ── Targeted Social Proof ── */}
               {tier.socialProof ? (
-                <div className="mb-6 px-3 py-3 bg-white border border-phase-1">
+                <div className="mb-6 px-3 py-3 bg-white rounded-xl border border-[#e8eaed]">
                   <div className="flex items-center gap-0.5 mb-1.5">
                     {[...Array(5)].map((_, i) => (
                       <Star
@@ -284,23 +282,16 @@ export default function PricingCards({
                 <div className="mb-6" />
               )}
 
-              {/* ── Primary CTA ── */}
+              {/* ── Primary CTA — Antigravity full-width pill ── */}
               <button
                 onClick={() => onSelectPlan(planLabel)}
-                className={`
-                  w-full font-medium py-3.5 text-sm transition-all active:scale-[0.97]
-                  ${
-                    tier.isAnchored
-                      ? 'bg-black text-white hover:bg-phase-4 shadow-sm'
-                      : 'bg-dashboard text-phase-4 hover:bg-phase-1 border border-phase-1'
-                  }
-                `}
+                className={`ag-button w-full ${!tier.isAnchored ? 'ag-button-secondary' : ''}`}
               >
                 {tier.ctaLabel}
               </button>
 
               {/* ── CTA Microcopy ── */}
-              <p className="text-center text-xs text-phase-2 font-medium uppercase tracking-widest mt-2.5">
+              <p className="text-center text-xs text-phase-2 font-medium mt-2.5">
                 {tier.ctaMicrocopy}
               </p>
 

@@ -33,6 +33,7 @@ const LANES: LaneDef[] = [
   { id: 'pipeline',    label: 'Deal Pipeline',        shortLabel: 'Pipeline' },
   { id: 'evaluation',  label: 'Capital & Evaluation', shortLabel: 'Eval' },
   { id: 'closing',     label: 'The Closing Room',     shortLabel: 'Closing' },
+  { id: 'rehab',       label: 'The Rehab Engine',     shortLabel: 'Rehab'   },
   { id: 'engine',      label: 'The Engine Room',      shortLabel: 'Engine' },
   { id: 'exit',        label: 'The Exit Hub',         shortLabel: 'Exit' },
 ];

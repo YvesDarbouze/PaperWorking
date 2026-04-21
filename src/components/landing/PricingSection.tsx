@@ -191,7 +191,7 @@ const PRICING_FAQ = [
   {
     question: 'How does the free trial work?',
     answer:
-      'Every new account starts with a full-access 14-day free trial — no credit card required. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.',
+      "Every new account starts with a full-access 14-day free trial — no credit card required. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.",
   },
   {
     question: 'What happens if I cancel?',

@@ -8,6 +8,7 @@ import { useUserStore } from '@/store/userStore';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { usePaywall } from '@/hooks/usePaywall';
 import { projectsService } from '@/lib/firebase/projects';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { CardSkeleton, ChartSkeleton } from '@/components/ui/skeletons';
@@ -45,6 +46,7 @@ export default function PipelinePanel() {
   useAllDealsSync();
   const { user, profile } = useAuth();
   const { isLead, role } = usePermissions();
+  const { requireSubscription } = usePaywall();
 
   const metrics = useProjectStore(state => state.metrics);
   const projects = useProjectStore(state => state.projects);
@@ -57,13 +59,13 @@ export default function PipelinePanel() {
 
   const handleAddDeal = () => {
     if (!user) return;
-    
-    if (!profile?.organizationId || profile.organizationId === 'org_placeholder') {
-      toast.error('Organization sync in progress. Please wait a moment...');
-      return;
-    }
-
-    setIsWizardOpen(true);
+    requireSubscription(() => {
+      if (!profile?.organizationId || profile.organizationId === 'org_placeholder') {
+        toast.error('Organization sync in progress. Please wait a moment...');
+        return;
+      }
+      setIsWizardOpen(true);
+    });
   };
 
   const handleWizardSuccess = (projectId: string) => {

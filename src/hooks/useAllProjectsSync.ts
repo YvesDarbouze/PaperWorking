@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useProjectStore } from '@/store/projectStore';
 import { Project, LedgerItem } from '@/types/schema';
@@ -15,25 +15,41 @@ export function useAllDealsSync() {
   // Track counts to trigger notifications
   const prevLedgerCounts = useRef<Record<string, number>>({});
 
-  // 1. Sync All Deals (Filtered by Org for security rules)
+  // 1. Sync Deals — guest-scoped to a single invited project; owners get full org portfolio
   useEffect(() => {
     if (!profile?.organizationId || profile.organizationId === 'org_placeholder') return;
 
+    // Guest tier: user arrived via invite link — scope to their one invited project only
+    if (profile.inviteToken && profile.invitedToProjectId) {
+      const projectRef = doc(db, 'projects', profile.invitedToProjectId);
+      const unsubscribe = onSnapshot(
+        projectRef,
+        (snap) => {
+          setDeals(snap.exists() ? [{ id: snap.id, ...snap.data() } as Project] : []);
+        },
+        (error) => {
+          console.error('Guest Project Sync Error:', error);
+        },
+      );
+      return () => unsubscribe();
+    }
+
+    // Owner / org-team tier: full portfolio scoped to the organization
     const projectsRef = collection(db, 'projects');
     const q = query(projectsRef, where('organizationId', '==', profile.organizationId));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const liveDeals: Project[] = [];
-      snapshot.forEach((doc) => {
-        liveDeals.push({ id: doc.id, ...doc.data() } as Project);
+      snapshot.forEach((d) => {
+        liveDeals.push({ id: d.id, ...d.data() } as Project);
       });
       setDeals(liveDeals);
     }, (error) => {
-      console.error("All Deals Sync Error: ", error);
+      console.error('All Deals Sync Error:', error);
     });
 
     return () => unsubscribe();
-  }, [setDeals, profile?.organizationId]);
+  }, [setDeals, profile?.organizationId, profile?.inviteToken, profile?.invitedToProjectId]);
 
   // 2. Sync Active Deal's Ledger (Sub-collection)
   useEffect(() => {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useProjectStore, selectActiveProjectMetrics } from '@/store/projectStore';
-import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle, Cloud, Wrench } from 'lucide-react';
+import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle, Cloud } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -255,12 +255,6 @@ export default function EnginePanel() {
                <WhatIfSimulator />
             </div>
 
-            {/* Holding & Timeline — live cost basis clock */}
-            <div className="mt-8">
-              <Suspense fallback={<div className="h-64 border border-pw-border bg-pw-surface animate-pulse" />}>
-                <HoldingTimeline />
-              </Suspense>
-            </div>
           </div>
         )}
 

@@ -155,7 +155,7 @@ const COMPARISON_FEATURES: ComparisonFeature[] = [
 const TESTIMONIALS = [
   {
     quote:
-      'I used to track everything on a messy spreadsheet. PaperWorking's pipeline view lets me see exactly where every deal is — and I closed 2 more flips last quarter.',
+      "I used to track everything on a messy spreadsheet. PaperWorking's pipeline view lets me see exactly where every deal is — and I closed 2 more flips last quarter.",
     author: 'Marcus T.',
     role: 'Solo Flipper, Charlotte NC',
     icon: Users,
@@ -169,7 +169,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      'Since listing on PaperWorking's Vendor Network, I get 3–5 qualified leads per week from investor teams who actually have projects ready to go.',
+      "Since listing on PaperWorking's Vendor Network, I get 3–5 qualified leads per week from investor teams who actually have projects ready to go.",
     author: 'David R.',
     role: 'Licensed General Contractor, Miami FL',
     icon: Wrench,

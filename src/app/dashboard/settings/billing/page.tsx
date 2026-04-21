@@ -1,35 +1,61 @@
 'use client';
 
 import { useState } from 'react';
-import { CreditCard, CheckCircle2, AlertTriangle, Loader2, ExternalLink, ArrowLeft } from 'lucide-react';
+import { CreditCard, CheckCircle2, AlertTriangle, Loader2, ExternalLink, Download, FileText, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
-const PLAN_LABELS: Record<string, { label: string; color: string }> = {
-  'Individual':      { label: 'Individual',           color: 'text-pw-fg' },
-  'Team':            { label: 'Investor Team',         color: 'text-pw-black' },
-  'Lawyer Lead-Gen': { label: 'Service Professional',  color: 'text-pw-fg' },
-  'None':            { label: 'No active plan',        color: 'text-pw-muted' },
+/* ═══════════════════════════════════════════════════════
+   Billing & Subscription Settings
+
+   Refactored to render inside the settings layout shell.
+   Four cards:
+   1. Current Plan Overview — tier + pricing + next billing
+   2. Payment Method — masked card on file
+   3. Invoice History — downloadable table
+   4. Account Details — summary info
+   ═══════════════════════════════════════════════════════ */
+
+const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
+  'Individual':      { label: 'Individual',          price: '$59',  period: '/mo' },
+  'Team':            { label: 'Investor Team',       price: '$99',  period: '/mo' },
+  'Lawyer Lead-Gen': { label: 'Service Professional', price: '$79', period: '/mo' },
+  'None':            { label: 'No active plan',      price: '—',    period: ''    },
 };
 
 const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
-  active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2    },
-  past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle   },
-  canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',    Icon: AlertTriangle   },
-  inactive: { label: 'Inactive', cls: 'bg-gray-100  text-pw-muted  border-pw-border',  Icon: AlertTriangle   },
+  active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2  },
+  past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle },
+  canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',     Icon: AlertTriangle },
+  inactive: { label: 'Inactive', cls: 'bg-gray-100  text-pw-muted  border-pw-border',   Icon: AlertTriangle },
 };
+
+// Placeholder invoices for demo
+const MOCK_INVOICES = [
+  { id: 'INV-2026-04', date: 'Apr 1, 2026', amount: '$59.00', status: 'Paid' },
+  { id: 'INV-2026-03', date: 'Mar 1, 2026', amount: '$59.00', status: 'Paid' },
+  { id: 'INV-2026-02', date: 'Feb 1, 2026', amount: '$59.00', status: 'Paid' },
+  { id: 'INV-2026-01', date: 'Jan 1, 2026', amount: '$59.00', status: 'Paid' },
+  { id: 'INV-2025-12', date: 'Dec 1, 2025', amount: '$59.00', status: 'Paid' },
+];
 
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError]     = useState<string | null>(null);
 
-  const plan   = profile?.subscriptionPlan   ?? 'None';
-  const status = profile?.subscriptionStatus ?? 'inactive';
+  const plan    = profile?.subscriptionPlan   ?? 'None';
+  const status  = profile?.subscriptionStatus ?? 'inactive';
+  const lastFour = profile?.lastFour ?? '4242';
 
-  const planInfo   = PLAN_LABELS[plan]   ?? PLAN_LABELS['None'];
+  const planInfo    = PLAN_PRICING[plan]   ?? PLAN_PRICING['None'];
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
   const StatusIcon  = statusBadge.Icon;
+
+  // Calculate next billing date (mock: 1st of next month)
+  const now = new Date();
+  const nextBilling = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const nextBillingStr = nextBilling.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   const openPortal = async () => {
     if (!user) return;
@@ -53,122 +79,183 @@ export default function BillingSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-pw-bg">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="space-y-6">
 
-        {/* Back nav */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-pw-muted hover:text-pw-black transition-colors mb-10"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-        </Link>
+      {/* ═══ Card 1: Current Plan Overview ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Current Plan</h2>
 
-        <h1 className="text-3xl font-light tracking-tight text-pw-black mb-1">Billing &amp; Subscription</h1>
-        <p className="text-sm text-pw-muted mb-10">Manage your plan, payment method, and invoices.</p>
-
-        {/* Current Plan Card */}
-        <section className="bg-white border border-pw-border p-6 mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Current Plan</h2>
-
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className={`text-2xl font-medium ${planInfo.color}`}>{planInfo.label}</p>
-              {plan === 'None' && (
-                <p className="text-sm text-pw-muted mt-1">
-                  You don't have an active subscription.{' '}
-                  <Link href="/pricing" className="underline hover:text-pw-black transition-colors">
-                    View plans →
-                  </Link>
-                </p>
-              )}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-light text-pw-black">{planInfo.price}</span>
+              <span className="text-sm text-pw-muted">{planInfo.period}</span>
             </div>
-
-            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold border px-2.5 py-1 ${statusBadge.cls}`}>
-              <StatusIcon className="w-3.5 h-3.5" />
-              {statusBadge.label}
-            </span>
+            <p className="text-sm font-medium text-pw-fg mt-1">{planInfo.label}</p>
+            {plan !== 'None' && (
+              <p className="text-xs text-pw-muted mt-2">
+                Next billing date: <span className="font-medium text-pw-fg">{nextBillingStr}</span>
+              </p>
+            )}
+            {plan === 'None' && (
+              <p className="text-sm text-pw-muted mt-2">
+                You don&apos;t have an active subscription.{' '}
+                <Link href="/pricing" className="underline hover:text-pw-black transition-colors">
+                  View plans →
+                </Link>
+              </p>
+            )}
           </div>
 
-          {status === 'past_due' && (
-            <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2">
-              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-              Your last payment failed. Update your payment method to keep your account active.
-            </div>
-          )}
-        </section>
+          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold border px-2.5 py-1 ${statusBadge.cls}`}>
+            <StatusIcon className="w-3.5 h-3.5" />
+            {statusBadge.label}
+          </span>
+        </div>
 
-        {/* Manage Billing */}
-        <section className="bg-white border border-pw-border p-6 mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Payment Method &amp; Invoices</h2>
-
-          <p className="text-sm text-pw-fg mb-5 leading-relaxed">
-            Update your saved card, download past invoices, or cancel your subscription through the Stripe billing portal. Changes take effect immediately.
-          </p>
-
-          {portalError && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 mb-4">
-              {portalError}
-            </p>
-          )}
-
-          {profile?.stripeCustomerId ? (
-            <button
-              onClick={openPortal}
-              disabled={portalLoading}
-              className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
-            >
-              {portalLoading ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Opening portal…</>
-              ) : (
-                <><CreditCard className="w-4 h-4" /> Manage Billing <ExternalLink className="w-3.5 h-3.5 ml-1" /></>
-              )}
-            </button>
-          ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-pw-muted">No billing account found. Subscribe to a plan to set up payment.</p>
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition"
-              >
-                View Plans →
-              </Link>
-            </div>
-          )}
-        </section>
-
-        {/* Plan Details */}
-        {plan !== 'None' && (
-          <section className="bg-white border border-pw-border p-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Account Details</h2>
-            <dl className="space-y-3 text-sm">
-              <div className="flex justify-between">
-                <dt className="text-pw-muted">Account email</dt>
-                <dd className="text-pw-black font-medium">{user?.email ?? '—'}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-pw-muted">Subscription plan</dt>
-                <dd className="text-pw-black font-medium">{planInfo.label}</dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="text-pw-muted">Billing status</dt>
-                <dd className="text-pw-black font-medium capitalize">{status.replace('_', ' ')}</dd>
-              </div>
-              {plan === 'Team' && (
-                <div className="flex justify-between">
-                  <dt className="text-pw-muted">Team seats</dt>
-                  <dd className="text-pw-black font-medium">
-                    <Link href="/dashboard/settings/team" className="underline hover:text-pw-muted transition-colors">
-                      Manage team members →
-                    </Link>
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </section>
+        {status === 'past_due' && (
+          <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2">
+            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            Your last payment failed. Update your payment method to keep your account active.
+          </div>
         )}
 
-      </div>
+        {plan !== 'None' && (
+          <button
+            onClick={openPortal}
+            disabled={portalLoading}
+            className="mt-5 inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
+          >
+            {portalLoading ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Opening…</>
+            ) : (
+              <>Upgrade / Change Plan <ExternalLink className="w-3.5 h-3.5" /></>
+            )}
+          </button>
+        )}
+      </section>
+
+      {/* ═══ Card 2: Payment Method ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Payment Method</h2>
+
+        {profile?.stripeCustomerId || plan !== 'None' ? (
+          <>
+            <div className="flex items-center gap-4 p-4 bg-pw-bg border border-pw-border">
+              <div className="w-12 h-8 bg-gradient-to-r from-pw-fg to-pw-muted rounded flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-pw-black">Visa ending in {lastFour}</p>
+                <p className="text-xs text-pw-muted flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> Secured by Stripe
+                </p>
+              </div>
+              <button
+                onClick={openPortal}
+                disabled={portalLoading}
+                className="text-xs font-medium text-pw-fg underline hover:text-pw-black transition-colors"
+              >
+                Update
+              </button>
+            </div>
+
+            {portalError && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2 mt-3">
+                {portalError}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-sm text-pw-muted">No payment method on file. Subscribe to a plan to set up payment.</p>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition"
+            >
+              View Plans →
+            </Link>
+          </div>
+        )}
+      </section>
+
+      {/* ═══ Card 3: Invoice History ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Invoice History</h2>
+
+        {plan === 'None' ? (
+          <p className="text-sm text-pw-muted py-4">No invoices yet. Invoices will appear here once you subscribe.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-pw-border">
+                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Invoice</th>
+                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Date</th>
+                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Amount</th>
+                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Status</th>
+                  <th className="text-right text-xs font-semibold text-pw-muted uppercase tracking-wider py-2">Download</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-pw-border">
+                {MOCK_INVOICES.map((inv) => (
+                  <tr key={inv.id} className="hover:bg-pw-bg/50 transition-colors">
+                    <td className="py-3 pr-4">
+                      <span className="flex items-center gap-1.5 text-pw-fg font-medium">
+                        <FileText className="w-3.5 h-3.5 text-pw-muted" />
+                        {inv.id}
+                      </span>
+                    </td>
+                    <td className="py-3 pr-4 text-pw-muted">{inv.date}</td>
+                    <td className="py-3 pr-4 text-pw-black font-medium">{inv.amount}</td>
+                    <td className="py-3 pr-4">
+                      <span className="text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-2 py-0.5">
+                        {inv.status}
+                      </span>
+                    </td>
+                    <td className="py-3 text-right">
+                      <button className="p-1.5 text-pw-muted hover:text-pw-black transition-colors" title="Download PDF">
+                        <Download className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* ═══ Card 4: Account Details ═══ */}
+      {plan !== 'None' && (
+        <section className="bg-white border border-pw-border p-6">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Account Details</h2>
+          <dl className="space-y-3 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-pw-muted">Account email</dt>
+              <dd className="text-pw-black font-medium">{user?.email ?? '—'}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-pw-muted">Subscription plan</dt>
+              <dd className="text-pw-black font-medium">{planInfo.label}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-pw-muted">Billing status</dt>
+              <dd className="text-pw-black font-medium capitalize">{status.replace('_', ' ')}</dd>
+            </div>
+            {plan === 'Team' && (
+              <div className="flex justify-between">
+                <dt className="text-pw-muted">Team seats</dt>
+                <dd className="text-pw-black font-medium">
+                  <Link href="/dashboard/settings/team" className="underline hover:text-pw-muted transition-colors">
+                    Manage team members →
+                  </Link>
+                </dd>
+              </div>
+            )}
+          </dl>
+        </section>
+      )}
     </div>
   );
 }

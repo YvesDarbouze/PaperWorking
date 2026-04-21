@@ -135,7 +135,7 @@ export default function PipelinePanel() {
                   <div className="relative">
                      {onboardingStep === 3 && (
                         <div className="absolute -top-16 -left-4 bg-pw-black text-pw-white text-[11px] px-5 py-2.5 rounded-full font-medium tracking-tight flex items-center animate-bounce shadow-2xl z-50">
-                           <Info className="w-4 h-4 mr-2" /> Start the Tour — Create a target property here.
+                           <Info className="w-4 h-4 mr-2" /> Start the Tour — Add your first project here.
                            <div className="absolute -bottom-1 left-10 w-2 h-2 bg-pw-black rotate-45"></div>
                         </div>
                      )}
@@ -149,11 +149,11 @@ export default function PipelinePanel() {
 
                       <button 
                         onClick={handleAddDeal} 
-                        aria-label="Add New Target Property"
+                        aria-label="Add A Project"
                         className="ag-button px-10 py-5 text-base"
                       >
                         <Plus className="w-5 h-5 mr-3 transition-transform group-hover:rotate-90"/>
-                        Add Target Property
+                        Add A Project
                       </button>
                    </div>
                </div>

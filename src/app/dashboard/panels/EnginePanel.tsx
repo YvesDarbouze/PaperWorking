@@ -32,22 +32,7 @@ const BalanceSheet = lazy(() => import('@/components/reporting/BalanceSheet'));
 const SettlementDocPortal = lazy(() => import('@/components/reporting/SettlementDocPortal'));
 const StatementExporter = lazy(() => import('@/components/reporting/StatementExporter'));
 
-// Phase 3 Unified Rehab Tracker
-const RehabTracker = lazy(() => import('@/components/rehab/RehabTracker'));
-
-// Phase 6 Components
-import TriageQueue from '@/components/rehab/TriageQueue';
-
-// Phase 3 Lazy Modules — ROI Tasks + Permit Compliance
-const ROIRenovationTasks = lazy(() => import('@/components/rehab/ROIRenovationTasks'));
-const PermitTrackingChecklist = lazy(() => import('@/components/rehab/PermitTrackingChecklist'));
-
-// Phase 3 Expansion — Rehab Cost Track + Metrics + Field Logistics
-const HoldingTimeline = lazy(() => import('@/components/rehab/HoldingTimeline'));
-const RehabMetricsDashboard = lazy(() => import('@/components/rehab/RehabMetricsDashboard'));
-const RehabExpenseTracker = lazy(() => import('@/components/rehab/RehabExpenseTracker'));
-const HoldingCostTicker = lazy(() => import('@/components/rehab/HoldingCostTicker'));
-const SiteVisitChecklist = lazy(() => import('@/components/rehab/SiteVisitChecklist'));
+// Content moved to RehabPanel
 
 /* ═══════════════════════════════════════════════════════
    Engine Panel — Lane 3 (The Engine Room)
@@ -56,7 +41,7 @@ const SiteVisitChecklist = lazy(() => import('@/components/rehab/SiteVisitCheckl
    Extracted from /dashboard/engine-room/page.tsx
    ═══════════════════════════════════════════════════════ */
 
-type Tab = 'cash' | 'triage' | 'rehab' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts' | 'sync';
+type Tab = 'cash' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts' | 'sync';
 type StatementSubTab = 'pl' | 'cashflow' | 'balance' | 'hud1';
 
 export default function EnginePanel() {
@@ -66,7 +51,7 @@ export default function EnginePanel() {
   const isFinanceTeam = isLead || role === 'Accountant';
   const isContractor = role === 'General Contractor';
   
-  const [activeTab, setActiveTab] = useState<Tab>(isFinanceTeam ? 'cash' : 'triage');
+  const [activeTab, setActiveTab] = useState<Tab>(isFinanceTeam ? 'cash' : 'docs');
   const [expandedLedgerProperties, setExpandedLedgerProperties] = useState<Record<string, boolean>>({});
   const [statementSubTab, setStatementSubTab] = useState<StatementSubTab>('pl');
   
@@ -158,28 +143,7 @@ export default function EnginePanel() {
           </button>
           )}
           
-          {/* Phase 6: Triage Queue Entry */}
-          <button
-            onClick={() => setActiveTab('triage')}
-            className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'triage' ? 'border-orange-500 text-orange-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <ShieldAlert className={`mr-2 h-4 w-4 ${metrics.triagePendingCount > 0 ? 'text-orange-500 animate-pulse' : ''}`} /> 
-            Triage & Tasks 
-            {metrics.triagePendingCount > 0 && (
-                <span className="ml-2 bg-orange-100 text-orange-800 py-0.5 px-2 rounded-full text-xs font-bold">{metrics.triagePendingCount}</span>
-            )}
-          </button>
 
-          <button
-            onClick={() => setActiveTab('rehab')}
-            className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'rehab' ? 'border-amber-500 text-amber-600' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
-          >
-            <Wrench className="mr-2 h-4 w-4" /> Rehab Tracker
-          </button>
 
           {isFinanceTeam && (
             <>
@@ -300,55 +264,6 @@ export default function EnginePanel() {
           </div>
         )}
 
-        {/* Phase 6: Triage Dashboard + ROI Tasks + Permits */}
-        {activeTab === 'triage' && (
-           <div className="space-y-8">
-             {/* Rehab Metrics Dashboard — 3 live widgets at the top */}
-             <Suspense fallback={<div className="h-28 bg-gray-50 rounded-xl animate-pulse" />}>
-               <RehabMetricsDashboard />
-             </Suspense>
-
-             <TriageQueue />
-
-             {/* ROI-Focused Renovation Tasks (Kitchens/Bathrooms) */}
-             <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
-               <ROIRenovationTasks />
-             </Suspense>
-
-             {/* Permit Tracking Checklist — Legal Compliance */}
-             <Suspense fallback={<div className="h-40 bg-gray-50 rounded-xl animate-pulse" />}>
-               <PermitTrackingChecklist />
-             </Suspense>
-
-             {/* Rehab Expense Tracker — Material, Labor, Permits, Dumpster */}
-             <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
-               <RehabExpenseTracker />
-             </Suspense>
-
-             {/* Holding Cost Ticker — Recurring monthly costs */}
-             <Suspense fallback={<div className="h-40 bg-gray-50 rounded-xl animate-pulse" />}>
-               <HoldingCostTicker />
-             </Suspense>
-
-             {/* Site Visit Checklist — Field Logistics */}
-             <Suspense fallback={<div className="h-40 bg-gray-50 rounded-xl animate-pulse" />}>
-               <SiteVisitChecklist />
-             </Suspense>
-           </div>
-        )}
-
-        {activeTab === 'rehab' && (
-          <Suspense fallback={<div className="h-96 bg-gray-50 rounded-xl animate-pulse" />}>
-            {currentProject
-              ? <RehabTracker />
-              : (
-                <div className="p-12 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
-                  Select an active property to load the Rehab Tracker.
-                </div>
-              )
-            }
-          </Suspense>
-        )}
 
         {activeTab === 'ledger' && (
           <div className="space-y-8">

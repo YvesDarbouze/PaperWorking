@@ -24,6 +24,8 @@
   --phase-rehab:    #a5a5a5;
   --phase-listed:   #7f7f7f;
   --phase-closed:   #595959;
+  --phase-findandfund: #ccfbf1;         /* Teal-50 wash */
+  --phase-findandfund-accent: #0d9488;  /* Teal-600 */
 
   --spacing-unit: 8px; /* Increased for 'Air' aesthetic */
 }
@@ -60,6 +62,8 @@
   --color-phase-rehab:    #a5a5a5;
   --color-phase-listed:   #7f7f7f;
   --color-phase-closed:   #595959;
+  --color-phase-findandfund: var(--phase-findandfund);
+  --color-phase-findandfund-accent: var(--phase-findandfund-accent);
 
   /* ─── Font System ─── */
   --font-sans: "Inter Variable", "Inter", system-ui, sans-serif;

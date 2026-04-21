@@ -29,11 +29,12 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
    ═══════════════════════════════════════════════════════ */
 
 const LANES: LaneDef[] = [
-  { id: 'pipeline',   label: 'Deal Pipeline',        shortLabel: 'Pipeline' },
-  { id: 'evaluation', label: 'Capital & Evaluation',  shortLabel: 'Eval' },
-  { id: 'closing',    label: 'The Closing Room',      shortLabel: 'Closing' },
-  { id: 'engine',     label: 'The Engine Room',       shortLabel: 'Engine' },
-  { id: 'exit',       label: 'The Exit Hub',          shortLabel: 'Exit' },
+  { id: 'findandfund', label: 'Find & Fund',          shortLabel: 'Find' },
+  { id: 'pipeline',    label: 'Deal Pipeline',        shortLabel: 'Pipeline' },
+  { id: 'evaluation',  label: 'Capital & Evaluation', shortLabel: 'Eval' },
+  { id: 'closing',     label: 'The Closing Room',     shortLabel: 'Closing' },
+  { id: 'engine',      label: 'The Engine Room',      shortLabel: 'Engine' },
+  { id: 'exit',        label: 'The Exit Hub',         shortLabel: 'Exit' },
 ];
 
 function DashboardSkeleton() {

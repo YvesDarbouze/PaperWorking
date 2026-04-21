@@ -7,6 +7,11 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = request.cookies.get('__session')?.value;
 
+  // Guest Portal — always public, never redirect
+  if (pathname.startsWith('/invest')) {
+    return NextResponse.next();
+  }
+
   // Redirect already-authenticated users away from auth pages.
   // Dashboard protection is handled client-side in dashboard/layout.tsx
   // to avoid race conditions between Firebase Auth and the session cookie.
@@ -18,5 +23,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/login', '/register', '/forgot-password'],
+  matcher: ['/login', '/register', '/forgot-password', '/invest/:path*'],
 };

@@ -239,7 +239,83 @@ export interface FundingPledge {
   rejectionReason?: string;
 }
 
+// ── LOI & Investor Commitment Types ───────────────────
+
+// 2.11 LOI Status Lifecycle
+export type LOIStatus = 'Drafted' | 'Sent' | 'Viewed' | 'Signed' | 'Declined';
+
+// 2.12 LOI Document (Letter of Intent)
+export interface LOIDocument {
+  id: string;
+  investorId: string;
+  legalEntityName: string;
+  investmentAmount: number;
+  termLengthMonths: number;
+  equitySplitPercent: number;
+  interestRatePercent: number;
+  status: LOIStatus;
+  createdAt: Date;
+  sentAt?: Date;
+  viewedAt?: Date;
+  signedAt?: Date;
+  signatureDataUrl?: string; // Base64 signature
+}
+
+// 2.13 Investor Commitment (enriched for Syndication Engine)
+export interface InvestorCommitment {
+  id: string;
+  investorName: string;
+  investorEmail: string;
+  pledgedAmount: number;
+  loiStatus: LOIStatus;
+  loiDocumentId?: string;
+  previousDealCount: number; // Historical commitment count
+  isReturning: boolean;
+  invitedAt: Date;
+  respondedAt?: Date;
+}
+
+// 2.14 Guest Portal Access Token
+export interface GuestPortalToken {
+  id: string;
+  token: string;
+  projectId: string;
+  investorEmail: string;
+  investorName: string;
+  proposedAmount: number;
+  equityPercent: number;
+  loiDocumentId?: string;
+  expiresAt: Date;
+  createdAt: Date;
+  status: 'active' | 'used' | 'expired';
+}
+
 // ── Acquisition & Due Diligence Module Types ──────────
+
+export type LoanStatus = 'Pre-Approved' | 'In-Underwriting' | 'Appraisal-Ordered' | 'Clear-To-Close';
+
+export type NegotiationStatus = 'Pending' | 'Accepted' | 'Rejected';
+
+export interface Negotiation {
+  id: string;
+  offerAmount: number;
+  counterOffer?: number;
+  earnestMoneyDeposit: number;
+  status: NegotiationStatus;
+  date: Date;
+  notes?: string;
+}
+
+export type ContingencyType = 'Inspection' | 'Financing' | 'Appraisal';
+
+export interface Contingency {
+  id: string;
+  type: ContingencyType;
+  deadlineDate: Date;
+  isWaived: boolean;
+  isSatisfied: boolean;
+  notes?: string;
+}
 
 // 2.11 Cost Basis Line Item
 export interface CostBasisLineItem {
@@ -285,6 +361,8 @@ export interface RoleLinkedDocument {
   notes: string;
 }
 
+export type PhaseStatus = 'Phase 1: Find & Fund' | 'Phase 2: Acquisition' | 'Phase 3: Holding & Rehab' | 'Phase 4: Closing & Exit';
+
 // 3. Project Container Schema
 export interface Project {
   id: string; // Document ID
@@ -293,6 +371,7 @@ export interface Project {
   address: string;
   squareFootage?: number; // Core metric for sqft-based reporting
   status: 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold';
+  phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
   members: Record<string, ProjectMember>; // Map of user UIDs to their role in the project
   financials: ProjectFinancials;
   closingRoom?: ClosingRoom;
@@ -301,8 +380,17 @@ export interface Project {
   historicalProperties?: HistoricalProperty[]; // Find & Fund: Track Record Ledger
   prospects?: ProspectProperty[]; // Find & Fund: Active Prospecting Board
   pledges?: FundingPledge[]; // Find & Fund: Investor Pledges
+  loiDocuments?: LOIDocument[]; // Find & Fund: LOI Workflow
+  investorCommitments?: InvestorCommitment[]; // Find & Fund: Syndication Engine
+  guestPortalTokens?: GuestPortalToken[]; // Find & Fund: Guest Portal Access
+  
+  // Acquisition & Due Diligence
   costBasisLedger?: CostBasisLedger; // Acquisition: Capitalization tracker
   roleLinkedDocuments?: RoleLinkedDocument[]; // Acquisition: Document vault
+  loanStatus?: LoanStatus; // Financing status tracker
+  negotiations?: Negotiation[]; // Phase 2: Negotiation history
+  contingencies?: Contingency[]; // Phase 2: Due Diligence contingencies
+  
   createdAt: Date;
   updatedAt: Date;
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
@@ -457,6 +545,12 @@ export interface ProjectFinancials {
   maintenanceReserves?: number; // per month
   propertyManagementFee?: number; // per month
   longTermMortgagePayment?: number; // per month
+
+  // Phase 4 Exit Dashboard — Settlement & Tax
+  settlementLedger?: SettlementLineItem[];
+  proratedEscrow?: ProratedEscrowItem[];
+  taxEstimate?: TaxEstimate;
+  marginalTaxBracket?: number; // user-supplied marginal rate, e.g. 32 for 32%
 }
 
 export interface ExitAssets {
@@ -520,6 +614,52 @@ export interface ExitCostLineItem {
   paid: boolean;
   paidAt?: Date;
   notes: string;
+}
+
+// ── Phase 4 Exit Dashboard: Settlement & Tax Types ──────────
+
+export type SettlementCategory =
+  | 'Commission'
+  | 'Title'
+  | 'Transfer Tax'
+  | 'Attorney'
+  | 'Recording'
+  | 'Escrow'
+  | 'Prorated'
+  | 'Other';
+
+export interface SettlementLineItem {
+  id: string;
+  label: string;
+  category: SettlementCategory;
+  isPercentage: boolean;
+  percentageRate?: number;        // e.g. 6 for 6%
+  flatAmount?: number;            // used when isPercentage = false
+  computedAmount: number;         // resolved dollar value
+  paidBy: 'Seller' | 'Buyer' | 'Split';
+  locked: boolean;                // false = user-editable
+  notes?: string;
+}
+
+export interface TaxEstimate {
+  holdingPeriodDays: number;
+  isLongTerm: boolean;
+  costBasis: number;
+  netProceeds: number;
+  capitalGain: number;
+  estimatedTaxRate: number;
+  estimatedTaxLiability: number;
+  netAfterTax: number;
+}
+
+export interface ProratedEscrowItem {
+  id: string;
+  type: 'Property Tax' | 'Insurance' | 'HOA' | 'Utilities' | 'Other';
+  annualAmount: number;
+  dailyRate: number;
+  sellerDays: number;
+  sellerCredit: number;
+  buyerCredit: number;
 }
 
 // Phase 6: Rehab & Execution (primary definition at line 107)

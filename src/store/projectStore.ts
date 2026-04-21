@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem } from '@/types/schema';
+import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
@@ -90,9 +90,19 @@ interface ProjectState {
   updateProspects: (projectId: string, prospects: ProspectProperty[]) => void;
   updatePledges: (projectId: string, pledges: FundingPledge[]) => void;
 
+  // LOI & Syndication Actions
+  updateLOIDocuments: (projectId: string, docs: LOIDocument[]) => void;
+  updateInvestorCommitments: (projectId: string, commitments: InvestorCommitment[]) => void;
+  updateGuestPortalTokens: (projectId: string, tokens: GuestPortalToken[]) => void;
+
   // Acquisition & Due Diligence Actions
   updateCostBasis: (projectId: string, ledger: CostBasisLedger) => void;
   updateRoleDocuments: (projectId: string, docs: RoleLinkedDocument[]) => void;
+  submitOffer: (projectId: string, offer: Omit<Negotiation, 'id' | 'date'>) => void;
+  logCounterOffer: (projectId: string, negotiationId: string, counterOffer: number, status?: Negotiation['status']) => void;
+  updateLoanStatus: (projectId: string, status: LoanStatus) => void;
+  updateContingencies: (projectId: string, contingencies: Contingency[]) => void;
+  transitionToPhase3: (projectId: string, finalHUDCosts: { purchasePrice: number, titleFees: number, originationFees: number }) => { success: boolean; error?: string };
 
   // Rehab Expansion Actions
   updateRehabExpenses: (projectId: string, expenses: RehabExpense[]) => void;
@@ -443,6 +453,43 @@ export const useProjectStore = create<ProjectState>()(
         }
       },
 
+      // ─── LOI & Syndication Mutations ────────────────────
+      updateLOIDocuments: (projectId, docs) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, loiDocuments: docs } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateInvestorCommitments: (projectId, commitments) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, investorCommitments: commitments } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateGuestPortalTokens: (projectId, tokens) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, guestPortalTokens: tokens } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
       // ─── Acquisition & Due Diligence Mutations ─────────
       updateCostBasis: (projectId, ledger) => {
         const { projects, currentProject } = get();
@@ -466,6 +513,122 @@ export const useProjectStore = create<ProjectState>()(
           const u = updatedDeals.find(d => d.id === projectId);
           if (u) set({ currentProject: u });
         }
+      },
+
+      submitOffer: (projectId, offer) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
+            const currentNegs = d.negotiations || [];
+            const newNeg: Negotiation = {
+              id: crypto.randomUUID(),
+              date: new Date(),
+              ...offer
+            };
+            return { ...d, negotiations: [...currentNegs, newNeg] };
+          }
+          return d;
+        });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      logCounterOffer: (projectId, negotiationId, counterOffer, status) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
+            const updatedNegs = (d.negotiations || []).map(neg => 
+              neg.id === negotiationId 
+                ? { ...neg, counterOffer, status: status || neg.status, date: new Date() } 
+                : neg
+            );
+            return { ...d, negotiations: updatedNegs };
+          }
+          return d;
+        });
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateLoanStatus: (projectId, status) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, loanStatus: status } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateContingencies: (projectId, contingencies) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, contingencies } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      transitionToPhase3: (projectId, finalHUDCosts) => {
+        const { projects, currentProject, updateCostBasis, updateProjectFinancials } = get();
+        const deal = projects.find(d => d.id === projectId);
+        
+        if (!deal) return { success: false, error: 'Deal not found' };
+        
+        if (deal.loanStatus !== 'Clear-To-Close') {
+          return { success: false, error: 'Loan Status must be Clear-To-Close to finalize acquisition.' };
+        }
+
+        // Apply to Phase 3 Cost Basis Ledger
+        const currentLedger = deal.costBasisLedger || { directAcquisition: [], financing: [], preClosing: [] };
+        const newLedger: CostBasisLedger = {
+          ...currentLedger,
+          directAcquisition: [
+            ...currentLedger.directAcquisition,
+            { id: crypto.randomUUID(), label: 'Purchase Price', amount: finalHUDCosts.purchasePrice, paid: true, paidAt: new Date(), notes: '' },
+            { id: crypto.randomUUID(), label: 'Title Fees', amount: finalHUDCosts.titleFees, paid: true, paidAt: new Date(), notes: '' }
+          ],
+          financing: [
+            ...currentLedger.financing,
+            { id: crypto.randomUUID(), label: 'Origination Fees', amount: finalHUDCosts.originationFees, paid: true, paidAt: new Date(), notes: '' }
+          ]
+        };
+
+        const updatedDeals = projects.map(d =>
+          d.id === projectId 
+            ? { 
+                ...d, 
+                phaseStatus: 'Phase 3: Holding & Rehab' as const,
+                costBasisLedger: newLedger,
+                financials: {
+                  ...d.financials,
+                  purchasePrice: finalHUDCosts.purchasePrice,
+                  loanOriginationPoints: (finalHUDCosts.originationFees / (d.financials.loanAmount || finalHUDCosts.purchasePrice)) * 100
+                }
+              } 
+            : d
+        );
+        
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+        
+        get().recalculateMetrics();
+
+        return { success: true };
       },
 
       // ─── Rehab Expansion Mutations ────────────────────

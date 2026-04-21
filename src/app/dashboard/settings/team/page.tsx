@@ -1,12 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { UserPlus, Trash2, Shield, ArrowLeft, Loader2, Mail, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { UserPlus, Trash2, Shield, Loader2, Mail, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
 import type { OrgTeamMember, InternalRole } from '@/types/schema';
+
+/* ═══════════════════════════════════════════════════════
+   Team & Role Management Settings
+
+   Refactored to render inside the settings layout shell.
+   Dynamically adapts based on billing tier (Individual vs Team).
+   ═══════════════════════════════════════════════════════ */
 
 const ROLE_OPTIONS: InternalRole[] = ['Admin', 'Deal Lead'];
 
@@ -91,11 +98,12 @@ export default function TeamManagementPage() {
   const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
   const usedSeats     = activeMembers.length;
   const seatsLeft     = maxSeats - usedSeats;
+  const seatPercent   = maxSeats > 0 ? Math.round((usedSeats / maxSeats) * 100) : 0;
 
   // Gate: only Lead Investors on the Team plan may manage members
   if (!isLead || !isTeamPlan) {
     return (
-      <div className="min-h-screen bg-pw-bg flex items-center justify-center p-6">
+      <div className="flex items-center justify-center py-20">
         <div className="bg-white border border-pw-border p-8 max-w-sm text-center space-y-4">
           <Shield className="w-10 h-10 text-pw-muted mx-auto" />
           <h2 className="text-lg font-medium text-pw-black">Team Plan Required</h2>
@@ -163,148 +171,151 @@ export default function TeamManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-pw-bg">
-      <div className="max-w-2xl mx-auto px-6 py-12">
+    <div className="space-y-6">
 
-        {/* Back nav */}
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-sm text-pw-muted hover:text-pw-black transition-colors mb-10"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
-        </Link>
-
-        <div className="flex items-start justify-between mb-1">
-          <h1 className="text-3xl font-light tracking-tight text-pw-black">Team Management</h1>
-          <span className="text-xs font-bold uppercase tracking-widest border border-pw-border px-2.5 py-1 text-pw-muted mt-2">
-            {usedSeats} / {maxSeats} seats
+      {/* ═══ Seat Tracker ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted">Seat Usage</h2>
+          <span className="text-xs font-bold uppercase tracking-widest text-pw-muted">
+            {usedSeats} of {maxSeats} Seats Filled
           </span>
         </div>
-        <p className="text-sm text-pw-muted mb-10">
-          Invite Agents, General Contractors, and co-investors. Each member can only access your organization's data.
+        {/* Progress bar */}
+        <div className="w-full h-2.5 bg-pw-bg rounded-full overflow-hidden">
+          <div
+            className={`h-full transition-all duration-500 ease-out ${
+              seatPercent >= 90 ? 'bg-red-500' : seatPercent >= 70 ? 'bg-amber-500' : 'bg-pw-fg'
+            }`}
+            style={{ width: `${Math.min(seatPercent, 100)}%` }}
+          />
+        </div>
+        <p className="text-xs text-pw-muted mt-2">
+          {seatsLeft > 0
+            ? `${seatsLeft} seat${seatsLeft !== 1 ? 's' : ''} remaining on your Team plan.`
+            : 'All seats are occupied. Remove a member or upgrade to add more.'}
         </p>
+      </section>
 
-        {/* Role permissions legend */}
-        <section className="bg-white border border-pw-border p-6 mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-4">Role Permissions</h2>
-          <div className="space-y-3">
-            {ROLE_OPTIONS.map((r) => (
-              <div key={r} className="flex items-start gap-3">
-                <Shield className="w-4 h-4 text-pw-muted flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium text-pw-black">{r}</p>
-                  <p className="text-xs text-pw-muted">{ROLE_DESCRIPTION[r]}</p>
-                </div>
+      {/* ═══ Role Permissions Legend ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-4">Role Permissions</h2>
+        <div className="space-y-3">
+          {ROLE_OPTIONS.map((r) => (
+            <div key={r} className="flex items-start gap-3">
+              <Shield className="w-4 h-4 text-pw-muted flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-pw-black">{r}</p>
+                <p className="text-xs text-pw-muted">{ROLE_DESCRIPTION[r]}</p>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══ Active Directory ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-1">
+          Team Members
+        </h2>
+        <p className="text-xs text-pw-muted mb-5">{seatsLeft} seat{seatsLeft !== 1 ? 's' : ''} remaining</p>
+
+        {activeMembers.length === 0 ? (
+          <div className="text-center py-8 text-pw-muted">
+            <Users className="w-8 h-8 mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No team members yet. Invite your first collaborator below.</p>
+          </div>
+        ) : (
+          <div>
+            {activeMembers.map((m) => (
+              <MemberRow
+                key={m.id}
+                member={m}
+                onRemove={removeTeamMember}
+                onRoleChange={updateMemberRole}
+              />
             ))}
           </div>
-        </section>
+        )}
+      </section>
 
-        {/* Current team */}
-        <section className="bg-white border border-pw-border p-6 mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-1">
-            Team Members
-          </h2>
-          <p className="text-xs text-pw-muted mb-5">{seatsLeft} seat{seatsLeft !== 1 ? 's' : ''} remaining</p>
+      {/* ═══ Invite Hub ═══ */}
+      <section className="bg-white border border-pw-border p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">
+          Invite a Team Member
+        </h2>
 
-          {activeMembers.length === 0 ? (
-            <div className="text-center py-8 text-pw-muted">
-              <Users className="w-8 h-8 mx-auto mb-3 opacity-40" />
-              <p className="text-sm">No team members yet. Invite your first collaborator below.</p>
-            </div>
-          ) : (
+        <form onSubmit={handleInvite} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              {activeMembers.map((m) => (
-                <MemberRow
-                  key={m.id}
-                  member={m}
-                  onRemove={removeTeamMember}
-                  onRoleChange={updateMemberRole}
-                />
+              <label className="block text-xs font-semibold text-pw-muted mb-1">Email Address *</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="jane@realtycorp.com"
+                className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-pw-muted mb-1">Display Name</label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Jane Realty"
+                className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-pw-muted mb-1">Role</label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value as InternalRole)}
+              className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+            >
+              {ROLE_OPTIONS.map((r) => (
+                <option key={r} value={r}>{r} — {ROLE_DESCRIPTION[r]}</option>
               ))}
+            </select>
+          </div>
+
+          {inviteError && (
+            <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              {inviteError}
             </div>
           )}
-        </section>
 
-        {/* Invite form */}
-        <section className="bg-white border border-pw-border p-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">
-            Invite a Team Member
-          </h2>
-
-          <form onSubmit={handleInvite} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-pw-muted mb-1">Email Address *</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jane@realtycorp.com"
-                  className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-pw-muted mb-1">Display Name</label>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Jane Realty"
-                  className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
-                />
-              </div>
+          {invited && (
+            <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 px-3 py-2">
+              <CheckCircle2 className="w-4 h-4" /> Invitation sent successfully.
             </div>
+          )}
 
-            <div>
-              <label className="block text-xs font-semibold text-pw-muted mb-1">Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as InternalRole)}
-                className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
-              >
-                {ROLE_OPTIONS.map((r) => (
-                  <option key={r} value={r}>{r} — {ROLE_DESCRIPTION[r]}</option>
-                ))}
-              </select>
-            </div>
-
-            {inviteError && (
-              <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                {inviteError}
-              </div>
+          <button
+            type="submit"
+            disabled={inviting || seatsLeft <= 0}
+            className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
+          >
+            {inviting ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Sending invite…</>
+            ) : (
+              <><UserPlus className="w-4 h-4" /> Send Invite <Mail className="w-3.5 h-3.5" /></>
             )}
+          </button>
 
-            {invited && (
-              <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 px-3 py-2">
-                <CheckCircle2 className="w-4 h-4" /> Invitation sent successfully.
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={inviting || seatsLeft <= 0}
-              className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
-            >
-              {inviting ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Sending invite…</>
-              ) : (
-                <><UserPlus className="w-4 h-4" /> Send Invite <Mail className="w-3.5 h-3.5" /></>
-              )}
-            </button>
-
-            {seatsLeft <= 0 && (
-              <p className="text-xs text-pw-muted">
-                Seat limit reached. Remove a member or{' '}
-                <Link href="/dashboard/settings/billing" className="underline">upgrade your plan</Link>.
-              </p>
-            )}
-          </form>
-        </section>
-
-      </div>
+          {seatsLeft <= 0 && (
+            <p className="text-xs text-pw-muted">
+              Seat limit reached. Remove a member or{' '}
+              <Link href="/dashboard/settings/billing" className="underline">upgrade your plan</Link>.
+            </p>
+          )}
+        </form>
+      </section>
     </div>
   );
 }

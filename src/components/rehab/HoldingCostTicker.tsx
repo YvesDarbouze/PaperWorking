@@ -47,6 +47,7 @@ export default function HoldingCostTicker() {
     () => currentProject?.holdingCosts ?? DEFAULT_COSTS.map(c => ({ ...c }))
   );
   const [expanded, setExpanded] = useState(true);
+  const [taxCapitalized, setTaxCapitalized] = useState(false);
 
   const persist = useCallback(
     (next: HoldingCostEntry[]) => {
@@ -120,9 +121,25 @@ export default function HoldingCostTicker() {
             </p>
           </div>
         </div>
-        <span className="text-sm font-mono font-medium text-gray-700">
-          ${totals.totalMonthly.toLocaleString()}/mo
-        </span>
+        
+        <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">
+              Capitalize Costs for IRS
+            </span>
+            <div 
+              role="switch"
+              aria-checked={taxCapitalized}
+              onClick={() => setTaxCapitalized(!taxCapitalized)}
+              className={`w-8 h-4 flex items-center rounded-full p-1 cursor-pointer transition-colors ${taxCapitalized ? 'bg-pw-black' : 'bg-gray-300'}`}
+            >
+              <div className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform transition-transform duration-300 ${taxCapitalized ? 'translate-x-3.5' : ''}`} />
+            </div>
+          </div>
+          <span className="text-sm font-mono font-medium text-gray-700 ml-4 border-l border-gray-200 pl-4">
+            ${totals.totalMonthly.toLocaleString()}/mo
+          </span>
+        </div>
       </button>
 
       {expanded && (

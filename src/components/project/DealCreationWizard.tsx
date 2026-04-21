@@ -73,13 +73,12 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
           estimatedARV: parseFloat(formData.estimatedARV) * 100,
           costs: []
         },
-        // In a real app we'd map more fields from the wizard to the schema
       }, organizationId);
 
-      toast.success('DEAL_ACQUIRED and indexed correctly.');
+      toast.success('Project created and indexed successfully.');
       onSuccess?.(projectId);
     } catch (error) {
-      toast.error('COMMIT_FAILURE: Ledger synchronization error.');
+      toast.error('Failed to create project. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +95,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
   return (
     <FocusedWorkflowLayout
-      title="DEAL_INGESTION_PROTOCOL"
+      title="NEW_PROJECT_SETUP"
       subtitle={`ORG_ID: ${organizationId}`}
       steps={STEPS.map((s, i) => ({
         id: s.id,
@@ -126,18 +125,18 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
           <div className="grid gap-10">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Project Designation / Internal Name</label>
+              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Project Name / Nickname</label>
               <input 
                 type="text"
                 value={formData.propertyName}
                 onChange={(e) => updateForm({ propertyName: e.target.value })}
                 className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
-                placeholder="E.G. MIAMI_RECON_ALPHA"
+                placeholder="E.G. THE MIAMI FLIP"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Full Address / Asset Vector</label>
+              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Full Address / Location</label>
               <input 
                 type="text"
                 value={formData.address}
@@ -253,12 +252,12 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Operational Objectives / Vision Statement</label>
+              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Operational Objectives / Vision</label>
               <textarea 
                 value={formData.vision}
                 onChange={(e) => updateForm({ vision: e.target.value })}
                 className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30 min-h-[150px] resize-none"
-                placeholder="DEFINE_SUCCESS_PARAMETERS..."
+                placeholder="DEFINE_YOUR_REHAB_PLAN_HERE..."
               />
             </div>
           </div>
@@ -319,7 +318,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
           <div className="border border-pw-border bg-pw-white">
             <div className="bg-pw-black px-10 py-6 border-b border-pw-border">
-              <h3 className="text-xs font-black text-pw-white uppercase tracking-[0.3em]">PRE_COMMIT_LEDGER_SUMMARY</h3>
+              <h3 className="text-xs font-black text-pw-white uppercase tracking-[0.3em]">PROJECT_CREATION_SUMMARY</h3>
             </div>
             
             <div className="divide-y divide-pw-border">

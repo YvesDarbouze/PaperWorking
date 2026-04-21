@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export type TrackMode = 'FLIP' | 'HOLD';
-export type DashboardViewMode = 'COMMAND_CENTER' | 'KANBAN';
+export type DashboardViewMode = 'HOME' | 'COMMAND_CENTER' | 'KANBAN';
 
 interface UIState {
   trackMode: TrackMode;
@@ -13,7 +13,7 @@ interface UIState {
 
 export const useUIStore = create<UIState>((set) => ({
   trackMode: 'FLIP',
-  viewMode: 'KANBAN', // Default to Kanban as per Phase 6 focus
+  viewMode: 'HOME', // Default to Dashboard Home — centralized command center
   setTrackMode: (mode) => set({ trackMode: mode }),
   setViewMode: (mode) => set({ viewMode: mode }),
   toggleTrackMode: () => set((state) => ({ 

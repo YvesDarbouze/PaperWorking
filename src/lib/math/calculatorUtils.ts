@@ -255,3 +255,194 @@ export function calculateEquityPayout(deal: Project | undefined) {
 
   return { isSold, targetProfit, calculationStatus, payouts, investors };
 }
+
+// ─── Phase 4 Exit Dashboard Calculators ──────────────────────
+
+import type { SettlementLineItem, ProratedEscrowItem, TaxEstimate } from '@/types/schema';
+
+/**
+ * Generates pre-populated settlement line items with industry-standard
+ * percentage defaults. Used when no saved settlement data exists.
+ */
+export function computeSettlementDefaults(salePrice: number): SettlementLineItem[] {
+  const pct = (rate: number) => salePrice * (rate / 100);
+  return [
+    {
+      id: 'sl-listing-agent',
+      label: 'Listing Agent Commission',
+      category: 'Commission',
+      isPercentage: true,
+      percentageRate: 3,
+      computedAmount: pct(3),
+      paidBy: 'Seller',
+      locked: false,
+    },
+    {
+      id: 'sl-buyer-agent',
+      label: 'Buyer Agent Commission',
+      category: 'Commission',
+      isPercentage: true,
+      percentageRate: 3,
+      computedAmount: pct(3),
+      paidBy: 'Seller',
+      locked: false,
+    },
+    {
+      id: 'sl-title-insurance',
+      label: 'Title Insurance',
+      category: 'Title',
+      isPercentage: true,
+      percentageRate: 0.5,
+      computedAmount: pct(0.5),
+      paidBy: 'Seller',
+      locked: false,
+    },
+    {
+      id: 'sl-transfer-tax',
+      label: 'Transfer / Conveyance Tax',
+      category: 'Transfer Tax',
+      isPercentage: true,
+      percentageRate: 0.5,
+      computedAmount: pct(0.5),
+      paidBy: 'Split',
+      locked: false,
+    },
+    {
+      id: 'sl-attorney',
+      label: 'Attorney / Legal Fees',
+      category: 'Attorney',
+      isPercentage: false,
+      flatAmount: 1500,
+      computedAmount: 1500,
+      paidBy: 'Seller',
+      locked: false,
+    },
+    {
+      id: 'sl-recording',
+      label: 'Recording Fees',
+      category: 'Recording',
+      isPercentage: false,
+      flatAmount: 250,
+      computedAmount: 250,
+      paidBy: 'Buyer',
+      locked: false,
+    },
+    {
+      id: 'sl-escrow',
+      label: 'Escrow / Settlement Fee',
+      category: 'Escrow',
+      isPercentage: false,
+      flatAmount: 1200,
+      computedAmount: 1200,
+      paidBy: 'Split',
+      locked: false,
+    },
+  ];
+}
+
+/**
+ * Recalculates settlement line item amounts based on a new sale price.
+ */
+export function recomputeSettlement(items: SettlementLineItem[], salePrice: number): SettlementLineItem[] {
+  return items.map(item => ({
+    ...item,
+    computedAmount: item.isPercentage && item.percentageRate != null
+      ? salePrice * (item.percentageRate / 100)
+      : item.flatAmount ?? item.computedAmount,
+  }));
+}
+
+/**
+ * Calculates prorated escrow credits based on closing date position in the year.
+ * sellerDays = days from Jan 1 (or last billing period) to closing.
+ */
+export function computeProratedEscrow(
+  closingDate: Date,
+  items: ProratedEscrowItem[]
+): ProratedEscrowItem[] {
+  const yearStart = new Date(closingDate.getFullYear(), 0, 1);
+  const dayOfYear = Math.ceil(
+    (closingDate.getTime() - yearStart.getTime()) / 86_400_000
+  );
+
+  return items.map(item => {
+    const dailyRate = item.annualAmount / 365;
+    const sellerDays = dayOfYear;
+    const sellerCredit = Math.round(dailyRate * sellerDays * 100) / 100;
+    const buyerCredit = Math.round((item.annualAmount - sellerCredit) * 100) / 100;
+    return { ...item, dailyRate, sellerDays, sellerCredit, buyerCredit };
+  });
+}
+
+/**
+ * Estimates capital gains tax for a sold property.
+ * Short-term (≤365 days) → user's marginal bracket (default 32%).
+ * Long-term (>365 days) → 15% (≤$492,300 income) or 20%.
+ */
+export function computeCapitalGainsTax(deal: Project): TaxEstimate {
+  const fin = deal.financials;
+  const salePrice = fin?.actualSalePrice || fin?.estimatedARV || 0;
+  const purchasePrice = fin?.purchasePrice || 0;
+
+  // Cost basis = purchase + rehab + acquisition costs
+  let rehabCosts = 0;
+  fin?.costs?.forEach(c => { if (c.approved) rehabCosts += c.amount; });
+  deal.rehabExpenses?.forEach(e => { rehabCosts += e.amount; });
+
+  let acquisitionCosts = 0;
+  if (fin?.loanAmount && fin?.loanOriginationPoints) {
+    acquisitionCosts += fin.loanAmount * (fin.loanOriginationPoints / 100);
+  }
+  if (deal.costBasisLedger) {
+    [...(deal.costBasisLedger.directAcquisition || []),
+     ...(deal.costBasisLedger.financing || []),
+     ...(deal.costBasisLedger.preClosing || [])
+    ].forEach(item => { acquisitionCosts += item.amount; });
+  }
+
+  let holdingCosts = 0;
+  deal.holdingCosts?.forEach(hc => { holdingCosts += hc.monthlyAmount * hc.monthsPaid; });
+
+  const costBasis = purchasePrice + rehabCosts + acquisitionCosts + holdingCosts;
+
+  // Sell-side costs (commissions + closing)
+  let sellCosts = fin?.finalClosingCosts || 0;
+  const buyerComm = salePrice * ((fin?.buyersAgentCommission || 0) / 100);
+  const sellerComm = salePrice * ((fin?.sellersAgentCommission || 0) / 100);
+  sellCosts += buyerComm + sellerComm;
+
+  // Settlement ledger costs
+  fin?.settlementLedger?.forEach(item => {
+    if (item.paidBy === 'Seller' || item.paidBy === 'Split') {
+      const amount = item.paidBy === 'Split' ? item.computedAmount / 2 : item.computedAmount;
+      sellCosts += amount;
+    }
+  });
+
+  const netProceeds = salePrice - sellCosts;
+  const capitalGain = netProceeds - costBasis;
+
+  // Holding period
+  let holdingPeriodDays = fin?.estimatedTimelineDays || 90;
+  if (deal.createdAt && fin?.soldDate) {
+    const ms = new Date(fin.soldDate).getTime() - new Date(deal.createdAt).getTime();
+    holdingPeriodDays = Math.max(1, Math.round(ms / 86_400_000));
+  }
+
+  const isLongTerm = holdingPeriodDays > 365;
+  const marginalRate = fin?.marginalTaxBracket || 32;
+  const estimatedTaxRate = isLongTerm ? 15 : marginalRate;
+  const estimatedTaxLiability = capitalGain > 0 ? capitalGain * (estimatedTaxRate / 100) : 0;
+  const netAfterTax = capitalGain - estimatedTaxLiability;
+
+  return {
+    holdingPeriodDays,
+    isLongTerm,
+    costBasis,
+    netProceeds,
+    capitalGain,
+    estimatedTaxRate,
+    estimatedTaxLiability,
+    netAfterTax,
+  };
+}

@@ -52,7 +52,8 @@ export function usePermissions() {
   
   // Default to a safe fallback role if user profile is missing role
   // In production, this should come from user documentation in Firestore.
-  const role: Role = profile?.role || 'Accountant';
+  // Changed to 'Lead Investor' to ensure new signups hit the Command Center and can test project creation.
+  const role: Role = profile?.role || 'Lead Investor';
 
   const can = (permission: Permission) => {
     return ROLE_PERMISSIONS[role]?.includes(permission) || false;

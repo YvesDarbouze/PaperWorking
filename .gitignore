@@ -41,3 +41,12 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# deployment/build artifacts
+.firebase/
+build_log.txt
+dev.db
+firebase-debug*.log
+test_*.mjs
+package-lock 2.json
+

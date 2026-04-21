@@ -1,0 +1,14 @@
+# .gcloudignore
+# Exclude heavy or unnecessary files from the build upload context
+node_modules/
+.git/
+.next/
+dist/
+.env*
+
+# Standard gcloud exclusions if not already covered
+.gcloudignore
+.git
+.gitignore
+.dockerignore
+#!include:.gitignore

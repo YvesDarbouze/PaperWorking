@@ -2,36 +2,53 @@
 
 This file passes context between Antigravity (Google), Claude Code (Anthropic), and IDE agents (Cursor, Windsurf).
 
-## Current State: CLEAN & DEPLOYED ✅ (2026-04-21, Claude Code)
+## Current State: BRIDGE API + REI LIFECYCLE COMPLETE ✅ (2026-04-23, Claude Code)
 
-`main` is up to date with all changes from this session. Production deployment triggered.
+Build passes clean. All Bridge API routes registered as dynamic. TypeScript clean.
 
 ## What Was Completed (this session — Claude Code)
 
-- **Junk files removed**: `package-lock 3.json`, `package-lock 4.json`, `prisma.config 2.ts`, and exact duplicate test files (`firestore.rules.test 2.ts`, `projectStore.test 2.ts`)
-- **Workspace tooling committed** (e9e647e): Agent skills (`skills/`), Claude agent configs (`.claude/agents/`), IDE rule files (`.cursorrules`, `.windsurfrules`, etc.), `Dockerfile`, `.dockerignore`, `.gcloudignore`, `hooks/`, `scripts/sync-firestore-to-postgres.ts`
-- **Antigravity UI changes committed** (245d176): DM Sans font, refined color tokens (`--pw-border`, `--pw-black`, `--pw-accent`), updated pill button styles, PricingCards layout refresh
-- **PricingSection quote fix** (6941a69): Replaced curly apostrophes in testimonial strings
+### Bridge API — Build-Time Safety
+- `bridge.ts`: Lazy `getBridgeConfig()` with Proxy. `BRIDGE_DATASET_ID` + `BRIDGE_WEBHOOK_SECRET` made optional (not used in services)
+- `zillow.ts`: Lazy `getZillowBridgeConfig()` + Proxy
+- `apiClient.ts`: Lazy `createApiClient()` factory + Proxy default export
+- `replicationWorker.ts`: Fixed endpoint to `{vDatasetId}/Property/replication` (interceptor substitutes dataset ID)
+- `mlsPropertyService.ts`: Fixed wrong domain (`bridgeinteractive.com` → `bridgedataoutput.com`)
+- `bridge/sync/route.ts` + `bridge/metadata/route.ts`: Added `force-dynamic`
+- `.env.local`: Added `BRIDGE_API_BASE_URL` + documented all required vars
 
-## Previous Auth Fixes (from 2026-04-20, Claude Code)
+### MLS Predictive Property Search (NEW)
+- `src/app/api/bridge/search/route.ts` — OData `contains(tolower(UnparsedAddress),'q')` search, returns 8 results, degrades gracefully when credentials missing (`credentialsMissing: true` flag)
+- `src/components/shared/PropertySearchInput.tsx` — 300ms debounced autocomplete dropdown with MLS property cards (address, price, beds/baths, sqft, MLS status, thumbnail)
 
-- Firebase `doc()` TypeError fixed — removed Proxy wrappers in `src/lib/firebase/config.ts` (8dc6525)
-- OAuth redirect flow: `useEffect(user+loading)` in login/register pages
-- Cookie race: `setLoading(false)` runs after `syncSessionCookie` in `AuthContext`
-- Proxy: no longer blocks dashboard; client-side guard in `dashboard/layout.tsx` is authoritative
-- COOP header, terms/privacy pages, btoa() for App Hosting, Prisma schema committed
+### REI Lifecycle Integration (NEW)
+- `src/types/schema.ts`: Added `ReiStatus` type: `Target | In Contract | Acquired | Rehabbing | Under Construction | Renting | For Sale`; expanded `DealPhaseKey` to match; added MLS fields + `acquisitionDate` + `saleDate` to `Project`
+- `src/lib/services/dealStateMachine.ts`: `DealPhase` updated to full REI lifecycle
+- `src/lib/firebase/deals.ts`: Fixed hardcoded `status: 'Lead'` override — now uses caller-supplied status (falls back to `'Target'`)
+- `src/components/project/DealCreationWizard.tsx`: Full rewrite — Step 1 now has MLS predictive search + REI status picker (7 options with icons). Step 2 captures `acquisitionDate` + `saleDate`. Review step shows all MLS + REI fields
+
+## What Needs Real Bridge Credentials to Go Live
+
+`.env.local` credentials are still placeholders — obtain from https://bridgeinteractive.com/developers/:
+```
+BRIDGE_CLIENT_ID=your_client_id_here
+BRIDGE_CLIENT_SECRET=your_client_secret_here
+BRIDGE_SERVER_TOKEN=your_server_token_here
+BRIDGE_API_BASE_URL=https://api.bridgedataoutput.com/api/v2/OData/
+BRIDGE_VIRTUAL_DATASET_ID=your_virtual_dataset_id_here
+```
+The search UI degrades gracefully without them (amber warning banner; manual address entry works).
 
 ## Architecture Summary
 
-- Auth source of truth: Firebase Client SDK (`onAuthStateChanged`)
-- Server session: Firebase ID token → `/api/auth/session` → `__session` HttpOnly cookie
-- Proxy file: `src/proxy.ts` (Next.js 16 — was `middleware.ts` in v15)
-- Dashboard guard: Client-side in `src/app/dashboard/layout.tsx`
-- Secrets: `FIREBASE_CLIENT_EMAIL` + `FIREBASE_PRIVATE_KEY` in Google Secret Manager
-- Font: DM Sans (loaded via `next/font/google`)
+- Auth: Firebase → `/api/auth/session` → `__session` HttpOnly cookie
+- MLS ingestion: `replicationWorker` → `{vDatasetId}/Property/replication` watermark-based sync
+- MLS search: `GET /api/bridge/search?q=` → `PropertySearchInput` autocomplete
+- REI lifecycle order: `Target → In Contract → Acquired → Rehabbing → Under Construction → For Sale / Renting`
+- DB: Neon PostgreSQL (Prisma) for `Property` + financials; Firestore for real-time project docs
 
-## Next Agent
+## Next Steps for Next Agent
 
-No blocking issues. Auth is deployed and ready. Repo is clean. Open for feature work.
-
-**Note for Antigravity**: If you made changes to `/api/auth/session` (401 fix), please merge them to `main` — Claude Code's current `main` tip is `6941a69`. Check for conflicts with `src/app/api/auth/session/route.ts`.
+1. Wire **webhook HMAC signature verification** in `/api/webhooks/bridge/route.ts` using `BRIDGE_WEBHOOK_SECRET`
+2. Display **MLS enrichment fields** (beds, baths, sqft, thumbnail, MLS status badge) on kanban cards and project detail view
+3. Add **REI status advancement UI** on project cards (click to transition through lifecycle)

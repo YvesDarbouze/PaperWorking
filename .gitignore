@@ -50,3 +50,15 @@ firebase-debug*.log
 test_*.mjs
 package-lock 2.json
 
+# macOS Finder duplicate directories
+"node_modules 2/"
+node_modules\ 2/
+.agents/skills\ 2/
+".agents/skills 2/"
+
+# MCP Jam tool cache
+.mcpjam/
+
+# Claude Code agent dirs
+.claude/
+

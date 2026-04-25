@@ -70,15 +70,15 @@ export default function FundingSourceTracker() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
-          <Landmark className="w-5 h-5 text-gray-700" />
-          <h3 className="text-lg font-medium tracking-tight text-gray-900">Funding Sources</h3>
+          <Landmark className="w-5 h-5 text-text-primary" />
+          <h3 className="text-lg font-medium tracking-tight text-text-primary">Funding Sources</h3>
         </div>
         <button
           onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
+          className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-bg-primary text-text-primary rounded-md hover:bg-gray-200 transition"
         >
           <Plus className="w-3 h-3" /> Add Source
         </button>
@@ -86,8 +86,8 @@ export default function FundingSourceTracker() {
 
       {/* Funding Gap Indicator */}
       {purchasePrice > 0 && (
-        <div className="mb-5 p-3 rounded-lg bg-gray-50 border border-gray-100">
-          <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+        <div className="mb-5 p-3 rounded-lg bg-bg-primary border border-border-accent">
+          <div className="flex justify-between text-xs text-text-secondary mb-1.5">
             <span>Funding Coverage</span>
             <span>
               ${totalFunding.toLocaleString()} / ${purchasePrice.toLocaleString()}
@@ -107,11 +107,11 @@ export default function FundingSourceTracker() {
 
       {/* Add Source Dropdown */}
       {showAdd && (
-        <div className="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50 flex items-center gap-3">
+        <div className="mb-4 p-4 border border-border-accent rounded-lg bg-bg-primary flex items-center gap-3">
           <select
             value={newType}
             onChange={(e) => setNewType(e.target.value as FundingType)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-1 focus:ring-gray-400 focus:outline-none"
+            className="text-sm border border-border-accent rounded-md px-3 py-1.5 focus:ring-1 focus:ring-gray-400 focus:outline-none"
           >
             <option value="Hard Money">Hard Money</option>
             <option value="Traditional">Traditional</option>
@@ -125,7 +125,7 @@ export default function FundingSourceTracker() {
           </button>
           <button
             onClick={() => setShowAdd(false)}
-            className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700"
+            className="px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary"
           >
             Cancel
           </button>
@@ -135,20 +135,20 @@ export default function FundingSourceTracker() {
       {/* Source List */}
       <div className="space-y-3">
         {sources.map((src) => (
-          <div key={src.id} className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+          <div key={src.id} className="p-4 border border-border-accent rounded-lg hover:bg-bg-primary transition">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+                <div className="w-7 h-7 rounded-full bg-bg-primary flex items-center justify-center text-text-secondary">
                   {FUNDING_ICONS[src.type]}
                 </div>
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-gray-400">{src.type}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider text-text-secondary">{src.type}</p>
                   <input
                     type="text"
                     defaultValue={src.lenderName}
                     placeholder="Lender name..."
                     onChange={(e) => updateSource(src.id, 'lenderName', e.target.value)}
-                    className="text-sm font-medium text-gray-900 bg-transparent border-none p-0 focus:ring-0 w-full"
+                    className="text-sm font-medium text-text-primary bg-transparent border-none p-0 focus:ring-0 w-full"
                   />
                 </div>
               </div>
@@ -159,32 +159,32 @@ export default function FundingSourceTracker() {
 
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="text-xs text-gray-400 uppercase tracking-wider block mb-0.5">Amount</label>
+                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Amount</label>
                 <input
                   type="number"
                   defaultValue={src.amount}
                   onChange={(e) => updateSource(src.id, 'amount', Number(e.target.value))}
-                  className="text-sm font-medium text-gray-900 bg-gray-50 border border-gray-200 rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
+                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-400 uppercase tracking-wider block mb-0.5">Rate (%)</label>
+                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Rate (%)</label>
                 <input
                   type="number"
                   step="0.1"
                   defaultValue={src.interestRate}
                   onChange={(e) => updateSource(src.id, 'interestRate', Number(e.target.value))}
-                  className="text-sm font-medium text-gray-900 bg-gray-50 border border-gray-200 rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
+                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-400 uppercase tracking-wider block mb-0.5">Term</label>
+                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Term</label>
                 <input
                   type="text"
                   defaultValue={src.term}
                   placeholder="12 months"
                   onChange={(e) => updateSource(src.id, 'term', e.target.value)}
-                  className="text-sm font-medium text-gray-900 bg-gray-50 border border-gray-200 rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
+                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -192,7 +192,7 @@ export default function FundingSourceTracker() {
         ))}
 
         {sources.length === 0 && (
-          <div className="p-8 text-center text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+          <div className="p-8 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-lg">
             <Wallet className="w-8 h-8 mx-auto mb-2 opacity-50" />
             <p className="text-sm">No funding sources tracked yet.</p>
           </div>

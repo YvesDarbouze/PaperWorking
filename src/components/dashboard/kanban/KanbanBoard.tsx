@@ -109,7 +109,7 @@ export default function KanbanBoard() {
     setPendingTransition({ deal, targetPhase: target });
 
   return (
-    <div className="flex-1 w-full bg-gray-50 overflow-hidden flex flex-col">
+    <div className="flex-1 w-full bg-bg-primary overflow-hidden flex flex-col">
 
       {/* ── Desktop: multi-column horizontal scroll ── */}
       <div className="hidden md:flex flex-1 overflow-x-auto p-6 space-x-6 min-h-0 custom-scrollbar">
@@ -163,12 +163,12 @@ export default function KanbanBoard() {
         </motion.div>
 
         {/* Active column label */}
-        <p className="text-center text-[10px] font-black text-pw-muted uppercase tracking-[0.2em] pt-2 flex-shrink-0">
+        <p className="text-center text-[10px] font-black text-text-secondary uppercase tracking-[0.2em] pt-2 flex-shrink-0" aria-live="polite" aria-atomic="true">
           {COLUMNS[mobileColIndex].title}
         </p>
 
         {/* Dot indicators */}
-        <div className="flex justify-center items-center gap-2 py-3 bg-gray-50 border-t border-pw-border/20 flex-shrink-0">
+        <div className="flex justify-center items-center gap-2 py-3 bg-bg-primary border-t border-border-accent/20 flex-shrink-0">
           {COLUMNS.map((col, i) => (
             <button
               key={col.id}
@@ -191,6 +191,11 @@ export default function KanbanBoard() {
         dealName={pendingTransition?.deal.propertyName || ''}
         targetPhase={pendingTransition?.targetPhase || ''}
       />
+      
+      {/* Screen reader announcements */}
+      <div className="sr-only" aria-live="assertive" aria-atomic="true">
+        {pendingTransition ? `Confirm moving ${pendingTransition.deal.propertyName} to ${pendingTransition.targetPhase}?` : ''}
+      </div>
     </div>
   );
 }

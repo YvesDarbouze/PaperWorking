@@ -86,7 +86,7 @@ export default function PricingFAQ() {
 
       <div className="w-full max-w-3xl mx-auto mt-24 mb-16 px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-medium tracking-tight text-black">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary">
             Common Questions.
           </h2>
           <p className="text-sm text-phase-3 mt-2">
@@ -94,7 +94,7 @@ export default function PricingFAQ() {
           </p>
         </div>
 
-        <div className="border border-phase-1 bg-white shadow-sm overflow-hidden divide-y divide-dashboard">
+        <div className="border border-phase-1 bg-bg-surface shadow-sm overflow-hidden divide-y divide-dashboard">
           {faqItems.map((item, index) => (
             <div key={index} itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
               <button

@@ -7,8 +7,8 @@ export default function CalendarPage() {
   return (
     <div className="p-8 max-w-[1400px] mx-auto h-[calc(100vh-64px)]">
       <header className="mb-10">
-        <h1 className="text-4xl font-light tracking-tight text-gray-900 mb-2">Asset Timeline</h1>
-        <p className="text-gray-500 font-medium">Coordinate logistics, milestones, and tactical to-dos across your portfolio.</p>
+        <h1 className="text-4xl font-light tracking-tight text-text-primary mb-2">Asset Timeline</h1>
+        <p className="text-text-secondary font-medium">Coordinate logistics, milestones, and tactical to-dos across your portfolio.</p>
       </header>
       
       <div className="h-[calc(100%-120px)]">

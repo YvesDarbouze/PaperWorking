@@ -35,13 +35,13 @@ export default function FAQSection() {
   };
 
   return (
-    <section className="py-24 sm:py-32 bg-white text-pw-black">
+    <section className="py-24 sm:py-32 bg-bg-surface text-text-primary">
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-pw-accent mb-4">
             System Mechanics
           </p>
-          <h2 className="text-4xl font-black tracking-tighter text-pw-black mb-6 uppercase">
+          <h2 className="text-4xl font-black tracking-tighter text-text-primary mb-6 uppercase">
             Frequently Asked Questions
           </h2>
         </div>
@@ -50,19 +50,19 @@ export default function FAQSection() {
           {FAQS.map((faq, index) => (
             <div 
               key={index} 
-              className="border border-gray-200 overflow-hidden"
+              className="border border-border-accent overflow-hidden"
             >
               <button
                 onClick={() => toggle(index)}
-                className="w-full flex items-center justify-between p-6 text-left focus:outline-none hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between p-6 text-left focus:outline-none hover:bg-bg-primary transition-colors"
                 aria-expanded={openIndex === index}
               >
-                <span className="text-lg font-bold text-gray-900">{faq.question}</span>
+                <span className="text-lg font-bold text-text-primary">{faq.question}</span>
                 <span className="ml-6 flex-shrink-0">
                   {openIndex === index ? (
                     <Minus className="h-5 w-5 text-pw-accent" />
                   ) : (
-                    <Plus className="h-5 w-5 text-pw-subtle" />
+                    <Plus className="h-5 w-5 text-text-secondary" />
                   )}
                 </span>
               </button>
@@ -75,7 +75,7 @@ export default function FAQSection() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <div className="p-6 pt-0 text-gray-600 leading-relaxed border-t border-gray-100">
+                    <div className="p-6 pt-0 text-text-secondary leading-relaxed border-t border-border-accent">
                       {faq.answer}
                     </div>
                   </motion.div>

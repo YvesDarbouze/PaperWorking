@@ -40,15 +40,15 @@ function MetricRow({ label, value, sub, accent }: {
 }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em] leading-tight pt-0.5 flex-shrink-0">
+      <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] leading-tight pt-0.5 flex-shrink-0">
         {label}
       </span>
       <div className="text-right">
-        <span className={`tabular-nums font-black text-sm ${accent ? 'text-red-500' : 'text-pw-black'}`}>
+        <span className={`tabular-nums font-black text-sm ${accent ? 'text-red-500' : 'text-text-primary'}`}>
           {value}
         </span>
         {sub && (
-          <p className="text-[9px] text-pw-muted font-bold tracking-wide mt-0.5">{sub}</p>
+          <p className="text-[9px] text-text-secondary font-bold tracking-wide mt-0.5">{sub}</p>
         )}
       </div>
     </div>
@@ -57,9 +57,9 @@ function MetricRow({ label, value, sub, accent }: {
 
 function SectionHeader({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
   return (
-    <div className="flex items-center gap-2 pb-3 border-b border-pw-border mb-4">
-      <Icon className="w-3.5 h-3.5 text-pw-muted" />
-      <span className="text-[9px] font-black text-pw-black uppercase tracking-[0.3em]">{title}</span>
+    <div className="flex items-center gap-2 pb-3 border-b border-border-accent mb-4">
+      <Icon className="w-3.5 h-3.5 text-text-secondary" />
+      <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">{title}</span>
     </div>
   );
 }
@@ -164,8 +164,8 @@ export default function HoldingTimeline() {
 
   if (!currentProject) {
     return (
-      <div className="border border-pw-border bg-pw-surface p-8 text-center">
-        <p className="text-[9px] font-black text-pw-muted/40 uppercase tracking-[0.3em]">
+      <div className="border border-border-accent bg-bg-surface p-8 text-center">
+        <p className="text-[9px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
           No active deal selected
         </p>
       </div>
@@ -193,7 +193,7 @@ export default function HoldingTimeline() {
             Clock Status
           </p>
           <div className="flex items-center gap-1.5 justify-end mt-0.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${resolvedAcquisitionDate ? 'bg-green-400 animate-pulse' : 'bg-white/30'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full ${resolvedAcquisitionDate ? 'bg-green-400 animate-pulse' : 'bg-bg-surface/30'}`} />
             <p className="text-[9px] font-mono text-white/60">
               {resolvedAcquisitionDate ? 'ACTIVE' : 'NOT STARTED'}
             </p>
@@ -226,7 +226,7 @@ export default function HoldingTimeline() {
         )}
       </AnimatePresence>
 
-      <div className="p-6 space-y-6 bg-pw-surface">
+      <div className="p-6 space-y-6 bg-bg-surface">
 
         {/* ── Section 1: Project Timeline ── */}
         <div>
@@ -234,20 +234,20 @@ export default function HoldingTimeline() {
 
           {/* Acquisition date input */}
           <div className="mb-5 space-y-1.5">
-            <label className="block text-[9px] font-black text-pw-muted uppercase tracking-[0.25em]">
+            <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
               Acquisition Date
             </label>
             <div className="flex items-center gap-3">
-              <div className="border border-pw-border bg-pw-bg focus-within:border-pw-black transition-colors flex-1">
+              <div className="border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors flex-1">
                 <input
                   type="date"
                   value={acquisitionDateInput}
                   onChange={e => handleAcquisitionDateChange(e.target.value)}
-                  className="w-full px-3 py-2.5 text-xs font-black text-pw-black bg-transparent outline-none cursor-pointer"
+                  className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-transparent outline-none cursor-pointer"
                 />
               </div>
               {resolvedAcquisitionDate && (
-                <span className="text-[9px] font-black text-pw-muted uppercase tracking-widest whitespace-nowrap">
+                <span className="text-[9px] font-black text-text-secondary uppercase tracking-widest whitespace-nowrap">
                   {resolvedAcquisitionDate.toLocaleDateString('en-US', {
                     month: 'short', day: 'numeric', year: 'numeric'
                   })}
@@ -258,42 +258,42 @@ export default function HoldingTimeline() {
 
           {/* Elapsed days display */}
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="border border-pw-border bg-pw-bg p-4 text-center">
-              <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em] mb-1">Elapsed</p>
-              <p className={`text-3xl font-black tabular-nums leading-none ${warningTriggered ? 'text-red-600' : 'text-pw-black'}`}>
+            <div className="border border-border-accent bg-bg-primary p-4 text-center">
+              <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">Elapsed</p>
+              <p className={`text-3xl font-black tabular-nums leading-none ${warningTriggered ? 'text-red-600' : 'text-text-primary'}`}>
                 {elapsedDays}
               </p>
-              <p className="text-[9px] font-black text-pw-muted mt-1">DAYS</p>
+              <p className="text-[9px] font-black text-text-secondary mt-1">DAYS</p>
             </div>
-            <div className="border border-pw-border bg-pw-bg p-4 text-center">
-              <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em] mb-1">Threshold</p>
-              <p className="text-3xl font-black tabular-nums leading-none text-pw-black">
+            <div className="border border-border-accent bg-bg-primary p-4 text-center">
+              <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">Threshold</p>
+              <p className="text-3xl font-black tabular-nums leading-none text-text-primary">
                 {WARNING_DAYS}
               </p>
-              <p className="text-[9px] font-black text-pw-muted mt-1">DAYS</p>
+              <p className="text-[9px] font-black text-text-secondary mt-1">DAYS</p>
             </div>
-            <div className="border border-pw-border bg-pw-bg p-4 text-center">
-              <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em] mb-1">
+            <div className="border border-border-accent bg-bg-primary p-4 text-center">
+              <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em] mb-1">
                 {warningTriggered ? 'Overrun' : 'Remaining'}
               </p>
               <p className={`text-3xl font-black tabular-nums leading-none ${warningTriggered ? 'text-red-600' : 'text-green-700'}`}>
                 {warningTriggered ? elapsedDays - WARNING_DAYS : daysUntilWarning}
               </p>
-              <p className="text-[9px] font-black text-pw-muted mt-1">DAYS</p>
+              <p className="text-[9px] font-black text-text-secondary mt-1">DAYS</p>
             </div>
           </div>
 
           {/* Progress bar */}
           <div className="space-y-1.5">
             <div className="flex justify-between">
-              <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">
+              <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">
                 Timeline Progress
               </span>
-              <span className="text-[9px] font-black text-pw-black tabular-nums">
+              <span className="text-[9px] font-black text-text-primary tabular-nums">
                 {timelinePercent.toFixed(0)}% of 166-day window
               </span>
             </div>
-            <div className="h-1.5 w-full bg-gray-100 overflow-hidden">
+            <div className="h-1.5 w-full bg-bg-primary overflow-hidden">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(timelinePercent, 100)}%` }}
@@ -353,7 +353,7 @@ export default function HoldingTimeline() {
                   label="Days Elapsed"
                   value={`${elapsedDays} days`}
                 />
-                <div className="border-t border-pw-border pt-2">
+                <div className="border-t border-border-accent pt-2">
                   <MetricRow
                     label="Formula"
                     value={`${fmt(loanAmount)} × ${interestRate}% ÷ 365 × ${elapsedDays}d`}
@@ -364,8 +364,8 @@ export default function HoldingTimeline() {
               </div>
             </div>
           ) : (
-            <div className="border border-dashed border-pw-border p-6 text-center">
-              <p className="text-[9px] font-black text-pw-muted/40 uppercase tracking-[0.3em]">
+            <div className="border border-dashed border-border-accent p-6 text-center">
+              <p className="text-[9px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
                 Set loan amount & interest rate in Evaluation → Capital to activate
               </p>
             </div>
@@ -382,18 +382,18 @@ export default function HoldingTimeline() {
                 {holdingCosts
                   .filter(c => c.type !== 'Loan Interest' && c.monthlyAmount > 0)
                   .map(c => (
-                    <div key={c.id} className="flex items-center justify-between border border-pw-border bg-pw-bg px-3 py-2">
-                      <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.15em]">
+                    <div key={c.id} className="flex items-center justify-between border border-border-accent bg-bg-primary px-3 py-2">
+                      <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.15em]">
                         {c.type}
                       </span>
-                      <span className="text-xs font-black text-pw-black tabular-nums">
+                      <span className="text-xs font-black text-text-primary tabular-nums">
                         {fmt(c.monthlyAmount)}/mo
                       </span>
                     </div>
                   ))}
               </div>
 
-              <div className="border-t border-pw-border pt-3 space-y-2">
+              <div className="border-t border-border-accent pt-3 space-y-2">
                 <MetricRow
                   label="Total Monthly (non-interest)"
                   value={`${fmt(monthlyNonInterest)}/mo`}
@@ -402,7 +402,7 @@ export default function HoldingTimeline() {
                   label="Elapsed Months"
                   value={elapsedMonths.toFixed(1)}
                 />
-                <div className="border-t border-pw-border pt-2">
+                <div className="border-t border-border-accent pt-2">
                   <MetricRow
                     label="Holding Costs to Date"
                     value={fmt(holdingCostsToDate, 2)}
@@ -413,8 +413,8 @@ export default function HoldingTimeline() {
               </div>
             </div>
           ) : (
-            <div className="border border-dashed border-pw-border p-6 text-center">
-              <p className="text-[9px] font-black text-pw-muted/40 uppercase tracking-[0.3em]">
+            <div className="border border-dashed border-border-accent p-6 text-center">
+              <p className="text-[9px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
                 Add recurring costs in the Holding Cost Ticker below
               </p>
             </div>
@@ -425,7 +425,7 @@ export default function HoldingTimeline() {
         <div>
           <SectionHeader icon={TrendingUp} title="Total_Project_Cost_Basis" />
 
-          <div className="bg-pw-bg border border-pw-border p-5 space-y-3">
+          <div className="bg-bg-primary border border-border-accent p-5 space-y-3">
             <MetricRow
               label="Purchase Price"
               value={fmt(purchasePrice)}
@@ -451,15 +451,15 @@ export default function HoldingTimeline() {
             <div className="border-t-2 border-pw-black pt-4 mt-2">
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1">
+                  <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-1">
                     Total Cost Basis
                   </p>
-                  <p className="text-[9px] font-bold text-pw-muted">
+                  <p className="text-[9px] font-bold text-text-secondary">
                     Purchase + Rehab + Holding + Interest
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-black text-pw-black tabular-nums">
+                  <p className="text-2xl font-black text-text-primary tabular-nums">
                     ${totalCostBasis.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                   {f?.estimatedARV && f.estimatedARV > 0 && (
@@ -478,14 +478,14 @@ export default function HoldingTimeline() {
           {f?.estimatedARV && f.estimatedARV > 0 && (
             <div className="mt-3 space-y-1.5">
               <div className="flex justify-between">
-                <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">
+                <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">
                   Cost Basis vs ARV
                 </span>
-                <span className="text-[9px] font-black text-pw-black tabular-nums">
+                <span className="text-[9px] font-black text-text-primary tabular-nums">
                   {((totalCostBasis / f.estimatedARV) * 100).toFixed(1)}% of ARV consumed
                 </span>
               </div>
-              <div className="h-1.5 w-full bg-gray-100 overflow-hidden">
+              <div className="h-1.5 w-full bg-bg-primary overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((totalCostBasis / f.estimatedARV) * 100, 100)}%` }}
@@ -502,9 +502,9 @@ export default function HoldingTimeline() {
         </div>
 
         {/* ── Footer note ── */}
-        <div className="flex items-start gap-2 pt-2 border-t border-pw-border">
-          <Shield className="w-3 h-3 text-pw-muted flex-shrink-0 mt-0.5" />
-          <p className="text-[9px] font-bold text-pw-muted leading-relaxed">
+        <div className="flex items-start gap-2 pt-2 border-t border-border-accent">
+          <Shield className="w-3 h-3 text-text-secondary flex-shrink-0 mt-0.5" />
+          <p className="text-[9px] font-bold text-text-secondary leading-relaxed">
             Per-diem interest and cost basis recalculate every dashboard load. No manual input required
             for live accumulation — set your acquisition date once to start the clock.
           </p>

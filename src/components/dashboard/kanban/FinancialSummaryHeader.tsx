@@ -22,18 +22,18 @@ export default function FinancialSummaryHeader() {
   };
 
   return (
-    <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200 px-6 py-4 shadow-sm">
+    <div className="sticky top-0 z-30 bg-bg-surface/80 backdrop-blur-md border-b border-border-accent px-6 py-4 shadow-sm">
       <div className="max-w-[1600px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
 
           {/* Metric Group */}
           <div className="flex items-center space-x-8">
             <div className="flex flex-col">
-              <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+              <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
                 <Banknote className="w-3 h-3 mr-1.5" />
                 Capital Deployed
               </div>
-              <div className="text-2xl font-light text-gray-900 tracking-tight">
+              <div className="text-2xl font-light text-text-primary tracking-tight">
                 ${portfolioMetrics.totalInvestedCapitalRealized.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
@@ -41,7 +41,7 @@ export default function FinancialSummaryHeader() {
             <div className="h-10 w-px bg-gray-200" />
 
             <div className="flex flex-col">
-              <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+              <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
                 <TrendingUp className="w-3 h-3 mr-1.5" />
                 Realized Profit
               </div>
@@ -53,7 +53,7 @@ export default function FinancialSummaryHeader() {
             <div className="h-10 w-px bg-gray-200" />
 
             <div className="flex flex-col">
-              <div className="flex items-center text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">
+              <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
                 <PieChart className="w-3 h-3 mr-1.5" />
                 Sales vs Losses
               </div>
@@ -62,26 +62,26 @@ export default function FinancialSummaryHeader() {
                   <span className={`text-2xl font-light tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     ${Math.abs(portfolioMetrics.totalRealizedProfit).toLocaleString()}
                   </span>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase">Profit</span>
+                  <span className="text-[10px] text-text-secondary font-bold uppercase">Profit</span>
                 </div>
-                <div className="flex items-baseline gap-1.5 border-l border-gray-100 pl-3">
-                  <span className="text-sm font-black text-gray-900 tracking-tight">
+                <div className="flex items-baseline gap-1.5 border-l border-border-accent pl-3">
+                  <span className="text-sm font-black text-text-primary tracking-tight">
                     {portfolioMetrics.averageRealizedROI.toFixed(1)}%
                   </span>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase whitespace-nowrap">Avg ROI</span>
+                  <span className="text-[10px] text-text-secondary font-bold uppercase whitespace-nowrap">Avg ROI</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Global Track Toggle */}
-          <div className="flex items-center bg-gray-100 p-1 rounded-xl border border-gray-200">
+          <div className="flex items-center bg-bg-primary p-1 rounded-xl border border-border-accent">
             <button
               onClick={() => toggleTrackMode()}
               className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 trackMode === 'FLIP'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-bg-surface text-text-primary shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               FLIP TRACK
@@ -90,8 +90,8 @@ export default function FinancialSummaryHeader() {
               onClick={() => toggleTrackMode()}
               className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 trackMode === 'HOLD'
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-bg-surface text-emerald-600 shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary'
               }`}
             >
               HOLD TRACK
@@ -99,7 +99,7 @@ export default function FinancialSummaryHeader() {
           </div>
 
           {/* Deep Focus Indicator */}
-          <div className="hidden lg:flex items-center text-xs text-gray-400 font-medium bg-black/5 px-3 py-1.5 rounded-full">
+          <div className="hidden lg:flex items-center text-xs text-text-secondary font-medium bg-black/5 px-3 py-1.5 rounded-full">
             <Info className="w-3 h-3 mr-2 text-indigo-500" />
             DEEP FOCUS MODE ENABLED
           </div>
@@ -110,7 +110,7 @@ export default function FinancialSummaryHeader() {
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-3 pt-3 border-t border-gray-100 -mx-6 px-6"
+            className="mt-3 pt-3 border-t border-border-accent -mx-6 px-6"
           >
             <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
               {projects.map((deal) => {
@@ -123,10 +123,10 @@ export default function FinancialSummaryHeader() {
                 return (
                   <div
                     key={deal.id}
-                    className="flex-shrink-0 flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 hover:border-gray-400 transition-colors cursor-default"
+                    className="flex-shrink-0 flex items-center gap-2 bg-bg-primary border border-border-accent px-3 py-1.5 hover:border-gray-400 transition-colors cursor-default"
                   >
                     <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
-                    <span className="text-[10px] font-black text-pw-black uppercase tracking-tight max-w-[80px] truncate">
+                    <span className="text-[10px] font-black text-text-primary uppercase tracking-tight max-w-[80px] truncate">
                       {deal.propertyName}
                     </span>
                     <span className={`text-[10px] font-black tabular-nums ${text}`}>

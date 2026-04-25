@@ -23,7 +23,7 @@ interface PermitItem {
 }
 
 const STATUS_CONFIG: Record<PermitStatus, { color: string; bg: string; icon: React.ReactNode }> = {
-  'Not Filed': { color: 'text-gray-500', bg: 'bg-gray-50', icon: <Clock className="w-3.5 h-3.5" /> },
+  'Not Filed': { color: 'text-text-secondary', bg: 'bg-bg-primary', icon: <Clock className="w-3.5 h-3.5" /> },
   Filed: { color: 'text-blue-600', bg: 'bg-blue-50', icon: <FileText className="w-3.5 h-3.5" /> },
   'Under Review': { color: 'text-yellow-600', bg: 'bg-yellow-50', icon: <Clock className="w-3.5 h-3.5" /> },
   Approved: { color: 'text-emerald-600', bg: 'bg-emerald-50', icon: <CheckCircle className="w-3.5 h-3.5" /> },
@@ -81,13 +81,13 @@ export default function PermitTrackingChecklist() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="p-6 border-b border-border-accent">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <FileText className="w-5 h-5 text-gray-700" />
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Permit Compliance</h3>
+            <FileText className="w-5 h-5 text-text-primary" />
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Permit Compliance</h3>
           </div>
           <div className="flex items-center gap-2">
             {isFullyCompliant ? (
@@ -101,7 +101,7 @@ export default function PermitTrackingChecklist() {
             ) : null}
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-bg-primary text-text-primary rounded-md hover:bg-gray-200 transition"
             >
               <Plus className="w-3 h-3" /> Add
             </button>
@@ -110,11 +110,11 @@ export default function PermitTrackingChecklist() {
 
         {/* Progress */}
         <div className="mb-4">
-          <div className="flex justify-between text-xs text-gray-500 mb-1">
+          <div className="flex justify-between text-xs text-text-secondary mb-1">
             <span>Compliance Progress</span>
             <span>{approvedCount}/{permits.length} approved</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2 flex overflow-hidden">
+          <div className="w-full bg-bg-primary rounded-full h-2 flex overflow-hidden">
             <div className="bg-emerald-500 h-2 transition-all" style={{ width: `${(approvedCount / permits.length) * 100}%` }} />
             {deniedCount > 0 && (
               <div className="bg-red-400 h-2 transition-all" style={{ width: `${(deniedCount / permits.length) * 100}%` }} />
@@ -124,14 +124,14 @@ export default function PermitTrackingChecklist() {
 
         {/* Add Form */}
         {showAddForm && (
-          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="flex items-center gap-2 p-3 bg-bg-primary rounded-lg border border-border-accent">
             <input
               type="text"
               placeholder="e.g., Roofing Permit"
               value={newPermitType}
               onChange={(e) => setNewPermitType(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAddPermit()}
-              className="flex-1 text-sm border border-gray-300 rounded px-3 py-1.5 focus:ring-1 focus:ring-gray-400 focus:outline-none"
+              className="flex-1 text-sm border border-border-accent rounded px-3 py-1.5 focus:ring-1 focus:ring-gray-400 focus:outline-none"
             />
             <button onClick={handleAddPermit} className="px-4 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded hover:bg-gray-800 transition">
               Add
@@ -145,19 +145,19 @@ export default function PermitTrackingChecklist() {
         {permits.map(permit => {
           const config = STATUS_CONFIG[permit.status];
           return (
-            <div key={permit.id} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition group">
+            <div key={permit.id} className="flex items-center justify-between px-6 py-4 hover:bg-bg-primary transition group">
               <div className="flex items-center space-x-3">
                 <span className={config.color}>{config.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{permit.type}</p>
+                  <p className="text-sm font-medium text-text-primary">{permit.type}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-gray-400">{permit.municipality}</p>
+                    <p className="text-xs text-text-secondary">{permit.municipality}</p>
                     {permit.filedDate && (
-                      <p className="text-xs text-gray-400">Filed: {permit.filedDate}</p>
+                      <p className="text-xs text-text-secondary">Filed: {permit.filedDate}</p>
                     )}
                   </div>
                   {permit.notes && (
-                    <p className="text-xs text-gray-500 mt-0.5 italic">{permit.notes}</p>
+                    <p className="text-xs text-text-secondary mt-0.5 italic">{permit.notes}</p>
                   )}
                 </div>
               </div>

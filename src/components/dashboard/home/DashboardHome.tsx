@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useGuestProjectsSync } from '@/hooks/useGuestProjectsSync';
-import SmartInboxWidget from './SmartInboxWidget';
-import GlobalTodoWidget from './GlobalTodoWidget';
-import PortfolioKPIStrip from './PortfolioKPIStrip';
-import MAOGaugeTracker from './MAOGaugeTracker';
-import BurnRateMonitor from './BurnRateMonitor';
+const SmartInboxWidget = lazy(() => import('./SmartInboxWidget'));
+const GlobalTodoWidget = lazy(() => import('./GlobalTodoWidget'));
+const PortfolioKPIStrip = lazy(() => import('./PortfolioKPIStrip'));
+const MAOGaugeTracker = lazy(() => import('./MAOGaugeTracker'));
+const BurnRateMonitor = lazy(() => import('./BurnRateMonitor'));
 import { LayoutGrid, ArrowRight, Plus, Lock, Building2, TrendingUp, ChevronRight } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { usePaywall } from '@/hooks/usePaywall';
@@ -35,9 +35,22 @@ const ROIChart = lazy(() => import('./ROIChart'));
 
 function ChartSkeleton() {
   return (
-    <div className="ag-card bg-pw-surface border border-pw-border/10 animate-pulse">
-      <div className="h-4 bg-pw-bg rounded w-1/3 mb-4" />
-      <div className="h-[280px] bg-pw-bg rounded-2xl" />
+    <div className="ag-card bg-bg-surface border border-border-accent/10 animate-pulse">
+      <div className="h-4 bg-pw-border/20 rounded w-1/3 mb-4" />
+      <div className="h-[280px] bg-bg-primary rounded-md" />
+    </div>
+  );
+}
+
+function WidgetSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={`ag-card bg-bg-surface border border-border-accent/10 animate-pulse flex flex-col p-6 ${className || ''}`}>
+      <div className="h-6 w-1/3 bg-pw-border/20 rounded mb-4" />
+      <div className="flex-1 space-y-3">
+        <div className="h-12 w-full bg-pw-border/10 rounded-lg" />
+        <div className="h-12 w-full bg-pw-border/10 rounded-lg" />
+        <div className="h-12 w-full bg-pw-border/10 rounded-lg" />
+      </div>
     </div>
   );
 }
@@ -46,7 +59,7 @@ function ChartSkeleton() {
 
 function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
   return (
-    <div className="mb-8 flex items-center justify-between bg-pw-black text-pw-white rounded-[var(--radius-md)] px-8 py-5">
+    <div className="mb-8 flex items-center justify-between bg-pw-black text-pw-white rounded-md px-8 py-5">
       <div className="flex items-center gap-4">
         <TrendingUp className="w-5 h-5 text-pw-accent flex-shrink-0" aria-hidden="true" />
         <div>
@@ -58,7 +71,7 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
       </div>
       <button
         onClick={onUpgrade}
-        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-pw-white text-pw-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-pw-border transition-colors"
+        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-bg-surface text-text-primary rounded text-xs font-bold uppercase tracking-widest hover:bg-pw-border transition-colors"
       >
         View Plans
         <ChevronRight className="w-3 h-3" aria-hidden="true" />
@@ -76,7 +89,7 @@ function dealStatusStyle(status: string): string {
     case 'Renovating':     return 'bg-orange-50 text-orange-700';
     case 'Listed':         return 'bg-blue-50 text-blue-700';
     case 'Sold':           return 'bg-green-50 text-green-700';
-    default:               return 'bg-gray-100 text-gray-600';
+    default:               return 'bg-bg-primary text-text-secondary';
   }
 }
 
@@ -84,27 +97,27 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
   const memberInfo = project.members?.[userUid];
   const role = memberInfo?.role ?? 'Collaborator';
   return (
-    <article className="ag-card bg-pw-surface border border-pw-border/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] hover:scale-[1.02] transition-all duration-300">
+    <article className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] hover:scale-[1.02] transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center">
-          <Building2 className="w-5 h-5 text-pw-muted" aria-hidden="true" />
+        <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center">
+          <Building2 className="w-5 h-5 text-text-secondary" aria-hidden="true" />
         </div>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${dealStatusStyle(project.status)}`}>
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded ${dealStatusStyle(project.status)}`}>
           {project.status}
         </span>
       </div>
-      <h3 className="text-xl font-light text-pw-black tracking-tight mb-1 leading-tight">
+      <h3 className="text-xl font-light text-text-primary tracking-tight mb-1 leading-tight">
         {project.propertyName || 'Unnamed Property'}
       </h3>
-      <p className="text-sm text-pw-muted mb-5 leading-snug">{project.address}</p>
-      <div className="flex items-end justify-between pt-4 border-t border-pw-border/10">
+      <p className="text-sm text-text-secondary mb-5 leading-snug">{project.address}</p>
+      <div className="flex items-end justify-between pt-4 border-t border-border-accent/10">
         <div>
-          <p className="ag-label opacity-40">Your Role</p>
-          <p className="text-sm font-medium text-pw-black mt-0.5">{role}</p>
+          <p className="ag-label text-text-secondary">Your Role</p>
+          <p className="text-sm font-medium text-text-primary mt-0.5">{role}</p>
         </div>
         <div className="text-right">
-          <p className="ag-label opacity-40">Phase</p>
-          <p className="text-sm font-medium text-pw-black mt-0.5 max-w-[140px] truncate">
+          <p className="ag-label text-text-secondary">Phase</p>
+          <p className="text-sm font-medium text-text-primary mt-0.5 max-w-[140px] truncate">
             {project.phaseStatus ?? '—'}
           </p>
         </div>
@@ -116,13 +129,13 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
 /** Shown in place of the KPI / chart column for guest-tier users. */
 function GuestAccessPanel() {
   return (
-    <div className="ag-card bg-pw-surface border border-pw-border/10 flex flex-col items-center justify-center py-16 text-center gap-5">
-      <div className="w-14 h-14 rounded-full bg-pw-bg border border-pw-border/30 flex items-center justify-center">
-        <Lock className="w-6 h-6 text-pw-muted" />
+    <div className="ag-card bg-bg-surface border border-border-accent/10 flex flex-col items-center justify-center py-16 text-center gap-5">
+      <div className="w-14 h-14 rounded-md bg-bg-primary border border-border-accent/30 flex items-center justify-center">
+        <Lock className="w-6 h-6 text-text-secondary" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-pw-black tracking-tight">Guest Access Active</p>
-        <p className="text-xs text-pw-muted max-w-[240px] leading-relaxed">
+        <p className="text-sm font-semibold text-text-primary tracking-tight">Guest Access Active</p>
+        <p className="text-xs text-text-secondary max-w-[240px] leading-relaxed">
           Portfolio financials are only visible to account owners. You can view the deals you&apos;ve been invited to.
         </p>
       </div>
@@ -177,7 +190,7 @@ export default function DashboardHome() {
     : 'Subscribe to start tracking deals and growing your portfolio';
 
   return (
-    <div className="min-h-full bg-pw-bg px-8 py-8 overflow-y-auto">
+    <div className="dashboard-context min-h-full bg-bg-primary px-8 py-8 overflow-y-auto">
 
       {/* State 2 — Free tier upgrade prompt */}
       {isFree && <FreeTierBanner onUpgrade={() => router.push('/pricing')} />}
@@ -186,15 +199,15 @@ export default function DashboardHome() {
       <div className="flex items-end justify-between mb-10 flex-wrap gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-full bg-pw-black flex items-center justify-center">
+            <div className="w-10 h-10 rounded-md bg-pw-black flex items-center justify-center">
               <LayoutGrid className="w-5 h-5 text-pw-white" aria-hidden="true" />
             </div>
             <p className="ag-label opacity-40">{isGuest ? 'Collaborator Dashboard' : 'Command Center'}</p>
           </div>
-          <h1 className="text-5xl font-extralight text-pw-black tracking-tight leading-none">
+          <h1 className="text-5xl font-extralight text-text-primary tracking-tight leading-none">
             {greeting}
           </h1>
-          <p className="text-base text-pw-muted mt-3 font-normal tracking-tight">
+          <p className="text-base text-text-secondary mt-3 font-normal tracking-tight">
             {pipelineSubtext}
           </p>
         </div>
@@ -210,10 +223,10 @@ export default function DashboardHome() {
           <button
             onClick={handleCreateProject}
             aria-label={isPaid ? 'Create a new project' : 'Upgrade to create a project'}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full border text-sm font-bold uppercase tracking-widest transition-all duration-300 ${
+            className={`flex items-center gap-2 px-6 py-3 rounded border text-sm font-bold uppercase tracking-widest transition-all duration-300 ${
               isPaid
-                ? 'bg-white border-pw-black text-pw-black hover:bg-pw-black hover:text-pw-white'
-                : 'bg-white border-pw-border/40 text-pw-muted hover:border-pw-black hover:text-pw-black'
+                ? 'bg-bg-surface border-pw-black text-text-primary hover:bg-pw-black hover:text-pw-white'
+                : 'bg-bg-surface border-border-accent/40 text-text-secondary hover:border-pw-black hover:text-text-primary'
             }`}
           >
             {isPaid
@@ -226,7 +239,7 @@ export default function DashboardHome() {
           {!isGuest && (
             <button
               onClick={() => setViewMode('COMMAND_CENTER')}
-              className="flex items-center gap-3 px-8 py-4 bg-pw-black text-pw-white rounded-full hover:bg-pw-muted transition-all duration-300 group shadow-lg"
+              className="flex items-center gap-3 px-8 py-4 bg-pw-black text-pw-white rounded hover:bg-pw-muted transition-all duration-300 group shadow-lg"
             >
               <span className="text-sm font-bold uppercase tracking-widest">Enter Pipeline</span>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -244,7 +257,7 @@ export default function DashboardHome() {
               ? [0, 1].map(i => (
                   <div
                     key={i}
-                    className="ag-card bg-pw-surface border border-pw-border/10 animate-pulse h-52"
+                    className="ag-card bg-bg-surface border border-border-accent/10 animate-pulse h-52"
                     style={{ animationDelay: `${i * 80}ms` }}
                   />
                 ))
@@ -253,9 +266,9 @@ export default function DashboardHome() {
                   <GuestProjectCard key={p.id} project={p} userUid={user?.uid ?? ''} />
                 ))
               : (
-                  <div className="col-span-3 ag-card bg-pw-surface border border-dashed border-pw-border/40 flex flex-col items-center justify-center py-16 text-center">
-                    <p className="text-sm font-bold text-pw-black uppercase tracking-widest mb-2">No Active Collaborations</p>
-                    <p className="text-xs text-pw-muted opacity-60 max-w-xs leading-relaxed">
+                  <div className="col-span-3 ag-card bg-bg-surface border border-dashed border-border-accent/40 flex flex-col items-center justify-center py-16 text-center">
+                    <p className="text-sm font-bold text-text-primary uppercase tracking-widest mb-2">No Active Collaborations</p>
+                    <p className="text-xs text-text-secondary max-w-xs leading-relaxed">
                       You haven't been added to any deals yet. Check your email for an invite.
                     </p>
                   </div>
@@ -272,11 +285,15 @@ export default function DashboardHome() {
             Paid/Free: Inbox + To-Do (portfolioProjects drives data)
             Guest: empty-state widgets (invited project data stays in GuestProjectCard) */}
         <div className="col-span-12 lg:col-span-3 space-y-6">
-          <SmartInboxWidget projects={portfolioProjects} />
-          <GlobalTodoWidget
-            projects={portfolioProjects}
-            onNavigateToDeal={() => setViewMode('COMMAND_CENTER')}
-          />
+          <Suspense fallback={<WidgetSkeleton className="h-64" />}>
+            <SmartInboxWidget projects={portfolioProjects} />
+          </Suspense>
+          <Suspense fallback={<WidgetSkeleton className="h-[400px]" />}>
+            <GlobalTodoWidget
+              projects={portfolioProjects}
+              onNavigateToDeal={() => setViewMode('COMMAND_CENTER')}
+            />
+          </Suspense>
         </div>
 
         {/* Center: Portfolio Health
@@ -288,18 +305,24 @@ export default function DashboardHome() {
             <GuestAccessPanel />
           ) : (
             <>
-              <PortfolioKPIStrip projects={portfolioProjects} />
+              <Suspense fallback={<WidgetSkeleton className="h-32" />}>
+                <PortfolioKPIStrip projects={portfolioProjects} />
+              </Suspense>
               <Suspense fallback={<ChartSkeleton />}>
                 <ROIChart projects={portfolioProjects} />
               </Suspense>
-              <MAOGaugeTracker projects={portfolioProjects} />
+              <Suspense fallback={<WidgetSkeleton className="h-48" />}>
+                <MAOGaugeTracker projects={portfolioProjects} />
+              </Suspense>
             </>
           )}
         </div>
 
         {/* Right: Burn Rate */}
         <div className="col-span-12 lg:col-span-3">
-          <BurnRateMonitor projects={portfolioProjects} />
+          <Suspense fallback={<WidgetSkeleton className="h-full min-h-[500px]" />}>
+            <BurnRateMonitor projects={portfolioProjects} />
+          </Suspense>
         </div>
       </div>
 

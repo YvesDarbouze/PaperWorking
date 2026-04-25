@@ -94,19 +94,19 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
     <div className="space-y-4">
       {/* Search Bar */}
       <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
           onFocus={() => setShowResults(true)}
           placeholder="Search MLS by address, city, or zip..."
-          className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition placeholder:text-gray-400"
+          className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition placeholder:text-text-secondary"
         />
 
         {/* Dropdown Results */}
         {showResults && results.length > 0 && (
-          <div className="absolute z-20 top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+          <div className="absolute z-20 top-full mt-2 w-full bg-bg-surface border border-border-accent rounded-xl shadow-lg overflow-hidden">
             {results.map(p => (
               <button
                 key={p.id}
@@ -115,10 +115,10 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
               >
                 <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{p.address}</p>
-                  <p className="text-xs text-gray-500">{p.city}, {p.state} {p.zip} · {p.beds}bd/{p.baths}ba · {p.sqft.toLocaleString()} sqft</p>
+                  <p className="text-sm font-medium text-text-primary truncate">{p.address}</p>
+                  <p className="text-xs text-text-secondary">{p.city}, {p.state} {p.zip} · {p.beds}bd/{p.baths}ba · {p.sqft.toLocaleString()} sqft</p>
                 </div>
-                <span className="text-sm font-semibold text-gray-900">${p.askingPrice.toLocaleString()}</span>
+                <span className="text-sm font-semibold text-text-primary">${p.askingPrice.toLocaleString()}</span>
                 <ChevronRight className="w-4 h-4 text-gray-300" />
               </button>
             ))}
@@ -128,31 +128,31 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
 
       {/* Selected Property Card */}
       {selectedProperty && (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="bg-bg-surface border border-border-accent rounded-2xl overflow-hidden">
           {/* Property Header */}
           <div className="relative h-32 bg-gradient-to-br from-teal-100 to-cyan-50 flex items-center justify-center">
             <Home className="w-12 h-12 text-teal-300" />
             <button
               onClick={handleClear}
-              className="absolute top-3 right-3 p-1.5 bg-white/80 rounded-full hover:bg-white transition"
+              className="absolute top-3 right-3 p-1.5 bg-bg-surface/80 rounded-full hover:bg-bg-surface transition"
             >
-              <X className="w-3.5 h-3.5 text-gray-500" />
+              <X className="w-3.5 h-3.5 text-text-secondary" />
             </button>
           </div>
 
           <div className="p-5 space-y-4">
             {/* Address & Details */}
             <div>
-              <h3 className="text-base font-semibold text-gray-900">{selectedProperty.address}</h3>
-              <p className="text-sm text-gray-500">{selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip}</p>
+              <h3 className="text-base font-semibold text-text-primary">{selectedProperty.address}</h3>
+              <p className="text-sm text-text-secondary">{selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip}</p>
               <div className="flex items-center gap-4 mt-2">
-                <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+                <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
                   <Home className="w-3 h-3" /> {selectedProperty.beds}bd / {selectedProperty.baths}ba
                 </span>
-                <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+                <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
                   <Ruler className="w-3 h-3" /> {selectedProperty.sqft.toLocaleString()} sqft
                 </span>
-                <span className="text-xs text-gray-400">Built {selectedProperty.yearBuilt}</span>
+                <span className="text-xs text-text-secondary">Built {selectedProperty.yearBuilt}</span>
               </div>
             </div>
 
@@ -161,12 +161,12 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
               <div>
                 <label className="ag-label mb-1.5 block">Asking Price</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-secondary" />
                   <input
                     type="text"
                     readOnly
                     value={selectedProperty.askingPrice.toLocaleString()}
-                    className="w-full pl-8 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 cursor-not-allowed"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-primary border border-border-accent rounded-lg text-sm text-text-secondary cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
                     value={targetPrice}
                     onChange={(e) => setTargetPrice(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                   />
                 </div>
               </div>
@@ -192,7 +192,7 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
                     value={rehabBudget}
                     onChange={(e) => setRehabBudget(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                   />
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
             <button
               onClick={handleApply}
               disabled={!targetPrice}
-              className="w-full py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+              className="w-full py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition"
             >
               Set as Active Property
             </button>
@@ -225,8 +225,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
           <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3">
             <MapPin className="w-6 h-6 text-teal-400" />
           </div>
-          <p className="text-sm font-medium text-gray-500 mb-1">No property selected</p>
-          <p className="text-xs text-gray-400">Search the MLS to find your next deal</p>
+          <p className="text-sm font-medium text-text-secondary mb-1">No property selected</p>
+          <p className="text-xs text-text-secondary">Search the MLS to find your next deal</p>
         </div>
       )}
     </div>

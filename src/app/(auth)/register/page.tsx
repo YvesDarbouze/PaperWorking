@@ -97,8 +97,8 @@ export default function RegisterPage() {
 
       {/* ─── Header ─── */}
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-light tracking-tighter text-pw-black">Secure Onboarding.</h1>
-        <p className="mt-4 text-sm text-pw-muted font-normal">
+        <h1 className="text-3xl font-light tracking-tighter text-text-primary">Secure Onboarding.</h1>
+        <p className="mt-4 text-sm text-text-secondary font-normal">
           Initialize your institutional identity.
         </p>
       </div>
@@ -117,10 +117,10 @@ export default function RegisterPage() {
           type="button"
           onClick={() => handleSocialRegister('google')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group"
+          className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
         >
           {loadingProvider === 'google' ? (
-            <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
+            <Loader2 className="w-5 h-5 animate-spin text-text-primary" />
           ) : (
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -135,10 +135,10 @@ export default function RegisterPage() {
           type="button"
           onClick={() => handleSocialRegister('facebook')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group"
+          className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
         >
           {loadingProvider === 'facebook' ? (
-            <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
+            <Loader2 className="w-5 h-5 animate-spin text-text-primary" />
           ) : (
             <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="#1877F2" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.384C19.612 23.027 24 18.062 24 12.073z"/>
@@ -160,12 +160,12 @@ export default function RegisterPage() {
         <div>
           <label className="ag-label mb-3 block opacity-60">Full Identity</label>
           <div className="relative group">
-            <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+            <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
             <input
               type="text"
               {...register('fullName')}
               placeholder="Legal Full Name"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
             />
           </div>
           {errors.fullName && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.fullName.message}</p>}
@@ -175,12 +175,12 @@ export default function RegisterPage() {
         <div>
           <label className="ag-label mb-3 block opacity-60">Professional Email</label>
           <div className="relative group">
-            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
             <input
               type="email"
               {...register('email')}
               placeholder="direct@firm.com"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
             />
           </div>
           {errors.email && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.email.message}</p>}
@@ -190,17 +190,17 @@ export default function RegisterPage() {
         <div>
           <label className="ag-label mb-3 block opacity-60">Authentication Secret</label>
           <div className="relative group">
-            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
             <input
               type={showPassword ? 'text' : 'password'}
               {...register('password')}
               placeholder="Complexity Required"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -210,7 +210,7 @@ export default function RegisterPage() {
            {watchedPassword.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 px-6">
               {passwordRules.map((rule) => (
-                <div key={rule.label} className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest transition-opacity duration-300 ${rule.met ? 'text-pw-black opacity-100' : 'text-pw-muted opacity-30'}`}>
+                <div key={rule.label} className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest transition-opacity duration-300 ${rule.met ? 'text-text-primary opacity-100' : 'text-text-secondary opacity-30'}`}>
                   <CheckCircle2 className="w-3 h-3" />
                   {rule.label}
                 </div>
@@ -224,17 +224,17 @@ export default function RegisterPage() {
         <div>
           <label className="ag-label mb-3 block opacity-60">Validate Security Key</label>
           <div className="relative group">
-            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
             <input
               type={showConfirm ? 'text' : 'password'}
               {...register('confirmPassword')}
               placeholder="Repeat Secret"
-              className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
             />
             <button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
-              className="absolute right-6 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
             >
               {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -248,13 +248,13 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               {...register('acceptTerms')}
-              className="w-5 h-5 border-2 border-pw-border rounded cursor-pointer accent-pw-black"
+              className="w-5 h-5 border-2 border-border-accent rounded cursor-pointer accent-pw-black"
             />
           </div>
-          <p className="text-[10px] font-medium text-pw-muted leading-tight leading-loose">
+          <p className="text-[10px] font-medium text-text-secondary leading-tight leading-loose">
             By initializing account, I confirm adherence to 
-            <Link href="/terms" className="text-pw-black underline decoration-pw-border/30 underline-offset-4 ml-1">Governance Protocols</Link> & 
-            <Link href="/privacy" className="text-pw-black underline decoration-pw-border/30 underline-offset-4 ml-1">Privacy Mandates</Link>.
+            <Link href="/terms" className="text-text-primary underline decoration-pw-border/30 underline-offset-4 ml-1">Governance Protocols</Link> & 
+            <Link href="/privacy" className="text-text-primary underline decoration-pw-border/30 underline-offset-4 ml-1">Privacy Mandates</Link>.
           </p>
         </div>
         {errors.acceptTerms && <p className="ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.acceptTerms.message}</p>}
@@ -270,10 +270,10 @@ export default function RegisterPage() {
       </form>
 
       {/* ─── Login Link Footer ─── */}
-      <div className="mt-12 text-center pt-8 border-t border-pw-border/10">
-        <p className="text-xs text-pw-muted">
+      <div className="mt-12 text-center pt-8 border-t border-border-accent/10">
+        <p className="text-xs text-text-secondary">
           Existing credentials found?{' '}
-          <Link href="/login" className="text-pw-black font-bold hover:underline transition-all">
+          <Link href="/login" className="text-text-primary font-bold hover:underline transition-all">
             Authorize Log In
           </Link>
         </p>

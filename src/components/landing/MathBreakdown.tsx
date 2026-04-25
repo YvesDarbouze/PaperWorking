@@ -17,26 +17,26 @@ export default function MathBreakdown() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <div className="inline-flex items-center space-x-3 px-4 py-2 bg-pw-white/10 rounded-full mb-8">
+            <div className="inline-flex items-center space-x-3 px-4 py-2 bg-bg-surface/10 rounded-full mb-8">
               <Calculator className="w-4 h-4 text-pw-accent" />
               <span className="text-xs font-bold uppercase tracking-widest">Calculating the Costs</span>
             </div>
             
             <h2 className="text-4xl sm:text-5xl font-black tracking-tighter mb-8 leading-tight">
               To understand your profit, <br/>
-              <span className="text-pw-subtle">you must track every penny.</span>
+              <span className="text-text-secondary">you must track every penny.</span>
             </h2>
             
-            <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
+            <p className="text-text-secondary text-lg leading-relaxed mb-10 max-w-lg">
               The Paperworking ledger automatically tallies your entry prices, ongoing holding costs, and dynamic refurbishment budgets so nothing slips through the cracks.
             </p>
             
             <div className="space-y-10">
               <div>
                 <h3 className="text-xl font-bold mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-pw-white mr-3"></span> The Purchase Price
+                  <span className="w-2 h-2 bg-bg-surface mr-3"></span> The Purchase Price
                 </h3>
-                <p className="text-gray-400 text-sm mb-4">This is the entry price into the investment.</p>
+                <p className="text-text-secondary text-sm mb-4">This is the entry price into the investment.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="border border-pw-white/10 p-4">
                     <p className="text-pw-accent text-xs font-black uppercase mb-1">Initial Cost</p>
@@ -51,9 +51,9 @@ export default function MathBreakdown() {
 
               <div>
                 <h3 className="text-xl font-bold mb-4 flex items-center">
-                  <span className="w-2 h-2 bg-pw-white mr-3"></span> Refurbishing Costs
+                  <span className="w-2 h-2 bg-bg-surface mr-3"></span> Refurbishing Costs
                 </h3>
-                <p className="text-gray-400 text-sm mb-4">These vary wildly based on the property condition.</p>
+                <p className="text-text-secondary text-sm mb-4">These vary wildly based on the property condition.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="border border-pw-white/10 p-4">
                     <p className="text-pw-accent text-xs font-black uppercase mb-1">Materials</p>
@@ -84,11 +84,11 @@ export default function MathBreakdown() {
               <div className="w-32 h-32 border-r-2 border-t-2 border-pw-white" />
             </div>
             
-            <p className="text-xs text-pw-subtle font-mono mb-8 uppercase tracking-widest text-center">Interactive Ledger Preview</p>
+            <p className="text-xs text-text-secondary font-mono mb-8 uppercase tracking-widest text-center">Interactive Ledger Preview</p>
             
             <div className="space-y-6 font-mono text-sm">
               <div className="flex justify-between items-end border-b border-pw-white/20 pb-4">
-                <span className="text-gray-400">Total Purchase</span>
+                <span className="text-text-secondary">Total Purchase</span>
                 <span className="text-2xl text-pw-white">$150,000.00</span>
               </div>
               <div className="flex justify-between items-center text-pw-accent">
@@ -104,7 +104,7 @@ export default function MathBreakdown() {
                 <span>$18,000.00</span>
               </div>
               <div className="flex justify-between items-end pt-4">
-                <span className="text-gray-400 uppercase text-xs tracking-widest">Target ARV</span>
+                <span className="text-text-secondary uppercase text-xs tracking-widest">Target ARV</span>
                 <span className="text-3xl text-pw-white">$300,000.00</span>
               </div>
               <div className="flex justify-between items-center pt-8 border-t-2 border-pw-white/40">

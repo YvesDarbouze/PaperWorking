@@ -11,7 +11,7 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, Wand2, CheckCircle2 } fr
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="animate-pulse bg-pw-bg h-[400px] w-full rounded-[48px]" />}>
+    <Suspense fallback={<div className="animate-pulse bg-bg-primary h-[400px] w-full rounded-[48px]" />}>
       <LoginPageInner />
     </Suspense>
   );
@@ -103,8 +103,8 @@ function LoginPageInner() {
     <div className="flex flex-col">
       {/* ─── Header ─── */}
       <div className="text-center mb-10">
-        <h1 className="text-3xl font-light tracking-tighter text-pw-black">Welcome back.</h1>
-        <p className="mt-4 text-sm text-pw-muted font-normal">
+        <h1 className="text-3xl font-light tracking-tighter text-text-primary">Welcome back.</h1>
+        <p className="mt-4 text-sm text-text-secondary font-normal">
           Access the operations desk to manage your pipeline.
         </p>
       </div>
@@ -123,10 +123,10 @@ function LoginPageInner() {
           type="button"
           onClick={() => handleSocialLogin('google')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group disabled:opacity-50"
+          className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >
           {loadingProvider === 'google' ? (
-            <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
+            <Loader2 className="w-5 h-5 animate-spin text-text-primary" />
           ) : (
             <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -141,10 +141,10 @@ function LoginPageInner() {
           type="button"
           onClick={() => handleSocialLogin('facebook')}
           disabled={!!loadingProvider || isSubmitting}
-          className="flex-1 flex items-center justify-center h-14 bg-pw-bg hover:bg-pw-border/20 border border-pw-border/10 rounded-full transition-all duration-300 group disabled:opacity-50"
+          className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >
           {loadingProvider === 'facebook' ? (
-            <Loader2 className="w-5 h-5 animate-spin text-pw-black" />
+            <Loader2 className="w-5 h-5 animate-spin text-text-primary" />
           ) : (
             <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="#1877F2" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.384C19.612 23.027 24 18.062 24 12.073z"/>
@@ -154,11 +154,11 @@ function LoginPageInner() {
       </div>
 
       {/* ─── Mode Toggles ─── */}
-      <div className="flex bg-pw-bg/50 p-1 rounded-full mb-8">
+      <div className="flex bg-bg-primary/50 p-1 rounded-full mb-8">
         <button
           onClick={() => setLoginMode('password')}
           className={`flex-1 h-10 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-            loginMode === 'password' ? 'bg-white shadow-sm text-pw-black' : 'text-pw-muted hover:text-pw-black'
+            loginMode === 'password' ? 'bg-bg-surface shadow-sm text-text-primary' : 'text-text-secondary hover:text-text-primary'
           }`}
         >
           Password
@@ -166,7 +166,7 @@ function LoginPageInner() {
         <button
           onClick={() => setLoginMode('magic-link')}
           className={`flex-1 h-10 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
-            loginMode === 'magic-link' ? 'bg-white shadow-sm text-pw-black' : 'text-pw-muted hover:text-pw-black'
+            loginMode === 'magic-link' ? 'bg-bg-surface shadow-sm text-text-primary' : 'text-text-secondary hover:text-text-primary'
           }`}
         >
           Magic Link
@@ -180,12 +180,12 @@ function LoginPageInner() {
             <div>
               <label className="ag-label mb-3 block opacity-60">Corporate Email</label>
               <div className="relative group">
-                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
                 <input
                   type="email"
                   {...register('email')}
                   placeholder="name@company.com"
-                  className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                  className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
                 />
               </div>
               {errors.email && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest">{errors.email.message}</p>}
@@ -199,17 +199,17 @@ function LoginPageInner() {
                 </Link>
               </div>
               <div className="relative group">
-                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   {...register('password')}
                   placeholder="Enter password"
-                  className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                  className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-6 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+                  className="absolute right-6 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -228,15 +228,15 @@ function LoginPageInner() {
         ) : (
           <div className="absolute w-full animate-in fade-in slide-in-from-right-4 duration-300">
             {magicLinkSent ? (
-              <div className="text-center p-8 bg-pw-bg/50 rounded-3xl border border-pw-border/10">
+              <div className="text-center p-8 bg-bg-primary/50 rounded-3xl border border-border-accent/10">
                 <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
-                <h3 className="font-medium text-pw-black mb-2 tracking-tight">Check your inbox</h3>
-                <p className="text-xs text-pw-muted leading-relaxed">
-                  We've sent a secure single-use login link to <strong className="text-pw-black">{magicEmail}</strong>.
+                <h3 className="font-medium text-text-primary mb-2 tracking-tight">Check your inbox</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  We've sent a secure single-use login link to <strong className="text-text-primary">{magicEmail}</strong>.
                 </p>
                 <button 
                   onClick={() => setMagicLinkSent(false)}
-                  className="mt-6 text-[10px] font-bold uppercase tracking-widest text-pw-muted hover:text-pw-black transition-colors"
+                  className="mt-6 text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors"
                 >
                   Use a different email
                 </button>
@@ -246,17 +246,17 @@ function LoginPageInner() {
                 <div>
                   <label className="ag-label mb-3 block opacity-60">Send Magic Link to</label>
                   <div className="relative group">
-                    <Wand2 className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted group-hover:text-pw-black transition-colors" />
+                    <Wand2 className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
                     <input
                       type="email"
                       value={magicEmail}
                       onChange={(e) => setMagicEmail(e.target.value)}
                       placeholder="name@company.com"
                       required
-                      className="w-full h-14 bg-pw-bg/30 border border-pw-border/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-pw-surface focus:border-pw-black transition-all outline-none"
+                      className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none"
                     />
                   </div>
-                  <p className="mt-3 ml-6 text-[10px] uppercase tracking-widest text-pw-muted leading-relaxed max-w-[280px]">
+                  <p className="mt-3 ml-6 text-[10px] uppercase tracking-widest text-text-secondary leading-relaxed max-w-[280px]">
                     We'll email you a secure link so you can sign in without a password.
                   </p>
                 </div>
@@ -275,10 +275,10 @@ function LoginPageInner() {
       </div>
 
       {/* ─── Signup Footer ─── */}
-      <div className="mt-14 text-center pt-8 border-t border-pw-border/10">
-        <p className="text-xs text-pw-muted">
+      <div className="mt-14 text-center pt-8 border-t border-border-accent/10">
+        <p className="text-xs text-text-secondary">
           New to the platform?{' '}
-          <Link href="/register" className="text-pw-black font-bold hover:underline transition-all">
+          <Link href="/register" className="text-text-primary font-bold hover:underline transition-all">
             Initialize Account
           </Link>
         </p>

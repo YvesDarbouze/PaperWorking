@@ -26,7 +26,7 @@ const CATEGORIES: { key: DealDocumentCategory; label: string; icon: React.ReactN
 ];
 
 const ESIGN_CONFIG: Record<ESignStatus, { label: string; color: string; icon: React.ReactNode }> = {
-  'Not Required':       { label: 'No eSign Required', color: 'text-gray-500 bg-gray-50 border-gray-200',       icon: <FileText className="w-3 h-3" /> },
+  'Not Required':       { label: 'No eSign Required', color: 'text-text-secondary bg-bg-primary border-border-accent',       icon: <FileText className="w-3 h-3" /> },
   'Awaiting Signature': { label: 'Awaiting Signature', color: 'text-amber-700 bg-amber-50 border-amber-200',   icon: <Clock className="w-3 h-3" /> },
   'Signed':             { label: 'Signed',             color: 'text-emerald-700 bg-emerald-50 border-emerald-200', icon: <CheckCircle2 className="w-3 h-3" /> },
   'Declined':           { label: 'Declined',           color: 'text-red-700 bg-red-50 border-red-200',          icon: <AlertCircle className="w-3 h-3" /> },
@@ -183,13 +183,13 @@ export default function DocumentHub() {
       {/* Header + Deal Selector */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Document Hub</h3>
-          <p className="text-sm text-gray-500">Offer letters, deeds, lender forms — with eSign tracking.</p>
+          <h3 className="text-lg font-medium text-text-primary">Document Hub</h3>
+          <p className="text-sm text-text-secondary">Offer letters, deeds, lender forms — with eSign tracking.</p>
         </div>
         <div className="flex items-center gap-3">
           {projects.length > 0 && (
             <select
-              className="border border-gray-300 rounded-md text-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+              className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 bg-bg-surface"
               value={selectedProjectId}
               onChange={e => {
                 setSelectedProjectId(e.target.value);
@@ -225,7 +225,7 @@ export default function DocumentHub() {
       </div>
 
       {/* Category Tabs */}
-      <div className="border-b border-gray-200 overflow-x-auto">
+      <div className="border-b border-border-accent overflow-x-auto">
         <nav className="-mb-px flex space-x-6 min-w-max">
           {CATEGORIES.map(cat => (
             <button
@@ -233,14 +233,14 @@ export default function DocumentHub() {
               onClick={() => setActiveCategory(cat.key)}
               className={`flex items-center gap-2 whitespace-nowrap border-b-2 py-3 px-1 text-sm font-medium transition ${
                 activeCategory === cat.key
-                  ? 'border-gray-900 text-gray-900'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-gray-900 text-text-primary'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-border-accent'
               }`}
             >
               {cat.icon}
               {cat.label}
               {documents.filter(d => d.category === cat.key).length > 0 && (
-                <span className="ml-1 bg-gray-100 text-gray-600 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                <span className="ml-1 bg-bg-primary text-text-secondary text-xs font-semibold px-1.5 py-0.5 rounded-full">
                   {documents.filter(d => d.category === cat.key).length}
                 </span>
               )}
@@ -252,30 +252,30 @@ export default function DocumentHub() {
       {/* Upload Form Modal */}
       {showUploadForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-md mx-4 p-6">
+          <div className="bg-bg-surface rounded-xl shadow-2xl border border-border-accent w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-5">
-              <h4 className="text-base font-semibold text-gray-900">Upload Document</h4>
-              <button onClick={() => { setShowUploadForm(false); setPendingFile(null); }} className="text-gray-400 hover:text-gray-600">
+              <h4 className="text-base font-semibold text-text-primary">Upload Document</h4>
+              <button onClick={() => { setShowUploadForm(false); setPendingFile(null); }} className="text-text-secondary hover:text-text-secondary">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {pendingFile ? (
-              <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-3">
-                <FileText className="w-8 h-8 text-gray-400 flex-shrink-0" />
+              <div className="mb-4 p-3 bg-bg-primary border border-border-accent rounded-lg flex items-center gap-3">
+                <FileText className="w-8 h-8 text-text-secondary flex-shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">{pendingFile.name}</p>
-                  <p className="text-xs text-gray-500">{formatBytes(pendingFile.size)}</p>
+                  <p className="text-sm font-medium text-text-primary truncate">{pendingFile.name}</p>
+                  <p className="text-xs text-text-secondary">{formatBytes(pendingFile.size)}</p>
                 </div>
-                <button onClick={() => setPendingFile(null)} className="ml-auto text-gray-400 hover:text-red-500">
+                <button onClick={() => setPendingFile(null)} className="ml-auto text-text-secondary hover:text-red-500">
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <label className="block mb-4 cursor-pointer">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">Click to select a file</p>
+                <div className="border-2 border-dashed border-border-accent rounded-lg p-6 text-center hover:border-gray-400 transition">
+                  <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                  <p className="text-sm text-text-secondary">Click to select a file</p>
                 </div>
                 <input type="file" className="hidden" onChange={handleFileSelect} />
               </label>
@@ -283,9 +283,9 @@ export default function DocumentHub() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
+                <label className="block text-xs font-medium text-text-primary mb-1">Category</label>
                 <select
-                  className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                   value={uploadForm.category}
                   onChange={e => setUploadForm(f => ({ ...f, category: e.target.value as DealDocumentCategory }))}
                 >
@@ -293,9 +293,9 @@ export default function DocumentHub() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">eSignature Required?</label>
+                <label className="block text-xs font-medium text-text-primary mb-1">eSignature Required?</label>
                 <select
-                  className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                   value={uploadForm.eSignStatus}
                   onChange={e => setUploadForm(f => ({ ...f, eSignStatus: e.target.value as ESignStatus }))}
                 >
@@ -304,10 +304,10 @@ export default function DocumentHub() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Notes (optional)</label>
+                <label className="block text-xs font-medium text-text-primary mb-1">Notes (optional)</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                   placeholder="Any additional context…"
                   value={uploadForm.notes}
                   onChange={e => setUploadForm(f => ({ ...f, notes: e.target.value }))}
@@ -318,7 +318,7 @@ export default function DocumentHub() {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => { setShowUploadForm(false); setPendingFile(null); }}
-                className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                className="px-4 py-2 text-sm text-text-primary border border-border-accent rounded-lg hover:bg-bg-primary transition"
               >
                 Cancel
               </button>
@@ -340,7 +340,7 @@ export default function DocumentHub() {
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`relative min-h-[300px] rounded-xl border-2 transition-all ${
-          isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-dashed border-gray-200 bg-gray-50/50'
+          isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-dashed border-border-accent bg-bg-primary/50'
         }`}
       >
         {isDragging && (
@@ -353,27 +353,27 @@ export default function DocumentHub() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
             <FileText className="w-12 h-12 text-gray-300 mb-3" />
-            <p className="text-sm font-medium text-gray-500">No {CATEGORIES.find(c => c.key === activeCategory)?.label} uploaded yet</p>
-            <p className="text-xs text-gray-400 mt-1">Drag & drop files here or use the Upload button</p>
+            <p className="text-sm font-medium text-text-secondary">No {CATEGORIES.find(c => c.key === activeCategory)?.label} uploaded yet</p>
+            <p className="text-xs text-text-secondary mt-1">Drag & drop files here or use the Upload button</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
             {filtered.map(doc => {
               const sign = ESIGN_CONFIG[doc.eSignStatus];
               return (
-                <div key={doc.id} className="flex items-center gap-4 p-4 hover:bg-white transition group">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="w-5 h-5 text-gray-500" />
+                <div key={doc.id} className="flex items-center gap-4 p-4 hover:bg-bg-surface transition group">
+                  <div className="w-10 h-10 rounded-lg bg-bg-primary flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-5 h-5 text-text-secondary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{doc.fileName}</p>
+                    <p className="text-sm font-medium text-text-primary truncate">{doc.fileName}</p>
                     <div className="flex items-center gap-3 mt-0.5">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-text-secondary">
                         {doc.uploadedByName} · {doc.uploadedAt ? new Date((doc.uploadedAt as any)?.seconds ? (doc.uploadedAt as any).seconds * 1000 : doc.uploadedAt).toLocaleDateString() : ''}
                       </span>
-                      {doc.fileSize && <span className="text-xs text-gray-400">{formatBytes(doc.fileSize)}</span>}
+                      {doc.fileSize && <span className="text-xs text-text-secondary">{formatBytes(doc.fileSize)}</span>}
                     </div>
-                    {doc.notes && <p className="text-xs text-gray-500 mt-1 truncate">{doc.notes}</p>}
+                    {doc.notes && <p className="text-xs text-text-secondary mt-1 truncate">{doc.notes}</p>}
                   </div>
 
                   {/* eSign Status Badge */}
@@ -388,7 +388,7 @@ export default function DocumentHub() {
                       <button
                         onClick={() => handleRequestESign(doc.id)}
                         title="Request eSignature"
-                        className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition"
                       >
                         <FilePen className="w-4 h-4" />
                       </button>
@@ -397,7 +397,7 @@ export default function DocumentHub() {
                       <button
                         onClick={() => handleMarkSigned(doc.id)}
                         title="Mark as Signed"
-                        className="p-1.5 text-gray-400 hover:text-emerald-600 rounded-md hover:bg-emerald-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-emerald-600 rounded-md hover:bg-emerald-50 transition"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                       </button>
@@ -408,7 +408,7 @@ export default function DocumentHub() {
                         target="_blank"
                         rel="noopener noreferrer"
                         title="Download"
-                        className="p-1.5 text-gray-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-blue-600 rounded-md hover:bg-blue-50 transition"
                       >
                         <Download className="w-4 h-4" />
                       </a>
@@ -416,7 +416,7 @@ export default function DocumentHub() {
                     <button
                       onClick={() => handleDelete(doc.id)}
                       title="Remove"
-                      className="p-1.5 text-gray-400 hover:text-red-500 rounded-md hover:bg-red-50 transition"
+                      className="p-1.5 text-text-secondary hover:text-red-500 rounded-md hover:bg-red-50 transition"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -430,8 +430,8 @@ export default function DocumentHub() {
 
       {/* eSign Summary Footer */}
       {documents.length > 0 && (
-        <div className="flex items-center gap-6 text-xs text-gray-500 pt-2 border-t border-gray-100">
-          <span className="font-medium text-gray-700">{documents.length} total documents</span>
+        <div className="flex items-center gap-6 text-xs text-text-secondary pt-2 border-t border-border-accent">
+          <span className="font-medium text-text-primary">{documents.length} total documents</span>
           {(['Awaiting Signature', 'Signed', 'Declined'] as ESignStatus[]).map(s => {
             const count = documents.filter(d => d.eSignStatus === s).length;
             if (!count) return null;

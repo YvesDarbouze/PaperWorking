@@ -31,7 +31,7 @@ const badges = [
 
 export default function SecurityBadges() {
   return (
-    <section className="bg-white border-t border-phase-1" aria-label="Security certifications">
+    <section className="bg-bg-surface border-t border-phase-1" aria-label="Security certifications">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8">
         {/* Title */}
         <p className="text-center text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-6">
@@ -53,7 +53,7 @@ export default function SecurityBadges() {
                   <Icon className="w-5 h-5 text-phase-4" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-black">{badge.label}</p>
+                  <p className="text-xs font-bold text-text-primary">{badge.label}</p>
                   <p className="text-xs text-phase-3 mt-0.5">{badge.detail}</p>
                 </div>
               </div>

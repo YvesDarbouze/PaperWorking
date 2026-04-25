@@ -52,7 +52,7 @@ function MetricCard({ label, value, change, positive, icon, delay }: MetricCardP
 
   return (
     <div
-      className={`bg-white border border-phase-1 p-4 transition-all duration-500 ${
+      className={`bg-bg-surface border border-phase-1 p-4 transition-all duration-500 ${
         visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >
@@ -62,7 +62,7 @@ function MetricCard({ label, value, change, positive, icon, delay }: MetricCardP
           {icon}
         </div>
       </div>
-      <div className="text-xl font-medium text-black tracking-tight tabular-nums">{value}</div>
+      <div className="text-xl font-medium text-text-primary tracking-tight tabular-nums">{value}</div>
       <div className={`flex items-center mt-1 text-xs font-medium ${positive ? 'text-phase-4' : 'text-phase-2'}`}>
         {positive ? (
           <ArrowUpRight className="w-3 h-3 mr-0.5" />
@@ -85,7 +85,7 @@ export default function HeroDashboard() {
   const bars = [42, 58, 35, 72, 88, 64, 91, 76, 83, 95, 68, 79];
 
   return (
-    <div className="w-full bg-white border border-phase-1 shadow-lg overflow-hidden">
+    <div className="w-full bg-bg-surface border border-phase-1 shadow-lg overflow-hidden">
       {/* Title Bar */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-dashboard bg-dashboard">
         <div className="flex items-center space-x-2">
@@ -168,7 +168,7 @@ export default function HeroDashboard() {
             </div>
             <span className="text-xs text-phase-3 font-medium">3 team members active</span>
           </div>
-          <span className="text-xs text-phase-4 font-bold cursor-pointer hover:text-black transition-colors">
+          <span className="text-xs text-phase-4 font-bold cursor-pointer hover:text-text-primary transition-colors">
             View All →
           </span>
         </div>

@@ -217,24 +217,24 @@ function KPITile({
 
   return (
     <div className={`rounded-xl border p-4 transition-all hover:shadow-md ${
-      style ? `${style.bg} ${style.border}` : 'border-gray-200 bg-white'
+      style ? `${style.bg} ${style.border}` : 'border-border-accent bg-bg-surface'
     }`}>
       <div className="flex items-center justify-between mb-1.5">
         <div className="flex items-center gap-1.5">
-          <div className="p-1 rounded-md bg-gray-100/80">
+          <div className="p-1 rounded-md bg-bg-primary/80">
             {icon}
           </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">{label}</p>
         </div>
         {band && BAND_ICON[band]}
       </div>
       <h4 className={`text-xl font-light tracking-tight ${
-        style ? style.text : 'text-gray-900'
+        style ? style.text : 'text-text-primary'
       }`}>
         {value}
       </h4>
       {target && (
-        <p className="text-xs text-gray-400 mt-1">Target: {target}</p>
+        <p className="text-xs text-text-secondary mt-1">Target: {target}</p>
       )}
     </div>
   );
@@ -255,10 +255,10 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
 
   if (yearlyData.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center">
+      <div className="rounded-2xl border border-border-accent bg-bg-surface p-8 text-center">
         <BarChart3 className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-        <p className="text-sm text-gray-500 font-medium">No Completed Exits</p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-sm text-text-secondary font-medium">No Completed Exits</p>
+        <p className="text-xs text-text-secondary mt-1">
           Post-mortem metrics will appear here once projects reach the &lsquo;Sold&rsquo; status in the Exit Hub.
         </p>
       </div>
@@ -277,19 +277,19 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
   );
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-border-accent bg-bg-surface shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-6 pt-5 pb-4 border-b border-gray-100">
+      <div className="px-6 pt-5 pb-4 border-b border-border-accent">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-gray-50">
-              <Calendar className="w-4 h-4 text-gray-400" />
+            <div className="p-1.5 rounded-lg bg-bg-primary">
+              <Calendar className="w-4 h-4 text-text-secondary" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+              <h3 className="text-xs font-bold text-text-secondary uppercase tracking-widest">
                 Yearly Portfolio Performance
               </h3>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <p className="text-xs text-text-secondary mt-0.5">
                 {allTime.count} completed exit{allTime.count !== 1 ? 's' : ''} · All-time net: <span className={`font-mono font-medium ${allTime.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                   {allTime.profit >= 0 ? '' : '-'}${Math.abs(allTime.profit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
@@ -309,11 +309,11 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
               {/* Year Header Row */}
               <button
                 onClick={() => setExpandedYear(isExpanded ? null : ym.year)}
-                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50/50 transition-colors text-left"
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-bg-primary/50 transition-colors text-left"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl font-light text-gray-900 tracking-tight">{ym.year}</span>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                  <span className="text-xl font-light text-text-primary tracking-tight">{ym.year}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-text-secondary bg-bg-primary px-2 py-0.5 rounded-full">
                     {ym.dealCount} flip{ym.dealCount !== 1 ? 's' : ''}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                   <span className={`text-sm font-mono ${ym.totalNetProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {ym.totalNetProfit >= 0 ? '+' : '-'}${Math.abs(ym.totalNetProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </span>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-text-secondary transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                 </div>
               </button>
 
@@ -330,38 +330,38 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                 <div className="px-6 pb-5 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
                     <KPITile
-                      icon={<TrendingUp className="w-3 h-3 text-gray-400" />}
+                      icon={<TrendingUp className="w-3 h-3 text-text-secondary" />}
                       label="GPM"
                       value={`${ym.gpm.toFixed(1)}%`}
                       band={gpmBand(ym.gpm)}
                       target="≥ 20%"
                     />
                     <KPITile
-                      icon={<BarChart3 className="w-3 h-3 text-gray-400" />}
+                      icon={<BarChart3 className="w-3 h-3 text-text-secondary" />}
                       label="Return on Cost"
                       value={`${ym.roc.toFixed(1)}%`}
                       band={rocBand(ym.roc)}
                       target="≥ 25%"
                     />
                     <KPITile
-                      icon={<Receipt className="w-3 h-3 text-gray-400" />}
+                      icon={<Receipt className="w-3 h-3 text-text-secondary" />}
                       label="Acq. Cost %"
                       value={`${ym.acquisitionCostPct.toFixed(1)}%`}
                       band={acqBand(ym.acquisitionCostPct)}
                       target="15–18%"
                     />
                     <KPITile
-                      icon={<DollarSign className="w-3 h-3 text-gray-400" />}
+                      icon={<DollarSign className="w-3 h-3 text-text-secondary" />}
                       label="Avg Profit / Flip"
                       value={`$${Math.abs(ym.avgProfitPerFlip).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                     />
                     <KPITile
-                      icon={<Clock className="w-3 h-3 text-gray-400" />}
+                      icon={<Clock className="w-3 h-3 text-text-secondary" />}
                       label="Avg DOM"
                       value={`${ym.avgDOM}d`}
                     />
                     <KPITile
-                      icon={<DollarSign className="w-3 h-3 text-gray-400" />}
+                      icon={<DollarSign className="w-3 h-3 text-text-secondary" />}
                       label="Gross Sales"
                       value={`$${(ym.totalGrossSales / 1000).toFixed(0)}k`}
                     />
@@ -369,10 +369,10 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
 
                   {/* Per-deal breakdown table */}
                   {ym.projects.length > 1 && (
-                    <div className="mt-4 rounded-lg border border-gray-100 overflow-hidden">
+                    <div className="mt-4 rounded-lg border border-border-accent overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-gray-50/80 text-gray-400 uppercase tracking-wider">
+                          <tr className="bg-bg-primary/80 text-text-secondary uppercase tracking-wider">
                             <th className="py-2 px-3 text-left font-medium">Property</th>
                             <th className="py-2 px-3 text-right font-medium">Sale</th>
                             <th className="py-2 px-3 text-right font-medium">Net Profit</th>
@@ -386,9 +386,9 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                               ? (d.netProfit / d.grossSalePrice) * 100
                               : 0;
                             return (
-                              <tr key={d.projectId} className="hover:bg-gray-50/50 transition-colors">
-                                <td className="py-2 px-3 text-gray-700 font-medium">{d.propertyName}</td>
-                                <td className="py-2 px-3 text-right text-gray-500 font-mono">
+                              <tr key={d.projectId} className="hover:bg-bg-primary/50 transition-colors">
+                                <td className="py-2 px-3 text-text-primary font-medium">{d.propertyName}</td>
+                                <td className="py-2 px-3 text-right text-text-secondary font-mono">
                                   ${d.grossSalePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </td>
                                 <td className={`py-2 px-3 text-right font-mono ${d.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
@@ -399,7 +399,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                                 }`}>
                                   {dealGPM.toFixed(1)}%
                                 </td>
-                                <td className="py-2 px-3 text-right text-gray-500 font-mono">
+                                <td className="py-2 px-3 text-right text-text-secondary font-mono">
                                   {d.dom}d
                                 </td>
                               </tr>

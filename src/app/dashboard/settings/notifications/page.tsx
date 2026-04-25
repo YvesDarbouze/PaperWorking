@@ -53,7 +53,7 @@ function ToggleSwitch({ enabled, onToggle }: { enabled: boolean; onToggle: () =>
     >
       <span
         className={`
-          inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm
+          inline-block h-3.5 w-3.5 transform rounded-full bg-bg-surface transition-transform shadow-sm
           ${enabled ? 'translate-x-[18px]' : 'translate-x-[3px]'}
         `}
       />
@@ -71,15 +71,15 @@ export default function NotificationsSettingsPage() {
     <div className="space-y-6">
 
       {/* ═══ Card 1: Alert Matrix ═══ */}
-      <section className="bg-white border border-pw-border p-6">
+      <section className="bg-bg-surface border border-border-accent p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">
               Notification Preferences
             </h2>
-            <p className="text-xs text-pw-muted mt-1">Choose how you want to be notified for each event type.</p>
+            <p className="text-xs text-text-secondary mt-1">Choose how you want to be notified for each event type.</p>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-pw-muted">
+          <div className="flex items-center gap-1.5 text-xs text-text-secondary">
             {anyEnabled ? (
               <><Bell className="w-3.5 h-3.5" /> Active</>
             ) : (
@@ -90,12 +90,12 @@ export default function NotificationsSettingsPage() {
 
         {/* Column Headers */}
         <div className="grid grid-cols-[1fr_64px_64px] gap-3 items-center mb-3 px-1">
-          <span className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Alert Type</span>
-          <span className="text-xs font-semibold text-pw-muted uppercase tracking-wider text-center">
+          <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Alert Type</span>
+          <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider text-center">
             <Mail className="w-3.5 h-3.5 mx-auto mb-0.5" />
             Email
           </span>
-          <span className="text-xs font-semibold text-pw-muted uppercase tracking-wider text-center">
+          <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider text-center">
             <MessageSquare className="w-3.5 h-3.5 mx-auto mb-0.5" />
             In-App
           </span>
@@ -106,8 +106,8 @@ export default function NotificationsSettingsPage() {
           {ALERT_ROWS.map(({ key, label, description }) => (
             <div key={key} className="grid grid-cols-[1fr_64px_64px] gap-3 items-center py-4 px-1">
               <div>
-                <p className="text-sm font-medium text-pw-black">{label}</p>
-                <p className="text-xs text-pw-muted mt-0.5">{description}</p>
+                <p className="text-sm font-medium text-text-primary">{label}</p>
+                <p className="text-xs text-text-secondary mt-0.5">{description}</p>
               </div>
               <div className="flex justify-center">
                 <ToggleSwitch
@@ -127,8 +127,8 @@ export default function NotificationsSettingsPage() {
       </section>
 
       {/* ═══ Card 2: Theme Customizer ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-6">
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
           Appearance
         </h2>
 
@@ -142,27 +142,27 @@ export default function NotificationsSettingsPage() {
                 className={`
                   w-full flex items-center gap-4 px-4 py-3.5 text-left transition-all cursor-pointer
                   ${isSelected
-                    ? 'bg-pw-bg border border-pw-black'
-                    : 'border border-pw-border hover:border-pw-muted'
+                    ? 'bg-bg-primary border border-pw-black'
+                    : 'border border-border-accent hover:border-pw-muted'
                   }
                 `}
               >
                 <div className={`
                   w-10 h-10 flex items-center justify-center flex-shrink-0
-                  ${isSelected ? 'bg-pw-black text-white' : 'bg-pw-bg text-pw-muted'}
+                  ${isSelected ? 'bg-pw-black text-white' : 'bg-bg-primary text-text-secondary'}
                 `}>
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <p className={`text-sm font-medium ${isSelected ? 'text-pw-black' : 'text-pw-fg'}`}>
+                  <p className={`text-sm font-medium ${isSelected ? 'text-text-primary' : 'text-text-primary'}`}>
                     {label}
                   </p>
-                  <p className="text-xs text-pw-muted">{description}</p>
+                  <p className="text-xs text-text-secondary">{description}</p>
                 </div>
                 {/* Radio indicator */}
                 <div className={`
                   w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0
-                  ${isSelected ? 'border-pw-black' : 'border-pw-border'}
+                  ${isSelected ? 'border-pw-black' : 'border-border-accent'}
                 `}>
                   {isSelected && (
                     <div className="w-2 h-2 rounded-full bg-pw-black" />

@@ -43,12 +43,12 @@ export default function GCUploadSimulator() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 bg-white border border-gray-200 rounded-xl shadow-2xl p-4 w-72 animate-in slide-in-from-right-8 fade-in duration-500">
-       <div className="flex items-center space-x-2 text-gray-800 mb-2 border-b border-gray-100 pb-2">
+    <div className="fixed bottom-6 right-6 z-50 bg-bg-surface border border-border-accent rounded-xl shadow-2xl p-4 w-72 animate-in slide-in-from-right-8 fade-in duration-500">
+       <div className="flex items-center space-x-2 text-text-primary mb-2 border-b border-border-accent pb-2">
          <UploadCloud className="w-4 h-4 text-orange-500"/>
          <span className="text-sm font-bold tracking-tight">Test Harness</span>
        </div>
-       <p className="text-xs text-gray-500 mb-4 leading-tight">
+       <p className="text-xs text-text-secondary mb-4 leading-tight">
          Skip having to open two tabs. Click this to simulate a General Contractor out in the field uploading a $15k receipt.
        </p>
        <button

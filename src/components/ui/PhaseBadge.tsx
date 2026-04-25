@@ -42,7 +42,7 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
       case 'Closed':
         return 'bg-phase-closed';
       default:
-        return 'bg-gray-100'; // Fallback
+        return 'bg-bg-primary'; // Fallback
     }
   };
 

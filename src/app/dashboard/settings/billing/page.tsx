@@ -27,7 +27,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof Ch
   active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2  },
   past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle },
   canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',     Icon: AlertTriangle },
-  inactive: { label: 'Inactive', cls: 'bg-gray-100  text-pw-muted  border-pw-border',   Icon: AlertTriangle },
+  inactive: { label: 'Inactive', cls: 'bg-bg-primary  text-text-secondary  border-border-accent',   Icon: AlertTriangle },
 };
 
 // Placeholder invoices for demo
@@ -82,25 +82,25 @@ export default function BillingSettingsPage() {
     <div className="space-y-6">
 
       {/* ═══ Card 1: Current Plan Overview ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Current Plan</h2>
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">Current Plan</h2>
 
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-light text-pw-black">{planInfo.price}</span>
-              <span className="text-sm text-pw-muted">{planInfo.period}</span>
+              <span className="text-3xl font-light text-text-primary">{planInfo.price}</span>
+              <span className="text-sm text-text-secondary">{planInfo.period}</span>
             </div>
-            <p className="text-sm font-medium text-pw-fg mt-1">{planInfo.label}</p>
+            <p className="text-sm font-medium text-text-primary mt-1">{planInfo.label}</p>
             {plan !== 'None' && (
-              <p className="text-xs text-pw-muted mt-2">
-                Next billing date: <span className="font-medium text-pw-fg">{nextBillingStr}</span>
+              <p className="text-xs text-text-secondary mt-2">
+                Next billing date: <span className="font-medium text-text-primary">{nextBillingStr}</span>
               </p>
             )}
             {plan === 'None' && (
-              <p className="text-sm text-pw-muted mt-2">
+              <p className="text-sm text-text-secondary mt-2">
                 You don&apos;t have an active subscription.{' '}
-                <Link href="/pricing" className="underline hover:text-pw-black transition-colors">
+                <Link href="/pricing" className="underline hover:text-text-primary transition-colors">
                   View plans →
                 </Link>
               </p>
@@ -136,25 +136,25 @@ export default function BillingSettingsPage() {
       </section>
 
       {/* ═══ Card 2: Payment Method ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Payment Method</h2>
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">Payment Method</h2>
 
         {profile?.stripeCustomerId || plan !== 'None' ? (
           <>
-            <div className="flex items-center gap-4 p-4 bg-pw-bg border border-pw-border">
+            <div className="flex items-center gap-4 p-4 bg-bg-primary border border-border-accent">
               <div className="w-12 h-8 bg-gradient-to-r from-pw-fg to-pw-muted rounded flex items-center justify-center">
                 <CreditCard className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-pw-black">Visa ending in {lastFour}</p>
-                <p className="text-xs text-pw-muted flex items-center gap-1">
+                <p className="text-sm font-medium text-text-primary">Visa ending in {lastFour}</p>
+                <p className="text-xs text-text-secondary flex items-center gap-1">
                   <Lock className="w-3 h-3" /> Secured by Stripe
                 </p>
               </div>
               <button
                 onClick={openPortal}
                 disabled={portalLoading}
-                className="text-xs font-medium text-pw-fg underline hover:text-pw-black transition-colors"
+                className="text-xs font-medium text-text-primary underline hover:text-text-primary transition-colors"
               >
                 Update
               </button>
@@ -168,7 +168,7 @@ export default function BillingSettingsPage() {
           </>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-pw-muted">No payment method on file. Subscribe to a plan to set up payment.</p>
+            <p className="text-sm text-text-secondary">No payment method on file. Subscribe to a plan to set up payment.</p>
             <Link
               href="/pricing"
               className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition"
@@ -180,41 +180,41 @@ export default function BillingSettingsPage() {
       </section>
 
       {/* ═══ Card 3: Invoice History ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Invoice History</h2>
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">Invoice History</h2>
 
         {plan === 'None' ? (
-          <p className="text-sm text-pw-muted py-4">No invoices yet. Invoices will appear here once you subscribe.</p>
+          <p className="text-sm text-text-secondary py-4">No invoices yet. Invoices will appear here once you subscribe.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-pw-border">
-                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Invoice</th>
-                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Date</th>
-                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Amount</th>
-                  <th className="text-left text-xs font-semibold text-pw-muted uppercase tracking-wider py-2 pr-4">Status</th>
-                  <th className="text-right text-xs font-semibold text-pw-muted uppercase tracking-wider py-2">Download</th>
+                <tr className="border-b border-border-accent">
+                  <th className="text-left text-xs font-semibold text-text-secondary uppercase tracking-wider py-2 pr-4">Invoice</th>
+                  <th className="text-left text-xs font-semibold text-text-secondary uppercase tracking-wider py-2 pr-4">Date</th>
+                  <th className="text-left text-xs font-semibold text-text-secondary uppercase tracking-wider py-2 pr-4">Amount</th>
+                  <th className="text-left text-xs font-semibold text-text-secondary uppercase tracking-wider py-2 pr-4">Status</th>
+                  <th className="text-right text-xs font-semibold text-text-secondary uppercase tracking-wider py-2">Download</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-pw-border">
                 {MOCK_INVOICES.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-pw-bg/50 transition-colors">
+                  <tr key={inv.id} className="hover:bg-bg-primary/50 transition-colors">
                     <td className="py-3 pr-4">
-                      <span className="flex items-center gap-1.5 text-pw-fg font-medium">
-                        <FileText className="w-3.5 h-3.5 text-pw-muted" />
+                      <span className="flex items-center gap-1.5 text-text-primary font-medium">
+                        <FileText className="w-3.5 h-3.5 text-text-secondary" />
                         {inv.id}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-pw-muted">{inv.date}</td>
-                    <td className="py-3 pr-4 text-pw-black font-medium">{inv.amount}</td>
+                    <td className="py-3 pr-4 text-text-secondary">{inv.date}</td>
+                    <td className="py-3 pr-4 text-text-primary font-medium">{inv.amount}</td>
                     <td className="py-3 pr-4">
                       <span className="text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-2 py-0.5">
                         {inv.status}
                       </span>
                     </td>
                     <td className="py-3 text-right">
-                      <button className="p-1.5 text-pw-muted hover:text-pw-black transition-colors" title="Download PDF">
+                      <button className="p-1.5 text-text-secondary hover:text-text-primary transition-colors" title="Download PDF">
                         <Download className="w-4 h-4" />
                       </button>
                     </td>
@@ -228,26 +228,26 @@ export default function BillingSettingsPage() {
 
       {/* ═══ Card 4: Account Details ═══ */}
       {plan !== 'None' && (
-        <section className="bg-white border border-pw-border p-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">Account Details</h2>
+        <section className="bg-bg-surface border border-border-accent p-6">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">Account Details</h2>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between">
-              <dt className="text-pw-muted">Account email</dt>
-              <dd className="text-pw-black font-medium">{user?.email ?? '—'}</dd>
+              <dt className="text-text-secondary">Account email</dt>
+              <dd className="text-text-primary font-medium">{user?.email ?? '—'}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-pw-muted">Subscription plan</dt>
-              <dd className="text-pw-black font-medium">{planInfo.label}</dd>
+              <dt className="text-text-secondary">Subscription plan</dt>
+              <dd className="text-text-primary font-medium">{planInfo.label}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-pw-muted">Billing status</dt>
-              <dd className="text-pw-black font-medium capitalize">{status.replace('_', ' ')}</dd>
+              <dt className="text-text-secondary">Billing status</dt>
+              <dd className="text-text-primary font-medium capitalize">{status.replace('_', ' ')}</dd>
             </div>
             {plan === 'Team' && (
               <div className="flex justify-between">
-                <dt className="text-pw-muted">Team seats</dt>
-                <dd className="text-pw-black font-medium">
-                  <Link href="/dashboard/settings/team" className="underline hover:text-pw-muted transition-colors">
+                <dt className="text-text-secondary">Team seats</dt>
+                <dd className="text-text-primary font-medium">
+                  <Link href="/dashboard/settings/team" className="underline hover:text-text-secondary transition-colors">
                     Manage team members →
                   </Link>
                 </dd>

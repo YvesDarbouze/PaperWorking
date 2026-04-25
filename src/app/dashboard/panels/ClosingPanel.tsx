@@ -41,7 +41,7 @@ export default function ClosingPanel() {
   }, [projects, currentProject, setDeal]);
 
   if (!currentProject) {
-    return <div className="p-12 text-center text-gray-500">No active projects found. Head to the Pipeline lane and add a property first.</div>;
+    return <div className="p-12 text-center text-text-secondary">No active projects found. Head to the Pipeline lane and add a property first.</div>;
   }
 
   const portal = currentProject.closingPortal || {
@@ -158,32 +158,32 @@ export default function ClosingPanel() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-light tracking-tight text-gray-900">The Closing Room</h1>
-        <p className="text-gray-500 mt-1">Legally binding checkpoint protecting Acquisition boundaries.</p>
+        <h1 className="text-3xl font-light tracking-tight text-text-primary">The Closing Room</h1>
+        <p className="text-text-secondary mt-1">Legally binding checkpoint protecting Acquisition boundaries.</p>
       </div>
 
       {/* ── 70% Rule Audit — Top-level margin warning ── */}
-      <Suspense fallback={<div className="h-40 bg-gray-50 rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-40 bg-bg-primary rounded-xl animate-pulse" />}>
         <SeventyPercentRuleAudit />
       </Suspense>
 
       {/* ── Closing Checklist — Must-complete validation ── */}
-      <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
         <ClosingChecklist />
       </Suspense>
 
       {/* ── Cost Basis Ledger (3-part capitalization tracker) ── */}
-      <Suspense fallback={<div className="h-60 bg-gray-50 rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-60 bg-bg-primary rounded-xl animate-pulse" />}>
         <CostBasisLedger />
       </Suspense>
 
       {/* ── Document Vault (Role-linked uploads) ── */}
-      <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
         <DocumentVault />
       </Suspense>
 
       {/* ── Exit Cost Ledger (Broker Fees, Staging, Marketing) ── */}
-      <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
         <ExitCostLedger />
       </Suspense>
 
@@ -191,20 +191,20 @@ export default function ClosingPanel() {
         
         {/* Document Collection Grid */}
         <div className="lg:col-span-8 space-y-6">
-           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+           <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
               <h3 className="text-lg font-medium tracking-tight border-b pb-4 mb-4">Required Legal Artifacts</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  {(['Title Insurance', 'Closing Disclosure', 'Wiring Instructions'] as const).map(type => (
-                   <div key={type} className={`border rounded-lg p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-gray-300 bg-gray-50' : 'border-dashed border-gray-300 hover:bg-gray-50 cursor-pointer'}`} onClick={() => !hasDoc(type) && handleUploadMock(type)}>
+                   <div key={type} className={`border rounded-lg p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-border-accent bg-bg-primary' : 'border-dashed border-border-accent hover:bg-bg-primary cursor-pointer'}`} onClick={() => !hasDoc(type) && handleUploadMock(type)}>
                       {hasDoc(type) ? (
                          isDocVerified(type) ? <CheckCircle className="w-8 h-8 text-green-500 mb-2" /> : <FileSignature className="w-8 h-8 text-indigo-500 mb-2" />
                       ) : (
-                         <UploadCloud className="w-8 h-8 text-gray-400 mb-2" />
+                         <UploadCloud className="w-8 h-8 text-text-secondary mb-2" />
                       )}
                       
-                      <p className="text-sm font-medium text-gray-900">{type}</p>
-                      <p className="text-xs uppercase tracking-wider text-gray-500 mt-1">
+                      <p className="text-sm font-medium text-text-primary">{type}</p>
+                      <p className="text-xs uppercase tracking-wider text-text-secondary mt-1">
                         {hasDoc(type) ? (isDocVerified(type) ? 'VERIFIED' : 'PENDING REVIEW') : 'REQUIRED'}
                       </p>
 
@@ -222,12 +222,12 @@ export default function ClosingPanel() {
            </div>
 
             {/* Inspection Upload Module — Structural/Plumbing/Electrical */}
-            <Suspense fallback={<div className="h-48 bg-gray-50 rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
               <InspectionUploadModule />
             </Suspense>
 
             {/* Title Search Clearance Tracker */}
-            <Suspense fallback={<div className="h-40 bg-gray-50 rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-40 bg-bg-primary rounded-xl animate-pulse" />}>
               <TitleSearchClearance />
             </Suspense>
 
@@ -254,7 +254,7 @@ export default function ClosingPanel() {
                  <button 
                    onClick={triggerBlockchainVerification}
                    disabled={isMining}
-                   className={`px-6 py-3 bg-white text-indigo-900 font-medium rounded-lg text-sm shadow-md transition ${isMining ? 'opacity-70' : 'hover:scale-105'} flex items-center`}
+                   className={`px-6 py-3 bg-bg-surface text-indigo-900 font-medium rounded-lg text-sm shadow-md transition ${isMining ? 'opacity-70' : 'hover:scale-105'} flex items-center`}
                  >
                    {isMining ? 'Interrogating Network...' : 'Ping Blockchain Registry'}
                  </button>
@@ -265,15 +265,15 @@ export default function ClosingPanel() {
 
         {/* Lawyer Portal Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+           <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
               <div className="flex items-center space-x-2 border-b pb-4 mb-4">
-                <Scale className="w-5 h-5 text-gray-700" />
+                <Scale className="w-5 h-5 text-text-primary" />
                 <h3 className="text-lg font-medium tracking-tight">Attorney Network</h3>
               </div>
               
               {!portal.assignedLawyerUid ? (
                  <>
-                   <p className="text-sm text-gray-500 mb-6">Scan your physical state domain (Simulated: FL) for certified Title Attorneys deployed through the PaperWorking subscription platform.</p>
+                   <p className="text-sm text-text-secondary mb-6">Scan your physical state domain (Simulated: FL) for certified Title Attorneys deployed through the PaperWorking subscription platform.</p>
                    {availableLawyers.length === 0 ? (
                       <button 
                          onClick={searchLawyersData}
@@ -285,10 +285,10 @@ export default function ClosingPanel() {
                    ) : (
                       <div className="space-y-3">
                         {availableLawyers.map(lw => (
-                          <div key={lw.uid} className="p-3 border rounded-lg border-gray-200 flex justify-between items-center">
+                          <div key={lw.uid} className="p-3 border rounded-lg border-border-accent flex justify-between items-center">
                             <div>
                               <p className="text-sm font-medium">{lw.displayName}</p>
-                              <p className="text-xs text-gray-500">{lw.state} Certified Target</p>
+                              <p className="text-xs text-text-secondary">{lw.state} Certified Target</p>
                             </div>
                             <button onClick={() => assignLawyer(lw.uid)} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded hover:bg-blue-100">
                                Recruit
@@ -308,7 +308,7 @@ export default function ClosingPanel() {
             </div>
 
             {/* Deal Roster — External Stakeholder Directory */}
-            <Suspense fallback={<div className="h-32 bg-gray-50 rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-32 bg-bg-primary rounded-xl animate-pulse" />}>
               <DealRoster projectId={currentProject.id} />
             </Suspense>
          </div>

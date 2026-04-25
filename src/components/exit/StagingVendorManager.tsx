@@ -26,7 +26,7 @@ interface Vendor {
 const STATUS_STYLES: Record<Vendor['status'], string> = {
   Contacted: 'bg-blue-900/30 text-blue-400 border-blue-800',
   Booked: 'bg-emerald-900/30 text-emerald-400 border-emerald-800',
-  Completed: 'bg-white/10 text-white border-white/20',
+  Completed: 'bg-bg-surface/10 text-white border-white/20',
   Cancelled: 'bg-red-900/30 text-red-400 border-red-800',
 };
 
@@ -41,7 +41,7 @@ function StarRating({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'xs
   return (
     <div className="flex items-center gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className={`${cls} ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-600'}`} />
+        <Star key={i} className={`${cls} ${i < rating ? 'text-yellow-400 fill-yellow-400' : 'text-text-secondary'}`} />
       ))}
     </div>
   );
@@ -93,10 +93,10 @@ export default function StagingVendorManager() {
           <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase">Staging & Vendor Network</h3>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-500">{bookedCount}/{vendors.length} secured</span>
+          <span className="text-xs text-text-secondary">{bookedCount}/{vendors.length} secured</span>
           <button
             onClick={handleAddVendor}
-            className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-white/10 text-gray-300 rounded hover:bg-white/20 transition"
+            className="flex items-center gap-1 px-2.5 py-1 text-xs font-medium bg-bg-surface/10 text-gray-300 rounded hover:bg-bg-surface/20 transition"
           >
             <Plus className="w-3 h-3" /> Add
           </button>
@@ -109,14 +109,14 @@ export default function StagingVendorManager() {
             <div className="flex items-start justify-between mb-2">
               <div>
                 <p className="text-sm font-medium text-white">{vendor.name || 'New Vendor'}</p>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mt-0.5">{vendor.type}</p>
+                <p className="text-xs text-text-secondary uppercase tracking-wider mt-0.5">{vendor.type}</p>
               </div>
               <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${STATUS_STYLES[vendor.status]}`}>
                 {vendor.status}
               </span>
             </div>
 
-            <div className="flex items-center gap-4 text-xs text-gray-400 mt-2">
+            <div className="flex items-center gap-4 text-xs text-text-secondary mt-2">
               {vendor.phone && (
                 <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{vendor.phone}</span>
               )}

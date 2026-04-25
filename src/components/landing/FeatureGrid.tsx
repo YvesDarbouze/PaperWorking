@@ -133,22 +133,22 @@ export default function FeatureGrid() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group relative bg-pw-surface border border-pw-border p-8 sm:p-10
+              className="group relative bg-bg-surface border border-border-accent p-8 sm:p-10
                          transition-all duration-300 ease-out
                          hover:-translate-y-1 hover:shadow-lg hover:border-pw-fg/20"
             >
               {/* Icon */}
-              <div className="text-pw-fg mb-5 transition-transform duration-300 group-hover:scale-110">
+              <div className="text-text-primary mb-5 transition-transform duration-300 group-hover:scale-110">
                 {f.icon}
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-semibold text-pw-fg tracking-tight mb-2">
+              <h3 className="text-lg font-semibold text-text-primary tracking-tight mb-2">
                 {f.title}
               </h3>
 
               {/* Description */}
-              <p className="text-sm text-pw-muted leading-relaxed">
+              <p className="text-sm text-text-secondary leading-relaxed">
                 {f.description}
               </p>
 

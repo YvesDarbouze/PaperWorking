@@ -27,17 +27,17 @@ const FEATURES = [
 
 export default function ValuePropGrid() {
   return (
-    <section id="features" className="py-32 sm:py-48 bg-pw-white border-t border-pw-border">
+    <section id="features" className="py-32 sm:py-48 bg-bg-surface border-t border-border-accent">
       <div className="mx-auto max-w-7xl px-10">
         <div className="mx-auto max-w-4xl mb-32">
            <p className="text-xs font-black uppercase tracking-[0.5em] text-pw-accent mb-6">SYSTEM CORE — CORE FUNCTIONALITY</p>
-           <h2 className="text-5xl sm:text-7xl font-black text-pw-black tracking-tighter leading-none uppercase">
+           <h2 className="text-5xl sm:text-7xl font-black text-text-primary tracking-tighter leading-none uppercase">
              THE ENGINE BUILT <br/> FOR INSTITUTIONAL SCALE.
            </h2>
         </div>
 
         {/* Antigravity Workbench Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-pw-border bg-pw-bg">
+        <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-border-accent bg-bg-primary">
           {FEATURES.map((feature, i) => (
             <motion.div
               key={feature.title}
@@ -45,23 +45,23 @@ export default function ValuePropGrid() {
               whileInView={{ opacity: 1 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className="flex flex-col group p-12 border-r border-b border-pw-border hover:bg-pw-black transition-all"
+              className="flex flex-col group p-12 border-r border-b border-border-accent hover:bg-pw-black transition-all"
             >
-              <div className="w-14 h-14 border border-pw-border bg-pw-white flex items-center justify-center mb-12 group-hover:bg-pw-accent group-hover:border-pw-accent transition-all">
-                 <feature.icon className="w-5 h-5 text-pw-black group-hover:text-pw-white transition-colors" />
+              <div className="w-14 h-14 border border-border-accent bg-bg-surface flex items-center justify-center mb-12 group-hover:bg-pw-accent group-hover:border-pw-accent transition-all">
+                 <feature.icon className="w-5 h-5 text-text-primary group-hover:text-pw-white transition-colors" />
               </div>
               
-              <h3 className="text-2xl font-black text-pw-black mb-6 uppercase tracking-tighter group-hover:text-pw-white">
+              <h3 className="text-2xl font-black text-text-primary mb-6 uppercase tracking-tighter group-hover:text-pw-white">
                 {feature.title}
               </h3>
               
-              <p className="text-pw-muted text-sm font-bold uppercase tracking-tight leading-relaxed mb-12 flex-1 group-hover:text-pw-white/70">
+              <p className="text-text-secondary text-sm font-bold uppercase tracking-tight leading-relaxed mb-12 flex-1 group-hover:text-pw-white/70">
                 {feature.description}
               </p>
 
               <ul className="space-y-6">
                 {feature.details.map((detail) => (
-                   <li key={detail} className="flex items-center text-xs font-black uppercase tracking-[0.2em] text-pw-subtle group-hover:text-pw-white">
+                   <li key={detail} className="flex items-center text-xs font-black uppercase tracking-[0.2em] text-text-secondary group-hover:text-pw-white">
                       <div className="w-1.5 h-1.5 bg-pw-accent mr-5" />
                       {detail}
                    </li>
@@ -72,7 +72,7 @@ export default function ValuePropGrid() {
         </div>
         
         {/* Institutional System Audit Box */}
-        <div className="mt-48 p-20 border border-pw-border bg-pw-black flex flex-col md:flex-row items-center gap-16">
+        <div className="mt-48 p-20 border border-border-accent bg-pw-black flex flex-col md:flex-row items-center gap-16">
            <div className="w-24 h-24 border-2 border-pw-white flex items-center justify-center flex-shrink-0 animate-pulse">
               <TrendingUp className="w-10 h-10 text-pw-white" />
            </div>
@@ -83,7 +83,7 @@ export default function ValuePropGrid() {
                high-yield construction pipelines in excess of $1B globally. System integrity verified via Antigravity protocols.
              </p>
            </div>
-           <div className="w-full md:w-px h-px md:h-12 bg-pw-white/20" />
+           <div className="w-full md:w-px h-px md:h-12 bg-bg-surface/20" />
            <div className="text-nowrap">
              <span className="text-xs font-black text-pw-accent uppercase tracking-[0.5em]">PROTOCOL STATUS</span>
              <p className="text-2xl font-black text-pw-white uppercase">VERIFIED</p>

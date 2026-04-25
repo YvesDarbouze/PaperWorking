@@ -88,15 +88,15 @@ function KPICard({ icon, label, value, subtext, band, locked }: KPICardProps) {
       aria-label={`${label}: ${value}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="p-1.5 rounded-lg bg-white/5" aria-hidden="true">{icon}</div>
+        <div className="p-1.5 rounded-lg bg-bg-surface/5" aria-hidden="true">{icon}</div>
         <div className="flex items-center gap-1">
-          {locked && <Lock className="w-3 h-3 text-gray-500" aria-hidden="true" />}
+          {locked && <Lock className="w-3 h-3 text-text-secondary" aria-hidden="true" />}
           {s.icon}
         </div>
       </div>
-      <p className="text-[10px] font-mono tracking-widest text-gray-400 uppercase mb-1">{label}</p>
+      <p className="text-[10px] font-mono tracking-widest text-text-secondary uppercase mb-1">{label}</p>
       <p className={`text-2xl font-light tracking-tight ${s.value}`}>{value}</p>
-      <p className="text-[10px] text-gray-500 mt-1">{subtext}</p>
+      <p className="text-[10px] text-text-secondary mt-1">{subtext}</p>
     </div>
   );
 }
@@ -111,11 +111,11 @@ function CompRow({ label, estimated, actual, isTotal = false }: {
   return (
     <div className={`grid grid-cols-3 gap-4 px-4 py-2.5 text-xs ${
       isTotal
-        ? 'bg-white/5 border-t border-gray-700/50 font-semibold'
+        ? 'bg-bg-surface/5 border-t border-gray-700/50 font-semibold'
         : 'border-b border-gray-800/50'
     }`}>
       <span className="text-gray-300">{label}</span>
-      <span className="text-gray-400 text-right font-mono">{estimated}</span>
+      <span className="text-text-secondary text-right font-mono">{estimated}</span>
       <span className="text-gray-200 text-right font-mono">{actual}</span>
     </div>
   );
@@ -157,7 +157,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           </div>
           <div>
             <h2 className="text-sm font-semibold text-white tracking-wide">Project Autopsy</h2>
-            <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest mt-0.5">
+            <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest mt-0.5">
               Phase 4 Exit Intelligence
             </p>
           </div>
@@ -189,7 +189,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             onClick={handleDownloadPDF}
             disabled={pdfLoading}
             aria-label={`Download PDF autopsy report for ${deal.propertyName}`}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-gray-700 text-gray-300 text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-pw-black"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-bg-surface/5 border border-gray-700 text-gray-300 text-[10px] font-bold uppercase tracking-widest hover:bg-bg-surface/10 hover:text-white transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-pw-black"
           >
             {pdfLoading
               ? <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
@@ -209,7 +209,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           className="grid grid-cols-2 md:grid-cols-4 gap-3 border-0 p-0"
         >
           <KPICard
-            icon={<DollarSign  className="w-4 h-4 text-gray-400" />}
+            icon={<DollarSign  className="w-4 h-4 text-text-secondary" />}
             label="Net Profit"
             value={fmt$(m.netProfit)}
             subtext="Gross sale − total cost basis"
@@ -217,7 +217,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             locked={isSold}
           />
           <KPICard
-            icon={<TrendingUp  className="w-4 h-4 text-gray-400" />}
+            icon={<TrendingUp  className="w-4 h-4 text-text-secondary" />}
             label="ROI"
             value={fmtPct(m.roi)}
             subtext="Net profit ÷ total cost basis · target ≥ 25%"
@@ -225,7 +225,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             locked={isSold}
           />
           <KPICard
-            icon={<BarChart3   className="w-4 h-4 text-gray-400" />}
+            icon={<BarChart3   className="w-4 h-4 text-text-secondary" />}
             label="Cash-on-Cash"
             value={fmtPct(m.coc)}
             subtext={`Net profit ÷ ${fmt$(m.outOfPocketCash)} out-of-pocket`}
@@ -233,7 +233,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             locked={isSold}
           />
           <KPICard
-            icon={<TrendingUp  className="w-4 h-4 text-gray-400" />}
+            icon={<TrendingUp  className="w-4 h-4 text-text-secondary" />}
             label="Profit Margin"
             value={fmtPct(m.profitMargin)}
             subtext="Net profit ÷ sale price · target ≥ 20%"
@@ -248,32 +248,32 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           aria-label="Time metrics"
         >
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-800 bg-black/40">
-            <Clock className="w-4 h-4 text-gray-500 flex-shrink-0" aria-hidden="true" />
+            <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Days on Market</p>
+              <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Days on Market</p>
               <p className="text-lg font-light text-white mt-0.5" aria-label={`Days on market: ${m.dom !== null ? m.dom : 'unknown'}`}>
                 {m.dom !== null ? `${m.dom}d` : '—'}
               </p>
-              <p className="text-[9px] text-gray-600 mt-0.5">
+              <p className="text-[9px] text-text-secondary mt-0.5">
                 {deal.financials?.listingDate ? 'Listing date → sold date' : 'Estimated from hold period'}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-800 bg-black/40">
-            <Clock className="w-4 h-4 text-gray-500 flex-shrink-0" aria-hidden="true" />
+            <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">Total Hold Period</p>
+              <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Total Hold Period</p>
               <p className="text-lg font-light text-white mt-0.5" aria-label={`Hold period: ${m.holdDays !== null ? m.holdDays : 'unknown'} days`}>
                 {m.holdDays !== null ? `${m.holdDays}d` : '—'}
               </p>
-              <p className="text-[9px] text-gray-600 mt-0.5">Acquisition → closed</p>
+              <p className="text-[9px] text-text-secondary mt-0.5">Acquisition → closed</p>
             </div>
           </div>
         </div>
 
         {/* ── Estimates vs Actuals Table ───────────────────── */}
         <div>
-          <h3 className="text-[10px] font-mono tracking-widest text-gray-500 uppercase mb-3">
+          <h3 className="text-[10px] font-mono tracking-widest text-text-secondary uppercase mb-3">
             Original Estimates vs. Final Actuals
           </h3>
           <div
@@ -283,7 +283,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           >
             {/* Table header */}
             <div
-              className="grid grid-cols-3 gap-4 px-4 py-2 bg-white/5 text-[10px] font-bold text-gray-400 uppercase tracking-widest"
+              className="grid grid-cols-3 gap-4 px-4 py-2 bg-bg-surface/5 text-[10px] font-bold text-text-secondary uppercase tracking-widest"
               role="row"
             >
               <span role="columnheader">Line Item</span>
@@ -341,7 +341,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
 
         {/* ── Financing Summary ────────────────────────────── */}
         {m.loanAmount > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-800/60 bg-black/20 text-xs text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-800/60 bg-black/20 text-xs text-text-secondary">
             <span>Loan Amount: <span className="text-gray-300 font-mono">{fmt$(m.loanAmount)}</span></span>
             <span>Out-of-Pocket Cash: <span className="text-gray-300 font-mono">{fmt$(m.outOfPocketCash)}</span></span>
             <span>Total Cost Basis: <span className="text-gray-300 font-mono">{fmt$(m.totalCostBasis)}</span></span>

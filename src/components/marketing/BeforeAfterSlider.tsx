@@ -58,10 +58,10 @@ export default function BeforeAfterSlider({ beforeImage, afterImage }: BeforeAft
 
       {/* Slider Bar */}
       <div 
-        className="absolute top-0 bottom-0 w-[2px] bg-white z-20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
+        className="absolute top-0 bottom-0 w-[2px] bg-bg-surface z-20 shadow-[0_0_15px_rgba(0,0,0,0.5)]"
         style={{ left: `${sliderPos}%` }}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-bg-surface rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
           <div className="flex space-x-0.5">
             <div className="w-[1.5px] h-3 bg-gray-400" />
             <div className="w-[1.5px] h-3 bg-gray-400" />

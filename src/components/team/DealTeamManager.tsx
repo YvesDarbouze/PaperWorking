@@ -66,13 +66,13 @@ export default function DealTeamManager({ projectId }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+    <div className="bg-bg-surface rounded-xl border border-border-accent p-6 shadow-sm">
+      <div className="flex items-center justify-between border-b border-border-accent pb-4 mb-5">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 tracking-tight">Deal Team</h3>
-          <p className="text-sm text-gray-500 mt-0.5">Assign professionals to this deal.</p>
+          <h3 className="text-sm font-semibold text-text-primary tracking-tight">Deal Team</h3>
+          <p className="text-sm text-text-secondary mt-0.5">Assign professionals to this deal.</p>
         </div>
-        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">
           {team.filter((m) => m.status !== 'removed').length} / {DEAL_ROLE_SLOTS.length} assigned
         </span>
       </div>
@@ -87,30 +87,30 @@ export default function DealTeamManager({ projectId }: Props) {
               key={role}
               className={`border rounded-lg p-4 transition-all duration-200 ${
                 member
-                  ? 'border-gray-200 bg-gray-50/50'
+                  ? 'border-border-accent bg-bg-primary/50'
                   : isEditing
                   ? 'border-indigo-300 bg-indigo-50/30'
-                  : 'border-dashed border-gray-200 hover:border-gray-300'
+                  : 'border-dashed border-border-accent hover:border-border-accent'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      member ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-400'
+                      member ? 'bg-indigo-100 text-indigo-600' : 'bg-bg-primary text-text-secondary'
                     }`}
                   >
                     {icon}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-gray-900">{label}</p>
+                    <p className="text-xs font-semibold text-text-primary">{label}</p>
                     {member ? (
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-text-secondary">
                         {member.displayName}{' '}
-                        <span className="text-gray-400">· {member.email}</span>
+                        <span className="text-text-secondary">· {member.email}</span>
                       </p>
                     ) : (
-                      <p className="text-sm text-gray-400">Not assigned</p>
+                      <p className="text-sm text-text-secondary">Not assigned</p>
                     )}
                   </div>
                 </div>
@@ -118,7 +118,7 @@ export default function DealTeamManager({ projectId }: Props) {
                 {member ? (
                   <button
                     onClick={() => handleRemove(member.id)}
-                    className="p-1.5 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition"
+                    className="p-1.5 rounded-md hover:bg-red-50 text-text-secondary hover:text-red-500 transition"
                     title="Remove"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -135,20 +135,20 @@ export default function DealTeamManager({ projectId }: Props) {
 
               {/* Inline Invite Form */}
               {isEditing && !member && (
-                <div className="mt-3 pt-3 border-t border-gray-100 flex gap-2">
+                <div className="mt-3 pt-3 border-t border-border-accent flex gap-2">
                   <input
                     type="text"
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
                     placeholder="Name"
-                    className="flex-1 border border-gray-200 rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
                   />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="email@company.com"
-                    className="flex-[2] border border-gray-200 rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
                   />
                   <button
                     onClick={() => handleAssign(role)}
@@ -159,7 +159,7 @@ export default function DealTeamManager({ projectId }: Props) {
                   </button>
                   <button
                     onClick={() => { setEditingRole(null); setInviteEmail(''); setInviteName(''); }}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition"
+                    className="p-2 text-text-secondary hover:text-text-secondary transition"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>

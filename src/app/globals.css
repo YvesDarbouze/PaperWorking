@@ -56,6 +56,14 @@
   --color-pw-fg:      var(--pw-fg);
   --color-pw-accent:  var(--pw-accent);
 
+  /* ─── Semantic Brand Palette ─── */
+  --color-bg-primary: #f2f2f2;
+  --color-bg-transactional: #cccccc;
+  --color-bg-surface: #ffffff;
+  --color-text-primary: #595959;
+  --color-text-secondary: #7f7f7f;
+  --color-border-accent: #a5a5a5;
+
   /* ─── Deal Lifecycle Phases ─── */
   --color-phase-sourcing: #f2f2f2;
   --color-phase-contract: #cccccc;
@@ -65,8 +73,8 @@
   --color-phase-findandfund: var(--phase-findandfund);
   --color-phase-findandfund-accent: var(--phase-findandfund-accent);
 
-  /* ─── Font System — DM Sans (closest to Google Sans used on antigravity.google) ─── */
-  --font-sans: "DM Sans", system-ui, sans-serif;
+  /* ─── Font System — Hanken Grotesk ─── */
+  --font-sans: "Hanken Grotesk", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
   /* ─── Antigravity Radius — Soft & Large ─── */
@@ -84,8 +92,8 @@
    ═══════════════════════════════════════════════════════ */
 
 body {
-  background-color: var(--pw-bg);
-  color: var(--pw-fg);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   font-feature-settings: "cv02", "cv03", "cv04", "ss01";
   letter-spacing: -0.015em;
   -webkit-font-smoothing: antialiased;
@@ -93,12 +101,26 @@ body {
   line-height: 1.5;
 }
 
-/* Antigravity heading weights & tracking */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+/* Antigravity heading weights & tracking
+   200 = ExtraLight — the signature Antigravity weight.
+   Hanken Grotesk renders cleanly at this weight. */
+h1 {
+  font-weight: 200;
+  letter-spacing: -0.025em;
+  color: var(--pw-black);
+  line-height: 1.12;
+}
+h2, h3 {
+  font-weight: 200;
   letter-spacing: -0.02em;
   color: var(--pw-black);
   line-height: 1.15;
+}
+h4, h5, h6 {
+  font-weight: 200;
+  letter-spacing: -0.015em;
+  color: var(--pw-black);
+  line-height: 1.2;
 }
 
 html {
@@ -202,6 +224,28 @@ html {
 .delay-2 { animation-delay: 0.2s; }
 .delay-3 { animation-delay: 0.3s; }
 
+
+/* ═══════════════════════════════════════════════════════
+   Dashboard Context — Institutional-Grade Overrides
+   
+   The landing page uses "Soft & Large" radii (40–100px).
+   The dashboard requires sharp, FinTech-appropriate values.
+   This scopes the override so both contexts coexist.
+   ═══════════════════════════════════════════════════════ */
+
+.dashboard-context {
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   10px;
+  --radius-2xl:  12px;
+  --radius-3xl:  16px;
+}
+
+.dashboard-context .ag-card {
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+}
 
 /* Hide scrollbar while keeping scroll functionality */
 .no-scrollbar::-webkit-scrollbar { display: none; }

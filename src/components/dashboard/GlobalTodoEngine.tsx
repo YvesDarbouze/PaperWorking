@@ -168,8 +168,8 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
 /* ─── Urgency badge style ─── */
 const URGENCY_STYLE: Record<TaskUrgency, string> = {
   overdue:  'bg-pw-black text-white shadow-sm',
-  action:   'bg-pw-bg text-pw-black border border-pw-border/50 shadow-sm',
-  upcoming: 'bg-pw-bg text-pw-muted border border-pw-border/20',
+  action:   'bg-bg-primary text-text-primary border border-border-accent/50 shadow-sm',
+  upcoming: 'bg-bg-primary text-text-secondary border border-border-accent/20',
 };
 
 const URGENCY_LABEL: Record<TaskUrgency, string> = {
@@ -196,18 +196,18 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
   const actionCt = tasks.filter(t => t.urgency === 'action').length;
 
   return (
-    <div className="ag-card bg-pw-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col h-full min-h-[500px]">
+    <div className="ag-card bg-bg-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-border-accent/10 flex flex-col h-full min-h-[500px]">
       {/* Header */}
-      <div className="px-8 py-10 flex items-center justify-between border-b border-pw-border/10">
+      <div className="px-8 py-10 flex items-center justify-between border-b border-border-accent/10">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-pw-black" />
+              <CheckCircle2 className="w-5 h-5 text-text-primary" />
               <p className="ag-label opacity-60">Task Rollup</p>
             </div>
-            <h3 className="text-3xl font-light text-pw-black tracking-tighter">Action Engine</h3>
+            <h3 className="text-3xl font-light text-text-primary tracking-tighter">Action Engine</h3>
           </div>
-          <div className="bg-pw-bg px-4 py-2 rounded-full border border-pw-border/50">
-            <span className="text-[10px] font-bold text-pw-black tracking-widest uppercase">
+          <div className="bg-bg-primary px-4 py-2 rounded-full border border-border-accent/50">
+            <span className="text-[10px] font-bold text-text-primary tracking-widest uppercase">
               {tasks.length} Active Nodes
             </span>
           </div>
@@ -227,13 +227,13 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
               className={`px-5 py-2 text-[10px] font-bold uppercase tracking-widest rounded-full border transition-all duration-300 ${
                 activeFilter === tab.key
                   ? 'bg-pw-black text-pw-white border-pw-black shadow-lg shadow-pw-black/10'
-                  : 'bg-pw-bg text-pw-muted border-pw-border/30 hover:border-pw-black hover:text-pw-black'
+                  : 'bg-bg-primary text-text-secondary border-border-accent/30 hover:border-pw-black hover:text-text-primary'
               }`}
             >
               {tab.label}
               {tab.count > 0 && (
                 <span className={`ml-2 font-medium opacity-60 ${
-                  activeFilter === tab.key ? 'text-pw-white' : 'text-pw-black'
+                  activeFilter === tab.key ? 'text-pw-white' : 'text-text-primary'
                 }`}>
                   {tab.count}
                 </span>
@@ -246,7 +246,7 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
       {/* Task list */}
       <div className="flex-1 overflow-y-auto px-4 pb-8">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-pw-muted opacity-40">
+          <div className="flex flex-col items-center justify-center py-24 text-text-secondary opacity-40">
             <Circle className="w-12 h-12 mb-4 stroke-[1px]" />
             <p className="text-sm font-medium">All tasks verified.</p>
           </div>
@@ -256,7 +256,7 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
               <button
                 key={task.id}
                 onClick={() => onNavigateToDeal(task.projectId)}
-                className="w-full flex items-center gap-6 px-4 py-6 text-left rounded-2xl hover:bg-pw-bg/50 transition-all duration-300 group border border-transparent hover:border-pw-border/10"
+                className="w-full flex items-center gap-6 px-4 py-6 text-left rounded-2xl hover:bg-bg-primary/50 transition-all duration-300 group border border-transparent hover:border-border-accent/10"
               >
                 {/* Folder icon */}
                 <div className="shrink-0 transition-transform group-hover:scale-110 duration-500">
@@ -265,15 +265,15 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
 
                 {/* Task content */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-medium text-pw-black tracking-tight group-hover:text-black transition-colors">
+                  <p className="text-base font-medium text-text-primary tracking-tight group-hover:text-text-primary transition-colors">
                     {task.label}
                   </p>
                   <div className="flex items-center gap-4 mt-1.5">
-                    <span className="text-xs text-pw-muted font-normal truncate opacity-60">
+                    <span className="text-xs text-text-secondary font-normal truncate opacity-60">
                       {task.dealAddress}
                     </span>
                     {task.assignee && (
-                      <span className="flex items-center gap-1.5 text-xs text-pw-muted font-medium opacity-40 bg-pw-bg px-2 py-0.5 rounded-full">
+                      <span className="flex items-center gap-1.5 text-xs text-text-secondary font-medium opacity-40 bg-bg-primary px-2 py-0.5 rounded-full">
                         <User2 className="w-3 h-3" />
                         {task.assignee}
                       </span>

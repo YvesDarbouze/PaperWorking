@@ -39,10 +39,10 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-900">Execute Purchase</h2>
-          <p className="text-sm text-gray-500 mt-1">Finalize the HUD-1 costs to close out Phase 2 and lock the acquisition ledger.</p>
+      <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="p-6 border-b border-border-accent">
+          <h2 className="text-xl font-semibold text-text-primary">Execute Purchase</h2>
+          <p className="text-sm text-text-secondary mt-1">Finalize the HUD-1 costs to close out Phase 2 and lock the acquisition ledger.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">
@@ -57,40 +57,40 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Final Purchase Price</label>
+              <label className="block text-sm font-medium text-text-primary mb-1">Final Purchase Price</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary font-medium">$</span>
                 <input
                   type="number"
                   value={purchasePrice}
                   onChange={(e) => { setPurchasePrice(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-gray-50 focus:bg-white transition-all text-lg font-semibold text-gray-900"
+                  className="w-full pl-8 pr-3 py-2.5 border border-border-accent rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-bg-primary focus:bg-bg-surface transition-all text-lg font-semibold text-text-primary"
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title & Settlement Fees</label>
+              <label className="block text-sm font-medium text-text-primary mb-1">Title & Settlement Fees</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">$</span>
                 <input
                   type="number"
                   value={titleFees}
                   onChange={(e) => { setTitleFees(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-8 pr-3 py-2 border border-border-accent rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Origination / Lender Fees</label>
+              <label className="block text-sm font-medium text-text-primary mb-1">Origination / Lender Fees</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">$</span>
                 <input
                   type="number"
                   value={originationFees}
                   onChange={(e) => { setOriginationFees(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  className="w-full pl-8 pr-3 py-2 border border-border-accent rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                 />
               </div>
             </div>
@@ -100,7 +100,7 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 bg-white border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-4 bg-bg-surface border border-border-accent text-text-primary rounded-lg font-medium hover:bg-bg-primary transition-colors cursor-pointer"
             >
               Cancel
             </button>

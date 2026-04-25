@@ -49,7 +49,7 @@ const PropertyMediaGallery: React.FC<PropertyMediaGalleryProps> = ({
             <button 
               onClick={() => setShow3D(!show3D)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-all shadow-lg ${
-                show3D ? 'bg-indigo-600 text-white' : 'bg-white/90 text-gray-900 hover:bg-white'
+                show3D ? 'bg-indigo-600 text-white' : 'bg-bg-surface/90 text-text-primary hover:bg-bg-surface'
               }`}
             >
               <PlayCircle className="w-3.5 h-3.5" />

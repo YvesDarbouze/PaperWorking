@@ -1,0 +1,85 @@
+
+> paper-working@0.1.0 build
+> next build
+
+▲ Next.js 16.2.3 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 66s
+  Skipping validation of types
+  Finished TypeScript config validation in 36ms ...
+  Collecting page data using 15 workers ...
+⚠️ [REDIS] Connection unavailable. Rate limiting will fallback to in-memory mode.
+⚠️ [REDIS] Connection unavailable. Rate limiting will fallback to in-memory mode.
+  Generating static pages using 15 workers (0/71) ...
+  Generating static pages using 15 workers (17/71) 
+  Generating static pages using 15 workers (35/71) 
+  Generating static pages using 15 workers (53/71) 
+⚠️ [REDIS] Connection unavailable. Rate limiting will fallback to in-memory mode.
+✓ Generating static pages using 15 workers (71/71) in 4.4s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin/marketplace
+├ ƒ /api/auth/session
+├ ƒ /api/bridge/metadata
+├ ƒ /api/bridge/sync
+├ ƒ /api/calendar/sync
+├ ƒ /api/chat
+├ ƒ /api/drive/provision
+├ ƒ /api/emails/send
+├ ƒ /api/invitations/[token]
+├ ƒ /api/invitations/accept
+├ ƒ /api/invitations/send
+├ ƒ /api/lawyers
+├ ƒ /api/mcp/[transport]
+├ ƒ /api/permits
+├ ƒ /api/reports/[period]
+├ ƒ /api/stripe/checkout
+├ ƒ /api/stripe/portal
+├ ƒ /api/stripe/webhook
+├ ƒ /api/webhooks/bridge
+├ ƒ /api/webhooks/emails
+├ ○ /blog
+├ ƒ /blog/[slug]
+├ ○ /dashboard
+├ ○ /dashboard/calendar
+├ ○ /dashboard/closing-room
+├ ○ /dashboard/engine-room
+├ ○ /dashboard/evaluation
+├ ○ /dashboard/exit-hub
+├ ○ /dashboard/field-manager
+├ ○ /dashboard/inbox
+├ ○ /dashboard/reports
+├ ○ /dashboard/settings
+├ ○ /dashboard/settings/billing
+├ ○ /dashboard/settings/notifications
+├ ○ /dashboard/settings/profile
+├ ○ /dashboard/settings/team
+├ ○ /forgot-password
+├ ○ /how-it-works
+├ ƒ /invest/[token]
+├ ○ /login
+├ ○ /login/finish
+├ ○ /pricing
+├ ○ /privacy
+├ ○ /register
+├ ○ /support
+├ ● /support/[slug]
+│ ├ /support/generating-an-loi
+│ ├ /support/underwriting-criteria
+│ ├ /support/sourcing-off-market
+│ └ [+27 more paths]
+├ ○ /terms
+└ ○ /vendor-portal
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

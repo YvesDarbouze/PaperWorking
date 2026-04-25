@@ -18,7 +18,7 @@ export default function LaneIndicator() {
 
   return (
     <nav
-      className="mobile-lane-nav fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-gray-200"
+      className="mobile-lane-nav fixed bottom-0 left-0 right-0 z-50 bg-bg-surface/95 backdrop-blur-md border-t border-border-accent"
       style={{ height: 48 }}
       aria-label="Mobile dashboard navigation"
     >
@@ -31,7 +31,7 @@ export default function LaneIndicator() {
             px-2.5 py-1 rounded-md transition-all
             ${viewMode === 'minimized'
               ? 'bg-gray-900 text-white'
-              : 'text-gray-400 hover:text-gray-700'
+              : 'text-text-secondary hover:text-text-primary'
             }
           `}
           aria-label="Toggle board view"
@@ -66,7 +66,7 @@ export default function LaneIndicator() {
                 <span
                   className={`
                     text-xs font-semibold uppercase tracking-wider transition-colors
-                    ${isActive ? 'text-gray-900' : 'text-gray-400'}
+                    ${isActive ? 'text-text-primary' : 'text-text-secondary'}
                   `}
                 >
                   {lane.shortLabel}

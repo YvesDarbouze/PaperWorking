@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { DM_Sans } from "next/font/google";
+import { Hanken_Grotesk } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
+import ChatbotWidget from "@/components/shared/ChatbotWidget";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -23,19 +24,17 @@ export const metadata: Metadata = {
   },
 };
 
-import AnnouncementBanner from "@/components/marketing/AnnouncementBanner";
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} h-full`}>
-      <body className="min-h-full flex flex-col font-sans antialiased">
+    <html lang="en" className={`${hankenGrotesk.variable} h-full`}>
+      <body className="min-h-full flex flex-col font-sans antialiased bg-bg-primary text-text-primary">
         <AuthProvider>
-          <AnnouncementBanner />
           {children}
+          <ChatbotWidget />
         </AuthProvider>
       </body>
     </html>

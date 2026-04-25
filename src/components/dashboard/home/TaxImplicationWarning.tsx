@@ -65,7 +65,7 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
         <p className="ag-label opacity-80 text-[9px] text-amber-600">
           Short-Term Capital Gains
         </p>
-        <span className="text-[9px] bg-amber-50 px-2 py-0.5 rounded-full text-amber-500 font-bold border border-amber-100">
+        <span className="text-[9px] bg-amber-50 px-2 py-0.5 rounded text-amber-500 font-bold border border-amber-100">
           {warnings.length}
         </span>
       </div>
@@ -74,11 +74,11 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
         <div key={w.id} className="relative">
           <button
             onClick={() => setExpandedId(expandedId === w.id ? null : w.id)}
-            className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl bg-amber-50/50 border border-amber-100/50 hover:bg-amber-50 transition-all text-left"
+            className="w-full flex items-center justify-between px-3 py-2.5 rounded-md bg-amber-50/50 border border-amber-100/50 hover:bg-amber-50 transition-all text-left"
           >
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0" />
-              <span className="text-sm font-medium text-pw-black tracking-tight truncate max-w-[140px]">
+              <span className="text-sm font-medium text-text-primary tracking-tight truncate max-w-[140px]">
                 {w.address}
               </span>
             </div>
@@ -96,7 +96,7 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="mt-1 px-4 py-3 bg-amber-50 rounded-xl border border-amber-100/50 text-xs text-amber-700 space-y-2">
+                <div className="mt-1 px-4 py-3 bg-amber-50 rounded-md border border-amber-100/50 text-xs text-amber-700 space-y-2">
                   <div className="flex items-start gap-2">
                     <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-400" />
                     <p className="leading-relaxed">

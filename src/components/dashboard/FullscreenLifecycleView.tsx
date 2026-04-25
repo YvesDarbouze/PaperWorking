@@ -51,7 +51,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
     <div className={`fixed inset-0 z-50 flex flex-col transition-colors duration-1000 ease-in-out ${activePhaseMap.bg}`}>
        
        <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-40 bg-black/10 backdrop-blur-sm border-b border-black/5">
-          <button onClick={onExit} className="flex items-center text-black/70 hover:text-black font-medium transition-colors bg-white/20 px-4 py-2 rounded-lg">
+          <button onClick={onExit} className="flex items-center text-text-primary/70 hover:text-text-primary font-medium transition-colors bg-bg-surface/20 px-4 py-2 rounded-lg">
              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
           </button>
           <div className="flex flex-col items-end">
@@ -61,7 +61,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
           
           <div className="ml-8 pl-8 border-l border-white/10 flex items-center space-x-3">
              <div className="flex flex-col items-end mr-4">
-                <span className="text-xs font-bold text-black/40 uppercase tracking-widest">Current Status</span>
+                <span className="text-xs font-bold text-text-primary/40 uppercase tracking-widest">Current Status</span>
                 <PhaseBadge status={deal.status} />
              </div>
              <button 
@@ -93,14 +93,14 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
 
        {/* Swipe / Click Edges */}
        {currentPhase > 1 && (
-         <button onClick={handlePrev} className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-white/30 hover:bg-white/50 p-3 rounded-full backdrop-blur transition-all group">
-            <ChevronLeft className="w-8 h-8 text-black/50 group-hover:text-black" />
+         <button onClick={handlePrev} className="absolute left-4 top-1/2 -translate-y-1/2 z-40 bg-bg-surface/30 hover:bg-bg-surface/50 p-3 rounded-full backdrop-blur transition-all group">
+            <ChevronLeft className="w-8 h-8 text-text-primary/50 group-hover:text-text-primary" />
          </button>
        )}
        
        {currentPhase < 4 && (
-         <button onClick={handleNext} className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-white/30 hover:bg-white/50 p-3 rounded-full backdrop-blur transition-all group">
-            <ChevronRight className="w-8 h-8 text-black/50 group-hover:text-black" />
+         <button onClick={handleNext} className="absolute right-4 top-1/2 -translate-y-1/2 z-40 bg-bg-surface/30 hover:bg-bg-surface/50 p-3 rounded-full backdrop-blur transition-all group">
+            <ChevronRight className="w-8 h-8 text-text-primary/50 group-hover:text-text-primary" />
          </button>
        )}
 
@@ -141,11 +141,11 @@ const RefreshCw = ({ className }: { className: string }) => (
 
 function StaticPhase1({ deal }: { deal: Project }) {
   return (
-    <div className="w-full max-w-2xl bg-white/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20">
-       <h1 className="text-4xl font-light text-gray-900 mb-4">Phase 1: Find & Fund</h1>
-       <p className="text-gray-600 mb-8">Analyzing projections and fractional liquidity for {deal.address}.</p>
-       <div className="bg-white/80 rounded-xl p-6 border border-gray-200 text-left">
-          <p className="text-sm font-medium text-gray-500 uppercase">Purchase Matrix</p>
+    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20">
+       <h1 className="text-4xl font-light text-text-primary mb-4">Phase 1: Find & Fund</h1>
+       <p className="text-text-secondary mb-8">Analyzing projections and fractional liquidity for {deal.address}.</p>
+       <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent text-left">
+          <p className="text-sm font-medium text-text-secondary uppercase">Purchase Matrix</p>
           <p className="text-3xl font-light mt-2">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
        </div>
     </div>
@@ -154,16 +154,16 @@ function StaticPhase1({ deal }: { deal: Project }) {
 
 function StaticPhase2({ deal }: { deal: Project }) {
   return (
-    <div className="w-full max-w-2xl bg-white/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
-       <h1 className="text-4xl font-light text-gray-900 mb-4 text-center">Phase 2: Acquisition</h1>
-       <p className="text-gray-600 mb-8 text-center">Clearing Web3 records and legal hurdles via the Closing Room.</p>
+    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
+       <h1 className="text-4xl font-light text-text-primary mb-4 text-center">Phase 2: Acquisition</h1>
+       <p className="text-text-secondary mb-8 text-center">Clearing Web3 records and legal hurdles via the Closing Room.</p>
        <div className="space-y-4">
-          <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
-             <span className="font-medium text-gray-700">Digital Title Search</span>
+          <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
+             <span className="font-medium text-text-primary">Digital Title Search</span>
              <CheckCircle className="text-green-500 w-5 h-5" />
           </div>
-          <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
-             <span className="font-medium text-gray-700">Closing Disclosures</span>
+          <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
+             <span className="font-medium text-text-primary">Closing Disclosures</span>
              <CheckCircle className="text-green-500 w-5 h-5" />
           </div>
        </div>
@@ -212,28 +212,28 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   const generalPrc = totalRehab > 0 ? (general / totalRehab) * 100 : 0;
 
   return (
-    <div className="w-full max-w-3xl bg-white/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
-       <h1 className="text-4xl font-light text-gray-900 mb-4">Phase 3: Renovation</h1>
-       <p className="text-gray-600 mb-8">Execute rehab workflows and triage General Contractor draw requests.</p>
+    <div className="w-full max-w-3xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
+       <h1 className="text-4xl font-light text-text-primary mb-4">Phase 3: Renovation</h1>
+       <p className="text-text-secondary mb-8">Execute rehab workflows and triage General Contractor draw requests.</p>
        
        <div className="bg-black/90 text-white rounded-xl p-8 border border-gray-700 shadow-xl flex flex-col items-center">
           
           {/* Top Level Summary (Always Visible) */}
           <div className="w-full flex justify-between items-center mb-6">
              <div>
-               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center">
+               <p className="text-xs font-bold text-text-secondary uppercase tracking-widest flex items-center">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
                   Live Approved Rehab Spend
                </p>
                <p className="text-4xl font-light mt-2 flex items-baseline">
-                 ${totalRehab.toLocaleString()} <span className="text-sm text-gray-400 ml-2">/ ${deal.financials.projectedRehabCost?.toLocaleString()} bgt</span>
+                 ${totalRehab.toLocaleString()} <span className="text-sm text-text-secondary ml-2">/ ${deal.financials.projectedRehabCost?.toLocaleString()} bgt</span>
                </p>
              </div>
              {canAdd && (
                 <button 
                   onClick={addRealExpense} 
                   disabled={isAdding}
-                  className="bg-white text-black text-sm font-medium px-5 py-2.5 rounded-md hover:bg-gray-200 transition shadow-sm disabled:opacity-50"
+                  className="bg-bg-surface text-text-primary text-sm font-medium px-5 py-2.5 rounded-md hover:bg-gray-200 transition shadow-sm disabled:opacity-50"
                 >
                    {isAdding ? 'Syncing...' : 'Add Field Entry ($2.5k)'}
                 </button>
@@ -242,7 +242,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
 
           {/* Scalable Visual Indicator: Horizontal Distribution Bar */}
           <div className="w-full mb-6">
-             <div className="flex justify-between text-xs text-gray-400 uppercase tracking-widest mb-2 font-medium">
+             <div className="flex justify-between text-xs text-text-secondary uppercase tracking-widest mb-2 font-medium">
                <span>Cost Distribution</span>
              </div>
              <div className="w-full h-3 bg-gray-800 rounded-full flex overflow-hidden">
@@ -267,7 +267,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           <div className="w-full border-t border-gray-700/50 pt-4">
              <button 
                 onClick={() => setIsLedgerExpanded(!isLedgerExpanded)}
-                className="w-full flex items-center justify-between text-xs text-gray-400 hover:text-white uppercase tracking-widest font-bold transition-colors"
+                className="w-full flex items-center justify-between text-xs text-text-secondary hover:text-white uppercase tracking-widest font-bold transition-colors"
              >
                 <span>{isLedgerExpanded ? 'Hide Itemized Ledger' : 'View Itemized Ledger'}</span>
                 <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${isLedgerExpanded ? 'rotate-90' : ''}`} />
@@ -278,7 +278,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                 {costs.length > 0 ? (
                   <div className="bg-pw-black rounded-lg border border-gray-800 overflow-y-auto max-h-80">
                      <table className="w-full text-left text-sm">
-                       <thead className="bg-pw-black text-gray-400 text-xs uppercase tracking-widest sticky top-0">
+                       <thead className="bg-pw-black text-text-secondary text-xs uppercase tracking-widest sticky top-0">
                          <tr>
                             <th className="px-4 py-3 font-medium">Description</th>
                             <th className="px-4 py-3 font-medium">Cost</th>
@@ -298,7 +298,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                      </table>
                   </div>
                 ) : (
-                  <p className="text-gray-500 text-sm mt-4 text-center">No approved costs registered yet.</p>
+                  <p className="text-text-secondary text-sm mt-4 text-center">No approved costs registered yet.</p>
                 )}
              </div>
           </div>

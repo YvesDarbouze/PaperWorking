@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function InvestLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+    <div className="min-h-screen bg-bg-transactional font-sans">
       {children}
     </div>
   );

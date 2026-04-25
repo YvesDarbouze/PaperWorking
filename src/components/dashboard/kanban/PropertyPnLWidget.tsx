@@ -20,23 +20,23 @@ function Row({ label, value, emphasis, positive, negative }: {
   negative?: boolean;
 }) {
   const valueClass = emphasis
-    ? 'text-sm font-black text-pw-black tabular-nums'
+    ? 'text-sm font-black text-text-primary tabular-nums'
     : positive
     ? 'text-xs font-black text-green-700 tabular-nums'
     : negative
     ? 'text-xs font-black text-red-600 tabular-nums'
-    : 'text-xs font-light text-pw-black tabular-nums';
+    : 'text-xs font-light text-text-primary tabular-nums';
 
   return (
     <div className="flex items-center justify-between">
-      <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">{label}</span>
+      <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">{label}</span>
       <span className={valueClass}>{value}</span>
     </div>
   );
 }
 
 function Divider() {
-  return <div className="border-t border-pw-border/20" />;
+  return <div className="border-t border-border-accent/20" />;
 }
 
 function fmt(n: number) {
@@ -55,8 +55,8 @@ function FlipView({ deal }: { deal: Project }) {
       {/* ARV & MAO */}
       <Row label="ARV" value={fmt(m.arv)} />
       <div className="flex items-center justify-between">
-        <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">MAO</span>
-        <span className={`text-xs tabular-nums font-black flex items-center gap-1 ${m.maoViolated ? 'text-red-600' : 'text-pw-black'}`}>
+        <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">MAO</span>
+        <span className={`text-xs tabular-nums font-black flex items-center gap-1 ${m.maoViolated ? 'text-red-600' : 'text-text-primary'}`}>
           {fmt(m.mao)}
           {m.maoViolated && <AlertTriangle className="w-3 h-3 text-red-500" />}
         </span>
@@ -73,7 +73,7 @@ function FlipView({ deal }: { deal: Project }) {
           negative={m.rehabActual > m.rehabBudget}
         />
         {/* Progress bar */}
-        <div className="h-0.5 w-full bg-gray-100">
+        <div className="h-0.5 w-full bg-bg-primary">
           <div
             className={`h-full transition-all duration-700 ${m.rehabPct >= 1 ? 'bg-red-500' : 'bg-pw-black'}`}
             style={{ width: `${Math.min(m.rehabPct * 100, 100)}%` }}
@@ -153,14 +153,14 @@ export default function PropertyPnLWidget({ deal, mode, trackMode, onClose }: Pr
   const isExpanded = mode === 'expanded';
 
   return (
-    <div className={`bg-gray-50 space-y-3 ${isExpanded ? 'p-6' : 'p-4'}`}>
+    <div className={`bg-bg-primary space-y-3 ${isExpanded ? 'p-6' : 'p-4'}`}>
       {isExpanded && (
         <div className="flex items-center justify-between mb-1">
-          <p className="text-[10px] font-black text-pw-black uppercase tracking-[0.2em]">
+          <p className="text-[10px] font-black text-text-primary uppercase tracking-[0.2em]">
             {trackMode === 'FLIP' ? 'Flip Analysis' : 'Hold Analysis'}
           </p>
           {onClose && (
-            <button onClick={onClose} className="text-pw-muted hover:text-pw-black transition-colors">
+            <button onClick={onClose} className="text-text-secondary hover:text-text-primary transition-colors">
               <X className="w-3.5 h-3.5" />
             </button>
           )}

@@ -25,7 +25,7 @@ export default function FieldManagerPage() {
   }, [projects, currentProject, setDeal]);
 
   if (!currentProject) {
-    return <div className="p-8 text-center text-gray-400">No active properties available for Field Management.</div>;
+    return <div className="p-8 text-center text-text-secondary">No active properties available for Field Management.</div>;
   }
 
   const rehabTasks = currentProject.financials.rehabTasks || [
@@ -86,34 +86,34 @@ export default function FieldManagerPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-6 pb-24 bg-gray-50 min-h-screen">
+    <div className="max-w-md mx-auto space-y-6 pb-24 bg-bg-primary min-h-screen">
       {/* Mobile-centric Header */}
-      <div className="bg-white border-b px-4 py-4 sticky top-0 z-10 flex items-center shadow-sm">
-        <Link href="/dashboard" className="mr-3 p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+      <div className="bg-bg-surface border-b px-4 py-4 sticky top-0 z-10 flex items-center shadow-sm">
+        <Link href="/dashboard" className="mr-3 p-2 rounded-full bg-bg-primary hover:bg-gray-200">
+          <ArrowLeft className="w-5 h-5 text-text-primary" />
         </Link>
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">Field Manager</h1>
-          <p className="text-xs text-gray-500 font-medium truncate w-[250px]">{currentProject.address}</p>
+          <h1 className="text-xl font-bold tracking-tight text-text-primary">Field Manager</h1>
+          <p className="text-xs text-text-secondary font-medium truncate w-[250px]">{currentProject.address}</p>
         </div>
       </div>
 
       <div className="px-4 space-y-6">
         
         {/* Receipt Upload Zone */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+        <div className="bg-bg-surface rounded-2xl shadow-sm border border-border-accent p-5">
           <div className="flex items-center space-x-2 mb-4">
             <UploadCloud className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-800">Scan Receipt</h2>
+            <h2 className="text-lg font-semibold text-text-primary">Scan Receipt</h2>
           </div>
           
           <form onSubmit={handleReceiptUpload} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Budget Category</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Budget Category</label>
               <select 
                 value={receiptCategory}
                 onChange={(e) => setReceiptCategory(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-bg-primary border border-border-accent rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Plumbing">Plumbing</option>
                 <option value="Electrical">Electrical</option>
@@ -125,18 +125,18 @@ export default function FieldManagerPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Total Amount ($)</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Total Amount ($)</label>
               <input 
                 type="number" 
                 required
                 placeholder="e.g. 542.50"
                 value={receiptAmount}
                 onChange={(e) => setReceiptAmount(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-lg font-mono placeholder-gray-300 focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-bg-primary border border-border-accent rounded-lg p-3 text-lg font-mono placeholder-gray-300 focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center bg-gray-50 text-gray-400 cursor-pointer hover:bg-gray-100 transition">
+            <div className="border-2 border-dashed border-border-accent rounded-lg p-6 flex flex-col items-center justify-center bg-bg-primary text-text-secondary cursor-pointer hover:bg-bg-primary transition">
               <Camera className="w-8 h-8 mb-2" />
               <span className="text-xs font-medium text-center">Tap to snap photo<br/>or select PDF</span>
             </div>
@@ -153,11 +153,11 @@ export default function FieldManagerPage() {
         </div>
 
         {/* Linear Gantt/Task View */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mt-6">
+        <div className="bg-bg-surface rounded-2xl shadow-sm border border-border-accent p-5 mt-6">
           <div className="flex items-center justify-between mb-4">
              <div className="flex items-center space-x-2">
-               <ClipboardList className="w-5 h-5 text-gray-800" />
-               <h2 className="text-lg font-semibold text-gray-800">Rehab Timeline</h2>
+               <ClipboardList className="w-5 h-5 text-text-primary" />
+               <h2 className="text-lg font-semibold text-text-primary">Rehab Timeline</h2>
              </div>
              {rehabTasks.some(t => t.escrowDrawRequested) && (
                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200">
@@ -168,19 +168,19 @@ export default function FieldManagerPage() {
           
           <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 before:to-transparent">
             {rehabTasks.map((task, idx) => (
-              <div key={task.id} className="relative flex items-center justify-between z-10 p-3 bg-white border rounded-xl shadow-sm">
+              <div key={task.id} className="relative flex items-center justify-between z-10 p-3 bg-bg-surface border rounded-xl shadow-sm">
                  <div className="flex items-center space-x-3">
                    {task.status === 'Complete' ? (
-                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 bg-white" />
+                     <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 bg-bg-surface" />
                    ) : task.status === 'In Progress' ? (
-                     <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-blue-200 animate-spin flex-shrink-0 bg-white"></div>
+                     <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-blue-200 animate-spin flex-shrink-0 bg-bg-surface"></div>
                    ) : (
-                     <div className="w-6 h-6 rounded-full border-[3px] border-gray-200 flex-shrink-0 bg-white"></div>
+                     <div className="w-6 h-6 rounded-full border-[3px] border-border-accent flex-shrink-0 bg-bg-surface"></div>
                    )}
                    
                    <div>
-                     <p className={`text-sm font-semibold ${task.status === 'Complete' ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</p>
-                     <p className="text-xs uppercase tracking-wider text-gray-500 font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
+                     <p className={`text-sm font-semibold ${task.status === 'Complete' ? 'text-text-secondary line-through' : 'text-text-primary'}`}>{task.title}</p>
+                     <p className="text-xs uppercase tracking-wider text-text-secondary font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
                    </div>
                  </div>
 

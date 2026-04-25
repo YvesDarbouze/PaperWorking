@@ -34,7 +34,7 @@ export default function ReportsPage() {
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
       
       {/* ── Header ── */}
-      <div className="flex justify-between items-end border-b border-gray-100 pb-8">
+      <div className="flex justify-between items-end border-b border-border-accent pb-8">
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <div className="bg-emerald-600 p-1.5 rounded-lg">
@@ -42,17 +42,17 @@ export default function ReportsPage() {
             </div>
             <span className="text-xs font-bold text-emerald-600 uppercase tracking-[0.2em]">Institutional Intelligence</span>
           </div>
-          <h1 className="text-4xl font-light text-gray-900 tracking-tight">Performance Snapshots</h1>
-          <p className="text-gray-400 font-medium mt-2">Aggregated yields and capital deployment analysis.</p>
+          <h1 className="text-4xl font-light text-text-primary tracking-tight">Performance Snapshots</h1>
+          <p className="text-text-secondary font-medium mt-2">Aggregated yields and capital deployment analysis.</p>
         </div>
 
-        <div className="flex bg-gray-100 p-1 rounded-xl">
+        <div className="flex bg-bg-primary p-1 rounded-xl">
           {(['monthly', 'quarterly', 'yearly'] as const).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-6 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all ${
-                period === p ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                period === p ? 'bg-bg-surface text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-secondary'
               }`}
             >
               {p}
@@ -82,67 +82,67 @@ export default function ReportsPage() {
                 <ArrowUpRight className="w-3 h-3" />
                 <span>+12.4% vs Previous</span>
               </div>
-              <span className="text-xs text-gray-500 font-medium">Across {data?.count || 0} Assets</span>
+              <span className="text-xs text-text-secondary font-medium">Across {data?.count || 0} Assets</span>
             </div>
           </div>
 
           {/* Capital Deployed Card */}
-          <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+          <div className="bg-bg-surface rounded-3xl border border-border-accent p-8 shadow-sm">
             <div className="bg-indigo-50 w-10 h-10 rounded-xl flex items-center justify-center mb-6">
               <DollarSign className="w-5 h-5 text-indigo-600" />
             </div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Total Capex Injected</p>
-            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">Total Capex Injected</p>
+            <h3 className="text-2xl font-bold text-text-primary tracking-tight">
               {formatCentsToDollars(data?.summary?.totalCosts || 0)}
             </h3>
-            <p className="text-xs text-gray-400 mt-2 font-medium italic">Rehab + Operational Reserves</p>
+            <p className="text-xs text-text-secondary mt-2 font-medium italic">Rehab + Operational Reserves</p>
           </div>
 
           {/* Liquidity Velocity Card */}
-          <div className="bg-white rounded-3xl border border-gray-100 p-8 shadow-sm">
+          <div className="bg-bg-surface rounded-3xl border border-border-accent p-8 shadow-sm">
             <div className="bg-amber-50 w-10 h-10 rounded-xl flex items-center justify-center mb-6">
               <Calendar className="w-5 h-5 text-amber-600" />
             </div>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Liquidity Velocity</p>
-            <h3 className="text-2xl font-bold text-gray-900 tracking-tight">84 Days</h3>
-            <p className="text-xs text-gray-400 mt-2 font-medium italic">Avg. days to settle lifecycle</p>
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">Liquidity Velocity</p>
+            <h3 className="text-2xl font-bold text-text-primary tracking-tight">84 Days</h3>
+            <p className="text-xs text-text-secondary mt-2 font-medium italic">Avg. days to settle lifecycle</p>
           </div>
 
           {/* Detailed Breakdown Section */}
-          <div className="lg:col-span-4 bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-            <div className="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
-              <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Asset Category Performance</h4>
+          <div className="lg:col-span-4 bg-bg-surface rounded-3xl border border-border-accent overflow-hidden shadow-sm">
+            <div className="px-8 py-6 border-b border-gray-50 bg-bg-primary/50 flex justify-between items-center">
+              <h4 className="text-sm font-bold text-text-primary uppercase tracking-widest">Asset Category Performance</h4>
               <button className="text-xs font-bold text-indigo-600 hover:underline uppercase tracking-widest">Export CSV</button>
             </div>
             <div className="p-8">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-12">
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Core Residential</p>
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Core Residential</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-gray-900">$2.4M</span>
+                    <span className="text-3xl font-light text-text-primary">$2.4M</span>
                     <span className="text-xs text-emerald-500 font-bold mb-1">+4.2%</span>
                   </div>
-                  <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-500 w-[65%]"></div>
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Value-Add Multifamily</p>
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Value-Add Multifamily</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-gray-900">$1.1M</span>
+                    <span className="text-3xl font-light text-text-primary">$1.1M</span>
                     <span className="text-xs text-rose-500 font-bold mb-1">-0.8%</span>
                   </div>
-                  <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">
                     <div className="h-full bg-amber-500 w-[42%]"></div>
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Institutional REO</p>
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Institutional REO</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-gray-900">$840K</span>
+                    <span className="text-3xl font-light text-text-primary">$840K</span>
                     <span className="text-xs text-emerald-500 font-bold mb-1">+1.5%</span>
                   </div>
-                  <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">
                     <div className="h-full bg-indigo-500 w-[24%]"></div>
                   </div>
                 </div>

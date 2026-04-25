@@ -45,12 +45,12 @@ export default function InternalHierarchy() {
 
   if (accountTier === 'Individual') {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-sm font-semibold text-gray-900 tracking-tight flex items-center gap-2 mb-2">
+      <div className="bg-bg-surface rounded-xl border border-border-accent shadow-sm p-6">
+        <h3 className="text-sm font-semibold text-text-primary tracking-tight flex items-center gap-2 mb-2">
           <Crown className="w-4 h-4 text-amber-500" />
           Internal Hierarchy
         </h3>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-text-secondary">
           Upgrade to a Team account to assign Admin and Deal Lead roles to members.
         </p>
       </div>
@@ -59,12 +59,12 @@ export default function InternalHierarchy() {
 
   if (activeMembers.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <h3 className="text-sm font-semibold text-gray-900 tracking-tight flex items-center gap-2 mb-2">
+      <div className="bg-bg-surface rounded-xl border border-border-accent shadow-sm p-6">
+        <h3 className="text-sm font-semibold text-text-primary tracking-tight flex items-center gap-2 mb-2">
           <Crown className="w-4 h-4 text-amber-500" />
           Internal Hierarchy
         </h3>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-text-secondary">
           No team members yet. Invite members from the Account Tier settings above.
         </p>
       </div>
@@ -85,26 +85,26 @@ export default function InternalHierarchy() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <div className="px-6 pt-6 pb-4 border-b border-gray-100">
-        <h3 className="text-sm font-semibold text-gray-900 tracking-tight flex items-center gap-2">
+    <div className="bg-bg-surface rounded-xl border border-border-accent shadow-sm overflow-hidden">
+      <div className="px-6 pt-6 pb-4 border-b border-border-accent">
+        <h3 className="text-sm font-semibold text-text-primary tracking-tight flex items-center gap-2">
           <Crown className="w-4 h-4 text-amber-500" />
           Internal Hierarchy
         </h3>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <p className="text-sm text-text-secondary mt-0.5">
           Assign internal roles. Admins control billing; Deal Leads run specific properties.
         </p>
       </div>
 
       {/* Role Legend */}
-      <div className="px-6 py-3 bg-gray-50/60 border-b border-gray-100 flex gap-6">
+      <div className="px-6 py-3 bg-bg-primary/60 border-b border-border-accent flex gap-6">
         {(['Admin', 'Deal Lead'] as InternalRole[]).map(role => (
           <div key={role} className="flex items-center gap-2">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${ROLE_META[role].bg} ${ROLE_META[role].color}`}>
               {ROLE_META[role].icon}
               {role}
             </span>
-            <span className="text-xs text-gray-400">{ROLE_META[role].desc}</span>
+            <span className="text-xs text-text-secondary">{ROLE_META[role].desc}</span>
           </div>
         ))}
       </div>
@@ -118,14 +118,14 @@ export default function InternalHierarchy() {
 
           return (
             <div key={member.id}>
-              <div className="flex items-center justify-between px-6 py-4 hover:bg-gray-50/50 transition">
+              <div className="flex items-center justify-between px-6 py-4 hover:bg-bg-primary/50 transition">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-bold">
                     {member.displayName.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-gray-900">{member.displayName}</p>
-                    <p className="text-xs text-gray-400">{member.email}</p>
+                    <p className="text-xs font-medium text-text-primary">{member.displayName}</p>
+                    <p className="text-xs text-text-secondary">{member.email}</p>
                   </div>
                 </div>
 
@@ -150,7 +150,7 @@ export default function InternalHierarchy() {
                   {member.internalRole === 'Deal Lead' && projects.length > 0 && (
                     <button
                       onClick={() => setExpandedMember(isExpanded ? null : member.id)}
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-text-secondary bg-bg-primary rounded-lg hover:bg-gray-200 transition"
                     >
                       {assignedCount} deal{assignedCount !== 1 ? 's' : ''}
                       <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -161,8 +161,8 @@ export default function InternalHierarchy() {
 
               {/* Deal Assignment Panel (expanded) */}
               {isExpanded && member.internalRole === 'Deal Lead' && (
-                <div className="px-6 pb-4 bg-gray-50/40">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <div className="px-6 pb-4 bg-bg-primary/40">
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-2">
                     Assign Deals
                   </p>
                   <div className="grid grid-cols-2 gap-2">
@@ -175,10 +175,10 @@ export default function InternalHierarchy() {
                           className={`flex items-center gap-2 p-2.5 rounded-lg border text-left text-xs transition-all ${
                             isAssigned
                               ? 'border-gray-900 bg-gray-900 text-white'
-                              : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                              : 'border-border-accent bg-bg-surface text-text-primary hover:border-border-accent'
                           }`}
                         >
-                          <div className={`w-2 h-2 rounded-full ${isAssigned ? 'bg-white' : 'bg-gray-300'}`} />
+                          <div className={`w-2 h-2 rounded-full ${isAssigned ? 'bg-bg-surface' : 'bg-gray-300'}`} />
                           <span className="truncate font-medium">{deal.propertyName}</span>
                         </button>
                       );

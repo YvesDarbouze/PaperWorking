@@ -89,19 +89,19 @@ export default function InvestorEquityTable({ projectId }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-bg-surface rounded-xl border border-border-accent shadow-sm overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-6 pb-4 flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 tracking-tight flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-text-primary tracking-tight flex items-center gap-2">
             <Users className="w-4 h-4 text-indigo-600" />
             Investor Equity Table
           </h3>
-          <p className="text-sm text-gray-500 mt-0.5">Cap table for this deal.</p>
+          <p className="text-sm text-text-secondary mt-0.5">Cap table for this deal.</p>
         </div>
         <div className="text-right">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Allocated</p>
-          <p className={`text-lg font-light ${totalEquity > 100 ? 'text-red-600' : 'text-gray-900'}`}>
+          <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">Allocated</p>
+          <p className={`text-lg font-light ${totalEquity > 100 ? 'text-red-600' : 'text-text-primary'}`}>
             {totalEquity.toFixed(1)}%
           </p>
         </div>
@@ -110,7 +110,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
       {/* Stacked Equity Bar */}
       {investors.length > 0 && (
         <div className="mx-6 mb-4">
-          <div className="w-full h-6 bg-gray-100 rounded-full overflow-hidden flex">
+          <div className="w-full h-6 bg-bg-primary rounded-full overflow-hidden flex">
             {investors.map((inv, i) => (
               <div
                 key={inv.id}
@@ -127,10 +127,10 @@ export default function InvestorEquityTable({ projectId }: Props) {
             ))}
             {totalEquity < 100 && (
               <div
-                className="bg-gray-100 flex items-center justify-center"
+                className="bg-bg-primary flex items-center justify-center"
                 style={{ width: `${100 - totalEquity}%` }}
               >
-                <span className="text-xs text-gray-400 font-medium">
+                <span className="text-xs text-text-secondary font-medium">
                   {(100 - totalEquity).toFixed(1)}% unallocated
                 </span>
               </div>
@@ -140,20 +140,20 @@ export default function InvestorEquityTable({ projectId }: Props) {
       )}
 
       {/* Table */}
-      <div className="border-t border-gray-100">
+      <div className="border-t border-border-accent">
         <table className="w-full text-left">
           <thead>
-            <tr className="bg-gray-50/80">
-              <th className="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest">Investor</th>
-              <th className="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Equity %</th>
-              <th className="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Contribution</th>
-              <th className="px-6 py-3 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Status</th>
+            <tr className="bg-bg-primary/80">
+              <th className="px-6 py-3 text-xs font-bold text-text-secondary uppercase tracking-widest">Investor</th>
+              <th className="px-6 py-3 text-xs font-bold text-text-secondary uppercase tracking-widest text-right">Equity %</th>
+              <th className="px-6 py-3 text-xs font-bold text-text-secondary uppercase tracking-widest text-right">Contribution</th>
+              <th className="px-6 py-3 text-xs font-bold text-text-secondary uppercase tracking-widest text-right">Status</th>
               <th className="px-4 py-3 w-10" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {investors.map((inv, i) => (
-              <tr key={inv.id} className="hover:bg-gray-50/50 transition">
+              <tr key={inv.id} className="hover:bg-bg-primary/50 transition">
                 <td className="px-6 py-3.5">
                   <div className="flex items-center gap-3">
                     <div
@@ -164,20 +164,20 @@ export default function InvestorEquityTable({ projectId }: Props) {
                       {inv.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-900">{inv.name}</p>
-                      <p className="text-xs text-gray-400">{inv.email}</p>
+                      <p className="text-xs font-medium text-text-primary">{inv.name}</p>
+                      <p className="text-xs text-text-secondary">{inv.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-3.5 text-right">
-                  <span className="text-sm font-medium text-gray-900 flex items-center justify-end gap-1">
-                    <Percent className="w-3 h-3 text-gray-400" />
+                  <span className="text-sm font-medium text-text-primary flex items-center justify-end gap-1">
+                    <Percent className="w-3 h-3 text-text-secondary" />
                     {inv.equityPercentage.toFixed(1)}
                   </span>
                 </td>
                 <td className="px-6 py-3.5 text-right">
-                  <span className="text-sm font-medium text-gray-900 flex items-center justify-end gap-1">
-                    <DollarSign className="w-3 h-3 text-gray-400" />
+                  <span className="text-sm font-medium text-text-primary flex items-center justify-end gap-1">
+                    <DollarSign className="w-3 h-3 text-text-secondary" />
                     {inv.contributionAmount.toLocaleString()}
                   </span>
                 </td>
@@ -197,7 +197,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 <td className="px-4 py-3.5">
                   <button
                     onClick={() => handleRemove(inv.id)}
-                    className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 transition"
+                    className="p-1 rounded hover:bg-red-50 text-text-secondary hover:text-red-500 transition"
                     title="Remove investor"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -211,7 +211,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
               <tr>
                 <td colSpan={5} className="px-6 py-10 text-center">
                   <Users className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400">No investors assigned to this deal yet.</p>
+                  <p className="text-sm text-text-secondary">No investors assigned to this deal yet.</p>
                 </td>
               </tr>
             )}
@@ -226,14 +226,14 @@ export default function InvestorEquityTable({ projectId }: Props) {
                       value={newName}
                       onChange={(e) => setNewName(e.target.value)}
                       placeholder="Name"
-                      className="w-28 border border-gray-200 rounded px-2 py-1.5 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                      className="w-28 border border-border-accent rounded px-2 py-1.5 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     />
                     <input
                       type="email"
                       value={newEmail}
                       onChange={(e) => setNewEmail(e.target.value)}
                       placeholder="Email"
-                      className="w-36 border border-gray-200 rounded px-2 py-1.5 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                      className="w-36 border border-border-accent rounded px-2 py-1.5 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                     />
                   </div>
                 </td>
@@ -245,7 +245,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                     placeholder="%"
                     min="0"
                     max="100"
-                    className="w-16 border border-gray-200 rounded px-2 py-1.5 text-xs text-right focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-16 border border-border-accent rounded px-2 py-1.5 text-xs text-right focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </td>
                 <td className="px-6 py-3 text-right">
@@ -255,7 +255,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                     onChange={(e) => setNewAmount(e.target.value)}
                     placeholder="$0"
                     min="0"
-                    className="w-24 border border-gray-200 rounded px-2 py-1.5 text-xs text-right focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-24 border border-border-accent rounded px-2 py-1.5 text-xs text-right focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </td>
                 <td className="px-6 py-3 text-right">
@@ -269,7 +269,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 <td className="px-4 py-3">
                   <button
                     onClick={() => { setShowAddRow(false); setNewName(''); setNewEmail(''); setNewPercent(''); setNewAmount(''); }}
-                    className="p-1 text-gray-400 hover:text-gray-600"
+                    className="p-1 text-text-secondary hover:text-text-secondary"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -281,9 +281,9 @@ export default function InvestorEquityTable({ projectId }: Props) {
       </div>
 
       {/* Footer Actions */}
-      <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/40">
-        <div className="text-sm text-gray-500">
-          <span className="font-semibold text-gray-900">${totalContribution.toLocaleString()}</span> total capital committed
+      <div className="px-6 py-4 border-t border-border-accent flex items-center justify-between bg-bg-primary/40">
+        <div className="text-sm text-text-secondary">
+          <span className="font-semibold text-text-primary">${totalContribution.toLocaleString()}</span> total capital committed
         </div>
         {!showAddRow && (
           <button

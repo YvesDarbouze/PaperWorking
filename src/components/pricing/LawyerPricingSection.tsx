@@ -18,14 +18,14 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
       {/* Section Header */}
       <div className="text-center mb-10">
         <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-2">Also on PaperWorking</p>
-        <h2 className="text-3xl font-medium tracking-tight text-black">Appraisers & Inspectors.</h2>
+        <h2 className="text-3xl font-medium tracking-tight text-text-primary">Appraisers & Inspectors.</h2>
         <p className="text-sm text-phase-3 mt-2 max-w-lg mx-auto">
           Get matched with investors who need pre-purchase inspections and certified appraisals on active projects.
         </p>
       </div>
 
       {/* Single Centered Card */}
-      <div className="border border-phase-1 bg-white shadow-sm overflow-hidden max-w-lg mx-auto">
+      <div className="border border-phase-1 bg-bg-surface shadow-sm overflow-hidden max-w-lg mx-auto">
         <div className="p-8 bg-dashboard">
           <div className="inline-flex items-center space-x-2 text-phase-4 font-bold uppercase tracking-widest text-xs mb-4">
             <ClipboardCheck className="w-4 h-4" />
@@ -34,20 +34,20 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
 
           <div className="space-y-3 mt-2">
             <div className="flex items-start">
-              <div className="bg-white p-1.5 border border-phase-1 shadow-sm mr-3 text-phase-4">
+              <div className="bg-bg-surface p-1.5 border border-phase-1 shadow-sm mr-3 text-phase-4">
                 <Home className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="font-medium text-black text-sm">Property Inspection Requests</h4>
+                <h4 className="font-medium text-text-primary text-sm">Property Inspection Requests</h4>
                 <p className="text-xs text-phase-3">Receive inspection requests tied to active acquisitions in your area.</p>
               </div>
             </div>
             <div className="flex items-start">
-              <div className="bg-white p-1.5 border border-phase-1 shadow-sm mr-3 text-phase-4">
+              <div className="bg-bg-surface p-1.5 border border-phase-1 shadow-sm mr-3 text-phase-4">
                 <ClipboardCheck className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="font-medium text-black text-sm">Report Upload & Verification</h4>
+                <h4 className="font-medium text-text-primary text-sm">Report Upload & Verification</h4>
                 <p className="text-xs text-phase-3">Upload appraisal reports directly into the investor&apos;s deal room.</p>
               </div>
             </div>
@@ -56,7 +56,7 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
 
         <div className="p-8 flex flex-col items-center text-center border-t border-dashboard">
           <div className="mb-4">
-            <span className="text-4xl font-medium text-black">$59</span>
+            <span className="text-4xl font-medium text-text-primary">$59</span>
             <span className="text-sm font-medium text-phase-2 ml-1">/mo flat fee</span>
           </div>
           <button

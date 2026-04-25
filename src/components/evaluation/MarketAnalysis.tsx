@@ -49,11 +49,11 @@ export default function MarketAnalysis() {
   const hottest = [...neighborhoods].sort((a, b) => b.heatScore - a.heatScore)[0];
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
-          <BarChart3 className="w-5 h-5 text-gray-700" />
-          <h3 className="text-lg font-medium tracking-tight text-gray-900">Market Analysis</h3>
+          <BarChart3 className="w-5 h-5 text-text-primary" />
+          <h3 className="text-lg font-medium tracking-tight text-text-primary">Market Analysis</h3>
         </div>
         <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
           Emerging Neighborhoods
@@ -64,11 +64,11 @@ export default function MarketAnalysis() {
       <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg p-4 mb-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-widest text-gray-400 mb-1 flex items-center">
+            <p className="text-xs uppercase tracking-widest text-text-secondary mb-1 flex items-center">
               <Star className="w-3 h-3 mr-1 text-yellow-400" /> Top Emerging Market
             </p>
             <p className="text-lg font-semibold text-white">{hottest.name}</p>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-text-secondary mt-0.5">
               ${hottest.medianPrice.toLocaleString()} median · {hottest.daysOnMarket} DOM
             </p>
           </div>
@@ -92,15 +92,15 @@ export default function MarketAnalysis() {
             onClick={() => setSelectedId(selectedId === n.id ? null : n.id)}
             className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition ${
               selectedId === n.id
-                ? 'border-gray-400 bg-gray-50'
-                : 'border-gray-100 hover:bg-gray-50'
+                ? 'border-gray-400 bg-bg-primary'
+                : 'border-border-accent hover:bg-bg-primary'
             }`}
           >
             <div className="flex items-center space-x-3">
-              <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-text-secondary flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-gray-900">{n.name}</p>
-                <p className="text-xs text-gray-500">${n.medianPrice.toLocaleString()} median</p>
+                <p className="text-sm font-medium text-text-primary">{n.name}</p>
+                <p className="text-xs text-text-secondary">${n.medianPrice.toLocaleString()} median</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -109,7 +109,7 @@ export default function MarketAnalysis() {
                   <TrendingUp className="w-3 h-3 mr-0.5" />
                   {n.appreciation}%
                 </div>
-                <p className="text-xs text-gray-400">{n.daysOnMarket} DOM</p>
+                <p className="text-xs text-text-secondary">{n.daysOnMarket} DOM</p>
               </div>
               <HeatBar score={n.heatScore} />
             </div>

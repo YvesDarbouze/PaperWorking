@@ -13,21 +13,21 @@ const TICKER_ITEMS = [
 
 export default function NewsTicker() {
   return (
-    <div className="w-full bg-gray-50 border-b border-gray-100 py-2 overflow-hidden select-none">
+    <div className="w-full bg-bg-primary border-b border-border-accent py-2 overflow-hidden select-none">
       <div className="flex whitespace-nowrap animate-marquee">
         {/* We double the items to create a seamless loop */}
         {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
           <div key={idx} className="flex items-center mx-12">
-            <span className="text-xs font-black text-gray-400 uppercase tracking-widest mr-3">
+            <span className="text-xs font-black text-text-secondary uppercase tracking-widest mr-3">
               {item.label}
             </span>
-            <span className="text-xs font-bold text-gray-900 tracking-tight">
+            <span className="text-xs font-bold text-text-primary tracking-tight">
               {item.value}
             </span>
             {item.change && (
               <span className={`ml-2 text-xs font-bold ${
                 item.trend === 'up' ? 'text-red-500' : 
-                item.trend === 'down' ? 'text-emerald-500' : 'text-gray-400'
+                item.trend === 'down' ? 'text-emerald-500' : 'text-text-secondary'
               }`}>
                 {item.trend === 'up' ? '↑' : item.trend === 'down' ? '↓' : ''} {item.change}
               </span>

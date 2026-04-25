@@ -134,17 +134,17 @@ export default function BalanceSheet() {
         <div
           key={i}
           className={`flex items-center justify-between px-4 py-2.5 rounded-lg transition ${
-            line.bold ? 'bg-gray-50' : 'hover:bg-gray-50'
+            line.bold ? 'bg-bg-primary' : 'hover:bg-bg-primary'
           }`}
         >
-          <span className={`flex items-center gap-2 ${line.indent ? 'ml-6' : ''} ${line.bold ? 'font-semibold text-gray-900 text-sm' : 'text-gray-600 text-sm'}`}>
+          <span className={`flex items-center gap-2 ${line.indent ? 'ml-6' : ''} ${line.bold ? 'font-semibold text-text-primary text-sm' : 'text-text-secondary text-sm'}`}>
             {line.bold && !line.indent && <span className="flex-shrink-0">{icon}</span>}
             {line.label}
           </span>
           <span className={`font-mono text-sm ${
             line.highlight ? (bs.ownerEquity >= 0 ? 'text-emerald-700 font-bold' : 'text-red-600 font-bold') :
-            line.bold ? 'font-semibold text-gray-900' :
-            'text-gray-700'
+            line.bold ? 'font-semibold text-text-primary' :
+            'text-text-primary'
           }`}>
             {line.bold && line.amount === 0 && !line.highlight ? '' : formatCurrency(line.amount)}
           </span>
@@ -157,10 +157,10 @@ export default function BalanceSheet() {
     <div className="space-y-5">
       {/* Header */}
       <div className="border-b-2 border-gray-900 pb-2">
-        <h4 className="text-sm font-bold tracking-widest uppercase text-gray-900">
+        <h4 className="text-sm font-bold tracking-widest uppercase text-text-primary">
           Balance Sheet
         </h4>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-text-secondary mt-0.5">
           Portfolio Snapshot · As of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -168,20 +168,20 @@ export default function BalanceSheet() {
       {/* Balance Check Banner */}
       <div className={`flex items-center justify-between p-4 rounded-lg border ${
         Math.abs(bs.totalAssets - bs.totalLiabilities - bs.ownerEquity) < 1
-          ? 'bg-gray-50 border-gray-200'
+          ? 'bg-bg-primary border-border-accent'
           : 'bg-amber-50 border-amber-200'
       }`}>
         <div className="flex items-center gap-2">
-          <Scale className="w-5 h-5 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Balance Check</span>
+          <Scale className="w-5 h-5 text-text-secondary" />
+          <span className="text-sm font-medium text-text-primary">Balance Check</span>
         </div>
-        <span className="text-xs font-mono text-gray-500">
+        <span className="text-xs font-mono text-text-secondary">
           Assets {formatCurrency(bs.totalAssets)} = Liabilities {formatCurrency(bs.totalLiabilities)} + Equity {formatCurrency(bs.ownerEquity)}
         </span>
       </div>
 
       {/* Statement Body */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden divide-y divide-gray-200">
+      <div className="border border-border-accent rounded-lg overflow-hidden divide-y divide-gray-200">
         {renderSection(assetLines, <Building className="w-4 h-4 text-blue-600" />)}
         <div className="h-px bg-gray-200" />
         {renderSection(liabilityLines, <Landmark className="w-4 h-4 text-amber-600" />)}
@@ -192,25 +192,25 @@ export default function BalanceSheet() {
       {/* Breakdowns */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Asset Breakdown */}
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h5 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-1.5">
+        <div className="border border-border-accent rounded-lg p-4">
+          <h5 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-3 flex items-center gap-1.5">
             <Building className="w-3.5 h-3.5 text-blue-600" /> Property Detail
           </h5>
           {bs.assetDetails.length === 0 ? (
-            <p className="text-xs text-gray-400 italic">No properties in portfolio</p>
+            <p className="text-xs text-text-secondary italic">No properties in portfolio</p>
           ) : (
             <div className="space-y-1.5">
               {bs.assetDetails.map((a, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-700 font-medium">{a.name}</span>
+                    <span className="text-text-primary font-medium">{a.name}</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs font-bold uppercase ${
                       a.status === 'Sold → Cash' ? 'bg-emerald-50 text-emerald-700' :
                       a.status === 'Renovating' ? 'bg-amber-50 text-amber-700' :
-                      'bg-gray-100 text-gray-600'
+                      'bg-bg-primary text-text-secondary'
                     }`}>{a.status}</span>
                   </div>
-                  <span className="font-mono text-gray-700">{formatCurrency(a.value)}</span>
+                  <span className="font-mono text-text-primary">{formatCurrency(a.value)}</span>
                 </div>
               ))}
             </div>
@@ -218,21 +218,21 @@ export default function BalanceSheet() {
         </div>
 
         {/* Liability Breakdown */}
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h5 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3 flex items-center gap-1.5">
+        <div className="border border-border-accent rounded-lg p-4">
+          <h5 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-3 flex items-center gap-1.5">
             <Landmark className="w-3.5 h-3.5 text-amber-600" /> Debt & Equity Detail
           </h5>
           {bs.liabilityDetails.length === 0 ? (
-            <p className="text-xs text-gray-400 italic">No outstanding liabilities</p>
+            <p className="text-xs text-text-secondary italic">No outstanding liabilities</p>
           ) : (
             <div className="space-y-1.5">
               {bs.liabilityDetails.map((l, i) => (
                 <div key={i} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-700 font-medium">{l.name}</span>
-                    <span className="px-1.5 py-0.5 rounded text-xs font-bold uppercase bg-gray-100 text-gray-600">{l.type}</span>
+                    <span className="text-text-primary font-medium">{l.name}</span>
+                    <span className="px-1.5 py-0.5 rounded text-xs font-bold uppercase bg-bg-primary text-text-secondary">{l.type}</span>
                   </div>
-                  <span className="font-mono text-gray-700">{formatCurrency(l.value)}</span>
+                  <span className="font-mono text-text-primary">{formatCurrency(l.value)}</span>
                 </div>
               ))}
             </div>

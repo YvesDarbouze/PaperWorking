@@ -95,7 +95,7 @@ export default function FastDiscovery() {
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Intuitive Navigation
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
             Find any document in under a second.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-phase-3 leading-relaxed">
@@ -105,7 +105,7 @@ export default function FastDiscovery() {
 
         {/* Search UI */}
         <div className="mx-auto max-w-2xl">
-          <div className={`border bg-white transition-all duration-200 ${
+          <div className={`border bg-bg-surface transition-all duration-200 ${
             isFocused ? 'border-black shadow-sm' : 'border-phase-1'
           }`}>
             {/* Search bar */}
@@ -144,7 +144,7 @@ export default function FastDiscovery() {
                     <div className="flex items-center space-x-3 min-w-0">
                       <FileText className="w-4 h-4 text-phase-2 shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-xs font-medium text-black truncate">{doc.name}</p>
+                        <p className="text-xs font-medium text-text-primary truncate">{doc.name}</p>
                         <p className="text-xs text-phase-2 mt-0.5">{doc.type} · {doc.date}</p>
                       </div>
                     </div>
@@ -178,7 +178,7 @@ export default function FastDiscovery() {
                   performSearch(term);
                   inputRef.current?.focus();
                 }}
-                className="text-xs font-bold uppercase tracking-widest text-phase-3 border border-phase-1 px-2 py-1 hover:border-phase-3 hover:text-black transition-colors cursor-pointer"
+                className="text-xs font-bold uppercase tracking-widest text-phase-3 border border-phase-1 px-2 py-1 hover:border-phase-3 hover:text-text-primary transition-colors cursor-pointer"
               >
                 {term}
               </button>

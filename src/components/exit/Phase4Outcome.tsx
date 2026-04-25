@@ -86,7 +86,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   return (
     <div className="w-full h-full flex flex-col p-8 sm:p-12 animate-in fade-in slide-in-from-bottom-8">
       
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-gray-300/30 pb-6 mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-border-accent/30 pb-6 mb-8 gap-4">
          <div className="flex flex-col">
             <h2 className="text-3xl font-light text-white tracking-tight flex items-center">
                {strategy === 'Sell' ? 'Flip Strategy' : 'Hold Protocol'}
@@ -111,13 +111,13 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
          <div className="flex bg-black/20 p-1 rounded-lg">
             <button 
                onClick={() => handleToggle('Sell')}
-               className={`px-6 py-2 text-sm font-medium rounded-md transition-all ${strategy === 'Sell' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white'}`}
+               className={`px-6 py-2 text-sm font-medium rounded-md transition-all ${strategy === 'Sell' ? 'bg-bg-surface text-text-primary shadow-sm' : 'text-gray-300 hover:text-white'}`}
             >
                Exit Strategy: Sell
             </button>
             <button 
                onClick={() => handleToggle('Rent')}
-               className={`px-6 py-2 text-sm font-medium rounded-md transition-all ${strategy === 'Rent' ? 'bg-white text-black shadow-sm' : 'text-gray-300 hover:text-white'}`}
+               className={`px-6 py-2 text-sm font-medium rounded-md transition-all ${strategy === 'Rent' ? 'bg-bg-surface text-text-primary shadow-sm' : 'text-gray-300 hover:text-white'}`}
             >
                Exit Strategy: Rent & Hold
             </button>
@@ -125,7 +125,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
       </div>
 
       {viewMode === 'Listing' ? (
-        <div className="flex-1 overflow-y-auto bg-white/10 rounded-3xl p-8 backdrop-blur-xl border border-white/5">
+        <div className="flex-1 overflow-y-auto bg-bg-surface/10 rounded-3xl p-8 backdrop-blur-xl border border-white/5">
            <ProfessionalListingDashboard deal={deal} />
         </div>
       ) : (
@@ -136,12 +136,12 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
         {/* Left Column: Form Inputs */}
         <div className="space-y-6">
           {strategy === 'Sell' ? (
-             <div className="bg-white/10 backdrop-blur border border-white/10 rounded-xl p-8 space-y-6">
+             <div className="bg-bg-surface/10 backdrop-blur border border-white/10 rounded-xl p-8 space-y-6">
                <h3 className="text-lg text-white font-medium mb-4">Liquidation Parameters</h3>
                <div>
                  <label className="text-sm font-medium text-gray-300 mb-2 block">Actual Sale Price ($)</label>
                  <div className="relative">
-                   <DollarSign className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
+                   <DollarSign className="absolute left-3 top-3 w-5 h-5 text-text-secondary" />
                    <input type="number" value={salePrice} onChange={e => setSalePrice(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-3 pl-10 pr-4 text-white focus:outline-none focus:border-white transition-colors" />
                  </div>
                </div>
@@ -150,7 +150,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                    <label className="text-sm font-medium text-gray-300 mb-2 block">Total Agent Comm.</label>
                    <div className="relative">
                      <input type="number" step="0.1" value={agentCommissions} onChange={e => setAgentCommissions(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-white transition-colors" />
-                     <Percent className="absolute right-3 top-3 w-4 h-4 text-gray-500" />
+                     <Percent className="absolute right-3 top-3 w-4 h-4 text-text-secondary" />
                    </div>
                  </div>
                  <div>
@@ -160,7 +160,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                </div>
              </div>
           ) : (
-             <div className="bg-white/10 backdrop-blur border border-white/10 rounded-xl p-8 space-y-6">
+             <div className="bg-bg-surface/10 backdrop-blur border border-white/10 rounded-xl p-8 space-y-6">
                <h3 className="text-lg text-white font-medium mb-4">Revenue & Operations Ledger</h3>
                <div className="grid grid-cols-2 gap-4">
                  <div>
@@ -171,22 +171,22 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                    <label className="text-sm font-medium text-gray-300 mb-2 block">Vacancy Rate</label>
                    <div className="relative">
                       <input type="number" step="0.1" value={vacancyRate} onChange={e => setVacancyRate(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-white transition-colors" />
-                      <Percent className="absolute right-3 top-3 w-4 h-4 text-gray-500" />
+                      <Percent className="absolute right-3 top-3 w-4 h-4 text-text-secondary" />
                    </div>
                  </div>
                </div>
                <hr className="border-gray-500/30" />
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                  <div>
-                   <label className="text-xs font-medium text-gray-400 mb-2 block">Maint. Reserves</label>
+                   <label className="text-xs font-medium text-text-secondary mb-2 block">Maint. Reserves</label>
                    <input type="number" value={maintenance} onChange={e => setMaintenance(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-white transition-colors" />
                  </div>
                  <div>
-                   <label className="text-xs font-medium text-gray-400 mb-2 block">Prop. Management</label>
+                   <label className="text-xs font-medium text-text-secondary mb-2 block">Prop. Management</label>
                    <input type="number" value={propMgmt} onChange={e => setPropMgmt(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-white transition-colors" />
                  </div>
                  <div>
-                   <label className="text-xs font-medium text-gray-400 mb-2 block">Mortgage (PITI)</label>
+                   <label className="text-xs font-medium text-text-secondary mb-2 block">Mortgage (PITI)</label>
                    <input type="number" value={longTermMortgage} onChange={e => setLongTermMortgage(e.target.value)} className="w-full bg-black/40 border border-gray-600 rounded-lg py-2 px-3 text-sm text-white focus:outline-none focus:border-white transition-colors" />
                  </div>
                </div>
@@ -196,19 +196,19 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
         {/* Right Column: Financial Ticker Dashboard */}
         <div className="flex flex-col space-y-6">
-           <div className="bg-white rounded-xl p-8 shadow-2xl relative overflow-hidden h-full flex flex-col justify-center">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gray-100 rounded-bl-full -z-10 mix-blend-multiply opacity-50"></div>
+           <div className="bg-bg-surface rounded-xl p-8 shadow-2xl relative overflow-hidden h-full flex flex-col justify-center">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-bg-primary rounded-bl-full -z-10 mix-blend-multiply opacity-50"></div>
               
               <div className="mb-8">
-                 <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center">
+                 <p className="text-sm font-bold text-text-secondary uppercase tracking-widest mb-1 flex items-center">
                    <TrendingUp className="w-4 h-4 mr-2" /> Live Financial Ticker
                  </p>
-                 <p className="text-xs text-gray-500">Capital Deployed: ${totalCapitalDeployed.toLocaleString()}</p>
+                 <p className="text-xs text-text-secondary">Capital Deployed: ${totalCapitalDeployed.toLocaleString()}</p>
               </div>
 
               {strategy === 'Sell' ? (
                 <div>
-                   <p className="text-lg text-gray-600 font-medium mb-2">Final Net Profit</p>
+                   <p className="text-lg text-text-secondary font-medium mb-2">Final Net Profit</p>
                    <h1 className={`text-6xl font-light tracking-tighter ${calculateNetProfit() >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       ${calculateNetProfit().toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                    </h1>
@@ -216,14 +216,14 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
               ) : (
                 <div className="space-y-8">
                    <div>
-                     <p className="text-lg text-gray-600 font-medium mb-2">Monthly Cash Flow</p>
+                     <p className="text-lg text-text-secondary font-medium mb-2">Monthly Cash Flow</p>
                      <h1 className={`text-5xl font-light tracking-tighter ${cashFlow >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                        ${cashFlow.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} <span className="text-xl text-gray-400 font-normal">/mo</span>
+                        ${cashFlow.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} <span className="text-xl text-text-secondary font-normal">/mo</span>
                      </h1>
                    </div>
-                   <div className="pt-6 border-t border-gray-100">
-                     <p className="text-sm text-gray-500 font-medium mb-1">Cash-on-Cash Return (CoC)</p>
-                     <h2 className="text-3xl font-light text-gray-900">
+                   <div className="pt-6 border-t border-border-accent">
+                     <p className="text-sm text-text-secondary font-medium mb-1">Cash-on-Cash Return (CoC)</p>
+                     <h2 className="text-3xl font-light text-text-primary">
                         {cashOnCash.toFixed(2)}%
                      </h2>
                    </div>
@@ -236,7 +236,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
         {/* ── Deal Autopsy: locks all KPIs once status = Sold ── */}
         <div className="mt-12">
-          <Suspense fallback={<div className="h-96 rounded-2xl bg-white/5 animate-pulse" />}>
+          <Suspense fallback={<div className="h-96 rounded-2xl bg-bg-surface/5 animate-pulse" />}>
             <DealAutopsy deal={deal} />
           </Suspense>
         </div>

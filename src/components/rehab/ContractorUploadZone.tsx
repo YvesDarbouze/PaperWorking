@@ -70,28 +70,28 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden max-w-sm w-full mx-auto sm:max-w-md">
+        <div className="bg-bg-surface rounded-xl shadow-lg border border-border-accent overflow-hidden max-w-sm w-full mx-auto sm:max-w-md">
             <div className="bg-slate-900 p-6 text-white text-center">
-                <div className="mx-auto w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-3">
+                <div className="mx-auto w-12 h-12 bg-bg-surface/10 rounded-full flex items-center justify-center mb-3">
                     <Camera className="w-6 h-6 text-blue-400" />
                 </div>
                 <h3 className="text-xl font-bold">Upload Expense</h3>
-                <p className="text-slate-400 text-sm mt-1">{deal.propertyName}</p>
+                <p className="text-text-secondary text-sm mt-1">{deal.propertyName}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><DollarSign className="w-4 h-4 mr-1 text-green-600"/> Total Amount</label>
+                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><DollarSign className="w-4 h-4 mr-1 text-green-600"/> Total Amount</label>
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="text-gray-500 sm:text-sm">$</span>
+                            <span className="text-text-secondary sm:text-sm">$</span>
                         </div>
                         <input
                             type="number"
                             step="0.01"
                             value={amount}
                             onChange={(e) => setAmount(e.target.value)}
-                            className="block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md border py-3 focus:ring-blue-500 focus:border-blue-500"
+                            className="block w-full pl-7 pr-12 sm:text-sm border-border-accent rounded-md border py-3 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="0.00"
                             required
                         />
@@ -99,11 +99,11 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-purple-600"/> Budget Line Item</label>
+                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-purple-600"/> Budget Line Item</label>
                     <select
                         value={lineItem}
                         onChange={(e) => setLineItem(e.target.value)}
-                        className="block w-full border border-gray-300 rounded-md py-3 px-3 sm:text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+                        className="block w-full border border-border-accent rounded-md py-3 px-3 sm:text-sm focus:ring-blue-500 focus:border-blue-500 text-text-primary bg-bg-surface"
                         required
                     >
                         <option value="" disabled>Select a category...</option>
@@ -114,13 +114,13 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
                 </div>
 
                 <div className="pt-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center"><Upload className="w-4 h-4 mr-1 text-gray-500"/> Photo Receipt</label>
-                    <label className="flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
+                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><Upload className="w-4 h-4 mr-1 text-text-secondary"/> Photo Receipt</label>
+                    <label className="flex justify-center w-full h-32 px-4 transition bg-bg-surface border-2 border-border-accent border-dashed rounded-md appearance-none cursor-pointer hover:border-gray-400 focus:outline-none">
                         <span className="flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
-                            <span className="font-medium text-gray-600">
+                            <span className="font-medium text-text-secondary">
                                 {isUploading ? 'Uploading...' : 'Tap to scan/browse'}
                             </span>
                         </span>

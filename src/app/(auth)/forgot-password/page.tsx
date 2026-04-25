@@ -78,7 +78,7 @@ export default function ForgotPasswordPage() {
               setIsSuccess(false);
               clearError();
             }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+            className="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-bg-primary"
             style={{ borderColor: '#d4d4d4', color: '#262626' }}
           >
             Try a different email
@@ -186,7 +186,7 @@ export default function ForgotPasswordPage() {
       {/* ─── Back to Login ─── */}
       <Link
         href="/login"
-        className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors hover:text-black"
+        className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors hover:text-text-primary"
         style={{ color: '#737373' }}
       >
         <ArrowLeft className="h-3.5 w-3.5" />

@@ -82,7 +82,7 @@ export default function HistoricalLedger() {
   };
 
   return (
-    <section className="bg-pw-white border border-pw-black overflow-hidden flex flex-col">
+    <section className="bg-bg-surface border border-pw-black overflow-hidden flex flex-col">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -94,7 +94,7 @@ export default function HistoricalLedger() {
           </div>
           <div className="text-left">
             <h2 className="text-sm font-black uppercase tracking-[0.4em]">HISTORICAL_LEDGER</h2>
-            <p className="text-xs text-pw-muted font-bold uppercase tracking-widest mt-0.5">
+            <p className="text-xs text-text-secondary font-bold uppercase tracking-widest mt-0.5">
               {properties.length} ENTITIES_INDEXED
             </p>
           </div>
@@ -107,16 +107,16 @@ export default function HistoricalLedger() {
           
           {/* Summary Matrix */}
           {summary && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-pw-border border border-pw-border">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-pw-border border border-border-accent">
               {[
                 { label: 'CLOSED_DEALS', value: summary.count.toString() },
                 { label: 'CUMULATIVE_P/L', value: `$${summary.totalProfit.toLocaleString()}`, highlight: true },
                 { label: 'AVG_ROI_VECTOR', value: `${summary.avgROI.toFixed(1)}%` },
                 { label: 'MEAN_HOLD_TIME', value: `${summary.avgHoldDays}D` },
               ].map((m) => (
-                <div key={m.label} className="bg-pw-bg px-6 py-4">
-                  <p className="text-xs font-black text-pw-muted uppercase tracking-[0.3em] mb-1">{m.label}</p>
-                  <p className={`text-lg font-black tracking-tighter font-mono ${m.highlight ? 'text-pw-accent' : 'text-pw-black'}`}>
+                <div key={m.label} className="bg-bg-primary px-6 py-4">
+                  <p className="text-xs font-black text-text-secondary uppercase tracking-[0.3em] mb-1">{m.label}</p>
+                  <p className={`text-lg font-black tracking-tighter font-mono ${m.highlight ? 'text-pw-accent' : 'text-text-primary'}`}>
                     {m.value}
                   </p>
                 </div>
@@ -126,27 +126,27 @@ export default function HistoricalLedger() {
 
           {/* Table */}
           {properties.length > 0 && (
-            <div className="overflow-x-auto border border-pw-border">
+            <div className="overflow-x-auto border border-border-accent">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-pw-bg border-b border-pw-border">
+                  <tr className="bg-bg-primary border-b border-border-accent">
                     {['ASSET_VECTOR', 'BUY_IN', 'EXIT_VAL', 'REHAB_EXP', 'NET_P/L', ''].map((h) => (
-                      <th key={h} className="text-xs font-black text-pw-muted uppercase tracking-widest py-3 px-4 border-r border-pw-border last:border-r-0">{h}</th>
+                      <th key={h} className="text-xs font-black text-text-secondary uppercase tracking-widest py-3 px-4 border-r border-border-accent last:border-r-0">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-pw-border">
                   {properties.map((p) => (
-                    <tr key={p.id} className="group hover:bg-pw-bg transition-colors">
-                      <td className="py-4 px-4 text-xs font-black text-pw-black uppercase tracking-tight border-r border-pw-border">{p.address}</td>
-                      <td className="py-4 px-4 text-xs font-black text-pw-black font-mono border-r border-pw-border tracking-tighter">${p.purchasePrice.toLocaleString()}</td>
-                      <td className="py-4 px-4 text-xs font-black text-pw-black font-mono border-r border-pw-border tracking-tighter">${p.salePrice.toLocaleString()}</td>
-                      <td className="py-4 px-4 text-xs font-black text-pw-black font-mono border-r border-pw-border tracking-tighter">${p.totalRehabCost.toLocaleString()}</td>
-                      <td className={`py-4 px-4 text-xs font-black border-r border-pw-border font-mono tracking-tighter ${p.netProfit >= 0 ? 'text-pw-accent' : 'text-pw-subtle'}`}>
+                    <tr key={p.id} className="group hover:bg-bg-primary transition-colors">
+                      <td className="py-4 px-4 text-xs font-black text-text-primary uppercase tracking-tight border-r border-border-accent">{p.address}</td>
+                      <td className="py-4 px-4 text-xs font-black text-text-primary font-mono border-r border-border-accent tracking-tighter">${p.purchasePrice.toLocaleString()}</td>
+                      <td className="py-4 px-4 text-xs font-black text-text-primary font-mono border-r border-border-accent tracking-tighter">${p.salePrice.toLocaleString()}</td>
+                      <td className="py-4 px-4 text-xs font-black text-text-primary font-mono border-r border-border-accent tracking-tighter">${p.totalRehabCost.toLocaleString()}</td>
+                      <td className={`py-4 px-4 text-xs font-black border-r border-border-accent font-mono tracking-tighter ${p.netProfit >= 0 ? 'text-pw-accent' : 'text-text-secondary'}`}>
                         {p.netProfit >= 0 ? '+' : ''}${p.netProfit.toLocaleString()}
                       </td>
                       <td className="py-4 px-4 text-center">
-                        <button onClick={() => handleRemove(p.id)} className="text-pw-border hover:text-pw-subtle transition-colors">
+                        <button onClick={() => handleRemove(p.id)} className="text-pw-border hover:text-text-secondary transition-colors">
                           <X className="w-3.5 h-3.5" />
                         </button>
                       </td>
@@ -159,10 +159,10 @@ export default function HistoricalLedger() {
 
           {/* Intake Form */}
           {showForm ? (
-            <div className="border border-pw-black p-8 bg-pw-bg flex flex-col gap-8 animate-in fade-in duration-300">
-              <div className="flex items-center justify-between border-b border-pw-border pb-4">
-                <h3 className="text-xs font-black text-pw-black uppercase tracking-[0.4em]">INIT_LOG_PROTOCOL</h3>
-                <button onClick={() => setShowForm(false)} className="text-pw-muted hover:text-pw-black transition-colors">
+            <div className="border border-pw-black p-8 bg-bg-primary flex flex-col gap-8 animate-in fade-in duration-300">
+              <div className="flex items-center justify-between border-b border-border-accent pb-4">
+                <h3 className="text-xs font-black text-text-primary uppercase tracking-[0.4em]">INIT_LOG_PROTOCOL</h3>
+                <button onClick={() => setShowForm(false)} className="text-text-secondary hover:text-text-primary transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -170,14 +170,14 @@ export default function HistoricalLedger() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Address */}
                 <div className="md:col-span-2 space-y-2">
-                  <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">
+                  <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">
                     <MapPin className="w-3 h-3 inline mr-1 text-pw-accent" />ASSET_LAT_LONG_IDENT
                   </label>
                   <input
                     value={form.address}
                     onChange={(e) => set('address', e.target.value)}
                     placeholder="E.G. 123 MAIN ST, MIAMI, FL"
-                    className="w-full border border-pw-border bg-pw-white px-5 py-4 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all"
+                    className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all"
                   />
                 </div>
 
@@ -189,7 +189,7 @@ export default function HistoricalLedger() {
                   { key: 'holdingCostTotal' as const, label: 'PERIOD_COSTS', icon: DollarSign },
                 ].map(({ key, label, icon: Icon }) => (
                   <div key={key} className="space-y-2">
-                    <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">
+                    <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">
                       <Icon className="w-3 h-3 inline mr-1 text-pw-accent" />{label}
                     </label>
                     <input
@@ -197,7 +197,7 @@ export default function HistoricalLedger() {
                       value={form[key] || ''}
                       onChange={(e) => set(key, parseFloat(e.target.value) || 0)}
                       placeholder="0.00"
-                      className="w-full border border-pw-border bg-pw-white px-5 py-4 text-sm font-black font-mono tracking-tighter focus:border-pw-black focus:outline-none transition-all"
+                      className="w-full border border-border-accent bg-bg-surface px-5 py-4 text-sm font-black font-mono tracking-tighter focus:border-pw-black focus:outline-none transition-all"
                     />
                   </div>
                 ))}
@@ -209,7 +209,7 @@ export default function HistoricalLedger() {
                   <TrendingUp className="w-4 h-4 text-pw-accent" />
                   DELTA_NET_PROJECTION
                 </div>
-                <span className={`text-sm font-black font-mono tracking-tighter ${(form.salePrice - form.purchasePrice - form.totalRehabCost - form.holdingCostTotal) >= 0 ? 'text-pw-accent' : 'text-pw-subtle'}`}>
+                <span className={`text-sm font-black font-mono tracking-tighter ${(form.salePrice - form.purchasePrice - form.totalRehabCost - form.holdingCostTotal) >= 0 ? 'text-pw-accent' : 'text-text-secondary'}`}>
                   ${(form.salePrice - form.purchasePrice - form.totalRehabCost - form.holdingCostTotal).toLocaleString()}
                 </span>
               </div>
@@ -225,7 +225,7 @@ export default function HistoricalLedger() {
           ) : (
             <button
               onClick={() => setShowForm(true)}
-              className="flex items-center justify-center gap-3 w-full py-6 border border-dashed border-pw-border text-xs font-black text-pw-muted hover:text-pw-black hover:border-pw-black transition-all uppercase tracking-[0.3em]"
+              className="flex items-center justify-center gap-3 w-full py-6 border border-dashed border-border-accent text-xs font-black text-text-secondary hover:text-text-primary hover:border-pw-black transition-all uppercase tracking-[0.3em]"
             >
               <Plus className="w-4 h-4 text-pw-accent" /> LOG_PAST_ACQUISITION
             </button>

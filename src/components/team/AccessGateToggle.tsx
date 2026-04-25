@@ -46,7 +46,7 @@ export default function AccessGateToggle({ permissions, onChange, compact }: Pro
             className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
               enabled
                 ? 'bg-gray-900 text-white shadow-sm'
-                : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600'
+                : 'bg-bg-primary text-text-secondary hover:bg-gray-200 hover:text-text-secondary'
             }`}
             title={`${enabled ? 'Revoke' : 'Grant'} ${label} access`}
           >

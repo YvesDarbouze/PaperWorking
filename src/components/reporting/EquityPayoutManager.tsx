@@ -12,17 +12,17 @@ export default function EquityPayoutManager() {
   const { isSold, targetProfit, calculationStatus, payouts, investors } = calculateEquityPayout(deal);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
-           <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><Users className="w-5 h-5 text-emerald-600"/> Equity Payout Automation</h3>
-           <p className="text-sm text-gray-500 mt-1">Cross-references the crowdfunding database to distribute net escrow proceeds.</p>
+           <h3 className="text-lg font-bold text-text-primary flex items-center gap-2"><Users className="w-5 h-5 text-emerald-600"/> Equity Payout Automation</h3>
+           <p className="text-sm text-text-secondary mt-1">Cross-references the crowdfunding database to distribute net escrow proceeds.</p>
         </div>
         
         <select 
            value={selectedDealId}
            onChange={(e) => setSelectedDealId(e.target.value)}
-           className="border border-gray-300 rounded-lg text-sm p-2 bg-gray-50 focus:ring-2 focus:ring-emerald-500 focus:outline-none min-w-[200px]"
+           className="border border-border-accent rounded-lg text-sm p-2 bg-bg-primary focus:ring-2 focus:ring-emerald-500 focus:outline-none min-w-[200px]"
          >
            <option value="" disabled>Select Property...</option>
            {projects.map(d => (
@@ -32,7 +32,7 @@ export default function EquityPayoutManager() {
       </div>
 
       {!deal ? (
-         <div className="py-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 text-gray-400 text-sm">
+         <div className="py-8 text-center bg-bg-primary rounded-lg border border-dashed border-border-accent text-text-secondary text-sm">
             Please select a property from the dropdown to load the capital stack.
          </div>
       ) : (
@@ -60,34 +60,34 @@ export default function EquityPayoutManager() {
 
             {/* Investor List */}
             {(investors?.length ?? 0) === 0 ? (
-               <div className="py-6 text-center text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
+               <div className="py-6 text-center text-sm text-text-secondary bg-bg-primary rounded-lg border border-border-accent">
                   No fractional investors found on the cap table for this asset. Operating 100% Sponsor Equity.
                </div>
             ) : (
-               <div className="border border-gray-200 rounded-lg overflow-hidden">
+               <div className="border border-border-accent rounded-lg overflow-hidden">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-bg-primary">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Investor Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Equity Share</th>
-                        <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Disbursement Amt</th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Action</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase">Investor Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase">Equity Share</th>
+                        <th className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase">Disbursement Amt</th>
+                        <th className="px-4 py-3 text-center text-xs font-medium text-text-secondary uppercase">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-bg-surface divide-y divide-gray-200">
                        {investors?.map(inv => {
                          const pTarget = payouts.find(p => p.investorId === inv.id);
                          const payoutAmount = pTarget ? pTarget.amount : 0;
 
                          return (
                            <tr key={inv.id}>
-                             <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                             <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-text-primary">
                                 {inv.name}
                              </td>
-                             <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                             <td className="px-4 py-4 whitespace-nowrap text-sm text-text-secondary">
                                 {inv.equityPercentage.toFixed(1)}%
                              </td>
-                             <td className="px-4 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900">
+                             <td className="px-4 py-4 whitespace-nowrap text-sm text-right font-medium text-text-primary">
                                 ${payoutAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                              </td>
                              <td className="px-4 py-4 whitespace-nowrap text-center">

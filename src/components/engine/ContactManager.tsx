@@ -23,7 +23,7 @@ const ROLE_CONFIG: Record<ContactRole, { label: string; icon: React.ReactNode; c
   'Appraiser':          { label: 'Appraiser',         icon: <Briefcase className="w-4 h-4" />, color: 'bg-amber-50 text-amber-700 border-amber-200' },
   'Title Company':      { label: 'Title Company',     icon: <Building2 className="w-4 h-4" />, color: 'bg-orange-50 text-orange-700 border-orange-200' },
   'Insurance Agent':    { label: 'Insurance Agent',   icon: <Shield className="w-4 h-4" />,   color: 'bg-red-50 text-red-700 border-red-200' },
-  'Other':              { label: 'Other',             icon: <UserCircle className="w-4 h-4" />, color: 'bg-gray-50 text-gray-700 border-gray-200' },
+  'Other':              { label: 'Other',             icon: <UserCircle className="w-4 h-4" />, color: 'bg-bg-primary text-text-primary border-border-accent' },
 };
 
 const ROLE_OPTIONS: ContactRole[] = [
@@ -145,8 +145,8 @@ export default function ContactManager() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">Contact Manager</h3>
-          <p className="text-sm text-gray-500">Assign lawyers, agents, and lenders to your properties.</p>
+          <h3 className="text-lg font-medium text-text-primary">Contact Manager</h3>
+          <p className="text-sm text-text-secondary">Assign lawyers, agents, and lenders to your properties.</p>
         </div>
         <button
           onClick={() => { setForm(BLANK_FORM); setEditingId(null); setShowForm(true); }}
@@ -160,13 +160,13 @@ export default function ContactManager() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[220px] max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
           <input
             type="text"
             placeholder="Search contacts…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 outline-none"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-border-accent rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 outline-none"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -177,7 +177,7 @@ export default function ContactManager() {
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${
                 filterRole === r
                   ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  : 'bg-bg-surface text-text-secondary border-border-accent hover:border-gray-400'
               }`}
             >
               {r}
@@ -189,21 +189,21 @@ export default function ContactManager() {
       {/* Contact Form Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h4 className="text-base font-semibold text-gray-900">
+          <div className="bg-bg-surface rounded-xl shadow-2xl border border-border-accent w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-border-accent">
+              <h4 className="text-base font-semibold text-text-primary">
                 {editingId ? 'Edit Contact' : 'New Contact'}
               </h4>
-              <button onClick={() => { setShowForm(false); setEditingId(null); }} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => { setShowForm(false); setEditingId(null); }} className="text-text-secondary hover:text-text-secondary">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               {/* Role */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Role *</label>
+                <label className="block text-xs font-medium text-text-primary mb-1">Role *</label>
                 <select
-                  className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                   value={form.role}
                   onChange={e => setForm(f => ({ ...f, role: e.target.value as ContactRole }))}
                 >
@@ -214,20 +214,20 @@ export default function ContactManager() {
               {/* Name Row */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">First Name *</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">First Name *</label>
                   <input
                     type="text"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Jane"
                     value={form.firstName}
                     onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Last Name</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">Last Name</label>
                   <input
                     type="text"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Smith"
                     value={form.lastName}
                     onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
@@ -238,20 +238,20 @@ export default function ContactManager() {
               {/* Email + Phone */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">Email *</label>
                   <input
                     type="email"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="jane@firm.com"
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">Phone</label>
                   <input
                     type="tel"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="+1 (555) 000-0000"
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -262,20 +262,20 @@ export default function ContactManager() {
               {/* Company + License */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Company / Firm</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">Company / Firm</label>
                   <input
                     type="text"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="Smith & Associates"
                     value={form.companyName}
                     onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">License #</label>
+                  <label className="block text-xs font-medium text-text-primary mb-1">License #</label>
                   <input
                     type="text"
-                    className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                     placeholder="RE-1234567"
                     value={form.licenseNumber}
                     onChange={e => setForm(f => ({ ...f, licenseNumber: e.target.value }))}
@@ -286,22 +286,22 @@ export default function ContactManager() {
               {/* Assign to Properties */}
               {projects.length > 0 && (
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2">Assign to Properties</label>
-                  <div className="space-y-1.5 max-h-36 overflow-y-auto border border-gray-200 rounded-lg p-2">
+                  <label className="block text-xs font-medium text-text-primary mb-2">Assign to Properties</label>
+                  <div className="space-y-1.5 max-h-36 overflow-y-auto border border-border-accent rounded-lg p-2">
                     {projects.map(p => (
-                      <label key={p.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-gray-50 rounded cursor-pointer">
+                      <label key={p.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-bg-primary rounded cursor-pointer">
                         <div
                           onClick={() => toggleProject(p.id)}
                           className={`w-4 h-4 rounded border flex items-center justify-center transition flex-shrink-0 cursor-pointer ${
                             form.assignedProjectIds.includes(p.id)
                               ? 'bg-gray-900 border-gray-900'
-                              : 'border-gray-300'
+                              : 'border-border-accent'
                           }`}
                         >
                           {form.assignedProjectIds.includes(p.id) && <Check className="w-2.5 h-2.5 text-white" />}
                         </div>
-                        <span className="text-sm text-gray-700 truncate">{p.propertyName}</span>
-                        <span className="ml-auto text-xs text-gray-400 flex-shrink-0">{p.status}</span>
+                        <span className="text-sm text-text-primary truncate">{p.propertyName}</span>
+                        <span className="ml-auto text-xs text-text-secondary flex-shrink-0">{p.status}</span>
                       </label>
                     ))}
                   </div>
@@ -310,10 +310,10 @@ export default function ContactManager() {
 
               {/* Notes */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-xs font-medium text-text-primary mb-1">Notes</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-gray-300 rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
                   placeholder="Specializes in distressed properties…"
                   value={form.notes}
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -323,7 +323,7 @@ export default function ContactManager() {
             <div className="flex justify-end gap-3 px-6 pb-6">
               <button
                 onClick={() => { setShowForm(false); setEditingId(null); }}
-                className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                className="px-4 py-2 text-sm text-text-primary border border-border-accent rounded-lg hover:bg-bg-primary transition"
               >
                 Cancel
               </button>
@@ -341,13 +341,13 @@ export default function ContactManager() {
 
       {/* Contact Grid */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-gray-200 rounded-xl">
+        <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-border-accent rounded-xl">
           <Users className="w-12 h-12 text-gray-300 mb-3" />
-          <p className="text-sm font-medium text-gray-500">
+          <p className="text-sm font-medium text-text-secondary">
             {contacts.length === 0 ? 'No contacts added yet' : 'No contacts match your filter'}
           </p>
           {contacts.length === 0 && (
-            <p className="text-xs text-gray-400 mt-1">Add your lawyer, agent, and lender to get started</p>
+            <p className="text-xs text-text-secondary mt-1">Add your lawyer, agent, and lender to get started</p>
           )}
         </div>
       ) : (
@@ -358,25 +358,25 @@ export default function ContactManager() {
               .map(id => projects.find(p => p.id === id)?.propertyName)
               .filter(Boolean);
             return (
-              <div key={contact.id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-sm transition group">
+              <div key={contact.id} className="bg-bg-surface border border-border-accent rounded-xl p-4 hover:shadow-sm transition group">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full border flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
                       {cfg.icon}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-text-primary">
                         {contact.firstName} {contact.lastName}
                       </p>
                       {contact.companyName && (
-                        <p className="text-xs text-gray-500 truncate max-w-[140px]">{contact.companyName}</p>
+                        <p className="text-xs text-text-secondary truncate max-w-[140px]">{contact.companyName}</p>
                       )}
                     </div>
                   </div>
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                     <button
                       onClick={() => handleEdit(contact)}
-                      className="p-1 text-gray-400 hover:text-gray-600 rounded"
+                      className="p-1 text-text-secondary hover:text-text-secondary rounded"
                       title="Edit"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +385,7 @@ export default function ContactManager() {
                     </button>
                     <button
                       onClick={() => handleDelete(contact.id)}
-                      className="p-1 text-gray-400 hover:text-red-500 rounded"
+                      className="p-1 text-text-secondary hover:text-red-500 rounded"
                       title="Remove"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -401,33 +401,33 @@ export default function ContactManager() {
 
                 {/* Contact Info */}
                 <div className="space-y-1.5">
-                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-xs text-gray-600 hover:text-blue-600 transition">
-                    <Mail className="w-3.5 h-3.5 text-gray-400" />
+                  <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-xs text-text-secondary hover:text-blue-600 transition">
+                    <Mail className="w-3.5 h-3.5 text-text-secondary" />
                     <span className="truncate">{contact.email}</span>
                   </a>
                   {contact.phone && (
-                    <a href={`tel:${contact.phone}`} className="flex items-center gap-2 text-xs text-gray-600 hover:text-blue-600 transition">
-                      <Phone className="w-3.5 h-3.5 text-gray-400" />
+                    <a href={`tel:${contact.phone}`} className="flex items-center gap-2 text-xs text-text-secondary hover:text-blue-600 transition">
+                      <Phone className="w-3.5 h-3.5 text-text-secondary" />
                       <span>{contact.phone}</span>
                     </a>
                   )}
                   {contact.licenseNumber && (
-                    <p className="text-xs text-gray-400">License: {contact.licenseNumber}</p>
+                    <p className="text-xs text-text-secondary">License: {contact.licenseNumber}</p>
                   )}
                 </div>
 
                 {/* Assigned Properties */}
                 {assignedNames.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-xs font-medium text-gray-500 mb-1.5">Assigned to:</p>
+                  <div className="mt-3 pt-3 border-t border-border-accent">
+                    <p className="text-xs font-medium text-text-secondary mb-1.5">Assigned to:</p>
                     <div className="flex flex-wrap gap-1">
                       {assignedNames.slice(0, 3).map((name, i) => (
-                        <span key={i} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full truncate max-w-[120px]">
+                        <span key={i} className="px-2 py-0.5 bg-bg-primary text-text-secondary text-xs rounded-full truncate max-w-[120px]">
                           {name}
                         </span>
                       ))}
                       {assignedNames.length > 3 && (
-                        <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                        <span className="px-2 py-0.5 bg-bg-primary text-text-secondary text-xs rounded-full">
                           +{assignedNames.length - 3}
                         </span>
                       )}
@@ -436,7 +436,7 @@ export default function ContactManager() {
                 )}
 
                 {contact.notes && (
-                  <p className="mt-2 text-xs text-gray-400 italic line-clamp-2">{contact.notes}</p>
+                  <p className="mt-2 text-xs text-text-secondary italic line-clamp-2">{contact.notes}</p>
                 )}
               </div>
             );
@@ -446,8 +446,8 @@ export default function ContactManager() {
 
       {/* Footer Stats */}
       {contacts.length > 0 && (
-        <div className="flex flex-wrap gap-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
-          <span className="font-medium text-gray-700">{contacts.length} contacts total</span>
+        <div className="flex flex-wrap gap-4 pt-3 border-t border-border-accent text-xs text-text-secondary">
+          <span className="font-medium text-text-primary">{contacts.length} contacts total</span>
           {ROLE_OPTIONS.map(r => {
             const count = contacts.filter(c => c.role === r).length;
             if (!count) return null;

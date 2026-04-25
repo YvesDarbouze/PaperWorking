@@ -88,20 +88,20 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
+            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
                 
                 {/* Global Tracker */}
                 <DealProgressTracker currentPhase="Closing" />
                 
                 {/* Header */}
-                <div className="border-b border-gray-100 p-6 flex justify-between items-center bg-slate-50 sticky top-[72px] z-10">
+                <div className="border-b border-border-accent p-6 flex justify-between items-center bg-bg-primary sticky top-[72px] z-10">
                     <div>
                          <h2 className="text-2xl font-semibold flex items-center gap-2">
                              The Closing Room
                          </h2>
-                         <p className="text-sm text-gray-500 mt-1">{deal.propertyName} • {deal.address}</p>
+                         <p className="text-sm text-text-secondary mt-1">{deal.propertyName} • {deal.address}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition"><X className="w-5 h-5 text-gray-500"/></button>
+                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition"><X className="w-5 h-5 text-text-secondary"/></button>
                 </div>
 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -110,22 +110,22 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     <div className="space-y-6">
                         
                         {/* Web3 Title Check */}
-                        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                        <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm">
                             <h3 className="text-md font-medium flex items-center gap-2 mb-3">
                                 <Link className="w-5 h-5 text-indigo-500" /> Digital Chain of Title
                             </h3>
-                            <div className="bg-slate-50 p-4 rounded-lg flex flex-col gap-3">
+                            <div className="bg-bg-primary p-4 rounded-lg flex flex-col gap-3">
                                 {closingRoom.chainOfTitleStatus === 'verified' ? (
                                     <>
                                        <div className="flex items-center text-green-700">
                                             <ShieldCheck className="w-5 h-5 mr-2" />
                                             <span className="font-medium text-sm">Title Cleared via Smart Contract</span>
                                        </div>
-                                       <p className="text-xs text-gray-400 break-all font-mono">TX: {closingRoom.blockchainTxHash}</p>
+                                       <p className="text-xs text-text-secondary break-all font-mono">TX: {closingRoom.blockchainTxHash}</p>
                                     </>
                                 ) : (
                                     <>
-                                       <p className="text-sm text-gray-600">Pending immutable verification of property transfer chain.</p>
+                                       <p className="text-sm text-text-secondary">Pending immutable verification of property transfer chain.</p>
                                        <button 
                                           onClick={handleWeb3Ping} 
                                           disabled={isPinging}
@@ -139,7 +139,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         </div>
 
                         {/* Lawyer Marketplace API */}
-                        <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                        <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm">
                             <h3 className="text-md font-medium flex items-center gap-2 mb-3">
                                 <Users className="w-5 h-5 text-blue-500" /> Real Estate Attorney
                             </h3>
@@ -152,14 +152,14 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                     <p className="text-sm text-blue-700">{matchingLawyers.find(l => l.uid === closingRoom.assignedLawyerUid)?.displayName || 'Unknown Attorney'}</p>
                                 </div>
                             ) : (
-                                <div className="bg-slate-50 border border-gray-100 p-4 rounded-lg space-y-3">
-                                    <p className="text-xs text-gray-500 flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches in NY:</p>
+                                <div className="bg-bg-primary border border-border-accent p-4 rounded-lg space-y-3">
+                                    <p className="text-xs text-text-secondary flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches in NY:</p>
                                     {isSearchingLawyers ? (
-                                        <p className="text-sm text-gray-400">Scanning local subscriber registry...</p>
+                                        <p className="text-sm text-text-secondary">Scanning local subscriber registry...</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {matchingLawyers.map(l => (
-                                                <div key={l.uid} className="flex justify-between items-center p-2 bg-white rounded border border-gray-100 shadow-sm">
+                                                <div key={l.uid} className="flex justify-between items-center p-2 bg-bg-surface rounded border border-border-accent shadow-sm">
                                                     <p className="text-sm">{l.displayName}</p>
                                                     <button onClick={() => updateClosingRoom(deal.id, {assignedLawyerUid: l.uid})} className="text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition">Assign</button>
                                                 </div>
@@ -171,7 +171,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
                             {/* Demo Lawyer Verification Action */}
                             {closingRoom.assignedLawyerUid && !closingRoom.lawyerVerified && (
-                                <div className="mt-4 pt-4 border-t border-gray-100">
+                                <div className="mt-4 pt-4 border-t border-border-accent">
                                    <button 
                                       onClick={() => {
                                         toast.success('Lawyer verified the transaction.', { icon: '🧑‍⚖️' });
@@ -196,7 +196,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
                     {/* Right Column: Required Documents */}
                     <div className="space-y-4">
-                        <h3 className="text-md font-medium text-gray-800">Required Document Checkpoints</h3>
+                        <h3 className="text-md font-medium text-text-primary">Required Document Checkpoints</h3>
                         
                         <DocumentZone 
                            title="1. Title Insurance"
@@ -259,18 +259,18 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
 function DocumentZone({ title, description, isUploaded, onUpload }: { title: string, description: string, isUploaded: boolean, onUpload: () => void }) {
     return (
-        <div className={`p-4 border-2 border-dashed rounded-xl transition-colors ${isUploaded ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:border-gray-400 bg-gray-50'}`}>
+        <div className={`p-4 border-2 border-dashed rounded-xl transition-colors ${isUploaded ? 'border-green-300 bg-green-50' : 'border-border-accent hover:border-gray-400 bg-bg-primary'}`}>
             <div className="flex justify-between items-center">
                 <div>
-                   <h4 className={`text-sm font-semibold ${isUploaded ? 'text-green-800' : 'text-gray-800'}`}>{title}</h4>
-                   <p className="text-xs text-gray-500 mt-1">{description}</p>
+                   <h4 className={`text-sm font-semibold ${isUploaded ? 'text-green-800' : 'text-text-primary'}`}>{title}</h4>
+                   <p className="text-xs text-text-secondary mt-1">{description}</p>
                 </div>
                 {isUploaded ? (
                     <div className="flex items-center text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-bold">
                         <CheckCircle className="w-3 h-3 mr-1" /> PDF Attached
                     </div>
                 ) : (
-                    <button onClick={onUpload} className="flex items-center gap-1 bg-white border border-gray-200 shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-100">
+                    <button onClick={onUpload} className="flex items-center gap-1 bg-bg-surface border border-border-accent shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:bg-bg-primary">
                         <UploadCloud className="w-3 h-3" /> Upload
                     </button>
                 )}

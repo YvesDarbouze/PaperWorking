@@ -32,9 +32,9 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
       <div className="flex items-end justify-between mb-3">
         <div>
           <p className="ag-label mb-1">Capital Stack</p>
-          <p className="text-2xl font-semibold tracking-tight text-gray-900">
+          <p className="text-2xl font-semibold tracking-tight text-text-primary">
             {formatCurrency(capitalPledged)}
-            <span className="text-sm font-normal text-gray-400 ml-1">
+            <span className="text-sm font-normal text-text-secondary ml-1">
               of {formatCurrency(capitalNeeded)}
             </span>
           </p>
@@ -48,7 +48,7 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
       </div>
 
       {/* Progress Bar */}
-      <div className="relative w-full h-4 bg-gray-100 rounded-full overflow-hidden">
+      <div className="relative w-full h-4 bg-bg-primary rounded-full overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-all duration-700 ease-out"
           style={{
@@ -73,10 +73,10 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
 
       {/* Bottom Labels */}
       <div className="flex justify-between mt-2">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-text-secondary">
           {isFunded ? '✓ Fully Funded' : `${formatCurrency(remaining)} remaining`}
         </span>
-        <span className="text-xs text-gray-400">Target</span>
+        <span className="text-xs text-text-secondary">Target</span>
       </div>
 
       <style jsx>{`

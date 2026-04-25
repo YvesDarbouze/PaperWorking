@@ -84,13 +84,13 @@ export default function TestimonialSlider() {
   const t = testimonials[current];
 
   return (
-    <section className="py-24 bg-white border-b border-phase-1">
+    <section className="py-24 bg-bg-surface border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             What Teams Are Saying
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
             Results that speak for themselves.
           </h2>
         </div>
@@ -118,7 +118,7 @@ export default function TestimonialSlider() {
               </blockquote>
 
               {/* Attribution */}
-              <p className="text-sm font-bold text-black">{t.name}</p>
+              <p className="text-sm font-bold text-text-primary">{t.name}</p>
               <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">
                 {t.role} at {t.company}
               </p>
@@ -127,14 +127,14 @@ export default function TestimonialSlider() {
             {/* Nav arrows */}
             <button
               onClick={prev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-9 h-9 bg-white border border-phase-1 flex items-center justify-center text-phase-3 hover:text-black hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-9 h-9 bg-bg-surface border border-phase-1 flex items-center justify-center text-phase-3 hover:text-text-primary hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
               aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={next}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-9 h-9 bg-white border border-phase-1 flex items-center justify-center text-phase-3 hover:text-black hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-9 h-9 bg-bg-surface border border-phase-1 flex items-center justify-center text-phase-3 hover:text-text-primary hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
               aria-label="Next testimonial"
             >
               <ChevronRight className="w-4 h-4" />

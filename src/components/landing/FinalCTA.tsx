@@ -35,7 +35,7 @@ export default function FinalCTA() {
         </div>
 
         {/* Same headline as hero */}
-        <h2 className="text-4xl font-medium tracking-tight text-black sm:text-5xl lg:text-6xl mb-6">
+        <h2 className="text-4xl font-medium tracking-tight text-text-primary sm:text-5xl lg:text-6xl mb-6">
           Stop Pushing Paper.
           <br />
           <span className="text-phase-2">Start Closing Deals.</span>
@@ -50,15 +50,15 @@ export default function FinalCTA() {
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-0 border border-phase-1 mb-10 max-w-lg mx-auto">
           <div className="py-4 px-3 border-r border-phase-1">
-            <p className="text-2xl font-medium text-black">12hrs</p>
+            <p className="text-2xl font-medium text-text-primary">12hrs</p>
             <p className="text-xs text-phase-2 mt-1">Saved per week</p>
           </div>
           <div className="py-4 px-3 border-r border-phase-1">
-            <p className="text-2xl font-medium text-black">3.2×</p>
+            <p className="text-2xl font-medium text-text-primary">3.2×</p>
             <p className="text-xs text-phase-2 mt-1">Faster closings</p>
           </div>
           <div className="py-4 px-3">
-            <p className="text-2xl font-medium text-black">$4.8K</p>
+            <p className="text-2xl font-medium text-text-primary">$4.8K</p>
             <p className="text-xs text-phase-2 mt-1">Monthly savings</p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function FinalCTA() {
           </Link>
           <Link
             href="/dashboard"
-            className="px-8 py-4 border border-phase-1 text-phase-4 text-xs font-bold uppercase tracking-widest hover:border-black hover:text-black transition-colors"
+            className="px-8 py-4 border border-phase-1 text-phase-4 text-xs font-bold uppercase tracking-widest hover:border-black hover:text-text-primary transition-colors"
           >
             See It In Action
           </Link>

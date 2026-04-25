@@ -131,16 +131,16 @@ export default function DealRoster({ projectId }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-bg-surface rounded-xl border border-border-accent shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-gray-100">
+      <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-border-accent">
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 tracking-tight">Deal Roster</h3>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h3 className="text-sm font-semibold text-text-primary tracking-tight">Deal Roster</h3>
+          <p className="text-sm text-text-secondary mt-0.5">
             Tag external stakeholders and control their access.
           </p>
         </div>
-        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <span className="text-xs font-bold text-text-secondary uppercase tracking-widest">
           {activeCount} / {DEAL_ROLE_SLOTS.length} assigned
         </span>
       </div>
@@ -158,20 +158,20 @@ export default function DealRoster({ projectId }: Props) {
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                      member ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-400'
+                      member ? 'bg-gray-900 text-white' : 'bg-bg-primary text-text-secondary'
                     }`}
                   >
                     {icon}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-gray-900">{label}</p>
+                    <p className="text-xs font-semibold text-text-primary">{label}</p>
                     {member ? (
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-text-secondary truncate">
                         {member.displayName}{' '}
-                        <span className="text-gray-400">· {member.email}</span>
+                        <span className="text-text-secondary">· {member.email}</span>
                       </p>
                     ) : (
-                      <p className="text-xs text-gray-400">{shortDesc}</p>
+                      <p className="text-xs text-text-secondary">{shortDesc}</p>
                     )}
                   </div>
                 </div>
@@ -197,7 +197,7 @@ export default function DealRoster({ projectId }: Props) {
                       {/* Remove */}
                       <button
                         onClick={() => handleRemove(member.id)}
-                        className="p-1.5 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition"
+                        className="p-1.5 rounded-md hover:bg-red-50 text-text-secondary hover:text-red-500 transition"
                         title="Remove"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -206,7 +206,7 @@ export default function DealRoster({ projectId }: Props) {
                   ) : !isEditing ? (
                     <button
                       onClick={() => setEditingRole(role)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition"
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-text-primary bg-bg-primary rounded-md hover:bg-gray-200 transition"
                     >
                       <UserPlus className="w-3 h-3" /> Tag
                     </button>
@@ -216,13 +216,13 @@ export default function DealRoster({ projectId }: Props) {
 
               {/* Inline Invite Form */}
               {isEditing && !member && (
-                <div className="mt-3 pt-3 border-t border-gray-100 flex gap-2">
+                <div className="mt-3 pt-3 border-t border-border-accent flex gap-2">
                   <input
                     type="text"
                     value={inviteName}
                     onChange={e => setInviteName(e.target.value)}
                     placeholder="Name"
-                    className="flex-1 border border-gray-200 rounded-md px-3 py-2 text-xs focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition"
+                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition"
                     autoFocus
                   />
                   <input
@@ -230,7 +230,7 @@ export default function DealRoster({ projectId }: Props) {
                     value={inviteEmail}
                     onChange={e => setInviteEmail(e.target.value)}
                     placeholder="email@company.com"
-                    className="flex-[2] border border-gray-200 rounded-md px-3 py-2 text-xs focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition"
+                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition"
                   />
                   <button
                     onClick={() => handleAssign(role)}
@@ -241,7 +241,7 @@ export default function DealRoster({ projectId }: Props) {
                   </button>
                   <button
                     onClick={() => { setEditingRole(null); setInviteEmail(''); setInviteName(''); }}
-                    className="p-2 text-gray-400 hover:text-gray-600 transition"
+                    className="p-2 text-text-secondary hover:text-text-secondary transition"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>

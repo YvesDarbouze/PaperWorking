@@ -109,13 +109,13 @@ export default function GuestPortalPage() {
   // ── Invalid / Expired Token ──────────────────────────
   if (!dealData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
         <div className="text-center max-w-sm">
           <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Shield className="w-7 h-7 text-red-400" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Invalid or Expired Link</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-text-primary mb-2">Invalid or Expired Link</h1>
+          <p className="text-sm text-text-secondary">
             This investment portal link is no longer valid. Please contact the deal sponsor for a new invitation.
           </p>
         </div>
@@ -126,13 +126,13 @@ export default function GuestPortalPage() {
   // ── Declined State ──────────────────────────────────
   if (declined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
         <div className="text-center max-w-sm">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <XCircle className="w-7 h-7 text-gray-400" />
+          <div className="w-16 h-16 bg-bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <XCircle className="w-7 h-7 text-text-secondary" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Offer Declined</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-text-primary mb-2">Offer Declined</h1>
+          <p className="text-sm text-text-secondary">
             You have declined this investment opportunity. The deal sponsor has been notified.
           </p>
         </div>
@@ -143,27 +143,27 @@ export default function GuestPortalPage() {
   // ── Submitted State ──────────────────────────────────
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
         <div className="text-center max-w-sm">
           <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-500" />
           </div>
-          <h1 className="text-xl font-bold text-gray-900 mb-2">Commitment Confirmed!</h1>
-          <p className="text-sm text-gray-500 mb-4">
+          <h1 className="text-xl font-bold text-text-primary mb-2">Commitment Confirmed!</h1>
+          <p className="text-sm text-text-secondary mb-4">
             Your digital signature has been recorded. The deal sponsor will follow up with the formal subscription agreement.
           </p>
-          <div className="bg-white rounded-xl border border-gray-200 p-4 text-left">
+          <div className="bg-bg-surface rounded-xl border border-border-accent p-4 text-left">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-500">Investment:</span>
+                <span className="text-text-secondary">Investment:</span>
                 <span className="font-semibold">${dealData.investmentAmount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Equity:</span>
+                <span className="text-text-secondary">Equity:</span>
                 <span className="font-semibold">{dealData.equitySplit}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Status:</span>
+                <span className="text-text-secondary">Status:</span>
                 <span className="font-semibold text-emerald-600">Signed</span>
               </div>
             </div>
@@ -175,43 +175,43 @@ export default function GuestPortalPage() {
 
   // ── Main Portal View ──────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-primary">
       {/* Minimal Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <header className="bg-bg-surface border-b border-border-accent px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
               <span className="text-white text-xs font-bold">PW</span>
             </div>
-            <span className="text-sm font-semibold text-gray-900 tracking-tight">PaperWorking</span>
+            <span className="text-sm font-semibold text-text-primary tracking-tight">PaperWorking</span>
           </div>
-          <span className="text-xs text-gray-400">Secure Investor Portal</span>
+          <span className="text-xs text-text-secondary">Secure Investor Portal</span>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-8 space-y-6">
         {/* Welcome */}
         <div>
-          <p className="text-sm text-gray-500 mb-1">Hello, {dealData.investorName}</p>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Investment Opportunity</h1>
+          <p className="text-sm text-text-secondary mb-1">Hello, {dealData.investorName}</p>
+          <h1 className="text-2xl font-bold text-text-primary tracking-tight">Investment Opportunity</h1>
         </div>
 
         {/* Deal Summary Card */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-bg-surface rounded-2xl border border-border-accent overflow-hidden shadow-sm">
           <div className="h-28 bg-gradient-to-br from-teal-100 to-cyan-50 flex items-center justify-center">
             <Home className="w-10 h-10 text-teal-300" />
           </div>
           <div className="p-5">
-            <h2 className="text-lg font-semibold text-gray-900">{dealData.dealName}</h2>
-            <p className="text-sm text-gray-500 mb-4">{dealData.propertyAddress}</p>
+            <h2 className="text-lg font-semibold text-text-primary">{dealData.dealName}</h2>
+            <p className="text-sm text-text-secondary mb-4">{dealData.propertyAddress}</p>
             <div className="grid grid-cols-3 gap-3">
-              <div className="bg-gray-50 rounded-xl px-3 py-2.5 text-center">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">Target Price</p>
-                <p className="text-sm font-bold text-gray-900">${dealData.purchasePrice.toLocaleString()}</p>
+              <div className="bg-bg-primary rounded-xl px-3 py-2.5 text-center">
+                <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-widest mb-0.5">Target Price</p>
+                <p className="text-sm font-bold text-text-primary">${dealData.purchasePrice.toLocaleString()}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl px-3 py-2.5 text-center">
-                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-0.5">ARV</p>
-                <p className="text-sm font-bold text-gray-900">${dealData.estimatedARV.toLocaleString()}</p>
+              <div className="bg-bg-primary rounded-xl px-3 py-2.5 text-center">
+                <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-widest mb-0.5">ARV</p>
+                <p className="text-sm font-bold text-text-primary">${dealData.estimatedARV.toLocaleString()}</p>
               </div>
               <div className="bg-teal-50 rounded-xl px-3 py-2.5 text-center">
                 <p className="text-[10px] font-semibold text-teal-600 uppercase tracking-widest mb-0.5">Expected ROI</p>
@@ -222,10 +222,10 @@ export default function GuestPortalPage() {
         </div>
 
         {/* LOI Preview */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-bg-surface rounded-2xl border border-border-accent p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FileText className="w-4 h-4 text-teal-600" />
-            <h3 className="text-sm font-semibold text-gray-900">Letter of Intent — Terms</h3>
+            <h3 className="text-sm font-semibold text-text-primary">Letter of Intent — Terms</h3>
           </div>
 
           <div className="space-y-3">
@@ -237,36 +237,36 @@ export default function GuestPortalPage() {
               { label: 'Term Length', value: `${dealData.termMonths} months` },
             ].map((item) => (
               <div key={item.label} className="flex justify-between py-2 border-b border-gray-50 last:border-b-0">
-                <span className="text-sm text-gray-500">{item.label}</span>
-                <span className="text-sm font-semibold text-gray-900">{item.value}</span>
+                <span className="text-sm text-text-secondary">{item.label}</span>
+                <span className="text-sm font-semibold text-text-primary">{item.value}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-gray-400 mt-4 leading-relaxed">
+          <p className="text-xs text-text-secondary mt-4 leading-relaxed">
             This Letter of Intent is non-binding and subject to the execution of a definitive subscription agreement.
             By signing below, you indicate your intent to proceed under the terms outlined above.
           </p>
         </div>
 
         {/* Signature Canvas */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-bg-surface rounded-2xl border border-border-accent p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Pen className="w-4 h-4 text-teal-600" />
-              <h3 className="text-sm font-semibold text-gray-900">Digital Signature</h3>
+              <h3 className="text-sm font-semibold text-text-primary">Digital Signature</h3>
             </div>
             {hasSigned && (
               <button
                 onClick={clearSignature}
-                className="text-xs text-gray-400 hover:text-gray-600 transition"
+                className="text-xs text-text-secondary hover:text-text-secondary transition"
               >
                 Clear
               </button>
             )}
           </div>
 
-          <div className="relative border-2 border-dashed border-gray-200 rounded-xl overflow-hidden bg-gray-50/50">
+          <div className="relative border-2 border-dashed border-border-accent rounded-xl overflow-hidden bg-bg-primary/50">
             <canvas
               ref={canvasRef}
               width={600}
@@ -290,14 +290,14 @@ export default function GuestPortalPage() {
           <button
             onClick={handleSign}
             disabled={!hasSigned}
-            className="w-full py-4 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition shadow-lg shadow-teal-600/20 flex items-center justify-center gap-2"
+            className="w-full py-4 bg-teal-600 text-white text-sm font-semibold rounded-xl hover:bg-teal-700 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition shadow-lg shadow-teal-600/20 flex items-center justify-center gap-2"
           >
             <CheckCircle2 className="w-4 h-4" />
             Digitally Sign & Commit Funds
           </button>
           <button
             onClick={handleDecline}
-            className="w-full py-3 bg-white text-gray-500 text-sm font-medium rounded-xl border border-gray-200 hover:bg-gray-50 hover:text-gray-700 transition"
+            className="w-full py-3 bg-bg-surface text-text-secondary text-sm font-medium rounded-xl border border-border-accent hover:bg-bg-primary hover:text-text-primary transition"
           >
             Decline Offer
           </button>
@@ -305,9 +305,9 @@ export default function GuestPortalPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white mt-12 py-6 px-4 text-center">
-        <p className="text-xs text-gray-400">
-          Powered by <strong className="text-gray-600">PaperWorking</strong> · Secure Investment Portal
+      <footer className="border-t border-border-accent bg-bg-surface mt-12 py-6 px-4 text-center">
+        <p className="text-xs text-text-secondary">
+          Powered by <strong className="text-text-secondary">PaperWorking</strong> · Secure Investment Portal
         </p>
       </footer>
     </div>

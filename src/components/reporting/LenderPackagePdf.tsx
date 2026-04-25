@@ -139,16 +139,16 @@ export default function LenderPackagePdf() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-         <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2"><FileText className="w-5 h-5 text-blue-600"/> Lender Package Generator</h3>
-         <p className="text-sm text-gray-500 mt-1">Export professional PDF reports combining ARV, actual rehabs, and ROI to secure funding.</p>
+         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2"><FileText className="w-5 h-5 text-blue-600"/> Lender Package Generator</h3>
+         <p className="text-sm text-text-secondary mt-1">Export professional PDF reports combining ARV, actual rehabs, and ROI to secure funding.</p>
       </div>
       <div className="flex gap-3">
          <select 
            value={selectedDealId}
            onChange={(e) => setSelectedDealId(e.target.value)}
-           className="border border-gray-300 rounded-lg text-sm p-2 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none min-w-[200px]"
+           className="border border-border-accent rounded-lg text-sm p-2 bg-bg-primary focus:ring-2 focus:ring-blue-500 focus:outline-none min-w-[200px]"
          >
            <option value="" disabled>Select Property...</option>
            {projects.map(d => (

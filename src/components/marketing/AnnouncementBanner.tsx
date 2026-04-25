@@ -48,7 +48,7 @@ export default function AnnouncementBanner() {
             
             <button 
               onClick={handleDismiss}
-              className="p-1 hover:bg-white/10 rounded-full transition-colors"
+              className="p-1 hover:bg-bg-surface/10 rounded-full transition-colors"
             >
               <X className="w-4 h-4" />
             </button>

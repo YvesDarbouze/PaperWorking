@@ -91,9 +91,9 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
             <h2 className="text-xl font-light tracking-wide text-gray-200 flex items-center">
               The Exit Strategy Board <PhaseBadge status={currentProject.status} className="ml-3" />
             </h2>
-            <p className="text-xs text-gray-500 mt-1">{currentProject.propertyName} • {currentProject.address}</p>
+            <p className="text-xs text-text-secondary mt-1">{currentProject.propertyName} • {currentProject.address}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition text-gray-400">
+          <button onClick={onClose} className="p-2 hover:bg-bg-surface/10 rounded-full transition text-text-secondary">
              <X className="w-5 h-5"/>
           </button>
         </div>
@@ -112,22 +112,22 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                  
                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Photography Assets Uploaded</label>
+                      <label className="text-xs text-text-secondary block mb-1">Photography Assets Uploaded</label>
                       <div className="flex items-center space-x-3">
                          <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-black border border-gray-700 rounded-lg p-2 w-20 text-center focus:border-emerald-500 focus:outline-none" />
-                         <span className="text-sm text-gray-500">.JPG / .PNG / .MP4</span>
+                         <span className="text-sm text-text-secondary">.JPG / .PNG / .MP4</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Live MLS Link</label>
+                      <label className="text-xs text-text-secondary block mb-1">Live MLS Link</label>
                       <div className="relative">
-                         <LinkIcon className="absolute left-3 top-2.5 w-4 h-4 text-gray-500" />
+                         <LinkIcon className="absolute left-3 top-2.5 w-4 h-4 text-text-secondary" />
                          <input type="url" placeholder="https://zillow.com/homedetails/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-black border border-gray-700 rounded-lg py-2 pl-9 pr-3 w-full text-sm focus:border-emerald-500 focus:outline-none" />
                       </div>
                     </div>
                     
-                    <button onClick={handleUpdateListing} className="w-full mt-4 bg-white text-black font-semibold text-sm py-2.5 rounded-lg hover:bg-gray-200 transition active:scale-95 flex justify-center items-center">
+                    <button onClick={handleUpdateListing} className="w-full mt-4 bg-bg-surface text-text-primary font-semibold text-sm py-2.5 rounded-lg hover:bg-gray-200 transition active:scale-95 flex justify-center items-center">
                        <span>Push Updates to MLS</span>
                     </button>
                  </div>
@@ -138,40 +138,40 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                  <div className="flex justify-between items-center mb-4">
                    <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase flex items-center"><DollarSign className="w-3 h-3 mr-2" /> Final Capital Mechanics</h3>
                    <label className="flex items-center space-x-2 cursor-pointer">
-                     <span className="text-xs text-gray-500 font-medium">BRRRR Mode</span>
+                     <span className="text-xs text-text-secondary font-medium">BRRRR Mode</span>
                      <div className="relative">
                        <input type="checkbox" className="sr-only" checked={isBrrrr} onChange={() => setIsBrrrr(!isBrrrr)} />
                        <div className={`block w-10 h-6 rounded-full transition-colors ${isBrrrr ? 'bg-emerald-500' : 'bg-gray-700'}`}></div>
-                       <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${isBrrrr ? 'translate-x-4' : ''}`}></div>
+                       <div className={`dot absolute left-1 top-1 bg-bg-surface w-4 h-4 rounded-full transition-transform ${isBrrrr ? 'translate-x-4' : ''}`}></div>
                      </div>
                    </label>
                  </div>
                  
                  <div className="space-y-5">
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">{isBrrrr ? 'Refinance Appraisal Value ($)' : 'Gross Sale Trigger ($)'}</label>
+                      <label className="text-xs text-text-secondary block mb-1">{isBrrrr ? 'Refinance Appraisal Value ($)' : 'Gross Sale Trigger ($)'}</label>
                       <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-3 w-full text-lg font-light tracking-wide focus:border-emerald-500 focus:outline-none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Buyer Comm.</label>
+                        <label className="text-xs uppercase tracking-wider text-text-secondary block mb-1">Buyer Comm.</label>
                         <div className="relative">
                           <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
+                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-text-secondary" />
                         </div>
                       </div>
                       <div>
-                        <label className="text-xs uppercase tracking-wider text-gray-500 block mb-1">Seller Comm.</label>
+                        <label className="text-xs uppercase tracking-wider text-text-secondary block mb-1">Seller Comm.</label>
                         <div className="relative">
                           <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-gray-500" />
+                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-text-secondary" />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs text-gray-500 block mb-1">Final Closing & Concessions ($)</label>
+                      <label className="text-xs text-text-secondary block mb-1">Final Closing & Concessions ($)</label>
                       <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm focus:border-emerald-500 focus:outline-none" />
                     </div>
 
@@ -205,7 +205,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                      </div>
                   </div>
                ) : (
-                  <div className="mt-6 border border-gray-800 border-dashed  h-48 flex items-center justify-center flex-col text-gray-600 bg-black/20">
+                  <div className="mt-6 border border-gray-800 border-dashed  h-48 flex items-center justify-center flex-col text-text-secondary bg-black/20">
                      <BadgePercent className="w-8 h-8 mb-2 opacity-50" />
                      <p className="text-sm font-medium">Awaiting Listing Deployment</p>
                      <p className="text-xs mt-1">Upload Staging Images & MLS Link to syndicate.</p>

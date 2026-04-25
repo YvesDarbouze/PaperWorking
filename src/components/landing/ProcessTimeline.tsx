@@ -42,14 +42,14 @@ const phases: Phase[] = [
 
 export default function ProcessTimeline() {
   return (
-    <section className="py-20 sm:py-28 bg-pw-surface border-t border-b border-pw-border" id="process">
+    <section className="py-20 sm:py-28 bg-bg-surface border-t border-b border-border-accent" id="process">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         {/* Section header */}
         <div className="text-center mb-16 sm:mb-20">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-pw-muted mb-4">
+          <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-secondary mb-4">
             Simplifying the complex
           </p>
-          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-pw-fg">
+          <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-text-primary">
             Four phases. One platform.
           </h2>
         </div>
@@ -76,12 +76,12 @@ export default function ProcessTimeline() {
                   </div>
 
                   {/* Label */}
-                  <h3 className="mt-5 text-base font-semibold text-pw-fg tracking-tight">
+                  <h3 className="mt-5 text-base font-semibold text-text-primary tracking-tight">
                     {phase.label}
                   </h3>
 
                   {/* Description */}
-                  <p className="mt-2 text-sm text-pw-muted leading-relaxed max-w-[200px]">
+                  <p className="mt-2 text-sm text-text-secondary leading-relaxed max-w-[200px]">
                     {phase.description}
                   </p>
                 </div>
@@ -109,10 +109,10 @@ export default function ProcessTimeline() {
 
                 {/* Content */}
                 <div>
-                  <h3 className="text-base font-semibold text-pw-fg tracking-tight">
+                  <h3 className="text-base font-semibold text-text-primary tracking-tight">
                     {phase.label}
                   </h3>
-                  <p className="mt-1 text-sm text-pw-muted leading-relaxed">
+                  <p className="mt-1 text-sm text-text-secondary leading-relaxed">
                     {phase.description}
                   </p>
                 </div>

@@ -72,23 +72,23 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 z-[95] h-full w-full max-w-md bg-white shadow-2xl transform transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 z-[95] h-full w-full max-w-md bg-bg-surface shadow-2xl transform transition-transform duration-300 ease-out ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+        <div className="px-6 py-5 border-b border-border-accent flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center">
               <UserPlus className="w-5 h-5 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-gray-900">Invite Investor</h2>
-              <p className="text-xs text-gray-500">{dealName}</p>
+              <h2 className="text-base font-semibold text-text-primary">Invite Investor</h2>
+              <p className="text-xs text-text-secondary">{dealName}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 transition">
-            <X className="w-5 h-5 text-gray-400" />
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-bg-primary transition">
+            <X className="w-5 h-5 text-text-secondary" />
           </button>
         </div>
 
@@ -102,7 +102,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Smith"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
             />
           </div>
 
@@ -110,13 +110,13 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
           <div>
             <label className="ag-label mb-1.5 block">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="investor@email.com"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
               />
             </div>
           </div>
@@ -126,20 +126,20 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
             <div>
               <label className="ag-label mb-1.5 block">Pledge Amount</label>
               <div className="relative">
-                <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                 <input
                   type="number"
                   value={pledgeAmount}
                   onChange={(e) => setPledgeAmount(e.target.value)}
                   placeholder="50,000"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                 />
               </div>
             </div>
             <div>
               <label className="ag-label mb-1.5 block">Equity Split</label>
               <div className="relative">
-                <Percent className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Percent className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                 <input
                   type="number"
                   value={equitySplit}
@@ -147,7 +147,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
                   placeholder="25"
                   min="0"
                   max="100"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                 />
               </div>
             </div>
@@ -157,14 +157,14 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
           <div>
             <label className="ag-label mb-1.5 block">Annual Interest Rate (%)</label>
             <div className="relative">
-              <Percent className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Percent className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
               <input
                 type="number"
                 value={interestRate}
                 onChange={(e) => setInterestRate(e.target.value)}
                 placeholder="8"
                 step="0.5"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
               />
             </div>
           </div>
@@ -182,22 +182,22 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
               onChange={(e) => setCustomTerms(e.target.value)}
               placeholder="Any additional terms, conditions, or notes for this investor..."
               rows={4}
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm resize-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm resize-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
             />
           </div>
 
           {/* Info */}
-          <p className="text-xs text-gray-400 leading-relaxed">
+          <p className="text-xs text-text-secondary leading-relaxed">
             The investor will receive an email invitation with a secure link to review the deal terms and digitally sign the Letter of Intent.
           </p>
         </div>
 
         {/* Footer CTA */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-100">
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-bg-surface border-t border-border-accent">
           <button
             onClick={handleSubmit}
             disabled={sending || !name.trim() || !email.trim()}
-            className="w-full py-3.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
           >
             {sending ? (
               <span className="animate-pulse">Sending Invitation…</span>

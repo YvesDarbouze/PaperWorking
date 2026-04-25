@@ -75,20 +75,20 @@ export default function ROIChart({ projects }: ROIChartProps) {
   const data = useMemo(() => computeROIData(projects), [projects]);
 
   return (
-    <div className="ag-card bg-pw-surface border border-pw-border/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)]">
+    <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center">
-          <TrendingUp className="w-5 h-5 text-pw-muted" />
+        <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center">
+          <TrendingUp className="w-5 h-5 text-text-secondary" />
         </div>
         <div>
           <p className="ag-label opacity-60">Performance</p>
-          <h3 className="text-2xl font-light text-pw-black tracking-tighter">ROI Timeline</h3>
+          <h3 className="text-2xl font-light text-text-primary tracking-tighter">ROI Timeline</h3>
         </div>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-pw-muted opacity-30">
+        <div className="flex flex-col items-center justify-center py-16 text-text-secondary opacity-30">
           <TrendingUp className="w-12 h-12 mb-4 stroke-1" />
           <p className="text-sm font-medium">No completed exits yet</p>
           <p className="text-xs mt-1 opacity-50">Close your first deal to see ROI data</p>
@@ -127,7 +127,7 @@ export default function ROIChart({ projects }: ROIChartProps) {
                 contentStyle={{
                   background: '#ffffff',
                   border: '1px solid #e0e0e0',
-                  borderRadius: '16px',
+                  borderRadius: '6px',
                   padding: '12px 18px',
                   boxShadow: '0 8px 30px rgba(0,0,0,0.06)',
                   fontSize: '12px',

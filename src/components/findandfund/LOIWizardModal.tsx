@@ -78,27 +78,27 @@ export default function LOIWizardModal({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white max-w-2xl w-full mx-4 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="bg-bg-surface max-w-2xl w-full mx-4 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 pt-5 pb-4 border-b border-gray-100 flex items-center justify-between shrink-0">
+        <div className="px-6 pt-5 pb-4 border-b border-border-accent flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center">
               <FileText className="w-5 h-5 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-gray-900">Letter of Intent</h2>
-              <p className="text-xs text-gray-500">
+              <h2 className="text-base font-semibold text-text-primary">Letter of Intent</h2>
+              <p className="text-xs text-text-secondary">
                 {investorName} · {dealName}
               </p>
             </div>
           </div>
-          <button onClick={handleClose} className="p-2 rounded-lg hover:bg-gray-100 transition">
-            <X className="w-5 h-5 text-gray-400" />
+          <button onClick={handleClose} className="p-2 rounded-lg hover:bg-bg-primary transition">
+            <X className="w-5 h-5 text-text-secondary" />
           </button>
         </div>
 
         {/* Step Indicator */}
-        <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 shrink-0">
+        <div className="px-6 py-3 bg-bg-primary border-b border-border-accent shrink-0">
           <div className="flex items-center gap-2">
             {stepLabels.map((label, i) => {
               const stepNum = (i + 1) as WizardStep;
@@ -114,12 +114,12 @@ export default function LOIWizardModal({
                           ? 'bg-teal-600 text-white'
                           : isActive
                             ? 'bg-teal-100 text-teal-700 ring-2 ring-teal-400'
-                            : 'bg-gray-100 text-gray-400'
+                            : 'bg-bg-primary text-text-secondary'
                       }`}
                     >
                       {isComplete ? <CheckCircle2 className="w-3.5 h-3.5" /> : stepNum}
                     </div>
-                    <span className={`text-xs font-medium ${isActive ? 'text-gray-900' : 'text-gray-400'}`}>
+                    <span className={`text-xs font-medium ${isActive ? 'text-text-primary' : 'text-text-secondary'}`}>
                       {label}
                     </span>
                   </div>
@@ -137,13 +137,13 @@ export default function LOIWizardModal({
               <div>
                 <label className="ag-label mb-1.5 block">Legal Entity Name</label>
                 <div className="relative">
-                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                   <input
                     type="text"
                     value={legalEntity}
                     onChange={(e) => setLegalEntity(e.target.value)}
                     placeholder="e.g. Sunrise Capital Holdings LLC"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                   />
                 </div>
               </div>
@@ -152,26 +152,26 @@ export default function LOIWizardModal({
                 <div>
                   <label className="ag-label mb-1.5 block">Investment Amount</label>
                   <div className="relative">
-                    <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                     <input
                       type="number"
                       value={investmentAmount}
                       onChange={(e) => setInvestmentAmount(e.target.value)}
                       placeholder="100,000"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                      className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                     />
                   </div>
                 </div>
                 <div>
                   <label className="ag-label mb-1.5 block">Term Length (Months)</label>
                   <div className="relative">
-                    <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                     <input
                       type="number"
                       value={termLength}
                       onChange={(e) => setTermLength(e.target.value)}
                       placeholder="12"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                      className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                     />
                   </div>
                 </div>
@@ -187,7 +187,7 @@ export default function LOIWizardModal({
                     placeholder="25"
                     min="0"
                     max="100"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full px-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                   />
                 </div>
                 <div>
@@ -198,7 +198,7 @@ export default function LOIWizardModal({
                     onChange={(e) => setInterestRate(e.target.value)}
                     placeholder="8"
                     step="0.5"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full px-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
                   />
                 </div>
               </div>
@@ -207,14 +207,14 @@ export default function LOIWizardModal({
 
           {/* Step 2: Preview */}
           {step === 2 && (
-            <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+            <div className="bg-bg-surface border border-border-accent rounded-xl p-8 shadow-sm">
               {/* Letterhead */}
               <div className="border-b-2 border-gray-900 pb-4 mb-6">
-                <h3 className="text-lg font-bold text-gray-900 tracking-tight">LETTER OF INTENT</h3>
-                <p className="text-xs text-gray-500 mt-1">{formattedDate}</p>
+                <h3 className="text-lg font-bold text-text-primary tracking-tight">LETTER OF INTENT</h3>
+                <p className="text-xs text-text-secondary mt-1">{formattedDate}</p>
               </div>
 
-              <div className="space-y-4 text-sm text-gray-700 leading-relaxed">
+              <div className="space-y-4 text-sm text-text-primary leading-relaxed">
                 <p>
                   <strong>To:</strong> {investorName} ({investorEmail})
                 </p>
@@ -225,7 +225,7 @@ export default function LOIWizardModal({
                   <strong>Property:</strong> {propertyAddress}
                 </p>
 
-                <div className="h-px bg-gray-100 my-4" />
+                <div className="h-px bg-bg-primary my-4" />
 
                 <p>Dear {investorName},</p>
 
@@ -234,22 +234,22 @@ export default function LOIWizardModal({
                   in the investment of the above-referenced property through <strong>{legalEntity || '[Legal Entity]'}</strong>.
                 </p>
 
-                <div className="bg-gray-50 rounded-xl p-4 space-y-2 my-4">
+                <div className="bg-bg-primary rounded-xl p-4 space-y-2 my-4">
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Investment Amount:</span>
+                    <span className="text-text-secondary">Investment Amount:</span>
                     <span className="font-semibold">${parseFloat(investmentAmount || '0').toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Term Length:</span>
+                    <span className="text-text-secondary">Term Length:</span>
                     <span className="font-semibold">{termLength} months</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-500">Equity Split:</span>
+                    <span className="text-text-secondary">Equity Split:</span>
                     <span className="font-semibold">{equitySplit || '—'}%</span>
                   </div>
                   {interestRate && (
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Annual Interest Rate:</span>
+                      <span className="text-text-secondary">Annual Interest Rate:</span>
                       <span className="font-semibold">{interestRate}%</span>
                     </div>
                   )}
@@ -260,7 +260,7 @@ export default function LOIWizardModal({
                   Upon your acceptance, a formal subscription agreement will be prepared for execution.
                 </p>
 
-                <p className="text-gray-400 text-xs mt-6">
+                <p className="text-text-secondary text-xs mt-6">
                   Generated via PaperWorking · {formattedDate}
                 </p>
               </div>
@@ -273,12 +273,12 @@ export default function LOIWizardModal({
               <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Send className="w-7 h-7 text-teal-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to Send</h3>
-              <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">Ready to Send</h3>
+              <p className="text-sm text-text-secondary mb-6 max-w-sm mx-auto">
                 This LOI will be sent to <strong>{investorEmail}</strong> for digital review and signature via the Guest Portal.
               </p>
 
-              <div className="bg-gray-50 rounded-xl p-4 text-left space-y-2 mb-6 max-w-sm mx-auto">
+              <div className="bg-bg-primary rounded-xl p-4 text-left space-y-2 mb-6 max-w-sm mx-auto">
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                   <span>LOI document generated</span>
@@ -309,8 +309,8 @@ export default function LOIWizardModal({
               <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">LOI Dispatched!</h3>
-              <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">LOI Dispatched!</h3>
+              <p className="text-sm text-text-secondary mb-6 max-w-sm mx-auto">
                 {investorName} will receive an email with a secure link to review the terms and digitally sign.
               </p>
               <button
@@ -325,11 +325,11 @@ export default function LOIWizardModal({
 
         {/* Footer Navigation */}
         {!dispatched && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between shrink-0">
+          <div className="px-6 py-4 border-t border-border-accent flex items-center justify-between shrink-0">
             <button
               onClick={() => step > 1 && setStep((step - 1) as WizardStep)}
               disabled={step === 1}
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm text-text-secondary hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
             >
               <ChevronLeft className="w-4 h-4" />
               Back
@@ -338,7 +338,7 @@ export default function LOIWizardModal({
               <button
                 onClick={() => setStep((step + 1) as WizardStep)}
                 disabled={step === 1 && !canProceedStep1}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition"
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition"
               >
                 {step === 1 ? 'Preview LOI' : 'Continue'}
                 <ChevronRight className="w-4 h-4" />

@@ -31,7 +31,7 @@ function FacebookIcon({ className }: { className?: string }) {
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-white border-t border-[var(--pw-border)] py-12">
+    <footer className="bg-[var(--pw-bg)] border-t border-[var(--pw-border)] py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
         <div className="flex items-center gap-8">
           <Logo size="sm" />
@@ -41,10 +41,10 @@ export default function LandingFooter() {
         </div>
         <nav className="flex items-center gap-8" aria-label="Footer navigation">
           <Link
-            href="#faq"
+            href="/support"
             className="text-xs font-bold text-[var(--pw-subtle)] uppercase tracking-widest hover:text-[var(--pw-black)] transition-colors"
           >
-            FAQ
+            Support
           </Link>
           <div className="flex items-center gap-4 border-l border-[var(--pw-border)] pl-8">
             <Link

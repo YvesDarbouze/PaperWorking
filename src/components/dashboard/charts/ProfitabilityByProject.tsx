@@ -101,10 +101,10 @@ function ProfitTooltip({ active, payload }: { active?: boolean; payload?: Array<
   if (!active || !payload?.length) return null;
   const d = payload[0];
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-gray-900 font-medium mb-1">{d.payload.name}</p>
+    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
+      <p className="text-text-primary font-medium mb-1">{d.payload.name}</p>
       <p className="flex items-center gap-2">
-        <span className="text-gray-500">Net Profit:</span>
+        <span className="text-text-secondary">Net Profit:</span>
         <span className={`font-mono font-semibold ${d.value >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
           {d.value >= 0 ? '+' : '-'}${Math.abs(d.value).toLocaleString()}
         </span>
@@ -123,7 +123,7 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-xs">
+      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
         No completed flips {year ? `in ${year}` : ''} to chart.
       </div>
     );

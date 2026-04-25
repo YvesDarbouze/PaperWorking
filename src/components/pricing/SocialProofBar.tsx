@@ -19,7 +19,7 @@ const logos = [
 export default function SocialProofBar() {
   return (
     <div className="w-full max-w-5xl mx-auto mt-20 px-4">
-      <div className="border border-phase-1 bg-white py-8 px-6 shadow-sm">
+      <div className="border border-phase-1 bg-bg-surface py-8 px-6 shadow-sm">
 
         {/* Rating */}
         <div className="flex justify-center items-center mb-6">

@@ -70,21 +70,21 @@ export default function PhotographyUploadManager() {
           <Camera className="w-4 h-4 text-emerald-500" />
           <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase">Photography & Media</h3>
         </div>
-        <span className="text-xs text-gray-500">{uploadedCount}/{assets.length} ready</span>
+        <span className="text-xs text-text-secondary">{uploadedCount}/{assets.length} ready</span>
       </div>
 
       {/* Summary Strip */}
       <div className="grid grid-cols-3 gap-2 mb-5">
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-gray-500">Photos</p>
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Photos</p>
           <p className="text-lg font-light text-white">{photoCount}</p>
         </div>
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-gray-500">Videos</p>
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Videos</p>
           <p className="text-lg font-light text-white">{videoCount}</p>
         </div>
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-gray-500">Total</p>
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Total</p>
           <p className="text-lg font-light text-white">{uploadedCount}</p>
         </div>
       </div>
@@ -119,10 +119,10 @@ export default function PhotographyUploadManager() {
         {assets.filter(a => !a.uploaded).map(asset => (
           <div key={asset.id} className="flex items-center justify-between p-3 border border-gray-800 rounded-lg bg-black/20 group">
             <div className="flex items-center space-x-3">
-              <span className="text-gray-500">{TYPE_ICONS[asset.type]}</span>
+              <span className="text-text-secondary">{TYPE_ICONS[asset.type]}</span>
               <div>
                 <p className="text-sm text-gray-300">{asset.name || 'Untitled Asset'}</p>
-                <p className="text-xs text-gray-500">{asset.type} · {asset.room || 'Unassigned'}</p>
+                <p className="text-xs text-text-secondary">{asset.type} · {asset.room || 'Unassigned'}</p>
               </div>
             </div>
             <button
@@ -138,7 +138,7 @@ export default function PhotographyUploadManager() {
       {/* Add Asset Button */}
       <button
         onClick={handleAddAsset}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-2 border border-dashed border-gray-700 rounded-lg text-xs text-gray-500 hover:text-gray-300 hover:border-gray-600 transition"
+        className="mt-4 w-full flex items-center justify-center gap-2 py-2 border border-dashed border-gray-700 rounded-lg text-xs text-text-secondary hover:text-gray-300 hover:border-gray-600 transition"
       >
         <Upload className="w-3 h-3" /> Add Media Asset
       </button>

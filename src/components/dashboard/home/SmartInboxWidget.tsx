@@ -82,19 +82,19 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
   return (
     <>
       {/* ── Collapsed Card ── */}
-      <div className="ag-card bg-pw-surface border border-pw-border/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)]">
+      <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)]">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center">
-              <Mail className="w-5 h-5 text-pw-muted" />
+            <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center">
+              <Mail className="w-5 h-5 text-text-secondary" />
             </div>
             <div>
               <p className="ag-label opacity-60">Inbox</p>
-              <h3 className="text-2xl font-light text-pw-black tracking-tighter">Messages</h3>
+              <h3 className="text-2xl font-light text-text-primary tracking-tighter">Messages</h3>
             </div>
           </div>
           {totalUnread > 0 && (
-            <div className="flex items-center gap-2 bg-pw-black text-pw-white px-4 py-1.5 rounded-full">
+            <div className="flex items-center gap-2 bg-pw-black text-pw-white px-4 py-1.5 rounded">
               <span className="text-xs font-bold">{totalUnread}</span>
               <span className="text-[9px] uppercase tracking-widest opacity-60">unread</span>
             </div>
@@ -103,22 +103,22 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
 
         {groups.length === 0 ? (
           <div className="py-8 text-center">
-            <MessageSquare className="w-8 h-8 mx-auto text-pw-muted opacity-20 mb-3" />
-            <p className="text-sm text-pw-muted opacity-40">Inbox clear</p>
+            <MessageSquare className="w-8 h-8 mx-auto text-text-secondary opacity-20 mb-3" />
+            <p className="text-sm text-text-secondary opacity-40">Inbox clear</p>
           </div>
         ) : (
           <div className="space-y-2">
             {groups.map(group => (
               <div
                 key={group.role}
-                className="flex items-center justify-between px-4 py-3 rounded-2xl bg-pw-bg/50 border border-pw-border/10 hover:bg-pw-bg transition-all"
+                className="flex items-center justify-between px-4 py-3 rounded-md bg-bg-primary/50 border border-border-accent/10 hover:bg-bg-primary transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-pw-muted">{group.icon}</div>
-                  <span className="text-sm font-medium text-pw-black tracking-tight">{group.role}</span>
+                  <div className="text-text-secondary">{group.icon}</div>
+                  <span className="text-sm font-medium text-text-primary tracking-tight">{group.role}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-pw-black bg-pw-bg px-3 py-1 rounded-full border border-pw-border/30">
+                  <span className="text-xs font-bold text-text-primary bg-bg-primary px-3 py-1 rounded border border-border-accent/30">
                     {group.count}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
         {groups.length > 0 && (
           <button
             onClick={() => setIsExpanded(true)}
-            className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-pw-bg text-pw-black text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all border border-pw-border/20"
+            className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded bg-bg-primary text-text-primary text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all border border-border-accent/20"
           >
             Expand Inbox
             <ChevronRight className="w-3.5 h-3.5" />
@@ -155,16 +155,16 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: '-100%', opacity: 0 }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed left-0 top-0 bottom-0 w-full max-w-md bg-pw-surface z-[80] shadow-2xl overflow-y-auto"
+              className="fixed left-0 top-0 bottom-0 w-full max-w-md bg-bg-surface z-[80] shadow-2xl overflow-y-auto"
             >
-              <div className="sticky top-0 bg-pw-surface/95 backdrop-blur-md px-6 py-5 border-b border-pw-border/20 flex items-center justify-between z-10">
+              <div className="sticky top-0 bg-bg-surface/95 backdrop-blur-md px-6 py-5 border-b border-border-accent/20 flex items-center justify-between z-10">
                 <div>
                   <p className="ag-label opacity-60 mb-1">Inbox</p>
-                  <h3 className="text-xl font-light text-pw-black tracking-tighter">All Messages</h3>
+                  <h3 className="text-xl font-light text-text-primary tracking-tighter">All Messages</h3>
                 </div>
                 <button
                   onClick={() => setIsExpanded(false)}
-                  className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center hover:bg-pw-black hover:text-pw-white transition-all text-pw-muted"
+                  className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center hover:bg-pw-black hover:text-pw-white transition-all text-text-secondary"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -174,25 +174,25 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
                 {groups.map(group => (
                   <div key={group.role}>
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="text-pw-muted">{group.icon}</div>
+                      <div className="text-text-secondary">{group.icon}</div>
                       <h4 className="ag-label opacity-80 text-[10px]">{group.role}</h4>
-                      <span className="text-[9px] bg-pw-bg px-2 py-0.5 rounded-full text-pw-muted font-bold">{group.count}</span>
+                      <span className="text-[9px] bg-bg-primary px-2 py-0.5 rounded text-text-secondary font-bold">{group.count}</span>
                     </div>
                     <div className="space-y-2">
                       {group.messages.map(msg => (
                         <div
                           key={msg.id}
-                          className="flex items-start gap-3 px-4 py-4 rounded-2xl bg-pw-bg/30 border border-pw-border/10 hover:bg-pw-bg transition-all cursor-pointer"
+                          className="flex items-start gap-3 px-4 py-4 rounded-md bg-bg-primary/30 border border-border-accent/10 hover:bg-bg-primary transition-all cursor-pointer"
                         >
-                          <div className="w-8 h-8 rounded-full bg-pw-black text-pw-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                          <div className="w-8 h-8 rounded-md bg-pw-black text-pw-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                             {msg.sender[0]}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-pw-black tracking-tight">{msg.sender}</span>
-                              <span className="text-[10px] text-pw-muted opacity-40">{msg.time}</span>
+                              <span className="text-sm font-medium text-text-primary tracking-tight">{msg.sender}</span>
+                              <span className="text-[10px] text-text-secondary opacity-40">{msg.time}</span>
                             </div>
-                            <p className="text-xs text-pw-muted truncate">{msg.preview}</p>
+                            <p className="text-xs text-text-secondary truncate">{msg.preview}</p>
                           </div>
                           {!msg.read && (
                             <div className="w-2 h-2 rounded-full bg-pw-black flex-shrink-0 mt-2" />

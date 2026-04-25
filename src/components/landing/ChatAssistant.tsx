@@ -127,7 +127,7 @@ export default function ChatAssistant() {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-48px)] bg-white border border-phase-1 shadow-xl flex flex-col transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-24 right-6 z-50 w-[360px] max-w-[calc(100vw-48px)] bg-bg-surface border border-phase-1 shadow-xl flex flex-col transition-all duration-300 origin-bottom-right ${
           isOpen
             ? 'opacity-100 scale-100 translate-y-0'
             : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
@@ -168,7 +168,7 @@ export default function ChatAssistant() {
                 <div
                   className={`px-3 py-2.5 text-xs leading-relaxed ${
                     msg.role === 'assistant'
-                      ? 'bg-white border border-phase-1 text-phase-4'
+                      ? 'bg-bg-surface border border-phase-1 text-phase-4'
                       : 'bg-black text-white'
                   }`}
                 >
@@ -185,7 +185,7 @@ export default function ChatAssistant() {
                 <div className="w-6 h-6 shrink-0 flex items-center justify-center mt-0.5 bg-black">
                   <Bot className="w-3 h-3 text-white" />
                 </div>
-                <div className="bg-white border border-phase-1 px-3 py-2.5 text-xs text-phase-3">
+                <div className="bg-bg-surface border border-phase-1 px-3 py-2.5 text-xs text-phase-3">
                   <span className="inline-flex gap-1">
                     <span className="w-1.5 h-1.5 bg-phase-2 animate-bounce" style={{ animationDelay: '0ms' }} />
                     <span className="w-1.5 h-1.5 bg-phase-2 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -198,7 +198,7 @@ export default function ChatAssistant() {
         </div>
 
         {/* Input */}
-        <div className="px-4 py-3 border-t border-phase-1 bg-white shrink-0">
+        <div className="px-4 py-3 border-t border-phase-1 bg-bg-surface shrink-0">
           <form onSubmit={handleSubmit} className="flex items-center space-x-2">
             <input
               ref={inputRef}

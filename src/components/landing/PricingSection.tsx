@@ -271,7 +271,7 @@ function BillingToggle({
         aria-label="Toggle annual billing"
       >
         <div
-          className="absolute top-1 w-6 h-6 bg-white shadow-md transition-transform duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]"
+          className="absolute top-1 w-6 h-6 bg-bg-surface shadow-md transition-transform duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]"
           style={{
             borderRadius: '9999px',
             transform: isAnnual ? 'translateX(33px)' : 'translateX(5px)',
@@ -334,8 +334,8 @@ function PricingCard({
       text: '#595959',
       textMuted: '#7f7f7f',
       border: '1px solid #cccccc',
-      ctaBg: 'transparent',
-      ctaText: '#595959',
+      ctaBg: '#1a1a1a',
+      ctaText: '#ffffff',
       badgeBg: '',
       badgeText: '',
     },
@@ -354,8 +354,8 @@ function PricingCard({
       text: '#595959',
       textMuted: '#7f7f7f',
       border: '2px dashed #cccccc',
-      ctaBg: 'transparent',
-      ctaText: '#595959',
+      ctaBg: '#1a1a1a',
+      ctaText: '#ffffff',
       badgeBg: '',
       badgeText: '',
     },
@@ -452,11 +452,11 @@ function PricingCard({
           e.preventDefault();
           onSelect(`${plan.name} ${isAnnual ? 'Annual' : 'Monthly'}`);
         }}
-        className="w-full py-4 text-sm font-bold uppercase tracking-[0.15em] text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.97]"
+        className="w-full py-4 text-sm font-bold uppercase tracking-[0.15em] text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center gap-2 hover:scale-[1.02] hover:opacity-90 active:scale-[0.97]"
         style={{
-          backgroundColor: plan.isHighlighted ? s.ctaBg : 'transparent',
-          color: plan.isHighlighted ? s.ctaText : s.text,
-          border: plan.isHighlighted ? 'none' : `1.5px solid ${s.text}`,
+          backgroundColor: s.ctaBg,
+          color: s.ctaText,
+          border: 'none',
           borderRadius: '9999px',
         }}
       >

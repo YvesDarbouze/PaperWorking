@@ -252,10 +252,10 @@ export default function SettlementDocPortal() {
     <div className="space-y-5">
       {/* Header */}
       <div className="border-b-2 border-gray-900 pb-2">
-        <h4 className="text-sm font-bold tracking-widest uppercase text-gray-900">
+        <h4 className="text-sm font-bold tracking-widest uppercase text-text-primary">
           Settlement Document Portal
         </h4>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-text-secondary mt-0.5">
           Upload HUD-1 & Closing Disclosure documents for cost extraction
         </p>
       </div>
@@ -265,7 +265,7 @@ export default function SettlementDocPortal() {
         <select
           value={selectedDealId}
           onChange={e => setSelectedDealId(e.target.value)}
-          className="border border-gray-300 rounded-lg text-sm py-2 px-3 focus:ring-1 focus:ring-gray-400 outline-none bg-white min-w-[220px]"
+          className="border border-border-accent rounded-lg text-sm py-2 px-3 focus:ring-1 focus:ring-gray-400 outline-none bg-bg-surface min-w-[220px]"
         >
           <option value="" disabled>Select Property...</option>
           {projects.map(d => (
@@ -286,10 +286,10 @@ export default function SettlementDocPortal() {
 
       {/* Upload Zone */}
       {showUpload && selectedDealId && (
-        <div className="border border-gray-200 rounded-xl p-5 bg-gray-50 space-y-4">
+        <div className="border border-border-accent rounded-xl p-5 bg-bg-primary space-y-4">
           <div className="flex items-center justify-between">
-            <h5 className="text-sm font-semibold text-gray-900">New Settlement Document</h5>
-            <button onClick={() => { setShowUpload(false); setUploadFile(null); }} className="text-gray-400 hover:text-gray-600">
+            <h5 className="text-sm font-semibold text-text-primary">New Settlement Document</h5>
+            <button onClick={() => { setShowUpload(false); setUploadFile(null); }} className="text-text-secondary hover:text-text-secondary">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -303,7 +303,7 @@ export default function SettlementDocPortal() {
                 className={`flex-1 py-2.5 rounded-lg text-sm font-medium border transition ${
                   uploadType === type
                     ? 'bg-gray-900 text-white border-gray-900'
-                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    : 'bg-bg-surface text-text-primary border-border-accent hover:border-gray-400'
                 }`}
               >
                 {type}
@@ -317,7 +317,7 @@ export default function SettlementDocPortal() {
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
-              dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+              dragOver ? 'border-blue-400 bg-blue-50' : 'border-border-accent hover:border-gray-400'
             }`}
             onClick={() => {
               const input = document.createElement('input');
@@ -333,14 +333,14 @@ export default function SettlementDocPortal() {
             {uploadFile ? (
               <div className="flex items-center justify-center gap-2">
                 <FileCheck2 className="w-5 h-5 text-emerald-600" />
-                <span className="text-sm font-medium text-gray-900">{uploadFile.name}</span>
-                <span className="text-xs text-gray-400">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
+                <span className="text-sm font-medium text-text-primary">{uploadFile.name}</span>
+                <span className="text-xs text-text-secondary">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
               </div>
             ) : (
               <div>
-                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">Drop file here or click to browse</p>
-                <p className="text-xs text-gray-400 mt-1">PDF, JPEG, PNG — Max 25MB</p>
+                <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-secondary">Drop file here or click to browse</p>
+                <p className="text-xs text-text-secondary mt-1">PDF, JPEG, PNG — Max 25MB</p>
               </div>
             )}
           </div>
@@ -372,28 +372,28 @@ export default function SettlementDocPortal() {
       {selectedDealId && (
         <div className="space-y-3">
           {documents.length === 0 ? (
-            <div className="p-10 text-center text-sm text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+            <div className="p-10 text-center text-sm text-text-secondary border-2 border-dashed border-border-accent rounded-xl">
               <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
               No settlement documents uploaded for this property.
             </div>
           ) : (
             documents.map(doc => (
-              <div key={doc.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+              <div key={doc.id} className="border border-border-accent rounded-lg overflow-hidden bg-bg-surface">
                 {/* Document Header */}
                 <div
-                  className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-gray-50 transition"
+                  className="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-bg-primary transition"
                   onClick={() => setExpandedDocId(expandedDocId === doc.id ? null : doc.id)}
                 >
                   <div className="flex items-center gap-3">
                     {expandedDocId === doc.id ? (
-                      <ChevronDown className="w-4 h-4 text-gray-400" />
+                      <ChevronDown className="w-4 h-4 text-text-secondary" />
                     ) : (
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4 text-text-secondary" />
                     )}
                     <FileText className="w-4 h-4 text-blue-600" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{doc.fileName}</p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-sm font-medium text-text-primary">{doc.fileName}</p>
+                      <p className="text-xs text-text-secondary">
                         {doc.type} · Uploaded {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : 'N/A'}
                       </p>
                     </div>
@@ -413,7 +413,7 @@ export default function SettlementDocPortal() {
 
                 {/* Expanded Verification Form */}
                 {expandedDocId === doc.id && (
-                  <div className="border-t border-gray-100 px-4 py-4 bg-gray-50 space-y-4">
+                  <div className="border-t border-border-accent px-4 py-4 bg-bg-primary space-y-4">
                     <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                       <AlertCircle className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                       <p className="text-xs text-blue-700">
@@ -424,16 +424,16 @@ export default function SettlementDocPortal() {
                     <div className="grid grid-cols-2 gap-3">
                       {VERIFICATION_FIELDS.map(field => (
                         <div key={field.key} className="space-y-1">
-                          <label className="text-xs font-medium text-gray-600">{field.label}</label>
-                          <div className="flex items-center gap-1 border border-gray-300 rounded-lg bg-white overflow-hidden">
-                            <DollarSign className="w-3.5 h-3.5 text-gray-400 ml-2" />
+                          <label className="text-xs font-medium text-text-secondary">{field.label}</label>
+                          <div className="flex items-center gap-1 border border-border-accent rounded-lg bg-bg-surface overflow-hidden">
+                            <DollarSign className="w-3.5 h-3.5 text-text-secondary ml-2" />
                             <input
                               type="number"
                               value={doc[field.key] ?? ''}
                               onChange={e => updateDocField(doc.id, field.key, parseFloat(e.target.value) || 0)}
                               placeholder="0.00"
                               disabled={doc.verified}
-                              className="w-full text-sm py-2 pr-3 outline-none disabled:bg-gray-100 disabled:text-gray-500"
+                              className="w-full text-sm py-2 pr-3 outline-none disabled:bg-bg-primary disabled:text-text-secondary"
                             />
                           </div>
                         </div>
@@ -442,14 +442,14 @@ export default function SettlementDocPortal() {
 
                     {/* Notes */}
                     <div className="space-y-1">
-                      <label className="text-xs font-medium text-gray-600">Notes</label>
+                      <label className="text-xs font-medium text-text-secondary">Notes</label>
                       <textarea
                         value={doc.notes || ''}
                         onChange={e => updateDocField(doc.id, 'notes', e.target.value)}
                         disabled={doc.verified}
                         rows={2}
                         placeholder="Any discrepancies or notes..."
-                        className="w-full text-sm border border-gray-300 rounded-lg p-3 outline-none focus:ring-1 focus:ring-gray-400 disabled:bg-gray-100 resize-none"
+                        className="w-full text-sm border border-border-accent rounded-lg p-3 outline-none focus:ring-1 focus:ring-gray-400 disabled:bg-bg-primary resize-none"
                       />
                     </div>
 
@@ -473,7 +473,7 @@ export default function SettlementDocPortal() {
                       )}
                       <button
                         onClick={() => removeDocument(doc.id)}
-                        className="text-sm text-gray-500 hover:text-red-600 transition"
+                        className="text-sm text-text-secondary hover:text-red-600 transition"
                       >
                         Remove
                       </button>

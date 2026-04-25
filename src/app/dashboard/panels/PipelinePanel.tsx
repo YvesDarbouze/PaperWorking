@@ -80,7 +80,7 @@ export default function PipelinePanel() {
   }
 
   return (
-    <div className="flex flex-col bg-pw-bg font-sans px-8 sm:px-12 lg:px-16 pt-12 pb-20">
+    <div className="flex flex-col bg-bg-primary font-sans px-8 sm:px-12 lg:px-16 pt-12 pb-20">
       
       {/* Deal Creation Protocol (Wizard) */}
       {isWizardOpen && profile?.organizationId && (
@@ -114,19 +114,19 @@ export default function PipelinePanel() {
          <div className="space-y-12 delay-1">
 
             {/* ═══ Command Center Header ═══ */}
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-pw-border/20">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-border-accent/20">
                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 bg-pw-surface w-fit px-6 py-3 rounded-full border border-pw-border/30 shadow-sm">
-                     <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center border border-pw-border/50">
-                        <UserCircle className="w-6 h-6 text-pw-muted" />
+                  <div className="flex items-center space-x-4 bg-bg-surface w-fit px-6 py-3 rounded-full border border-border-accent/30 shadow-sm">
+                     <div className="w-10 h-10 rounded-full bg-bg-primary flex items-center justify-center border border-border-accent/50">
+                        <UserCircle className="w-6 h-6 text-text-secondary" />
                      </div>
                      <div>
                         <p className="ag-label text-[9px] mb-0.5 opacity-80">Perspective Node</p>
-                        <p className="text-base font-medium text-pw-black tracking-tight">{user?.displayName || 'Operator'} <span className="text-pw-muted opacity-40">/</span> <span className="text-pw-muted">{role}</span></p>
+                        <p className="text-base font-medium text-text-primary tracking-tight">{user?.displayName || 'Operator'} <span className="text-text-secondary opacity-40">/</span> <span className="text-text-secondary">{role}</span></p>
                      </div>
                   </div>
-                  <h1 className="text-6xl font-light text-pw-black tracking-tighter leading-none">Command Center</h1>
-                  <p className="text-pw-muted text-lg font-normal tracking-tight max-w-xl">Real-time pipeline intelligence across all active organizational vectors.</p>
+                  <h1 className="text-6xl font-light text-text-primary tracking-tighter leading-none">Command Center</h1>
+                  <p className="text-text-secondary text-lg font-normal tracking-tight max-w-xl">Real-time pipeline intelligence across all active organizational vectors.</p>
                </div>
                
                <div className="flex items-center gap-4">
@@ -143,7 +143,7 @@ export default function PipelinePanel() {
                      )}
                       <button 
                         onClick={() => setIsInviteModalOpen(true)}
-                        className="flex items-center gap-3 px-6 py-5 bg-white border border-pw-black text-pw-black text-sm font-black uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all shadow-sm"
+                        className="flex items-center gap-3 px-6 py-5 bg-bg-surface border border-pw-black text-text-primary text-sm font-black uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all shadow-sm"
                       >
                         <UserPlus className="w-5 h-5" />
                         <span>Invite Investor</span>
@@ -189,13 +189,13 @@ export default function PipelinePanel() {
 
             <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 delay-3">
               <div className="lg:col-span-8 2xl:col-span-9">
-                 <div className="ag-card shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col h-full min-h-[500px]">
+                 <div className="ag-card shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-border-accent/10 flex flex-col h-full min-h-[500px]">
                    <div className="flex justify-between items-start mb-12">
                       <div>
                         <p className="ag-label mb-2">Budget Variance Report</p>
-                        <h2 className="text-3xl font-light text-pw-black tracking-tighter">Fiscal_Drift_Analysis</h2>
+                        <h2 className="text-3xl font-light text-text-primary tracking-tighter">Fiscal_Drift_Analysis</h2>
                       </div>
-                      <span className="bg-pw-bg text-pw-fg text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em] flex items-center shadow-inner">
+                      <span className="bg-bg-primary text-text-primary text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em] flex items-center shadow-inner">
                          <Activity className="w-3 h-3 mr-2 animate-pulse" aria-hidden="true" /> LIVE TELEMETRY
                       </span>
                    </div>

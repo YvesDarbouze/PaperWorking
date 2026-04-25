@@ -22,10 +22,23 @@ const DashboardHome = lazy(() => import('@/components/dashboard/home/DashboardHo
 
 function PanelFallback() {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-pw-bg">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-48 animate-pulse rounded-full bg-gray-200" />
-        <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />
+    <div className="flex h-screen w-full flex-col bg-bg-primary p-8">
+      <div className="flex items-center justify-between mb-8">
+        <div className="h-10 w-48 animate-pulse rounded bg-pw-border/20" />
+        <div className="h-10 w-32 animate-pulse rounded-full bg-pw-border/20" />
+      </div>
+      <div className="grid grid-cols-12 gap-8 flex-1">
+        <div className="col-span-12 lg:col-span-3 space-y-6">
+          <div className="h-64 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-64 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+        </div>
+        <div className="col-span-12 lg:col-span-6 space-y-6">
+          <div className="h-32 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-96 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+        </div>
+        <div className="col-span-12 lg:col-span-3">
+          <div className="h-full animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+        </div>
       </div>
     </div>
   );
@@ -46,22 +59,22 @@ export default function DashboardPage() {
       <div
         role="group"
         aria-label="Dashboard view mode"
-        className="fixed bottom-8 left-8 z-[60] flex items-center bg-black/90 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-2xl"
+        className="fixed bottom-4 right-4 md:bottom-8 md:right-auto md:left-8 z-[60] flex items-center bg-black/90 backdrop-blur-md p-1.5 rounded-2xl border border-white/10 shadow-2xl"
       >
         {viewButtons.map(btn => (
           <button
             key={btn.mode}
             onClick={() => setViewMode(btn.mode)}
             aria-pressed={viewMode === btn.mode}
-            aria-label={`${btn.label} view`}
-            className={`flex items-center px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+            aria-label={`Switch to ${btn.label} view`}
+            className={`flex items-center px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
               viewMode === btn.mode
-                ? 'bg-white text-black'
-                : 'text-gray-400 hover:text-white'
+                ? 'bg-bg-surface text-text-primary'
+                : 'text-text-secondary hover:text-white'
             }`}
           >
             {btn.icon}
-            {btn.label}
+            <span className="hidden sm:inline">{btn.label}</span>
           </button>
         ))}
       </div>

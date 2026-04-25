@@ -33,9 +33,9 @@ export default function OrgRoleSelector() {
   const setOrgRole = useUserStore((s) => s.setOrgRole);
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-      <h3 className="text-sm font-semibold text-gray-900 mb-1 tracking-tight">Organization Role</h3>
-      <p className="text-xs text-gray-500 mb-5">Designate your account-level authority.</p>
+    <div className="bg-bg-surface rounded-xl border border-border-accent p-6 shadow-sm">
+      <h3 className="text-sm font-semibold text-text-primary mb-1 tracking-tight">Organization Role</h3>
+      <p className="text-xs text-text-secondary mb-5">Designate your account-level authority.</p>
 
       <div className="flex gap-3">
         {roles.map((r) => {
@@ -47,14 +47,14 @@ export default function OrgRoleSelector() {
               className={`flex-1 p-4 rounded-lg border-2 text-left transition-all duration-200 ${
                 active
                   ? 'border-indigo-600 bg-indigo-50/60 shadow-sm'
-                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : 'border-border-accent hover:border-border-accent hover:bg-bg-primary'
               }`}
             >
-              <div className={`flex items-center gap-2 mb-2 ${active ? 'text-indigo-700' : 'text-gray-500'}`}>
+              <div className={`flex items-center gap-2 mb-2 ${active ? 'text-indigo-700' : 'text-text-secondary'}`}>
                 {r.icon}
                 <span className="text-xs font-bold uppercase tracking-widest">{r.label}</span>
               </div>
-              <p className={`text-sm leading-relaxed ${active ? 'text-indigo-600' : 'text-gray-400'}`}>
+              <p className={`text-sm leading-relaxed ${active ? 'text-indigo-600' : 'text-text-secondary'}`}>
                 {r.description}
               </p>
             </button>
@@ -62,9 +62,9 @@ export default function OrgRoleSelector() {
         })}
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-        <span className="text-xs text-gray-400 uppercase tracking-widest font-bold">Active Designation</span>
-        <span className="text-xs font-semibold text-gray-900 flex items-center gap-1.5">
+      <div className="mt-4 pt-4 border-t border-border-accent flex items-center justify-between">
+        <span className="text-xs text-text-secondary uppercase tracking-widest font-bold">Active Designation</span>
+        <span className="text-xs font-semibold text-text-primary flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse" />
           {orgRole}
         </span>

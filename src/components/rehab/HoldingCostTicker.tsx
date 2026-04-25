@@ -104,18 +104,18 @@ export default function HoldingCostTicker() {
   }, [currentProject]);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between p-6 hover:bg-bg-primary transition"
       >
         <div className="flex items-center gap-2 text-left">
-          {expanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-          <Clock className="w-5 h-5 text-pw-subtle" />
+          {expanded ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
+          <Clock className="w-5 h-5 text-text-secondary" />
           <div>
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Holding Cost Ticker</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Holding Cost Ticker</h3>
+            <p className="text-xs text-text-secondary mt-0.5">
               Recurring monthly costs during renovation
               {elapsedMonths > 0 && <span className="ml-1">· {elapsedMonths} months elapsed</span>}
             </p>
@@ -124,7 +124,7 @@ export default function HoldingCostTicker() {
         
         <div className="flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-500 uppercase tracking-widest">
+            <span className="text-xs font-medium text-text-secondary uppercase tracking-widest">
               Capitalize Costs for IRS
             </span>
             <div 
@@ -133,10 +133,10 @@ export default function HoldingCostTicker() {
               onClick={() => setTaxCapitalized(!taxCapitalized)}
               className={`w-8 h-4 flex items-center rounded-full p-1 cursor-pointer transition-colors ${taxCapitalized ? 'bg-pw-black' : 'bg-gray-300'}`}
             >
-              <div className={`bg-white w-2.5 h-2.5 rounded-full shadow-md transform transition-transform duration-300 ${taxCapitalized ? 'translate-x-3.5' : ''}`} />
+              <div className={`bg-bg-surface w-2.5 h-2.5 rounded-full shadow-md transform transition-transform duration-300 ${taxCapitalized ? 'translate-x-3.5' : ''}`} />
             </div>
           </div>
-          <span className="text-sm font-mono font-medium text-gray-700 ml-4 border-l border-gray-200 pl-4">
+          <span className="text-sm font-mono font-medium text-text-primary ml-4 border-l border-border-accent pl-4">
             ${totals.totalMonthly.toLocaleString()}/mo
           </span>
         </div>
@@ -147,20 +147,20 @@ export default function HoldingCostTicker() {
           {/* Summary */}
           <div className="px-6 pb-4">
             <div className="grid grid-cols-4 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Monthly Burn</p>
-                <p className="text-lg font-light text-gray-900">${totals.totalMonthly.toLocaleString()}</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Monthly Burn</p>
+                <p className="text-lg font-light text-text-primary">${totals.totalMonthly.toLocaleString()}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Paid to Date</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Paid to Date</p>
                 <p className="text-lg font-light text-green-700">${totals.totalPaid.toLocaleString()}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Projected Total</p>
-                <p className="text-lg font-light text-gray-900">${totals.totalProjected.toLocaleString()}</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Projected Total</p>
+                <p className="text-lg font-light text-text-primary">${totals.totalProjected.toLocaleString()}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Outstanding</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
                 <p className="text-lg font-light text-amber-700">${totals.outstanding.toLocaleString()}</p>
               </div>
             </div>
@@ -173,16 +173,16 @@ export default function HoldingCostTicker() {
               const progress = c.totalMonths > 0 ? (c.monthsPaid / c.totalMonths) * 100 : 0;
 
               return (
-                <div key={c.id} className="p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition">
+                <div key={c.id} className="p-3 rounded-lg border border-border-accent hover:border-border-accent transition">
                   <div className="flex items-center gap-3">
                     {/* Type icon */}
-                    <span className="text-gray-500 flex-shrink-0">{meta.icon}</span>
+                    <span className="text-text-secondary flex-shrink-0">{meta.icon}</span>
 
                     {/* Type selector */}
                     <select
                       value={c.type}
                       onChange={e => updateField(c.id, 'type', e.target.value)}
-                      className="text-sm font-medium text-gray-900 bg-transparent outline-none border-none cursor-pointer"
+                      className="text-sm font-medium text-text-primary bg-transparent outline-none border-none cursor-pointer"
                     >
                       {(Object.keys(COST_TYPE_META) as HoldingCostType[]).map(t => (
                         <option key={t} value={t}>{t}</option>
@@ -191,22 +191,22 @@ export default function HoldingCostTicker() {
 
                     {/* Monthly amount */}
                     <div className="flex items-center gap-0.5 ml-auto flex-shrink-0">
-                      <span className="text-gray-400 text-sm">$</span>
+                      <span className="text-text-secondary text-sm">$</span>
                       <input
                         type="number"
                         value={c.monthlyAmount || ''}
                         onChange={e => updateField(c.id, 'monthlyAmount', parseFloat(e.target.value) || 0)}
                         placeholder="0"
-                        className="w-20 text-sm font-mono text-right bg-transparent outline-none text-gray-900"
+                        className="w-20 text-sm font-mono text-right bg-transparent outline-none text-text-primary"
                       />
-                      <span className="text-gray-400 text-xs">/mo</span>
+                      <span className="text-text-secondary text-xs">/mo</span>
                     </div>
 
                     {/* Pay month button */}
                     <button
                       onClick={() => incrementMonthPaid(c.id)}
                       disabled={c.monthsPaid >= c.totalMonths}
-                      className="px-2 py-1 text-xs font-bold uppercase bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition disabled:opacity-30"
+                      className="px-2 py-1 text-xs font-bold uppercase bg-bg-primary text-text-secondary rounded hover:bg-gray-200 transition disabled:opacity-30"
                       title="Mark next month as paid"
                     >
                       Pay Mo {c.monthsPaid + 1}
@@ -223,13 +223,13 @@ export default function HoldingCostTicker() {
 
                   {/* Progress bar */}
                   <div className="mt-2 flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-bg-primary rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-[#7f7f7f] to-[#595959] rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
-                    <span className="text-xs text-gray-400 flex-shrink-0">
+                    <span className="text-xs text-text-secondary flex-shrink-0">
                       {c.monthsPaid}/{c.totalMonths} mo
                     </span>
                   </div>
@@ -240,7 +240,7 @@ export default function HoldingCostTicker() {
             {/* Add cost */}
             <button
               onClick={addCost}
-              className="w-full flex items-center justify-center gap-1.5 py-2 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:bg-gray-50 hover:border-gray-400 transition"
+              className="w-full flex items-center justify-center gap-1.5 py-2 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
             >
               <Plus className="w-3 h-3" /> Add Holding Cost
             </button>

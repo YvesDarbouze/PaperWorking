@@ -92,13 +92,13 @@ function buildSpendSeries(projects: Project[]): ProjectSpendSeries[] {
 function SpendTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string; color: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-gray-500 font-medium mb-1.5">{label}</p>
+    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
+      <p className="text-text-secondary font-medium mb-1.5">{label}</p>
       {payload.map((entry, i: number) => (
         <p key={i} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-gray-600">{entry.dataKey === 'projected' ? 'Budget' : 'Actual'}:</span>
-          <span className="font-mono font-medium text-gray-900">
+          <span className="text-text-secondary">{entry.dataKey === 'projected' ? 'Budget' : 'Actual'}:</span>
+          <span className="font-mono font-medium text-text-primary">
             ${entry.value.toLocaleString()}
           </span>
         </p>
@@ -116,7 +116,7 @@ export default function ProjectedVsActualSpend({ projects }: ProjectedVsActualSp
 
   if (series.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-xs">
+      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
         No active renovation projects to chart.
       </div>
     );
@@ -128,11 +128,11 @@ export default function ProjectedVsActualSpend({ projects }: ProjectedVsActualSp
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
           {activeSeries.projectName}
         </p>
         {series.length > 1 && (
-          <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+          <span className="text-xs text-text-secondary bg-bg-primary px-2 py-0.5 rounded-full">
             +{series.length - 1} more
           </span>
         )}

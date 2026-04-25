@@ -128,7 +128,7 @@ export default function DealFolder({
 
   const Wrapper = onClick ? 'button' : 'div';
   const interactiveStyle = onClick
-    ? 'cursor-pointer hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98] transition-all'
+    ? 'cursor-pointer hover:bg-bg-primary hover:border-border-accent active:scale-[0.98] transition-all'
     : '';
 
   return (
@@ -136,7 +136,7 @@ export default function DealFolder({
       {...(onClick ? { onClick, type: 'button' as const } : {})}
       className={`
         flex items-center ${t.gap} ${t.pad}
-        bg-white border border-gray-200 rounded-lg
+        bg-bg-surface border border-border-accent rounded-lg
         ${interactiveStyle}
         ${className}
       `}
@@ -146,13 +146,13 @@ export default function DealFolder({
 
       {/* ── Label block ── */}
       <div className="flex-1 min-w-0 text-left">
-        <h4 className={`${t.labelSize} font-semibold text-gray-900 truncate leading-tight`}>
+        <h4 className={`${t.labelSize} font-semibold text-text-primary truncate leading-tight`}>
           {streetLabel}
         </h4>
 
         {/* Secondary line: full address or status */}
         {(deal.address.includes(',') || showStatus) && (
-          <p className={`${t.subSize} text-gray-500 truncate mt-0.5`}>
+          <p className={`${t.subSize} text-text-secondary truncate mt-0.5`}>
             {showStatus
               ? deal.status
               : deal.address}
@@ -161,7 +161,7 @@ export default function DealFolder({
 
         {/* Optional price badge */}
         {showPrice && purchase > 0 && (
-          <span className={`${t.subSize} font-mono text-gray-500 mt-1 inline-block`}>
+          <span className={`${t.subSize} font-mono text-text-secondary mt-1 inline-block`}>
             ${purchase.toLocaleString()}
           </span>
         )}

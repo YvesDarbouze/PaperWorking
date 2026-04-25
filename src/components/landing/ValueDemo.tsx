@@ -42,11 +42,11 @@ function MessyDocument() {
       {/* Scattered paper sheets */}
       <div className="relative w-full max-w-xs">
         {/* Background sheet — rotated */}
-        <div className="absolute -top-2 -left-3 w-full h-48 bg-white border border-phase-1 shadow-sm rotate-[-4deg] opacity-60" />
-        <div className="absolute -top-1 left-2 w-full h-48 bg-white border border-phase-1 shadow-sm rotate-[2deg] opacity-80" />
+        <div className="absolute -top-2 -left-3 w-full h-48 bg-bg-surface border border-phase-1 shadow-sm rotate-[-4deg] opacity-60" />
+        <div className="absolute -top-1 left-2 w-full h-48 bg-bg-surface border border-phase-1 shadow-sm rotate-[2deg] opacity-80" />
 
         {/* Main messy form */}
-        <div className="relative bg-white border border-phase-1 shadow-sm p-5">
+        <div className="relative bg-bg-surface border border-phase-1 shadow-sm p-5">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="h-2 w-24 bg-phase-1 rounded-full" />
@@ -135,7 +135,7 @@ function ProcessingAnimation() {
               key={field.label}
               className={`flex items-center justify-between py-1.5 px-3 border transition-all duration-300 ${
                 progress >= field.threshold
-                  ? 'border-phase-1 bg-white opacity-100 translate-y-0'
+                  ? 'border-phase-1 bg-bg-surface opacity-100 translate-y-0'
                   : 'border-transparent bg-transparent opacity-0 translate-y-2'
               }`}
             >
@@ -153,7 +153,7 @@ function CleanDashboard() {
   return (
     <div className="relative w-full h-full flex items-center justify-center p-6">
       <div className="w-full max-w-xs">
-        <div className="bg-white border border-phase-1 shadow-sm overflow-hidden">
+        <div className="bg-bg-surface border border-phase-1 shadow-sm overflow-hidden">
           {/* Header */}
           <div className="px-4 py-2.5 border-b border-dashboard bg-dashboard flex items-center justify-between">
             <div className="flex items-center space-x-2">

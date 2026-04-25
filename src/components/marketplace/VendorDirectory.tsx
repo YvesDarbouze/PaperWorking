@@ -70,26 +70,26 @@ export default function VendorDirectory() {
   });
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex flex-col h-full bg-bg-surface">
       {/* Institutional Header */}
-      <header className="bg-white border-b border-pw-border p-12">
+      <header className="bg-bg-surface border-b border-border-accent p-12">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-16">
           <div className="max-w-xl">
-            <h1 className="text-5xl font-black tracking-tight text-pw-black mb-4 uppercase">Marketplace</h1>
-            <p className="text-pw-muted font-medium text-sm leading-relaxed">
+            <h1 className="text-5xl font-black tracking-tight text-text-primary mb-4 uppercase">Marketplace</h1>
+            <p className="text-text-secondary font-medium text-sm leading-relaxed">
               Standardized procurement for real estate legal counsel and certified appraisal reports. 
               Centralized for high-yield portfolio operations.
             </p>
           </div>
           <div className="flex items-center gap-8">
             <div className="text-right">
-              <p className="text-xs uppercase tracking-widest font-black text-pw-subtle mb-1">Market Liquidity</p>
-              <p className="text-2xl font-black text-pw-black">2.4 Days</p>
+              <p className="text-xs uppercase tracking-widest font-black text-text-secondary mb-1">Market Liquidity</p>
+              <p className="text-2xl font-black text-text-primary">2.4 Days</p>
             </div>
             <div className="h-10 w-px bg-pw-border" />
             <div className="text-right">
-              <p className="text-xs uppercase tracking-widest font-black text-pw-subtle mb-1">TX Avg Fee</p>
-              <p className="text-2xl font-black text-pw-black">$840</p>
+              <p className="text-xs uppercase tracking-widest font-black text-text-secondary mb-1">TX Avg Fee</p>
+              <p className="text-2xl font-black text-text-primary">$840</p>
             </div>
           </div>
         </div>
@@ -97,17 +97,17 @@ export default function VendorDirectory() {
         {/* Filters — Reverting to Minimalist Inputs */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[300px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-subtle" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
             <input 
               type="text"
               placeholder="Filter by specialty (e.g. Probate, Title...)"
-              className="w-full pl-11 pr-4 py-4 bg-pw-dashboard border border-pw-border rounded-none text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-black transition-all"
+              className="w-full pl-11 pr-4 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-black transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select 
-            className="px-6 py-4 bg-pw-dashboard border border-pw-border rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
+            className="px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
           >
@@ -116,7 +116,7 @@ export default function VendorDirectory() {
             <option value="Appraiser">Appraisers</option>
           </select>
           <select 
-            className="px-6 py-4 bg-pw-dashboard border border-pw-border rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
+            className="px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
             value={stateFilter}
             onChange={(e) => setStateFilter(e.target.value)}
           >
@@ -130,7 +130,7 @@ export default function VendorDirectory() {
 
       {/* Directory Content */}
       <main className="flex-1 overflow-y-auto p-12 bg-pw-dashboard">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-pw-border border border-pw-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-pw-border border border-border-accent">
           {filteredVendors.map((vendor) => (
             <VendorCard key={vendor.id} vendor={vendor} />
           ))}
@@ -142,46 +142,46 @@ export default function VendorDirectory() {
 
 function VendorCard({ vendor }: { vendor: VendorProfile }) {
   return (
-    <div className="bg-white p-8 flex flex-col group relative">
+    <div className="bg-bg-surface p-8 flex flex-col group relative">
       <div className="flex justify-between items-start mb-8">
         <div>
-           <p className="text-xs font-black text-pw-subtle uppercase tracking-widest mb-1">{vendor.type}</p>
+           <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">{vendor.type}</p>
            {vendor.verified && (
-             <p className="text-xs font-black text-pw-black uppercase tracking-widest flex items-center gap-1">
+             <p className="text-xs font-black text-text-primary uppercase tracking-widest flex items-center gap-1">
                <ShieldCheck className="w-3 h-3" /> Institutional Profile
              </p>
            )}
         </div>
         <div className="flex items-center gap-1">
-          <Star className="w-3 h-3 text-pw-black fill-pw-black" />
-          <span className="text-xs font-black text-pw-black">{vendor.overallRating}</span>
+          <Star className="w-3 h-3 text-text-primary fill-pw-black" />
+          <span className="text-xs font-black text-text-primary">{vendor.overallRating}</span>
         </div>
       </div>
 
-      <h3 className="text-xl font-black text-pw-black mb-4 uppercase tracking-tighter group-hover:underline underline-offset-4 decoration-1">
+      <h3 className="text-xl font-black text-text-primary mb-4 uppercase tracking-tighter group-hover:underline underline-offset-4 decoration-1">
         {vendor.companyName}
       </h3>
-      <p className="text-xs text-pw-muted font-medium mb-8 leading-relaxed line-clamp-2">
+      <p className="text-xs text-text-secondary font-medium mb-8 leading-relaxed line-clamp-2">
         {vendor.bio}
       </p>
 
       <div className="mt-auto space-y-4 pt-8 border-t border-pw-dashboard">
         <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-          <span className="text-pw-subtle">Jurisdiction</span>
-          <span className="text-pw-black">{vendor.licensingStates.join(' / ')}</span>
+          <span className="text-text-secondary">Jurisdiction</span>
+          <span className="text-text-primary">{vendor.licensingStates.join(' / ')}</span>
         </div>
         <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-          <span className="text-pw-subtle">Latency</span>
-          <span className="text-pw-black">{vendor.avgTurnaroundDays} Days</span>
+          <span className="text-text-secondary">Latency</span>
+          <span className="text-text-primary">{vendor.avgTurnaroundDays} Days</span>
         </div>
         <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
-          <span className="text-pw-subtle">Baseline Fee</span>
-          <span className="text-pw-black">{vendor.feeRangeLabel}</span>
+          <span className="text-text-secondary">Baseline Fee</span>
+          <span className="text-text-primary">{vendor.feeRangeLabel}</span>
         </div>
       </div>
 
       <div className="mt-10">
-        <button className="w-full py-4 border border-pw-black text-pw-black text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-white transition-all">
+        <button className="w-full py-4 border border-pw-black text-text-primary text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-white transition-all">
           Request Quote
         </button>
       </div>

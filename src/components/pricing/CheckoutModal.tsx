@@ -73,22 +73,22 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-md shadow-2xl border border-pw-border overflow-hidden animate-in slide-in-from-bottom-6 duration-300">
+      <div className="bg-bg-surface w-full max-w-md shadow-2xl border border-border-accent overflow-hidden animate-in slide-in-from-bottom-6 duration-300">
 
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-5 border-b border-pw-border">
+        <div className="flex justify-between items-center px-6 py-5 border-b border-border-accent">
           <div>
-            <h2 className="text-xl font-semibold text-pw-black tracking-tight flex items-center gap-2">
-              Secure Checkout <Lock className="w-4 h-4 text-pw-muted" />
+            <h2 className="text-xl font-semibold text-text-primary tracking-tight flex items-center gap-2">
+              Secure Checkout <Lock className="w-4 h-4 text-text-secondary" />
             </h2>
-            <p className="text-xs font-medium text-pw-muted tracking-widest uppercase mt-1">
+            <p className="text-xs font-medium text-text-secondary tracking-widest uppercase mt-1">
               {plan} Plan — {displayPrice}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-pw-muted hover:text-pw-black transition-colors"
+            className="p-2 text-text-secondary hover:text-text-primary transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -97,18 +97,18 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
 
         {/* Plan Summary */}
         <div className="p-6 space-y-5">
-          <div className="bg-pw-bg border border-pw-border p-4">
+          <div className="bg-bg-primary border border-border-accent p-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-semibold text-pw-black">{plan}</p>
-                <p className="text-sm text-pw-muted mt-0.5 leading-snug max-w-[200px]">{info.tagline}</p>
+                <p className="font-semibold text-text-primary">{plan}</p>
+                <p className="text-sm text-text-secondary mt-0.5 leading-snug max-w-[200px]">{info.tagline}</p>
               </div>
-              <span className="text-2xl font-medium text-pw-black tabular-nums whitespace-nowrap ml-4">
+              <span className="text-2xl font-medium text-text-primary tabular-nums whitespace-nowrap ml-4">
                 {displayPrice}
               </span>
             </div>
             {interval === 'annual' && (
-              <p className="text-xs text-pw-muted mt-3 flex items-center gap-1.5">
+              <p className="text-xs text-text-secondary mt-3 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
                 Billed annually — equivalent to 2 months free
               </p>
@@ -118,18 +118,18 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
           {/* Auth-gated body */}
           {!user ? (
             <div className="text-center py-3 space-y-4">
-              <p className="text-sm text-pw-muted">Sign in to complete your purchase.</p>
+              <p className="text-sm text-text-secondary">Sign in to complete your purchase.</p>
               <button
                 onClick={() => router.push('/login?redirect=/pricing')}
                 className="flex items-center gap-2 mx-auto bg-pw-black text-white px-6 py-2.5 text-sm font-medium hover:opacity-90 transition"
               >
                 <LogIn className="w-4 h-4" /> Sign in to continue
               </button>
-              <p className="text-xs text-pw-muted">
+              <p className="text-xs text-text-secondary">
                 New here?{' '}
                 <button
                   onClick={() => router.push('/register?redirect=/pricing')}
-                  className="underline hover:text-pw-black transition-colors"
+                  className="underline hover:text-text-primary transition-colors"
                 >
                   Create an account
                 </button>
@@ -137,7 +137,7 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm text-pw-fg">
+              <div className="flex items-center gap-2 text-sm text-text-primary">
                 <CheckCircle2 className="w-4 h-4 text-pw-accent flex-shrink-0" />
                 Subscribing as <strong>{user.email}</strong>
               </div>
@@ -148,7 +148,7 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
                 </p>
               )}
 
-              <div className="flex items-center gap-5 text-xs font-medium text-pw-muted">
+              <div className="flex items-center gap-5 text-xs font-medium text-text-secondary">
                 <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4" /> 256-bit SSL</span>
                 <span className="flex items-center gap-1"><CheckCircle2 className="w-4 h-4" /> Cancel Anytime</span>
               </div>
@@ -158,7 +158,7 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
 
         {/* Footer CTA */}
         {user && (
-          <div className="p-6 border-t border-pw-border bg-pw-bg">
+          <div className="p-6 border-t border-border-accent bg-bg-primary">
             <button
               onClick={handleCheckout}
               disabled={loading}
@@ -170,7 +170,7 @@ export default function CheckoutModal({ planIdentifier, onClose }: CheckoutModal
                 <>Subscribe to {plan} <ArrowRight className="w-4 h-4 ml-2" /></>
               )}
             </button>
-            <p className="text-xs text-center text-pw-muted mt-4 leading-relaxed max-w-xs mx-auto">
+            <p className="text-xs text-center text-text-secondary mt-4 leading-relaxed max-w-xs mx-auto">
               You'll be redirected to Stripe's secure checkout. Card data never touches our servers.
             </p>
           </div>

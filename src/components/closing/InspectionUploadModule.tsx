@@ -35,7 +35,7 @@ const SEVERITY_STYLES: Record<InspectionIssue['severity'], string> = {
   Critical: 'bg-red-50 text-red-700 border-red-200',
   Major: 'bg-orange-50 text-orange-700 border-orange-200',
   Minor: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  Cosmetic: 'bg-gray-50 text-gray-600 border-gray-200',
+  Cosmetic: 'bg-bg-primary text-text-secondary border-border-accent',
 };
 
 const SAMPLE_ISSUES: InspectionIssue[] = [
@@ -79,12 +79,12 @@ export default function InspectionUploadModule() {
   const criticalCount = issues.filter(i => i.severity === 'Critical' && !i.resolved).length;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="p-6 border-b border-gray-100">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
+      <div className="p-6 border-b border-border-accent">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <HardHat className="w-5 h-5 text-gray-700" />
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Inspection Report</h3>
+            <HardHat className="w-5 h-5 text-text-primary" />
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Inspection Report</h3>
           </div>
           {criticalCount > 0 && (
             <span className="flex items-center gap-1 bg-red-50 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full border border-red-200">
@@ -99,31 +99,31 @@ export default function InspectionUploadModule() {
             onClick={handleUpload}
             className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
               uploadState === 'uploading'
-                ? 'border-gray-400 bg-gray-50 animate-pulse'
-                : 'border-gray-300 hover:bg-gray-50 hover:border-gray-400'
+                ? 'border-gray-400 bg-bg-primary animate-pulse'
+                : 'border-border-accent hover:bg-bg-primary hover:border-gray-400'
             }`}
           >
-            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-            <p className="text-sm font-medium text-gray-700">
+            <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+            <p className="text-sm font-medium text-text-primary">
               {uploadState === 'uploading' ? 'Parsing inspection PDF...' : 'Upload Inspection Report'}
             </p>
-            <p className="text-xs text-gray-400 mt-1">PDF, DOCX — Auto-extracts structural/plumbing/electrical issues</p>
+            <p className="text-xs text-text-secondary mt-1">PDF, DOCX — Auto-extracts structural/plumbing/electrical issues</p>
           </div>
         )}
 
         {/* Summary Bar */}
         <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className="p-3 bg-gray-50 rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-gray-400">Open Issues</p>
-            <p className="text-xl font-light text-gray-900">{unresolvedCount}</p>
+          <div className="p-3 bg-bg-primary rounded-lg text-center">
+            <p className="text-xs uppercase tracking-widest text-text-secondary">Open Issues</p>
+            <p className="text-xl font-light text-text-primary">{unresolvedCount}</p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-gray-400">Est. Repair</p>
-            <p className="text-xl font-light text-gray-900">${totalRepairCost.toLocaleString()}</p>
+          <div className="p-3 bg-bg-primary rounded-lg text-center">
+            <p className="text-xs uppercase tracking-widest text-text-secondary">Est. Repair</p>
+            <p className="text-xl font-light text-text-primary">${totalRepairCost.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-gray-400">Categories</p>
-            <p className="text-xl font-light text-gray-900">{Object.keys(grouped).length}</p>
+          <div className="p-3 bg-bg-primary rounded-lg text-center">
+            <p className="text-xs uppercase tracking-widest text-text-secondary">Categories</p>
+            <p className="text-xl font-light text-text-primary">{Object.keys(grouped).length}</p>
           </div>
         </div>
       </div>
@@ -137,14 +137,14 @@ export default function InspectionUploadModule() {
             <div key={category}>
               <button
                 onClick={() => toggleCategory(category)}
-                className="w-full flex items-center justify-between px-6 py-3 hover:bg-gray-50 transition"
+                className="w-full flex items-center justify-between px-6 py-3 hover:bg-bg-primary transition"
               >
                 <div className="flex items-center space-x-2">
-                  {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
-                  <span className="text-gray-500 flex-shrink-0">{CATEGORY_ICONS[category as InspectionCategory]}</span>
-                  <span className="text-sm font-medium text-gray-900">{category}</span>
+                  {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-text-secondary" /> : <ChevronRight className="w-3.5 h-3.5 text-text-secondary" />}
+                  <span className="text-text-secondary flex-shrink-0">{CATEGORY_ICONS[category as InspectionCategory]}</span>
+                  <span className="text-sm font-medium text-text-primary">{category}</span>
                 </div>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-text-secondary">
                   {catUnresolved}/{categoryIssues.length} open
                 </span>
               </button>
@@ -155,18 +155,18 @@ export default function InspectionUploadModule() {
                     <div
                       key={issue.id}
                       className={`flex items-start justify-between p-3 rounded-lg border transition ${
-                        issue.resolved ? 'bg-gray-50 border-gray-100 opacity-60' : 'border-gray-200'
+                        issue.resolved ? 'bg-bg-primary border-border-accent opacity-60' : 'border-border-accent'
                       }`}
                     >
                       <div className="flex items-start space-x-3">
                         <button
                           onClick={() => toggleResolved(issue.id)}
-                          className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-emerald-500' : 'text-gray-300 hover:text-gray-500'}`}
+                          className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-emerald-500' : 'text-gray-300 hover:text-text-secondary'}`}
                         >
                           <CheckCircle className="w-4.5 h-4.5" />
                         </button>
                         <div>
-                          <p className={`text-sm ${issue.resolved ? 'line-through text-gray-400' : 'text-gray-900'}`}>{issue.description}</p>
+                          <p className={`text-sm ${issue.resolved ? 'line-through text-text-secondary' : 'text-text-primary'}`}>{issue.description}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded border ${SEVERITY_STYLES[issue.severity]}`}>
                               {issue.severity}
@@ -174,7 +174,7 @@ export default function InspectionUploadModule() {
                           </div>
                         </div>
                       </div>
-                      <span className="text-sm font-mono text-gray-600 flex-shrink-0 ml-3">
+                      <span className="text-sm font-mono text-text-secondary flex-shrink-0 ml-3">
                         ${issue.estimatedRepairCost.toLocaleString()}
                       </span>
                     </div>

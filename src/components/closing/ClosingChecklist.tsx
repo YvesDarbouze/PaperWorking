@@ -116,22 +116,22 @@ export default function ClosingChecklist() {
   const canClose = allComplete && items.every(i => i.documentUrl);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between p-6 hover:bg-bg-primary transition"
       >
         <div className="flex items-center gap-2 text-left">
-          {expanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-          <ShieldCheck className="w-5 h-5 text-pw-muted" />
+          {expanded ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
+          <ShieldCheck className="w-5 h-5 text-text-secondary" />
           <div>
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Closing Checklist</h3>
-            <p className="text-xs text-gray-400 mt-0.5">All items must be completed before deal can be marked &ldquo;Closed&rdquo;</p>
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Closing Checklist</h3>
+            <p className="text-xs text-text-secondary mt-0.5">All items must be completed before deal can be marked &ldquo;Closed&rdquo;</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`text-sm font-mono font-medium ${allComplete ? 'text-green-600' : 'text-gray-700'}`}>
+          <span className={`text-sm font-mono font-medium ${allComplete ? 'text-green-600' : 'text-text-primary'}`}>
             {completedCount}/{totalCount}
           </span>
           {allComplete ? (
@@ -146,7 +146,7 @@ export default function ClosingChecklist() {
         <>
           {/* Progress bar */}
           <div className="px-6 pb-4">
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-2 bg-bg-primary rounded-full overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
                   allComplete ? 'bg-green-500' : 'bg-gradient-to-r from-[#a5a5a5] to-[#7f7f7f]'
@@ -166,7 +166,7 @@ export default function ClosingChecklist() {
                   className={`rounded-lg border transition ${
                     item.completed
                       ? 'bg-green-50 border-green-200'
-                      : 'border-gray-200 hover:border-gray-300'
+                      : 'border-border-accent hover:border-border-accent'
                   }`}
                 >
                   <div className="p-4 flex items-start gap-3">
@@ -174,7 +174,7 @@ export default function ClosingChecklist() {
                     <button
                       onClick={() => toggleComplete(item.id)}
                       className={`mt-0.5 flex-shrink-0 transition ${
-                        item.completed ? 'text-green-500' : 'text-gray-300 hover:text-gray-500'
+                        item.completed ? 'text-green-500' : 'text-gray-300 hover:text-text-secondary'
                       }`}
                     >
                       {item.completed ? (
@@ -187,18 +187,18 @@ export default function ClosingChecklist() {
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={item.completed ? 'text-green-600' : 'text-gray-500'}>
+                        <span className={item.completed ? 'text-green-600' : 'text-text-secondary'}>
                           {meta.icon}
                         </span>
                         <h4
                           className={`text-sm font-semibold ${
-                            item.completed ? 'text-green-800 line-through' : 'text-gray-900'
+                            item.completed ? 'text-green-800 line-through' : 'text-text-primary'
                           }`}
                         >
                           {item.type}
                         </h4>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{meta.description}</p>
+                      <p className="text-xs text-text-secondary mt-1">{meta.description}</p>
 
                       {/* Document status */}
                       <div className="flex items-center gap-3 mt-2">
@@ -209,13 +209,13 @@ export default function ClosingChecklist() {
                         ) : (
                           <button
                             onClick={() => simulateUpload(item.id)}
-                            className="flex items-center gap-1 text-xs text-gray-500 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded hover:bg-gray-100 transition"
+                            className="flex items-center gap-1 text-xs text-text-secondary bg-bg-primary border border-border-accent px-2 py-0.5 rounded hover:bg-bg-primary transition"
                           >
                             <Upload className="w-3 h-3" /> Upload Document
                           </button>
                         )}
                         {item.completedAt && (
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-text-secondary">
                             Completed {new Date(item.completedAt).toLocaleDateString()}
                           </span>
                         )}
@@ -227,7 +227,7 @@ export default function ClosingChecklist() {
                         value={item.notes}
                         onChange={e => updateNotes(item.id, e.target.value)}
                         placeholder="Add notes..."
-                        className="mt-2 w-full text-xs bg-transparent border-b border-gray-200 focus:border-gray-400 outline-none py-1 text-gray-600 placeholder:text-gray-300"
+                        className="mt-2 w-full text-xs bg-transparent border-b border-border-accent focus:border-gray-400 outline-none py-1 text-text-secondary placeholder:text-gray-300"
                       />
                     </div>
                   </div>
@@ -237,7 +237,7 @@ export default function ClosingChecklist() {
           </div>
 
           {/* Close Deal Gate */}
-          <div className="px-6 py-4 border-t border-gray-100">
+          <div className="px-6 py-4 border-t border-border-accent">
             {canClose ? (
               <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
                 <ShieldCheck className="w-6 h-6 text-green-600 flex-shrink-0" />
@@ -247,13 +247,13 @@ export default function ClosingChecklist() {
                 </div>
               </div>
             ) : (
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-3">
-                <Lock className="w-5 h-5 text-gray-400 flex-shrink-0" />
+              <div className="p-4 bg-bg-primary border border-border-accent rounded-lg flex items-center gap-3">
+                <Lock className="w-5 h-5 text-text-secondary flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-gray-700">
+                  <p className="text-sm font-medium text-text-primary">
                     {totalCount - completedCount} item{totalCount - completedCount !== 1 ? 's' : ''} remaining
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-text-secondary mt-0.5">
                     Complete all checklist items and upload supporting documents to close this deal.
                   </p>
                 </div>

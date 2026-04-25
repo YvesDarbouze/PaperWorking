@@ -21,7 +21,7 @@ const logos = [
 
 export default function TrustBar() {
   return (
-    <section className="py-10 border-b border-phase-1 bg-white">
+    <section className="py-10 border-b border-phase-1 bg-bg-surface">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <p className="text-center text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-8">
           Trusted by teams across the real estate lifecycle
@@ -41,7 +41,7 @@ export default function TrustBar() {
               </div>
               {/* Logo Type */}
               <div className="hidden sm:block">
-                <span className="text-xs font-bold text-phase-4 group-hover:text-black tracking-tight transition-colors duration-300">
+                <span className="text-xs font-bold text-phase-4 group-hover:text-text-primary tracking-tight transition-colors duration-300">
                   {logo.name}
                 </span>
                 <p className="text-xs font-bold uppercase tracking-[0.15em] text-phase-2 group-hover:text-phase-3 transition-colors duration-300">

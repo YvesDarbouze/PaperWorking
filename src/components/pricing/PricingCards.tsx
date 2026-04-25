@@ -183,7 +183,7 @@ export default function PricingCards({
             onClick={() => onToggleAnnual(false)}
             className={`px-6 py-2 text-sm font-medium rounded-full transition-all ${
               !isAnnual
-                ? 'bg-white shadow-sm text-[#0d0d0d]'
+                ? 'bg-bg-surface shadow-sm text-[#0d0d0d]'
                 : 'text-[#595959] hover:text-[#0d0d0d]'
             }`}
           >
@@ -193,7 +193,7 @@ export default function PricingCards({
             onClick={() => onToggleAnnual(true)}
             className={`flex items-center px-6 py-2 text-sm font-medium rounded-full transition-all ${
               isAnnual
-                ? 'bg-white shadow-sm text-[#0d0d0d]'
+                ? 'bg-bg-surface shadow-sm text-[#0d0d0d]'
                 : 'text-[#595959] hover:text-[#0d0d0d]'
             }`}
           >
@@ -223,7 +223,7 @@ export default function PricingCards({
               key={tier.id}
               className={`
                 p-8 flex flex-col rounded-2xl transition-all duration-300 relative
-                ${tier.isAnchored ? 'bg-[#f8f9fa]' : 'bg-white border border-[#e8eaed]'}
+                ${tier.isAnchored ? 'bg-[#f8f9fa]' : 'bg-bg-surface border border-[#e8eaed]'}
               `}
             >
               {/* ── Status Label (blue, like "Recommended" on Antigravity) ── */}
@@ -262,7 +262,7 @@ export default function PricingCards({
 
               {/* ── Targeted Social Proof ── */}
               {tier.socialProof ? (
-                <div className="mb-6 px-3 py-3 bg-white rounded-xl border border-[#e8eaed]">
+                <div className="mb-6 px-3 py-3 bg-bg-surface rounded-xl border border-[#e8eaed]">
                   <div className="flex items-center gap-0.5 mb-1.5">
                     {[...Array(5)].map((_, i) => (
                       <Star

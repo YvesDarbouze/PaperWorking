@@ -38,10 +38,10 @@ function MemberRow({
   const statusCls =
     member.status === 'active'  ? 'bg-green-50  text-green-700  border-green-200' :
     member.status === 'invited' ? 'bg-amber-50  text-amber-700  border-amber-200' :
-                                  'bg-gray-100  text-pw-muted   border-pw-border';
+                                  'bg-bg-primary  text-text-secondary   border-border-accent';
 
   return (
-    <div className="flex items-center gap-4 py-4 border-b border-pw-border last:border-0">
+    <div className="flex items-center gap-4 py-4 border-b border-border-accent last:border-0">
       {/* Avatar */}
       <div className="w-9 h-9 rounded-full bg-pw-fg text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
         {initials}
@@ -49,15 +49,15 @@ function MemberRow({
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-pw-black truncate">{member.displayName || member.email}</p>
-        <p className="text-xs text-pw-muted truncate">{member.email}</p>
+        <p className="text-sm font-medium text-text-primary truncate">{member.displayName || member.email}</p>
+        <p className="text-xs text-text-secondary truncate">{member.email}</p>
       </div>
 
       {/* Role selector */}
       <select
         value={member.internalRole}
         onChange={(e) => onRoleChange(member.id, e.target.value as InternalRole)}
-        className="text-xs bg-pw-bg border border-pw-border px-2 py-1.5 text-pw-fg focus:outline-none focus:ring-1 focus:ring-pw-black"
+        className="text-xs bg-bg-primary border border-border-accent px-2 py-1.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-pw-black"
       >
         {ROLE_OPTIONS.map((r) => (
           <option key={r} value={r}>{r}</option>
@@ -72,7 +72,7 @@ function MemberRow({
       {/* Remove */}
       <button
         onClick={() => onRemove(member.id)}
-        className="p-1.5 text-pw-muted hover:text-red-600 transition-colors"
+        className="p-1.5 text-text-secondary hover:text-red-600 transition-colors"
         aria-label="Remove member"
       >
         <Trash2 className="w-4 h-4" />
@@ -104,10 +104,10 @@ export default function TeamManagementPage() {
   if (!isLead || !isTeamPlan) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="bg-white border border-pw-border p-8 max-w-sm text-center space-y-4">
-          <Shield className="w-10 h-10 text-pw-muted mx-auto" />
-          <h2 className="text-lg font-medium text-pw-black">Team Plan Required</h2>
-          <p className="text-sm text-pw-muted leading-relaxed">
+        <div className="bg-bg-surface border border-border-accent p-8 max-w-sm text-center space-y-4">
+          <Shield className="w-10 h-10 text-text-secondary mx-auto" />
+          <h2 className="text-lg font-medium text-text-primary">Team Plan Required</h2>
+          <p className="text-sm text-text-secondary leading-relaxed">
             Team management is available exclusively on the Investor Team plan for Lead Investors.
           </p>
           <Link
@@ -174,15 +174,15 @@ export default function TeamManagementPage() {
     <div className="space-y-6">
 
       {/* ═══ Seat Tracker ═══ */}
-      <section className="bg-white border border-pw-border p-6">
+      <section className="bg-bg-surface border border-border-accent p-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted">Seat Usage</h2>
-          <span className="text-xs font-bold uppercase tracking-widest text-pw-muted">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">Seat Usage</h2>
+          <span className="text-xs font-bold uppercase tracking-widest text-text-secondary">
             {usedSeats} of {maxSeats} Seats Filled
           </span>
         </div>
         {/* Progress bar */}
-        <div className="w-full h-2.5 bg-pw-bg rounded-full overflow-hidden">
+        <div className="w-full h-2.5 bg-bg-primary rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-500 ease-out ${
               seatPercent >= 90 ? 'bg-red-500' : seatPercent >= 70 ? 'bg-amber-500' : 'bg-pw-fg'
@@ -190,7 +190,7 @@ export default function TeamManagementPage() {
             style={{ width: `${Math.min(seatPercent, 100)}%` }}
           />
         </div>
-        <p className="text-xs text-pw-muted mt-2">
+        <p className="text-xs text-text-secondary mt-2">
           {seatsLeft > 0
             ? `${seatsLeft} seat${seatsLeft !== 1 ? 's' : ''} remaining on your Team plan.`
             : 'All seats are occupied. Remove a member or upgrade to add more.'}
@@ -198,15 +198,15 @@ export default function TeamManagementPage() {
       </section>
 
       {/* ═══ Role Permissions Legend ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-4">Role Permissions</h2>
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">Role Permissions</h2>
         <div className="space-y-3">
           {ROLE_OPTIONS.map((r) => (
             <div key={r} className="flex items-start gap-3">
-              <Shield className="w-4 h-4 text-pw-muted flex-shrink-0 mt-0.5" />
+              <Shield className="w-4 h-4 text-text-secondary flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-pw-black">{r}</p>
-                <p className="text-xs text-pw-muted">{ROLE_DESCRIPTION[r]}</p>
+                <p className="text-sm font-medium text-text-primary">{r}</p>
+                <p className="text-xs text-text-secondary">{ROLE_DESCRIPTION[r]}</p>
               </div>
             </div>
           ))}
@@ -214,14 +214,14 @@ export default function TeamManagementPage() {
       </section>
 
       {/* ═══ Active Directory ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-1">
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-1">
           Team Members
         </h2>
-        <p className="text-xs text-pw-muted mb-5">{seatsLeft} seat{seatsLeft !== 1 ? 's' : ''} remaining</p>
+        <p className="text-xs text-text-secondary mb-5">{seatsLeft} seat{seatsLeft !== 1 ? 's' : ''} remaining</p>
 
         {activeMembers.length === 0 ? (
-          <div className="text-center py-8 text-pw-muted">
+          <div className="text-center py-8 text-text-secondary">
             <Users className="w-8 h-8 mx-auto mb-3 opacity-40" />
             <p className="text-sm">No team members yet. Invite your first collaborator below.</p>
           </div>
@@ -240,42 +240,42 @@ export default function TeamManagementPage() {
       </section>
 
       {/* ═══ Invite Hub ═══ */}
-      <section className="bg-white border border-pw-border p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-muted mb-5">
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5">
           Invite a Team Member
         </h2>
 
         <form onSubmit={handleInvite} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-pw-muted mb-1">Email Address *</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Email Address *</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane@realtycorp.com"
-                className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-pw-muted mb-1">Display Name</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">Display Name</label>
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="Jane Realty"
-                className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-pw-muted mb-1">Role</label>
+            <label className="block text-xs font-semibold text-text-secondary mb-1">Role</label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as InternalRole)}
-              className="w-full text-sm bg-pw-bg border border-pw-border px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+              className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
             >
               {ROLE_OPTIONS.map((r) => (
                 <option key={r} value={r}>{r} — {ROLE_DESCRIPTION[r]}</option>
@@ -309,7 +309,7 @@ export default function TeamManagementPage() {
           </button>
 
           {seatsLeft <= 0 && (
-            <p className="text-xs text-pw-muted">
+            <p className="text-xs text-text-secondary">
               Seat limit reached. Remove a member or{' '}
               <Link href="/dashboard/settings/billing" className="underline">upgrade your plan</Link>.
             </p>

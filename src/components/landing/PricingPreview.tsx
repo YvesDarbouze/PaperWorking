@@ -64,13 +64,13 @@ export default function PricingPreview() {
   const [isAnnual, setIsAnnual] = useState(false);
 
   return (
-    <section id="pricing-preview" className="py-24 bg-white border-b border-phase-1">
+    <section id="pricing-preview" className="py-24 bg-bg-surface border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-12">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Simple Pricing
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
             One price. Everything included.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-phase-3 leading-relaxed">
@@ -81,7 +81,7 @@ export default function PricingPreview() {
         {/* Toggle */}
         <div className="flex items-center justify-center mb-12">
           <span className={`text-xs font-medium transition-colors duration-300 ${
-            !isAnnual ? 'text-black' : 'text-phase-2'
+            !isAnnual ? 'text-text-primary' : 'text-phase-2'
           }`}>
             Monthly
           </span>
@@ -97,7 +97,7 @@ export default function PricingPreview() {
             }`} />
           </button>
           <span className={`text-xs font-medium transition-colors duration-300 ${
-            isAnnual ? 'text-black' : 'text-phase-2'
+            isAnnual ? 'text-text-primary' : 'text-phase-2'
           }`}>
             Annual
           </span>
@@ -117,7 +117,7 @@ export default function PricingPreview() {
             <div
               key={plan.name}
               className={`p-8 flex flex-col ${
-                plan.highlight ? 'bg-black text-white' : 'bg-white'
+                plan.highlight ? 'bg-black text-white' : 'bg-bg-surface'
               } ${i < plans.length - 1 ? 'border-b md:border-b-0 md:border-r border-phase-1' : ''}`}
             >
               {/* Plan name */}
@@ -127,7 +127,7 @@ export default function PricingPreview() {
                     Most Popular
                   </span>
                 )}
-                <h3 className={`text-lg font-bold ${plan.highlight ? 'text-white' : 'text-black'}`}>
+                <h3 className={`text-lg font-bold ${plan.highlight ? 'text-white' : 'text-text-primary'}`}>
                   {plan.name}
                 </h3>
                 <p className={`text-xs mt-1 ${plan.highlight ? 'text-phase-2' : 'text-phase-3'}`}>
@@ -140,7 +140,7 @@ export default function PricingPreview() {
                 {plan.monthly !== null ? (
                   <div className="flex items-baseline space-x-1">
                     <span className={`text-4xl font-medium tabular-nums transition-all duration-500 ${
-                      plan.highlight ? 'text-white' : 'text-black'
+                      plan.highlight ? 'text-white' : 'text-text-primary'
                     }`}>
                       ${isAnnual ? plan.annual : plan.monthly}
                     </span>
@@ -149,7 +149,7 @@ export default function PricingPreview() {
                     </span>
                   </div>
                 ) : (
-                  <span className={`text-4xl font-medium ${plan.highlight ? 'text-white' : 'text-black'}`}>
+                  <span className={`text-4xl font-medium ${plan.highlight ? 'text-white' : 'text-text-primary'}`}>
                     Custom
                   </span>
                 )}
@@ -183,7 +183,7 @@ export default function PricingPreview() {
                 href="/pricing"
                 className={`w-full py-3 text-xs font-bold uppercase tracking-widest text-center transition-colors flex items-center justify-center space-x-2 ${
                   plan.highlight
-                    ? 'bg-white text-black hover:bg-dashboard'
+                    ? 'bg-bg-surface text-text-primary hover:bg-dashboard'
                     : 'bg-black text-white hover:bg-phase-4'
                 }`}
               >
@@ -198,7 +198,7 @@ export default function PricingPreview() {
         <div className="text-center mt-8">
           <Link
             href="/pricing"
-            className="text-xs font-bold uppercase tracking-widest text-phase-3 hover:text-black transition-colors"
+            className="text-xs font-bold uppercase tracking-widest text-phase-3 hover:text-text-primary transition-colors"
           >
             View full plan comparison →
           </Link>

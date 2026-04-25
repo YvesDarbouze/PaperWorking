@@ -82,22 +82,22 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-gray-50 rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto flex flex-col">
+      <div className="bg-bg-primary rounded-2xl shadow-xl w-full max-w-5xl max-h-[90vh] overflow-y-auto flex flex-col">
         
         {/* Global Tracker */}
         <DealProgressTracker currentPhase="Rehab" />
 
         {/* Header */}
-        <div className="bg-white border-b border-gray-100 p-5 flex justify-between items-center sticky top-[72px] z-10">
+        <div className="bg-bg-surface border-b border-border-accent p-5 flex justify-between items-center sticky top-[72px] z-10">
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900">Field Manager</h1>
-            <p className="text-xs text-gray-500 font-medium truncate sm:w-auto w-[200px]">{currentProject.address}</p>
+            <h1 className="text-xl font-bold tracking-tight text-text-primary">Field Manager</h1>
+            <p className="text-xs text-text-secondary font-medium truncate sm:w-auto w-[200px]">{currentProject.address}</p>
           </div>
           <button 
             onClick={onClose} 
-            className="p-2 hover:bg-gray-100 rounded-full transition"
+            className="p-2 hover:bg-bg-primary rounded-full transition"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-text-secondary" />
           </button>
         </div>
 
@@ -105,20 +105,20 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
           <div className="lg:col-span-2 space-y-6">
           
           {/* Receipt Upload Zone */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+          <div className="bg-bg-surface rounded-2xl shadow-sm border border-border-accent p-5">
             <div className="flex items-center space-x-2 mb-4">
               <UploadCloud className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-800">Scan Receipt</h2>
+              <h2 className="text-lg font-semibold text-text-primary">Scan Receipt</h2>
             </div>
             
             <form onSubmit={handleReceiptUpload} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Budget Category</label>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Budget Category</label>
                   <select 
                     value={receiptCategory}
                     onChange={(e) => setReceiptCategory(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-bg-primary border border-border-accent rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="Plumbing">Plumbing</option>
                     <option value="Electrical">Electrical</option>
@@ -130,20 +130,20 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1 border-b pb-1">Total Amount ($)</label>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Total Amount ($)</label>
                   <input 
                     type="number" 
                     required
                     placeholder="e.g. 542.50"
                     value={receiptAmount}
                     onChange={(e) => setReceiptAmount(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-lg font-mono placeholder-gray-300 focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-bg-primary border border-border-accent rounded-lg p-2 text-lg font-mono placeholder-gray-300 focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
 
               <div className="flex flex-col space-y-4">
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex-1 flex flex-col items-center justify-center bg-gray-50 text-gray-400 cursor-pointer hover:bg-gray-100 transition min-h-[120px]">
+                <div className="border-2 border-dashed border-border-accent rounded-lg p-4 flex-1 flex flex-col items-center justify-center bg-bg-primary text-text-secondary cursor-pointer hover:bg-bg-primary transition min-h-[120px]">
                   <Camera className="w-6 h-6 mb-2" />
                   <span className="text-xs font-medium text-center">Tap to snap photo<br/>or select PDF</span>
                 </div>
@@ -161,11 +161,11 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
           </div>
 
           {/* Linear Gantt/Task View */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 mt-6">
+          <div className="bg-bg-surface rounded-2xl shadow-sm border border-border-accent p-5 mt-6">
             <div className="flex items-center justify-between mb-4">
                <div className="flex items-center space-x-2">
-                 <ClipboardList className="w-5 h-5 text-gray-800" />
-                 <h2 className="text-lg font-semibold text-gray-800">Rehab Timeline</h2>
+                 <ClipboardList className="w-5 h-5 text-text-primary" />
+                 <h2 className="text-lg font-semibold text-text-primary">Rehab Timeline</h2>
                </div>
                {rehabTasks.some((t: any) => t.escrowDrawRequested) && (
                  <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full border border-green-200 hidden sm:block">
@@ -176,19 +176,19 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
             
             <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 before:to-transparent">
               {rehabTasks.map((task: any, idx: number) => (
-                <div key={task.id} className="relative flex items-center justify-between z-10 p-3 bg-white border rounded-xl shadow-sm hover:shadow-md transition">
+                <div key={task.id} className="relative flex items-center justify-between z-10 p-3 bg-bg-surface border rounded-xl shadow-sm hover:shadow-md transition">
                    <div className="flex items-center space-x-3">
                      {task.status === 'Complete' ? (
-                       <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 bg-white" />
+                       <CheckCircle className="w-6 h-6 text-green-500 flex-shrink-0 bg-bg-surface" />
                      ) : task.status === 'In Progress' ? (
-                       <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-blue-200 animate-spin flex-shrink-0 bg-white"></div>
+                       <div className="w-6 h-6 rounded-full border-2 border-blue-500 border-t-blue-200 animate-spin flex-shrink-0 bg-bg-surface"></div>
                      ) : (
-                       <div className="w-6 h-6 rounded-full border-[3px] border-gray-200 flex-shrink-0 bg-white"></div>
+                       <div className="w-6 h-6 rounded-full border-[3px] border-border-accent flex-shrink-0 bg-bg-surface"></div>
                      )}
                      
                      <div>
-                       <p className={`text-sm font-semibold ${task.status === 'Complete' ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{task.title}</p>
-                       <p className="text-xs uppercase tracking-wider text-gray-500 font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
+                       <p className={`text-sm font-semibold ${task.status === 'Complete' ? 'text-text-secondary line-through' : 'text-text-primary'}`}>{task.title}</p>
+                       <p className="text-xs uppercase tracking-wider text-text-secondary font-mono">${task.estimatedCost.toLocaleString()} • {task.category}</p>
                      </div>
                    </div>
 

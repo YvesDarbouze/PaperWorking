@@ -22,10 +22,10 @@ export default function KanbanView() {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col h-screen w-full bg-gray-50 overflow-hidden"
+      className="flex flex-col h-screen w-full bg-bg-primary overflow-hidden"
     >
       <ErrorBoundary name="Financial Summary Header">
-        <Suspense fallback={<div className="h-20 bg-gray-100 flex-shrink-0 border-b border-gray-200 animate-pulse" />}>
+        <Suspense fallback={<div className="h-20 bg-bg-primary flex-shrink-0 border-b border-border-accent animate-pulse" />}>
           <FinancialSummaryHeader />
         </Suspense>
       </ErrorBoundary>

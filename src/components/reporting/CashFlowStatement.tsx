@@ -147,10 +147,10 @@ export default function CashFlowStatement() {
     <div className="space-y-5">
       {/* Header */}
       <div className="border-b-2 border-gray-900 pb-2">
-        <h4 className="text-sm font-bold tracking-widest uppercase text-gray-900">
+        <h4 className="text-sm font-bold tracking-widest uppercase text-text-primary">
           Cash Flow Statement
         </h4>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-text-secondary mt-0.5">
           Portfolio — Monthly Liquidity Tracker · {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -181,10 +181,10 @@ export default function CashFlowStatement() {
           <p className="text-xs uppercase tracking-widest text-red-600">Total Outflows</p>
           <p className="text-lg font-light text-red-700">{formatCurrency(totalOutflows)}</p>
         </div>
-        <div className={`p-3 rounded-lg text-center border ${totalInflows - totalOutflows >= 0 ? 'bg-gray-50 border-gray-100' : 'bg-red-50 border-red-100'}`}>
-          <TrendingDown className="w-4 h-4 text-gray-500 mx-auto mb-1" />
-          <p className="text-xs uppercase tracking-widest text-gray-500">Net Cash Flow</p>
-          <p className={`text-lg font-light ${totalInflows - totalOutflows >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+        <div className={`p-3 rounded-lg text-center border ${totalInflows - totalOutflows >= 0 ? 'bg-bg-primary border-border-accent' : 'bg-red-50 border-red-100'}`}>
+          <TrendingDown className="w-4 h-4 text-text-secondary mx-auto mb-1" />
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Net Cash Flow</p>
+          <p className={`text-lg font-light ${totalInflows - totalOutflows >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
             {formatCurrency(totalInflows - totalOutflows)}
           </p>
         </div>
@@ -192,19 +192,19 @@ export default function CashFlowStatement() {
 
       {/* Monthly Table */}
       {monthlyData.length === 0 ? (
-        <div className="p-10 text-center text-sm text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+        <div className="p-10 text-center text-sm text-text-secondary border-2 border-dashed border-border-accent rounded-xl">
           No transaction data available. Add projects with financial entries to populate the cash flow.
         </div>
       ) : (
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="border border-border-accent rounded-lg overflow-hidden">
           <table className="w-full text-sm" id="cashflow-statement-table">
             <thead>
-              <tr className="bg-gray-50">
-                <th className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-500">Month</th>
+              <tr className="bg-bg-primary">
+                <th className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Month</th>
                 <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-emerald-600">Inflows</th>
                 <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-red-500">Outflows</th>
-                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-500">Net Cash</th>
-                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-500">Balance</th>
+                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Net Cash</th>
+                <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Balance</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -213,20 +213,20 @@ export default function CashFlowStatement() {
                   <tr
                     onClick={() => setExpandedMonth(expandedMonth === month.key ? null : month.key)}
                     className={`cursor-pointer transition-colors ${
-                      month.cumulativeBalance < 0 ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50'
+                      month.cumulativeBalance < 0 ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-bg-primary'
                     }`}
                   >
-                    <td className="px-4 py-2.5 font-medium text-gray-900">{month.label}</td>
+                    <td className="px-4 py-2.5 font-medium text-text-primary">{month.label}</td>
                     <td className="px-4 py-2.5 text-right font-mono text-emerald-700">
                       {month.inflows > 0 ? formatCurrency(month.inflows) : '—'}
                     </td>
                     <td className="px-4 py-2.5 text-right font-mono text-red-600">
                       {month.outflows > 0 ? `(${formatCurrency(month.outflows)})` : '—'}
                     </td>
-                    <td className={`px-4 py-2.5 text-right font-mono ${month.netCashFlow >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+                    <td className={`px-4 py-2.5 text-right font-mono ${month.netCashFlow >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
                       {formatCurrency(month.netCashFlow)}
                     </td>
-                    <td className={`px-4 py-2.5 text-right font-mono font-semibold ${month.cumulativeBalance >= 0 ? 'text-gray-900' : 'text-red-700'}`}>
+                    <td className={`px-4 py-2.5 text-right font-mono font-semibold ${month.cumulativeBalance >= 0 ? 'text-text-primary' : 'text-red-700'}`}>
                       {formatCurrency(month.cumulativeBalance)}
                       {month.cumulativeBalance < 0 && (
                         <AlertTriangle className="w-3 h-3 text-red-500 inline ml-1" />
@@ -236,16 +236,16 @@ export default function CashFlowStatement() {
                   {/* Expanded detail */}
                   {expandedMonth === month.key && (
                     <tr>
-                      <td colSpan={5} className="px-4 py-3 bg-gray-50">
+                      <td colSpan={5} className="px-4 py-3 bg-bg-primary">
                         <div className="grid grid-cols-2 gap-4 text-xs">
                           <div>
                             <p className="font-semibold text-emerald-700 mb-1">Inflow Details</p>
                             {month.inflowDetails.length === 0 ? (
-                              <p className="text-gray-400 italic">No inflows this month</p>
+                              <p className="text-text-secondary italic">No inflows this month</p>
                             ) : (
                               month.inflowDetails.map((d, i) => (
                                 <div key={i} className="flex justify-between py-0.5">
-                                  <span className="text-gray-600">{d.label}</span>
+                                  <span className="text-text-secondary">{d.label}</span>
                                   <span className="font-mono text-emerald-700">{formatCurrency(d.amount)}</span>
                                 </div>
                               ))
@@ -254,11 +254,11 @@ export default function CashFlowStatement() {
                           <div>
                             <p className="font-semibold text-red-600 mb-1">Outflow Details</p>
                             {month.outflowDetails.length === 0 ? (
-                              <p className="text-gray-400 italic">No outflows this month</p>
+                              <p className="text-text-secondary italic">No outflows this month</p>
                             ) : (
                               month.outflowDetails.map((d, i) => (
                                 <div key={i} className="flex justify-between py-0.5">
-                                  <span className="text-gray-600 truncate mr-2">{d.label}</span>
+                                  <span className="text-text-secondary truncate mr-2">{d.label}</span>
                                   <span className="font-mono text-red-600">{formatCurrency(d.amount)}</span>
                                 </div>
                               ))

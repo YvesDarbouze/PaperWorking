@@ -26,8 +26,8 @@ const CATEGORY_META: Record<RehabExpenseCategory, { icon: React.ReactNode; color
   Material: { icon: <Package className="w-4 h-4" />, color: 'text-blue-600' },
   'Professional Labor': { icon: <HardHat className="w-4 h-4" />, color: 'text-amber-600' },
   Permits: { icon: <Receipt className="w-4 h-4" />, color: 'text-purple-600' },
-  'Dumpster Rental': { icon: <TrashIcon className="w-4 h-4" />, color: 'text-gray-600' },
-  Other: { icon: <Wrench className="w-4 h-4" />, color: 'text-gray-500' },
+  'Dumpster Rental': { icon: <TrashIcon className="w-4 h-4" />, color: 'text-text-secondary' },
+  Other: { icon: <Wrench className="w-4 h-4" />, color: 'text-text-secondary' },
 };
 
 const ALL_CATEGORIES: RehabExpenseCategory[] = ['Material', 'Professional Labor', 'Permits', 'Dumpster Rental', 'Other'];
@@ -100,23 +100,23 @@ export default function RehabExpenseTracker() {
   const totalPaid = expenses.filter(e => e.paid).reduce((s, e) => s + e.amount, 0);
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between p-6 hover:bg-bg-primary transition"
       >
         <div className="flex items-center gap-2 text-left">
-          {expanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-          <Wrench className="w-5 h-5 text-pw-subtle" />
+          {expanded ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
+          <Wrench className="w-5 h-5 text-text-secondary" />
           <div>
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Rehab Expense Tracker</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Material, labor, permits & dumpster costs (separate from acquisition)</p>
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Rehab Expense Tracker</h3>
+            <p className="text-xs text-text-secondary mt-0.5">Material, labor, permits & dumpster costs (separate from acquisition)</p>
           </div>
         </div>
         <div className="flex items-center gap-4 text-xs">
-          <span className="font-mono font-medium text-gray-700">${totalSpent.toLocaleString()}</span>
-          <span className="text-gray-400">{expenses.length} items</span>
+          <span className="font-mono font-medium text-text-primary">${totalSpent.toLocaleString()}</span>
+          <span className="text-text-secondary">{expenses.length} items</span>
         </div>
       </button>
 
@@ -125,16 +125,16 @@ export default function RehabExpenseTracker() {
           {/* Summary bar */}
           <div className="px-6 pb-4">
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Total Rehab</p>
-                <p className="text-xl font-light text-gray-900">${totalSpent.toLocaleString()}</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Total Rehab</p>
+                <p className="text-xl font-light text-text-primary">${totalSpent.toLocaleString()}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Paid</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Paid</p>
                 <p className="text-xl font-light text-green-700">${totalPaid.toLocaleString()}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Outstanding</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
                 <p className="text-xl font-light text-amber-700">${(totalSpent - totalPaid).toLocaleString()}</p>
               </div>
             </div>
@@ -150,32 +150,32 @@ export default function RehabExpenseTracker() {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className={meta?.color}>{meta?.icon}</span>
-                      <span className="text-sm font-semibold text-gray-800">{cat}</span>
-                      <span className="text-xs text-gray-400">{items.length} items</span>
+                      <span className="text-sm font-semibold text-text-primary">{cat}</span>
+                      <span className="text-xs text-text-secondary">{items.length} items</span>
                     </div>
-                    <span className="text-sm font-mono text-gray-700">${catTotal.toLocaleString()}</span>
+                    <span className="text-sm font-mono text-text-primary">${catTotal.toLocaleString()}</span>
                   </div>
                   <div className="space-y-1.5">
                     {items.map(e => (
                       <div
                         key={e.id}
                         className={`flex items-center gap-3 p-2.5 rounded-lg border transition ${
-                          e.paid ? 'bg-gray-50 border-gray-100 opacity-70' : 'border-gray-200'
+                          e.paid ? 'bg-bg-primary border-border-accent opacity-70' : 'border-border-accent'
                         }`}
                       >
                         <button
                           onClick={() => togglePaid(e.id)}
-                          className={`flex-shrink-0 ${e.paid ? 'text-green-500' : 'text-gray-300 hover:text-gray-500'}`}
+                          className={`flex-shrink-0 ${e.paid ? 'text-green-500' : 'text-gray-300 hover:text-text-secondary'}`}
                         >
                           {e.paid ? <CheckCircle className="w-4 h-4" /> : <Circle className="w-4 h-4" />}
                         </button>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm ${e.paid ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                          <p className={`text-sm ${e.paid ? 'line-through text-text-secondary' : 'text-text-primary'}`}>
                             {e.description}
                           </p>
-                          {e.vendor && <p className="text-xs text-gray-400">{e.vendor}</p>}
+                          {e.vendor && <p className="text-xs text-text-secondary">{e.vendor}</p>}
                         </div>
-                        <span className="text-sm font-mono text-gray-700 flex-shrink-0">${e.amount.toLocaleString()}</span>
+                        <span className="text-sm font-mono text-text-primary flex-shrink-0">${e.amount.toLocaleString()}</span>
                         <button
                           onClick={() => removeExpense(e.id)}
                           className="text-gray-300 hover:text-red-500 transition flex-shrink-0"
@@ -191,17 +191,17 @@ export default function RehabExpenseTracker() {
           </div>
 
           {expenses.length === 0 && (
-            <div className="px-6 py-8 text-center text-sm text-gray-400">
+            <div className="px-6 py-8 text-center text-sm text-text-secondary">
               No rehab expenses logged yet. Add your first expense below.
             </div>
           )}
 
           {/* Add expense form */}
-          <div className="px-6 py-4 border-t border-gray-100">
+          <div className="px-6 py-4 border-t border-border-accent">
             {!showForm ? (
               <button
                 onClick={() => setShowForm(true)}
-                className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:bg-gray-50 hover:border-gray-400 transition"
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
               >
                 <Plus className="w-3 h-3" /> Add Rehab Expense
               </button>
@@ -211,7 +211,7 @@ export default function RehabExpenseTracker() {
                   <select
                     value={newCategory}
                     onChange={e => setNewCategory(e.target.value as RehabExpenseCategory)}
-                    className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                    className="text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                   >
                     {ALL_CATEGORIES.map(c => (
                       <option key={c} value={c}>{c}</option>
@@ -222,7 +222,7 @@ export default function RehabExpenseTracker() {
                     value={newVendor}
                     onChange={e => setNewVendor(e.target.value)}
                     placeholder="Vendor (optional)"
-                    className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                    className="text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                   />
                 </div>
                 <input
@@ -230,17 +230,17 @@ export default function RehabExpenseTracker() {
                   value={newDesc}
                   onChange={e => setNewDesc(e.target.value)}
                   placeholder="Description (e.g., 'Drywall for kitchen remodel')"
-                  className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                  className="w-full text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                 />
                 <div className="flex gap-3">
                   <div className="flex items-center gap-1 flex-1">
-                    <span className="text-gray-400 text-sm">$</span>
+                    <span className="text-text-secondary text-sm">$</span>
                     <input
                       type="number"
                       value={newAmount}
                       onChange={e => setNewAmount(e.target.value)}
                       placeholder="0.00"
-                      className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                      className="w-full text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                     />
                   </div>
                   <button
@@ -252,7 +252,7 @@ export default function RehabExpenseTracker() {
                   </button>
                   <button
                     onClick={() => setShowForm(false)}
-                    className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                    className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition"
                   >
                     Cancel
                   </button>

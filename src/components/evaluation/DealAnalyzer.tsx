@@ -49,11 +49,11 @@ function CurrencyInput({
 
   return (
     <div className="space-y-1.5">
-      <label className="block text-[9px] font-black text-pw-muted uppercase tracking-[0.25em]">
+      <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
         {label}
       </label>
-      <div className="relative flex items-center border border-pw-border bg-pw-bg focus-within:border-pw-black transition-colors">
-        <span className="pl-3 text-xs font-black text-pw-muted select-none">$</span>
+      <div className="relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+        <span className="pl-3 text-xs font-black text-text-secondary select-none">$</span>
         <input
           type="text"
           inputMode="numeric"
@@ -65,10 +65,10 @@ function CurrencyInput({
             onChange(parseInt(stripped, 10) || 0);
           }}
           onBlur={() => setRaw(fmtCurrency(value))}
-          className="flex-1 px-2 py-3 text-sm font-black text-pw-black bg-transparent outline-none tabular-nums placeholder:text-pw-muted/40"
+          className="flex-1 px-2 py-3 text-sm font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/40"
         />
       </div>
-      {hint && <p className="text-[9px] text-pw-muted font-bold tracking-wide">{hint}</p>}
+      {hint && <p className="text-[9px] text-text-secondary font-bold tracking-wide">{hint}</p>}
     </div>
   );
 }
@@ -82,14 +82,14 @@ function ReadOnlyLine({ label, value, emphasis, positive, negative }: {
 }) {
   return (
     <div className="flex items-center justify-between py-1.5">
-      <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">{label}</span>
+      <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">{label}</span>
       <span className={`tabular-nums ${
         emphasis ? 'text-base font-black' :
         'text-xs font-black'
       } ${
         positive ? 'text-green-700' :
         negative ? 'text-red-600' :
-        'text-pw-black'
+        'text-text-primary'
       }`}>
         {value}
       </span>
@@ -189,7 +189,7 @@ export default function DealAnalyzer() {
   };
 
   return (
-    <div className="border border-pw-black bg-pw-surface overflow-hidden">
+    <div className="border border-pw-black bg-bg-surface overflow-hidden">
       {/* ── Header ── */}
       <div className="px-8 py-5 border-b border-pw-black bg-pw-black">
         <div className="flex items-center justify-between">
@@ -214,8 +214,8 @@ export default function DealAnalyzer() {
 
           {/* Input Column */}
           <div className="space-y-5">
-            <div className="flex items-center gap-2 pb-4 border-b border-pw-border">
-              <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.3em]">Financial Inputs</span>
+            <div className="flex items-center gap-2 pb-4 border-b border-border-accent">
+              <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em]">Financial Inputs</span>
             </div>
             <CurrencyInput
               label="After Repair Value (ARV)"
@@ -238,9 +238,9 @@ export default function DealAnalyzer() {
           </div>
 
           {/* MAO Output Column */}
-          <div className="flex flex-col justify-between bg-pw-bg border border-pw-border p-6 space-y-4">
+          <div className="flex flex-col justify-between bg-bg-primary border border-border-accent p-6 space-y-4">
             <div>
-              <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.3em] mb-4">Calculation Breakdown</p>
+              <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-4">Calculation Breakdown</p>
               <ReadOnlyLine
                 label="ARV"
                 value={maoIsSetup ? `$${arv.toLocaleString()}` : '—'}
@@ -259,15 +259,15 @@ export default function DealAnalyzer() {
                 value={fixedCosts > 0 ? `-$${fixedCosts.toLocaleString()}` : '—'}
                 negative={fixedCosts > 0}
               />
-              <div className="border-t border-pw-border mt-2 pt-3">
+              <div className="border-t border-border-accent mt-2 pt-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">
+                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">
                     Max Allowable Offer
                   </span>
                   <span className={`text-2xl font-black tabular-nums ${
-                    !maoIsSetup ? 'text-pw-muted' :
+                    !maoIsSetup ? 'text-text-secondary' :
                     maoViolated ? 'text-red-600' :
-                    'text-pw-black'
+                    'text-text-primary'
                   }`}>
                     {maoIsSetup ? `$${mao.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '---'}
                   </span>
@@ -312,16 +312,16 @@ export default function DealAnalyzer() {
 
         {/* ── Section 2: Comparable Sales ── */}
         <div className="space-y-5">
-          <div className="flex items-center justify-between pb-4 border-b border-pw-border">
+          <div className="flex items-center justify-between pb-4 border-b border-border-accent">
             <div className="flex items-center gap-3">
-              <MapPin className="w-3.5 h-3.5 text-pw-muted" />
-              <span className="text-[9px] font-black text-pw-black uppercase tracking-[0.3em]">Comparable_Sales</span>
-              <span className="text-[9px] font-black text-pw-muted">({comps.length}/{MAX_COMPS})</span>
+              <MapPin className="w-3.5 h-3.5 text-text-secondary" />
+              <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">Comparable_Sales</span>
+              <span className="text-[9px] font-black text-text-secondary">({comps.length}/{MAX_COMPS})</span>
             </div>
             {comps.length < MAX_COMPS && (
               <button
                 onClick={addComp}
-                className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border border-pw-black text-pw-black hover:bg-pw-black hover:text-white transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border border-pw-black text-text-primary hover:bg-pw-black hover:text-white transition-colors"
               >
                 <Plus className="w-3 h-3" />
                 Add Comp
@@ -335,9 +335,9 @@ export default function DealAnalyzer() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="border border-dashed border-pw-border p-8 text-center"
+                className="border border-dashed border-border-accent p-8 text-center"
               >
-                <p className="text-[9px] font-black text-pw-muted/40 uppercase tracking-[0.3em]">
+                <p className="text-[9px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
                   No comps added — click Add Comp to begin
                 </p>
               </motion.div>
@@ -346,7 +346,7 @@ export default function DealAnalyzer() {
                 {/* Column headers */}
                 <div className="hidden md:grid md:grid-cols-[1fr_120px_100px_90px_32px] gap-3">
                   {['Address', 'Sold Price', 'Distance (mi)', 'DOM', ''].map((h) => (
-                    <span key={h} className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">{h}</span>
+                    <span key={h} className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">{h}</span>
                   ))}
                 </div>
 
@@ -357,25 +357,25 @@ export default function DealAnalyzer() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-[1fr_120px_100px_90px_32px] gap-3 items-start md:items-center p-4 md:p-0 bg-pw-bg md:bg-transparent border border-pw-border md:border-none"
+                    className="grid grid-cols-1 md:grid-cols-[1fr_120px_100px_90px_32px] gap-3 items-start md:items-center p-4 md:p-0 bg-bg-primary md:bg-transparent border border-border-accent md:border-none"
                   >
                     {/* Address */}
                     <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Address</label>
+                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Address</label>
                       <input
                         type="text"
                         placeholder="123 Main St, City, ST"
                         value={comp.address}
                         onChange={(e) => updateComp(comp.id, { address: e.target.value })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-pw-black bg-pw-bg border border-pw-border focus:border-pw-black outline-none placeholder:text-pw-muted/30 placeholder:font-normal"
+                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none placeholder:text-text-secondary/30 placeholder:font-normal"
                       />
                     </div>
 
                     {/* Sold Price */}
                     <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Sold Price</label>
-                      <div className="relative flex items-center border border-pw-border bg-pw-bg focus-within:border-pw-black transition-colors">
-                        <span className="pl-2 text-xs font-black text-pw-muted">$</span>
+                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Sold Price</label>
+                      <div className="relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+                        <span className="pl-2 text-xs font-black text-text-secondary">$</span>
                         <input
                           type="text"
                           inputMode="numeric"
@@ -385,14 +385,14 @@ export default function DealAnalyzer() {
                             const n = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10) || 0;
                             updateComp(comp.id, { soldPrice: n });
                           }}
-                          className="w-full px-1 py-2.5 text-xs font-black text-pw-black bg-transparent outline-none tabular-nums placeholder:text-pw-muted/30"
+                          className="w-full px-1 py-2.5 text-xs font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/30"
                         />
                       </div>
                     </div>
 
                     {/* Distance */}
                     <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Distance (mi)</label>
+                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Distance (mi)</label>
                       <input
                         type="number"
                         inputMode="decimal"
@@ -401,13 +401,13 @@ export default function DealAnalyzer() {
                         min="0"
                         value={comp.distanceMiles || ''}
                         onChange={(e) => updateComp(comp.id, { distanceMiles: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-pw-black bg-pw-bg border border-pw-border focus:border-pw-black outline-none tabular-nums placeholder:text-pw-muted/30"
+                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30"
                       />
                     </div>
 
                     {/* Days on Market */}
                     <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">DOM</label>
+                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">DOM</label>
                       <input
                         type="number"
                         inputMode="numeric"
@@ -415,14 +415,14 @@ export default function DealAnalyzer() {
                         min="0"
                         value={comp.daysOnMarket || ''}
                         onChange={(e) => updateComp(comp.id, { daysOnMarket: parseInt(e.target.value, 10) || 0 })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-pw-black bg-pw-bg border border-pw-border focus:border-pw-black outline-none tabular-nums placeholder:text-pw-muted/30"
+                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30"
                       />
                     </div>
 
                     {/* Remove */}
                     <button
                       onClick={() => removeComp(comp.id)}
-                      className="flex items-center justify-center w-8 h-8 border border-pw-border hover:border-red-400 hover:text-red-600 text-pw-muted transition-colors self-center"
+                      className="flex items-center justify-center w-8 h-8 border border-border-accent hover:border-red-400 hover:text-red-600 text-text-secondary transition-colors self-center"
                       aria-label="Remove comp"
                     >
                       <Trash2 className="w-3 h-3" />
@@ -438,17 +438,17 @@ export default function DealAnalyzer() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center justify-between border-t border-pw-border pt-4"
+              className="flex items-center justify-between border-t border-border-accent pt-4"
             >
               <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.3em]">
+                <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em]">
                   Average Comp Price
                 </span>
-                <span className="text-[9px] font-black text-pw-muted/50">
+                <span className="text-[9px] font-black text-text-secondary/50">
                   ({validComps.length} sale{validComps.length !== 1 ? 's' : ''})
                 </span>
               </div>
-              <span className="text-lg font-black text-pw-black tabular-nums">
+              <span className="text-lg font-black text-text-primary tabular-nums">
                 ${avgCompPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </span>
             </motion.div>
@@ -457,19 +457,19 @@ export default function DealAnalyzer() {
 
         {/* ── Section 3: Lead Intelligence + EMD ── */}
         <div className="space-y-5">
-          <div className="flex items-center gap-3 pb-4 border-b border-pw-border">
-            <Calendar className="w-3.5 h-3.5 text-pw-muted" />
-            <span className="text-[9px] font-black text-pw-black uppercase tracking-[0.3em]">Lead_Intelligence</span>
+          <div className="flex items-center gap-3 pb-4 border-b border-border-accent">
+            <Calendar className="w-3.5 h-3.5 text-text-secondary" />
+            <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">Lead_Intelligence</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
             {/* Lead Source */}
             <div className="space-y-1.5">
-              <label className="block text-[9px] font-black text-pw-muted uppercase tracking-[0.25em]">
+              <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
                 Lead Source
               </label>
-              <div className="relative border border-pw-border bg-pw-bg focus-within:border-pw-black transition-colors">
+              <div className="relative border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
                 <select
                   value={leadSource}
                   onChange={(e) => {
@@ -477,7 +477,7 @@ export default function DealAnalyzer() {
                     setLeadSource(val);
                     save({ leadSource: val as LeadSource || undefined });
                   }}
-                  className="w-full px-3 py-3 text-xs font-black text-pw-black bg-transparent outline-none appearance-none cursor-pointer"
+                  className="w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none appearance-none cursor-pointer"
                 >
                   <option value="">Select source…</option>
                   {LEAD_SOURCES.map(s => (
@@ -485,7 +485,7 @@ export default function DealAnalyzer() {
                   ))}
                 </select>
                 <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg className="w-3 h-3 text-pw-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <svg className="w-3 h-3 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -502,10 +502,10 @@ export default function DealAnalyzer() {
 
             {/* Go Hard Date */}
             <div className="space-y-1.5">
-              <label className="block text-[9px] font-black text-pw-muted uppercase tracking-[0.25em]">
+              <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
                 Go Hard Date
               </label>
-              <div className="border border-pw-border bg-pw-bg focus-within:border-pw-black transition-colors">
+              <div className="border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
                 <input
                   type="date"
                   value={emdGoHardDate}
@@ -515,16 +515,16 @@ export default function DealAnalyzer() {
                       emdGoHardDate: e.target.value ? new Date(e.target.value) : undefined,
                     });
                   }}
-                  className="w-full px-3 py-3 text-xs font-black text-pw-black bg-transparent outline-none cursor-pointer"
+                  className="w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none cursor-pointer"
                 />
               </div>
-              <p className="text-[9px] text-pw-muted font-bold tracking-wide">EMD becomes non-refundable</p>
+              <p className="text-[9px] text-text-secondary font-bold tracking-wide">EMD becomes non-refundable</p>
             </div>
           </div>
 
           {/* Seller Motivation */}
           <div className="space-y-1.5">
-            <label className="block text-[9px] font-black text-pw-muted uppercase tracking-[0.25em]">
+            <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
               Seller Motivation
             </label>
             <textarea
@@ -535,7 +535,7 @@ export default function DealAnalyzer() {
                 setSellerMotivation(e.target.value);
                 save({ sellerMotivation: e.target.value });
               }}
-              className="w-full px-4 py-3 text-xs font-black text-pw-black bg-pw-bg border border-pw-border focus:border-pw-black outline-none resize-none leading-relaxed placeholder:text-pw-muted/30 placeholder:font-normal"
+              className="w-full px-4 py-3 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none resize-none leading-relaxed placeholder:text-text-secondary/30 placeholder:font-normal"
             />
           </div>
         </div>

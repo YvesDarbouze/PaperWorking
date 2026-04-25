@@ -34,10 +34,10 @@ export function RoleGuard({
 
   // Default unauthorized block
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-6 text-center bg-gray-50 rounded-lg border border-gray-200">
+    <div className="flex flex-col items-center justify-center py-12 px-6 text-center bg-bg-primary rounded-lg border border-border-accent">
       <ShieldAlert className="w-12 h-12 text-red-500 mb-4" />
-      <h3 className="text-xl font-bold text-gray-900">Access Restricted</h3>
-      <p className="text-gray-500 mt-2 max-w-sm">
+      <h3 className="text-xl font-bold text-text-primary">Access Restricted</h3>
+      <p className="text-text-secondary mt-2 max-w-sm">
         Your current role ({currentRole}) does not have permission to view or interact with this component.
       </p>
     </div>

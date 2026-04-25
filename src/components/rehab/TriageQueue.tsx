@@ -66,8 +66,8 @@ export default function TriageQueue() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-               <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent">
+               <div className="p-4 border-b border-border-accent flex justify-between items-center bg-bg-primary/50">
                    <h3 className="text-lg font-medium">Contingency Triage Matrix</h3>
                    <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
                        {pendingReceiptsData.length} Action Required
@@ -76,7 +76,7 @@ export default function TriageQueue() {
                
                <div className="p-0">
                   {pendingReceiptsData.length === 0 ? (
-                      <div className="p-12 text-center text-gray-400">
+                      <div className="p-12 text-center text-text-secondary">
                           <CheckSquare className="w-12 h-12 mx-auto mb-3 text-green-300 opacity-50" />
                           <p>The Triage Queue is clear.</p>
                       </div>
@@ -90,7 +90,7 @@ export default function TriageQueue() {
                                return (
                                    <div key={receipt.id} className={`flex flex-col md:flex-row p-6 gap-6 ${isBreach ? 'bg-red-50/30' : ''}`}>
                                        {/* Image Viewer */}
-                                       <div className="md:w-1/3 bg-gray-100 rounded-lg aspect-auto flex items-center justify-center relative overflow-hidden border border-gray-200 min-h-[200px]">
+                                       <div className="md:w-1/3 bg-bg-primary rounded-lg aspect-auto flex items-center justify-center relative overflow-hidden border border-border-accent min-h-[200px]">
                                             <img src="https://images.unsplash.com/photo-1621217032731-bf55c7075253?auto=format&fit=crop&q=80&w=400" alt="Receipt Mock" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" />
                                             <div className="z-10 absolute bottom-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded flex items-center">
                                                <Paperclip className="w-3 h-3 mr-1"/> Attached Evidence
@@ -101,29 +101,29 @@ export default function TriageQueue() {
                                        <div className="md:w-2/3 flex flex-col pl-4">
                                            <div className="flex justify-between items-start">
                                                <div>
-                                                   <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">{deal.propertyName}</p>
-                                                   <h4 className="text-xl font-bold text-gray-900">${receipt.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
-                                                   <p className="text-sm text-gray-600 border border-gray-200 bg-gray-50 px-2 py-0.5 rounded inline-block mt-2">{receipt.description}</p>
+                                                   <p className="text-xs text-text-secondary uppercase tracking-widest mb-1">{deal.propertyName}</p>
+                                                   <h4 className="text-xl font-bold text-text-primary">${receipt.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h4>
+                                                   <p className="text-sm text-text-secondary border border-border-accent bg-bg-primary px-2 py-0.5 rounded inline-block mt-2">{receipt.description}</p>
                                                </div>
                                                
                                                <div className="text-right">
-                                                   <p className="text-xs text-gray-500">Submitted by: <span className="font-medium text-gray-700">General Contractor</span></p>
-                                                   <p className="text-xs text-gray-400 mt-1">{new Date(receipt.createdAt).toLocaleString()}</p>
+                                                   <p className="text-xs text-text-secondary">Submitted by: <span className="font-medium text-text-primary">General Contractor</span></p>
+                                                   <p className="text-xs text-text-secondary mt-1">{new Date(receipt.createdAt).toLocaleString()}</p>
                                                </div>
                                            </div>
 
                                            {/* Buffer Intelligence */}
                                            <div className="mt-6">
                                                <div className="flex justify-between text-xs mb-1">
-                                                   <span className="text-gray-600">Base Budget: ${validation.rehabBudgetBase.toLocaleString()}</span>
-                                                   <span className="text-gray-600 flex items-center"><AlertTriangle className="w-3 h-3 mr-1 text-orange-400"/> Max Buffer: ${validation.rehabBudgetBuffered.toLocaleString()}</span>
+                                                   <span className="text-text-secondary">Base Budget: ${validation.rehabBudgetBase.toLocaleString()}</span>
+                                                   <span className="text-text-secondary flex items-center"><AlertTriangle className="w-3 h-3 mr-1 text-orange-400"/> Max Buffer: ${validation.rehabBudgetBuffered.toLocaleString()}</span>
                                                </div>
                                                <div className="w-full bg-gray-200 rounded-full h-2">
                                                    <div 
                                                        className={`h-2 rounded-full ${isBreach ? 'bg-red-500' : isDanger ? 'bg-orange-400' : 'bg-blue-500'}`} 
                                                        style={{ width: `${Math.min(100, (validation.projectedTotal / validation.rehabBudgetBuffered) * 100)}%` }}></div>
                                                </div>
-                                               <p className={`text-xs mt-2 font-medium ${isBreach ? 'text-red-600' : isDanger ? 'text-orange-600' : 'text-gray-500'}`}>
+                                               <p className={`text-xs mt-2 font-medium ${isBreach ? 'text-red-600' : isDanger ? 'text-orange-600' : 'text-text-secondary'}`}>
                                                    {isBreach 
                                                        ? `WARNING: Exceeds Contingency Enforcer by $${validation.exceedsBy.toLocaleString()}` 
                                                        : isDanger 
@@ -138,12 +138,12 @@ export default function TriageQueue() {
                                                     <button onClick={() => handleApproveReceipt(deal, receipt)} disabled={isBreach} className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
                                                         <CheckCircle className="w-4 h-4 mr-2" /> Approve & Post
                                                     </button>
-                                                    <button onClick={() => handleRejectReceipt(deal.id, receipt.id)} className="flex-x bg-white border border-gray-300 hover:bg-red-50 hover:border-red-300 hover:text-red-600 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
+                                                    <button onClick={() => handleRejectReceipt(deal.id, receipt.id)} className="flex-x bg-bg-surface border border-border-accent hover:bg-red-50 hover:border-red-300 hover:text-red-600 text-text-primary px-6 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center">
                                                         <XCircle className="w-4 h-4 mr-2" /> Reject
                                                     </button>
                                                </div>
                                                
-                                               <div className="flex items-center gap-3 mt-1 pt-3 border-t border-gray-100">
+                                               <div className="flex items-center gap-3 mt-1 pt-3 border-t border-border-accent">
                                                     <ESignAction 
                                                         documentName={`Lien Waiver - ${receipt.description}`}
                                                         signeeRole="General Contractor"

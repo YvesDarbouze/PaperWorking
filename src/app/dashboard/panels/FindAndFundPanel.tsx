@@ -143,8 +143,8 @@ export default function FindAndFundPanel() {
           <div className="w-16 h-16 bg-teal-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
             <Search className="w-7 h-7 text-teal-400" />
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Find & Fund</h2>
-          <p className="text-sm text-gray-400">Select a deal from the Pipeline to begin</p>
+          <h2 className="text-lg font-semibold text-text-primary mb-1">Find & Fund</h2>
+          <p className="text-sm text-text-secondary">Select a deal from the Pipeline to begin</p>
         </div>
       </section>
     );
@@ -166,21 +166,21 @@ export default function FindAndFundPanel() {
                 Phase 01
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Find & Fund</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <h1 className="text-2xl font-bold text-text-primary tracking-tight">Find & Fund</h1>
+            <p className="text-sm text-text-secondary mt-0.5">
               {currentProject.propertyName || currentProject.address || 'Untitled Deal'}
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="ag-label">Deal Status</p>
-              <p className="text-sm font-semibold text-gray-900">{currentProject.phaseStatus || currentProject.status}</p>
+              <p className="text-sm font-semibold text-text-primary">{currentProject.phaseStatus || currentProject.status}</p>
             </div>
           </div>
         </div>
 
         {/* Capital Stack Progress */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
           <CapitalStackProgress
             capitalNeeded={capitalNeeded}
             capitalPledged={capitalPledged}
@@ -191,19 +191,19 @@ export default function FindAndFundPanel() {
         {/* Two-Column Layout: Property + Financials */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Property Discovery */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Briefcase className="w-4 h-4 text-teal-600" />
-              <h2 className="text-sm font-semibold text-gray-900">Property Discovery</h2>
+              <h2 className="text-sm font-semibold text-text-primary">Property Discovery</h2>
             </div>
             <PropertyDiscovery onPropertySelected={handlePropertySelected} />
           </div>
 
           {/* Quick Financials Summary */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-teal-600" />
-              <h2 className="text-sm font-semibold text-gray-900">Deal Snapshot</h2>
+              <h2 className="text-sm font-semibold text-text-primary">Deal Snapshot</h2>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -213,9 +213,9 @@ export default function FindAndFundPanel() {
                 { label: 'Rehab Budget', value: currentProject.financials?.estimatedRepairCost, prefix: '$' },
                 { label: 'Total Capital', value: capitalNeeded, prefix: '$' },
               ].map((item) => (
-                <div key={item.label} className="bg-gray-50 rounded-xl px-4 py-3">
+                <div key={item.label} className="bg-bg-primary rounded-xl px-4 py-3">
                   <p className="ag-label mb-1">{item.label}</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-text-primary">
                     {item.value ? `${item.prefix}${item.value.toLocaleString()}` : '—'}
                   </p>
                 </div>
@@ -223,16 +223,16 @@ export default function FindAndFundPanel() {
             </div>
 
             {/* Quick Stats */}
-            <div className="flex items-center gap-4 pt-2 border-t border-gray-100">
+            <div className="flex items-center gap-4 pt-2 border-t border-border-accent">
               <div className="flex items-center gap-2">
                 <DollarSign className="w-3.5 h-3.5 text-teal-500" />
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-text-secondary">
                   {investors.filter(i => i.loiStatus === 'Signed').length} LOIs signed
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <DollarSign className="w-3.5 h-3.5 text-teal-500" />
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-text-secondary">
                   ${capitalPledged.toLocaleString()} committed
                 </span>
               </div>
@@ -241,7 +241,7 @@ export default function FindAndFundPanel() {
         </div>
 
         {/* Syndication Engine */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+        <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
           <SyndicationEngine
             investors={investors}
             onInviteClick={() => setShowInviteDrawer(true)}

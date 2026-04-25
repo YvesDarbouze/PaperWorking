@@ -154,9 +154,9 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
 
 /* ─── Severity styling ─── */
 const SEVERITY_CONFIG: Record<AlertSeverity, { border: string; bg: string; text: string; dot: string; label: string }> = {
-  critical: { border: 'border-pw-black', bg: 'bg-pw-black text-white', text: 'text-white', dot: 'bg-white', label: 'Priority' },
-  action:   { border: 'border-pw-border/50', bg: 'bg-pw-bg text-pw-black', text: 'text-pw-black', dot: 'bg-pw-black', label: 'Required' },
-  warning:  { border: 'border-pw-border/20', bg: 'bg-pw-bg/50 text-pw-muted', text: 'text-pw-muted', dot: 'bg-pw-muted', label: 'Monitor' },
+  critical: { border: 'border-pw-black', bg: 'bg-pw-black text-white', text: 'text-white', dot: 'bg-bg-surface', label: 'Priority' },
+  action:   { border: 'border-border-accent/50', bg: 'bg-bg-primary text-text-primary', text: 'text-text-primary', dot: 'bg-pw-black', label: 'Required' },
+  warning:  { border: 'border-border-accent/20', bg: 'bg-bg-primary/50 text-text-secondary', text: 'text-text-secondary', dot: 'bg-pw-muted', label: 'Monitor' },
 };
 
 interface DealGroomingAlertsProps {
@@ -176,19 +176,19 @@ export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealG
   const criticalCt = alerts.filter(a => a.severity === 'critical').length;
 
   return (
-    <div className="ag-card bg-pw-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col h-full min-h-[500px]">
+    <div className="ag-card bg-bg-surface shadow-[0_30px_60px_rgba(0,0,0,0.02)] border border-border-accent/10 flex flex-col h-full min-h-[500px]">
       {/* Header */}
-      <div className="px-8 py-10 flex items-center justify-between border-b border-pw-border/10">
+      <div className="px-8 py-10 flex items-center justify-between border-b border-border-accent/10">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 text-pw-black" />
+              <AlertCircle className="w-5 h-5 text-text-primary" />
               <p className="ag-label opacity-60">Deal Hygiene</p>
             </div>
-            <h3 className="text-3xl font-light text-pw-black tracking-tighter">Grooming Portal</h3>
+            <h3 className="text-3xl font-light text-text-primary tracking-tighter">Grooming Portal</h3>
           </div>
           {criticalCt > 0 && (
             <div className="bg-pw-black px-4 py-2 rounded-full flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-bg-surface animate-pulse" />
               <span className="text-[10px] font-bold text-white tracking-widest uppercase">
                 {criticalCt} Critical
               </span>
@@ -196,8 +196,8 @@ export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealG
           )}
       </div>
 
-      <div className="px-8 py-5 border-b border-pw-border/10 bg-pw-bg/20">
-        <p className="text-[10px] font-bold text-pw-muted/60 uppercase tracking-[0.2em] leading-none">
+      <div className="px-8 py-5 border-b border-border-accent/10 bg-bg-primary/20">
+        <p className="text-[10px] font-bold text-text-secondary/60 uppercase tracking-[0.2em] leading-none">
           {alerts.length === 0 ? 'System State: Optimal' : `${alerts.length} Anomalies Resolved`}
         </p>
       </div>
@@ -205,7 +205,7 @@ export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealG
       {/* Alerts list */}
       <div className="flex-1 overflow-y-auto px-6 py-8 space-y-4">
         {alerts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 text-pw-muted opacity-40">
+          <div className="flex flex-col items-center justify-center py-24 text-text-secondary opacity-40">
             <Info className="w-12 h-12 mb-4 stroke-[1px]" />
             <p className="text-sm font-medium">Protocol Nominal.</p>
           </div>
@@ -216,17 +216,17 @@ export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealG
               <button
                 key={alert.id}
                 onClick={() => onNavigateToDeal(alert.projectId)}
-                className={`w-full flex items-start gap-6 p-6 rounded-3xl border transition-all duration-300 group hover:scale-[1.01] hover:shadow-lg shadow-pw-black/5 ${sev.border} ${alert.severity === 'critical' ? 'bg-pw-black text-white' : 'bg-pw-surface'}`}
+                className={`w-full flex items-start gap-6 p-6 rounded-3xl border transition-all duration-300 group hover:scale-[1.01] hover:shadow-lg shadow-pw-black/5 ${sev.border} ${alert.severity === 'critical' ? 'bg-pw-black text-white' : 'bg-bg-surface'}`}
               >
                 {/* Severity icon */}
-                <div className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${alert.severity === 'critical' ? 'bg-white/10 text-white' : 'bg-pw-bg text-pw-black group-hover:bg-pw-black group-hover:text-white'}`}>
+                <div className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${alert.severity === 'critical' ? 'bg-bg-surface/10 text-white' : 'bg-bg-primary text-text-primary group-hover:bg-pw-black group-hover:text-white'}`}>
                   {alert.icon}
                 </div>
 
                 {/* Alert content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className={`text-[9px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${alert.severity === 'critical' ? 'border-white/20 text-white' : 'border-pw-border/50 text-pw-muted'}`}>
+                    <span className={`text-[9px] font-bold uppercase tracking-[0.2em] px-3 py-1 rounded-full border ${alert.severity === 'critical' ? 'border-white/20 text-white' : 'border-border-accent/50 text-text-secondary'}`}>
                       {sev.label}
                     </span>
                     <span className={`text-[10px] font-medium uppercase tracking-widest truncate opacity-40`}>

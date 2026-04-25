@@ -104,11 +104,11 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
   return (
     <div className="w-full max-w-5xl mx-auto my-24 px-4 overflow-x-auto">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-medium tracking-tight text-black">Compare all capabilities.</h2>
+        <h2 className="text-3xl font-medium tracking-tight text-text-primary">Compare all capabilities.</h2>
         <p className="text-sm text-phase-3 mt-2">Every plan is built for a specific role. Find yours.</p>
       </div>
 
-      <div className="min-w-[580px] border border-phase-1 bg-white shadow-sm overflow-hidden">
+      <div className="min-w-[580px] border border-phase-1 bg-bg-surface shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-dashboard text-xs sm:text-xs uppercase tracking-widest text-phase-3 font-bold border-b border-phase-1">

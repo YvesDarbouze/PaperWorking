@@ -214,7 +214,7 @@ export function PanelTrack({
         className="lane-track"
         style={{
           display: 'flex',
-          width: `${lanes.length * 100}vw`,
+          width: lanes.length * containerWidth,
           height: '100%',
           x,
           cursor: 'grab',
@@ -232,7 +232,13 @@ export function PanelTrack({
           <section
             key={lanes[i]?.id || i}
             className="lane-panel"
-            style={{ height: '100%' }}
+            style={{ 
+              height: '100%', 
+              width: containerWidth, 
+              flexShrink: 0,
+              overflowY: 'auto', 
+              overflowX: 'hidden' 
+            }}
             data-lane={lanes[i]?.id}
             aria-label={lanes[i]?.label}
           >

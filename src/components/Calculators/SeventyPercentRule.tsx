@@ -24,20 +24,20 @@ export default function SeventyPercentRule() {
   const { MAO: maximumAllowableOffer, isSetup, isOverbought, variance } = calculateSeventyPercentRule(arv, rehabCosts, purchasePrice);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-      <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-gray-900">
+    <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
+      <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-text-primary">
         <Calculator className="w-5 h-5 text-indigo-600" />
         <h3 className="text-lg font-semibold">70% Rule Engine</h3>
       </div>
       
       <div className="space-y-4">
         <div className="flex justify-between items-center text-sm">
-           <span className="text-gray-500">Estimated ARV:</span>
-           <span className="font-medium text-gray-900">${arv.toLocaleString()}</span>
+           <span className="text-text-secondary">Estimated ARV:</span>
+           <span className="font-medium text-text-primary">${arv.toLocaleString()}</span>
         </div>
         <div className="flex justify-between items-center text-sm">
-           <span className="text-gray-500">x 0.70 Threshold:</span>
-           <span className="font-medium text-gray-900">${(arv * 0.70).toLocaleString()}</span>
+           <span className="text-text-secondary">x 0.70 Threshold:</span>
+           <span className="font-medium text-text-primary">${(arv * 0.70).toLocaleString()}</span>
         </div>
         <div className="flex justify-between items-center text-sm border-b pb-2 text-red-600">
            <span>- Est. Repairs:</span>
@@ -46,8 +46,8 @@ export default function SeventyPercentRule() {
         
         <div className="flex justify-between items-end pt-2">
            <div className="flex-1">
-              <span className="block text-xs uppercase tracking-wider text-gray-400 mb-1">Max Allowable Offer (MAO)</span>
-              <span className="text-3xl font-bold text-gray-900">${isSetup ? Math.max(0, maximumAllowableOffer).toLocaleString() : '---'}</span>
+              <span className="block text-xs uppercase tracking-wider text-text-secondary mb-1">Max Allowable Offer (MAO)</span>
+              <span className="text-3xl font-bold text-text-primary">${isSetup ? Math.max(0, maximumAllowableOffer).toLocaleString() : '---'}</span>
            </div>
         </div>
 

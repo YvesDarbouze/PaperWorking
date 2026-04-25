@@ -87,16 +87,16 @@ interface KPICardProps {
 
 function KPICard({ icon, label, value, subtext }: KPICardProps) {
   return (
-    <div className="ag-card bg-pw-surface border border-pw-border/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[160px] hover:scale-[1.02] transition-all duration-300 group">
+    <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[160px] hover:scale-[1.02] transition-all duration-300 group">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center text-pw-muted group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500">
+        <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500">
           {icon}
         </div>
         <p className="ag-label opacity-60 group-hover:opacity-100 transition-opacity">{label}</p>
       </div>
       <div className="mt-6">
-        <h3 className="text-4xl font-light text-pw-black tracking-tighter leading-none">{value}</h3>
-        <p className="text-[11px] text-pw-muted mt-3 font-normal tracking-tight opacity-50 uppercase tracking-wide">
+        <h3 className="text-4xl font-light text-text-primary tracking-tighter leading-none">{value}</h3>
+        <p className="text-[11px] text-text-secondary mt-3 font-normal tracking-tight opacity-50 uppercase tracking-wide">
           {subtext}
         </p>
       </div>

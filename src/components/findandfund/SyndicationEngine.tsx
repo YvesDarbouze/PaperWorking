@@ -22,7 +22,7 @@ interface Props {
 }
 
 const STATUS_CONFIG: Record<LOIStatus, { icon: React.ReactNode; color: string; bg: string }> = {
-  Drafted:  { icon: <Clock className="w-3.5 h-3.5" />,          color: 'text-gray-500',   bg: 'bg-gray-100' },
+  Drafted:  { icon: <Clock className="w-3.5 h-3.5" />,          color: 'text-text-secondary',   bg: 'bg-bg-primary' },
   Sent:     { icon: <Send className="w-3.5 h-3.5" />,           color: 'text-blue-600',   bg: 'bg-blue-50' },
   Viewed:   { icon: <Eye className="w-3.5 h-3.5" />,            color: 'text-amber-600',  bg: 'bg-amber-50' },
   Signed:   { icon: <CheckCircle2 className="w-3.5 h-3.5" />,   color: 'text-emerald-600', bg: 'bg-emerald-50' },
@@ -50,8 +50,8 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
             <Users className="w-4.5 h-4.5 text-teal-600" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Investor Syndication</h3>
-            <p className="text-xs text-gray-400">
+            <h3 className="text-sm font-semibold text-text-primary">Investor Syndication</h3>
+            <p className="text-xs text-text-secondary">
               {investors.length} investor{investors.length !== 1 ? 's' : ''} · {formatCurrency(totalPledged)} pledged · {signedCount} signed
             </p>
           </div>
@@ -67,9 +67,9 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
 
       {/* Table */}
       {investors.length > 0 ? (
-        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="bg-bg-surface border border-border-accent rounded-2xl overflow-hidden">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-gray-50 border-b border-gray-100">
+          <div className="grid grid-cols-12 gap-2 px-5 py-3 bg-bg-primary border-b border-border-accent">
             <span className="col-span-3 ag-label">Investor</span>
             <span className="col-span-3 ag-label">Email</span>
             <span className="col-span-2 ag-label text-right">Pledged</span>
@@ -83,7 +83,7 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
             return (
               <div
                 key={inv.id}
-                className="grid grid-cols-12 gap-2 px-5 py-3.5 items-center border-b border-gray-50 last:border-b-0 hover:bg-gray-50/50 transition-colors"
+                className="grid grid-cols-12 gap-2 px-5 py-3.5 items-center border-b border-gray-50 last:border-b-0 hover:bg-bg-primary/50 transition-colors"
                 onMouseEnter={() => setHoveredRow(inv.id)}
                 onMouseLeave={() => setHoveredRow(null)}
               >
@@ -95,7 +95,7 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
                     </span>
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{inv.investorName}</p>
+                    <p className="text-sm font-medium text-text-primary truncate">{inv.investorName}</p>
                     {inv.isReturning && (
                       <span className="inline-flex items-center gap-1 text-[10px] font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-full">
                         <Award className="w-2.5 h-2.5" />
@@ -107,12 +107,12 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
 
                 {/* Email */}
                 <div className="col-span-3 min-w-0">
-                  <p className="text-sm text-gray-500 truncate">{inv.investorEmail}</p>
+                  <p className="text-sm text-text-secondary truncate">{inv.investorEmail}</p>
                 </div>
 
                 {/* Pledged */}
                 <div className="col-span-2 text-right">
-                  <span className="text-sm font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-text-primary">
                     {formatCurrency(inv.pledgedAmount)}
                   </span>
                 </div>
@@ -139,15 +139,15 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
                   {(inv.loiStatus === 'Sent' || inv.loiStatus === 'Viewed' || inv.loiStatus === 'Signed') && (
                     <button
                       onClick={() => onViewLOI?.(inv.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-200 transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-bg-primary text-text-secondary text-xs font-medium rounded-lg hover:bg-gray-200 transition"
                     >
                       <Eye className="w-3 h-3" />
                       View
                     </button>
                   )}
                   {hoveredRow === inv.id && (
-                    <button className="p-1.5 rounded-lg hover:bg-gray-100 transition">
-                      <MoreHorizontal className="w-4 h-4 text-gray-400" />
+                    <button className="p-1.5 rounded-lg hover:bg-bg-primary transition">
+                      <MoreHorizontal className="w-4 h-4 text-text-secondary" />
                     </button>
                   )}
                 </div>
@@ -157,12 +157,12 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
         </div>
       ) : (
         /* Empty State */
-        <div className="flex flex-col items-center justify-center py-12 text-center bg-white border border-dashed border-gray-200 rounded-2xl">
+        <div className="flex flex-col items-center justify-center py-12 text-center bg-bg-surface border border-dashed border-border-accent rounded-2xl">
           <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3">
             <Users className="w-6 h-6 text-teal-400" />
           </div>
-          <p className="text-sm font-medium text-gray-500 mb-1">No investors yet</p>
-          <p className="text-xs text-gray-400 mb-4">Start building your investor syndicate</p>
+          <p className="text-sm font-medium text-text-secondary mb-1">No investors yet</p>
+          <p className="text-xs text-text-secondary mb-4">Start building your investor syndicate</p>
           <button
             onClick={onInviteClick}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-xs font-medium rounded-xl hover:bg-gray-800 transition"

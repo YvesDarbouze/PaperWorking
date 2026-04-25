@@ -18,7 +18,7 @@ const benefits = [
     statLabel: 'less time spent on admin',
     icon: Clock,
     visual: (
-      <div className="bg-white border border-phase-1 p-6 space-y-3 w-full">
+      <div className="bg-bg-surface border border-phase-1 p-6 space-y-3 w-full">
         <div className="flex items-center justify-between pb-3 border-b border-dashboard">
           <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Document Queue</span>
           <span className="text-xs font-bold text-phase-4">3 auto-routed</span>
@@ -45,7 +45,7 @@ const benefits = [
     statLabel: 'fewer data entry errors',
     icon: TrendingDown,
     visual: (
-      <div className="bg-white border border-phase-1 p-6 w-full">
+      <div className="bg-bg-surface border border-phase-1 p-6 w-full">
         <div className="flex items-center justify-between pb-3 border-b border-dashboard mb-4">
           <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Validation Report</span>
           <span className="text-xs font-bold text-phase-4">2 flags</span>
@@ -83,7 +83,7 @@ const benefits = [
     statLabel: 'distinct permission tiers',
     icon: ShieldCheck,
     visual: (
-      <div className="bg-white border border-phase-1 p-6 w-full">
+      <div className="bg-bg-surface border border-phase-1 p-6 w-full">
         <div className="pb-3 border-b border-dashboard mb-4">
           <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Access Matrix</span>
         </div>
@@ -113,13 +113,13 @@ const benefits = [
 
 export default function BenefitsZigZag() {
   return (
-    <section className="py-24 bg-white border-b border-phase-1">
+    <section className="py-24 bg-bg-surface border-b border-phase-1">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-20">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Core Outcomes
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
             Measurable impact from day one.
           </h2>
         </div>
@@ -144,7 +144,7 @@ export default function BenefitsZigZag() {
                       {benefit.outcome}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-medium tracking-tight text-black mb-4 leading-tight text-balance">
+                  <h3 className="text-2xl font-medium tracking-tight text-text-primary mb-4 leading-tight text-balance">
                     {benefit.headline}
                   </h3>
                   <p className="text-sm text-phase-3 leading-relaxed mb-6">
@@ -152,7 +152,7 @@ export default function BenefitsZigZag() {
                   </p>
                   {/* Stat callout */}
                   <div className="inline-flex items-center space-x-3 border border-phase-1 px-4 py-3">
-                    <span className="text-3xl font-medium text-black tabular-nums">{benefit.stat}</span>
+                    <span className="text-3xl font-medium text-text-primary tabular-nums">{benefit.stat}</span>
                     <span className="text-xs font-bold uppercase tracking-widest text-phase-2 max-w-[100px] leading-tight">
                       {benefit.statLabel}
                     </span>

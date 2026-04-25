@@ -43,7 +43,7 @@ export default function VideoHero() {
             ORGANIZED.
           </h1>
 
-          <p className="mx-auto max-w-3xl text-sm sm:text-base text-pw-subtle font-black uppercase tracking-[0.2em] leading-loose mb-16 px-6">
+          <p className="mx-auto max-w-3xl text-sm sm:text-base text-text-secondary font-black uppercase tracking-[0.2em] leading-loose mb-16 px-6">
             Paperworking organizes the Real Estate Investment process <br className="hidden md:block"/>
             to make property flipping simple, organized, and professional.
           </p>
@@ -51,7 +51,7 @@ export default function VideoHero() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <Link
               href="/register"
-              className="group flex items-center space-x-4 bg-pw-white text-pw-black px-12 py-6 text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent hover:text-pw-white shadow-2xl"
+              className="group flex items-center space-x-4 bg-bg-surface text-text-primary px-12 py-6 text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent hover:text-pw-white shadow-2xl"
             >
               <span>START FLIPPING</span>
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
@@ -69,7 +69,7 @@ export default function VideoHero() {
 
       {/* Scroll Indicator - Rigid */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 opacity-30">
-         <div className="w-[1px] h-16 bg-pw-white" />
+         <div className="w-[1px] h-16 bg-bg-surface" />
          <span className="text-xs font-black text-pw-white uppercase tracking-[0.5em]">SCAN DOWN</span>
       </div>
     </section>

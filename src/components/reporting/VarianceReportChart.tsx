@@ -103,18 +103,18 @@ export default function VarianceReportChart() {
   const hasData = estimatedCosts.some(v => v > 0) || actualCosts.some(v => v > 0);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <div>
-           <h3 className="text-lg font-bold text-gray-900">Capital Variance Report</h3>
-           <p className="text-sm text-gray-500">Live monitoring of rehab budgets vs actual approved ledger entries.</p>
+           <h3 className="text-lg font-bold text-text-primary">Capital Variance Report</h3>
+           <p className="text-sm text-text-secondary">Live monitoring of rehab budgets vs actual approved ledger entries.</p>
         </div>
       </div>
       
       <div className="h-80 w-full relative">
          {!hasData ? (
-             <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                <p className="text-gray-400 text-sm">No construction budget or cost data available yet.</p>
+             <div className="absolute inset-0 flex items-center justify-center bg-bg-primary rounded-lg border border-dashed border-border-accent">
+                <p className="text-text-secondary text-sm">No construction budget or cost data available yet.</p>
              </div>
          ) : (
             <Bar data={data} options={options} />

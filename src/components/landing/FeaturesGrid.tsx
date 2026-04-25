@@ -61,12 +61,12 @@ export default function FeaturesGrid() {
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             Core Capabilities
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl text-balance">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
             Everything lives where you expect it.
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-phase-1 bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-phase-1 bg-bg-surface">
           {features.map((feature, i) => (
             <div
               key={feature.title}
@@ -75,12 +75,12 @@ export default function FeaturesGrid() {
               }`}
             >
               {/* Icon */}
-              <div className="w-12 h-12 bg-dashboard group-hover:bg-white border border-phase-1 flex items-center justify-center text-phase-4 mb-6 transition-colors">
+              <div className="w-12 h-12 bg-dashboard group-hover:bg-bg-surface border border-phase-1 flex items-center justify-center text-phase-4 mb-6 transition-colors">
                 {feature.icon}
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-bold text-black mb-3 tracking-tight">
+              <h3 className="text-lg font-bold text-text-primary mb-3 tracking-tight">
                 {feature.title}
               </h3>
 

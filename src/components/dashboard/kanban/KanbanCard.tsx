@@ -34,11 +34,11 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
 
   return (
     <div
-      className="group relative bg-white border border-pw-border hover:border-pw-black transition-all overflow-hidden"
+      className="group relative bg-bg-surface border border-border-accent hover:border-pw-black transition-all overflow-hidden"
       onClick={() => onSelect?.(deal.id)}
     >
       {/* Property Thumbnail */}
-      <div className="relative h-32 w-full bg-gray-100 overflow-hidden">
+      <div className="relative h-32 w-full bg-bg-primary overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=400&q=80"
           alt={deal.propertyName}
@@ -59,17 +59,17 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
           </button>
         )}
 
-        <div className="absolute bottom-0 right-0 flex items-center bg-white/90 backdrop-blur-sm px-2 py-1">
-          <Calendar className="w-3 h-3 mr-1 text-pw-black" />
-          <span className="text-[10px] font-black text-pw-black tracking-tighter">{daysInPhase} DAYS</span>
+        <div className="absolute bottom-0 right-0 flex items-center bg-bg-surface/90 backdrop-blur-sm px-2 py-1">
+          <Calendar className="w-3 h-3 mr-1 text-text-primary" />
+          <span className="text-[10px] font-black text-text-primary tracking-tighter">{daysInPhase} DAYS</span>
         </div>
       </div>
 
       <div className="p-4 space-y-3">
         {/* Header */}
         <div>
-          <h4 className="text-xs font-black text-pw-black uppercase tracking-tight truncate">{deal.propertyName}</h4>
-          <div className="flex items-center text-pw-muted mt-1">
+          <h4 className="text-xs font-black text-text-primary uppercase tracking-tight truncate">{deal.propertyName}</h4>
+          <div className="flex items-center text-text-secondary mt-1">
             <MapPin className="w-3 h-3 mr-1" />
             <p className="text-[10px] uppercase tracking-wide truncate">{deal.address}</p>
           </div>
@@ -79,7 +79,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
         {(flipMetrics.arv > 0 || flipMetrics.mao > 0) && (
           <div className="flex items-center gap-2 flex-wrap">
             {flipMetrics.arv > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] bg-gray-100 text-pw-black border border-pw-border/40">
+              <span className="inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] bg-bg-primary text-text-primary border border-border-accent/40">
                 ARV {`$${flipMetrics.arv.toLocaleString()}`}
               </span>
             )}
@@ -87,7 +87,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               <span className={`inline-flex items-center px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] border ${
                 flipMetrics.maoViolated
                   ? 'bg-red-50 text-red-700 border-red-200'
-                  : 'bg-gray-50 text-pw-muted border-pw-border/40'
+                  : 'bg-bg-primary text-text-secondary border-border-accent/40'
               }`}>
                 MAO {`$${flipMetrics.mao.toLocaleString()}`}
                 {flipMetrics.maoViolated && (
@@ -110,8 +110,8 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
             >
               <div className="flex justify-between items-end">
                 <div>
-                  <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Est. Net Profit</p>
-                  <p className={`text-xl font-light tabular-nums ${flipMetrics.netProjectedProfit < 0 ? 'text-red-600' : 'text-pw-black'}`}>
+                  <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Est. Net Profit</p>
+                  <p className={`text-xl font-light tabular-nums ${flipMetrics.netProjectedProfit < 0 ? 'text-red-600' : 'text-text-primary'}`}>
                     ${flipMetrics.netProjectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                 </div>
@@ -125,10 +125,10 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
                         stroke="currentColor" strokeWidth="2" fill="transparent"
                         strokeDasharray={100.5}
                         style={{ strokeDashoffset: 100.5 - (Math.min(flipMetrics.rehabPct, 1) * 100.5) }}
-                        className={`transition-all duration-1000 ${flipMetrics.rehabPct >= 1 ? 'text-red-500' : 'text-pw-black'}`}
+                        className={`transition-all duration-1000 ${flipMetrics.rehabPct >= 1 ? 'text-red-500' : 'text-text-primary'}`}
                       />
                     </svg>
-                    <span className="absolute text-[9px] font-black text-pw-black">{Math.round(flipMetrics.rehabPct * 100)}%</span>
+                    <span className="absolute text-[9px] font-black text-text-primary">{Math.round(flipMetrics.rehabPct * 100)}%</span>
                   </div>
                 )}
               </div>
@@ -137,12 +137,12 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               {flipMetrics.rehabBudget > 0 && (
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Rehab</span>
-                    <span className="text-[9px] font-black text-pw-black tabular-nums">
+                    <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Rehab</span>
+                    <span className="text-[9px] font-black text-text-primary tabular-nums">
                       ${flipMetrics.rehabActual.toLocaleString()} / ${flipMetrics.rehabBudget.toLocaleString()}
                     </span>
                   </div>
-                  <div className="h-0.5 w-full bg-gray-100">
+                  <div className="h-0.5 w-full bg-bg-primary">
                     <div
                       className={`h-full transition-all duration-700 ${flipMetrics.rehabPct >= 1 ? 'bg-red-500' : 'bg-pw-black'}`}
                       style={{ width: `${Math.min(flipMetrics.rehabPct * 100, 100)}%` }}
@@ -159,8 +159,8 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               {/* Daily burn rate */}
               {flipMetrics.hasBurnRate && (
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Daily Burn</span>
-                  <span className="text-[9px] font-black text-pw-black tabular-nums">
+                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Daily Burn</span>
+                  <span className="text-[9px] font-black text-text-primary tabular-nums">
                     ${flipMetrics.dailyBurnRate.toFixed(0)}/day
                   </span>
                 </div>
@@ -172,25 +172,25 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="space-y-3 p-3 bg-gray-50 border border-pw-border"
+              className="space-y-3 p-3 bg-bg-primary border border-border-accent"
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Monthly Rent</p>
-                  <p className="text-lg font-light text-pw-black tabular-nums">
+                  <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Monthly Rent</p>
+                  <p className="text-lg font-light text-text-primary tabular-nums">
                     ${holdMetrics.monthlyRent.toLocaleString()}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Cash-on-Cash</p>
-                  <p className={`text-sm font-black tabular-nums ${holdMetrics.cashOnCashYield >= 8 ? 'text-green-700' : holdMetrics.cashOnCashYield < 0 ? 'text-red-600' : 'text-pw-black'}`}>
+                  <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Cash-on-Cash</p>
+                  <p className={`text-sm font-black tabular-nums ${holdMetrics.cashOnCashYield >= 8 ? 'text-green-700' : holdMetrics.cashOnCashYield < 0 ? 'text-red-600' : 'text-text-primary'}`}>
                     {holdMetrics.cashOnCashYield.toFixed(1)}%
                   </p>
                 </div>
               </div>
               {holdMetrics.monthlyCashFlow !== 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-[9px] font-black text-pw-muted uppercase tracking-[0.2em]">Cash Flow</span>
+                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Cash Flow</span>
                   <span className={`text-[9px] font-black tabular-nums ${holdMetrics.monthlyCashFlow >= 0 ? 'text-green-700' : 'text-red-600'}`}>
                     {holdMetrics.monthlyCashFlow >= 0 ? '+' : '-'}${Math.abs(holdMetrics.monthlyCashFlow).toLocaleString()}/mo
                   </span>
@@ -201,21 +201,21 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
         </AnimatePresence>
 
         {/* Footer */}
-        <div className="flex justify-between items-center pt-3 border-t border-pw-border">
+        <div className="flex justify-between items-center pt-3 border-t border-border-accent">
           <div className="flex -space-x-1.5">
             {[1, 2].map(i => (
               <div key={i} className="w-5 h-5 border border-pw-black bg-gray-200" />
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center text-pw-muted">
+            <div className="flex items-center text-text-secondary">
               <PieChart className="w-3 h-3 mr-1" />
               <span className="text-[10px] font-bold uppercase tracking-widest">4 Tasks</span>
             </div>
             {/* P&L toggle */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsExpanded(v => !v); }}
-              className="flex items-center text-pw-muted hover:text-pw-black transition-colors"
+              className="flex items-center text-text-secondary hover:text-text-primary transition-colors"
               aria-label="Toggle P&L breakdown"
             >
               <BarChart2 className="w-3 h-3 mr-1" />
@@ -235,7 +235,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.19, 1, 0.22, 1] }}
-            className="overflow-hidden border-t border-pw-border/40"
+            className="overflow-hidden border-t border-border-accent/40"
           >
             <PropertyPnLWidget deal={deal} mode="compact" trackMode={trackMode} />
           </motion.div>

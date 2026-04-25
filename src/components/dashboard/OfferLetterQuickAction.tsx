@@ -157,7 +157,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
       {/* Trigger Button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center space-x-3 px-6 py-4 border-2 border-pw-black bg-pw-white text-pw-black font-black uppercase tracking-[0.2em] text-[10px] hover:bg-pw-black hover:text-pw-white transition-all shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+        className="flex items-center justify-center space-x-3 px-6 py-4 border-2 border-pw-black bg-bg-surface text-text-primary font-black uppercase tracking-[0.2em] text-[10px] hover:bg-pw-black hover:text-pw-white transition-all shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
       >
         <FileText className="w-4 h-4" />
         <span>Action: Generate_Offer</span>
@@ -173,7 +173,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
           />
 
           {/* Drawer panel */}
-          <div className="relative w-full max-w-lg bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="relative w-full max-w-lg bg-bg-surface shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Drawer header */}
             <div className="flex items-center justify-between px-8 py-6 bg-pw-black border-b border-pw-black">
               <div>
@@ -182,7 +182,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 bg-pw-white text-pw-black hover:bg-pw-accent transition-colors"
+                className="p-2 bg-bg-surface text-text-primary hover:bg-pw-accent transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -193,11 +193,11 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
 
               {/* Step 1: Select Deal */}
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest mb-2">
                   1. Select Deal
                 </label>
                 {eligibleDeals.length === 0 ? (
-                  <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-4 text-center">
+                  <p className="text-sm text-text-secondary bg-bg-primary rounded-lg p-4 text-center">
                     No projects in Find & Fund phase with prospects.
                   </p>
                 ) : (
@@ -213,16 +213,16 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                         }}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                           selectedDealId === deal.id
-                            ? 'border-gray-900 bg-gray-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-gray-900 bg-bg-primary'
+                            : 'border-border-accent hover:border-border-accent'
                         }`}
                       >
                         <DealFolderIcon status={deal.status} size={20} />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">
+                          <p className="text-sm font-medium text-text-primary truncate">
                             {shortAddress(deal.address || deal.propertyName)}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-text-secondary">
                             {deal.prospects?.length || 0} prospect{(deal.prospects?.length || 0) !== 1 ? 's' : ''}
                           </p>
                         </div>
@@ -236,7 +236,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
               {/* Step 2: Select Prospect (expands under selected deal) */}
               {selectedDeal && selectedDeal.prospects && (
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest mb-2">
                     2. Select Prospect
                   </label>
                   <div className="space-y-1.5">
@@ -246,20 +246,20 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                         onClick={() => handleSelectProspect(prospect)}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                           selectedProspectId === prospect.id
-                            ? 'border-gray-900 bg-gray-50'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-gray-900 bg-bg-primary'
+                            : 'border-border-accent hover:border-border-accent'
                         }`}
                       >
-                        <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <MapPin className="w-4 h-4 text-text-secondary flex-shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">
+                          <p className="text-sm font-medium text-text-primary truncate">
                             {prospect.address}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-text-secondary">
                             Asking: ${prospect.askingPrice.toLocaleString()} · Max Offer: ${prospect.maxOffer.toLocaleString()}
                           </p>
                         </div>
-                        <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-0.5 rounded">
+                        <span className="text-xs font-mono text-text-secondary bg-bg-primary px-2 py-0.5 rounded">
                           {prospect.status}
                         </span>
                       </button>
@@ -271,13 +271,13 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
               {/* Step 3: Offer Details */}
               {selectedProspect && !generated && (
                 <div className="space-y-4">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest">
                     3. Offer Details
                   </label>
 
                   {/* Recipient */}
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Recipient Name *</label>
+                    <label className="block text-xs text-text-secondary mb-1">Recipient Name *</label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                       <input
@@ -285,7 +285,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                         value={form.recipientName}
                         onChange={e => setForm({...form, recipientName: e.target.value})}
                         placeholder="Property owner or seller's agent"
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-accent text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-border-accent"
                       />
                     </div>
                   </div>
@@ -293,7 +293,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   {/* Offer Amount + Earnest Money */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Offer Amount *</label>
+                      <label className="block text-xs text-text-secondary mb-1">Offer Amount *</label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <input
@@ -301,12 +301,12 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                           value={form.offerAmount}
                           onChange={e => setForm({...form, offerAmount: e.target.value})}
                           placeholder="350,000"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-accent text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-border-accent"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Earnest Money</label>
+                      <label className="block text-xs text-text-secondary mb-1">Earnest Money</label>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                         <input
@@ -314,7 +314,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                           value={form.earnestMoney}
                           onChange={e => setForm({...form, earnestMoney: e.target.value})}
                           placeholder="3,500"
-                          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+                          className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-accent text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-border-accent"
                         />
                       </div>
                     </div>
@@ -322,21 +322,21 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
 
                   {/* Expiry */}
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Offer Valid For (days)</label>
+                    <label className="block text-xs text-text-secondary mb-1">Offer Valid For (days)</label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                       <input
                         type="number"
                         value={form.expiryDays}
                         onChange={e => setForm({...form, expiryDays: e.target.value})}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border-accent text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-border-accent"
                       />
                     </div>
                   </div>
 
                   {/* Contingencies */}
                   <div>
-                    <label className="block text-xs text-gray-500 mb-2">Contingencies</label>
+                    <label className="block text-xs text-text-secondary mb-2">Contingencies</label>
                     <div className="space-y-2">
                       {[
                         { key: 'contingencyInspection' as const, label: 'Inspection Contingency' },
@@ -345,15 +345,15 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                       ].map(({ key, label }) => (
                         <label
                           key={key}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer transition"
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border-accent hover:bg-bg-primary cursor-pointer transition"
                         >
                           <input
                             type="checkbox"
                             checked={form[key]}
                             onChange={() => setForm({...form, [key]: !form[key]})}
-                            className="w-4 h-4 rounded border-gray-300 text-gray-900 focus:ring-gray-200"
+                            className="w-4 h-4 rounded border-border-accent text-text-primary focus:ring-gray-200"
                           />
-                          <span className="text-sm text-gray-700">{label}</span>
+                          <span className="text-sm text-text-primary">{label}</span>
                         </label>
                       ))}
                     </div>
@@ -361,13 +361,13 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
 
                   {/* Notes */}
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Additional Notes</label>
+                    <label className="block text-xs text-text-secondary mb-1">Additional Notes</label>
                     <textarea
                       value={form.notes}
                       onChange={e => setForm({...form, notes: e.target.value})}
                       rows={3}
                       placeholder="Special terms, closing timeline preferences..."
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 resize-none"
+                      className="w-full px-4 py-2.5 rounded-lg border border-border-accent text-sm focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-border-accent resize-none"
                     />
                   </div>
 
@@ -375,7 +375,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   <button
                     onClick={handleGenerate}
                     disabled={!form.recipientName || !form.offerAmount}
-                    className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                   >
                     <FileText className="w-4 h-4" />
                     Generate Offer Letter
@@ -393,7 +393,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                     <div className="flex gap-2">
                       <button
                         onClick={handlePrint}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border-accent hover:bg-bg-primary transition"
                       >
                         <Printer className="w-3.5 h-3.5" /> Print
                       </button>
@@ -403,7 +403,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   {/* Letter Preview */}
                   <div
                     ref={letterRef}
-                    className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm text-sm leading-relaxed"
+                    className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm text-sm leading-relaxed"
                     style={{ fontFamily: 'Georgia, serif' }}
                   >
                     <h1 style={{ fontSize: '16px', fontWeight: 'normal', letterSpacing: '2px', textTransform: 'uppercase', borderBottom: '1px solid #ccc', paddingBottom: '8px', marginBottom: '16px' }}>
@@ -478,7 +478,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   {/* Action row */}
                   <button
                     onClick={handleClose}
-                    className="w-full py-3 rounded-lg bg-gray-100 text-gray-700 font-medium text-sm hover:bg-gray-200 transition-all"
+                    className="w-full py-3 rounded-lg bg-bg-primary text-text-primary font-medium text-sm hover:bg-gray-200 transition-all"
                   >
                     Done
                   </button>

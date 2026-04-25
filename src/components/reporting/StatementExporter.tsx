@@ -280,10 +280,10 @@ export default function StatementExporter({ activeStatement }: { activeStatement
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+    <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-bg-primary rounded-xl border border-border-accent">
       <div>
-        <p className="text-sm font-semibold text-gray-900">Export: {labels[activeStatement]}</p>
-        <p className="text-xs text-gray-400">CPA-ready formatting with full line-item detail</p>
+        <p className="text-sm font-semibold text-text-primary">Export: {labels[activeStatement]}</p>
+        <p className="text-xs text-text-secondary">CPA-ready formatting with full line-item detail</p>
       </div>
       <div className="flex gap-2">
         <button
@@ -297,7 +297,7 @@ export default function StatementExporter({ activeStatement }: { activeStatement
         <button
           onClick={generateCsv}
           disabled={generating !== null}
-          className="flex items-center gap-1.5 bg-white text-gray-700 px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-100 transition active:scale-95 disabled:opacity-50"
+          className="flex items-center gap-1.5 bg-bg-surface text-text-primary px-4 py-2 rounded-lg text-sm font-medium border border-border-accent hover:bg-bg-primary transition active:scale-95 disabled:opacity-50"
         >
           {generating === 'csv' ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
           {generating === 'csv' ? 'Exporting...' : 'Export CSV'}

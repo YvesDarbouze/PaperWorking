@@ -118,40 +118,40 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
               <Building2 className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
-              <p className="text-xs font-black text-pw-muted uppercase tracking-[0.4em] mb-1">PHASE_01</p>
-              <h2 className="text-2xl font-black text-pw-black uppercase tracking-tight">PROPERTY_IDENTITY</h2>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-1">PHASE_01</p>
+              <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">PROPERTY_IDENTITY</h2>
             </div>
           </div>
 
           <div className="grid gap-10">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Project Name / Nickname</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Project Name / Nickname</label>
               <input 
                 type="text"
                 value={formData.propertyName}
                 onChange={(e) => updateForm({ propertyName: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
                 placeholder="E.G. THE MIAMI FLIP"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Full Address / Location</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Full Address / Location</label>
               <input 
                 type="text"
                 value={formData.address}
                 onChange={(e) => updateForm({ address: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
                 placeholder="123 MAIN ST, MIAMI, FL 33101"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Asset Classification</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Asset Classification</label>
               <select 
                 value={formData.assetClass}
                 onChange={(e) => updateForm({ assetClass: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
               >
                 <option value="Residential">RESIDENTIAL_HOLDING</option>
                 <option value="Multi-Family">MULTI_FAMILY_COMPLEX</option>
@@ -171,51 +171,51 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
               <DollarSign className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
-              <p className="text-xs font-black text-pw-muted uppercase tracking-[0.4em] mb-1">PHASE_02</p>
-              <h2 className="text-2xl font-black text-pw-black uppercase tracking-tight">ACQUISITION_METRICS</h2>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-1">PHASE_02</p>
+              <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">ACQUISITION_METRICS</h2>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-10">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Purchase Price ($)</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Purchase Price ($)</label>
               <input 
                 type="number"
                 value={formData.purchasePrice}
                 onChange={(e) => updateForm({ purchasePrice: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
                 placeholder="0.00"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Estimated ARV ($)</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Estimated ARV ($)</label>
               <input 
                 type="number"
                 value={formData.estimatedARV}
                 onChange={(e) => updateForm({ estimatedARV: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
                 placeholder="0.00"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Target Close Date</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Target Close Date</label>
               <input 
                 type="date"
                 value={formData.closeDate}
                 onChange={(e) => updateForm({ closeDate: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Target Leverage (%)</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Target Leverage (%)</label>
               <input 
                 type="number"
                 value={formData.leverage}
                 onChange={(e) => updateForm({ leverage: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black font-mono uppercase focus:border-pw-black focus:outline-none transition-all"
                 placeholder="75"
               />
             </div>
@@ -231,18 +231,18 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
               <Target className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
-              <p className="text-xs font-black text-pw-muted uppercase tracking-[0.4em] mb-1">PHASE_03</p>
-              <h2 className="text-2xl font-black text-pw-black uppercase tracking-tight">STRATEGY_&_VISION</h2>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-1">PHASE_03</p>
+              <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">STRATEGY_&_VISION</h2>
             </div>
           </div>
 
           <div className="grid gap-10">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Investment Profile</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Investment Profile</label>
               <select 
                 value={formData.strategy}
                 onChange={(e) => updateForm({ strategy: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all appearance-none cursor-pointer"
               >
                 <option value="Fix & Flip">FIX_&_FLIP_SPECULATION</option>
                 <option value="BRRRR">BRRRR_CASH_OUT_REFI</option>
@@ -252,11 +252,11 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Operational Objectives / Vision</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Operational Objectives / Vision</label>
               <textarea 
                 value={formData.vision}
                 onChange={(e) => updateForm({ vision: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30 min-h-[150px] resize-none"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30 min-h-[150px] resize-none"
                 placeholder="DEFINE_YOUR_REHAB_PLAN_HERE..."
               />
             </div>
@@ -272,30 +272,30 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
               <Users className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
-              <p className="text-xs font-black text-pw-muted uppercase tracking-[0.4em] mb-1">PHASE_04</p>
-              <h2 className="text-2xl font-black text-pw-black uppercase tracking-tight">STAKEHOLDER_DELEGATION</h2>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-1">PHASE_04</p>
+              <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">STAKEHOLDER_DELEGATION</h2>
             </div>
           </div>
 
           <div className="grid gap-10">
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Lead Operator Identity (Email)</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Lead Operator Identity (Email)</label>
               <input 
                 type="email"
                 value={formData.leadEmail}
                 onChange={(e) => updateForm({ leadEmail: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
                 placeholder="LEAD@OPERATIONS.IO"
               />
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-black text-pw-muted uppercase tracking-[0.3em]">Partner Collaboration Signals (Comma Separated Emails)</label>
+              <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.3em]">Partner Collaboration Signals (Comma Separated Emails)</label>
               <input 
                 type="text"
                 value={formData.partnerEmails}
                 onChange={(e) => updateForm({ partnerEmails: e.target.value })}
-                className="w-full border border-pw-border bg-pw-bg px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-pw-subtle/30"
+                className="w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
                 placeholder="PARTNER@LLC.CO, ANALYST@BANK.LY"
               />
             </div>
@@ -311,13 +311,13 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
               <FileText className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
-              <p className="text-xs font-black text-pw-muted uppercase tracking-[0.4em] mb-1">PHASE_05</p>
-              <h2 className="text-2xl font-black text-pw-black uppercase tracking-tight">DOCUMENT_AUDIT_&_REVIEW</h2>
+              <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-1">PHASE_05</p>
+              <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">DOCUMENT_AUDIT_&_REVIEW</h2>
             </div>
           </div>
 
-          <div className="border border-pw-border bg-pw-white">
-            <div className="bg-pw-black px-10 py-6 border-b border-pw-border">
+          <div className="border border-border-accent bg-bg-surface">
+            <div className="bg-pw-black px-10 py-6 border-b border-border-accent">
               <h3 className="text-xs font-black text-pw-white uppercase tracking-[0.3em]">PROJECT_CREATION_SUMMARY</h3>
             </div>
             
@@ -331,17 +331,17 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
                 { label: 'Leverage Vector', value: `${formData.leverage}%` },
                 { label: 'Strategic Profile', value: formData.strategy },
               ].map((item) => (
-                <div key={item.label} className="grid grid-cols-2 px-10 py-5 hover:bg-pw-bg transition-all">
-                  <span className="text-xs font-black text-pw-muted uppercase tracking-widest">{item.label}</span>
-                  <span className="text-sm font-black text-pw-black uppercase tracking-tighter text-right font-mono">{item.value}</span>
+                <div key={item.label} className="grid grid-cols-2 px-10 py-5 hover:bg-bg-primary transition-all">
+                  <span className="text-xs font-black text-text-secondary uppercase tracking-widest">{item.label}</span>
+                  <span className="text-sm font-black text-text-primary uppercase tracking-tighter text-right font-mono">{item.value}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-pw-bg p-6 border border-pw-border">
+          <div className="flex items-center gap-4 bg-bg-primary p-6 border border-border-accent">
              <CheckCircle2 className="w-5 h-5 text-pw-accent" />
-             <p className="text-xs font-black text-pw-black uppercase tracking-widest">
+             <p className="text-xs font-black text-text-primary uppercase tracking-widest">
                Data validated and ready for institutional ledger write.
              </p>
           </div>

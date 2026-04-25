@@ -145,13 +145,13 @@ export default function ProfitAndLoss() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setViewMode(viewMode === 'property' ? 'portfolio' : 'property')}
-            className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition"
+            className="flex items-center gap-2 text-sm font-medium text-text-primary hover:text-text-primary transition"
           >
             {viewMode === 'property' ? (
               <>
                 <Building2 className="w-4 h-4 text-blue-600" />
                 <span>By Property</span>
-                <ToggleLeft className="w-5 h-5 text-gray-400" />
+                <ToggleLeft className="w-5 h-5 text-text-secondary" />
               </>
             ) : (
               <>
@@ -165,7 +165,7 @@ export default function ProfitAndLoss() {
 
         {viewMode === 'property' && projects.length > 0 && (
           <select
-            className="border border-gray-300 rounded-lg text-sm py-1.5 px-3 focus:ring-1 focus:ring-gray-400 outline-none bg-white"
+            className="border border-border-accent rounded-lg text-sm py-1.5 px-3 focus:ring-1 focus:ring-gray-400 outline-none bg-bg-surface"
             value={currentProject?.id || ''}
             onChange={e => {
               const d = projects.find(d => d.id === e.target.value);
@@ -182,10 +182,10 @@ export default function ProfitAndLoss() {
 
       {/* Statement Header */}
       <div className="border-b-2 border-gray-900 pb-2">
-        <h4 className="text-sm font-bold tracking-widest uppercase text-gray-900">
+        <h4 className="text-sm font-bold tracking-widest uppercase text-text-primary">
           Profit & Loss Statement
         </h4>
-        <p className="text-xs text-gray-400 mt-0.5">
+        <p className="text-xs text-text-secondary mt-0.5">
           {viewMode === 'portfolio'
             ? `Portfolio — ${targetDeals.length} properties`
             : currentProject?.propertyName || 'No property selected'
@@ -196,32 +196,32 @@ export default function ProfitAndLoss() {
       </div>
 
       {/* Statement Body */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="border border-border-accent rounded-lg overflow-hidden">
         <table className="w-full text-sm" id="pl-statement-table">
           <thead>
-            <tr className="bg-gray-50">
-              <th className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-500">Account</th>
-              <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-gray-500">Amount</th>
+            <tr className="bg-bg-primary">
+              <th className="text-left px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Account</th>
+              <th className="text-right px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-text-secondary">Amount</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {lines.map((line, i) => {
               if (line.separator && !line.label) {
-                return <tr key={i}><td colSpan={2} className="h-2 bg-gray-50"></td></tr>;
+                return <tr key={i}><td colSpan={2} className="h-2 bg-bg-primary"></td></tr>;
               }
               return (
                 <tr
                   key={i}
-                  className={`${line.bold ? 'bg-gray-50' : 'hover:bg-gray-50'} transition-colors`}
+                  className={`${line.bold ? 'bg-bg-primary' : 'hover:bg-bg-primary'} transition-colors`}
                 >
-                  <td className={`px-4 py-2.5 ${line.indent ? 'pl-8' : ''} ${line.bold ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
+                  <td className={`px-4 py-2.5 ${line.indent ? 'pl-8' : ''} ${line.bold ? 'font-semibold text-text-primary' : 'text-text-secondary'}`}>
                     {line.label}
                   </td>
                   <td className={`px-4 py-2.5 text-right font-mono ${
                     line.highlight === 'positive' ? 'text-emerald-700 font-bold' :
                     line.highlight === 'negative' ? 'text-red-600 font-bold' :
-                    line.bold ? 'font-semibold text-gray-900' :
-                    'text-gray-700'
+                    line.bold ? 'font-semibold text-text-primary' :
+                    'text-text-primary'
                   }`}>
                     {(line.bold && !line.highlight && line.amount === 0 && line.separator) ? '' : formatCurrency(line.amount)}
                   </td>
@@ -234,21 +234,21 @@ export default function ProfitAndLoss() {
 
       {/* Bottom Summary Badges */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="p-3 bg-gray-50 rounded-lg text-center border border-gray-100">
-          <p className="text-xs uppercase tracking-widest text-gray-400">Gross Margin</p>
-          <p className={`text-lg font-light ${pl.grossProfit >= 0 ? 'text-gray-900' : 'text-red-600'}`}>
+        <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Gross Margin</p>
+          <p className={`text-lg font-light ${pl.grossProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
             {pl.revenue > 0 ? ((pl.grossProfit / pl.revenue) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
-        <div className="p-3 bg-gray-50 rounded-lg text-center border border-gray-100">
-          <p className="text-xs uppercase tracking-widest text-gray-400">Net Margin</p>
+        <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Net Margin</p>
           <p className={`text-lg font-light flex items-center justify-center gap-1 ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
             {pl.netProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {pl.revenue > 0 ? ((pl.netProfit / pl.revenue) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
-        <div className="p-3 bg-gray-50 rounded-lg text-center border border-gray-100">
-          <p className="text-xs uppercase tracking-widest text-gray-400">Net P&L</p>
+        <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
+          <p className="text-xs uppercase tracking-widest text-text-secondary">Net P&L</p>
           <p className={`text-lg font-light ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
             {formatCurrency(pl.netProfit)}
           </p>

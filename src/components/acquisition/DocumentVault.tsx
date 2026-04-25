@@ -44,7 +44,7 @@ function findRosterMember(dealTeam: ProjectTeamMember[] | undefined, role: Proje
 }
 
 function getStatusBadge(doc: RoleLinkedDocument | undefined) {
-  if (!doc) return { label: 'AWAITING UPLOAD', color: 'bg-gray-100 text-gray-500 border-gray-200' };
+  if (!doc) return { label: 'AWAITING UPLOAD', color: 'bg-bg-primary text-text-secondary border-border-accent' };
   if (doc.verified) return { label: 'VERIFIED', color: 'bg-green-50 text-green-700 border-green-200' };
   return { label: 'UPLOADED · PENDING REVIEW', color: 'bg-amber-50 text-amber-700 border-amber-200' };
 }
@@ -109,24 +109,24 @@ export default function DocumentVault() {
   const verifiedCount = documents.filter(d => d.verified).length;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between p-6 hover:bg-bg-primary transition"
       >
         <div className="flex items-center gap-2 text-left">
-          {expanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
-          <FileText className="w-5 h-5 text-pw-muted" />
+          {expanded ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
+          <FileText className="w-5 h-5 text-text-secondary" />
           <div>
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">Document Vault</h3>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">Document Vault</h3>
+            <p className="text-xs text-text-secondary mt-0.5">
               Role-linked uploads tied to your Deal Roster
             </p>
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
             {uploadedCount}/{totalSlots} uploaded
           </span>
           <span className="text-xs font-bold uppercase tracking-wider text-green-600">
@@ -139,13 +139,13 @@ export default function DocumentVault() {
         <>
           {/* Progress bar */}
           <div className="px-6 pb-4">
-            <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-bg-primary rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#a5a5a5] to-[#7f7f7f] rounded-full transition-all duration-500"
                 style={{ width: `${totalSlots > 0 ? (verifiedCount / totalSlots) * 100 : 0}%` }}
               />
             </div>
-            <p className="text-xs text-gray-400 mt-1 text-right">
+            <p className="text-xs text-text-secondary mt-1 text-right">
               {Math.round(totalSlots > 0 ? (verifiedCount / totalSlots) * 100 : 0)}% complete
             </p>
           </div>
@@ -173,27 +173,27 @@ export default function DocumentVault() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-sm font-medium text-gray-900">{slot.category}</span>
+                      <span className="text-sm font-medium text-text-primary">{slot.category}</span>
                       <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded border ${status.color}`}>
                         {status.label}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-400 truncate">{slot.description}</p>
+                    <p className="text-xs text-text-secondary truncate">{slot.description}</p>
 
                     {/* Roster link */}
                     <div className="flex items-center gap-1 mt-1">
                       <User className="w-3 h-3 text-gray-300" />
-                      <span className="text-xs text-gray-400">
-                        Responsible: <span className="font-medium text-gray-600">{slot.role}</span>
+                      <span className="text-xs text-text-secondary">
+                        Responsible: <span className="font-medium text-text-secondary">{slot.role}</span>
                         {member && (
-                          <span className="text-gray-400"> — {member.displayName}</span>
+                          <span className="text-text-secondary"> — {member.displayName}</span>
                         )}
                       </span>
                     </div>
 
                     {/* Uploaded file info */}
                     {doc && (
-                      <p className="text-xs text-gray-400 mt-0.5 font-mono">
+                      <p className="text-xs text-text-secondary mt-0.5 font-mono">
                         📄 {doc.fileName}{' '}
                         {doc.uploadedAt && (
                           <span>

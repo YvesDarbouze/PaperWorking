@@ -96,22 +96,22 @@ function ScatterTooltip({ active, payload }: { active?: boolean; payload?: Array
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-gray-900 font-medium mb-1.5">{d.name}</p>
+    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
+      <p className="text-text-primary font-medium mb-1.5">{d.name}</p>
       <div className="space-y-0.5">
         <p className="flex justify-between gap-4">
-          <span className="text-gray-500">Days on Market:</span>
-          <span className="font-mono font-medium text-gray-900">{d.dom}d</span>
+          <span className="text-text-secondary">Days on Market:</span>
+          <span className="font-mono font-medium text-text-primary">{d.dom}d</span>
         </p>
         <p className="flex justify-between gap-4">
-          <span className="text-gray-500">Net Profit:</span>
+          <span className="text-text-secondary">Net Profit:</span>
           <span className={`font-mono font-semibold ${d.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
             {d.profit >= 0 ? '+' : '-'}${Math.abs(d.profit).toLocaleString()}
           </span>
         </p>
         <p className="flex justify-between gap-4">
-          <span className="text-gray-500">Sale Price:</span>
-          <span className="font-mono text-gray-700">${d.salePrice.toLocaleString()}</span>
+          <span className="text-text-secondary">Sale Price:</span>
+          <span className="font-mono text-text-primary">${d.salePrice.toLocaleString()}</span>
         </p>
       </div>
     </div>
@@ -144,7 +144,7 @@ export default function TimeToSaleVsProfit({ projects }: TimeToSaleVsProfitProps
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-xs">
+      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
         No completed sales to plot.
       </div>
     );

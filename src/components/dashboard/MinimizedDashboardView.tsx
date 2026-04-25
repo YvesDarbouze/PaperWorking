@@ -91,14 +91,14 @@ export default function MinimizedDashboardView({ projects, onSelectDeal }: Minim
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-light tracking-tight text-gray-900">Board View</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h2 className="text-2xl font-light tracking-tight text-text-primary">Board View</h2>
+          <p className="text-sm text-text-secondary mt-0.5">
             All {projects.length} deal{projects.length !== 1 ? 's' : ''} across your workflow
           </p>
         </div>
         <button
           onClick={handleClose}
-          className="p-2 rounded-lg hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition"
+          className="p-2 rounded-lg hover:bg-gray-200 text-text-secondary hover:text-text-primary transition"
           aria-label="Close board view"
         >
           <X className="w-5 h-5" />
@@ -147,14 +147,14 @@ function BoardColumn({
   onDealClick: (deal: Project) => void;
 }) {
   return (
-    <div className="flex flex-col rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div className="flex flex-col rounded-xl border border-border-accent bg-bg-surface overflow-hidden">
       {/* Column header */}
       <div className={`px-4 py-3 border-b ${accent}`}>
         <div className="flex items-center justify-between">
           <span className="text-sm font-bold uppercase tracking-widest">
             {lane.shortLabel}
           </span>
-          <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-mono bg-bg-surface/60 px-2 py-0.5 rounded-full">
             {projects.length}
           </span>
         </div>
@@ -163,7 +163,7 @@ function BoardColumn({
       {/* Deal cards */}
       <div className="flex-1 p-2.5 space-y-2 min-h-[120px] max-h-[calc(100vh-280px)] overflow-y-auto">
         {projects.length === 0 ? (
-          <div className="h-20 flex items-center justify-center text-sm text-gray-400 italic">
+          <div className="h-20 flex items-center justify-center text-sm text-text-secondary italic">
             No projects
           </div>
         ) : (
@@ -191,7 +191,7 @@ function MobileColumn({
   const [isOpen, setIsOpen] = React.useState(projects.length > 0);
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div className="rounded-xl border border-border-accent bg-bg-surface overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`w-full px-4 py-3 flex items-center justify-between text-left border-b ${accent}`}
@@ -200,7 +200,7 @@ function MobileColumn({
           {lane.label}
         </span>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono bg-white/60 px-2 py-0.5 rounded-full">
+          <span className="text-xs font-mono bg-bg-surface/60 px-2 py-0.5 rounded-full">
             {projects.length}
           </span>
           <motion.div
@@ -224,7 +224,7 @@ function MobileColumn({
           >
             <div className="p-3 space-y-2">
               {projects.length === 0 ? (
-                <p className="text-sm text-gray-400 italic text-center py-3">No projects in this phase</p>
+                <p className="text-sm text-text-secondary italic text-center py-3">No projects in this phase</p>
               ) : (
                 projects.map((deal) => (
                   <DealCard key={deal.id} deal={deal} onClick={() => onDealClick(deal)} />

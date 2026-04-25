@@ -59,8 +59,8 @@ export default function Logo({ href, size = 'md', className = '' }: LogoProps) {
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
       <PaperWorkingIcon size={s.iconPx} />
       <span className={`${s.text} tracking-tight`}>
-        <span className="font-bold">Paper</span>
-        <span className="font-light text-gray-500">Working</span>
+        <span className="font-black">Paper</span>
+        <span className="font-thin text-[var(--pw-subtle)]">Working</span>
       </span>
     </span>
   );

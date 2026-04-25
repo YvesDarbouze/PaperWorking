@@ -100,24 +100,24 @@ export default function ProspectingBoard() {
   };
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <section className="rounded-2xl border border-border-accent bg-bg-surface shadow-sm overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-6 py-5 hover:bg-gray-50/60 transition"
+        className="w-full flex items-center justify-between px-6 py-5 hover:bg-bg-primary/60 transition"
       >
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-pw-subtle/30 flex items-center justify-center">
-            <Search className="w-4.5 h-4.5 text-gray-600" />
+            <Search className="w-4.5 h-4.5 text-text-secondary" />
           </div>
           <div className="text-left">
-            <h2 className="text-base font-semibold text-gray-900 tracking-tight">Prospecting Board</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-base font-semibold text-text-primary tracking-tight">Prospecting Board</h2>
+            <p className="text-sm text-text-secondary">
               {prospects.length} active prospect{prospects.length !== 1 ? 's' : ''} in pipeline
             </p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+        {expanded ? <ChevronUp className="w-4 h-4 text-text-secondary" /> : <ChevronDown className="w-4 h-4 text-text-secondary" />}
       </button>
 
       {expanded && (
@@ -130,7 +130,7 @@ export default function ProspectingBoard() {
                 return (
                   <span
                     key={status}
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${count > 0 ? STATUS_COLORS[status] : 'bg-gray-50 text-gray-300'}`}
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${count > 0 ? STATUS_COLORS[status] : 'bg-bg-primary text-gray-300'}`}
                   >
                     {status} ({count})
                   </span>
@@ -149,19 +149,19 @@ export default function ProspectingBoard() {
               return (
                 <div
                   key={prospect.id}
-                  className="border border-gray-100 rounded-xl overflow-hidden hover:border-gray-200 transition"
+                  className="border border-border-accent rounded-xl overflow-hidden hover:border-border-accent transition"
                 >
                   {/* Card Header */}
-                  <div className="px-4 py-3 flex items-center justify-between bg-white">
+                  <div className="px-4 py-3 flex items-center justify-between bg-bg-surface">
                     <div className="flex items-center gap-3 min-w-0">
-                      <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                      <MapPin className="w-4 h-4 text-text-secondary shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{prospect.address}</p>
+                        <p className="text-sm font-medium text-text-primary truncate">{prospect.address}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${STATUS_COLORS[prospect.status]}`}>
                             {prospect.status}
                           </span>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-text-secondary">
                             Ask: ${prospect.askingPrice.toLocaleString()} · Max: ${maxOffer.toLocaleString()}
                           </span>
                           {!passesRule && prospect.askingPrice > 0 && (
@@ -178,7 +178,7 @@ export default function ProspectingBoard() {
                         className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition ${
                           prospect.syndicationEnabled
                             ? 'bg-indigo-50 text-indigo-600'
-                            : 'bg-gray-50 text-gray-400 hover:text-gray-600'
+                            : 'bg-bg-primary text-text-secondary hover:text-text-secondary'
                         }`}
                         title={prospect.syndicationEnabled ? 'Syndication ON' : 'Syndication OFF'}
                       >
@@ -192,7 +192,7 @@ export default function ProspectingBoard() {
 
                       <button
                         onClick={() => setExpandedCardId(isExpanded ? null : prospect.id)}
-                        className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 transition"
+                        className="p-1.5 rounded-md hover:bg-bg-primary text-text-secondary transition"
                       >
                         <MoreHorizontal className="w-4 h-4" />
                       </button>
@@ -201,7 +201,7 @@ export default function ProspectingBoard() {
 
                   {/* Expanded Detail */}
                   {isExpanded && (
-                    <div className="px-4 pb-4 pt-2 border-t border-gray-50 bg-gray-50/30 space-y-4">
+                    <div className="px-4 pb-4 pt-2 border-t border-gray-50 bg-bg-primary/30 space-y-4">
                       {/* Financial Snapshot */}
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {[
@@ -210,16 +210,16 @@ export default function ProspectingBoard() {
                           { label: 'Est. Repairs', value: `$${prospect.estimatedRepairs.toLocaleString()}` },
                           { label: '70% Max Offer', value: `$${maxOffer.toLocaleString()}`, highlight: true },
                         ].map((m) => (
-                          <div key={m.label} className={`rounded-lg px-3 py-2 ${m.highlight ? 'bg-gray-900 text-white' : 'bg-white border border-gray-100'}`}>
-                            <p className={`text-xs font-bold uppercase tracking-widest ${m.highlight ? 'text-gray-400' : 'text-gray-400'}`}>{m.label}</p>
-                            <p className={`text-sm font-semibold mt-0.5 ${m.highlight ? 'text-white' : 'text-gray-900'}`}>{m.value}</p>
+                          <div key={m.label} className={`rounded-lg px-3 py-2 ${m.highlight ? 'bg-gray-900 text-white' : 'bg-bg-surface border border-border-accent'}`}>
+                            <p className={`text-xs font-bold uppercase tracking-widest ${m.highlight ? 'text-text-secondary' : 'text-text-secondary'}`}>{m.label}</p>
+                            <p className={`text-sm font-semibold mt-0.5 ${m.highlight ? 'text-white' : 'text-text-primary'}`}>{m.value}</p>
                           </div>
                         ))}
                       </div>
 
                       {/* Status Transition */}
                       <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Move Status</p>
+                        <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-1.5">Move Status</p>
                         <div className="flex gap-1.5 flex-wrap">
                           {STATUS_FLOW.map((s) => (
                             <button
@@ -228,7 +228,7 @@ export default function ProspectingBoard() {
                               className={`px-2.5 py-1 rounded-md text-xs font-semibold transition ${
                                 prospect.status === s
                                   ? 'bg-gray-900 text-white'
-                                  : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                  : 'bg-bg-primary text-text-secondary hover:bg-gray-200'
                               }`}
                             >
                               {s}
@@ -239,7 +239,7 @@ export default function ProspectingBoard() {
 
                       {/* Offer Letters Section */}
                       <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-1">
+                        <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-2 flex items-center gap-1">
                           <FileText className="w-3 h-3" /> Offer Letters ({prospect.offerLetters.length})
                         </p>
                         <OfferLetterGenerator
@@ -270,7 +270,7 @@ export default function ProspectingBoard() {
                         onChange={(e) => updateProspect(prospect.id, { notes: e.target.value })}
                         placeholder="Notes about this prospect…"
                         rows={2}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition resize-none"
+                        className="w-full border border-border-accent rounded-lg px-3 py-2 text-xs focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition resize-none"
                       />
 
                       {/* Remove */}
@@ -289,24 +289,24 @@ export default function ProspectingBoard() {
 
           {/* Add Prospect Form */}
           {showAddForm ? (
-            <div className="border border-gray-200 rounded-xl p-5 bg-gray-50/40 space-y-3">
+            <div className="border border-border-accent rounded-xl p-5 bg-bg-primary/40 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-semibold text-gray-900">Add Prospect</h3>
-                <button onClick={() => setShowAddForm(false)} className="p-1 rounded hover:bg-gray-200 text-gray-400 transition">
+                <h3 className="text-sm font-semibold text-text-primary">Add Prospect</h3>
+                <button onClick={() => setShowAddForm(false)} className="p-1 rounded hover:bg-gray-200 text-text-secondary transition">
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">
                     <MapPin className="w-3 h-3 inline mr-1" />Address
                   </label>
                   <input
                     value={form.address}
                     onChange={(e) => setField('address', e.target.value)}
                     placeholder="456 Prospect Ave, Tampa, FL"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition"
+                    className="w-full border border-border-accent rounded-lg px-3 py-2 text-sm focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition"
                   />
                 </div>
                 {[
@@ -315,7 +315,7 @@ export default function ProspectingBoard() {
                   { key: 'estimatedRepairs' as const, label: 'Est. Repairs' },
                 ].map(({ key, label }) => (
                   <div key={key}>
-                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+                    <label className="block text-xs font-bold text-text-secondary uppercase tracking-widest mb-1">
                       <DollarSign className="w-3 h-3 inline mr-1" />{label}
                     </label>
                     <input
@@ -323,19 +323,19 @@ export default function ProspectingBoard() {
                       value={form[key] || ''}
                       onChange={(e) => setField(key, parseFloat(e.target.value) || 0)}
                       placeholder="0"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition"
+                      className="w-full border border-border-accent rounded-lg px-3 py-2 text-sm focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition"
                     />
                   </div>
                 ))}
               </div>
 
               {/* 70% Rule Preview */}
-              <div className="flex items-center justify-between bg-white rounded-lg px-4 py-3 border border-gray-100">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center justify-between bg-bg-surface rounded-lg px-4 py-3 border border-border-accent">
+                <div className="flex items-center gap-2 text-xs text-text-secondary">
                   <TrendingUp className="w-4 h-4" />
                   70% Max Offer
                 </div>
-                <span className="text-sm font-bold text-gray-900">
+                <span className="text-sm font-bold text-text-primary">
                   ${calc70(form.estimatedARV, form.estimatedRepairs).toLocaleString()}
                 </span>
               </div>
@@ -350,7 +350,7 @@ export default function ProspectingBoard() {
           ) : (
             <button
               onClick={() => setShowAddForm(true)}
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition font-medium"
+              className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary transition font-medium"
             >
               <Plus className="w-4 h-4" /> Add Prospect
             </button>

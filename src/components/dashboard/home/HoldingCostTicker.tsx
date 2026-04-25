@@ -94,23 +94,23 @@ export default function HoldingCostTicker({ projects, maxDOM = 160 }: HoldingCos
   return (
     <div className="space-y-3">
       {deals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-pw-muted opacity-30">
+        <div className="flex flex-col items-center justify-center py-10 text-text-secondary opacity-30">
           <Wallet className="w-8 h-8 mb-2 stroke-1" />
           <p className="text-xs font-medium">No holding costs tracked</p>
         </div>
       ) : (
         deals.map(deal => (
-          <div key={deal.id} className="px-4 py-3 rounded-2xl bg-pw-bg/40 border border-pw-border/10 space-y-2">
+          <div key={deal.id} className="px-4 py-3 rounded-md bg-bg-primary/40 border border-border-accent/10 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-pw-black tracking-tight truncate max-w-[150px]">
+              <span className="text-sm font-medium text-text-primary tracking-tight truncate max-w-[150px]">
                 {deal.address}
               </span>
-              <span className="text-base font-light text-pw-black tracking-tight">
+              <span className="text-base font-light text-text-primary tracking-tight">
                 {formatCurrency(deal.monthlyTotal)}
                 <span className="text-[9px] ml-1 opacity-40">/mo</span>
               </span>
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-pw-muted opacity-50">
+            <div className="flex items-center gap-3 text-[10px] text-text-secondary opacity-50">
               <span>{formatCurrency(deal.dailyRate)}/day</span>
               <ArrowRight className="w-2.5 h-2.5" />
               <span>~{formatCurrency(deal.projectedRemainingCost)} remaining</span>

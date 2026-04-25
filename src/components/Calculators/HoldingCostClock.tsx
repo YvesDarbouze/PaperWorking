@@ -60,7 +60,7 @@ export default function HoldingCostClock() {
       
       <div className="flex flex-col space-y-4 relative z-10 mt-4">
         <div>
-           <p className="text-xs uppercase tracking-widest text-gray-500 mb-1">Burned Today</p>
+           <p className="text-xs uppercase tracking-widest text-text-secondary mb-1">Burned Today</p>
            <p className="text-5xl font-light text-red-400 font-mono">
               ${burnedToday.toFixed(4)}
            </p>
@@ -68,9 +68,9 @@ export default function HoldingCostClock() {
         
         <div className="flex justify-between items-end border-t border-gray-800 pt-4 mt-2">
            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Daily Run Rate</p>
+              <p className="text-xs text-text-secondary uppercase tracking-widest mb-1">Daily Run Rate</p>
               <p className="text-xl font-medium text-gray-300">
-                 ${dailyBurn.toFixed(2)}<span className="text-sm font-normal text-gray-500">/day</span>
+                 ${dailyBurn.toFixed(2)}<span className="text-sm font-normal text-text-secondary">/day</span>
               </p>
            </div>
         </div>

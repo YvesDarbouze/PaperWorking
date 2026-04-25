@@ -59,7 +59,7 @@ export default function First60Seconds() {
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
             No Onboarding Required
           </p>
-          <h2 className="text-3xl font-medium tracking-tight text-black sm:text-4xl mb-4">
+          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl mb-4">
             The First 60 Seconds.
           </h2>
           <p className="mx-auto max-w-lg text-sm text-phase-3 leading-relaxed">
@@ -70,7 +70,7 @@ export default function First60Seconds() {
         {/* Dashboard Screenshot with Hotspots */}
         <div className="relative mx-auto max-w-4xl">
           {/* Simulated Dashboard Frame */}
-          <div className="bg-white border border-phase-1 shadow-lg overflow-hidden">
+          <div className="bg-bg-surface border border-phase-1 shadow-lg overflow-hidden">
             {/* Top bar */}
             <div className="flex items-center justify-between px-5 py-2.5 border-b border-dashboard bg-dashboard">
               <div className="flex items-center space-x-2">
@@ -90,19 +90,19 @@ export default function First60Seconds() {
                 <div className="px-3 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest">
                   + New Deal
                 </div>
-                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-bg-surface transition-colors">
                   Pipeline
                 </div>
-                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-3 hover:bg-bg-surface transition-colors">
                   Engine Room
                 </div>
-                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-bg-surface transition-colors">
                   Triage Queue
                 </div>
-                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-bg-surface transition-colors">
                   Closing Room
                 </div>
-                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-white transition-colors">
+                <div className="px-3 py-2 text-xs font-bold uppercase tracking-widest text-phase-2 hover:bg-bg-surface transition-colors">
                   Team Settings
                 </div>
               </div>
@@ -111,7 +111,7 @@ export default function First60Seconds() {
               <div className="flex-1 p-5 relative">
                 {/* Pipeline header */}
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-sm font-bold text-black">Deal Pipeline</h3>
+                  <h3 className="text-sm font-bold text-text-primary">Deal Pipeline</h3>
                   <span className="text-xs text-phase-2">3 active projects</span>
                 </div>
 
@@ -123,7 +123,7 @@ export default function First60Seconds() {
                     { address: '15 Elm Ct', phase: 'Exit', price: '$580K' },
                   ].map((deal) => (
                     <div key={deal.address} className="border border-phase-1 p-3 hover:bg-dashboard transition-colors">
-                      <p className="text-xs font-medium text-black mb-1">{deal.address}</p>
+                      <p className="text-xs font-medium text-text-primary mb-1">{deal.address}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase tracking-widest text-phase-2">{deal.phase}</span>
                         <span className="text-xs text-phase-3 tabular-nums">{deal.price}</span>
@@ -142,11 +142,11 @@ export default function First60Seconds() {
                 <div className="flex items-center justify-between border border-phase-1 p-3">
                   <div>
                     <span className="text-xs font-bold uppercase tracking-widest text-phase-2 block">Portfolio ROI</span>
-                    <span className="text-lg font-medium text-black tabular-nums">34.2%</span>
+                    <span className="text-lg font-medium text-text-primary tabular-nums">34.2%</span>
                   </div>
                   <div className="text-right">
                     <span className="text-xs font-bold uppercase tracking-widest text-phase-2 block">Total Deployed</span>
-                    <span className="text-lg font-medium text-black tabular-nums">$847K</span>
+                    <span className="text-lg font-medium text-text-primary tabular-nums">$847K</span>
                   </div>
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function First60Seconds() {
         <div className="text-center mt-12">
           <a
             href="/pricing"
-            className="inline-flex items-center text-sm font-bold text-phase-4 hover:text-black transition-colors"
+            className="inline-flex items-center text-sm font-bold text-phase-4 hover:text-text-primary transition-colors"
           >
             Try it yourself — no setup required
             <ArrowRight className="ml-2 w-4 h-4" />

@@ -37,7 +37,7 @@ const TTF_STYLE: Record<TTFBand, { bg: string; text: string; border: string; lab
   green:   { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: '< 6 mo' },
   yellow:  { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   label: '6-12 mo' },
   red:     { bg: 'bg-red-50',     text: 'text-red-700',     border: 'border-red-200',     label: '> 12 mo' },
-  neutral: { bg: 'bg-gray-50',    text: 'text-gray-500',    border: 'border-gray-200',    label: 'N/A' },
+  neutral: { bg: 'bg-bg-primary',    text: 'text-text-secondary',    border: 'border-border-accent',    label: 'N/A' },
 };
 
 /* ─── Computed KPI Shape ─── */
@@ -206,10 +206,10 @@ function KPICard({
   badge?: React.ReactNode;
 }) {
   return (
-    <div className="ag-card bg-pw-surface shadow-[0_15px_30px_rgba(0,0,0,0.02)] border border-pw-border/10 flex flex-col justify-between min-h-[180px] hover:scale-[1.02] transition-all duration-300 group">
+    <div className="ag-card bg-bg-surface shadow-[0_15px_30px_rgba(0,0,0,0.02)] border border-border-accent/10 flex flex-col justify-between min-h-[180px] hover:scale-[1.02] transition-all duration-300 group">
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-pw-bg flex items-center justify-center text-pw-muted group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500">
+          <div className="w-10 h-10 rounded-full bg-bg-primary flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500">
             {icon}
           </div>
           <p className="ag-label opacity-60 group-hover:opacity-100 transition-opacity">
@@ -220,10 +220,10 @@ function KPICard({
       </div>
 
       <div className="mt-6">
-        <h3 className={`text-4xl font-light tracking-tighter leading-none ${accent || 'text-pw-black'}`}>
+        <h3 className={`text-4xl font-light tracking-tighter leading-none ${accent || 'text-text-primary'}`}>
           {value}
         </h3>
-        <p className="text-[11px] text-pw-muted mt-4 font-normal tracking-tight opacity-50 leading-relaxed uppercase tracking-[0.05em]">
+        <p className="text-[11px] text-text-secondary mt-4 font-normal tracking-tight opacity-50 leading-relaxed uppercase tracking-[0.05em]">
           {subtext}
         </p>
       </div>
@@ -244,10 +244,10 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
 
   // Variance direction indicator
   const varianceIcon = kpis.constructionVariance > 0
-    ? <TrendingUp className="w-4 h-4 text-pw-black opacity-30" />
+    ? <TrendingUp className="w-4 h-4 text-text-primary opacity-30" />
     : kpis.constructionVariance < 0
-      ? <TrendingDown className="w-4 h-4 text-pw-black opacity-30" />
-      : <Minus className="w-4 h-4 text-pw-muted opacity-30" />;
+      ? <TrendingDown className="w-4 h-4 text-text-primary opacity-30" />
+      : <Minus className="w-4 h-4 text-text-secondary opacity-30" />;
 
   return (
     <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
@@ -257,7 +257,7 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
         label="Average Cycle"
         value={kpis.avgTTF !== null ? `${kpis.avgTTF}d` : '—'}
         subtext={`${kpis.ttfDeals} Entity Exits Recorded`}
-        accent="text-pw-black"
+        accent="text-text-primary"
         badge={
           kpis.avgTTF !== null && (
             <div className={`w-2.5 h-2.5 rounded-full ${ttfBand(kpis.avgTTF) === 'green' ? 'bg-pw-black' : ttfBand(kpis.avgTTF) === 'yellow' ? 'bg-pw-muted' : 'border border-pw-black'}`}></div>
@@ -271,7 +271,7 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
         label="Operational Burn"
         value={kpis.monthlyOverhead > 0 ? `$${Math.round(kpis.monthlyOverhead).toLocaleString()}` : '$0'}
         subtext="Fixed capital recurring burn rate"
-        accent="text-pw-black"
+        accent="text-text-primary"
       />
 
       {/* ── 3. CapEx Variance ── */}
@@ -283,8 +283,8 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
           : '—'}
         subtext={`${kpis.varianceDeals} Asset Tracks Syncing`}
         accent={
-          kpis.constructionVariance > 10 ? 'text-pw-black font-medium'
-          : 'text-pw-black'
+          kpis.constructionVariance > 10 ? 'text-text-primary font-medium'
+          : 'text-text-primary'
         }
         badge={kpis.varianceDeals > 0 ? varianceIcon : undefined}
       />
@@ -295,7 +295,7 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
         label="Capital Efficiency"
         value={kpis.cocDeals > 0 ? `${kpis.cashOnCash.toFixed(1)}%` : '—'}
         subtext="Annualized efficiency ratio"
-        accent="text-pw-black"
+        accent="text-text-primary"
       />
 
       {/* ── 5. Portfolio Fluidity ── */}
@@ -305,7 +305,7 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
         value={`${Math.round(kpis.activePct)}:${Math.round(kpis.pendingSalePct)}`}
         subtext={`$${Math.round(kpis.totalPortfolioValue / 1000)}k Total Value Locked`}
         badge={
-          <div className="flex h-1.5 w-16 bg-pw-bg rounded-full overflow-hidden border border-pw-border/20">
+          <div className="flex h-1.5 w-16 bg-bg-primary rounded-full overflow-hidden border border-border-accent/20">
             <div
               className="bg-pw-black transition-all duration-1000"
               style={{ width: `${kpis.activePct}%` }}

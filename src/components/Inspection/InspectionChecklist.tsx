@@ -25,13 +25,13 @@ export default function InspectionChecklist() {
   const variance = totalEstimate - totalActual; // positive means under budget
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
        <div className="flex justify-between items-center mb-6">
          <div className="flex items-center space-x-2">
-           <ClipboardCheck className="w-5 h-5 text-gray-700" />
-           <h3 className="text-lg font-medium tracking-tight text-gray-900">Virtual Walk-Through Inspection</h3>
+           <ClipboardCheck className="w-5 h-5 text-text-primary" />
+           <h3 className="text-lg font-medium tracking-tight text-text-primary">Virtual Walk-Through Inspection</h3>
          </div>
-         <button onClick={addRow} className="p-1 px-3 bg-gray-100 text-gray-700 text-xs font-semibold rounded hover:bg-gray-200 flex items-center">
+         <button onClick={addRow} className="p-1 px-3 bg-bg-primary text-text-primary text-xs font-semibold rounded hover:bg-gray-200 flex items-center">
             <Plus className="w-3 h-3 mr-1" /> Add Estimate
          </button>
        </div>
@@ -40,9 +40,9 @@ export default function InspectionChecklist() {
          <table className="min-w-full divide-y divide-gray-200">
            <thead>
              <tr>
-               <th className="py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-               <th className="py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Estimated ($)</th>
-               <th className="py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actual ($)</th>
+               <th className="py-2 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Category</th>
+               <th className="py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Estimated ($)</th>
+               <th className="py-2 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Actual ($)</th>
              </tr>
            </thead>
            <tbody className="divide-y divide-gray-100">
@@ -52,31 +52,31 @@ export default function InspectionChecklist() {
                     <input 
                       type="text" 
                       defaultValue={item.category}
-                      className="text-sm text-gray-900 bg-transparent border-none focus:ring-0 p-0 w-full"
+                      className="text-sm text-text-primary bg-transparent border-none focus:ring-0 p-0 w-full"
                     />
                   </td>
                   <td className="py-3 text-right">
                     <input 
                       type="number" 
                       defaultValue={item.estimatedCost}
-                      className="text-sm text-gray-600 bg-transparent border-none focus:ring-0 p-0 text-right w-24"
+                      className="text-sm text-text-secondary bg-transparent border-none focus:ring-0 p-0 text-right w-24"
                     />
                   </td>
                   <td className="py-3 text-right">
                     <input 
                       type="number" 
                       defaultValue={item.actualCost}
-                      className="text-sm text-gray-900 bg-transparent border-none focus:ring-0 p-0 text-right w-24 font-medium"
+                      className="text-sm text-text-primary bg-transparent border-none focus:ring-0 p-0 text-right w-24 font-medium"
                     />
                   </td>
                 </tr>
              ))}
            </tbody>
-           <tfoot className="border-t-2 border-gray-200">
+           <tfoot className="border-t-2 border-border-accent">
              <tr>
-               <td className="py-3 text-sm font-semibold text-gray-900">Total Projection</td>
-               <td className="py-3 text-right text-sm font-medium text-gray-600">${totalEstimate.toLocaleString()}</td>
-               <td className="py-3 text-right text-sm font-semibold text-gray-900">${totalActual.toLocaleString()}</td>
+               <td className="py-3 text-sm font-semibold text-text-primary">Total Projection</td>
+               <td className="py-3 text-right text-sm font-medium text-text-secondary">${totalEstimate.toLocaleString()}</td>
+               <td className="py-3 text-right text-sm font-semibold text-text-primary">${totalActual.toLocaleString()}</td>
              </tr>
            </tfoot>
          </table>

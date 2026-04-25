@@ -29,13 +29,13 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
       </div>
 
       {/* Gate Overlay */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-sm z-10">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 max-w-sm text-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-bg-surface/40 backdrop-blur-sm z-10">
+        <div className="bg-bg-surface rounded-2xl shadow-xl border border-border-accent p-8 max-w-sm text-center">
           <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-6 h-6 text-indigo-600" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Subscription Required</h3>
-          <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+          <h3 className="text-lg font-semibold text-text-primary mb-2">Subscription Required</h3>
+          <p className="text-sm text-text-secondary mb-6 leading-relaxed">
             {dealName
               ? `You've been invited to view "${dealName}". Subscribe to PaperWorking to access the full listing and accept equity offers.`
               : 'A PaperWorking subscription is required to access this content.'}
@@ -47,7 +47,7 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
             <CreditCard className="w-4 h-4" />
             Subscribe to View
           </a>
-          <p className="text-xs text-gray-400 mt-3">Starting at $29/month</p>
+          <p className="text-xs text-text-secondary mt-3">Starting at $29/month</p>
         </div>
       </div>
     </div>

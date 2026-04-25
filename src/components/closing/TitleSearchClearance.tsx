@@ -20,7 +20,7 @@ interface TitleCheckItem {
 }
 
 const STATUS_CONFIG: Record<ClearanceStatus, { icon: React.ReactNode; bg: string; text: string }> = {
-  Pending: { icon: <Clock className="w-3.5 h-3.5" />, bg: 'bg-gray-100', text: 'text-gray-500' },
+  Pending: { icon: <Clock className="w-3.5 h-3.5" />, bg: 'bg-bg-primary', text: 'text-text-secondary' },
   'In Review': { icon: <Search className="w-3.5 h-3.5" />, bg: 'bg-blue-50', text: 'text-blue-600' },
   Cleared: { icon: <CheckCircle className="w-3.5 h-3.5" />, bg: 'bg-emerald-50', text: 'text-emerald-600' },
   'Issue Found': { icon: <AlertTriangle className="w-3.5 h-3.5" />, bg: 'bg-red-50', text: 'text-red-600' },
@@ -57,11 +57,11 @@ export default function TitleSearchClearance() {
   const isFullyCleared = clearedCount === checks.length;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
-          <Shield className="w-5 h-5 text-gray-700" />
-          <h3 className="text-lg font-medium tracking-tight text-gray-900">Title Search Clearance</h3>
+          <Shield className="w-5 h-5 text-text-primary" />
+          <h3 className="text-lg font-medium tracking-tight text-text-primary">Title Search Clearance</h3>
         </div>
         <div className="flex items-center gap-2">
           {isFullyCleared ? (
@@ -78,11 +78,11 @@ export default function TitleSearchClearance() {
 
       {/* Progress Bar */}
       <div className="mb-5">
-        <div className="flex justify-between text-xs text-gray-500 mb-1.5">
+        <div className="flex justify-between text-xs text-text-secondary mb-1.5">
           <span>Clearance Progress</span>
           <span>{clearedCount}/{checks.length} cleared</span>
         </div>
-        <div className="w-full bg-gray-100 rounded-full h-2 flex overflow-hidden">
+        <div className="w-full bg-bg-primary rounded-full h-2 flex overflow-hidden">
           <div
             className="bg-emerald-500 h-2 transition-all"
             style={{ width: `${(clearedCount / checks.length) * 100}%` }}
@@ -105,9 +105,9 @@ export default function TitleSearchClearance() {
               <div className="flex items-center space-x-3">
                 <span className={config.text}>{config.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{check.name}</p>
+                  <p className="text-sm font-medium text-text-primary">{check.name}</p>
                   {check.detail && (
-                    <p className="text-xs text-gray-500 mt-0.5">{check.detail}</p>
+                    <p className="text-xs text-text-secondary mt-0.5">{check.detail}</p>
                   )}
                 </div>
               </div>

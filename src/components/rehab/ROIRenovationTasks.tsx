@@ -33,7 +33,7 @@ const CATEGORY_ICONS: Record<ROICategory, React.ReactNode> = {
 const PRIORITY_STYLES: Record<RenovationTask['priority'], string> = {
   High: 'bg-red-50 text-red-700',
   Medium: 'bg-yellow-50 text-yellow-700',
-  Low: 'bg-gray-50 text-gray-500',
+  Low: 'bg-bg-primary text-text-secondary',
 };
 
 const INITIAL_TASKS: RenovationTask[] = [
@@ -68,28 +68,28 @@ export default function ROIRenovationTasks() {
   const categories = Array.from(new Set(tasks.map(t => t.category)));
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
       {/* Header */}
-      <div className="p-6 border-b border-gray-100">
+      <div className="p-6 border-b border-border-accent">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <DollarSign className="w-5 h-5 text-gray-700" />
-            <h3 className="text-lg font-medium tracking-tight text-gray-900">ROI-Focused Renovation</h3>
+            <DollarSign className="w-5 h-5 text-text-primary" />
+            <h3 className="text-lg font-medium tracking-tight text-text-primary">ROI-Focused Renovation</h3>
           </div>
-          <span className="text-xs text-gray-500 font-medium">
+          <span className="text-xs text-text-secondary font-medium">
             {completedCount}/{tasks.length} Tasks
           </span>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <p className="text-xs uppercase tracking-widest text-gray-400">Total Budget</p>
-            <p className="text-lg font-light text-gray-900">${totalCost.toLocaleString()}</p>
+          <div className="p-3 bg-bg-primary rounded-lg">
+            <p className="text-xs uppercase tracking-widest text-text-secondary">Total Budget</p>
+            <p className="text-lg font-light text-text-primary">${totalCost.toLocaleString()}</p>
           </div>
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <p className="text-xs uppercase tracking-widest text-gray-400">Spent</p>
-            <p className="text-lg font-light text-gray-900">${completedCost.toLocaleString()}</p>
+          <div className="p-3 bg-bg-primary rounded-lg">
+            <p className="text-xs uppercase tracking-widest text-text-secondary">Spent</p>
+            <p className="text-lg font-light text-text-primary">${completedCost.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
             <p className="text-xs uppercase tracking-widest text-emerald-600">Projected ARV Lift</p>
@@ -102,7 +102,7 @@ export default function ROIRenovationTasks() {
           <button
             onClick={() => setFilterCategory('All')}
             className={`px-3 py-1 text-xs font-medium rounded-full transition ${
-              filterCategory === 'All' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              filterCategory === 'All' ? 'bg-gray-900 text-white' : 'bg-bg-primary text-text-secondary hover:bg-gray-200'
             }`}
           >
             All
@@ -112,7 +112,7 @@ export default function ROIRenovationTasks() {
               key={cat}
               onClick={() => setFilterCategory(cat)}
               className={`px-3 py-1 text-xs font-medium rounded-full transition flex items-center gap-1 ${
-                filterCategory === cat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                filterCategory === cat ? 'bg-gray-900 text-white' : 'bg-bg-primary text-text-secondary hover:bg-gray-200'
               }`}
             >
               {CATEGORY_ICONS[cat]} {cat}
@@ -127,7 +127,7 @@ export default function ROIRenovationTasks() {
           <div
             key={task.id}
             className={`flex items-start justify-between px-6 py-4 transition group ${
-              task.completed ? 'bg-gray-50/50 opacity-60' : 'hover:bg-gray-50'
+              task.completed ? 'bg-bg-primary/50 opacity-60' : 'hover:bg-bg-primary'
             }`}
           >
             <div className="flex items-start space-x-3">
@@ -138,15 +138,15 @@ export default function ROIRenovationTasks() {
                 {task.completed ? (
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 group-hover:text-gray-400 transition" />
+                  <Circle className="w-5 h-5 text-gray-300 group-hover:text-text-secondary transition" />
                 )}
               </button>
               <div>
-                <p className={`text-sm font-medium ${task.completed ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                <p className={`text-sm font-medium ${task.completed ? 'line-through text-text-secondary' : 'text-text-primary'}`}>
                   {task.title}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                  <span className="text-xs bg-bg-primary text-text-secondary px-1.5 py-0.5 rounded flex items-center gap-0.5">
                     {CATEGORY_ICONS[task.category]} {task.category}
                   </span>
                   <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${PRIORITY_STYLES[task.priority]}`}>
@@ -156,7 +156,7 @@ export default function ROIRenovationTasks() {
               </div>
             </div>
             <div className="text-right flex-shrink-0 ml-3">
-              <p className="text-sm font-mono text-gray-700">${task.estimatedCost.toLocaleString()}</p>
+              <p className="text-sm font-mono text-text-primary">${task.estimatedCost.toLocaleString()}</p>
               <p className="text-xs text-emerald-600 flex items-center justify-end mt-0.5">
                 <ArrowUpRight className="w-3 h-3 mr-0.5" />+{task.estimatedROILift}% ARV
               </p>

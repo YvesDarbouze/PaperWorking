@@ -62,7 +62,7 @@ export default function FAQAccordion({ items }: FAQAccordionProps) {
                 className="flex w-full items-center justify-between text-left focus:outline-none group cursor-pointer"
                 aria-expanded={isOpen}
               >
-                <h3 className="text-lg font-medium text-phase-4 group-hover:text-black transition-colors pr-4">
+                <h3 className="text-lg font-medium text-phase-4 group-hover:text-text-primary transition-colors pr-4">
                   {item.question}
                 </h3>
                 <ChevronDown

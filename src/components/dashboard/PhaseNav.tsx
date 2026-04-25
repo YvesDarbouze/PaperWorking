@@ -82,7 +82,7 @@ export default function PhaseNav() {
           px-3 py-1.5 rounded-md border transition-all
           ${viewMode === 'minimized'
             ? 'bg-gray-900 text-white border-gray-900'
-            : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-700'
+            : 'bg-bg-surface text-text-secondary border-border-accent hover:border-gray-400 hover:text-text-primary'
           }
         `}
         title={viewMode === 'minimized' ? 'Switch to Expanded View' : 'Switch to Board View'}

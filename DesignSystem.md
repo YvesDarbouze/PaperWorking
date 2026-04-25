@@ -10,6 +10,11 @@ We rely on a central custom theme configured in `tailwind.config.ts`.
 If you need a specific styling aspect that does not currently correspond to a mapped design token, you must update the global design system tokens instead of using an inline arbitrary value.
 
 ### Typography
+- **Primary Font**: Hanken Grotesk
+  - **Title (h1)**: Thin (100)
+  - **Heading (h2, h3)**: Light (300)
+  - **Sub-Heading (h4, h5, h6)**: ExtraLight (200)
+  - **Body**: Regular (400)
 - We use predefined scalable text variables. Instead of inline `text-[something]`, use `text-xs`, `text-sm`, `text-base`, `text-lg`.
 - **Institutional Styling**: When standardizing, we rely heavily on uppercase tracking configurations. Example: `uppercase tracking-widest text-xs font-black`.
 

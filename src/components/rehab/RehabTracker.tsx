@@ -105,7 +105,7 @@ const fmt = (n: number) =>
   `$${n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 
 const PERMIT_BADGE: Record<PermitEntry['status'], string> = {
-  'Not Filed': 'bg-gray-100 text-gray-500',
+  'Not Filed': 'bg-bg-primary text-text-secondary',
   'Filed': 'bg-blue-50 text-blue-700',
   'Approved': 'bg-green-50 text-green-700',
   'Final Sign-Off': 'bg-emerald-50 text-emerald-700',
@@ -328,7 +328,7 @@ export default function RehabTracker() {
 
   if (!currentProject) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center text-sm text-gray-400">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 text-center text-sm text-text-secondary">
         No active deal selected.
       </div>
     );
@@ -338,28 +338,28 @@ export default function RehabTracker() {
     <div className="space-y-4">
 
       {/* ── HEADER SUMMARY ────────────────────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <HardHat className="w-5 h-5 text-amber-600" />
             <div>
-              <h2 className="text-lg font-medium tracking-tight text-gray-900">Rehab Tracker</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Construction velocity & budget burn rate — Phase 3</p>
+              <h2 className="text-lg font-medium tracking-tight text-text-primary">Rehab Tracker</h2>
+              <p className="text-xs text-text-secondary mt-0.5">Construction velocity & budget burn rate — Phase 3</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            <div className="p-3 bg-gray-50 rounded-lg text-center min-w-[100px]">
-              <p className="text-xs uppercase tracking-widest text-gray-400">Budget</p>
-              <p className="text-xl font-light text-gray-900">{fmt(totalEstimated)}</p>
+            <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Budget</p>
+              <p className="text-xl font-light text-text-primary">{fmt(totalEstimated)}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg text-center min-w-[100px]">
-              <p className="text-xs uppercase tracking-widest text-gray-400">Actual</p>
-              <p className={`text-xl font-light ${totalActual > totalEstimated ? 'text-red-600' : 'text-gray-900'}`}>
+            <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Actual</p>
+              <p className={`text-xl font-light ${totalActual > totalEstimated ? 'text-red-600' : 'text-text-primary'}`}>
                 {fmt(totalActual)}
               </p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg text-center min-w-[100px]">
-              <p className="text-xs uppercase tracking-widest text-gray-400">Variance</p>
+            <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Variance</p>
               <p className={`text-xl font-light ${totalVariance < 0 ? 'text-red-600' : 'text-green-700'}`}>
                 {totalVariance < 0 ? '−' : '+'}{fmt(Math.abs(totalVariance))}
               </p>
@@ -369,16 +369,16 @@ export default function RehabTracker() {
       </div>
 
       {/* ── SECTION 1: BUDGET VS ACTUAL ───────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
         <button
           onClick={() => toggle('budget')}
-          className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-between p-5 hover:bg-bg-primary transition"
         >
           <div className="flex items-center gap-2">
-            {open.budget ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open.budget ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
             <TrendingUp className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-semibold text-gray-800">Line-Item Budget vs. Actual</span>
-            <span className="text-xs text-gray-400 ml-1">{budgetLines.length} categories</span>
+            <span className="text-sm font-semibold text-text-primary">Line-Item Budget vs. Actual</span>
+            <span className="text-xs text-text-secondary ml-1">{budgetLines.length} categories</span>
           </div>
           <span className={`text-xs font-mono font-medium px-2 py-1 rounded ${
             totalVariance < 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'
@@ -393,11 +393,11 @@ export default function RehabTracker() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-t border-gray-100 bg-gray-50">
-                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal w-44">Category</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Estimated Cost</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Actual Cost Logged</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Variance</th>
+                    <tr className="border-t border-border-accent bg-bg-primary">
+                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal w-44">Category</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Estimated Cost</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Actual Cost Logged</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Variance</th>
                       <th className="w-20"></th>
                     </tr>
                   </thead>
@@ -414,11 +414,11 @@ export default function RehabTracker() {
                             <td className="px-5 py-3">
                               <div className="flex items-center gap-1.5">
                                 {overBudget && <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />}
-                                <span className="font-medium text-gray-800">{line.category}</span>
+                                <span className="font-medium text-text-primary">{line.category}</span>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(line.estimated)}</td>
-                            <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(actual)}</td>
+                            <td className="px-4 py-3 text-right font-mono text-text-primary">{fmt(line.estimated)}</td>
+                            <td className="px-4 py-3 text-right font-mono text-text-primary">{fmt(actual)}</td>
                             <td className={`px-4 py-3 text-right font-mono font-medium ${overBudget ? 'text-red-600' : 'text-green-700'}`}>
                               {overBudget ? '−' : '+'}{fmt(Math.abs(variance))}
                             </td>
@@ -446,10 +446,10 @@ export default function RehabTracker() {
                               <td colSpan={5} className="px-5 pb-2 pt-0">
                                 <div className="ml-4 space-y-1">
                                   {lineActuals.map(e => (
-                                    <div key={e.id} className="flex items-center gap-3 text-xs text-gray-500">
+                                    <div key={e.id} className="flex items-center gap-3 text-xs text-text-secondary">
                                       <span className="text-gray-300">└</span>
-                                      <span className="text-gray-600 flex-1">{e.description}</span>
-                                      <span className="text-gray-400">{e.vendor}</span>
+                                      <span className="text-text-secondary flex-1">{e.description}</span>
+                                      <span className="text-text-secondary">{e.vendor}</span>
                                       <span className="font-mono">{fmt(e.amount)}</span>
                                       <button
                                         onClick={() => persist({ ...data, actualEntries: actualEntries.filter(a => a.id !== e.id) })}
@@ -475,23 +475,23 @@ export default function RehabTracker() {
                                       value={actualVendor}
                                       onChange={e => setActualVendor(e.target.value)}
                                       placeholder="Vendor / Contractor *"
-                                      className="text-xs border border-gray-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
+                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
                                     />
                                     <input
                                       type="text"
                                       value={actualDesc}
                                       onChange={e => setActualDesc(e.target.value)}
                                       placeholder="Description (optional)"
-                                      className="text-xs border border-gray-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
+                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
                                     />
                                     <div className="flex items-center gap-1">
-                                      <span className="text-gray-400 text-xs">$</span>
+                                      <span className="text-text-secondary text-xs">$</span>
                                       <input
                                         type="number"
                                         value={actualAmt}
                                         onChange={e => setActualAmt(e.target.value)}
                                         placeholder="Amount *"
-                                        className="flex-1 text-xs border border-gray-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
+                                        className="flex-1 text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-blue-400 outline-none"
                                       />
                                     </div>
                                   </div>
@@ -505,7 +505,7 @@ export default function RehabTracker() {
                                     </button>
                                     <button
                                       onClick={() => setActiveActualRow(null)}
-                                      className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition"
+                                      className="px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary transition"
                                     >
                                       Cancel
                                     </button>
@@ -519,10 +519,10 @@ export default function RehabTracker() {
                     })}
 
                     {/* Totals row */}
-                    <tr className="bg-gray-50 border-t border-gray-200 font-semibold">
-                      <td className="px-5 py-3 text-sm text-gray-700">Total</td>
-                      <td className="px-4 py-3 text-right font-mono text-sm text-gray-700">{fmt(totalEstimated)}</td>
-                      <td className="px-4 py-3 text-right font-mono text-sm text-gray-700">{fmt(totalActual)}</td>
+                    <tr className="bg-bg-primary border-t border-border-accent font-semibold">
+                      <td className="px-5 py-3 text-sm text-text-primary">Total</td>
+                      <td className="px-4 py-3 text-right font-mono text-sm text-text-primary">{fmt(totalEstimated)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-sm text-text-primary">{fmt(totalActual)}</td>
                       <td className={`px-4 py-3 text-right font-mono text-sm ${totalVariance < 0 ? 'text-red-600' : 'text-green-700'}`}>
                         {totalVariance < 0 ? '−' : '+'}{fmt(Math.abs(totalVariance))}
                       </td>
@@ -534,42 +534,42 @@ export default function RehabTracker() {
             )}
 
             {budgetLines.length === 0 && (
-              <p className="px-5 py-6 text-center text-sm text-gray-400">
+              <p className="px-5 py-6 text-center text-sm text-text-secondary">
                 No budget categories yet. Add your first line item below.
               </p>
             )}
 
             {/* Add budget line */}
-            <div className="px-5 py-4 border-t border-gray-100">
+            <div className="px-5 py-4 border-t border-border-accent">
               {!showBudgetForm ? (
                 <button
                   onClick={() => setShowBudgetForm(true)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:bg-gray-50 hover:border-gray-400 transition"
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
                 >
                   <Plus className="w-3 h-3" /> Add Budget Category
                 </button>
               ) : (
                 <div className="flex gap-2 items-end">
                   <div className="flex-1">
-                    <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                    <label className="text-xs text-text-secondary mb-1 block">Category</label>
                     <select
                       value={budgetCat}
                       onChange={e => setBudgetCat(e.target.value)}
-                      className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                      className="w-full text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                     >
                       {DEFAULT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div className="flex-1">
-                    <label className="text-xs text-gray-500 mb-1 block">Estimated Budget</label>
+                    <label className="text-xs text-text-secondary mb-1 block">Estimated Budget</label>
                     <div className="flex items-center gap-1">
-                      <span className="text-gray-400 text-sm">$</span>
+                      <span className="text-text-secondary text-sm">$</span>
                       <input
                         type="number"
                         value={budgetEst}
                         onChange={e => setBudgetEst(e.target.value)}
                         placeholder="0"
-                        className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                        className="flex-1 text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                       />
                     </div>
                   </div>
@@ -582,7 +582,7 @@ export default function RehabTracker() {
                   </button>
                   <button
                     onClick={() => setShowBudgetForm(false)}
-                    className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                    className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition"
                   >
                     Cancel
                   </button>
@@ -594,18 +594,18 @@ export default function RehabTracker() {
       </div>
 
       {/* ── SECTION 2: CONTINGENCY TRACKER ────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
         <button
           onClick={() => toggle('contingency')}
-          className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-between p-5 hover:bg-bg-primary transition"
         >
           <div className="flex items-center gap-2">
-            {open.contingency ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open.contingency ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
             <AlertTriangle className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-semibold text-gray-800">Contingency Buffer</span>
+            <span className="text-sm font-semibold text-text-primary">Contingency Buffer</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-400">{(contingencyPct * 100).toFixed(0)}% reserve</span>
+            <span className="text-xs text-text-secondary">{(contingencyPct * 100).toFixed(0)}% reserve</span>
             <span className={`text-xs font-mono font-medium px-2 py-1 rounded ${
               contingencyUsedPct >= 90 ? 'bg-red-50 text-red-600' :
               contingencyUsedPct >= 60 ? 'bg-amber-50 text-amber-700' :
@@ -619,18 +619,18 @@ export default function RehabTracker() {
         {open.contingency && (
           <div className="px-5 pb-5 space-y-4">
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Reserve ({(contingencyPct * 100).toFixed(0)}%)</p>
-                <p className="text-xl font-light text-gray-900">{fmt(contingencyAmount)}</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Reserve ({(contingencyPct * 100).toFixed(0)}%)</p>
+                <p className="text-xl font-light text-text-primary">{fmt(contingencyAmount)}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Consumed by Overruns</p>
-                <p className={`text-xl font-light ${overBudgetTotal > 0 ? 'text-red-600' : 'text-gray-400'}`}>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Consumed by Overruns</p>
+                <p className={`text-xl font-light ${overBudgetTotal > 0 ? 'text-red-600' : 'text-text-secondary'}`}>
                   {fmt(overBudgetTotal)}
                 </p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Remaining Reserve</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Remaining Reserve</p>
                 <p className={`text-xl font-light ${contingencyAmount - overBudgetTotal < 0 ? 'text-red-600' : 'text-green-700'}`}>
                   {fmt(Math.max(0, contingencyAmount - overBudgetTotal))}
                 </p>
@@ -638,11 +638,11 @@ export default function RehabTracker() {
             </div>
 
             <div>
-              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+              <div className="flex justify-between text-xs text-text-secondary mb-1.5">
                 <span>Buffer consumed by overruns</span>
                 <span>{contingencyUsedPct.toFixed(1)}%</span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-bg-primary rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
                     contingencyUsedPct >= 90 ? 'bg-red-500' :
@@ -661,7 +661,7 @@ export default function RehabTracker() {
             </div>
 
             <div className="flex items-center gap-3 pt-1">
-              <span className="text-xs text-gray-500">Buffer %</span>
+              <span className="text-xs text-text-secondary">Buffer %</span>
               {[10, 15, 20].map(pct => (
                 <button
                   key={pct}
@@ -669,7 +669,7 @@ export default function RehabTracker() {
                   className={`text-xs px-3 py-1 rounded-full border transition ${
                     Math.abs(contingencyPct - pct / 100) < 0.001
                       ? 'bg-gray-900 text-white border-gray-900'
-                      : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                      : 'border-border-accent text-text-secondary hover:bg-bg-primary'
                   }`}
                 >
                   {pct}%
@@ -681,15 +681,15 @@ export default function RehabTracker() {
       </div>
 
       {/* ── SECTION 3: CONTRACTOR PAYABLES & 1099 PREP ─────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
         <button
           onClick={() => toggle('contractors')}
-          className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-between p-5 hover:bg-bg-primary transition"
         >
           <div className="flex items-center gap-2">
-            {open.contractors ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open.contractors ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
             <Users className="w-4 h-4 text-indigo-600" />
-            <span className="text-sm font-semibold text-gray-800">Contractor Payables & 1099 Prep</span>
+            <span className="text-sm font-semibold text-text-primary">Contractor Payables & 1099 Prep</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             {Object.entries(vendorTotals).filter(([, t]) => t >= 600).length > 0 && (
@@ -697,7 +697,7 @@ export default function RehabTracker() {
                 {Object.entries(vendorTotals).filter(([, t]) => t >= 600).length} 1099 required
               </span>
             )}
-            <span className="text-gray-400">{Object.keys(vendorTotals).length} vendors</span>
+            <span className="text-text-secondary">{Object.keys(vendorTotals).length} vendors</span>
           </div>
         </button>
 
@@ -707,11 +707,11 @@ export default function RehabTracker() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-t border-gray-100 bg-gray-50">
-                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Vendor</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Total Paid</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">W-9 Received</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">1099 Status</th>
+                    <tr className="border-t border-border-accent bg-bg-primary">
+                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Vendor</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Total Paid</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">W-9 Received</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">1099 Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -724,17 +724,17 @@ export default function RehabTracker() {
                         <React.Fragment key={vendor}>
                           <tr className={needs1099 && !w9?.w9Received ? 'bg-red-50/20' : ''}>
                             <td className="px-5 py-3">
-                              <p className="font-medium text-gray-800">{vendor}</p>
-                              <p className="text-xs text-gray-400">{vendorActuals.length} invoice{vendorActuals.length !== 1 ? 's' : ''}</p>
+                              <p className="font-medium text-text-primary">{vendor}</p>
+                              <p className="text-xs text-text-secondary">{vendorActuals.length} invoice{vendorActuals.length !== 1 ? 's' : ''}</p>
                             </td>
-                            <td className={`px-4 py-3 text-right font-mono ${needs1099 ? 'text-amber-700 font-semibold' : 'text-gray-700'}`}>
+                            <td className={`px-4 py-3 text-right font-mono ${needs1099 ? 'text-amber-700 font-semibold' : 'text-text-primary'}`}>
                               {fmt(total)}
                             </td>
                             <td className="px-4 py-3 text-center">
                               <button
                                 onClick={() => toggleW9(vendor)}
                                 className={`inline-flex items-center gap-1.5 text-xs transition ${
-                                  w9?.w9Received ? 'text-green-600' : 'text-gray-400 hover:text-gray-600'
+                                  w9?.w9Received ? 'text-green-600' : 'text-text-secondary hover:text-text-secondary'
                                 }`}
                               >
                                 {w9?.w9Received
@@ -752,7 +752,7 @@ export default function RehabTracker() {
                                   {w9?.w9Received ? 'Ready to File' : 'W-9 Needed'}
                                 </span>
                               ) : (
-                                <span className="text-xs text-gray-400">
+                                <span className="text-xs text-text-secondary">
                                   {fmt(600 - total)} to threshold
                                 </span>
                               )}
@@ -763,9 +763,9 @@ export default function RehabTracker() {
                             <td colSpan={4} className="px-5 pb-2 pt-0">
                               <div className="ml-4 space-y-1">
                                 {vendorActuals.map(e => (
-                                  <div key={e.id} className="flex text-xs text-gray-500 gap-3">
+                                  <div key={e.id} className="flex text-xs text-text-secondary gap-3">
                                     <span className="text-gray-300">└</span>
-                                    <span className="text-gray-600 flex-1">{e.description}</span>
+                                    <span className="text-text-secondary flex-1">{e.description}</span>
                                     <span className="font-mono">{fmt(e.amount)}</span>
                                     <span className="text-gray-300">{e.createdAt.slice(0, 10)}</span>
                                   </div>
@@ -780,7 +780,7 @@ export default function RehabTracker() {
                 </table>
               </div>
             ) : (
-              <p className="px-5 py-6 text-center text-sm text-gray-400">
+              <p className="px-5 py-6 text-center text-sm text-text-secondary">
                 Log actual costs with a vendor name (in the Budget table above) to track payables here.
               </p>
             )}
@@ -789,42 +789,42 @@ export default function RehabTracker() {
       </div>
 
       {/* ── SECTION 4: LENDER DRAW SCHEDULE ───────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
         <button
           onClick={() => toggle('draws')}
-          className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-between p-5 hover:bg-bg-primary transition"
         >
           <div className="flex items-center gap-2">
-            {open.draws ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open.draws ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
             <Banknote className="w-4 h-4 text-green-600" />
-            <span className="text-sm font-semibold text-gray-800">Lender Draw Schedule</span>
+            <span className="text-sm font-semibold text-text-primary">Lender Draw Schedule</span>
           </div>
-          <span className="text-xs text-gray-400">{fmt(totalDrawn)} drawn of {fmt(totalLoanAmount)}</span>
+          <span className="text-xs text-text-secondary">{fmt(totalDrawn)} drawn of {fmt(totalLoanAmount)}</span>
         </button>
 
         {open.draws && (
           <div className="px-5 pb-5 space-y-4">
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Total Loan</p>
-                <p className="text-xl font-light text-gray-900">{fmt(totalLoanAmount)}</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Total Loan</p>
+                <p className="text-xl font-light text-text-primary">{fmt(totalLoanAmount)}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Drawn to Date</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Drawn to Date</p>
                 <p className="text-xl font-light text-green-700">{fmt(totalDrawn)}</p>
               </div>
-              <div className="p-3 bg-gray-50 rounded-lg text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400">Pending Draw</p>
+              <div className="p-3 bg-bg-primary rounded-lg text-center">
+                <p className="text-xs uppercase tracking-widest text-text-secondary">Pending Draw</p>
                 <p className="text-xl font-light text-amber-700">{fmt(totalPendingDraw)}</p>
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+              <div className="flex justify-between text-xs text-text-secondary mb-1.5">
                 <span>Loan utilization</span>
                 <span>{drawPct.toFixed(1)}%</span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-3 bg-bg-primary rounded-full overflow-hidden">
                 <div
                   className="h-full bg-green-500 rounded-full transition-all duration-500"
                   style={{ width: `${drawPct}%` }}
@@ -833,27 +833,27 @@ export default function RehabTracker() {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-500 whitespace-nowrap">Total Construction Loan</span>
-              <span className="text-gray-400 text-sm">$</span>
+              <span className="text-xs text-text-secondary whitespace-nowrap">Total Construction Loan</span>
+              <span className="text-text-secondary text-sm">$</span>
               <input
                 type="number"
                 value={totalLoanAmount || ''}
                 onChange={e => persist({ ...data, totalLoanAmount: parseFloat(e.target.value) || 0 })}
                 placeholder="0"
-                className="w-40 text-sm border border-gray-300 rounded px-2 py-1.5 focus:ring-1 focus:ring-gray-400 outline-none"
+                className="w-40 text-sm border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-gray-400 outline-none"
               />
             </div>
 
             {drawEntries.length > 0 && (
-              <div className="border border-gray-100 rounded-lg overflow-hidden">
+              <div className="border border-border-accent rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="text-left px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Description</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Requested</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Drawn</th>
-                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Pending</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Status</th>
+                    <tr className="bg-bg-primary">
+                      <th className="text-left px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Description</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Requested</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Drawn</th>
+                      <th className="text-right px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Pending</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Status</th>
                       <th className="w-8"></th>
                     </tr>
                   </thead>
@@ -861,10 +861,10 @@ export default function RehabTracker() {
                     {drawEntries.map(d => (
                       <tr key={d.id} className="group">
                         <td className="px-4 py-3">
-                          <p className="text-gray-800">{d.description}</p>
-                          <p className="text-xs text-gray-400">{d.requestedAt.slice(0, 10)}</p>
+                          <p className="text-text-primary">{d.description}</p>
+                          <p className="text-xs text-text-secondary">{d.requestedAt.slice(0, 10)}</p>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(d.totalAmount)}</td>
+                        <td className="px-4 py-3 text-right font-mono text-text-primary">{fmt(d.totalAmount)}</td>
                         <td className="px-4 py-3 text-right font-mono text-green-700">{fmt(d.drawnAmount)}</td>
                         <td className="px-4 py-3 text-right font-mono text-amber-700">{fmt(d.pendingAmount)}</td>
                         <td className="px-4 py-3 text-center">
@@ -896,18 +896,18 @@ export default function RehabTracker() {
             {!showDrawForm ? (
               <button
                 onClick={() => setShowDrawForm(true)}
-                className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:bg-gray-50 hover:border-gray-400 transition"
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
               >
                 <Plus className="w-3 h-3" /> Add Draw Request
               </button>
             ) : (
-              <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+              <div className="border border-border-accent rounded-lg p-4 space-y-3">
                 <input
                   type="text"
                   value={drawDesc}
                   onChange={e => setDrawDesc(e.target.value)}
                   placeholder="Draw description (e.g., Foundation work completed)"
-                  className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                  className="w-full text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                 />
                 <div className="grid grid-cols-3 gap-3">
                   {([
@@ -916,15 +916,15 @@ export default function RehabTracker() {
                     { label: 'Pending Inspector', val: drawPending, set: setDrawPending },
                   ] as const).map(({ label, val, set }) => (
                     <div key={label}>
-                      <label className="text-xs text-gray-500 mb-1 block">{label}</label>
+                      <label className="text-xs text-text-secondary mb-1 block">{label}</label>
                       <div className="flex items-center gap-1">
-                        <span className="text-gray-400 text-sm">$</span>
+                        <span className="text-text-secondary text-sm">$</span>
                         <input
                           type="number"
                           value={val}
                           onChange={e => set(e.target.value)}
                           placeholder="0"
-                          className="flex-1 text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                          className="flex-1 text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                         />
                       </div>
                     </div>
@@ -940,7 +940,7 @@ export default function RehabTracker() {
                   </button>
                   <button
                     onClick={() => setShowDrawForm(false)}
-                    className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                    className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition"
                   >
                     Cancel
                   </button>
@@ -952,16 +952,16 @@ export default function RehabTracker() {
       </div>
 
       {/* ── SECTION 5: PERMIT STATUS ───────────────────────────── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent overflow-hidden">
         <button
           onClick={() => toggle('permits')}
-          className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition"
+          className="w-full flex items-center justify-between p-5 hover:bg-bg-primary transition"
         >
           <div className="flex items-center gap-2">
-            {open.permits ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+            {open.permits ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
             <FileCheck className="w-4 h-4 text-purple-600" />
-            <span className="text-sm font-semibold text-gray-800">Permit Status</span>
-            <span className="text-xs text-gray-400 ml-1">{permitEntries.length} permits</span>
+            <span className="text-sm font-semibold text-text-primary">Permit Status</span>
+            <span className="text-xs text-text-secondary ml-1">{permitEntries.length} permits</span>
           </div>
           {permitEntries.filter(p => p.status === 'Denied').length > 0 && (
             <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded font-medium">
@@ -976,28 +976,28 @@ export default function RehabTracker() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-t border-gray-100 bg-gray-50">
-                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Permit Type</th>
-                      <th className="text-left px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Municipality</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Filed</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Approved</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Final Sign-Off</th>
-                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-gray-400 font-normal">Status</th>
+                    <tr className="border-t border-border-accent bg-bg-primary">
+                      <th className="text-left px-5 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Permit Type</th>
+                      <th className="text-left px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Municipality</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Filed</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Approved</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Final Sign-Off</th>
+                      <th className="text-center px-4 py-2.5 text-xs uppercase tracking-widest text-text-secondary font-normal">Status</th>
                       <th className="w-24"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {permitEntries.map(p => (
                       <tr key={p.id} className="group">
-                        <td className="px-5 py-3 font-medium text-gray-800">{p.type}</td>
-                        <td className="px-4 py-3 text-gray-600 text-sm">{p.municipality || '—'}</td>
-                        <td className="px-4 py-3 text-center text-xs font-mono text-gray-600">
+                        <td className="px-5 py-3 font-medium text-text-primary">{p.type}</td>
+                        <td className="px-4 py-3 text-text-secondary text-sm">{p.municipality || '—'}</td>
+                        <td className="px-4 py-3 text-center text-xs font-mono text-text-secondary">
                           {p.appliedAt ?? <span className="text-gray-300">—</span>}
                         </td>
-                        <td className="px-4 py-3 text-center text-xs font-mono text-gray-600">
+                        <td className="px-4 py-3 text-center text-xs font-mono text-text-secondary">
                           {p.approvedAt ?? <span className="text-gray-300">—</span>}
                         </td>
-                        <td className="px-4 py-3 text-center text-xs font-mono text-gray-600">
+                        <td className="px-4 py-3 text-center text-xs font-mono text-text-secondary">
                           {p.finalSignOffAt ?? <span className="text-gray-300">—</span>}
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -1031,16 +1031,16 @@ export default function RehabTracker() {
             )}
 
             {permitEntries.length === 0 && (
-              <p className="px-5 py-6 text-center text-sm text-gray-400">
+              <p className="px-5 py-6 text-center text-sm text-text-secondary">
                 No permits tracked yet. Add permits to monitor the municipal approval pipeline.
               </p>
             )}
 
-            <div className="px-5 py-4 border-t border-gray-100">
+            <div className="px-5 py-4 border-t border-border-accent">
               {!showPermitForm ? (
                 <button
                   onClick={() => setShowPermitForm(true)}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 hover:bg-gray-50 hover:border-gray-400 transition"
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
                 >
                   <Plus className="w-3 h-3" /> Add Permit
                 </button>
@@ -1052,14 +1052,14 @@ export default function RehabTracker() {
                       value={permitType}
                       onChange={e => setPermitType(e.target.value)}
                       placeholder="Permit type (e.g., Structural, Electrical)"
-                      className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                      className="text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                     />
                     <input
                       type="text"
                       value={permitMuni}
                       onChange={e => setPermitMuni(e.target.value)}
                       placeholder="Municipality / Building Dept."
-                      className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
+                      className="text-sm border border-border-accent rounded-lg px-3 py-2 focus:ring-1 focus:ring-gray-400 outline-none"
                     />
                   </div>
                   <div className="flex gap-2">
@@ -1072,7 +1072,7 @@ export default function RehabTracker() {
                     </button>
                     <button
                       onClick={() => setShowPermitForm(false)}
-                      className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+                      className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary transition"
                     >
                       Cancel
                     </button>

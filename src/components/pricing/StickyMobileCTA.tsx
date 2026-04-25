@@ -22,7 +22,7 @@ export default function StickyMobileCTA({ visible, planName, price, onSelect }: 
     <div
       className={`
         fixed bottom-0 inset-x-0 z-50 md:hidden
-        bg-white/95 backdrop-blur-md border-t border-phase-1 shadow-2xl
+        bg-bg-surface/95 backdrop-blur-md border-t border-phase-1 shadow-2xl
         transition-all duration-300 ease-out
         ${visible
           ? 'translate-y-0 opacity-100'

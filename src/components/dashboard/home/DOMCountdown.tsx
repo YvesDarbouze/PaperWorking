@@ -56,7 +56,7 @@ function computeDOMData(projects: Project[]): DealDOM[] {
 }
 
 const PHASE_COLORS = {
-  green:  { bg: 'bg-pw-muted/20', fill: 'bg-pw-muted', text: 'text-pw-muted' },
+  green:  { bg: 'bg-pw-muted/20', fill: 'bg-pw-muted', text: 'text-text-secondary' },
   yellow: { bg: 'bg-amber-100', fill: 'bg-amber-400', text: 'text-amber-500' },
   red:    { bg: 'bg-red-100', fill: 'bg-red-400', text: 'text-red-500' },
 };
@@ -82,23 +82,23 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
             onChange={(e) => setMaxDOM(Math.max(30, parseInt(e.target.value) || 160))}
             onBlur={() => setEditing(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditing(false)}
-            className="w-16 text-right text-sm font-medium bg-pw-bg px-2 py-1 rounded-lg border border-pw-border/30 text-pw-black focus:outline-none focus:border-pw-black"
+            className="w-16 text-right text-sm font-medium bg-bg-primary px-2 py-1 rounded-md border border-border-accent/30 text-text-primary focus:outline-none focus:border-pw-black"
             autoFocus
           />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="flex items-center gap-1.5 text-sm font-medium text-pw-black hover:text-pw-muted transition-colors"
+            className="flex items-center gap-1.5 text-sm font-medium text-text-primary hover:text-text-secondary transition-colors"
           >
             {maxDOM}d
-            <Edit3 className="w-3 h-3 text-pw-muted" />
+            <Edit3 className="w-3 h-3 text-text-secondary" />
           </button>
         )}
       </div>
 
       {/* Deal List */}
       {deals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-pw-muted opacity-30">
+        <div className="flex flex-col items-center justify-center py-10 text-text-secondary opacity-30">
           <Timer className="w-8 h-8 mb-2 stroke-1" />
           <p className="text-xs font-medium">No active listings</p>
         </div>
@@ -109,7 +109,7 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
           return (
             <div key={deal.id} className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-pw-black tracking-tight truncate max-w-[180px]">
+                <span className="text-sm font-medium text-text-primary tracking-tight truncate max-w-[180px]">
                   {deal.address}
                 </span>
                 <span className={`text-base font-light tracking-tight ${colors.text}`}>

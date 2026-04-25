@@ -129,12 +129,12 @@ function buildMonthlyBurn(projects: Project[], year: number): MonthlyBurnData[] 
 function BurnTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string; color: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-gray-500 font-medium mb-1.5">{label}</p>
+    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
+      <p className="text-text-secondary font-medium mb-1.5">{label}</p>
       {payload.map((entry, i: number) => (
         <p key={i} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-gray-600">
+          <span className="text-text-secondary">
             {entry.dataKey === 'fixedExpenses' ? 'Fixed Expenses' : 'Net Profit'}:
           </span>
           <span className={`font-mono font-medium ${
@@ -142,7 +142,7 @@ function BurnTooltip({ active, payload, label }: { active?: boolean; payload?: A
               ? 'text-emerald-600'
               : entry.dataKey === 'netProfit' && entry.value < 0
                 ? 'text-red-600'
-                : 'text-gray-900'
+                : 'text-text-primary'
           }`}>
             ${Math.abs(entry.value).toLocaleString()}
           </span>
@@ -164,7 +164,7 @@ export default function MonthlyBurnRate({ projects, year }: MonthlyBurnRateProps
   const hasData = data.some((d: MonthlyBurnData) => d.fixedExpenses > 0 || d.netProfit !== 0);
   if (!hasData) {
     return (
-      <div className="flex items-center justify-center h-64 text-gray-400 text-xs">
+      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
         No expense or profit data for {currentYear}.
       </div>
     );

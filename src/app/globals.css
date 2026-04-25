@@ -99,19 +99,18 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
+  font-weight: 400;
 }
 
-/* Antigravity heading weights & tracking
-   200 = ExtraLight — the signature Antigravity weight.
-   Hanken Grotesk renders cleanly at this weight. */
+/* Antigravity heading weights & tracking */
 h1 {
-  font-weight: 200;
+  font-weight: 100;
   letter-spacing: -0.025em;
   color: var(--pw-black);
   line-height: 1.12;
 }
 h2, h3 {
-  font-weight: 200;
+  font-weight: 300;
   letter-spacing: -0.02em;
   color: var(--pw-black);
   line-height: 1.15;

@@ -11,7 +11,7 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, Wand2, CheckCircle2 } fr
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="animate-pulse bg-bg-primary h-[400px] w-full rounded-[48px]" />}>
+    <Suspense fallback={<div className="animate-pulse bg-bg-primary h-[400px] w-full rounded-[24px]" />}>
       <LoginPageInner />
     </Suspense>
   );
@@ -139,7 +139,17 @@ function LoginPageInner() {
 
         <button
           type="button"
-          onClick={() => handleSocialLogin('facebook')}
+          onClick={() => {
+            if (typeof window !== 'undefined' && (window as any).FB) {
+              setLoadingProvider('facebook');
+              (window as any).FB.login(
+                () => (window as any).checkLoginState(),
+                { scope: 'public_profile,email' }
+              );
+            } else {
+              handleSocialLogin('facebook');
+            }
+          }}
           disabled={!!loadingProvider || isSubmitting}
           className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >

@@ -113,15 +113,17 @@ export default function ChatAssistant() {
       {/* FAB */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-300 cursor-pointer ${
-          isOpen ? 'bg-phase-3 rotate-0' : 'bg-black hover:bg-phase-4'
-        }`}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 flex items-center justify-center shadow-lg transition-all duration-300 cursor-pointer hover:opacity-90 active:scale-95"
+        style={{
+          backgroundColor: isOpen ? '#595959' : '#0d0d0d',
+          borderRadius: '9999px',
+        }}
         aria-label={isOpen ? 'Close assistant' : 'Open assistant'}
       >
         {isOpen ? (
-          <X className="w-5 h-5 text-white" />
+          <X className="w-5 h-5" style={{ color: '#ffffff' }} />
         ) : (
-          <MessageSquare className="w-5 h-5 text-white" />
+          <MessageSquare className="w-5 h-5" style={{ color: '#ffffff' }} />
         )}
       </button>
 

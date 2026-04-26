@@ -69,6 +69,10 @@ export default function LandingHero() {
               text-base sm:text-lg
               px-8 py-4 sm:px-10 sm:py-5
             "
+            style={{
+              backgroundColor: '#0d0d0d',
+              color: '#ffffff',
+            }}
           >
             Start Building Your Portfolio
           </Link>

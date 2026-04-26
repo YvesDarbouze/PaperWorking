@@ -28,7 +28,6 @@ import {
   Play,
 } from 'lucide-react';
 import { SUPPORT_CATEGORIES, SUPPORT_ARTICLES, SUPPORT_FAQS } from '@/lib/cms/supportData';
-import { submitSupportMessage } from '@/app/actions/support';
 
 /* ═══════════════════════════════════════════════════════
    Support Page — /support  (content only)
@@ -59,7 +58,7 @@ const RESOURCES = [
     icon: MessageSquare,
     title: 'Live Chat',
     description: 'Talk to our AI assistant or a human agent in real time.',
-    href: '#contact',
+    href: '#',
     cta: 'Start chat',
   },
   {
@@ -148,78 +147,6 @@ export default function SupportPage() {
   /* ── Category cards accordion state ── */
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  /* ── Direct Engineering Support form state ── */
-  const [directForm, setDirectForm] = useState({
-    subject: '',
-    dealId: '',
-    message: '',
-  });
-  const [directSubmitted, setDirectSubmitted] = useState(false);
-  const [directSending, setDirectSending] = useState(false);
-
-  const handleDirectChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setDirectForm({ ...directForm, [e.target.name]: e.target.value });
-  };
-
-  const handleDirectSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setDirectSending(true);
-    const formData = new FormData();
-    formData.append('name', 'Direct Engineering Support');
-    formData.append('email', 'support-ticket@paperworking.co'); // Placeholder for user email if authenticated
-    formData.append('subject', `[ENG TICKET] ${directForm.subject}`);
-    formData.append('message', `Deal ID/URL: ${directForm.dealId || 'N/A'}\n\n${directForm.message}`);
-
-    try {
-      await submitSupportMessage(formData);
-      setDirectSubmitted(true);
-    } catch (err) {
-      console.error(err);
-      alert('There was an error sending your ticket. Please try again.');
-    } finally {
-      setDirectSending(false);
-    }
-  };
-
-  /* ── Contact form state ── */
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSending(true);
-    const formData = new FormData();
-    formData.append('name', form.name);
-    formData.append('email', form.email);
-    formData.append('subject', form.subject);
-    formData.append('message', form.message);
-
-    try {
-      await submitSupportMessage(formData);
-      setSubmitted(true);
-    } catch (err) {
-      console.error(err);
-      alert('There was an error sending your message. Please try again.');
-    } finally {
-      setSending(false);
-    }
-  };
-
   return (
     <>
       {/* ══════════════════════════════════════════════════
@@ -258,17 +185,17 @@ export default function SupportPage() {
             questions below.
           </motion.p>
 
-          <motion.div variants={fadeUp} className="relative max-w-2xl mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-              <Search className="h-6 w-6 text-[var(--pw-muted)]" />
+          <motion.div variants={fadeUp} className="relative max-w-md mx-auto">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-[var(--pw-fg)]" />
             </div>
             <input
               type="text"
               aria-label="Search support documentation"
-              placeholder="Search guides, SOPs, and technical documentation..."
+              placeholder="Search guides, SOPs, and docs..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="w-full h-16 sm:h-20 pl-14 pr-6 rounded-2xl bg-[var(--pw-surface)] border border-[var(--pw-border)] text-base sm:text-lg text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] focus:ring-1 focus:ring-[var(--pw-black)] transition-all shadow-sm"
+              className="w-full h-10 pl-10 pr-4 rounded-[var(--radius-sm)] bg-[var(--pw-surface)] border border-[var(--pw-border)] text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-fg)] focus:outline-none focus:border-[var(--pw-black)] focus:ring-1 focus:ring-[var(--pw-black)] transition-all shadow-sm"
             />
             
             {/* Search Dropdown / Loading State */}
@@ -278,7 +205,7 @@ export default function SupportPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 w-full mt-2 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-xl shadow-lg z-50 overflow-hidden"
+                  className="absolute top-full left-0 w-full mt-2 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] shadow-lg z-50 overflow-hidden"
                 >
                   {isSearching ? (
                     <div className="p-8 flex flex-col items-center justify-center text-[var(--pw-muted)]">
@@ -325,14 +252,14 @@ export default function SupportPage() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-            <span className="text-xs text-[var(--pw-muted)] uppercase tracking-wider font-semibold mr-1">
+            <span className="text-xs text-[var(--pw-fg)] uppercase tracking-wider font-semibold mr-1">
               Popular searches:
             </span>
             {['Generate LOI', 'Capital Gains Tax', 'Invite Vendor', '70% Rule Tracker'].map((tag) => (
               <button
                 key={tag}
                 onClick={() => handleTagClick(tag)}
-                className="text-xs font-medium text-[var(--pw-subtle)] bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-full px-3 py-1.5 hover:bg-[var(--pw-bg)] hover:text-[var(--pw-black)] hover:border-[var(--pw-black)] transition-all"
+                className="text-xs font-medium text-[var(--pw-black)] bg-white border border-[var(--pw-border)] rounded-full px-4 py-2 hover:bg-[var(--pw-black)] hover:text-white transition-all shadow-sm"
               >
                 {tag}
               </button>
@@ -615,185 +542,17 @@ export default function SupportPage() {
       </section>
 
       {/* ══════════════════════════════════════════════════
-          § 3 + § 4 — Contact Form + FAQ (side-by-side on desktop)
-          Still single-column in the DOM flow; the two-col
-          grid is an INTERNAL layout within this section.
+          § 4 — FAQ Accordion
          ══════════════════════════════════════════════════ */}
-      <section id="contact" className="pb-32">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* ── Left: Contact Form ── */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={stagger}
-          >
-            <motion.p
-              variants={fadeUp}
-              className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--pw-muted)] mb-3"
-            >
-              Get in Touch
-            </motion.p>
-            <motion.h2
-              variants={fadeUp}
-              className="text-3xl sm:text-4xl tracking-tighter text-[var(--pw-black)] mb-8"
-            >
-              Send us a message
-            </motion.h2>
-
-            <AnimatePresence mode="wait">
-              {submitted ? (
-                <motion.div
-                  key="success"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] p-10 text-center"
-                >
-                  <CheckCircle2 className="w-12 h-12 text-[var(--pw-black)] mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[var(--pw-black)] mb-2">
-                    Message received
-                  </h3>
-                  <p className="text-sm text-[var(--pw-muted)] mb-6">
-                    We&apos;ll get back to you within 4 business hours.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSubmitted(false);
-                      setForm({ name: '', email: '', subject: '', message: '' });
-                    }}
-                    className="ag-button-secondary ag-button text-sm"
-                  >
-                    Send another
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.form
-                  key="form"
-                  ref={formRef}
-                  onSubmit={handleSubmit}
-                  variants={stagger}
-                  className="space-y-5"
-                >
-                  {/* Name */}
-                  <motion.div variants={fadeUp}>
-                    <label
-                      htmlFor="support-name"
-                      className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2"
-                    >
-                      Full Name
-                    </label>
-                    <input
-                      id="support-name"
-                      name="name"
-                      type="text"
-                      required
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder="Jane Doe"
-                      className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors"
-                    />
-                  </motion.div>
-
-                  {/* Email */}
-                  <motion.div variants={fadeUp}>
-                    <label
-                      htmlFor="support-email"
-                      className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="support-email"
-                      name="email"
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="jane@company.co"
-                      className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors"
-                    />
-                  </motion.div>
-
-                  {/* Subject */}
-                  <motion.div variants={fadeUp}>
-                    <label
-                      htmlFor="support-subject"
-                      className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2"
-                    >
-                      Subject
-                    </label>
-                    <select
-                      id="support-subject"
-                      name="subject"
-                      required
-                      value={form.subject}
-                      onChange={handleChange}
-                      className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] focus:outline-none focus:border-[var(--pw-black)] transition-colors appearance-none cursor-pointer"
-                    >
-                      <option value="" disabled>
-                        Select a topic…
-                      </option>
-                      <option value="billing">Billing &amp; Subscriptions</option>
-                      <option value="technical">Technical Issue</option>
-                      <option value="account">Account &amp; Access</option>
-                      <option value="feature">Feature Request</option>
-                      <option value="partnership">Partnership Inquiry</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </motion.div>
-
-                  {/* Message */}
-                  <motion.div variants={fadeUp}>
-                    <label
-                      htmlFor="support-message"
-                      className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2"
-                    >
-                      Message
-                    </label>
-                    <textarea
-                      id="support-message"
-                      name="message"
-                      required
-                      rows={5}
-                      value={form.message}
-                      onChange={handleChange}
-                      placeholder="Describe your issue or question…"
-                      className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors resize-none"
-                    />
-                  </motion.div>
-
-                  {/* Submit */}
-                  <motion.div variants={fadeUp}>
-                    <button
-                      type="submit"
-                      disabled={sending}
-                      className="ag-button w-full sm:w-auto text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {sending ? (
-                        <span className="inline-flex items-center gap-2">
-                          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                          Sending…
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-2">
-                          <Send className="w-4 h-4" />
-                          Send Message
-                        </span>
-                      )}
-                    </button>
-                  </motion.div>
-                </motion.form>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          {/* ── Right: FAQ Accordion ── */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
-            variants={stagger}
-          >
+      <section className="pb-32">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={stagger}
+          className="max-w-3xl mx-auto"
+        >
+          <div className="text-center mb-10">
             <motion.p
               variants={fadeUp}
               className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--pw-muted)] mb-3"
@@ -802,218 +561,55 @@ export default function SupportPage() {
             </motion.p>
             <motion.h2
               variants={fadeUp}
-              className="text-3xl sm:text-4xl tracking-tighter text-[var(--pw-black)] mb-8"
+              className="text-3xl sm:text-4xl tracking-tighter text-[var(--pw-black)]"
             >
               FAQ
             </motion.h2>
-
-            <motion.div variants={stagger} className="space-y-3">
-              {SUPPORT_FAQS.map((faq, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  className="bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] overflow-hidden"
-                >
-                  <button
-                    onClick={() => toggle(i)}
-                    className="w-full flex items-center justify-between p-5 text-left focus:outline-none hover:bg-[var(--pw-bg)] transition-colors cursor-pointer"
-                    aria-expanded={openIndex === i}
-                  >
-                    <span className="text-sm font-semibold text-[var(--pw-black)] pr-4">
-                      {faq.question}
-                    </span>
-                    <span className="shrink-0">
-                      {openIndex === i ? (
-                        <Minus className="w-4 h-4 text-[var(--pw-black)]" />
-                      ) : (
-                        <Plus className="w-4 h-4 text-[var(--pw-muted)]" />
-                      )}
-                    </span>
-                  </button>
-                  <AnimatePresence>
-                    {openIndex === i && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: [0.19, 1, 0.22, 1],
-                        }}
-                      >
-                        <div className="px-5 pb-5 text-sm text-[var(--pw-subtle)] leading-relaxed border-t border-[var(--pw-border)] pt-4">
-                          {faq.answer}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════
-          § 4.5 — Support Fallback / Demo
-         ══════════════════════════════════════════════════ */}
-      <section className="pb-24">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
-          variants={stagger}
-          className="bg-[var(--pw-bg)] rounded-3xl p-8 sm:p-12 lg:p-16 border border-[var(--pw-border)] overflow-hidden relative"
-        >
-          {/* Subtle background element */}
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-[var(--pw-surface)] border border-[var(--pw-border)] opacity-50 blur-3xl" />
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
-            <motion.div variants={fadeUp}>
-              <h2 className="text-3xl sm:text-4xl tracking-tighter font-semibold text-[var(--pw-black)] mb-6">
-                Direct Engineering Support
-              </h2>
-              <p className="text-base sm:text-lg text-[var(--pw-subtle)] leading-relaxed mb-8 max-w-md">
-                Still need help? Our support team is on standby.
-              </p>
-              
-              <AnimatePresence mode="wait">
-                {directSubmitted ? (
-                  <motion.div
-                    key="success"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] p-8 text-center"
-                  >
-                    <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-[var(--pw-black)] mb-2">
-                      Ticket Submitted
-                    </h3>
-                    <p className="text-sm text-[var(--pw-muted)] mb-6">
-                      Our engineering team will review your request shortly.
-                    </p>
-                    <button
-                      onClick={() => {
-                        setDirectSubmitted(false);
-                        setDirectForm({ subject: '', dealId: '', message: '' });
-                      }}
-                      className="ag-button-secondary text-sm"
-                    >
-                      Submit another ticket
-                    </button>
-                  </motion.div>
-                ) : (
-                  <motion.form
-                    key="form"
-                    onSubmit={handleDirectSubmit}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label htmlFor="direct-subject" className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2">
-                        Subject
-                      </label>
-                      <input
-                        id="direct-subject"
-                        name="subject"
-                        type="text"
-                        required
-                        value={directForm.subject}
-                        onChange={handleDirectChange}
-                        placeholder="E.g., Cannot access Deal #1244"
-                        className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="direct-dealId" className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2">
-                        Deal ID or URL <span className="text-[var(--pw-muted)] font-normal">(Optional)</span>
-                      </label>
-                      <input
-                        id="direct-dealId"
-                        name="dealId"
-                        type="text"
-                        value={directForm.dealId}
-                        onChange={handleDirectChange}
-                        placeholder="https://... or #DEAL-123"
-                        className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="direct-message" className="block text-xs font-bold uppercase tracking-widest text-[var(--pw-muted)] mb-2">
-                        Message
-                      </label>
-                      <textarea
-                        id="direct-message"
-                        name="message"
-                        required
-                        rows={4}
-                        value={directForm.message}
-                        onChange={handleDirectChange}
-                        placeholder="Please provide details about the issue..."
-                        className="w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] px-4 py-3 text-sm text-[var(--pw-black)] placeholder:text-[var(--pw-muted)] focus:outline-none focus:border-[var(--pw-black)] transition-colors resize-none"
-                      />
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        disabled={directSending}
-                        className="ag-button w-full sm:w-auto text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {directSending ? (
-                          <span className="inline-flex items-center gap-2">
-                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            Submitting...
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-2">
-                            <Wrench className="w-4 h-4" />
-                            Submit Support Ticket
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </motion.form>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            <motion.div variants={fadeUp} className="relative flex flex-col gap-6">
-              <div>
-                <h3 className="text-xl font-medium tracking-tight text-[var(--pw-black)] mb-2">Platform Walkthrough</h3>
-                <p className="text-[var(--pw-muted)] text-sm">
-                  Watch the full technical walkthrough. See exactly how to execute a deal from start to finish.
-                </p>
-              </div>
-
-              <div 
-                className="aspect-[16/9] w-full bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-2xl overflow-hidden shadow-sm flex items-center justify-center group cursor-pointer relative"
-                role="button"
-                tabIndex={0}
-                aria-label="Play platform walkthrough video"
-              >
-                {/* Play button overlay */}
-                <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors z-10 flex items-center justify-center">
-                  <button 
-                    className="w-16 h-16 rounded-full bg-bg-surface shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300 focus:outline-none focus:ring-2 focus:ring-[var(--pw-primary)] focus:ring-offset-2"
-                    aria-label="Play platform walkthrough video"
-                  >
-                    <Play className="w-8 h-8 ml-1 text-[var(--pw-black)] fill-[var(--pw-black)]" />
-                  </button>
-                </div>
-                
-                {/* Placeholder UI pattern */}
-                <div className="absolute inset-0 p-4 flex flex-col pointer-events-none">
-                  <div className="h-6 w-1/3 bg-[var(--pw-border)]/50 rounded-md mb-4" />
-                  <div className="flex-1 flex gap-4">
-                    <div className="w-1/4 h-full bg-[var(--pw-border)]/30 rounded-md" />
-                    <div className="flex-1 h-full bg-[var(--pw-border)]/20 rounded-md" />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </div>
+
+          <motion.div variants={stagger} className="space-y-3">
+            {SUPPORT_FAQS.map((faq, i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                className="bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] overflow-hidden"
+              >
+                <button
+                  onClick={() => toggle(i)}
+                  className="w-full flex items-center justify-between p-5 text-left focus:outline-none hover:bg-[var(--pw-bg)] transition-colors cursor-pointer"
+                  aria-expanded={openIndex === i}
+                >
+                  <span className="text-sm font-semibold text-[var(--pw-black)] pr-4">
+                    {faq.question}
+                  </span>
+                  <span className="shrink-0">
+                    {openIndex === i ? (
+                      <Minus className="w-4 h-4 text-[var(--pw-black)]" />
+                    ) : (
+                      <Plus className="w-4 h-4 text-[var(--pw-muted)]" />
+                    )}
+                  </span>
+                </button>
+                <AnimatePresence>
+                  {openIndex === i && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{
+                        duration: 0.3,
+                        ease: [0.19, 1, 0.22, 1],
+                      }}
+                    >
+                      <div className="px-5 pb-5 text-sm text-[var(--pw-subtle)] leading-relaxed border-t border-[var(--pw-border)] pt-4">
+                        {faq.answer}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </motion.div>
         </motion.div>
       </section>
 

@@ -11,6 +11,7 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
@@ -37,6 +38,7 @@ interface AuthContextType {
   profile: any | null;
   loading: boolean;
   error: string | null;
+  fbStatus: 'pending' | 'connected' | 'not_authorized' | 'unknown';
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -103,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [fbStatus, setFbStatus] = useState<'pending' | 'connected' | 'not_authorized' | 'unknown'>('pending');
 
   // 1. Check for Redirect Result on Mount
   useEffect(() => {
@@ -118,6 +121,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setError(getAuthErrorMessage(err.code));
       });
   }, []);
+
+  // 1b. Listen for FB SDK login status (connected / not_authorized / unknown)
+  useEffect(() => {
+    function handleFBStatus(e: Event) {
+      const { status, authResponse } = (e as CustomEvent).detail;
+      setFbStatus(status);
+
+      if (status === 'connected' && authResponse?.accessToken && !user) {
+        // User is logged into Facebook AND has authorized our app → auto sign-in
+        const credential = FacebookAuthProvider.credential(authResponse.accessToken);
+        signInWithCredential(auth, credential)
+          .then(async (result) => {
+            await provisionSocialUser(result.user);
+            await syncSessionCookie(result.user);
+            console.log('[AuthContext] Auto-signed in via FB SDK session');
+          })
+          .catch((err) => {
+            console.warn('[AuthContext] FB auto-login failed:', err.code);
+          });
+      }
+      // 'not_authorized' → user is on Facebook but hasn't authorized our app
+      //   → components can check fbStatus and show FB.login() prompt
+      // 'unknown' → user isn't logged into Facebook at all
+      //   → components can show the standard Login Button
+    }
+
+    window.addEventListener('fb-status', handleFBStatus);
+    return () => window.removeEventListener('fb-status', handleFBStatus);
+  }, [user]);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -286,6 +318,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         error,
+        fbStatus,
         login,
         register,
         loginWithGoogle,

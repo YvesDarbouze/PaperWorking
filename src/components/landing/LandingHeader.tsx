@@ -73,13 +73,26 @@ export default function LandingHeader() {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 href="/login"
-                className="ag-button !bg-transparent !text-[var(--pw-black)] !border !border-[var(--pw-border)] hover:!bg-black/5 text-sm"
+                className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
+                style={{
+                  backgroundColor: 'transparent',
+                  color: '#0d0d0d',
+                  border: '1px solid #cccccc',
+                  padding: '0.625rem 1.5rem',
+                  borderRadius: '9999px',
+                }}
               >
                 Sign-in
               </Link>
               <Link
                 href="/register"
-                className="ag-button text-sm"
+                className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
+                style={{
+                  backgroundColor: '#0d0d0d',
+                  color: '#ffffff',
+                  padding: '0.625rem 1.5rem',
+                  borderRadius: '9999px',
+                }}
               >
                 Sign-up
               </Link>
@@ -110,67 +123,94 @@ export default function LandingHeader() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-40 md:hidden"
+            className="fixed inset-0 z-[60] md:hidden"
           >
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
             />
 
             {/* Drawer panel */}
             <motion.nav
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -20, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.19, 1, 0.22, 1] }}
-              className="absolute top-16 left-4 right-4 rounded-2xl bg-[var(--pw-surface)] shadow-2xl border border-[var(--pw-border)] p-6 flex flex-col gap-4"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
+              className="absolute top-0 left-0 bottom-0 w-4/5 max-w-sm bg-[var(--pw-surface)] shadow-2xl border-r border-[var(--pw-border)] flex flex-col"
             >
-              <Link
-                href="/#how-it-works"
-                onClick={() => setMobileOpen(false)}
-                className="text-base font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors py-2"
-              >
-                How It Works
-              </Link>
-              <Link
-                href="/#pricing"
-                onClick={() => setMobileOpen(false)}
-                className="text-base font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors py-2"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/#news"
-                onClick={() => setMobileOpen(false)}
-                className="text-base font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors py-2"
-              >
-                News
-              </Link>
-              <Link
-                href="/support"
-                onClick={() => setMobileOpen(false)}
-                className="text-base font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors py-2"
-              >
-                Help
-              </Link>
+              <div className="p-6 flex items-center justify-between border-b border-[var(--pw-border)] shrink-0">
+                <Logo size="sm" />
+                <button
+                  type="button"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl hover:bg-black/5 transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="w-5 h-5 text-[var(--pw-black)]" />
+                </button>
+              </div>
 
-              <div className="border-t border-[var(--pw-border)] my-2" />
+              <div className="p-6 flex flex-col gap-6 flex-grow overflow-y-auto">
+                <Link
+                  href="/#how-it-works"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                >
+                  How It Works
+                </Link>
+                <Link
+                  href="/#pricing"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                >
+                  Pricing
+                </Link>
+                <Link
+                  href="/#news"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                >
+                  News
+                </Link>
+                <Link
+                  href="/support"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-lg font-medium text-[var(--pw-fg)] hover:text-[var(--pw-black)] transition-colors"
+                >
+                  Help
+                </Link>
 
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="ag-button !bg-transparent !text-[var(--pw-black)] border border-[var(--pw-border)] text-center text-base"
-              >
-                Sign-in
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMobileOpen(false)}
-                className="ag-button text-center text-base"
-              >
-                Sign-up
-              </Link>
+                <div className="border-t border-[var(--pw-border)] my-4" />
+
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: '#0d0d0d',
+                    border: '1px solid #cccccc',
+                    padding: '0.875rem 1.75rem',
+                    borderRadius: '9999px',
+                  }}
+                >
+                  Sign-in
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMobileOpen(false)}
+                  className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
+                  style={{
+                    backgroundColor: '#0d0d0d',
+                    color: '#ffffff',
+                    padding: '0.875rem 1.75rem',
+                    borderRadius: '9999px',
+                  }}
+                >
+                  Sign-up
+                </Link>
+              </div>
             </motion.nav>
           </motion.div>
         )}

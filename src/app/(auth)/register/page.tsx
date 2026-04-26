@@ -133,7 +133,17 @@ export default function RegisterPage() {
 
         <button
           type="button"
-          onClick={() => handleSocialRegister('facebook')}
+          onClick={() => {
+            if (typeof window !== 'undefined' && (window as any).FB) {
+              setLoadingProvider('facebook');
+              (window as any).FB.login(
+                () => (window as any).checkLoginState(),
+                { scope: 'public_profile,email' }
+              );
+            } else {
+              handleSocialRegister('facebook');
+            }
+          }}
           disabled={!!loadingProvider || isSubmitting}
           className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
         >

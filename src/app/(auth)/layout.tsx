@@ -33,7 +33,7 @@ export default function AuthLayout({
 
       {/* ─── Auth Card Container (Antigravity v2 Geometry) ─── */}
       <div
-        className="w-full max-w-[460px] rounded-[48px] bg-bg-surface border border-border-accent/10 px-10 py-12 shadow-[0_40px_100px_rgba(0,0,0,0.03)] animate-in fade-in zoom-in-95 duration-700"
+        className="w-full max-w-[460px] rounded-[24px] bg-bg-surface border border-border-accent/10 px-10 py-12 shadow-[0_40px_100px_rgba(0,0,0,0.03)] animate-in fade-in zoom-in-95 duration-700"
       >
         {children}
       </div>

@@ -10,19 +10,20 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  Line,
+  ComposedChart,
+  Cell,
 } from 'recharts';
 import { Project } from '@/types/schema';
+import { calculateProjectMetrics } from '@/lib/analyticsUtils';
 
 /* ═══════════════════════════════════════════════════════════════
-   Chart 4 — Monthly Burn Rate (Stacked Bar Chart)
-
-   X-Axis: Months of the year
-   Y-Axis: Dollar amount
-   Data:   Stacked bars showing:
-           Bottom → Fixed Business Expenses (holding costs,
-                    management fees, loan interest)
-           Top    → Net Profit generated that month (from
-                    projects sold in that month)
+   Chart 4 — Monthly Burn Rate (Premium Composed Chart)
+   
+   Features:
+   - Burn vs. Profit comparison
+   - Net Cash Flow trend line
+   - Premium depth with gradients and shadows
    ═══════════════════════════════════════════════════════════════ */
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -31,123 +32,75 @@ interface MonthlyBurnData {
   month: string;
   fixedExpenses: number;
   netProfit: number;
+  netFlow: number;
 }
 
 function buildMonthlyBurn(projects: Project[], year: number): MonthlyBurnData[] {
-  const monthlyData: MonthlyBurnData[] = MONTH_LABELS.map((m: string) => ({
+  const monthlyData = MONTH_LABELS.map((m) => ({
     month: m,
     fixedExpenses: 0,
     netProfit: 0,
+    netFlow: 0,
   }));
 
-  projects.forEach((deal: Project) => {
-    const fin = deal.financials;
-
-    // === Fixed Expenses (burn) distributed across months deal was active ===
-    // Determine active months for this deal
+  projects.forEach((deal) => {
+    const metrics = calculateProjectMetrics(deal);
     const created = new Date(deal.createdAt);
-    const ended = deal.financials?.soldDate
-      ? new Date(deal.financials.soldDate)
-      : new Date(); // Still active
+    const ended = deal.financials?.soldDate ? new Date(deal.financials.soldDate) : new Date();
 
-    // Monthly holding costs
-    const monthlyHolding = (deal.holdingCosts || []).reduce(
-      (sum: number, hc) => sum + (hc.monthlyAmount || 0), 0
-    );
-
-    // Additional monthly fixed costs
-    let monthlyFixed = monthlyHolding;
-    if (fin?.propertyManagementFee) monthlyFixed += fin.propertyManagementFee;
-    if (fin?.maintenanceReserves) monthlyFixed += fin.maintenanceReserves;
-    if (fin?.longTermMortgagePayment) monthlyFixed += fin.longTermMortgagePayment;
-
-    // Loan interest per month: (loanAmount * interestRate%) / 12
-    if (fin?.loanAmount && fin?.loanInterestRate) {
-      monthlyFixed += (fin.loanAmount * (fin.loanInterestRate / 100)) / 12;
-    }
-
-    // Distribute fixed costs to each month the deal was active in the selected year
+    // Distribute monthly burn
     for (let m = 0; m < 12; m++) {
       const monthStart = new Date(year, m, 1);
-      const monthEnd = new Date(year, m + 1, 0); // Last day of month
+      const monthEnd = new Date(year, m + 1, 0);
 
-      // Was the deal active during this month?
       if (created <= monthEnd && ended >= monthStart) {
-        monthlyData[m].fixedExpenses += Math.round(monthlyFixed);
+        monthlyData[m].fixedExpenses += Math.round(metrics.monthlyHoldingCosts);
       }
     }
 
-    // === Net Profit (credited to the month of sale) ===
-    if (deal.status === 'Sold' && fin?.soldDate) {
-      const soldDate = new Date(fin.soldDate);
+    // Add profit to the month of sale
+    if (deal.status === 'Sold' && deal.financials?.soldDate) {
+      const soldDate = new Date(deal.financials.soldDate);
       if (soldDate.getFullYear() === year) {
-        const soldMonth = soldDate.getMonth();
-        const pp = fin.purchasePrice || 0;
-        const grossSalePrice = fin.actualSalePrice || fin.estimatedARV || 0;
-
-        let renovationCosts = 0;
-        fin.costs?.forEach((c) => { if (c.approved) renovationCosts += c.amount; });
-        fin.inspections?.forEach((i) => { renovationCosts += i.actualCost; });
-        deal.rehabExpenses?.forEach((e) => { renovationCosts += e.amount; });
-
-        let sourcingClosing = 0;
-        if (fin.loanAmount && fin.loanOriginationPoints) {
-          sourcingClosing += fin.loanAmount * (fin.loanOriginationPoints / 100);
-        }
-        if (deal.costBasisLedger) {
-          [
-            ...(deal.costBasisLedger.directAcquisition || []),
-            ...(deal.costBasisLedger.financing || []),
-            ...(deal.costBasisLedger.preClosing || []),
-          ].forEach((item) => { sourcingClosing += item.amount; });
-        }
-
-        let holdingCosts = 0;
-        deal.holdingCosts?.forEach((hc) => {
-          holdingCosts += hc.monthlyAmount * hc.monthsPaid;
-        });
-
-        let sellClosing = fin.finalClosingCosts || 0;
-        sellClosing += grossSalePrice * ((fin.buyersAgentCommission || 0) / 100);
-        sellClosing += grossSalePrice * ((fin.sellersAgentCommission || 0) / 100);
-        deal.exitCosts?.forEach((ec) => {
-          sellClosing += ec.isPercentage && ec.percentageRate
-            ? grossSalePrice * (ec.percentageRate / 100)
-            : ec.amount;
-        });
-
-        const totalCosts = pp + renovationCosts + sourcingClosing + holdingCosts + sellClosing;
-        monthlyData[soldMonth].netProfit += Math.round(grossSalePrice - totalCosts);
+        monthlyData[soldDate.getMonth()].netProfit += Math.round(metrics.netProfit);
       }
     }
   });
 
-  return monthlyData;
+  // Calculate Net Flow
+  return monthlyData.map(d => ({
+    ...d,
+    netFlow: d.netProfit - d.fixedExpenses
+  }));
 }
 
-/* ─── Custom Tooltip ─── */
-function BurnTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; dataKey: string; color: string }>; label?: string }) {
+function BurnTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-text-secondary font-medium mb-1.5">{label}</p>
-      {payload.map((entry, i: number) => (
-        <p key={i} className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-          <span className="text-text-secondary">
-            {entry.dataKey === 'fixedExpenses' ? 'Fixed Expenses' : 'Net Profit'}:
+    <div className="bg-bg-surface/95 backdrop-blur-md border border-border-accent/40 rounded-xl shadow-2xl px-4 py-3 text-xs">
+      <p className="text-text-secondary font-bold uppercase tracking-widest mb-2 border-b border-border-accent/20 pb-1.5">{label}</p>
+      <div className="space-y-2">
+        {payload.map((entry: any, i: number) => {
+          if (entry.dataKey === 'netFlow') return null;
+          return (
+            <div key={i} className="flex justify-between gap-8">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: entry.color }} />
+                <span className="text-text-secondary font-medium">{entry.name}:</span>
+              </div>
+              <span className="font-mono font-bold text-text-primary">
+                ${Math.abs(entry.value).toLocaleString()}
+              </span>
+            </div>
+          );
+        })}
+        <div className="mt-2 pt-1.5 border-t border-border-accent/30 flex justify-between gap-8">
+          <span className="text-text-primary font-bold uppercase tracking-tighter">Net Cash:</span>
+          <span className={`font-mono font-bold ${payload[2]?.value >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+            ${payload[2]?.value.toLocaleString()}
           </span>
-          <span className={`font-mono font-medium ${
-            entry.dataKey === 'netProfit' && entry.value >= 0
-              ? 'text-emerald-600'
-              : entry.dataKey === 'netProfit' && entry.value < 0
-                ? 'text-red-600'
-                : 'text-text-primary'
-          }`}>
-            ${Math.abs(entry.value).toLocaleString()}
-          </span>
-        </p>
-      ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -161,57 +114,62 @@ export default function MonthlyBurnRate({ projects, year }: MonthlyBurnRateProps
   const currentYear = year || new Date().getFullYear();
   const data = useMemo(() => buildMonthlyBurn(projects, currentYear), [projects, currentYear]);
 
-  const hasData = data.some((d: MonthlyBurnData) => d.fixedExpenses > 0 || d.netProfit !== 0);
-  if (!hasData) {
-    return (
-      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
-        No expense or profit data for {currentYear}.
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+      <ResponsiveContainer width="100%" height={280}>
+        <ComposedChart data={data} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+          <defs>
+            <linearGradient id="profitBar" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#111827" stopOpacity={1}/>
+              <stop offset="100%" stopColor="#374151" stopOpacity={1}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" vertical={false} />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 10, fill: '#6b7280', fontFamily: 'Inter' }}
+            tick={{ fontSize: 10, fill: '#6b7280', fontWeight: 600 }}
             axisLine={false}
             tickLine={false}
           />
           <YAxis
-            tick={{ fontSize: 10, fill: '#9ca3af', fontFamily: 'Inter' }}
+            tick={{ fontSize: 10, fill: '#9ca3af', fontFamily: 'JetBrains Mono, monospace' }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v: number) => {
-              if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-              return `$${v}`;
-            }}
+            tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
           />
-          <Tooltip content={<BurnTooltip />} cursor={{ fill: 'rgba(0,0,0,0.03)' }} />
+          <Tooltip content={<BurnTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
           <Legend
+            verticalAlign="top"
+            align="right"
             iconType="circle"
             iconSize={6}
-            wrapperStyle={{ fontSize: 10, fontFamily: 'Inter', paddingTop: 8 }}
+            wrapperStyle={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', paddingBottom: 20 }}
           />
-          <Bar
-            dataKey="fixedExpenses"
-            stackId="stack"
-            fill="#e5e7eb"
-            name="Fixed Expenses"
-            radius={[0, 0, 0, 0]}
+          <Bar 
+            dataKey="fixedExpenses" 
+            stackId="a" 
+            fill="#e5e7eb" 
+            name="Burn Rate" 
+            radius={[0, 0, 0, 0]} 
           />
-          <Bar
-            dataKey="netProfit"
-            stackId="stack"
-            fill="#111827"
-            name="Net Profit"
-            radius={[4, 4, 0, 0]}
+          <Bar 
+            dataKey="netProfit" 
+            stackId="a" 
+            fill="url(#profitBar)" 
+            name="Sale Profits" 
+            radius={[4, 4, 0, 0]} 
           />
-        </BarChart>
+          <Line
+            type="monotone"
+            dataKey="netFlow"
+            stroke="#111827"
+            strokeWidth={2}
+            dot={{ r: 3, fill: '#111827', strokeWidth: 0 }}
+            name="Net Flow"
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
 }
+

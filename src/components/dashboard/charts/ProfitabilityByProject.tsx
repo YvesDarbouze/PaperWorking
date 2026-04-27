@@ -13,19 +13,21 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { Project } from '@/types/schema';
+import { calculateProjectMetrics } from '@/lib/analyticsUtils';
 
 /* ═══════════════════════════════════════════════════════════════
-   Chart 2 — Profitability by Project (Bar Chart)
-
-   X-Axis: Project Name / Address
-   Y-Axis: Net Profit ($)
-   Data:   Bar graph comparing final profit of every flip
-           completed within the selected calendar year.
+   Chart 2 — Profitability by Project (Premium Horizontal Bar Chart)
+   
+   Features:
+   - Unified ROI/Profit logic from analyticsUtils
+   - Horizontal layout for better readability of project names
+   - Bi-directional bars for profits/losses
    ═══════════════════════════════════════════════════════════════ */
 
 interface ProfitBarData {
   name: string;
   profit: number;
+  roi: number;
   projectId: string;
 }
 
@@ -40,75 +42,39 @@ function computeProfitByProject(projects: Project[], year?: number): ProfitBarDa
   });
 
   return soldDeals.map((deal: Project) => {
-    const fin = deal.financials;
-    const pp = fin.purchasePrice || 0;
-    const grossSalePrice = fin.actualSalePrice || fin.estimatedARV || 0;
-
-    // Renovation costs
-    let renovationCosts = 0;
-    fin.costs?.forEach((c) => { if (c.approved) renovationCosts += c.amount; });
-    fin.inspections?.forEach((i) => { renovationCosts += i.actualCost; });
-    deal.rehabExpenses?.forEach((e) => { renovationCosts += e.amount; });
-
-    // Sourcing & Closing
-    let sourcingClosingCosts = 0;
-    if (fin.loanAmount && fin.loanOriginationPoints) {
-      sourcingClosingCosts += fin.loanAmount * (fin.loanOriginationPoints / 100);
-    }
-    if (deal.costBasisLedger) {
-      [
-        ...(deal.costBasisLedger.directAcquisition || []),
-        ...(deal.costBasisLedger.financing || []),
-        ...(deal.costBasisLedger.preClosing || []),
-      ].forEach((item) => { sourcingClosingCosts += item.amount; });
-    }
-
-    // Holding costs
-    let holdingCosts = 0;
-    deal.holdingCosts?.forEach((hc) => {
-      holdingCosts += hc.monthlyAmount * hc.monthsPaid;
-    });
-
-    // Sell-side
-    let sellClosing = fin.finalClosingCosts || 0;
-    sellClosing += grossSalePrice * ((fin.buyersAgentCommission || 0) / 100);
-    sellClosing += grossSalePrice * ((fin.sellersAgentCommission || 0) / 100);
-    deal.exitCosts?.forEach((ec) => {
-      sellClosing += ec.isPercentage && ec.percentageRate
-        ? grossSalePrice * (ec.percentageRate / 100)
-        : ec.amount;
-    });
-
-    const totalCosts = pp + renovationCosts + sourcingClosingCosts + holdingCosts + sellClosing;
-    const netProfit = grossSalePrice - totalCosts;
-
-    // Shorter display name
-    const nameParts = deal.propertyName.split(' ');
-    const shortName = nameParts.length > 3
-      ? nameParts.slice(0, 2).join(' ')
-      : deal.propertyName;
-
+    const metrics = calculateProjectMetrics(deal);
+    
     return {
-      name: shortName,
-      profit: Math.round(netProfit),
+      name: deal.propertyName.split(' ').slice(0, 2).join(' '),
+      profit: Math.round(metrics.netProfit),
+      roi: metrics.roi,
       projectId: deal.id,
     };
-  }).sort((a: ProfitBarData, b: ProfitBarData) => b.profit - a.profit);
+  }).sort((a, b) => b.profit - a.profit);
 }
 
-/* ─── Custom Tooltip ─── */
-function ProfitTooltip({ active, payload }: { active?: boolean; payload?: Array<{ value: number; payload: ProfitBarData }> }) {
+function ProfitTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
-  const d = payload[0];
+  const d = payload[0].payload;
+  const isPositive = d.profit >= 0;
+
   return (
-    <div className="bg-bg-surface border border-border-accent rounded-xl shadow-lg px-4 py-3 text-xs">
-      <p className="text-text-primary font-medium mb-1">{d.payload.name}</p>
-      <p className="flex items-center gap-2">
-        <span className="text-text-secondary">Net Profit:</span>
-        <span className={`font-mono font-semibold ${d.value >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-          {d.value >= 0 ? '+' : '-'}${Math.abs(d.value).toLocaleString()}
-        </span>
-      </p>
+    <div className="bg-bg-surface/95 backdrop-blur-sm border border-border-accent/40 rounded-xl shadow-2xl px-4 py-3 text-xs">
+      <p className="text-text-primary font-bold uppercase tracking-wider mb-2 border-b border-border-accent/20 pb-1.5">{d.name}</p>
+      <div className="space-y-1.5">
+        <div className="flex justify-between gap-6">
+          <span className="text-text-secondary font-medium">Net Profit:</span>
+          <span className={`font-mono font-bold ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+            {isPositive ? '+' : '-'}${Math.abs(d.profit).toLocaleString()}
+          </span>
+        </div>
+        <div className="flex justify-between gap-6">
+          <span className="text-text-secondary font-medium">ROI:</span>
+          <span className={`font-mono font-bold ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+            {d.roi.toFixed(1)}%
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -123,25 +89,38 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-text-secondary text-xs">
-        No completed flips {year ? `in ${year}` : ''} to chart.
+      <div className="flex items-center justify-center h-64 text-text-secondary text-xs italic bg-bg-primary/30 rounded-2xl border border-dashed border-border-accent">
+        No completed flips recorded {year ? `for ${year}` : ''}.
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <ResponsiveContainer width="100%" height={260}>
-        <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+      <ResponsiveContainer width="100%" height={data.length * 50 + 60}>
+        <BarChart 
+          data={data} 
+          layout="vertical" 
+          margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+          barGap={0}
+        >
+          <defs>
+            <filter id="barShadow" x="-20%" y="-20%" width="140%" height={140%}>
+              <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
+              <feOffset dx="0" dy="1" result="offsetblur" />
+              <feComponentTransfer>
+                <feFuncA type="linear" slope="0.2" />
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <CartesianGrid strokeDasharray="4 4" stroke="#e5e7eb" horizontal={false} />
           <XAxis
-            dataKey="name"
-            tick={{ fontSize: 10, fill: '#6b7280', fontFamily: 'Inter' }}
-            axisLine={false}
-            tickLine={false}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: '#9ca3af', fontFamily: 'Inter' }}
+            type="number"
+            tick={{ fontSize: 10, fill: '#9ca3af', fontFamily: 'JetBrains Mono, monospace' }}
             axisLine={false}
             tickLine={false}
             tickFormatter={(v: number) => {
@@ -149,14 +128,22 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
               return `$${v}`;
             }}
           />
-          <Tooltip content={<ProfitTooltip />} cursor={{ fill: 'rgba(0,0,0,0.03)' }} />
-          <ReferenceLine y={0} stroke="#e5e7eb" strokeWidth={1} />
-          <Bar dataKey="profit" radius={[6, 6, 0, 0]} maxBarSize={48}>
-            {data.map((entry: ProfitBarData, index: number) => (
+          <YAxis
+            dataKey="name"
+            type="category"
+            tick={{ fontSize: 10, fill: '#111827', fontWeight: 600 }}
+            axisLine={false}
+            tickLine={false}
+            width={80}
+          />
+          <Tooltip content={<ProfitTooltip />} cursor={{ fill: 'rgba(0,0,0,0.02)' }} />
+          <ReferenceLine x={0} stroke="#111827" strokeWidth={1} />
+          <Bar dataKey="profit" radius={[0, 4, 4, 0]} barSize={24}>
+            {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={entry.profit >= 0 ? '#111827' : '#ef4444'}
-                opacity={entry.profit >= 0 ? 1 : 0.7}
+                filter="url(#barShadow)"
               />
             ))}
           </Bar>
@@ -165,3 +152,4 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
     </div>
   );
 }
+

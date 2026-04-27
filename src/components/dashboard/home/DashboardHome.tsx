@@ -32,6 +32,7 @@ import { Project } from '@/types/schema';
    ═══════════════════════════════════════════════════════════════ */
 
 const ROIChart = lazy(() => import('./ROIChart'));
+const AssetMixChart = lazy(() => import('./AssetMixChart'));
 
 function ChartSkeleton() {
   return (
@@ -279,12 +280,12 @@ export default function DashboardHome() {
       )}
 
       {/* ── 3-Column Grid ── */}
-      <div className="grid grid-cols-12 gap-8">
+      <div className="grid grid-cols-12 gap-10">
 
         {/* Left: Action Center
             Paid/Free: Inbox + To-Do (portfolioProjects drives data)
             Guest: empty-state widgets (invited project data stays in GuestProjectCard) */}
-        <div className="col-span-12 lg:col-span-3 space-y-6">
+        <div className="col-span-12 lg:col-span-3 space-y-8">
           <Suspense fallback={<WidgetSkeleton className="h-64" />}>
             <SmartInboxWidget projects={portfolioProjects} />
           </Suspense>
@@ -300,7 +301,7 @@ export default function DashboardHome() {
             Paid: full KPI strip + ROI chart + MAO gauge (live data)
             Free: same strip with empty array → all KPIs display "—" (teaser)
             Guest: GuestAccessPanel — financial KPIs intentionally hidden */}
-        <div className="col-span-12 lg:col-span-6 space-y-6">
+        <div className="col-span-12 lg:col-span-6 space-y-8">
           {isGuest ? (
             <GuestAccessPanel />
           ) : (
@@ -309,11 +310,22 @@ export default function DashboardHome() {
                 <PortfolioKPIStrip projects={portfolioProjects} />
               </Suspense>
               <Suspense fallback={<ChartSkeleton />}>
-                <ROIChart projects={portfolioProjects} />
+                <div className="ag-card bg-bg-surface/80 backdrop-blur-md border border-border-accent/10 shadow-sm p-1 rounded-2xl">
+                  <ROIChart projects={portfolioProjects} />
+                </div>
               </Suspense>
-              <Suspense fallback={<WidgetSkeleton className="h-48" />}>
-                <MAOGaugeTracker projects={portfolioProjects} />
-              </Suspense>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Suspense fallback={<WidgetSkeleton className="h-64" />}>
+                  <div className="ag-card bg-bg-surface/80 backdrop-blur-md border border-border-accent/10 shadow-sm p-1 rounded-2xl">
+                    <AssetMixChart projects={portfolioProjects} />
+                  </div>
+                </Suspense>
+                <Suspense fallback={<WidgetSkeleton className="h-64" />}>
+                  <div className="ag-card bg-bg-surface/80 backdrop-blur-md border border-border-accent/10 shadow-sm p-1 rounded-2xl">
+                    <MAOGaugeTracker projects={portfolioProjects} />
+                  </div>
+                </Suspense>
+              </div>
             </>
           )}
         </div>
@@ -321,7 +333,9 @@ export default function DashboardHome() {
         {/* Right: Burn Rate */}
         <div className="col-span-12 lg:col-span-3">
           <Suspense fallback={<WidgetSkeleton className="h-full min-h-[500px]" />}>
-            <BurnRateMonitor projects={portfolioProjects} />
+            <div className="ag-card bg-bg-surface/80 backdrop-blur-md border border-border-accent/10 shadow-sm p-1 rounded-2xl h-full">
+              <BurnRateMonitor projects={portfolioProjects} />
+            </div>
           </Suspense>
         </div>
       </div>

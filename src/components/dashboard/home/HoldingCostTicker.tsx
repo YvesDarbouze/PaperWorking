@@ -2,13 +2,15 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { Wallet, ArrowRight } from 'lucide-react';
+import { Wallet, ArrowRight, TrendingUp } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
-   HoldingCostTicker — Per-Deal Monthly Holding Costs
-
-   Aggregates holding costs (taxes, insurance, utilities, interest)
-   and shows cost per day + projected remaining cost.
+   HoldingCostTicker — Financial Drain Sentinel
+   
+   Tracks the non-productive capital leakage per active deal.
+   Includes taxes, insurance, utilities, and debt service.
+   Aesthetics: Structured list items, high-contrast values, 
+   and clean status indicators.
    ═══════════════════════════════════════════════════════════════ */
 
 interface DealHoldingCost {
@@ -22,6 +24,7 @@ interface DealHoldingCost {
 }
 
 function shortAddress(addr: string): string {
+  if (!addr) return 'Unnamed Property';
   const comma = addr.indexOf(',');
   return comma > 0 ? addr.slice(0, comma) : addr;
 }
@@ -37,7 +40,6 @@ function computeHoldingCosts(projects: Project[], maxDOM: number): DealHoldingCo
         : new Date(deal.createdAt);
       const daysHeld = Math.max(1, Math.floor((now.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24)));
 
-      // Aggregate holding costs from deal.holdingCosts[] or financials
       let monthlyTotal = 0;
       const breakdown: { label: string; amount: number }[] = [];
 
@@ -92,28 +94,48 @@ export default function HoldingCostTicker({ projects, maxDOM = 160 }: HoldingCos
   const deals = useMemo(() => computeHoldingCosts(projects, maxDOM), [projects, maxDOM]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-6">
       {deals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-10 text-text-secondary opacity-30">
-          <Wallet className="w-8 h-8 mb-2 stroke-1" />
-          <p className="text-xs font-medium">No holding costs tracked</p>
+        <div className="flex flex-col items-center justify-center py-12 text-text-secondary opacity-30">
+          <Wallet className="w-8 h-8 mb-2 stroke-[1px]" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-center">No Holding Costs Tracked</p>
         </div>
       ) : (
         deals.map(deal => (
-          <div key={deal.id} className="px-4 py-3 rounded-md bg-bg-primary/40 border border-border-accent/10 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-text-primary tracking-tight truncate max-w-[150px]">
+          <div key={deal.id} className="group/item p-4 rounded-xl bg-bg-surface border border-border-accent/10 shadow-sm hover:border-pw-black/20 transition-all duration-500">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-text-primary tracking-tight truncate max-w-[150px]">
                 {deal.address}
               </span>
-              <span className="text-base font-light text-text-primary tracking-tight">
-                {formatCurrency(deal.monthlyTotal)}
-                <span className="text-[9px] ml-1 opacity-40">/mo</span>
-              </span>
+              <div className="flex flex-col items-end">
+                <span className="text-sm font-bold text-text-primary tracking-tight font-mono">
+                  {formatCurrency(deal.monthlyTotal)}
+                </span>
+                <span className="text-[9px] uppercase tracking-[0.1em] text-text-secondary opacity-40 font-black">
+                  Monthly Burn
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-text-secondary opacity-50">
-              <span>{formatCurrency(deal.dailyRate)}/day</span>
-              <ArrowRight className="w-2.5 h-2.5" />
-              <span>~{formatCurrency(deal.projectedRemainingCost)} remaining</span>
+            
+            <div className="flex items-center gap-4 py-3 border-y border-border-accent/5">
+              <div className="flex-1">
+                <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-0.5">Daily Rate</p>
+                <p className="text-xs font-mono text-text-primary font-bold">{formatCurrency(deal.dailyRate)}</p>
+              </div>
+              <div className="flex-1 text-right">
+                <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-0.5">Days Held</p>
+                <p className="text-xs font-mono text-text-primary font-bold">{deal.daysHeld}d</p>
+              </div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <TrendingUp className="w-3 h-3 text-red-500/60" />
+                <span className="text-[10px] text-text-secondary opacity-60">Est. Remaining Exposure</span>
+              </div>
+              <span className="text-xs font-bold text-red-600 font-mono">
+                {formatCurrency(deal.projectedRemainingCost)}
+              </span>
             </div>
           </div>
         ))

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
-import { FieldValue } from 'firebase-admin/firestore';
+import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
 
 /**
- * Transactional Email API — Resend-native, falls back to audit-log when key absent.
+ * Transactional Email API — Unified via CommunicationEngine
  *
  * POST /api/emails/send
  * Body: {
@@ -13,13 +13,11 @@ import { FieldValue } from 'firebase-admin/firestore';
  *   subject: string
  *   html: string           // HTML body
  *   text?: string          // plain-text fallback
- *   replyTo?: string       // optional reply-to address
- *   tags?: { name: string; value: string }[]
  * }
  *
- * To enable Resend, set: RESEND_API_KEY and RESEND_FROM_EMAIL in your env.
- * The reply-to address should be: reply+{projectId}@your-inbound-domain.com
- * so incoming replies are routed back through /api/webhooks/emails.
+ * All dispatch, audit logging, and delivery tracking is handled by
+ * the CommunicationEngine module. The route only handles auth validation
+ * and cross-tenant security checks.
  */
 
 interface SendEmailBody {
@@ -29,50 +27,12 @@ interface SendEmailBody {
   subject: string;
   html: string;
   text?: string;
-  replyTo?: string;
-  tags?: { name: string; value: string }[];
-}
-
-async function sendViaResend(payload: Omit<SendEmailBody, 'idToken' | 'projectId'>): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@paperworking.io';
-
-  if (!apiKey) {
-    // Return a mock ID so the rest of the handler still persists the audit log
-    return { id: `mock_${Date.now().toString(36)}` };
-  }
-
-  const body = {
-    from: fromEmail,
-    to: payload.to,
-    subject: payload.subject,
-    html: payload.html,
-    ...(payload.text && { text: payload.text }),
-    ...(payload.replyTo && { reply_to: payload.replyTo }),
-    ...(payload.tags && { tags: payload.tags }),
-  };
-
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Resend API error ${res.status}: ${err}`);
-  }
-
-  return res.json();
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: SendEmailBody = await request.json();
-    const { idToken, projectId, to, subject, html, text, replyTo, tags } = body;
+    const { idToken, projectId, to, subject, html, text } = body;
 
     // ── Validation ─────────────────────────────────────────
     if (!idToken || !projectId || !to?.length || !subject || !html) {
@@ -91,7 +51,7 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (!dealSnap.exists) return NextResponse.json({ error: 'Deal not found.' }, { status: 404 });
-    if (!userSnap.exists)  return NextResponse.json({ error: 'User not found.' }, { status: 404 });
+    if (!userSnap.exists) return NextResponse.json({ error: 'User not found.' }, { status: 404 });
 
     const dealData = dealSnap.data()!;
     const userData = userSnap.data()!;
@@ -100,54 +60,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
     }
 
-    // ── Inject tracking token into subject so inbound replies route back ──
-    const trackingSubject = `${subject} [ref:deal_${projectId}]`;
-
-    // ── Build default reply-to if not provided ──────────────
-    const inboundDomain = process.env.INBOUND_EMAIL_DOMAIN;
-    const effectiveReplyTo = replyTo
-      || (inboundDomain ? `reply+${projectId}@${inboundDomain}` : undefined);
-
-    // ── Dispatch ────────────────────────────────────────────
-    const result = await sendViaResend({
+    // ── Dispatch via CommunicationEngine ────────────────────
+    const result = await CommunicationEngine.sendCustomEmail({
+      senderUid: uid,
+      projectId,
       to,
-      subject: trackingSubject,
+      subject,
       html,
       text,
-      replyTo: effectiveReplyTo,
-      tags,
     });
 
-    const isMock = !process.env.RESEND_API_KEY;
-
-    // ── Firestore audit log ─────────────────────────────────
-    await adminDb.collection('projects').doc(projectId)
-      .collection('messages')
-      .add({
-        senderEmail: process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.io',
-        senderName: 'PaperWorking',
-        body: text || html.replace(/<[^>]+>/g, ''),
-        subject: trackingSubject,
-        type: 'EMAIL_OUTBOUND',
-        recipients: to,
-        providerMessageId: result.id,
-        projectId,
-        organizationId: dealData.organizationId,
-        mock: isMock,
-        createdAt: FieldValue.serverTimestamp(),
-      });
+    if (!result.success) {
+      return NextResponse.json({ error: result.error || 'Failed to send.' }, { status: 500 });
+    }
 
     return NextResponse.json({
       success: true,
-      messageId: result.id,
-      mock: isMock,
-      ...(isMock && { message: 'Email mocked — set RESEND_API_KEY to enable live delivery.' }),
+      messageId: result.messageId,
+      mock: result.mock,
+      recipientCount: result.recipientCount,
+      ...(result.mock && { message: 'Email mocked — set RESEND_API_KEY to enable live delivery.' }),
     });
   } catch (error: any) {
     console.error('[Email Send] Error:', error);
     if (error.code === 'auth/id-token-expired') {
       return NextResponse.json({ error: 'Session expired.' }, { status: 401 });
     }
-    return NextResponse.json({ error: 'Failed to send email.', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to send email.', details: error.message },
+      { status: 500 },
+    );
   }
 }

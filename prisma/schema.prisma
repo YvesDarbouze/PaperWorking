@@ -88,6 +88,37 @@ model CommunicationLog {
   @@index([threadId])
 }
 
+/// Per-recipient delivery tracking for transactional emails.
+/// Updated by Resend webhook events (Sent → Delivered → Opened → Clicked).
+model EmailLog {
+  id                String    @id @default(uuid())
+  organizationId    String
+  recipientId       String?   // Firebase UID of the recipient (null for external)
+  recipientEmail    String
+  messageId         String    // Resend provider message ID
+  templateSlug      String    // e.g. 'phase_advance', 'investor_pledge', 'user_composed'
+  linkedProjectId   String?   // Firestore project ID for deal context
+  status            String    @default("Sent") // Sent | Delivered | Opened | Clicked | Bounced | Failed
+  subject           String?
+  sentAt            DateTime  @default(now())
+  deliveredAt       DateTime?
+  openedAt          DateTime?
+  clickedAt         DateTime?
+  bouncedAt         DateTime?
+  errorMessage      String?
+  metadata          String?   // JSON: extra context (merge vars, campaign tags, etc.)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([organizationId])
+  @@index([recipientEmail])
+  @@index([messageId])
+  @@index([templateSlug])
+  @@index([status])
+  @@index([linkedProjectId])
+}
+
 // ── Bridge API Models ────────────────────────────────────────
 
 model Property {
@@ -128,4 +159,25 @@ model BridgeSyncState {
   id                               String   @id @default("replication_watermark")
   mostRecentModificationTimestamp  DateTime
   updatedAt                        DateTime @updatedAt
+}
+
+// ── Async Job Queue Audit Log ────────────────────────────────
+// Records the lifecycle of every job that passes through the
+// Redis queue for observability and DLQ investigation.
+// Additive migration — no existing columns modified.
+
+model JobRecord {
+  id          String    @id // matches jobQueue.Job.id
+  type        String    // 'bridge_sync' | 'webhook_process'
+  status      String    @default("pending") // pending | processing | done | failed | dlq
+  payload     String    // JSON
+  attempts    Int       @default(0)
+  error       String?
+  enqueuedAt  DateTime
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([type, status])
+  @@index([enqueuedAt])
 }

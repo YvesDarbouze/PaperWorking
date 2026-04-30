@@ -1,5 +1,45 @@
 // PaperWorking Project Schema
 
+// ── Phase Pipeline Snapshots ─────────────────────────────────
+// Written once (immutable) when a user advances past a phase.
+// Sub-collection path: projects/{projectId}/phaseSnapshots/{phaseKey}
+
+export type PhaseSnapshotKey = 'phase-1' | 'phase-2' | 'phase-3';
+
+export interface Phase1Snapshot {
+  phaseKey:              'phase-1';
+  purchasePrice:         number;
+  estimatedARV:          number;
+  loanAmount:            number;
+  loanInterestRate:      number;
+  loanOriginationPoints: number;
+  projectedRehabCost:    number;
+  estimatedTimelineDays: number;
+  fixedAcquisitionCosts: number;
+  maxOffer:              number;
+  capturedAt:            Date;
+}
+
+export interface Phase2Snapshot {
+  phaseKey:                'phase-2';
+  initialCapitalizedBasis: number;
+  isClearToClose:          boolean;
+  capturedAt:              Date;
+}
+
+export interface Phase3Snapshot {
+  phaseKey:          'phase-3';
+  totalRehabActual:  number;  // sum of approved rehabExpenses
+  totalHoldingCosts: number;  // sum of holdingCosts (monthlyAmount × monthsPaid)
+  capturedAt:        Date;
+}
+
+export interface PhaseSnapshotMap {
+  'phase-1'?: Phase1Snapshot;
+  'phase-2'?: Phase2Snapshot;
+  'phase-3'?: Phase3Snapshot;
+}
+
 // ── Deal Phase System ─────────────────────────────────────────
 
 export type DealPhaseKey =
@@ -73,6 +113,7 @@ export type OrgRole = 'Lead Investor' | 'Admin';
 // 1.2 Project-Specific Team Roles (non-investor professionals)
 export type ProjectRole =
   | 'Real Estate Agent'
+  | 'Real Estate Attorney'
   | 'Loan Officer/Broker'
   | 'Loan Processor'
   | 'Loan Underwriter'
@@ -114,6 +155,12 @@ export interface Organization {
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
   teamMembers: OrgTeamMember[]; // Up to 10 for Team accounts, 0 for Individual
   maxSeats: number; // 1 for Individual, 10 for Team
+  
+  // Portfolio Aggregates (Updated on Phase 4 Project Close)
+  totalProjectsClosed?: number;
+  totalNetRealizedProfit?: number;
+  averagePortfolioROI?: number;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -129,6 +176,12 @@ export interface ApplicationUser {
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
   inviteToken?: string; // Populated when user arrived via crowdfund invitation
   invitedToProjectId?: string; // Project they were invited to join
+  
+  // Billing Metadata
+  stripeCustomerId?: string;
+  lastFour?: string;
+  cardBrand?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -150,6 +203,8 @@ export interface ProjectTeamMember {
   id: string;
   uid?: string; // null if invited but not yet registered
   email: string;
+  phoneNumber?: string; // Optional contact phone number
+  firm?: string; // Optional firm/company name
   displayName: string;
   projectRole: ProjectRole;
   permissions: ExternalAccessPermission; // Granular access gates
@@ -292,7 +347,7 @@ export interface GuestPortalToken {
 
 // ── Acquisition & Due Diligence Module Types ──────────
 
-export type LoanStatus = 'Pre-Approved' | 'In-Underwriting' | 'Appraisal-Ordered' | 'Clear-To-Close';
+export type LoanStatus = 'Application-Submitted' | 'Appraisal-Ordered' | 'Underwriting-Review' | 'Clear-To-Close' | 'Pre-Approved' | 'In-Underwriting';
 
 export type NegotiationStatus = 'Pending' | 'Accepted' | 'Rejected';
 
@@ -315,6 +370,13 @@ export interface Contingency {
   isWaived: boolean;
   isSatisfied: boolean;
   notes?: string;
+}
+
+export interface DueDiligenceItem {
+  id: string;
+  label: string;
+  completed: boolean;
+  completedAt?: Date;
 }
 
 // 2.11 Cost Basis Line Item
@@ -344,6 +406,12 @@ export type DocumentCategory =
   | 'Loan Estimate'
   | 'Closing Disclosure'
   | 'Environmental Report'
+  | 'Loan Processing Documents'
+  | 'Real Estate Attorney Documents'
+  | 'General Sale Disclosures'
+  | 'Final Settlement Statement'
+  | 'Deed'
+  | 'Buyer Agreements'
   | 'Other';
 
 export interface RoleLinkedDocument {
@@ -358,10 +426,25 @@ export interface RoleLinkedDocument {
   verified: boolean;
   verifiedByUid?: string;
   verifiedAt?: Date;
+  fileSize?: number;         // Size in bytes for usage tracking
   notes: string;
 }
 
 export type PhaseStatus = 'Phase 1: Find & Fund' | 'Phase 2: Acquisition' | 'Phase 3: Holding & Rehab' | 'Phase 4: Closing & Exit';
+
+// Phase 1: Mandatory Document Checklist (Purchase Readiness)
+export type PurchaseReadinessItemType = 'Operating Agreement' | 'Proof of Funds' | 'Title Commitment' | 'Entity Documents (LLC/Inc)';
+
+export interface PurchaseReadinessItem {
+  id: string;
+  type: PurchaseReadinessItemType | string;
+  completed: boolean;
+  completedAt?: Date;
+  completedByUid?: string;
+  documentUrl?: string; // Uploaded proof
+  fileSize?: number;    // Size in bytes
+  notes: string;
+}
 
 // 3. Project Container Schema
 export interface Project {
@@ -370,8 +453,9 @@ export interface Project {
   propertyName: string;
   address: string;
   squareFootage?: number; // Core metric for sqft-based reporting
-  status: 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold';
+  status: 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'closed_won' | 'closed_lost';
   phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
+  yearBuilt?: number;
   members: Record<string, ProjectMember>; // Map of user UIDs to their role in the project
   financials: ProjectFinancials;
   closingRoom?: ClosingRoom;
@@ -384,13 +468,26 @@ export interface Project {
   investorCommitments?: InvestorCommitment[]; // Find & Fund: Syndication Engine
   guestPortalTokens?: GuestPortalToken[]; // Find & Fund: Guest Portal Access
   
+  // Phase 1 Purchase Readiness Checklist
+  purchaseReadinessChecklist?: PurchaseReadinessItem[];
+  
   // Acquisition & Due Diligence
   costBasisLedger?: CostBasisLedger; // Acquisition: Capitalization tracker
   roleLinkedDocuments?: RoleLinkedDocument[]; // Acquisition: Document vault
   loanStatus?: LoanStatus; // Financing status tracker
   negotiations?: Negotiation[]; // Phase 2: Negotiation history
   contingencies?: Contingency[]; // Phase 2: Due Diligence contingencies
+  dueDiligenceChecklist?: DueDiligenceItem[]; // Phase 2: Due Diligence Checklist
+  closingChecklist?: ClosingChecklistItem[]; // Phase 2: Closing Checklist
+  isClearToClose?: boolean; // Milestone gate
   
+  // Phase progression (1=Acquisition, 2=Purchase, 3=Hold, 4=Exit)
+  currentPhase?: number;
+
+  // Phase 4 Exit & Settlement
+  settlementDocuments?: SettlementDocument[]; // HUD-1, Closing Disclosures
+
+  locked?: boolean; // Global read-only lock after closure
   createdAt: Date;
   updatedAt: Date;
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
@@ -454,6 +551,7 @@ export interface RehabTask {
   category: 'Plumbing' | 'Electrical' | 'Framing' | 'HVAC' | 'Foundation' | 'Other';
   status: 'Pending' | 'In Progress' | 'Complete';
   estimatedCost: number;
+  actualCost?: number;
   afterPhotoUrl?: string; 
   escrowDrawRequested?: boolean; // Automates draw request alert when Complete
 }
@@ -466,12 +564,16 @@ export interface BuildingPermit {
   updatedAt?: Date;
 }
 
+export type InspectionStatus = 'Pending' | 'Pass' | 'Fail' | 'Needs Negotiation';
+
 export interface InspectionItem {
   id: string;
   category: string;
-  estimatedCost: number;
-  actualCost: number;
-  loggedBy: string; // UID
+  status: InspectionStatus;
+  notes: string;
+  estimatedCost?: number;
+  actualCost?: number;
+  loggedBy?: string; // UID
 }
 
 export interface ClosingRoom {
@@ -502,9 +604,27 @@ export interface ComparableSale {
   daysOnMarket: number;
 }
 
+export interface DistressedIndicators {
+  absenteeOwnership: boolean;
+  preForeclosure: boolean;
+  liensPresent: boolean;
+  vacantStatus: boolean;
+  highTurnoverSalesHistory: boolean;
+}
+
+export type FundingCategory = 'Hard Money Loans' | 'Private Money' | 'Conventional Financing';
+
+export interface CapitalSource {
+  id: string;
+  category: FundingCategory;
+  amount: number;
+  interestRate: number; // e.g., 12 for 12%
+}
+
 export interface ProjectFinancials {
   purchasePrice: number;
   estimatedARV: number; // After-Repair Value
+  listedPrice?: number; // Current Listed Price (if applicable)
   costs: CostEntry[]; // Ledger of costs
 
   // Phase 1 Deal Analyzer — Sourcing intelligence
@@ -515,8 +635,19 @@ export interface ProjectFinancials {
   sellerMotivation?: string;
   emdAmount?: number;
   emdGoHardDate?: Date;
+  emdClearedDate?: Date;
+  emdVerified?: boolean;
+  distressedIndicators?: DistressedIndicators;
+  offerStatus?: string;
+  counterPriceCents?: number;
+  counterTerms?: string;
+  
+  // Equity Valuation Tracker
+  estimatedCurrentValue?: number;
+  estimatedExistingDebt?: number;
   
   // Evaluation & Capital Financing
+  capitalStack?: CapitalSource[];
   loanAmount?: number; // Hard money loan amount
   loanInterestRate?: number; // e.g., 12 for 12%
   loanOriginationPoints?: number; // Upfront percentage cost of loan value
@@ -537,20 +668,70 @@ export interface ProjectFinancials {
   finalClosingCosts?: number; // Fixed dollar amount
   listingDate?: Date;   // Date the property was listed on MLS — used for exact DOM calculation
   soldDate?: Date;
+  mlsNumber?: string; // Added for CRM-lite tracker
+  numberOfShowings?: number; // Added for CRM-lite tracker
+  openHouseFeedback?: string; // Added for CRM-lite tracker
+  stagingCosts?: number; // Added for Disposition Ledger
+  photographyAndMedia?: number; // Added for Disposition Ledger
+  mlsListingFees?: number; // Added for Disposition Ledger
+  utilityUpkeep?: number; // Final expense tracker
+  landscapingMaintenance?: number; // Final expense tracker
+  stagingAndMarketingCosts?: number; // Derived/Fixed total
+  agentCommissionsFixed?: number; // Fixed dollar amount for Phase 4 UX
+  sellerConcessionsFixed?: number; // Fixed dollar amount for Phase 4 UX
 
   // Phase 10 / UX Phase 4 Fork
   exitStrategyType?: 'Sell' | 'Rent';
   projectedMonthlyRent?: number;
   vacancyRate?: number; // percentage e.g., 5 for 5%
   maintenanceReserves?: number; // per month
-  propertyManagementFee?: number; // per month
+  propertyManagementFee?: number; // per month (fixed amount)
+  propertyManagementFeePercent?: number; // percentage e.g., 10 for 10%
+  propertyManagerName?: string;
+  propertyManagerPhone?: string;
+  propertyManagerEmail?: string;
+  leasingFee?: number; // up-front leasing fee / tenant placement fee
   longTermMortgagePayment?: number; // per month
+
+  // Deal Calculator Detailed Fields
+  grossIncomeBaseRent?: number;
+  grossIncomeParking?: number;
+  grossIncomeLaundry?: number;
+  operatingExpenseTaxes?: number;
+  operatingExpenseInsurance?: number;
+  financingCashInvested?: number;
+  financingDebtService?: number;
+
+  // Holding Costs Calculator
+  projectedHoldTimeMonths?: number;
+  holdingCostTaxes?: number; // per month
+  holdingCostInsurance?: number; // per month
+  holdingCostUtilities?: number; // per month
 
   // Phase 4 Exit Dashboard — Settlement & Tax
   settlementLedger?: SettlementLineItem[];
   proratedEscrow?: ProratedEscrowItem[];
   taxEstimate?: TaxEstimate;
   marginalTaxBracket?: number; // user-supplied marginal rate, e.g. 32 for 32%
+  
+  // Debt Service Payoffs (Settlement Ledger)
+  hardMoneyPrincipalPayoff?: number;
+  privateLenderPayoff?: number;
+  finalClosingAttorneyFees?: number;
+  loanOriginationFeesSettlement?: number;
+  titleInsuranceSettlement?: number;
+  
+  // Phase 2 Capitalized Basis
+  initialCapitalizedBasis?: number;
+
+  // Derived / Calculated Final Metrics (Phase 4)
+  totalAllInCost?: number;
+  netRealizedProfit?: number;
+  netOperatingIncome?: number;
+  netCashFlow?: number;
+  capRate?: number;
+  cashOnCashReturn?: number;
+  closedOutcome?: 'won' | 'lost'; // Explicit performance outcome tracked post-closing
 }
 
 export interface ExitAssets {
@@ -572,6 +753,7 @@ export interface ClosingDocument {
   fileName: string;
   verifiedByLawyer: boolean;
   uploadedAt: Date;
+  fileSize?: number; // Size in bytes
 }
 
 export interface ClosingPortalState {
@@ -598,6 +780,7 @@ export interface ClosingChecklistItem {
   completedAt?: Date;
   completedByUid?: string;
   documentUrl?: string;   // Uploaded proof
+  fileSize?: number;      // Size in bytes
   notes: string;
 }
 
@@ -667,7 +850,7 @@ export interface ProratedEscrowItem {
 // ── Rehab Expansion Module Types ──────────────────────
 
 // 3.1 Rehab Expense Category (separate from Acquisition costs)
-export type RehabExpenseCategory = 'Material' | 'Professional Labor' | 'Permits' | 'Dumpster Rental' | 'Other';
+export type RehabExpenseCategory = 'Demo' | 'Systems' | 'Interior' | 'Exterior' | 'Material' | 'Professional Labor' | 'Permits' | 'Dumpster Rental' | 'Other';
 
 export interface RehabExpense {
   id: string;
@@ -740,6 +923,39 @@ export interface RehabModule {
    permits: Permit[];
    pendingReceipts: PendingReceipt[];
    drawRequests: DrawRequest[];
+   
+   // Phase 3 Additions
+   scopeOfWork?: ScopeOfWorkItem[];
+   contractorBids?: ContractorBid[];
+   drawSchedule?: DrawScheduleItem[];
+   currentStage?: 'Demolition' | 'Rough-In/MEP' | 'Finishes' | 'Staging' | 'Complete';
+}
+
+export interface ContractorBid {
+  id: string;
+  contractorName: string;
+  totalAmount: number;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  submittedAt: Date;
+  notes?: string;
+  fileUrl?: string;
+}
+
+export interface ScopeOfWorkItem {
+  id: string;
+  description: string;
+  category: RehabExpenseCategory;
+  estimatedCost: number;
+}
+
+export interface DrawScheduleItem {
+  id: string;
+  milestone: string;
+  completionPercentage: number;
+  amount: number;
+  status: 'Pending' | 'Requested' | 'Approved' | 'Paid';
+  requestedAt?: Date;
+  paidAt?: Date;
 }
 
 // ── Financial Statement Generator Types ──────────────────
@@ -765,6 +981,7 @@ export interface SettlementDocument {
   extractedTitleFees?: number;
   extractedRecordingFees?: number;
   extractedTransferTaxes?: number;
+  fileSize?: number; // Size in bytes
   notes: string;
 }
 
@@ -778,7 +995,7 @@ declare module './schema' {
     // NOTE: privateFinancials lives as a SUB-COLLECTION, not an inline field.
     // Access via: projects/{projectId}/privateFinancials/summary
     // This ensures Contractors are blocked at the Firestore Rules level.
-    currentPhase?: number; // 1-4, only Admin/Lead Investor can mutate
+    // currentPhase is now a first-class field on the main Project interface above.
     assignedUsers?: string[]; // UID array for cross-org guest access
     holdingCostClockStart?: Date; // Server-timestamped on project creation
     rehabExpenses?: RehabExpense[]; // Rehab: Separate expense ledger
@@ -853,6 +1070,11 @@ export interface CommunicationMessage {
   createdAt: Date;
   providerMessageId?: string;
   attachments?: string[]; // URLs
+  
+  // Notification tracking fields
+  readByUid?: string[];     // UIDs of users who have read the message
+  recipientsUid?: string[]; // Intended recipients for this message
+  emailNotificationSent?: boolean; // True if the cron processed this message
 }
 
 export interface CommunicationThread {

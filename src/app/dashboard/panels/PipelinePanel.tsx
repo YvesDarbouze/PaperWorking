@@ -70,6 +70,7 @@ export default function PipelinePanel() {
 
   const handleWizardSuccess = (projectId: string) => {
     setIsWizardOpen(false);
+    setActiveDealId(projectId);
     if (onboardingStep === 3) {
       setNextStep();
     }
@@ -87,7 +88,7 @@ export default function PipelinePanel() {
         <DealCreationWizard
           organizationId={profile.organizationId}
           onClose={() => setIsWizardOpen(false)}
-          onSuccess={() => setIsWizardOpen(false)}
+          onSuccess={handleWizardSuccess}
         />
       )}
 

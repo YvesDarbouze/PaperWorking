@@ -6,10 +6,12 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   FolderOpen,
-  Store,
+  Database,
+  Mail,
   Users,
+  UserCircle,
+  CreditCard,
   Settings,
-  LogOut,
 } from 'lucide-react';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
@@ -17,12 +19,18 @@ import Logo from '@/components/brand/Logo';
 /* ═══════════════════════════════════════════════════════
    AppSidebar — Primary Authenticated Navigation Shell
 
-   Directive menu items:
+   Route Map:
+     WORKSPACE
      • Command Center   → /dashboard
-     • Project Folders  → /dashboard/projects  (deals)
-     • Vendor Network   → /dashboard/vendors
-     • Team Directory   → /dashboard/settings/team
-     • Settings         → /dashboard/settings
+     • Project Folders   → /dashboard/projects
+     • Data Hub          → /dashboard/data
+     • Inbox             → /dashboard/inbox
+     • Team Directory    → /dashboard/team
+
+     ACCOUNT
+     • Profile           → /dashboard/profile
+     • Account & Billing → /dashboard/account
+     • Settings          → /dashboard/settings
 
    Active indicator: bold #0d0d0d pill on #f2f2f2 sidebar.
    Inactive: #7f7f7f muted text, no background.
@@ -37,7 +45,8 @@ interface NavItem {
   exact?: boolean;
 }
 
-const NAV_ITEMS: NavItem[] = [
+/* ─── Workspace Group ─── */
+const WORKSPACE_ITEMS: NavItem[] = [
   {
     id: 'command-center',
     label: 'Command Center',
@@ -46,22 +55,44 @@ const NAV_ITEMS: NavItem[] = [
     exact: true,
   },
   {
-    id: 'project-folders',
-    label: 'Project Folders',
+    id: 'projects',
+    label: 'Projects',
     href: '/dashboard/projects',
     icon: <FolderOpen className="w-4 h-4" />,
   },
   {
-    id: 'vendor-network',
-    label: 'Vendor Network',
-    href: '/dashboard/vendors',
-    icon: <Store className="w-4 h-4" />,
+    id: 'data-hub',
+    label: 'Data Hub',
+    href: '/dashboard/data',
+    icon: <Database className="w-4 h-4" />,
   },
   {
-    id: 'team-directory',
-    label: 'Team Directory',
-    href: '/dashboard/settings/team',
+    id: 'inbox',
+    label: 'Inbox',
+    href: '/dashboard/inbox',
+    icon: <Mail className="w-4 h-4" />,
+  },
+  {
+    id: 'team',
+    label: 'Team',
+    href: '/dashboard/team',
     icon: <Users className="w-4 h-4" />,
+  },
+];
+
+/* ─── Account Group ─── */
+const ACCOUNT_ITEMS: NavItem[] = [
+  {
+    id: 'profile',
+    label: 'Profile',
+    href: '/dashboard/profile',
+    icon: <UserCircle className="w-4 h-4" />,
+  },
+  {
+    id: 'account',
+    label: 'Account & Billing',
+    href: '/dashboard/account',
+    icon: <CreditCard className="w-4 h-4" />,
   },
   {
     id: 'settings',
@@ -88,17 +119,17 @@ function SidebarLink({ item }: { item: NavItem }) {
       style={{
         /* Active pill: #0d0d0d bg, #f2f2f2 text — 17.1:1 contrast */
         background: isActive ? '#0d0d0d' : 'transparent',
-        color: isActive ? '#f2f2f2' : '#7f7f7f',
+        color: isActive ? 'var(--bg-canvas)' : 'var(--text-secondary)',
       }}
       onMouseEnter={(e) => {
         if (!isActive) {
-          (e.currentTarget as HTMLAnchorElement).style.color = '#0d0d0d';
+          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-primary)';
           (e.currentTarget as HTMLAnchorElement).style.background = '#e8e8e8';
         }
       }}
       onMouseLeave={(e) => {
         if (!isActive) {
-          (e.currentTarget as HTMLAnchorElement).style.color = '#7f7f7f';
+          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-secondary)';
           (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
         }
       }}
@@ -120,7 +151,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       {isActive && (
         <span
           className="ml-auto w-1.5 h-1.5 rounded-full shrink-0"
-          style={{ background: '#f2f2f2' }}
+          style={{ background: 'var(--bg-canvas)' }}
           aria-hidden="true"
         />
       )}
@@ -133,7 +164,7 @@ function SidebarSection({ label }: { label: string }) {
   return (
     <p
       className="px-3 pt-6 pb-2 text-[9px] font-bold uppercase tracking-[0.3em]"
-      style={{ color: '#b0b0b0' }}
+      style={{ color: 'var(--border-ui)' }}
     >
       {label}
     </p>
@@ -149,24 +180,33 @@ export default function AppSidebar() {
       className="flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto"
       style={{
         width: 240,
-        background: '#f2f2f2',
-        borderRight: '1px solid #d4d4d4',
+        background: 'var(--bg-canvas)',
+        borderRight: '1px solid var(--border-ui)',
       }}
       aria-label="Primary navigation"
     >
       {/* ── Logo ── */}
       <div
         className="flex items-center px-5 h-16 shrink-0"
-        style={{ borderBottom: '1px solid #d4d4d4' }}
+        style={{ borderBottom: '1px solid var(--border-ui)' }}
       >
         <Logo href="/dashboard" size="sm" />
       </div>
 
       {/* ── Primary Nav ── */}
-      <nav className="flex-1 px-3 py-4" aria-label="Main menu">
+      <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Main menu">
         <SidebarSection label="Workspace" />
         <ul className="space-y-0.5" role="list">
-          {NAV_ITEMS.map((item) => (
+          {WORKSPACE_ITEMS.map((item) => (
+            <li key={item.id} role="listitem">
+              <SidebarLink item={item} />
+            </li>
+          ))}
+        </ul>
+
+        <SidebarSection label="Account" />
+        <ul className="space-y-0.5" role="list">
+          {ACCOUNT_ITEMS.map((item) => (
             <li key={item.id} role="listitem">
               <SidebarLink item={item} />
             </li>
@@ -177,7 +217,7 @@ export default function AppSidebar() {
       {/* ── Footer ── */}
       <div
         className="px-3 py-4 shrink-0"
-        style={{ borderTop: '1px solid #d4d4d4' }}
+        style={{ borderTop: '1px solid var(--border-ui)' }}
       >
         {/* Powered-by badge */}
         <p

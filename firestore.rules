@@ -31,6 +31,11 @@ service cloud.firestore {
       return isProjectMember(projectId) && (getProjectRole(projectId) in allowedRoles);
     }
 
+    // Check if the project is closed
+    function isProjectClosed(projectId) {
+      return get(/databases/$(database)/documents/projects/$(projectId)).data.status in ['closed_won', 'closed_lost'];
+    }
+
     // ─── Organizations ─────────────────────────────────────────────────
     // Only the organization owner can write; members can read their own org.
     match /organizations/{orgId} {
@@ -65,10 +70,12 @@ service cloud.firestore {
 
       allow update: if request.auth != null
                     && hasRole(projectId, ['Lead Investor', 'General Contractor'])
-                    && isInProjectOrg(projectId);
+                    && isInProjectOrg(resource.data)
+                    && !isProjectClosed(projectId);
 
       allow delete: if request.auth != null
-                    && hasRole(projectId, ['Lead Investor']);
+                    && hasRole(projectId, ['Lead Investor'])
+                    && !isProjectClosed(projectId);
 
       // ─── Ledger Items (Sub-Collection) ─────────────────────────────
       // All project members can read. Only finance-authorized roles can write.
@@ -79,15 +86,32 @@ service cloud.firestore {
         // Lead Investor, General Contractor, and Accountant can create items
         allow create: if request.auth != null
                       && hasRole(projectId, ['Lead Investor', 'General Contractor', 'Accountant'])
-                      && request.resource.data.organizationId == getUserDoc().organizationId;
+                      && request.resource.data.organizationId == getUserDoc().organizationId
+                      && !isProjectClosed(projectId);
 
         // Only Lead Investor and Accountant can approve/reject (update)
         allow update: if request.auth != null
-                      && hasRole(projectId, ['Lead Investor', 'Accountant']);
+                      && hasRole(projectId, ['Lead Investor', 'Accountant'])
+                      && !isProjectClosed(projectId);
 
         // Only Lead Investor can delete ledger items
         allow delete: if request.auth != null
-                      && hasRole(projectId, ['Lead Investor']);
+                      && hasRole(projectId, ['Lead Investor'])
+                      && !isProjectClosed(projectId);
+      }
+
+      // ─── Phase Snapshots (Sub-Collection) ──────────────────────────
+      // Snapshots are immutable once captured to preserve historical accuracy.
+      match /phaseSnapshots/{phaseKey} {
+        allow read: if request.auth != null
+                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        // Allow Lead Investor to create a snapshot, but not update or delete it
+        allow create: if request.auth != null
+                      && hasRole(projectId, ['Lead Investor'])
+                      && !isProjectClosed(projectId);
+
+        allow update, delete: if false;
       }
 
       // ─── Private Financials (Sub-Collection) ───────────────────────
@@ -100,7 +124,8 @@ service cloud.firestore {
                     && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if request.auth != null
-                     && hasRole(projectId, ['Lead Investor']);
+                     && hasRole(projectId, ['Lead Investor'])
+                     && !isProjectClosed(projectId);
       }
     }
 

@@ -12,7 +12,9 @@ export async function pingDigitalRegistry(propertyAddress: string): Promise<Web3
   await new Promise(resolve => setTimeout(resolve, 2500));
 
   // In a real scenario, we might formulate a hash or read from an Ethereum/Polygon contract
-  const mockTxHash = `0x${Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('')}`;
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const mockTxHash = `0x${Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')}`;
 
   return {
     chainOfTitleStatus: 'verified',

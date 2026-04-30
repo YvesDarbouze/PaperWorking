@@ -102,7 +102,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
         'Listed',
         'Sold',
         'bridge_api_system',
-        expect.stringContaining('Zillow Bridge Webhook')
+        expect.stringContaining('Bridge webhook')
       );
     });
 

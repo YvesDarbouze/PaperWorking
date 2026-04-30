@@ -148,3 +148,92 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
   await dealDoc.set(newDeal);
   return { success: true, projectId: dealDoc.id };
 }
+
+/**
+ * CLOSE PROJECT AND ARCHIVE
+ * Finalizes the project, updates its status, and aggregates outcomes back to the Organization
+ */
+export async function closeProjectAndArchiveServerAction(idToken: string, projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
+  const user = await verifyActionAuth(idToken);
+  
+  // Security validation
+  const allowedRoles = ['Admin', 'Accountant', 'Lead Investor'];
+  if (!allowedRoles.includes(user.role)) {
+    throw new Error('Insufficient privileges to close a project.');
+  }
+
+  // Double check that the passed organizationId matches the user's organization
+  if (user.organizationId !== organizationId) {
+    throw new Error('Cross-Tenant Data Security Exception');
+  }
+
+  return adminDb.runTransaction(async (transaction) => {
+    const projectRef = adminDb.collection('projects').doc(projectId);
+    const orgRef = adminDb.collection('organizations').doc(organizationId);
+
+    const projectSnap = await transaction.get(projectRef);
+    if (!projectSnap.exists) {
+      throw new Error('Project not found');
+    }
+
+    const projectData = projectSnap.data();
+    if (projectData?.organizationId !== organizationId) {
+      throw new Error('Project does not belong to this organization');
+    }
+
+    // 1. Fetch all other closed projects for this org BEFORE making any writes
+    const closedProjectsQuery = adminDb.collection('projects')
+      .where('organizationId', '==', organizationId)
+      .where('status', 'in', ['closed_won', 'closed_lost']);
+    const closedProjectsSnap = await transaction.get(closedProjectsQuery);
+
+    const profit = projectData?.financials?.netRealizedProfit || 0;
+    const targetStatus = profit >= 0 ? 'closed_won' : 'closed_lost';
+
+    // 2. Perform Writes
+    // Update Project status
+    transaction.update(projectRef, {
+      status: targetStatus,
+      phaseStatus: 'Phase 4: Closing & Exit',
+      'financials.closedOutcome': profit >= 0 ? 'won' : 'lost',
+      locked: true,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    let totalProfit = 0;
+    let totalAllInCost = 0;
+    
+    // We add 1 for the current project because it hasn't been committed as closed_won/closed_lost yet
+    // unless it was ALREADY closed_won/closed_lost (which we should handle).
+    let isAlreadyClosed = ['closed_won', 'closed_lost'].includes(projectData?.status);
+    let closedCount = closedProjectsSnap.docs.length + (isAlreadyClosed ? 0 : 1);
+
+    closedProjectsSnap.forEach(docSnap => {
+      // Don't double count the current project if it's already in the query results
+      if (docSnap.id === projectId) return;
+
+      const data = docSnap.data();
+      const p = data.financials?.netRealizedProfit || 0;
+      const c = data.financials?.totalAllInCost || 0;
+      totalProfit += p;
+      totalAllInCost += c;
+    });
+
+    // Add the current project's financials to the aggregates
+    const currentProjectCost = projectData?.financials?.totalAllInCost || 0;
+    totalProfit += profit;
+    totalAllInCost += currentProjectCost;
+
+    const avgROI = totalAllInCost > 0 ? (totalProfit / totalAllInCost) * 100 : 0;
+
+    // Update Organization aggregates
+    transaction.update(orgRef, {
+      totalProjectsClosed: closedCount,
+      totalNetRealizedProfit: totalProfit,
+      averagePortfolioROI: avgROI,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    return { success: true, message: 'Project successfully closed and archived' };
+  });
+}

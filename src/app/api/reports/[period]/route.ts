@@ -2,11 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { aggregateFinancials } from '@/lib/calculations/financials';
 import { Project } from '@/types/schema';
-
-/**
- * ── Reporting API ──
- * Aggregates financial performance data per period from Firestore.
- */
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = "force-dynamic";
 
@@ -14,12 +10,21 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ period: string }> }
 ) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const { period } = await params;
   const searchParams = request.nextUrl.searchParams;
   const orgId = searchParams.get('organizationId');
 
   if (!orgId) {
     return NextResponse.json({ error: 'Organization ID required' }, { status: 400 });
+  }
+
+  // Ensure the authenticated user belongs to the requested organization
+  const userSnap = await adminDb.collection('users').doc(auth.uid).get();
+  if (!userSnap.exists || userSnap.data()?.organizationId !== orgId) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   // Define date range based on period

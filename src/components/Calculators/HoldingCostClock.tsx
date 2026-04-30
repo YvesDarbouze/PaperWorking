@@ -18,7 +18,7 @@ export default function HoldingCostClock() {
       if (cost.approved) dealApprovedCost += cost.amount;
     });
     
-    const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
+    const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + (curr.actualCost || 0), 0) || 0;
     dealApprovedCost += inspectionsCost;
 
     const purchasePrice = currentProject.financials.purchasePrice || 0;

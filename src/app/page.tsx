@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
@@ -10,7 +10,6 @@ import PricingSection from '@/components/landing/PricingSection';
 import CheckoutModal from '@/components/pricing/CheckoutModal';
 
 export default function ParallaxLandingPage() {
-  const containerRef = useRef(null);
   const [activePlanSelection, setActivePlanSelection] = useState<string | null>(null);
   
   // Track scroll within the full page

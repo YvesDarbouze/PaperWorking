@@ -44,7 +44,8 @@ describe('BridgeQueryBuilder', () => {
     expect(query).toContain('$expand=ListOffice');
     
     // Verify $select contains both original fields AND the expanded field
-    const selectPart = query.split('&').find(p => p.startsWith('$select=')) || '';
+    // Strip the leading '?' before splitting so the first param is found correctly
+    const selectPart = query.slice(1).split('&').find(p => p.startsWith('$select=')) || '';
     expect(selectPart).toContain('ListingId');
     expect(selectPart).toContain('ListPrice');
     expect(selectPart).toContain('ListOffice');
@@ -57,8 +58,8 @@ describe('BridgeQueryBuilder', () => {
         .ignoreDefaults();
     
     const query = builder.build();
-    const selectPart = query.split('&').find(p => p.startsWith('$select=')) || '';
-    
+    const selectPart = query.slice(1).split('&').find(p => p.startsWith('$select=')) || '';
+
     // Verify ListOffice appears exactly once in the select list
     const occurrences = (selectPart.match(/ListOffice/g) || []).length;
     expect(occurrences).toBe(1);

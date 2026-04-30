@@ -39,9 +39,9 @@ export default function FindAndFundPanel() {
 
   const capitalNeeded = useMemo(() => {
     const purchase = currentProject?.financials?.purchasePrice || 0;
-    const rehab = currentProject?.financials?.estimatedRepairCost || 0;
+    const rehab = currentProject?.financials?.projectedRehabCost || 0;
     return purchase + rehab;
-  }, [currentProject?.financials?.purchasePrice, currentProject?.financials?.estimatedRepairCost]);
+  }, [currentProject?.financials?.purchasePrice, currentProject?.financials?.projectedRehabCost]);
 
   const capitalPledged = useMemo(() => {
     return investors.reduce((sum, inv) => sum + inv.pledgedAmount, 0);
@@ -129,7 +129,7 @@ export default function FindAndFundPanel() {
     if (!currentProject) return;
     updateProjectFinancials(currentProject.id, {
       purchasePrice: data.targetPrice,
-      estimatedRepairCost: data.rehabBudget,
+      projectedRehabCost: data.rehabBudget,
       estimatedARV: data.askingPrice,
     });
     toast.success('Property data applied to deal');
@@ -210,7 +210,7 @@ export default function FindAndFundPanel() {
               {[
                 { label: 'Purchase Price', value: currentProject.financials?.purchasePrice, prefix: '$' },
                 { label: 'Estimated ARV', value: currentProject.financials?.estimatedARV, prefix: '$' },
-                { label: 'Rehab Budget', value: currentProject.financials?.estimatedRepairCost, prefix: '$' },
+                { label: 'Rehab Budget', value: currentProject.financials?.projectedRehabCost, prefix: '$' },
                 { label: 'Total Capital', value: capitalNeeded, prefix: '$' },
               ].map((item) => (
                 <div key={item.label} className="bg-bg-primary rounded-xl px-4 py-3">

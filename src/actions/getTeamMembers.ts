@@ -52,6 +52,7 @@ export async function getTeamMembers(): Promise<TeamMembersResult> {
         internalRole: d.internalRole || 'Deal Lead', status: d.status || 'active',
         assignedProjectIds: d.assignedProjectIds || [],
         joinedAt: d.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        invitedAt: d.invitedAt?.toDate?.()?.toISOString(),
       };
     });
 

@@ -19,6 +19,7 @@ import { calculateProjectMetrics } from '@/lib/analyticsUtils';
 interface DataPoint {
   month: string;
   profit: number;
+  cumulativeProfit?: number;
   roi: number;
   deals: number;
 }
@@ -95,7 +96,7 @@ export default function ROIChart({ projects }: ROIChartProps) {
           <div className="text-right hidden sm:block">
             <p className="ag-label opacity-30 text-[9px] uppercase tracking-[0.2em] font-black">Total Realized</p>
             <p className="text-2xl font-light font-mono text-text-primary tracking-tight">
-              {formatCurrency(data[data.length - 1].cumulativeProfit)}
+              {formatCurrency(data[data.length - 1].cumulativeProfit || 0)}
             </p>
           </div>
         )}
@@ -167,7 +168,7 @@ export default function ROIChart({ projects }: ROIChartProps) {
                 }}
                 itemStyle={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}
                 labelStyle={{ fontSize: '9px', fontWeight: 900, color: '#7F7F7F', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.15em', borderBottom: '1px solid #F2F2F2', paddingBottom: '8px' }}
-                formatter={(value: number, name: string) => {
+                formatter={(value: any, name: any) => {
                   if (name === 'cumulativeProfit') return [formatCurrency(value), 'TOTAL REALIZED EQUITY'];
                   if (name === 'profit') return [formatCurrency(value), 'MONTHLY NET'];
                   return [`${value}%`, 'ROI'];

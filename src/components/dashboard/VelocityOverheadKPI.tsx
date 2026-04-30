@@ -115,7 +115,7 @@ function computeKPIs(projects: Project[]): VelocityKPIs {
     });
     // Add inspection actuals
     fin?.inspections?.forEach(i => {
-      actualSpend += i.actualCost;
+      actualSpend += i.actualCost || 0;
     });
     // Add separate rehab expenses
     deal.rehabExpenses?.forEach(e => {

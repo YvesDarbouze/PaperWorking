@@ -7,14 +7,12 @@ import { Toaster } from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import { usePanelContext, PanelProvider, LaneDef } from '@/components/dashboard/HorizontalPanelShell';
 import { useProjectStore } from '@/store/projectStore';
-import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
-import Link from 'next/link';
-import { Mail, Calendar } from 'lucide-react';
-import PhaseNav from '@/components/dashboard/PhaseNav';
 import LaneIndicator from '@/components/dashboard/LaneIndicator';
 import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardView';
 import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
+import AppSidebar from '@/components/layout/AppSidebar';
+import TopHeader from '@/components/layout/TopHeader';
 import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
@@ -40,37 +38,61 @@ const LANES: LaneDef[] = [
 
 function DashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-bg-surface font-sans">
-      <header 
-        className="sticky top-0 z-50 w-full border-b border-border-accent bg-bg-surface/80 backdrop-blur"
-        role="banner"
+    <div className="dashboard-context flex min-h-screen font-sans" style={{ background: 'var(--bg-canvas)' }}>
+      {/* Sidebar skeleton */}
+      <aside
+        className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0"
+        style={{ width: 240, background: 'var(--bg-canvas)', borderRight: '1px solid var(--border-ui)' }}
+        aria-hidden="true"
       >
-        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-8">
-            <div className="opacity-30"><Logo size="sm" /></div>
-            <div className="hidden lg:flex items-center gap-6">
-              {[24, 32, 28, 28, 20].map((w, i) => (
-                <div key={i} className="h-4 animate-pulse rounded bg-bg-primary" style={{ width: `${w * 4}px` }} />
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
-            <div className="hidden sm:block h-4 w-20 animate-pulse rounded bg-bg-primary" />
-          </div>
+        <div className="flex items-center px-5 h-16 shrink-0" style={{ borderBottom: '1px solid var(--border-ui)' }}>
+          <div className="opacity-30"><Logo size="sm" /></div>
         </div>
-      </header>
-      <main className="p-4 sm:p-6 md:p-8">
-        <div className="mb-6 space-y-3">
-          <div className="h-8 w-48 sm:w-64 animate-pulse rounded bg-gray-200" />
-          <div className="h-4 w-full sm:w-96 animate-pulse rounded bg-bg-primary" />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-40 animate-pulse rounded-lg border border-border-accent bg-bg-surface" style={{ animationDelay: `${i * 80}ms` }} />
+        <div className="flex-1 px-3 py-4 space-y-3">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-8 animate-shimmer rounded" style={{ animationDelay: `${i * 60}ms` }} />
           ))}
         </div>
-      </main>
+      </aside>
+
+      {/* Main area skeleton */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header
+          className="sticky top-0 z-50 w-full backdrop-blur-md"
+          style={{ height: 64, background: 'color-mix(in srgb, var(--bg-surface) 80%, transparent)', borderBottom: '1px solid var(--border-ui)' }}
+          role="banner"
+        >
+          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+            <div className="flex items-center gap-8">
+              <div className="lg:hidden opacity-30"><Logo size="sm" /></div>
+              <div className="hidden lg:flex items-center gap-6">
+                {[24, 32, 28, 28, 20].map((w, i) => (
+                  <div key={i} className="h-4 animate-shimmer rounded" style={{ width: `${w * 4}px` }} />
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 animate-shimmer rounded-full" />
+              <div className="hidden sm:block h-4 w-20 animate-shimmer rounded" />
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 p-4 sm:p-6 md:p-8" style={{ background: 'var(--bg-canvas)' }}>
+          <div className="mb-6 space-y-3">
+            <div className="h-8 w-48 sm:w-64 animate-shimmer rounded" />
+            <div className="h-4 w-full sm:w-96 animate-shimmer rounded" />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="h-40 animate-shimmer rounded-lg"
+                style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }}
+              />
+            ))}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
@@ -111,73 +133,31 @@ function DashboardLayoutInner({ children, user }: { children: React.ReactNode; u
 
   return (
     <PanelProvider lanes={LANES} initialLane={initialLane}>
-      <div className="horizontal-dashboard bg-bg-surface font-sans text-foreground">
+      <div
+        className="dashboard-context horizontal-dashboard flex min-h-screen font-sans"
+        style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
+      >
         {/* Onboarding Wizard (Fixed at top level) */}
         {isNewUser && hasActiveSubscription && isLead && <OnboardingWizard />}
 
-        {/* ── Fixed Header: Logo + Phase Tabs + User ── */}
-        <header
-          className="sticky top-0 z-50 w-full border-b border-border-accent bg-bg-surface/80 backdrop-blur-md"
-          style={{ height: 64 }}
-          role="banner"
-        >
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-            <div className="flex-shrink-0">
-              <Logo href="/dashboard" size="sm" />
-            </div>
-            
-            <nav role="navigation" aria-label="Main phases">
-              <PhaseNav />
-            </nav>
+        {/* ══════ Fixed Left Sidebar ══════ */}
+        <div className="hidden lg:block">
+          <AppSidebar />
+        </div>
 
-            <nav role="navigation" aria-label="Quick links" className="flex items-center gap-4 sm:gap-6 mr-4 sm:mr-8">
-              <Link 
-                href="/dashboard/inbox" 
-                className="text-text-secondary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent rounded-md p-1"
-                title="Global Inbox"
-                aria-label="Global Inbox"
-              >
-                <Mail className="w-5 h-5" />
-                <span className="hidden xl:inline text-xs font-black uppercase tracking-widest">Inbox</span>
-              </Link>
-              <Link 
-                href="/dashboard/calendar" 
-                className="text-text-secondary hover:text-text-primary transition-all flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent rounded-md p-1"
-                title="Asset Calendar"
-                aria-label="Asset Calendar"
-              >
-                <Calendar className="w-5 h-5" />
-                <span className="hidden xl:inline text-xs font-black uppercase tracking-widest">Timeline</span>
-              </Link>
-            </nav>
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent"
-                role="button"
-                tabIndex={0}
-                aria-label={`Signed in as ${user.displayName || user.email || 'User'}`}
-              >
-                <span aria-hidden="true">
-                  {(user.displayName?.[0] || user.email?.[0] || 'U').toUpperCase()}
-                </span>
-              </div>
-              <span className="hidden text-sm font-medium text-text-primary lg:inline" aria-hidden="true">
-                {user.displayName || user.email}
-              </span>
-              <Link
-                href="/dashboard/settings/billing"
-                className="hidden lg:inline-flex items-center text-xs font-medium text-text-secondary hover:text-text-primary transition-colors px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent rounded-md"
-                title="Billing & Subscription"
-              >
-                Billing
-              </Link>
-              <LogoutButton compact />
-            </div>
-          </div>
-        </header>
+        {/* ══════ Main Content Area ══════ */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* ── Sticky Top Header ── */}
+          <TopHeader />
 
-        {/* ── Lane Panels (rendered by page.tsx) ── */}
-        {children}
+          {/* ── Main Scrollable Content ── */}
+          <main
+            className="flex-1"
+            style={{ background: 'var(--bg-canvas)' }}
+          >
+            {children}
+          </main>
+        </div>
 
         {/* ── Board Overlay (minimized mode) ── */}
         <BoardOverlay />

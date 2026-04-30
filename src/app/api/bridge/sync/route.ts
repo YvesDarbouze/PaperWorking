@@ -1,41 +1,30 @@
 import { NextResponse } from 'next/server';
-import { replicationWorker } from '@/lib/services/replicationWorker';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * POST /api/bridge/sync
- * 
- * manually triggers the high-volume replication worker to sync
- * listings from the Bridge /Property/replication endpoint.
+ *
+ * Enqueues a bridge_sync job and returns 202 Accepted immediately.
+ * The actual sync is executed asynchronously by /api/worker/drain.
+ *
+ * This decouples the long-running MLS replication (potentially minutes)
+ * from the HTTP request lifecycle, preventing gateway timeouts and freeing
+ * the serverless function slot.
  */
 export async function POST() {
   try {
-    console.log('🚀 [API BRIDGE SYNC] Manual trigger initiated...');
-    
-    // We execute the sync process. 
-    // Note: For very long syncs, you might want to run this as a background job 
-    // and return a 202 Accepted status. For this implementation, we run it inline.
-    const result = await replicationWorker.sync();
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    const jobId = await jobQueue.enqueue('bridge_sync', {});
 
-    if (!result.success) {
-      return NextResponse.json(
-        { 
-          error: 'Replication sync failed.', 
-          details: result.error 
-        }, 
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Replication sync completed successfully.',
-      syncedCount: result.syncedCount
-    });
-
-  } catch (error: any) {
-    console.error('❌ [API BRIDGE SYNC] Route error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error during replication sync.' }, 
+      { accepted: true, jobId, message: 'Sync job enqueued. Call /api/worker/drain to process.' },
+      { status: 202 }
+    );
+  } catch (error: any) {
+    console.error('❌ [API BRIDGE SYNC] Failed to enqueue job:', error);
+    return NextResponse.json(
+      { error: 'Failed to enqueue sync job.' },
       { status: 500 }
     );
   }
@@ -43,23 +32,25 @@ export async function POST() {
 
 /**
  * GET /api/bridge/sync
- * 
- * returns the current sync status and watermark information.
+ *
+ * Returns the current sync watermark and queue depth.
  */
 export async function GET() {
   try {
     const prisma = (await import('@/lib/prisma')).default;
-    
-    const state = await prisma.bridgeSyncState.findUnique({
-      where: { id: 'replication_watermark' }
-    });
+    const { jobQueue } = await import('@/lib/queue/jobQueue');
+
+    const [state, queueDepth] = await Promise.all([
+      prisma.bridgeSyncState.findUnique({ where: { id: 'replication_watermark' } }),
+      jobQueue.depth('bridge_sync'),
+    ]);
 
     return NextResponse.json({
       active: true,
-      lastWatermark: state?.mostRecentModificationTimestamp || 'None',
-      updatedAt: state?.updatedAt || 'None'
+      lastWatermark: state?.mostRecentModificationTimestamp ?? 'None',
+      updatedAt: state?.updatedAt ?? 'None',
+      queueDepth,
     });
-    
   } catch (error) {
     return NextResponse.json({ error: 'Failed to retrieve sync status.' }, { status: 500 });
   }

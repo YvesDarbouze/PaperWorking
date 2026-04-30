@@ -25,7 +25,7 @@ export default function KanbanView() {
       className="flex flex-col h-screen w-full bg-bg-primary overflow-hidden"
     >
       <ErrorBoundary name="Financial Summary Header">
-        <Suspense fallback={<div className="h-20 bg-bg-primary flex-shrink-0 border-b border-border-accent animate-pulse" />}>
+        <Suspense fallback={<div className="h-20 animate-shimmer flex-shrink-0 border-b border-border-accent" />}>
           <FinancialSummaryHeader />
         </Suspense>
       </ErrorBoundary>

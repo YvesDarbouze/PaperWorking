@@ -110,8 +110,11 @@ export default function CostBasisLedger() {
     [currentProject, updateCostBasis]
   );
 
+  const isLocked = currentProject?.isClearToClose ?? false;
+
   // ── Mutation helpers ──────────────────────────
   const updateItem = (section: SectionKey, id: string, field: keyof CostBasisLineItem, value: unknown) => {
+    if (isLocked) return;
     const next: CostBasisLedgerType = {
       ...ledger,
       [section]: ledger[section].map(item =>
@@ -122,6 +125,7 @@ export default function CostBasisLedger() {
   };
 
   const togglePaid = (section: SectionKey, id: string) => {
+    if (isLocked) return;
     const next: CostBasisLedgerType = {
       ...ledger,
       [section]: ledger[section].map(item =>
@@ -132,6 +136,7 @@ export default function CostBasisLedger() {
   };
 
   const addItem = (section: SectionKey) => {
+    if (isLocked) return;
     const newItem: CostBasisLineItem = {
       id: `${section.slice(0, 2)}-${Date.now()}`,
       label: '',
@@ -143,6 +148,7 @@ export default function CostBasisLedger() {
   };
 
   const removeItem = (section: SectionKey, id: string) => {
+    if (isLocked) return;
     persist({ ...ledger, [section]: ledger[section].filter(i => i.id !== id) });
   };
 
@@ -176,6 +182,7 @@ export default function CostBasisLedger() {
             <h3 className="text-lg font-medium tracking-tight text-text-primary flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-text-secondary" />
               Cost Basis Ledger
+              {isLocked && <span className="ml-2 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-pw-black text-white rounded-sm">Locked</span>}
             </h3>
             <p className="text-xs text-text-secondary mt-0.5">
               Track all capital costs for {currentProject?.propertyName ?? 'this deal'}
@@ -246,9 +253,10 @@ export default function CostBasisLedger() {
                       {/* Paid toggle */}
                       <button
                         onClick={() => togglePaid(sec.key, item.id)}
+                        disabled={isLocked}
                         className={`flex-shrink-0 ${
                           item.paid ? 'text-green-500' : 'text-gray-300 hover:text-text-secondary'
-                        }`}
+                        } ${isLocked ? 'cursor-not-allowed opacity-50' : ''}`}
                         title={item.paid ? 'Mark unpaid' : 'Mark paid'}
                       >
                         {item.paid ? <CheckCircle className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
@@ -260,9 +268,10 @@ export default function CostBasisLedger() {
                         value={item.label}
                         onChange={e => updateItem(sec.key, item.id, 'label', e.target.value)}
                         placeholder="Line item description"
+                        disabled={isLocked}
                         className={`flex-1 text-sm bg-transparent outline-none ${
                           item.paid ? 'line-through text-text-secondary' : 'text-text-primary'
-                        }`}
+                        } ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
 
                       {/* Amount (editable) */}
@@ -275,28 +284,33 @@ export default function CostBasisLedger() {
                             updateItem(sec.key, item.id, 'amount', parseFloat(e.target.value) || 0)
                           }
                           placeholder="0"
-                          className="w-24 text-sm font-mono text-right bg-transparent outline-none text-text-primary"
+                          disabled={isLocked}
+                          className={`w-24 text-sm font-mono text-right bg-transparent outline-none text-text-primary ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
                         />
                       </div>
 
                       {/* Delete */}
-                      <button
-                        onClick={() => removeItem(sec.key, item.id)}
-                        className="text-gray-300 hover:text-red-500 transition flex-shrink-0"
-                        title="Remove item"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {!isLocked && (
+                        <button
+                          onClick={() => removeItem(sec.key, item.id)}
+                          className="text-gray-300 hover:text-red-500 transition flex-shrink-0"
+                          title="Remove item"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   ))}
 
                   {/* Add item */}
-                  <button
-                    onClick={() => addItem(sec.key)}
-                    className="w-full flex items-center justify-center gap-1.5 py-2 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
-                  >
-                    <Plus className="w-3 h-3" /> Add Line Item
-                  </button>
+                  {!isLocked && (
+                    <button
+                      onClick={() => addItem(sec.key)}
+                      className="w-full flex items-center justify-center gap-1.5 py-2 border border-dashed border-border-accent rounded-lg text-xs text-text-secondary hover:bg-bg-primary hover:border-gray-400 transition"
+                    >
+                      <Plus className="w-3 h-3" /> Add Line Item
+                    </button>
+                  )}
                 </div>
               )}
             </div>

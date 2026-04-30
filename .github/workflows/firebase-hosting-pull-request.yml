@@ -14,7 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci
-      - run: npm ci && npm run build
+      - run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
+          NEXT_TELEMETRY_DISABLED: "1"
+          TURBOPACK: "0"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

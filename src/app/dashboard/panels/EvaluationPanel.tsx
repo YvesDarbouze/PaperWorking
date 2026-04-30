@@ -37,7 +37,7 @@ export default function EvaluationPanel() {
   const totalEquity = currentProject?.fractionalInvestors?.reduce((s, i) => s + i.equityPercentage, 0) || 0;
   
   const shimmer = (
-    <div className="h-40 border border-border-accent bg-bg-surface animate-pulse flex items-center justify-center">
+    <div className="h-40 border border-border-accent animate-shimmer rounded-xl flex items-center justify-center">
        <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">Module_Syncing...</span>
     </div>
   );
@@ -147,7 +147,7 @@ export default function EvaluationPanel() {
         {/* Right Column: Sourcing */}
         <div className="lg:col-span-7 space-y-8">
           <div className="bg-pw-black p-8 text-pw-white border border-pw-black shadow-2xl">
-            <Suspense fallback={<div className="h-60 bg-pw-black/50 animate-pulse" />}>
+            <Suspense fallback={<div className="h-60 animate-shimmer rounded-xl" />}>
               <FundingSourceTracker />
             </Suspense>
           </div>

@@ -42,21 +42,24 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className={`flex flex-col items-center justify-center p-6 text-center bg-red-50/50 border border-red-100 rounded-xl ${this.props.className || ''}`}>
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-            <AlertCircle className="w-6 h-6 text-red-600" />
+        <div className={`dashboard-context flex flex-col items-center justify-center p-8 text-center bg-white border border-border-accent rounded-[8px] min-h-[200px] ${this.props.className || ''}`}>
+          <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-5">
+            <AlertCircle className="w-6 h-6 text-[#A5A5A5]" />
           </div>
-          <h3 className="text-lg font-medium text-text-primary mb-2">Something went wrong</h3>
-          <p className="text-sm text-text-secondary max-w-md mb-6">
-            An unexpected error occurred in the {this.props.name || 'interface'}. Our systems have logged the issue.
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[#595959] mb-2">
+            Data currently unavailable
+          </h3>
+          <p className="text-xs text-[#7F7F7F] max-w-sm mb-6 leading-relaxed font-medium">
+            The {this.props.name || 'interface segment'} encountered an institutional sync error. 
+            The rest of your dashboard remains operational.
           </p>
           <button
             onClick={this.handleReset}
-            className="flex items-center px-4 py-2 bg-bg-surface border border-border-accent rounded-lg text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors"
-            aria-label="Try loading again"
+            className="flex items-center px-6 py-2.5 bg-[#595959] text-white text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-opacity"
+            aria-label="Retry data sync"
           >
-            <RefreshCcw className="w-4 h-4 mr-2" />
-            Try Again
+            <RefreshCcw className="w-3.5 h-3.5 mr-2" />
+            Retry Sync
           </button>
         </div>
       );

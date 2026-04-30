@@ -2,8 +2,27 @@ import { bridgeGuardrail } from '../bridgeGuardrail';
 import apiClient from '../../apiClient';
 import { BridgeQueryBuilder } from '../../utils/BridgeQueryBuilder';
 
-// Mock dependencies
-jest.mock('../../apiClient');
+// Manual factory mock — auto-mock fails on Proxy-based lazy exports
+jest.mock('../../apiClient', () => ({
+  __esModule: true,
+  default: { get: jest.fn() },
+}));
+
+// Prevent config validation from throwing when Bridge env vars are absent in CI/test
+jest.mock('../../../config/bridge', () => ({
+  __esModule: true,
+  default: {
+    BRIDGE_VIRTUAL_DATASET_ID: '',
+    BRIDGE_DATASET_ID: 'test-dataset',
+    BRIDGE_API_BASE_URL: 'https://api.test.bridge.com/',
+    BRIDGE_CLIENT_ID: 'test-client-id',
+    BRIDGE_CLIENT_SECRET: 'test-secret',
+    BRIDGE_SERVER_TOKEN: 'test-token',
+    BRIDGE_OAUTH_URL: 'https://api.test.bridge.com/oauth/token',
+    BRIDGE_WEBHOOK_SECRET: 'test-webhook-secret',
+  },
+  getBridgeConfig: () => ({ BRIDGE_VIRTUAL_DATASET_ID: '' }),
+}));
 
 describe('BridgeGuardrailService (OData Pagination)', () => {
   beforeEach(() => {

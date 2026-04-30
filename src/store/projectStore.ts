@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus } from '@/types/schema';
+import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus, DueDiligenceItem } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
@@ -102,6 +102,7 @@ interface ProjectState {
   logCounterOffer: (projectId: string, negotiationId: string, counterOffer: number, status?: Negotiation['status']) => void;
   updateLoanStatus: (projectId: string, status: LoanStatus) => void;
   updateContingencies: (projectId: string, contingencies: Contingency[]) => void;
+  updateDueDiligenceChecklist: (projectId: string, checklist: DueDiligenceItem[]) => void;
   transitionToPhase3: (projectId: string, finalHUDCosts: { purchasePrice: number, titleFees: number, originationFees: number }) => { success: boolean; error?: string };
 
   // Rehab Expansion Actions
@@ -182,7 +183,7 @@ function deriveActiveProjectMetrics(deal: Project | null, whatIfOffsetMonths: nu
     });
   }
 
-  const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
+  const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + (curr.actualCost || 0), 0) || 0;
   renovationCosts += inspectionsCost;
 
   // ─── Capital Costs (Closing Costs Buy — origination points)
@@ -580,14 +581,26 @@ export const useProjectStore = create<ProjectState>()(
         }
       },
 
+      updateDueDiligenceChecklist: (projectId, checklist) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, dueDiligenceChecklist: checklist } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
       transitionToPhase3: (projectId, finalHUDCosts) => {
         const { projects, currentProject, updateCostBasis, updateProjectFinancials } = get();
         const deal = projects.find(d => d.id === projectId);
         
         if (!deal) return { success: false, error: 'Deal not found' };
         
-        if (deal.loanStatus !== 'Clear-To-Close') {
-          return { success: false, error: 'Loan Status must be Clear-To-Close to finalize acquisition.' };
+        if (!deal.isClearToClose && deal.loanStatus !== 'Clear-To-Close') {
+          return { success: false, error: 'Project must be Clear-To-Close to finalize acquisition.' };
         }
 
         // Apply to Phase 3 Cost Basis Ledger
@@ -605,6 +618,15 @@ export const useProjectStore = create<ProjectState>()(
           ]
         };
 
+        const allItems = [
+          ...(newLedger.directAcquisition || []),
+          ...(newLedger.financing || []),
+          ...(newLedger.preClosing || [])
+        ];
+        const totalClosingCosts = allItems
+          .filter(item => item.label.toLowerCase() !== 'purchase price')
+          .reduce((sum, item) => sum + item.amount, 0);
+
         const updatedDeals = projects.map(d =>
           d.id === projectId 
             ? { 
@@ -614,7 +636,10 @@ export const useProjectStore = create<ProjectState>()(
                 financials: {
                   ...d.financials,
                   purchasePrice: finalHUDCosts.purchasePrice,
-                  loanOriginationPoints: (finalHUDCosts.originationFees / (d.financials.loanAmount || finalHUDCosts.purchasePrice)) * 100
+                  initialCapitalizedBasis: finalHUDCosts.purchasePrice + totalClosingCosts,
+                  loanOriginationPoints: (d.financials?.loanAmount || finalHUDCosts.purchasePrice) > 0 
+                    ? (finalHUDCosts.originationFees / (d.financials?.loanAmount || finalHUDCosts.purchasePrice)) * 100 
+                    : 0
                 }
               } 
             : d
@@ -765,7 +790,7 @@ export const useProjectStore = create<ProjectState>()(
             });
           }
 
-          const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
+          const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + (curr.actualCost || 0), 0) || 0;
           dealApprovedCost += inspectionsCost;
 
           // Compute Baseline Rehab Budget (using actual costs/estimates)

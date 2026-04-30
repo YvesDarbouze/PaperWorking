@@ -34,7 +34,8 @@ export const LoanProcessingPipeline: React.FC = () => {
       fileName: uploadName,
       linkedRole: 'Loan Officer/Broker',
       uploadedAt: new Date(),
-      verified: false
+      verified: false,
+      notes: ''
     };
 
     const existingDocs = currentProject.roleLinkedDocuments || [];

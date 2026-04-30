@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Users, Plus, X, Search, Phone, Mail, Building2,
   Briefcase, Scale, Home, Landmark, Shield, ChevronDown,
-  Check, UserCircle,
+  Check, UserCircle, MoreHorizontal, Pencil, Trash2,
 } from 'lucide-react';
 import {
   collection, query, where, onSnapshot, addDoc, updateDoc,
@@ -54,6 +54,7 @@ export default function ContactManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(BLANK_FORM);
   const [saving, setSaving] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const orgId: string = profile?.organizationId || `org_${user?.uid?.slice(0, 8)}` || '';
 
@@ -373,23 +374,49 @@ export default function ContactManager() {
                       )}
                     </div>
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
+
+                  {/* ── Triple-dot action menu ── */}
+                  <div className="relative">
                     <button
-                      onClick={() => handleEdit(contact)}
-                      className="p-1 text-text-secondary hover:text-text-secondary rounded"
-                      title="Edit"
+                      onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === contact.id ? null : contact.id); }}
+                      className="p-1.5 rounded-lg text-text-secondary opacity-0 group-hover:opacity-100 hover:bg-bg-primary hover:text-text-primary transition-all"
+                      aria-label="Contact actions"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
+                      <MoreHorizontal className="w-4 h-4" strokeWidth={2} />
                     </button>
-                    <button
-                      onClick={() => handleDelete(contact.id)}
-                      className="p-1 text-text-secondary hover:text-red-500 rounded"
-                      title="Remove"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
+
+                    {openMenuId === contact.id && (
+                      <>
+                        {/* Backdrop to close */}
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setOpenMenuId(null)}
+                        />
+                        <div
+                          className="absolute right-0 top-full mt-1 w-40 z-20 rounded-lg py-1 shadow-lg"
+                          style={{
+                            background: 'var(--bg-surface)',
+                            border: '1px solid var(--border-ui)',
+                          }}
+                        >
+                          <button
+                            onClick={() => { handleEdit(contact); setOpenMenuId(null); }}
+                            className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-text-primary hover:bg-bg-primary transition-colors"
+                          >
+                            <Pencil className="w-3.5 h-3.5 text-text-secondary" strokeWidth={2} />
+                            Edit Contact
+                          </button>
+                          <div className="my-1" style={{ borderTop: '1px solid var(--border-ui)' }} />
+                          <button
+                            onClick={() => { handleDelete(contact.id); setOpenMenuId(null); }}
+                            className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" strokeWidth={2} />
+                            Remove
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

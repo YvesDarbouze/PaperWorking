@@ -1,54 +1,55 @@
-# Agent Handoff
+# Agent Handoff — 2026-04-30 (Sprint 4 QA Finalization)
 
-This file passes context between Antigravity (Google), Claude Code (Anthropic), and IDE agents (Cursor, Windsurf).
+**Last agent:** Claude Code
+**Status:** ✅ Full QA pass — 77/77 tests passing, 0 TypeScript errors, lint clean
 
-## Current State: BRIDGE API + REI LIFECYCLE COMPLETE ✅ (2026-04-23, Claude Code)
+## Changes this session
 
-Build passes clean. All Bridge API routes registered as dynamic. TypeScript clean.
+### Test fixes (3 failing → 0 failing)
+- `src/lib/utils/__tests__/BridgeQueryBuilder.test.ts` — Fixed `split('&').find(p => p.startsWith('$select='))` to strip leading `?` with `.slice(1)` before splitting
+- `src/lib/services/__tests__/MLSIntegration.test.ts` — Updated `expect.stringContaining('Zillow Bridge Webhook')` to `'Bridge webhook'` to match actual `webhookProcessor.ts` message
+- `src/lib/services/__tests__/BridgeGuardrail.test.ts` — Added manual factory mocks for `apiClient` (Proxy-based, auto-mock fails) and `config/bridge` (throws without env vars)
 
-## What Was Completed (this session — Claude Code)
+### Security fixes (HIGH — `Math.random()` replaced with CSPRNG)
+- `src/app/api/invitations/send/route.ts` — `invitationId` uses `crypto.randomUUID()`, `generateToken()` uses `crypto.getRandomValues()`
+- `src/lib/web3RegistryHooks.ts` — Blockchain tx hash uses `crypto.getRandomValues()`
+- `src/lib/web3/titleVerify.ts` — Title verification hash uses `crypto.getRandomValues()`
+- `src/lib/services/communicationService.ts` — Email tracking ID uses `crypto.randomUUID()`
 
-### Bridge API — Build-Time Safety
-- `bridge.ts`: Lazy `getBridgeConfig()` with Proxy. `BRIDGE_DATASET_ID` + `BRIDGE_WEBHOOK_SECRET` made optional (not used in services)
-- `zillow.ts`: Lazy `getZillowBridgeConfig()` + Proxy
-- `apiClient.ts`: Lazy `createApiClient()` factory + Proxy default export
-- `replicationWorker.ts`: Fixed endpoint to `{vDatasetId}/Property/replication` (interceptor substitutes dataset ID)
-- `mlsPropertyService.ts`: Fixed wrong domain (`bridgeinteractive.com` → `bridgedataoutput.com`)
-- `bridge/sync/route.ts` + `bridge/metadata/route.ts`: Added `force-dynamic`
-- `.env.local`: Added `BRIDGE_API_BASE_URL` + documented all required vars
+### Cleanup
+- Deleted 5 Finder duplicate files (`src/app/how-it-works/page 2.tsx`, `src/app/support/layout 2.tsx`, `src/app/support/page 2.tsx`, `src/lib/firebase-admin/auth-guard 2.ts`, `src/lib/firebase/folders 2.ts`)
+- Removed unused `containerRef` + `useRef` import from `src/app/page.tsx`
 
-### MLS Predictive Property Search (NEW)
-- `src/app/api/bridge/search/route.ts` — OData `contains(tolower(UnparsedAddress),'q')` search, returns 8 results, degrades gracefully when credentials missing (`credentialsMissing: true` flag)
-- `src/components/shared/PropertySearchInput.tsx` — 300ms debounced autocomplete dropdown with MLS property cards (address, price, beds/baths, sqft, MLS status, thumbnail)
+---
 
-### REI Lifecycle Integration (NEW)
-- `src/types/schema.ts`: Added `ReiStatus` type: `Target | In Contract | Acquired | Rehabbing | Under Construction | Renting | For Sale`; expanded `DealPhaseKey` to match; added MLS fields + `acquisitionDate` + `saleDate` to `Project`
-- `src/lib/services/dealStateMachine.ts`: `DealPhase` updated to full REI lifecycle
-- `src/lib/firebase/deals.ts`: Fixed hardcoded `status: 'Lead'` override — now uses caller-supplied status (falls back to `'Target'`)
-- `src/components/project/DealCreationWizard.tsx`: Full rewrite — Step 1 now has MLS predictive search + REI status picker (7 options with icons). Step 2 captures `acquisitionDate` + `saleDate`. Review step shows all MLS + REI fields
+**Last agent:** Antigravity (Gemini)
+**Status:** ✅ Inbox Architecture (Command Center) — COMPLETE
 
-## What Needs Real Bridge Credentials to Go Live
+---
 
-`.env.local` credentials are still placeholders — obtain from https://bridgeinteractive.com/developers/:
-```
-BRIDGE_CLIENT_ID=your_client_id_here
-BRIDGE_CLIENT_SECRET=your_client_secret_here
-BRIDGE_SERVER_TOKEN=your_server_token_here
-BRIDGE_API_BASE_URL=https://api.bridgedataoutput.com/api/v2/OData/
-BRIDGE_VIRTUAL_DATASET_ID=your_virtual_dataset_id_here
-```
-The search UI degrades gracefully without them (amber warning banner; manual address entry works).
+## What was just built
 
-## Architecture Summary
+### Modified files
+- `src/app/dashboard/inbox/page.tsx`
+  - Refactored into a professional 30/70 split-pane layout.
+  - Implemented dynamic URL state handling via `threadId`.
+  - Applied strict Antigravity v2 styling: `#A5A5A5` borders, `#F2F2F2` canvas, and `#FFFFFF` surface contrast.
+- `src/components/inbox/ThreadList.tsx`
+  - Updated to provide premium hover/active states.
+  - Wired to the Firestore `useInboxThreads` hook for real-time unread management.
+- `src/components/inbox/ThreadDetail.tsx`
+  - Refined the conversation view with role-based badges and a production-ready reply system.
 
-- Auth: Firebase → `/api/auth/session` → `__session` HttpOnly cookie
-- MLS ingestion: `replicationWorker` → `{vDatasetId}/Property/replication` watermark-based sync
-- MLS search: `GET /api/bridge/search?q=` → `PropertySearchInput` autocomplete
-- REI lifecycle order: `Target → In Contract → Acquired → Rehabbing → Under Construction → For Sale / Renting`
-- DB: Neon PostgreSQL (Prisma) for `Property` + financials; Firestore for real-time project docs
+---
 
-## Next Steps for Next Agent
+## Technical notes
+- **Real-time Sync**: The inbox uses `collectionGroup` queries to monitor messages across all project sub-collections.
+- **Messaging Pipeline**: Outbound replies are routed through `POST /api/emails/send`, which validates identity via Firebase Admin SDK and dispatches via the `CommunicationEngine`.
+- **UI State**: Selecting a thread in the left pane updates the URL query string, supporting browser "Back" navigation and deep-linking.
 
-1. Wire **webhook HMAC signature verification** in `/api/webhooks/bridge/route.ts` using `BRIDGE_WEBHOOK_SECRET`
-2. Display **MLS enrichment fields** (beds, baths, sqft, thumbnail, MLS status badge) on kanban cards and project detail view
-3. Add **REI status advancement UI** on project cards (click to transition through lifecycle)
+---
+
+## Next sprint suggestions
+1. **Portfolio Insights (Batch 7)**: Begin visualizing organization-level analytics derived from closed projects.
+2. **Thread Filtering**: Implement the "Search threads..." logic more deeply (currently client-side; consider server-side search if volume grows).
+3. **Drafts System**: Add a "Save as Draft" feature for long email replies using a dedicated `drafts` collection.

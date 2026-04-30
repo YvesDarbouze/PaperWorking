@@ -1,0 +1,43 @@
+src/actions/getTeamMembers.ts(47,11): error TS2322: Type '{ id: string; uid: any; email: any; displayName: any; role: any; internalRole: any; status: any; assignedProjectIds: any; joinedAt: any; }[]' is not assignable to type 'OrgTeamMember[]'.
+  Property 'invitedAt' is missing in type '{ id: string; uid: any; email: any; displayName: any; role: any; internalRole: any; status: any; assignedProjectIds: any; joinedAt: any; }' but required in type 'OrgTeamMember'.
+src/app/api/cron/process-email-notifications/route.ts(95,33): error TS2339: Property 'name' does not exist on type 'Project'.
+src/app/dashboard/projects/[id]/phase-1/page.tsx(134,41): error TS2339: Property 'offerStatus' does not exist on type 'Phase1Live'.
+src/components/dashboard/home/AssetMixChart.tsx(134,17): error TS2322: Type 'MixDataPoint[]' is not assignable to type 'readonly TreemapDataType[]'.
+  Type 'MixDataPoint' is not assignable to type 'TreemapDataType'.
+    Index signature for type 'string' is missing in type 'MixDataPoint'.
+src/components/dashboard/home/AssetMixChart.tsx(151,19): error TS2322: Type '(value: number, name: string, props: any) => [string, any]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: number, name: string, props: any) => [string, any]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'value' and 'value' are incompatible.
+      Type 'ValueType | undefined' is not assignable to type 'number'.
+        Type 'undefined' is not assignable to type 'number'.
+src/components/dashboard/home/BurnRateMonitor.tsx(29,55): error TS2304: Cannot find name 'Zap'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(30,55): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(30,75): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(32,36): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(97,57): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(97,77): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/MAOGaugeTracker.tsx(99,38): error TS2339: Property 'arv' does not exist on type 'ProjectFinancials'.
+src/components/dashboard/home/ROIChart.tsx(99,31): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/dashboard/home/ROIChart.tsx(171,17): error TS2322: Type '(value: any, name: string) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType> & ((value: ValueType, name: NameType, item: TooltipPayloadEntry, index: number, payload: TooltipPayload) => ReactNode | [...])'.
+  Type '(value: any, name: string) => [string, string]' is not assignable to type 'Formatter<ValueType, NameType>'.
+    Types of parameters 'name' and 'name' are incompatible.
+      Type 'NameType | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+src/components/dashboard/VelocityOverheadKPI.tsx(118,22): error TS18048: 'i.actualCost' is possibly 'undefined'.
+src/components/dashboard/YearlyPortfolioPerformance.tsx(104,57): error TS18048: 'i.actualCost' is possibly 'undefined'.
+src/components/evaluation/DealAnalyzer.tsx(56,142): error TS2304: Cannot find name 'disabled'.
+src/components/evaluation/DealAnalyzer.tsx(63,21): error TS2304: Cannot find name 'disabled'.
+src/components/evaluation/DealAnalyzer.tsx(70,155): error TS2304: Cannot find name 'disabled'.
+src/components/project/DealCalculator.tsx(195,87): error TS2345: Argument of type 'string' is not assignable to parameter of type '"Pending" | "Rejected" | "Accepted" | (() => "Pending" | "Rejected" | "Accepted")'.
+src/components/project/OfferPipelineTracker.tsx(100,9): error TS2304: Cannot find name 'onCounterSubmit'.
+src/components/project/OfferPipelineTracker.tsx(101,7): error TS2304: Cannot find name 'onCounterSubmit'.
+src/components/project/OfferPipelineTracker.tsx(207,30): error TS2353: Object literal may only specify known properties, and 'focusRingColor' does not exist in type 'Properties<string | number, string & {}>'.
+src/components/project/OfferPipelineTracker.tsx(220,28): error TS2353: Object literal may only specify known properties, and 'focusRingColor' does not exist in type 'Properties<string | number, string & {}>'.
+src/components/projects/AddressAutocomplete.tsx(98,23): error TS2554: Expected 1 arguments, but got 0.
+src/components/projects/AddressAutocomplete.tsx(254,27): error TS2554: Expected 1 arguments, but got 0.
+src/components/rehab/RehabExpenseTracker.tsx(25,7): error TS2739: Type '{ Material: { icon: Element; color: string; }; 'Professional Labor': { icon: Element; color: string; }; Permits: { icon: Element; color: string; }; 'Dumpster Rental': { icon: Element; color: string; }; Other: { ...; }; }' is missing the following properties from type 'Record<RehabExpenseCategory, { icon: ReactNode; color: string; }>': Demo, Systems, Interior, Exterior
+src/components/shared/PropertySearchInput.tsx(5,41): error TS2307: Cannot find module '@/app/api/bridge/search/route' or its corresponding type declarations.
+src/lib/math/calculatorUtils.ts(30,85): error TS18048: 'curr.actualCost' is possibly 'undefined'.
+src/lib/math/calculatorUtils.ts(131,55): error TS18048: 'i.actualCost' is possibly 'undefined'.
+src/lib/queue/jobQueue.ts(119,20): error TS7006: Parameter 'r' implicitly has an 'any' type.

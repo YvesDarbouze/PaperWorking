@@ -407,13 +407,13 @@ export default function EnginePanel() {
 
             {/* Export Toolbar (visible for all except HUD-1) */}
             {statementSubTab !== 'hud1' && (
-              <Suspense fallback={<div className="h-16 bg-bg-primary rounded-xl animate-pulse" />}>
+              <Suspense fallback={<div className="h-16 animate-shimmer rounded-xl" />}>
                 <StatementExporter activeStatement={statementSubTab as 'pl' | 'cashflow' | 'balance'} />
               </Suspense>
             )}
 
             {/* Statement Content */}
-            <Suspense fallback={<div className="h-64 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-64 animate-shimmer rounded-xl" />}>
               {statementSubTab === 'pl' && <ProfitAndLoss />}
               {statementSubTab === 'cashflow' && <CashFlowStatement />}
               {statementSubTab === 'balance' && <BalanceSheet />}

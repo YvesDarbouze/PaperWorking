@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, Filter, ShieldCheck, Star, MapPin, Clock, Tag, ChevronRight, Calculator } from 'lucide-react';
 import { VendorProfile, VendorType } from '@/types/schema';
 import { motion } from 'framer-motion';
+import { VendorRequestModal } from './VendorRequestModal';
 
 const MOCK_VENDORS: VendorProfile[] = [
   {
@@ -60,6 +61,13 @@ export default function VendorDirectory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<VendorType | 'All'>('All');
   const [stateFilter, setStateFilter] = useState('All');
+  const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRequestQuote = (vendor: VendorProfile) => {
+    setSelectedVendor(vendor);
+    setIsModalOpen(true);
+  };
 
   const filteredVendors = MOCK_VENDORS.filter(v => {
     const matchesSearch = v.companyName.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -132,15 +140,24 @@ export default function VendorDirectory() {
       <main className="flex-1 overflow-y-auto p-12 bg-pw-dashboard">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-pw-border border border-border-accent">
           {filteredVendors.map((vendor) => (
-            <VendorCard key={vendor.id} vendor={vendor} />
+            <VendorCard key={vendor.id} vendor={vendor} onRequestQuote={() => handleRequestQuote(vendor)} />
           ))}
         </div>
       </main>
+
+      <VendorRequestModal 
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedVendor(null);
+        }}
+        vendor={selectedVendor}
+      />
     </div>
   );
 }
 
-function VendorCard({ vendor }: { vendor: VendorProfile }) {
+function VendorCard({ vendor, onRequestQuote }: { vendor: VendorProfile; onRequestQuote: () => void }) {
   return (
     <div className="bg-bg-surface p-8 flex flex-col group relative">
       <div className="flex justify-between items-start mb-8">
@@ -181,7 +198,10 @@ function VendorCard({ vendor }: { vendor: VendorProfile }) {
       </div>
 
       <div className="mt-10">
-        <button className="w-full py-4 border border-pw-black text-text-primary text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-white transition-all">
+        <button 
+          onClick={onRequestQuote}
+          className="w-full py-4 border border-pw-black text-text-primary text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-white transition-all"
+        >
           Request Quote
         </button>
       </div>

@@ -3,21 +3,15 @@ import prisma from '../prisma';
 import { bridgeWorkerService } from './bridgeWorkerService';
 import { BridgeFeedHandler, BridgeRecord } from '../utils/BridgeFeedHandler';
 import { BridgeRateLimitError, BridgeServerError } from '../types/errors';
+import { ingestRecords } from './propertyIngestor';
 
-const INGEST_CHUNK_SIZE = 100;
 const MAX_RETRIES = 3;
 
-/**
- * Returns the number of milliseconds to wait before retrying.
- * For 429: uses the header-provided reset time when available.
- * For 5xx: exponential backoff with full jitter.
- */
 function retryDelayMs(error: unknown, attempt: number): number {
   if (error instanceof BridgeRateLimitError && error.resetAt) {
     const nowSeconds = Math.floor(Date.now() / 1000);
     return Math.max((error.resetAt - nowSeconds) * 1000, 1000);
   }
-  // Exponential backoff with full jitter: random(0, 2^attempt * 2s), capped at 60s
   const cap = Math.min(2000 * Math.pow(2, attempt), 60_000);
   return Math.floor(Math.random() * cap);
 }
@@ -30,11 +24,6 @@ async function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/**
- * Wraps a single API fetch with retry + exponential backoff.
- * Retriable: 429 (rate limit) and 503 (server unavailable).
- * Non-retriable errors are re-thrown immediately.
- */
 async function fetchWithRetry(url: string): Promise<any> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -51,10 +40,9 @@ async function fetchWithRetry(url: string): Promise<any> {
 /**
  * 🏭 ReplicationWorker
  *
- * High-performance worker for MLS data synchronization via the Bridge
- * /Property/replication endpoint. Iterative (not recursive) to avoid
- * stack overflow on large datasets. Records are ingested in chunks of
- * 100 per Prisma transaction to keep connection pool pressure bounded.
+ * Orchestrates MLS data synchronization via the Bridge /Property/replication
+ * endpoint. Iterative nextLink traversal avoids call-stack growth on large
+ * datasets. Record persistence is delegated to PropertyIngestor.
  */
 class ReplicationWorker {
   private readonly REPLICATION_ENDPOINT = 'Property/replication';
@@ -90,9 +78,6 @@ class ReplicationWorker {
     }
   }
 
-  /**
-   * Iterative nextLink traversal — avoids call-stack growth on large datasets.
-   */
   private async runChain(initialUrl: string): Promise<{ success: boolean; syncedCount: number }> {
     let nextUrl: string | null = initialUrl;
     let totalSynced = 0;
@@ -114,8 +99,7 @@ class ReplicationWorker {
       console.log(`📥 [REPLICATION] Processing batch of ${records.length} records...`);
       BridgeFeedHandler.logSourceBreakdown(records);
 
-      await this.ingestRecords(records);
-      totalSynced += records.length;
+      totalSynced += await ingestRecords(records);
 
       const lastRecord = records[records.length - 1];
       if (lastRecord.BridgeModificationTimestamp) {
@@ -132,58 +116,13 @@ class ReplicationWorker {
         }
       }
 
-      if (rawNext) {
-        nextUrl = rawNext.includes('/OData/') ? rawNext.split('/OData/')[1] : rawNext;
-      } else {
-        nextUrl = null;
-      }
+      nextUrl = rawNext
+        ? (rawNext.includes('/OData/') ? rawNext.split('/OData/')[1] : rawNext)
+        : null;
     }
 
     console.log(`🎉 [REPLICATION] Sync complete. Total records ingested: ${totalSynced}`);
     return { success: true, syncedCount: totalSynced };
-  }
-
-  /**
-   * Upserts records in chunks of INGEST_CHUNK_SIZE, each chunk in its own
-   * Prisma transaction. This keeps connection-pool pressure bounded regardless
-   * of batch size (2000 concurrent upserts would exhaust the pool).
-   */
-  private async ingestRecords(records: BridgeRecord[]): Promise<void> {
-    for (let i = 0; i < records.length; i += INGEST_CHUNK_SIZE) {
-      const chunk = records.slice(i, i + INGEST_CHUNK_SIZE);
-
-      await prisma.$transaction(
-        chunk.map((originalRecord) => {
-          const record = BridgeFeedHandler.sanitize(originalRecord);
-
-          const sharedFields = {
-            listingId: record.ListingId as string,
-            standardStatus: record.StandardStatus as string,
-            // BigInt required: listPrice is a BigInt column; using Number here would
-            // silently lose precision on listings above ~$90 trillion (IEEE 754 limit).
-            listPrice: record.ListPrice ? BigInt(Math.round(Number(record.ListPrice) * 100)) : BigInt(0),
-            unparsedAddress: record.UnparsedAddress as string,
-            bedroomsTotal: record.BedroomsTotal ? Number(record.BedroomsTotal) : null,
-            bathroomsFull: record.BathroomsFull ? Number(record.BathroomsFull) : null,
-            bathroomsHalf: record.BathroomsHalf ? Number(record.BathroomsHalf) : null,
-            livingArea: record.LivingArea ? Number(record.LivingArea) : null,
-            lotSizeAcres: record.LotSizeAcres ? Number(record.LotSizeAcres) : null,
-            yearBuilt: record.YearBuilt ? Number(record.YearBuilt) : null,
-            publicRemarks: record.PublicRemarks as string,
-            media: record.Media ? JSON.stringify(record.Media) : null,
-            bridgeModificationTimestamp: new Date(record.BridgeModificationTimestamp as string),
-            coordinates: record.Coordinates as string,
-            feedTypes: JSON.stringify(record.FeedTypes || []),
-          };
-
-          return prisma.property.upsert({
-            where: { listingKey: record.ListingKey as string },
-            update: sharedFields,
-            create: { listingKey: record.ListingKey as string, ...sharedFields },
-          });
-        })
-      );
-    }
   }
 
   private async updateWatermark(timestamp: Date): Promise<void> {

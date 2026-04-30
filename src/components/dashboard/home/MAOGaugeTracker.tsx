@@ -27,9 +27,9 @@ interface DealMAO {
 
 function computeMAOMetrics(projects: Project[]): DealMAO[] {
   return projects
-    .filter(d => d.status !== 'Sold' && d.financials?.arv && d.financials.arv > 0)
+    .filter(d => d.status !== 'Sold' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
     .map(deal => {
-      const arv = deal.financials?.arv || 0;
+      const arv = deal.financials?.estimatedARV || 0;
       const purchasePrice = deal.financials?.purchasePrice || 0;
       
       let repairCosts = 0;
@@ -94,9 +94,9 @@ export default function MAOGaugeTracker({ projects }: MAOGaugeTrackerProps) {
   
   const deals = useMemo(() => {
     return projects
-      .filter(d => d.status !== 'Sold' && d.financials?.arv && d.financials.arv > 0)
+      .filter(d => d.status !== 'Sold' && d.financials?.estimatedARV && d.financials.estimatedARV > 0)
       .map(deal => {
-        const arv = deal.financials?.arv || 0;
+        const arv = deal.financials?.estimatedARV || 0;
         const purchasePrice = deal.financials?.purchasePrice || 0;
         
         let repairCosts = 0;

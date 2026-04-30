@@ -19,12 +19,14 @@ export default function VirtualInspection() {
   const handleAdd = () => {
     if (!category.trim()) return;
 
-    const newItem = {
+    const newItem: any = {
       id: crypto.randomUUID(),
       category: category.trim(),
       estimatedCost: parseFloat(estimated) || 0,
       actualCost: parseFloat(actual) || 0,
       loggedBy: 'current-uid', // Mock
+      status: 'Pending',
+      notes: ''
     };
 
     updateProjectFinancials(currentProject.id, {
@@ -42,8 +44,8 @@ export default function VirtualInspection() {
     });
   };
 
-  const totalEst = inspections.reduce((acc, curr) => acc + curr.estimatedCost, 0);
-  const totalAct = inspections.reduce((acc, curr) => acc + curr.actualCost, 0);
+  const totalEst = inspections.reduce((acc, curr) => acc + (curr.estimatedCost || 0), 0);
+  const totalAct = inspections.reduce((acc, curr) => acc + (curr.actualCost || 0), 0);
   const variance = totalAct - totalEst; // positive means over-budget
 
   return (
@@ -80,11 +82,11 @@ export default function VirtualInspection() {
                   <div className="flex items-center space-x-4 w-2/3 justify-end">
                      <div className="text-right">
                         <span className="block text-xs uppercase text-text-secondary">Est</span>
-                        <span className="text-text-secondary">${item.estimatedCost.toLocaleString()}</span>
+                        <span className="text-text-secondary">${(item.estimatedCost || 0).toLocaleString()}</span>
                      </div>
                      <div className="text-right">
                         <span className="block text-xs uppercase text-text-secondary">Act</span>
-                        <span className="text-text-primary font-medium">${item.actualCost.toLocaleString()}</span>
+                        <span className="text-text-primary font-medium">${(item.actualCost || 0).toLocaleString()}</span>
                      </div>
                      <button onClick={() => handleRemove(item.id)} className="text-gray-300 hover:text-red-500 transition-colors ml-2">
                         <Trash2 className="w-4 h-4" />

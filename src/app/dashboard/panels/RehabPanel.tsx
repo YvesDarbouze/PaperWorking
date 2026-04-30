@@ -44,12 +44,12 @@ export default function RehabPanel() {
             
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                <div className="lg:col-span-8">
-                  <Suspense fallback={<div className="h-64 border border-border-accent bg-bg-surface animate-pulse rounded-xl" />}>
+                  <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
                      <HoldingTimeline />
                   </Suspense>
                </div>
                <div className="lg:col-span-4">
-                  <Suspense fallback={<div className="h-64 border border-border-accent bg-bg-surface animate-pulse rounded-xl" />}>
+                  <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
                      <HoldingCostTicker />
                   </Suspense>
                </div>
@@ -62,7 +62,7 @@ export default function RehabPanel() {
                <h2 className="text-xl font-medium tracking-tight text-text-primary">High-ROI Modules (The "Money Rooms")</h2>
                <p className="text-sm text-text-secondary mt-1">Focus capital deployment on kitchens, baths, and curb appeal.</p>
             </div>
-            <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
               <ROIRenovationTasks />
             </Suspense>
           </section>
@@ -73,7 +73,7 @@ export default function RehabPanel() {
                <h2 className="text-xl font-medium tracking-tight text-text-primary">Permitting & Compliance</h2>
                <p className="text-sm text-text-secondary mt-1">Track regulatory approvals and inspection milestones.</p>
             </div>
-            <Suspense fallback={<div className="h-40 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-40 animate-shimmer rounded-xl" />}>
               <PermitTrackingChecklist />
             </Suspense>
           </section>
@@ -84,7 +84,7 @@ export default function RehabPanel() {
                <h2 className="text-xl font-medium tracking-tight text-text-primary">Contractor Milestones</h2>
                <p className="text-sm text-text-secondary mt-1">Budget VS Actual, Contingency, and Subcontractor tracking.</p>
             </div>
-            <Suspense fallback={<div className="h-96 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
               <RehabTracker />
             </Suspense>
           </section>

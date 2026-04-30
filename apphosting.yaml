@@ -10,31 +10,162 @@ runConfig:
 # Environment variables and secrets.
 # See https://firebase.google.com/docs/app-hosting/configure#user-defined-environment
 env:
-  # Increase Node.js heap size to prevent OOM during build
+  # ─── Build config ──────────────────────────────────────────────────────────
   - variable: NODE_OPTIONS
-    value: "--max-old-space-size=4096"
+    value: "--max-old-space-size=8192"
     availability:
       - BUILD
 
-  # ─── Firebase Admin SDK (server-side token verification) ───────────────
-  # Non-sensitive — safe to store as plain values
+  # ─── Firebase client SDK (public — already in browser bundle) ──────────────
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyDlmH8L2s9_IXXKUx9DIhhWP4nMYDzUlvg"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "paperworking.co"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "paperworking-97055"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "paperworking-97055.firebasestorage.app"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "779101817926"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:779101817926:web:0dfce37fddc70718e70e47"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: "G-7JX7B7KF0D"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_FACEBOOK_APP_ID
+    value: "846487651808178"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_APP_URL
+    value: "https://paperworking.co"
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # ─── Firebase Admin SDK (server-side) ──────────────────────────────────────
   - variable: FIREBASE_PROJECT_ID
     value: "paperworking-97055"
     availability:
       - RUNTIME
 
-  # Sensitive — stored in Google Secret Manager.
-  # Create with: gcloud secrets create FIREBASE_CLIENT_EMAIL --data-file=-
-  # then paste: firebase-adminsdk-XXXXX@paperworking-97055.iam.gserviceaccount.com
   - variable: FIREBASE_CLIENT_EMAIL
     secret: FIREBASE_CLIENT_EMAIL
     availability:
       - RUNTIME
 
-  # Sensitive — stored in Google Secret Manager.
-  # Create with: gcloud secrets create FIREBASE_PRIVATE_KEY --data-file=-
-  # then paste the full PEM key (actual newlines are fine in Secret Manager)
   - variable: FIREBASE_PRIVATE_KEY
     secret: FIREBASE_PRIVATE_KEY
+    availability:
+      - RUNTIME
+
+  # ─── AI / Generative ───────────────────────────────────────────────────────
+  - variable: GOOGLE_GENERATIVE_AI_API_KEY
+    secret: GOOGLE_GENERATIVE_AI_API_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Stripe ────────────────────────────────────────────────────────────────
+  - variable: STRIPE_WEBHOOK_SECRET
+    secret: STRIPE_WEBHOOK_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Bridge Interactive / MLS ──────────────────────────────────────────────
+  - variable: BRIDGE_API_BASE_URL
+    value: "https://api.bridgedataoutput.com/api/v2/OData/"
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_CLIENT_ID
+    secret: BRIDGE_CLIENT_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_CLIENT_SECRET
+    secret: BRIDGE_CLIENT_SECRET
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_SERVER_TOKEN
+    secret: BRIDGE_SERVER_TOKEN
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_VIRTUAL_DATASET_ID
+    secret: BRIDGE_VIRTUAL_DATASET_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_DATASET_ID
+    secret: BRIDGE_DATASET_ID
+    availability:
+      - RUNTIME
+
+  - variable: BRIDGE_WEBHOOK_SECRET
+    secret: BRIDGE_WEBHOOK_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Database (Neon PostgreSQL) ────────────────────────────────────────────
+  - variable: DATABASE_URL
+    secret: DATABASE_URL
+    availability:
+      - RUNTIME
+
+  - variable: DIRECT_URL
+    secret: DIRECT_URL
+    availability:
+      - RUNTIME
+
+  # ─── Redis ─────────────────────────────────────────────────────────────────
+  - variable: REDIS_URL
+    secret: REDIS_URL
+    availability:
+      - RUNTIME
+
+  # ─── Facebook ──────────────────────────────────────────────────────────────
+  - variable: FACEBOOK_APP_SECRET
+    secret: FACEBOOK_APP_SECRET
+    availability:
+      - RUNTIME
+
+  # ─── Google Places ─────────────────────────────────────────────────────────
+  - variable: GOOGLE_PLACES_API_KEY
+    secret: GOOGLE_PLACES_API_KEY
+    availability:
+      - RUNTIME
+
+  # ─── Worker / internal cron auth ───────────────────────────────────────────
+  - variable: WORKER_SECRET
+    secret: WORKER_SECRET
     availability:
       - RUNTIME

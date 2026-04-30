@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Project } from '@/types/schema';
-import { Flame, Timer, Wallet, AlertTriangle } from 'lucide-react';
+import { Flame, Timer, Wallet, AlertTriangle, Zap } from 'lucide-react';
 import DOMCountdown from './DOMCountdown';
 import HoldingCostTicker from './HoldingCostTicker';
 import TaxImplicationWarning from './TaxImplicationWarning';
@@ -88,9 +88,6 @@ export default function BurnRateMonitor({ projects }: BurnRateMonitorProps) {
           )}
         </div>
       </div>
-    </div>
-  );
-}
     </div>
   );
 }

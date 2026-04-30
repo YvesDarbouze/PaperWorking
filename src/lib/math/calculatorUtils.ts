@@ -15,57 +15,23 @@ export function calculateSeventyPercentRule(arv: number, rehabCosts: number, pur
   return { MAO: maximumAllowableOffer, isSetup, isOverbought, variance };
 }
 
-/**
- * Generates the full Profitability Net Engine calculations.
- * Accounts for extreme timelines, commissions, and holding cost projections.
- */
 export function calculateNetEngine(deal: Project, isBrrrr: boolean = false) {
-  const purchasePrice = deal.financials?.purchasePrice || 0;
+  const metrics = computeAutopsyMetrics(deal);
   
-  let totalApprovedRehab = 0;
-  deal.financials?.costs?.forEach(c => {
-    if (c.approved) totalApprovedRehab += c.amount;
-  });
+  const totalApprovedRehab = metrics.actualRehabCost;
+  const capitalCost = metrics.acquisitionCosts;
+  const holdingCost = metrics.holdingCosts;
+  const holdDays = metrics.holdDays || (deal.financials?.estimatedTimelineDays || 90);
   
-  const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + curr.actualCost, 0) || 0;
-  totalApprovedRehab += inspectionsCost;
-
-  const interestRate = (deal.financials?.loanInterestRate || 0) / 100;
-  const points = (deal.financials?.loanOriginationPoints || 0) / 100;
+  const proceeds = isBrrrr ? (metrics.grossSalePrice * 0.75) : metrics.grossSalePrice;
+  const actualCommissions = isBrrrr ? 0 : (metrics.grossSalePrice * ((deal.financials?.buyersAgentCommission || 0) + (deal.financials?.sellersAgentCommission || 0)) / 100);
   
-  const loanAmount = deal.financials?.loanAmount || (purchasePrice + totalApprovedRehab);
-  const capitalCost = loanAmount * points;
-
-  const now = new Date();
-  const soldDate = deal.financials?.soldDate ? new Date(deal.financials.soldDate) : null;
-  const createdDate = new Date(deal.createdAt || now);
+  // Use the totalCostBasis as totalInvestment
+  const totalInvestment = metrics.totalCostBasis;
   
-  let holdDays = deal.financials?.estimatedTimelineDays || 90;
-  if (soldDate) {
-     const ms = soldDate.getTime() - createdDate.getTime();
-     holdDays = Math.max(1, ms / (1000 * 60 * 60 * 24));
-  } else {
-     const ms = now.getTime() - createdDate.getTime();
-     const elapsed = ms / (1000 * 60 * 60 * 24);
-     holdDays = Math.max(holdDays, elapsed);
-  }
-
-  const timelineYears = holdDays / 365;
-  const holdingCost = loanAmount * interestRate * timelineYears;
-
-  const salePrice = deal.financials?.actualSalePrice || deal.financials?.estimatedARV || 0;
-  const buyerPercent = deal.financials?.buyersAgentCommission || 0;
-  const sellerPercent = deal.financials?.sellersAgentCommission || 0;
-  const agentCommissions = salePrice * ((buyerPercent + sellerPercent) / 100);
-  const finalClosingCosts = deal.financials?.finalClosingCosts || 0;
-
-  const totalInvestment = purchasePrice + totalApprovedRehab + capitalCost + holdingCost;
-  
-  const ltvRatio = 0.75;
-  const actualCommissions = isBrrrr ? 0 : agentCommissions;
-  const proceeds = isBrrrr ? (salePrice * ltvRatio) : salePrice;
-
-  const netProfit = proceeds - (totalInvestment + actualCommissions + finalClosingCosts);
+  const netProfit = isBrrrr 
+    ? (proceeds - metrics.totalCostBasis) 
+    : metrics.netProfit;
 
   const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
   const annualizedIrr = holdDays > 0 ? roi * (365 / holdDays) : 0;
@@ -143,15 +109,51 @@ export function computeAutopsyMetrics(deal: Project): AutopsyMetrics {
     items.forEach(item => { acquisitionCosts += item.amount; });
   }
 
-  // ── Holding Costs ───────────────────────────────────────────
+  // ── Time Metrics ────────────────────────────────────────────
+  let holdDays: number | null = null;
+  let dom: number | null = null;
+
+  // Real-time escalation: Use acquisition date if available, fallback to creation date
+  const startDate = fin?.acquisitionDate ? new Date(fin.acquisitionDate) : (deal.createdAt ? new Date(deal.createdAt) : null);
+  
+  if (startDate) {
+    const endDate = fin?.soldDate ? new Date(fin.soldDate) : new Date();
+    const ms = endDate.getTime() - startDate.getTime();
+    holdDays = Math.max(1, Math.round(ms / 86_400_000));
+  }
+
+  // ── Holding Costs (Automated) ───────────────────────────────
   let holdingCosts = 0;
-  deal.holdingCosts?.forEach(hc => { holdingCosts += hc.monthlyAmount * hc.monthsPaid; });
+  deal.holdingCosts?.forEach(hc => {
+    if (holdDays) {
+      // Calculate daily rate and multiply by holdDays for real-time escalation
+      holdingCosts += (hc.monthlyAmount / 30) * holdDays;
+    } else {
+      // Fallback if no start date exists
+      holdingCosts += hc.monthlyAmount * (hc.monthsPaid || 0);
+    }
+  });
 
   // ── Sell-Side Closing Costs + Commissions ───────────────────
   let sellClosingCosts = fin?.finalClosingCosts || 0;
   const buyerCommDollar = grossSalePrice * ((fin?.buyersAgentCommission || 0) / 100);
   const sellerCommDollar = grossSalePrice * ((fin?.sellersAgentCommission || 0) / 100);
   sellClosingCosts += buyerCommDollar + sellerCommDollar;
+  
+  // Include explicit Settlement Ledger flat fees
+  sellClosingCosts += (fin?.agentCommissionsFixed || 0);
+  sellClosingCosts += (fin?.sellerConcessionsFixed || 0);
+  sellClosingCosts += (fin?.finalClosingAttorneyFees || 0);
+  sellClosingCosts += (fin?.loanOriginationFeesSettlement || 0);
+  sellClosingCosts += (fin?.titleInsuranceSettlement || 0);
+
+  // Include Final Expenses / Disposition Ledger
+  sellClosingCosts += (fin?.stagingCosts || 0);
+  sellClosingCosts += (fin?.photographyAndMedia || 0);
+  sellClosingCosts += (fin?.mlsListingFees || 0);
+  sellClosingCosts += (fin?.utilityUpkeep || 0);
+  sellClosingCosts += (fin?.landscapingMaintenance || 0);
+
   deal.exitCosts?.forEach(ec => {
     sellClosingCosts += ec.isPercentage && ec.percentageRate
       ? grossSalePrice * (ec.percentageRate / 100)
@@ -169,18 +171,13 @@ export function computeAutopsyMetrics(deal: Project): AutopsyMetrics {
   const coc = outOfPocketCash > 0 ? (netProfit / outOfPocketCash) * 100 : roi;
   const profitMargin = grossSalePrice > 0 ? (netProfit / grossSalePrice) * 100 : 0;
 
-  // ── Time Metrics ────────────────────────────────────────────
-  let holdDays: number | null = null;
-  let dom: number | null = null;
-
-  if (deal.createdAt && fin?.soldDate) {
-    const ms = new Date(fin.soldDate).getTime() - new Date(deal.createdAt).getTime();
-    holdDays = Math.max(1, Math.round(ms / 86_400_000));
-  }
-
   if (fin?.listingDate && fin?.soldDate) {
     // Exact DOM from schema dates
     const ms = new Date(fin.soldDate).getTime() - new Date(fin.listingDate).getTime();
+    dom = Math.max(0, Math.round(ms / 86_400_000));
+  } else if (holdDays !== null && fin?.listingDate) {
+    // Current DOM if listed but not yet sold
+    const ms = new Date().getTime() - new Date(fin.listingDate).getTime();
     dom = Math.max(0, Math.round(ms / 86_400_000));
   } else if (holdDays !== null) {
     // Estimate: rehab occupies the first portion of the hold, remainder is market time
@@ -380,67 +377,27 @@ export function computeProratedEscrow(
  * Long-term (>365 days) → 15% (≤$492,300 income) or 20%.
  */
 export function computeCapitalGainsTax(deal: Project): TaxEstimate {
-  const fin = deal.financials;
-  const salePrice = fin?.actualSalePrice || fin?.estimatedARV || 0;
-  const purchasePrice = fin?.purchasePrice || 0;
+  const metrics = computeAutopsyMetrics(deal);
+  
+  const calculatedNetProceeds = metrics.grossSalePrice - metrics.sellClosingCosts;
+  
+  // Use holdDays from metrics (fallback to estimatedTimelineDays)
+  const holdDays = metrics.holdDays || (deal.financials?.estimatedTimelineDays || 90);
 
-  // Cost basis = purchase + rehab + acquisition costs
-  let rehabCosts = 0;
-  fin?.costs?.forEach(c => { if (c.approved) rehabCosts += c.amount; });
-  deal.rehabExpenses?.forEach(e => { rehabCosts += e.amount; });
-
-  let acquisitionCosts = 0;
-  if (fin?.loanAmount && fin?.loanOriginationPoints) {
-    acquisitionCosts += fin.loanAmount * (fin.loanOriginationPoints / 100);
-  }
-  if (deal.costBasisLedger) {
-    [...(deal.costBasisLedger.directAcquisition || []),
-     ...(deal.costBasisLedger.financing || []),
-     ...(deal.costBasisLedger.preClosing || [])
-    ].forEach(item => { acquisitionCosts += item.amount; });
-  }
-
-  let holdingCosts = 0;
-  deal.holdingCosts?.forEach(hc => { holdingCosts += hc.monthlyAmount * hc.monthsPaid; });
-
-  const costBasis = purchasePrice + rehabCosts + acquisitionCosts + holdingCosts;
-
-  // Sell-side costs (commissions + closing)
-  let sellCosts = fin?.finalClosingCosts || 0;
-  const buyerComm = salePrice * ((fin?.buyersAgentCommission || 0) / 100);
-  const sellerComm = salePrice * ((fin?.sellersAgentCommission || 0) / 100);
-  sellCosts += buyerComm + sellerComm;
-
-  // Settlement ledger costs
-  fin?.settlementLedger?.forEach(item => {
-    if (item.paidBy === 'Seller' || item.paidBy === 'Split') {
-      const amount = item.paidBy === 'Split' ? item.computedAmount / 2 : item.computedAmount;
-      sellCosts += amount;
-    }
-  });
-
-  const netProceeds = salePrice - sellCosts;
-  const capitalGain = netProceeds - costBasis;
-
-  // Holding period
-  let holdingPeriodDays = fin?.estimatedTimelineDays || 90;
-  if (deal.createdAt && fin?.soldDate) {
-    const ms = new Date(fin.soldDate).getTime() - new Date(deal.createdAt).getTime();
-    holdingPeriodDays = Math.max(1, Math.round(ms / 86_400_000));
-  }
-
-  const isLongTerm = holdingPeriodDays > 365;
-  const marginalRate = fin?.marginalTaxBracket || 32;
+  const isLongTerm = holdDays > 365;
+  const marginalRate = deal.financials?.marginalTaxBracket || 32;
   const estimatedTaxRate = isLongTerm ? 15 : marginalRate;
-  const estimatedTaxLiability = capitalGain > 0 ? capitalGain * (estimatedTaxRate / 100) : 0;
-  const netAfterTax = capitalGain - estimatedTaxLiability;
+  
+  // Capital gain is essentially the netProfit if everything matches up
+  const estimatedTaxLiability = metrics.netProfit > 0 ? metrics.netProfit * (estimatedTaxRate / 100) : 0;
+  const netAfterTax = metrics.netProfit - estimatedTaxLiability;
 
   return {
-    holdingPeriodDays,
+    holdingPeriodDays: holdDays,
     isLongTerm,
-    costBasis,
-    netProceeds,
-    capitalGain,
+    costBasis: metrics.totalCostBasis,
+    netProceeds: calculatedNetProceeds,
+    capitalGain: metrics.netProfit,
     estimatedTaxRate,
     estimatedTaxLiability,
     netAfterTax,

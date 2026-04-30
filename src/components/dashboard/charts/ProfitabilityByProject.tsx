@@ -105,7 +105,7 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
           barGap={0}
         >
           <defs>
-            <filter id="barShadow" x="-20%" y="-20%" width="140%" height={140%}>
+            <filter id="barShadow" x="-20%" y="-20%" width="140%" height="140%">
               <feGaussianBlur in="SourceAlpha" stdDeviation="2" />
               <feOffset dx="0" dy="1" result="offsetblur" />
               <feComponentTransfer>

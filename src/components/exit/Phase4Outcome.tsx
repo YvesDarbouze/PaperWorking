@@ -236,7 +236,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
         {/* ── Deal Autopsy: locks all KPIs once status = Sold ── */}
         <div className="mt-12">
-          <Suspense fallback={<div className="h-96 rounded-2xl bg-bg-surface/5 animate-pulse" />}>
+          <Suspense fallback={<div className="h-96 rounded-2xl bg-bg-surface/5 animate-shimmer" />}>
             <DealAutopsy deal={deal} />
           </Suspense>
         </div>

@@ -18,6 +18,7 @@ interface MixDataPoint {
   value: number;
   count: number;
   color: string;
+  [key: string]: any;
 }
 
 function computeMixData(projects: Project[]): MixDataPoint[] {
@@ -148,8 +149,8 @@ export default function AssetMixChart({ projects }: AssetMixChartProps) {
                     padding: '12px',
                   }}
                   itemStyle={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}
-                  formatter={(value: number, name: string, props: any) => {
-                    return [formatCurrency(value), props.payload.name];
+                  formatter={(value: any, name: any, props: any) => {
+                    return [formatCurrency(Number(value)), props.payload.name];
                   }}
                 />
               </Treemap>

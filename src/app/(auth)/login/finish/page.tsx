@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 export default function MagicLinkFinishPage() {
   return (
-    <Suspense fallback={<div className="animate-pulse bg-bg-primary h-[400px] w-full rounded-[24px]" />}>
+    <Suspense fallback={<div className="animate-shimmer bg-bg-primary h-[400px] w-full rounded-[24px]" />}>
       <MagicLinkFinishInner />
     </Suspense>
   );

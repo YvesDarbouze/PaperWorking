@@ -159,7 +159,7 @@ export default function ProjectedVsActualSpend({ projects }: ProjectedVsActualSp
             stroke="#111827"
             strokeWidth={3}
             dot={{ r: 4, fill: '#111827', strokeWidth: 2, stroke: '#fff' }}
-            activeDot={{ r: 6, fill: '#111827', stroke: '#fff', strokeWidth: 2, shadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+            activeDot={{ r: 6, fill: '#111827', stroke: '#fff', strokeWidth: 2 }}
             name="Actual Spend"
             animationDuration={2000}
           />

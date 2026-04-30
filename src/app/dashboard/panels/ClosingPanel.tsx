@@ -163,27 +163,27 @@ export default function ClosingPanel() {
       </div>
 
       {/* ── 70% Rule Audit — Top-level margin warning ── */}
-      <Suspense fallback={<div className="h-40 bg-bg-primary rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-40 animate-shimmer rounded-xl" />}>
         <SeventyPercentRuleAudit />
       </Suspense>
 
       {/* ── Closing Checklist — Must-complete validation ── */}
-      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
         <ClosingChecklist />
       </Suspense>
 
       {/* ── Cost Basis Ledger (3-part capitalization tracker) ── */}
-      <Suspense fallback={<div className="h-60 bg-bg-primary rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-60 animate-shimmer rounded-xl" />}>
         <CostBasisLedger />
       </Suspense>
 
       {/* ── Document Vault (Role-linked uploads) ── */}
-      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
         <DocumentVault />
       </Suspense>
 
       {/* ── Exit Cost Ledger (Broker Fees, Staging, Marketing) ── */}
-      <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
+      <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
         <ExitCostLedger />
       </Suspense>
 
@@ -222,12 +222,12 @@ export default function ClosingPanel() {
            </div>
 
             {/* Inspection Upload Module — Structural/Plumbing/Electrical */}
-            <Suspense fallback={<div className="h-48 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
               <InspectionUploadModule />
             </Suspense>
 
             {/* Title Search Clearance Tracker */}
-            <Suspense fallback={<div className="h-40 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-40 animate-shimmer rounded-xl" />}>
               <TitleSearchClearance />
             </Suspense>
 
@@ -308,7 +308,7 @@ export default function ClosingPanel() {
             </div>
 
             {/* Deal Roster — External Stakeholder Directory */}
-            <Suspense fallback={<div className="h-32 bg-bg-primary rounded-xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-32 animate-shimmer rounded-xl" />}>
               <DealRoster projectId={currentProject.id} />
             </Suspense>
          </div>

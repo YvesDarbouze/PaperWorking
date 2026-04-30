@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     // 2. Generate a unique invitation token
     const token = generateToken();
-    const invitationId = `inv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const invitationId = `inv_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
 
     const invitation = {
       id: invitationId,
@@ -85,10 +85,7 @@ export async function POST(request: Request) {
 }
 
 function generateToken(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  for (let i = 0; i < 32; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return token;
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Buffer.from(bytes).toString('base64url');
 }

@@ -58,7 +58,7 @@ export default function SettingsDrawer({ isOpen, onClose }: Props) {
         <div className="p-6 space-y-6 overflow-y-auto h-[calc(100%-80px)]">
           <Suspense
             fallback={
-              <div className="h-32 bg-bg-primary rounded-xl animate-pulse" />
+              <div className="h-32 animate-shimmer rounded-xl" />
             }
           >
             <OrgRoleSelector />

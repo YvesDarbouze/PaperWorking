@@ -1,17 +1,13 @@
+import { NextRequest } from 'next/server';
 import { streamText, convertToModelMessages } from 'ai';
-
-/**
- * PaperWorking Chat API (Gemini + MCP Tools)
- *
- * Orchestrates conversation between the user and Gemini,
- * enabling automated access to Firestore projects and Stripe data.
- *
- * Uses dynamic imports to prevent build-time crashes when API keys are absent.
- */
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const maxDuration = 30;
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+
   const { google } = await import('@ai-sdk/google');
   const { aiTools } = await import('@/lib/mcp/ai-tools');
 

@@ -2,21 +2,55 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
-  transpilePackages: ['recharts', 'react-smooth'],
+  serverExternalPackages: ['firebase-admin'],
   typescript: {
     ignoreBuildErrors: true,
+  },
+  experimental: {
+    optimizePackageImports: ['framer-motion', 'lucide-react', 'recharts'],
   },
   async headers() {
     return [
       {
-        // Required for Firebase signInWithPopup (Google/Facebook OAuth)
-        // Firebase popup auth uses window.closed / window.close across origins.
-        // App Hosting defaults to same-origin which blocks those calls.
         source: '/(.*)',
         headers: [
+          // Required for Firebase signInWithPopup (Google/Facebook OAuth)
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+          // Prevent MIME-type sniffing
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          // Clickjacking protection (belt-and-suspenders with CSP frame-ancestors)
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // Limit referrer information sent to third parties
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Disable browser features not needed by the app
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+          // Force HTTPS for 1 year (only effective in production behind TLS)
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+          // Content Security Policy
+          // unsafe-inline required: Next.js App Router injects inline scripts for hydration.
+          // unsafe-eval required: Next.js dev mode + some Firebase SDK paths.
+          // Tighten with nonce-based CSP once middleware nonce injection is wired in.
           {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              // Scripts: self + Next.js inline hydration + Firebase + Google + Stripe + FB
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.gstatic.com accounts.google.com connect.facebook.net js.stripe.com www.googletagmanager.com",
+              // Styles: self + inline (Tailwind CSS-in-JS) + Google Fonts
+              "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
+              // Fonts
+              "font-src 'self' fonts.gstatic.com",
+              // Images: self + data URIs + Google + CDN thumbnails
+              "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.googleusercontent.com *.bridgedataoutput.com",
+              // XHR/fetch/WebSocket: Firebase, Bridge API, Google Places, Stripe, Neon
+              "connect-src 'self' *.googleapis.com *.firebaseio.com wss://*.firebaseio.com *.firebaseapp.com api.bridgedataoutput.com places.googleapis.com *.stripe.com *.google-analytics.com *.analytics.google.com neon.tech *.neon.tech",
+              // Frames: Firebase auth popups + Stripe
+              "frame-src 'self' *.firebaseapp.com accounts.google.com *.stripe.com js.stripe.com",
+              // Prevent this site from being framed by others
+              "frame-ancestors 'self'",
+              // Workers: Next.js service worker
+              "worker-src 'self' blob:",
+            ].join('; '),
           },
         ],
       },

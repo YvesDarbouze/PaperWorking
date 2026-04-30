@@ -24,20 +24,20 @@ function PanelFallback() {
   return (
     <div className="flex h-screen w-full flex-col bg-bg-primary p-8">
       <div className="flex items-center justify-between mb-8">
-        <div className="h-10 w-48 animate-pulse rounded bg-pw-border/20" />
-        <div className="h-10 w-32 animate-pulse rounded-full bg-pw-border/20" />
+        <div className="h-10 w-48 animate-shimmer rounded bg-pw-border/20" />
+        <div className="h-10 w-32 animate-shimmer rounded-full bg-pw-border/20" />
       </div>
       <div className="grid grid-cols-12 gap-8 flex-1">
         <div className="col-span-12 lg:col-span-3 space-y-6">
-          <div className="h-64 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
-          <div className="h-64 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-64 animate-shimmer rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-64 animate-shimmer rounded-xl bg-bg-surface border border-border-accent/10" />
         </div>
         <div className="col-span-12 lg:col-span-6 space-y-6">
-          <div className="h-32 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
-          <div className="h-96 animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-32 animate-shimmer rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-96 animate-shimmer rounded-xl bg-bg-surface border border-border-accent/10" />
         </div>
         <div className="col-span-12 lg:col-span-3">
-          <div className="h-full animate-pulse rounded-xl bg-bg-surface border border-border-accent/10" />
+          <div className="h-full animate-shimmer rounded-xl bg-bg-surface border border-border-accent/10" />
         </div>
       </div>
     </div>
@@ -96,13 +96,27 @@ export default function DashboardPage() {
         <ErrorBoundary name="Command Center">
           <Suspense fallback={<PanelFallback />}>
             <PanelTrack headerHeight={64}>
-              <FindAndFundPanel />
-              <PipelinePanel />
-              <EvaluationPanel />
-              <ClosingPanel />
-              <RehabPanel />
-              <EnginePanel />
-              <ExitPanel />
+              <ErrorBoundary name="Find & Fund Hub">
+                <FindAndFundPanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Acquisition Pipeline">
+                <PipelinePanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Due Diligence Evaluation">
+                <EvaluationPanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Closing Room">
+                <ClosingPanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Hold & Rehab">
+                <RehabPanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Operational Engine">
+                <EnginePanel />
+              </ErrorBoundary>
+              <ErrorBoundary name="Exit Strategy Hub">
+                <ExitPanel />
+              </ErrorBoundary>
             </PanelTrack>
           </Suspense>
         </ErrorBoundary>

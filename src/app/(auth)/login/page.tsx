@@ -11,7 +11,7 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, Wand2, CheckCircle2 } fr
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="animate-pulse bg-bg-primary h-[400px] w-full rounded-[24px]" />}>
+    <Suspense fallback={<div className="animate-shimmer bg-bg-primary h-[400px] w-full rounded-[24px]" />}>
       <LoginPageInner />
     </Suspense>
   );
@@ -20,7 +20,7 @@ export default function LoginPage() {
 function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/dashboard';
+  const redirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '/dashboard';
   
   const {
     login,

@@ -38,9 +38,10 @@ function CurrencyInput({
 }: {
   label: string;
   value: number;
-  onChange: (n: number) => void;
+  onChange: (val: number) => void;
   placeholder?: string;
   hint?: string;
+  disabled?: boolean;
 }) {
   const [raw, setRaw] = useState(fmtCurrency(value));
 
@@ -52,20 +53,21 @@ function CurrencyInput({
       <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
         {label}
       </label>
-      <div className="relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+      <div className={`relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}>
         <span className="pl-3 text-xs font-black text-text-secondary select-none">$</span>
         <input
           type="text"
           inputMode="numeric"
           placeholder={placeholder}
           value={raw}
+          disabled={disabled}
           onChange={(e) => {
             const stripped = e.target.value.replace(/[^0-9]/g, '');
             setRaw(stripped ? parseInt(stripped, 10).toLocaleString() : '');
             onChange(parseInt(stripped, 10) || 0);
           }}
           onBlur={() => setRaw(fmtCurrency(value))}
-          className="flex-1 px-2 py-3 text-sm font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/40"
+          className={`flex-1 px-2 py-3 text-sm font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/40 ${disabled ? 'cursor-not-allowed' : ''}`}
         />
       </div>
       {hint && <p className="text-[9px] text-text-secondary font-bold tracking-wide">{hint}</p>}
@@ -140,6 +142,7 @@ export default function DealAnalyzer() {
   const purchasePrice = currentProject.financials.purchasePrice || 0;
   const maoViolated = maoIsSetup && purchasePrice > mao;
   const maoVariance = mao - purchasePrice;
+  const isLocked = currentProject.isClearToClose ?? false;
 
   // ── Comparable Sales averages ──
   const validComps = comps.filter(c => c.soldPrice > 0);
@@ -149,8 +152,9 @@ export default function DealAnalyzer() {
 
   // ── Persist helpers ──
   const save = useCallback((patch: Parameters<typeof updateProjectFinancials>[1]) => {
+    if (isLocked) return;
     updateProjectFinancials(currentProject.id, patch);
-  }, [currentProject.id, updateProjectFinancials]);
+  }, [currentProject.id, updateProjectFinancials, isLocked]);
 
   const handleArv = (n: number) => { setArv(n); save({ estimatedARV: n }); };
   const handleRehab = (n: number) => { setRehabEst(n); save({ projectedRehabCost: n }); };
@@ -163,6 +167,7 @@ export default function DealAnalyzer() {
   }, [mao, currentProject?.id]);
 
   const addComp = () => {
+    if (isLocked) return;
     if (comps.length >= MAX_COMPS) return;
     const newComp: ComparableSale = {
       id: `${uid}-${Date.now()}`,
@@ -177,12 +182,14 @@ export default function DealAnalyzer() {
   };
 
   const updateComp = (id: string, patch: Partial<ComparableSale>) => {
+    if (isLocked) return;
     const updated = comps.map(c => c.id === id ? { ...c, ...patch } : c);
     setComps(updated);
     save({ comparableSales: updated });
   };
 
   const removeComp = (id: string) => {
+    if (isLocked) return;
     const updated = comps.filter(c => c.id !== id);
     setComps(updated);
     save({ comparableSales: updated });
@@ -197,7 +204,10 @@ export default function DealAnalyzer() {
             <TrendingUp className="w-4 h-4 text-white" />
             <div>
               <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em]">Phase_01 · Sourcing</p>
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Deal.Analyzer</h2>
+              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
+                Deal.Analyzer
+                {isLocked && <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-white/20 text-white rounded-sm">Locked</span>}
+              </h2>
             </div>
           </div>
           <div className="text-right hidden sm:block">
@@ -221,18 +231,21 @@ export default function DealAnalyzer() {
               label="After Repair Value (ARV)"
               value={arv}
               onChange={handleArv}
+              disabled={isLocked}
               hint="Estimated market value after full renovation"
             />
             <CurrencyInput
               label="Rehab Estimate"
               value={rehabEst}
               onChange={handleRehab}
+              disabled={isLocked}
               hint="Total projected renovation cost"
             />
             <CurrencyInput
               label="Fixed / Closing Costs"
               value={fixedCosts}
               onChange={handleFixed}
+              disabled={isLocked}
               hint="Acquisition-side closing costs, inspections, etc."
             />
           </div>
@@ -318,7 +331,7 @@ export default function DealAnalyzer() {
               <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">Comparable_Sales</span>
               <span className="text-[9px] font-black text-text-secondary">({comps.length}/{MAX_COMPS})</span>
             </div>
-            {comps.length < MAX_COMPS && (
+            {!isLocked && comps.length < MAX_COMPS && (
               <button
                 onClick={addComp}
                 className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border border-pw-black text-text-primary hover:bg-pw-black hover:text-white transition-colors"
@@ -366,26 +379,28 @@ export default function DealAnalyzer() {
                         type="text"
                         placeholder="123 Main St, City, ST"
                         value={comp.address}
+                        disabled={isLocked}
                         onChange={(e) => updateComp(comp.id, { address: e.target.value })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none placeholder:text-text-secondary/30 placeholder:font-normal"
+                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none placeholder:text-text-secondary/30 placeholder:font-normal ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </div>
 
                     {/* Sold Price */}
                     <div className="space-y-1">
                       <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Sold Price</label>
-                      <div className="relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+                      <div className={`relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
                         <span className="pl-2 text-xs font-black text-text-secondary">$</span>
                         <input
                           type="text"
                           inputMode="numeric"
                           placeholder="0"
                           value={comp.soldPrice > 0 ? comp.soldPrice.toLocaleString() : ''}
+                          disabled={isLocked}
                           onChange={(e) => {
                             const n = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10) || 0;
                             updateComp(comp.id, { soldPrice: n });
                           }}
-                          className="w-full px-1 py-2.5 text-xs font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/30"
+                          className={`w-full px-1 py-2.5 text-xs font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed' : ''}`}
                         />
                       </div>
                     </div>
@@ -399,9 +414,10 @@ export default function DealAnalyzer() {
                         placeholder="0.0"
                         step="0.1"
                         min="0"
+                        disabled={isLocked}
                         value={comp.distanceMiles || ''}
                         onChange={(e) => updateComp(comp.id, { distanceMiles: parseFloat(e.target.value) || 0 })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30"
+                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </div>
 
@@ -413,20 +429,23 @@ export default function DealAnalyzer() {
                         inputMode="numeric"
                         placeholder="0"
                         min="0"
+                        disabled={isLocked}
                         value={comp.daysOnMarket || ''}
                         onChange={(e) => updateComp(comp.id, { daysOnMarket: parseInt(e.target.value, 10) || 0 })}
-                        className="w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30"
+                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
                       />
                     </div>
 
                     {/* Remove */}
-                    <button
-                      onClick={() => removeComp(comp.id)}
-                      className="flex items-center justify-center w-8 h-8 border border-border-accent hover:border-red-400 hover:text-red-600 text-text-secondary transition-colors self-center"
-                      aria-label="Remove comp"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
+                    {!isLocked && (
+                      <button
+                        onClick={() => removeComp(comp.id)}
+                        className="flex items-center justify-center w-8 h-8 border border-border-accent hover:border-red-400 hover:text-red-600 text-text-secondary transition-colors self-center"
+                        aria-label="Remove comp"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </motion.div>
                 ))}
               </div>
@@ -469,15 +488,16 @@ export default function DealAnalyzer() {
               <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
                 Lead Source
               </label>
-              <div className="relative border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+              <div className={`relative border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
                 <select
                   value={leadSource}
+                  disabled={isLocked}
                   onChange={(e) => {
                     const val = e.target.value as LeadSource | '';
                     setLeadSource(val);
                     save({ leadSource: val as LeadSource || undefined });
                   }}
-                  className="w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none appearance-none cursor-pointer"
+                  className={`w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none appearance-none cursor-pointer ${isLocked ? 'cursor-not-allowed' : ''}`}
                 >
                   <option value="">Select source…</option>
                   {LEAD_SOURCES.map(s => (
@@ -496,6 +516,7 @@ export default function DealAnalyzer() {
             <CurrencyInput
               label="Earnest Money Deposit (EMD)"
               value={emdAmount}
+              disabled={isLocked}
               onChange={(n) => { setEmdAmount(n); save({ emdAmount: n }); }}
               hint="Good faith deposit amount"
             />
@@ -505,17 +526,18 @@ export default function DealAnalyzer() {
               <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
                 Go Hard Date
               </label>
-              <div className="border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors">
+              <div className={`border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
                 <input
                   type="date"
                   value={emdGoHardDate}
+                  disabled={isLocked}
                   onChange={(e) => {
                     setEmdGoHardDate(e.target.value);
                     save({
                       emdGoHardDate: e.target.value ? new Date(e.target.value) : undefined,
                     });
                   }}
-                  className="w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none cursor-pointer"
+                  className={`w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none cursor-pointer ${isLocked ? 'cursor-not-allowed' : ''}`}
                 />
               </div>
               <p className="text-[9px] text-text-secondary font-bold tracking-wide">EMD becomes non-refundable</p>
@@ -531,11 +553,12 @@ export default function DealAnalyzer() {
               rows={3}
               placeholder="Describe the seller's motivation, urgency level, pain points, and deal context…"
               value={sellerMotivation}
+              disabled={isLocked}
               onChange={(e) => {
                 setSellerMotivation(e.target.value);
                 save({ sellerMotivation: e.target.value });
               }}
-              className="w-full px-4 py-3 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none resize-none leading-relaxed placeholder:text-text-secondary/30 placeholder:font-normal"
+              className={`w-full px-4 py-3 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none resize-none leading-relaxed placeholder:text-text-secondary/30 placeholder:font-normal ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
             />
           </div>
         </div>

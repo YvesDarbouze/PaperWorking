@@ -8,8 +8,9 @@ export async function pingBlockchainTitleRegistry(propertyAddress: string): Prom
     // We delay to simulate network mining/block confirmation 
     setTimeout(() => {
       // Create a simulated cryptographically random hex
-      const randomHex = [...Array(40)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
-      const fakeTxHash = `0x${randomHex}`;
+      const bytes = new Uint8Array(20);
+      crypto.getRandomValues(bytes);
+      const fakeTxHash = `0x${Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')}`;
       
       resolve({
         success: true,

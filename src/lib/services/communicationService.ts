@@ -28,6 +28,8 @@ export const communicationService = {
         ...message,
         projectId,
         organizationId,
+        readByUid: message.readByUid || (message.senderUid ? [message.senderUid] : []),
+        emailNotificationSent: message.emailNotificationSent || false,
         createdAt: serverTimestamp(),
       });
 
@@ -70,7 +72,7 @@ export const communicationService = {
     console.log(`[OUTBOUND EMAIL] To: ${recipients.join(', ')} | Sub: ${trackingSubject}`);
     
     // In real deployment, call SendGrid/Postmark API here
-    const mockProviderId = `msg_${Math.random().toString(36).substr(2, 9)}`;
+    const mockProviderId = `msg_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
 
     await this.logMessage(projectId, organizationId, {
       senderEmail: 'notifications@paperworking.io',

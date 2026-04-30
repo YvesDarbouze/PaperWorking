@@ -8,6 +8,7 @@ import NetEngine from '@/components/exit/NetEngine';
 import ProfitVarianceCard from '@/components/dashboard/ProfitVarianceCard';
 import ExitStrategyFork from '@/components/exit/ExitStrategyFork';
 import NetProceedsCard from '@/components/exit/NetProceedsCard';
+import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 
 const StagingVendorManager = lazy(() => import('@/components/exit/StagingVendorManager'));
 const PhotographyUploadManager = lazy(() => import('@/components/exit/PhotographyUploadManager'));
@@ -15,6 +16,7 @@ const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
 const SettlementLedger = lazy(() => import('@/components/exit/SettlementLedger'));
 const EscrowReconciliation = lazy(() => import('@/components/exit/EscrowReconciliation'));
 const TaxReportGenerator = lazy(() => import('@/components/exit/TaxReportGenerator'));
+const CrowdfundingReconciliation = lazy(() => import('@/components/exit/CrowdfundingReconciliation'));
 
 /* ═══════════════════════════════════════════════════════
    Exit Panel — Lane 4 (The Exit Hub)
@@ -25,7 +27,7 @@ const TaxReportGenerator = lazy(() => import('@/components/exit/TaxReportGenerat
    ═══════════════════════════════════════════════════════ */
 
 const LazyFallback = () => (
-  <div className="h-48 bg-bg-surface animate-pulse border border-border-accent" />
+  <div className="h-48 animate-shimmer border border-border-accent rounded-xl" />
 );
 
 export default function ExitPanel() {
@@ -154,6 +156,14 @@ export default function ExitPanel() {
        </div>
 
        <div className="max-w-7xl mx-auto px-8 py-12 space-y-12">
+          
+          <PhaseExplainerVideo
+            phaseKey="phase-4-exit"
+            title="Phase 4: The Exit Strategy"
+            description="Culmination of tracking marketing costs, final metrics, and generating documents for end-of-year taxes."
+            src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+            duration="2:45"
+          />
 
           {/* Strategy Fork */}
           <ExitStrategyFork projectId={currentProject.id} strategy={strategy} onStrategyChange={setStrategy} />
@@ -268,6 +278,10 @@ export default function ExitPanel() {
                     <TaxReportGenerator deal={currentProject} />
                   </Suspense>
 
+                  <Suspense fallback={<LazyFallback />}>
+                    <CrowdfundingReconciliation deal={currentProject} />
+                  </Suspense>
+
                   {/* Market Status */}
                   <div className="border border-pw-black bg-bg-surface overflow-hidden relative">
                      <div className="flex h-56 w-full items-center justify-center bg-bg-primary relative overflow-hidden group">
@@ -290,7 +304,7 @@ export default function ExitPanel() {
                      </div>
                   </div>
 
-                  <Suspense fallback={<div className="h-96 bg-bg-surface animate-pulse" />}>
+                  <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
                      <div className="border border-border-accent p-1"><DealAutopsy deal={currentProject} /></div>
                   </Suspense>
                </div>

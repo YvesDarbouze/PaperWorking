@@ -16,7 +16,7 @@ export default function SeventyPercentRule() {
   // Rehab Costs
   let rehabCosts = 0;
   currentProject.financials.costs?.forEach(cost => rehabCosts += cost.amount);
-  const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + curr.estimatedCost, 0) || 0;
+  const inspectionsCost = currentProject.financials.inspections?.reduce((acc, curr) => acc + (curr.estimatedCost || 0), 0) || 0;
   rehabCosts += inspectionsCost;
 
   const purchasePrice = currentProject.financials.purchasePrice || 0;

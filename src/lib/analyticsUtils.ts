@@ -14,6 +14,7 @@ export interface DetailedProjectMetrics {
   closingCostsBuy: number;
   closingCostsSell: number;
   holdingCosts: number;
+  monthlyHoldingCosts: number;
   salePrice: number;
   netProfit: number;
   roi: number;
@@ -104,12 +105,15 @@ export function calculateProjectMetrics(
   const commPercent = (buyerPercent + sellerPercent) / 100;
   const breakEvenPrice = totalBurdenWithoutSaleComms / (1 - commPercent);
 
+  const monthlyHoldingCosts = adjustedMonths > 0 ? holdingCosts / adjustedMonths : 0;
+
   return {
     purchasePrice,
     renovationCosts,
     closingCostsBuy,
     closingCostsSell,
     holdingCosts,
+    monthlyHoldingCosts,
     salePrice,
     netProfit,
     roi,

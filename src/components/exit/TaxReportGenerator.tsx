@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useMemo, useCallback } from 'react';
-import { Project, TaxEstimate } from '@/types/schema';
+import { Project, TaxEstimate, LedgerItem } from '@/types/schema';
 import { computeCapitalGainsTax } from '@/lib/math/calculatorUtils';
-import { FileText, Download, Printer } from 'lucide-react';
+import { FileText, Download, Printer, FileSpreadsheet } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useProjectStore } from '@/store/projectStore';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 /* ═══════════════════════════════════════════════════════
    Tax Report Generator — PDF-Ready Capital Gains Summary
@@ -20,25 +23,34 @@ interface TaxReportGeneratorProps {
 export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
   const tax = useMemo(() => computeCapitalGainsTax(deal), [deal]);
   const salePrice = deal.financials?.actualSalePrice || deal.financials?.estimatedARV || 0;
+  
+  const ledgerItems = useProjectStore(state => state.ledgerItems[deal.id] || []);
+  const approvedItems = useMemo(() => {
+    return ledgerItems
+      .filter((item) => item.status === 'Approved')
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  }, [ledgerItems]);
 
   const fmt = (n: number) =>
     `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const handleDownloadPDF = useCallback(() => {
-    // Open a print window with the report content
-    const reportContent = generateReportHTML(deal, tax, salePrice);
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(reportContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-      }, 500);
-    } else {
-      toast.error('Popup blocked. Allow popups to generate the report.');
-    }
-  }, [deal, tax, salePrice]);
+    generateItemizedPDF(deal, tax, salePrice, approvedItems);
+    toast.success('Itemized PDF downloaded');
+  }, [deal, tax, salePrice, approvedItems]);
+
+  const handleDownloadCSV = useCallback(() => {
+    const csvContent = generateItemizedCSV(approvedItems);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${deal.propertyName || 'Property'}_Tax_Report.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('CSV downloaded');
+  }, [deal, approvedItems]);
 
   const handleCopyText = useCallback(() => {
     const text = generateReportText(deal, tax, salePrice);
@@ -94,12 +106,18 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
       </div>
 
       {/* Actions */}
-      <div className="px-6 py-4 border-t border-border-accent flex gap-3">
+      <div className="px-6 py-4 border-t border-border-accent flex flex-col gap-3 sm:flex-row">
         <button
           onClick={handleDownloadPDF}
           className="flex-1 flex items-center justify-center gap-2 bg-pw-black text-pw-white font-black text-[10px] py-3 uppercase tracking-[0.3em] hover:bg-pw-accent transition-all active:scale-95 border border-pw-black"
         >
-          <Printer className="w-3.5 h-3.5" /> Print_Report
+          <Printer className="w-3.5 h-3.5" /> Export_PDF
+        </button>
+        <button
+          onClick={handleDownloadCSV}
+          className="flex-1 flex items-center justify-center gap-2 bg-bg-surface text-text-primary font-black text-[10px] py-3 uppercase tracking-[0.3em] hover:bg-border-accent transition-all active:scale-95 border border-border-accent"
+        >
+          <FileSpreadsheet className="w-3.5 h-3.5" /> Export_CSV
         </button>
         <button
           onClick={handleCopyText}
@@ -148,57 +166,101 @@ function Row({
   );
 }
 
-// ─── Helper: Generate Print HTML ──────────────────────
-function generateReportHTML(deal: Project, tax: TaxEstimate, salePrice: number): string {
+// ─── Helper: Generate Itemized PDF ─────────────────────
+function generateItemizedPDF(deal: Project, tax: TaxEstimate, salePrice: number, items: LedgerItem[]) {
+  const doc = new jsPDF();
   const fmt = (n: number) =>
     `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Capital Gains Tax Report — ${deal.propertyName || 'Property'}</title>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Courier New', monospace; color: #111; padding: 40px; max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 18px; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 4px; }
-        .subtitle { font-size: 10px; color: #666; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 24px; }
-        .meta { font-size: 10px; color: #999; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        th, td { text-align: left; padding: 8px 4px; font-size: 12px; }
-        th { border-bottom: 2px solid #111; font-weight: 900; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; color: #666; }
-        td { border-bottom: 1px solid #eee; }
-        .right { text-align: right; }
-        .bold { font-weight: 900; }
-        .total-row td { border-top: 2px solid #111; border-bottom: none; font-weight: 900; font-size: 14px; }
-        .profit { color: #15803d; }
-        .loss { color: #b91c1c; }
-        .disclaimer { font-size: 9px; color: #999; margin-top: 32px; border-top: 1px solid #eee; padding-top: 12px; }
-        @media print { body { padding: 20px; } }
-      </style>
-    </head>
-    <body>
-      <h1>PaperWorking</h1>
-      <p class="subtitle">Capital Gains Tax Estimate</p>
-      <p class="meta">Property: ${deal.propertyName || 'N/A'} &bull; Generated: ${new Date().toLocaleDateString()}</p>
-      <table>
-        <thead><tr><th>Description</th><th class="right">Amount</th></tr></thead>
-        <tbody>
-          <tr><td>Sale Price</td><td class="right">${fmt(salePrice)}</td></tr>
-          <tr><td>Cost Basis (Purchase + Rehab + Acquisition + Holding)</td><td class="right">${fmt(tax.costBasis)}</td></tr>
-          <tr><td>Sell-Side Costs</td><td class="right">${fmt(salePrice - tax.netProceeds)}</td></tr>
-          <tr><td class="bold">Net Proceeds</td><td class="right bold">${fmt(tax.netProceeds)}</td></tr>
-          <tr><td>Capital Gain / (Loss)</td><td class="right ${tax.capitalGain >= 0 ? 'profit' : 'loss'}">${fmt(tax.capitalGain)}</td></tr>
-          <tr><td>Holding Period</td><td class="right">${tax.holdingPeriodDays} days (${tax.isLongTerm ? 'Long-Term' : 'Short-Term'})</td></tr>
-          <tr><td>Estimated Tax Rate</td><td class="right">${tax.estimatedTaxRate}%</td></tr>
-          <tr><td>Estimated Tax Liability</td><td class="right loss">${fmt(tax.estimatedTaxLiability)}</td></tr>
-          <tr class="total-row"><td>NET AFTER TAX</td><td class="right ${tax.netAfterTax >= 0 ? 'profit' : 'loss'}">${fmt(tax.netAfterTax)}</td></tr>
-        </tbody>
-      </table>
-      <p class="disclaimer">This is an estimate for informational purposes only. It does not constitute tax advice. Consult a CPA or tax professional for accurate tax filings. Does not account for 1031 exchanges, depreciation recapture, state/local taxes, or AMT.</p>
-    </body>
-    </html>
-  `;
+  // Header
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PAPERWORKING', 14, 20);
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100);
+  doc.text('CAPITAL GAINS TAX ESTIMATE & ITEMIZED LEDGER', 14, 26);
+  
+  doc.setFontSize(9);
+  doc.text(`Property: ${deal.propertyName || 'N/A'}`, 14, 34);
+  doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 39);
+
+  // Summary Data for AutoTable
+  const summaryData = [
+    ['Sale Price', fmt(salePrice)],
+    ['Cost Basis (Purchase + Rehab + Acq. + Holding)', fmt(tax.costBasis)],
+    ['Sell-Side Costs', fmt(salePrice - tax.netProceeds)],
+    ['Net Proceeds', fmt(tax.netProceeds)],
+    ['Capital Gain / (Loss)', fmt(tax.capitalGain)],
+    ['Holding Period', `${tax.holdingPeriodDays} days (${tax.isLongTerm ? 'Long-Term' : 'Short-Term'})`],
+    ['Estimated Tax Rate', `${tax.estimatedTaxRate}%`],
+    ['Estimated Tax Liability', fmt(tax.estimatedTaxLiability)],
+    ['NET AFTER TAX', fmt(tax.netAfterTax)],
+  ];
+
+  autoTable(doc, {
+    startY: 45,
+    head: [['Summary', 'Amount']],
+    body: summaryData,
+    theme: 'grid',
+    headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: {
+      0: { cellWidth: 120 },
+      1: { halign: 'right', fontStyle: 'bold' },
+    },
+    styles: { fontSize: 9 },
+  });
+
+  // Itemized Ledger
+  const itemizedData = items.map(item => [
+    new Date(item.createdAt).toLocaleDateString(),
+    item.type.toUpperCase(),
+    item.category,
+    item.description,
+    fmt(item.amount)
+  ]);
+
+  autoTable(doc, {
+    startY: (doc as any).lastAutoTable.finalY + 15,
+    head: [['Date', 'Type', 'Category', 'Description', 'Amount']],
+    body: itemizedData,
+    theme: 'grid',
+    headStyles: { fillColor: [50, 50, 50], textColor: [255, 255, 255], fontStyle: 'bold' },
+    columnStyles: {
+      4: { halign: 'right' }
+    },
+    styles: { fontSize: 8 },
+    margin: { bottom: 20 },
+    didDrawPage: function (data) {
+      // Footer text
+      doc.setFontSize(8);
+      doc.setTextColor(150);
+      const str = 'Page ' + doc.internal.getNumberOfPages();
+      doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+      doc.text('This report is for informational purposes only. Not official tax advice.', data.settings.margin.left, doc.internal.pageSize.height - 15);
+    }
+  });
+
+  doc.save(`${deal.propertyName || 'Property'}_Tax_Report.pdf`);
+}
+
+// ─── Helper: Generate Itemized CSV ─────────────────────
+function generateItemizedCSV(items: LedgerItem[]): string {
+  const headers = ['Date', 'Type', 'Category', 'Description', 'Status', 'Amount'];
+  
+  const rows = items.map(item => {
+    return [
+      new Date(item.createdAt).toLocaleDateString(),
+      item.type,
+      item.category,
+      `"${item.description.replace(/"/g, '""')}"`, // Escape quotes for CSV
+      item.status,
+      item.amount.toString()
+    ].join(',');
+  });
+
+  return [headers.join(','), ...rows].join('\\n');
 }
 
 // ─── Helper: Generate Plaintext Report ────────────────

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { MapPin, Search, Loader2, Home, DollarSign } from 'lucide-react';
-import type { BridgeSearchResult } from '@/app/api/bridge/search/route';
+import type { BridgeSearchResult } from '@/types/bridge';
 
 interface PropertySearchInputProps {
   value: string;

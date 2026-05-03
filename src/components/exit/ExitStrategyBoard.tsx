@@ -51,7 +51,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
            exitAssets: {
              ...d.exitAssets,
              mlsListingLink: mlsLink,
-             stagingImages: Array(imageCount).fill('https://mock-image-server.dev/staging.jpg'),
+             stagingImages: [],
            }
          };
       }

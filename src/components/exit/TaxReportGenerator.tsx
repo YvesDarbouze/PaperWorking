@@ -236,7 +236,7 @@ function generateItemizedPDF(deal: Project, tax: TaxEstimate, salePrice: number,
       // Footer text
       doc.setFontSize(8);
       doc.setTextColor(150);
-      const str = 'Page ' + doc.internal.getNumberOfPages();
+      const str = 'Page ' + (doc.internal as unknown as { getNumberOfPages: () => number }).getNumberOfPages();
       doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
       doc.text('This report is for informational purposes only. Not official tax advice.', data.settings.margin.left, doc.internal.pageSize.height - 15);
     }

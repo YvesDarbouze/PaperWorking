@@ -92,7 +92,7 @@ export function computeAutopsyMetrics(deal: Project): AutopsyMetrics {
   // ── Actual Rehab Costs ──────────────────────────────────────
   let actualRehabCost = 0;
   fin?.costs?.forEach(c => { if (c.approved) actualRehabCost += c.amount; });
-  fin?.inspections?.forEach(i => { actualRehabCost += i.actualCost; });
+  fin?.inspections?.forEach(i => { actualRehabCost += i.actualCost ?? 0; });
   deal.rehabExpenses?.forEach(e => { actualRehabCost += e.amount; });
 
   // ── Buy-Side Acquisition Costs ──────────────────────────────

@@ -623,7 +623,8 @@ export interface CapitalSource {
 
 export interface ProjectFinancials {
   purchasePrice: number;
-  estimatedARV: number; // After-Repair Value
+  estimatedARV: number; // After-Repair Value (canonical field)
+  arv?: number;         // Shorthand alias — calculation components may write here; consumers should prefer estimatedARV
   listedPrice?: number; // Current Listed Price (if applicable)
   costs: CostEntry[]; // Ledger of costs
 
@@ -894,6 +895,14 @@ export interface Permit {
   municipality: string;
   status: 'Pending' | 'Approved' | 'Denied';
   lastCheckedAt?: Date;
+  propertyAddress?: string;
+  permitType?: string;
+  description?: string;
+  issueDate?: Date;
+  expirationDate?: Date;
+  filedDate?: Date;
+  inspectorName?: string;
+  permitFee?: number;
 }
 
 export interface PendingReceipt {

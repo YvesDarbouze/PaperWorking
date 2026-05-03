@@ -31,7 +31,7 @@ export default function ComposeEmailModal({
   onSent,
 }: ComposeEmailModalProps) {
   const { user, profile } = useAuth();
-  const deals = useProjectStore((state) => state.deals);
+  const deals = useProjectStore((state) => state.projects);
 
   const [to, setTo] = useState('');
   const [projectId, setProjectId] = useState(defaultProjectId || '');

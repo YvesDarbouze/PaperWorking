@@ -38,9 +38,6 @@ const mockLawyers: ApplicationUser[] = [
 ];
 
 export async function fetchStateMatchedLawyers(stateCode: string): Promise<ApplicationUser[]> {
-  // Simulate network latency
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
   // Return lawyers who have an 'active' subscription
   return mockLawyers.filter(lawyer => lawyer.subscriptionStatus === 'active');
 }

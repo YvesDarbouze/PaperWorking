@@ -116,7 +116,7 @@ export const jobQueue = {
   async peekDlq(limit = 10): Promise<Job[]> {
     if (redis.status !== 'ready') return [];
     const raw = await redis.lrange(DLQ_KEY, 0, limit - 1);
-    return raw.map(r => {
+    return raw.map((r: string) => {
       try { return JSON.parse(r) as Job; }
       catch { return null; }
     }).filter(Boolean) as Job[];

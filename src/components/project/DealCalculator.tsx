@@ -192,7 +192,7 @@ export default function DealCalculator({ phaseColor, projectId, propertyAddress,
   };
 
   // Offer Response State
-  const [offerStatus, setOfferStatus] = useState<'Pending' | 'Accepted' | 'Rejected'>(initialFinancials?.offerStatus || 'Pending');
+  const [offerStatus, setOfferStatus] = useState<'Pending' | 'Accepted' | 'Rejected'>((initialFinancials?.offerStatus as 'Pending' | 'Accepted' | 'Rejected') || 'Pending');
 
   // Distressed Property Indicators State
   const [absenteeOwnership, setAbsenteeOwnership] = useState<boolean>(initialFinancials?.distressedIndicators?.absenteeOwnership || false);

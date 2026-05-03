@@ -35,6 +35,7 @@ function CurrencyInput({
   onChange,
   placeholder = '0',
   hint,
+  disabled,
 }: {
   label: string;
   value: number;

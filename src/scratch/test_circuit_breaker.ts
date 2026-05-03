@@ -1,6 +1,5 @@
 import { bridgeWorkerService } from '../lib/services/bridgeWorkerService';
 import { fetchMLSData } from '../lib/services/mlsService';
-import redis from '../lib/redis';
 
 /**
  * 🧪 Circuit Breaker Verification Script
@@ -28,11 +27,12 @@ async function runVerification() {
   try {
     await fetchMLSData('TEST_LISTING_123');
     console.error('❌ [FAILURE] fetchMLSData should have been blocked!');
-  } catch (error: any) {
-    if (error.message === 'MLS_SERVICE_PAUSED') {
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg === 'MLS_SERVICE_PAUSED') {
       console.log('✅ [SUCCESS] fetchMLSData was correctly blocked by the circuit breaker.');
     } else {
-      console.error('❌ [FAILURE] Unexpected error:', error.message);
+      console.error('❌ [FAILURE] Unexpected error:', msg);
     }
   }
 

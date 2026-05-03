@@ -63,3 +63,5 @@ node_modules\ 2/
 .claude/
 
 .next*
+.gstack/
+.git-backup/

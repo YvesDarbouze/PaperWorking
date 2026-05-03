@@ -27,7 +27,8 @@ export function OfferPipelineTracker({
   onStatusChange,
   offerAmountCents,
   propertyAddress,
-  phaseColor = 'var(--text-primary)'
+  phaseColor = 'var(--text-primary)',
+  onCounterSubmit,
 }: OfferPipelineTrackerProps) {
   // Normalize currentStatus
   const activeStatus = OFFER_STAGES.includes(currentStatus as OfferStage)
@@ -204,11 +205,11 @@ export function OfferPipelineTracker({
                     onChange={(e) => setCounterPriceInput(e.target.value)}
                     placeholder="e.g. 150,000"
                     className="w-full pl-8 pr-4 py-2 border rounded-md text-sm outline-none focus:ring-2"
-                    style={{ focusRingColor: phaseColor, borderColor: 'var(--border-ui)' }}
+                    style={{ borderColor: 'var(--border-ui)' }}
                   />
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Updated Terms (Optional)</label>
                 <textarea
@@ -217,7 +218,7 @@ export function OfferPipelineTracker({
                   placeholder="e.g. Seller requests 10-day inspection instead of 15..."
                   className="w-full p-3 border rounded-md text-sm outline-none focus:ring-2 resize-none"
                   rows={3}
-                  style={{ focusRingColor: phaseColor, borderColor: 'var(--border-ui)' }}
+                  style={{ borderColor: 'var(--border-ui)' }}
                 />
               </div>
             </div>

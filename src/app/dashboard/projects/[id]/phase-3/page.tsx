@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { projectsService } from '@/lib/firebase/deals';
-import { RehabExpense, HoldingCostEntry, SiteVisitLog, ScopeOfWorkItem, ContractorBid, DrawScheduleItem } from '@/types/schema';
+import { RehabExpense, HoldingCostEntry, SiteVisitLog, ScopeOfWorkItem, ContractorBid, DrawScheduleItem, RehabTask, ProjectFinancials } from '@/types/schema';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { RehabExpenseTracker } from '@/components/project/RehabExpenseTracker';
 import { HoldingCostsTracker } from '@/components/project/HoldingCostsTracker';

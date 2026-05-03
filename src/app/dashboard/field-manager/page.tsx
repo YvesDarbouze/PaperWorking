@@ -28,12 +28,7 @@ export default function FieldManagerPage() {
     return <div className="p-8 text-center text-text-secondary">No active properties available for Field Management.</div>;
   }
 
-  const rehabTasks = currentProject.financials.rehabTasks || [
-    { id: 't1', title: 'Demo & Teardown', category: 'Other', status: 'In Progress', estimatedCost: 3500 },
-    { id: 't2', title: 'Rough Plumbing', category: 'Plumbing', status: 'Pending', estimatedCost: 8500 },
-    { id: 't3', title: 'Electrical Rewiring', category: 'Electrical', status: 'Pending', estimatedCost: 6500 },
-    { id: 't4', title: 'Foundation Seal', category: 'Foundation', status: 'Pending', estimatedCost: 4000 }
-  ];
+  const rehabTasks = currentProject.financials.rehabTasks || [];
 
   const handleReceiptUpload = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,29 +38,26 @@ export default function FieldManagerPage() {
     }
 
     setIsUploading(true);
-    // Simulate upload delay
-    setTimeout(() => {
-      const mockCostEntry = {
-        id: `cost_${Date.now()}`,
-        description: `Field Receipt - ${receiptCategory}`,
-        amount: Number(receiptAmount),
-        approved: false, // Explicitly MUST be false for Triage
-        addedBy: 'General Contractor',
-        createdAt: new Date(),
-        category: receiptCategory,
-        receiptUrl: 'https://mock-image-server.dev/receipt_scan.jpg',
-        status: 'Pending Triage' as any
-      };
+    const newCostEntry = {
+      id: `cost_${Date.now()}`,
+      description: `Field Receipt - ${receiptCategory}`,
+      amount: Number(receiptAmount),
+      approved: false,
+      addedBy: 'General Contractor',
+      createdAt: new Date(),
+      category: receiptCategory,
+      receiptUrl: undefined,
+      status: 'Pending Triage' as any
+    };
 
-      const currentCosts = currentProject.financials.costs || [];
-      updateProjectFinancials(currentProject.id, {
-        costs: [...currentCosts, mockCostEntry]
-      });
+    const currentCosts = currentProject.financials.costs || [];
+    updateProjectFinancials(currentProject.id, {
+      costs: [...currentCosts, newCostEntry]
+    });
 
-      setReceiptAmount('');
-      setIsUploading(false);
-      toast.success('Receipt transmitted to Engine Room Triage!');
-    }, 1200);
+    setReceiptAmount('');
+    setIsUploading(false);
+    toast.success('Receipt transmitted to Engine Room Triage!');
   };
 
   const handleTaskCompletion = (taskId: string) => {
@@ -74,7 +66,7 @@ export default function FieldManagerPage() {
         return {
           ...t,
           status: 'Complete' as any,
-          afterPhotoUrl: 'https://mock-image-server.dev/after_photo.jpg',
+          afterPhotoUrl: undefined,
           escrowDrawRequested: true
         };
       }
@@ -166,6 +158,9 @@ export default function FieldManagerPage() {
              )}
           </div>
           
+          {rehabTasks.length === 0 && (
+            <p className="text-sm text-text-secondary text-center py-4">No rehab tasks yet. Add tasks to this project to track progress.</p>
+          )}
           <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-300 before:to-transparent">
             {rehabTasks.map((task, idx) => (
               <div key={task.id} className="relative flex items-center justify-between z-10 p-3 bg-bg-surface border rounded-xl shadow-sm">

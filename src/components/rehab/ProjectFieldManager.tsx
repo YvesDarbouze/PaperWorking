@@ -22,12 +22,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
 
   if (!currentProject) return null;
 
-  const rehabTasks = currentProject.financials?.rehabTasks || [
-    { id: 't1', title: 'Demo & Teardown', category: 'Other', status: 'In Progress', estimatedCost: 3500 },
-    { id: 't2', title: 'Rough Plumbing', category: 'Plumbing', status: 'Pending', estimatedCost: 8500 },
-    { id: 't3', title: 'Electrical Rewiring', category: 'Electrical', status: 'Pending', estimatedCost: 6500 },
-    { id: 't4', title: 'Foundation Seal', category: 'Foundation', status: 'Pending', estimatedCost: 4000 }
-  ];
+  const rehabTasks = currentProject.financials?.rehabTasks || [];
 
   const handleReceiptUpload = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,30 +32,27 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
     }
 
     setIsUploading(true);
-    // Simulate upload delay
-    setTimeout(() => {
-      const mockCostEntry = {
-        id: `cost_${Date.now()}`,
-        description: `Field Receipt - ${receiptCategory}`,
-        amount: Number(receiptAmount),
-        approved: false, // Explicitly MUST be false for Triage
-        addedBy: 'General Contractor',
-        createdAt: new Date(),
-        category: receiptCategory,
-        receiptUrl: 'https://mock-image-server.dev/receipt_scan.jpg',
-        status: 'Pending Triage' as any,
-        propertyName: currentProject.propertyName
-      };
+    const mockCostEntry = {
+      id: `cost_${Date.now()}`,
+      description: `Field Receipt - ${receiptCategory}`,
+      amount: Number(receiptAmount),
+      approved: false,
+      addedBy: 'General Contractor',
+      createdAt: new Date(),
+      category: receiptCategory,
+      receiptUrl: undefined,
+      status: 'Pending Triage' as any,
+      propertyName: currentProject.propertyName
+    };
 
-      const currentCosts = currentProject.financials.costs || [];
-      updateProjectFinancials(currentProject.id, {
-        costs: [...currentCosts, mockCostEntry]
-      });
+    const currentCosts = currentProject.financials.costs || [];
+    updateProjectFinancials(currentProject.id, {
+      costs: [...currentCosts, mockCostEntry]
+    });
 
-      setReceiptAmount('');
-      setIsUploading(false);
-      toast.success('Receipt transmitted to Engine Room Triage!');
-    }, 1200);
+    setReceiptAmount('');
+    setIsUploading(false);
+    toast.success('Receipt transmitted to Engine Room Triage!');
   };
 
   const handleTaskCompletion = (taskId: string) => {
@@ -69,7 +61,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
         return {
           ...t,
           status: 'Complete' as any,
-          afterPhotoUrl: 'https://mock-image-server.dev/after_photo.jpg',
+          afterPhotoUrl: undefined,
           escrowDrawRequested: true
         };
       }

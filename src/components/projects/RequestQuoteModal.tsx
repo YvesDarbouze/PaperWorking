@@ -27,7 +27,6 @@ export default function RequestQuoteModal({ vendor, isOpen, onClose }: RequestQu
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
-    await new Promise(r => setTimeout(r, 1200));
     setIsSubmitting(false);
     setIsSuccess(true);
   };

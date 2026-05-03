@@ -1,0 +1,1 @@
+/Users/yvesdarbouze/Documents/PaperWorking/.agents/skills/gstack/autoplan/SKILL.md

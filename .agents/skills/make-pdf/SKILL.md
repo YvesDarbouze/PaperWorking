@@ -1,0 +1,1 @@
+/Users/yvesdarbouze/Documents/PaperWorking/.agents/skills/gstack/make-pdf/SKILL.md

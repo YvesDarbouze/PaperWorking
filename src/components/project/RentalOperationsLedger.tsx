@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ProjectFinancials } from '@/types/schema';
 import { DollarSign, Percent, Save } from 'lucide-react';
@@ -44,7 +44,7 @@ export function RentalOperationsLedger({
     reset,
     formState: { errors },
   } = useForm<RentalSetupInput>({
-    resolver: zodResolver(rentalSetupSchema),
+    resolver: zodResolver(rentalSetupSchema) as Resolver<RentalSetupInput>,
     defaultValues: {
       projectedMonthlyRent:         financials.projectedMonthlyRent         ?? 0,
       vacancyRate:                  financials.vacancyRate                  ?? 5,

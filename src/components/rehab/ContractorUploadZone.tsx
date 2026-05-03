@@ -47,8 +47,6 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
 
         setIsUploading(true);
         const receiptUrl = mockFileUpload();
-        
-        await new Promise(r => setTimeout(r, 1200)); // Simulate mock upload
 
         const newReceipt: PendingReceipt = {
             id: `receipt_${Date.now()}`,

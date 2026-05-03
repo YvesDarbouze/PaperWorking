@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 async function sendViaResend(to: string[], subject: string, html: string): Promise<{ id: string } | null> {
   const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@paperworking.io';
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@paperworking.co';
 
   if (!apiKey) {
     console.log('[Mock Email] Would have sent to:', to, 'Subject:', subject);
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.io';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
     
     // Using collectionGroup to find unnotified messages across all projects
     const messagesSnapshot = await adminDb.collectionGroup('messages')
@@ -134,7 +134,7 @@ export async function GET(req: NextRequest) {
             await adminDb.collection('projects').doc(projectId)
               .collection('messages')
               .add({
-                senderEmail: process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.io',
+                senderEmail: process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co',
                 senderName: 'PaperWorking',
                 body: `Automated notification sent to ${recipientsToNotify.length} recipients.`,
                 subject,

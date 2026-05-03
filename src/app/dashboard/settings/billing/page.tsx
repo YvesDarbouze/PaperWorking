@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CreditCard, CheckCircle2, AlertTriangle, Loader2, ExternalLink, Download, FileText, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -30,19 +30,38 @@ const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof Ch
   inactive: { label: 'Inactive', cls: 'bg-bg-primary  text-text-secondary  border-border-accent',   Icon: AlertTriangle },
 };
 
-// Placeholder invoices for demo
-const MOCK_INVOICES = [
-  { id: 'INV-2026-04', date: 'Apr 1, 2026', amount: '$59.00', status: 'Paid' },
-  { id: 'INV-2026-03', date: 'Mar 1, 2026', amount: '$59.00', status: 'Paid' },
-  { id: 'INV-2026-02', date: 'Feb 1, 2026', amount: '$59.00', status: 'Paid' },
-  { id: 'INV-2026-01', date: 'Jan 1, 2026', amount: '$59.00', status: 'Paid' },
-  { id: 'INV-2025-12', date: 'Dec 1, 2025', amount: '$59.00', status: 'Paid' },
-];
+interface BillingInvoice {
+  id: string;
+  number: string | null;
+  date: string;
+  amount: string;
+  status: string;
+  pdfUrl: string | null;
+  hostedUrl: string | null;
+}
 
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError]     = useState<string | null>(null);
+  const [invoices, setInvoices]           = useState<BillingInvoice[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    setInvoicesLoading(true);
+    user.getIdToken().then((idToken) =>
+      fetch('/api/stripe/invoices', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+        .then((r) => r.json())
+        .then((data) => { if (data.invoices) setInvoices(data.invoices); })
+        .catch(() => {})
+        .finally(() => setInvoicesLoading(false))
+    );
+  }, [user]);
 
   const plan    = profile?.subscriptionPlan   ?? 'None';
   const status  = profile?.subscriptionStatus ?? 'inactive';
@@ -175,7 +194,11 @@ export default function BillingSettingsPage() {
           )}
         </div>
 
-        {plan === 'None' ? (
+        {invoicesLoading ? (
+          <div className="flex items-center justify-center py-10">
+            <Loader2 className="w-5 h-5 animate-spin text-[#A5A5A5]" />
+          </div>
+        ) : plan === 'None' || invoices.length === 0 ? (
           <div className="text-center py-8">
             <FileText className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3 opacity-20" />
             <p className="text-sm text-[#7F7F7F]">No transactional history recorded.</p>
@@ -193,25 +216,42 @@ export default function BillingSettingsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {MOCK_INVOICES.map((inv) => (
+                {invoices.map((inv) => (
                   <tr key={inv.id} className="group hover:bg-gray-50/50 transition-colors">
                     <td className="px-8 py-4">
                       <span className="flex items-center gap-2 text-sm font-bold text-[#595959]">
                         <FileText className="w-4 h-4 text-[#A5A5A5]" />
-                        {inv.id}
+                        {inv.number ?? inv.id}
                       </span>
                     </td>
                     <td className="px-8 py-4 text-sm text-[#7F7F7F]">{inv.date}</td>
                     <td className="px-8 py-4 text-sm font-bold text-[#595959]">{inv.amount}</td>
                     <td className="px-8 py-4">
-                      <span className="inline-flex px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest bg-green-50 text-green-700 border border-green-100 rounded-sm">
+                      <span className={`inline-flex px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border rounded-sm ${
+                        inv.status === 'paid'
+                          ? 'bg-green-50 text-green-700 border-green-100'
+                          : inv.status === 'open'
+                          ? 'bg-amber-50 text-amber-700 border-amber-100'
+                          : 'bg-gray-50 text-[#7F7F7F] border-gray-100'
+                      }`}>
                         {inv.status}
                       </span>
                     </td>
                     <td className="px-8 py-4 text-right">
-                      <button className="p-2 text-[#A5A5A5] hover:text-[#595959] transition-colors">
-                        <Download className="w-4 h-4" />
-                      </button>
+                      {inv.pdfUrl ? (
+                        <a
+                          href={inv.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 text-[#A5A5A5] hover:text-[#595959] transition-colors inline-block"
+                        >
+                          <Download className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <span className="p-2 text-[#D5D5D5] inline-block">
+                          <Download className="w-4 h-4" />
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

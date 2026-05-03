@@ -89,7 +89,7 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
               <th className="pb-3 text-sm font-medium text-right" style={{ color: 'var(--text-secondary)' }}>Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y" style={{ divideColor: 'var(--border-subtle)' }}>
+          <tbody className="divide-y divide-[var(--border-subtle)]">
             {tasks.map(task => {
               const actual = task.actualCost || 0;
               const estimated = task.estimatedCost || 0;

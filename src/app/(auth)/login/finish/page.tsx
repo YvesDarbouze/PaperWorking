@@ -42,7 +42,7 @@ function MagicLinkFinishInner() {
     try {
       await verifyMagicLink(email, window.location.href);
       setStatus('success');
-      setTimeout(() => router.push('/dashboard'), 1500);
+      router.push('/dashboard');
     } catch (err) {
       setStatus('error');
     }

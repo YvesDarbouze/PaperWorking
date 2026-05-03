@@ -59,7 +59,7 @@ interface DispatchPayload {
 // ─── Constants ───────────────────────────────────────────────
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.io';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
 const INBOUND_DOMAIN = process.env.INBOUND_EMAIL_DOMAIN || '';
 
 // ─── Template Registry ──────────────────────────────────────

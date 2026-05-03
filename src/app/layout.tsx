@@ -2,6 +2,19 @@ import type { Metadata } from "next";
 import { Hanken_Grotesk } from "next/font/google";
 import Script from "next/script";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
+import { AuthProvider } from "@/context/AuthContext";
+import ChatbotWidget from "@/components/shared/ChatbotWidget";
+
+const hankenGrotesk = Hanken_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "PaperWorking",
+  description: "Real estate project management platform",
+};
 
 export default function RootLayout({
   children,

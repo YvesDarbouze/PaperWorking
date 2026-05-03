@@ -101,7 +101,7 @@ function computeYearlyMetrics(projects: Project[]): YearMetrics[] {
     // Renovation costs
     let renovationCosts = 0;
     fin?.costs?.forEach(c => { if (c.approved) renovationCosts += c.amount; });
-    fin?.inspections?.forEach(i => { renovationCosts += i.actualCost; });
+    fin?.inspections?.forEach(i => { renovationCosts += i.actualCost ?? 0; });
     deal.rehabExpenses?.forEach(e => { renovationCosts += e.amount; });
 
     // Sourcing & Closing (buy-side)

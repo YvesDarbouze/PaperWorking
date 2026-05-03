@@ -43,8 +43,5 @@ export async function GET(request: Request) {
 
   const matchedLawyers = mockLawyers.filter(lw => lw.state.toUpperCase() === stateCode.toUpperCase());
 
-  // Simulating Server latency constraint
-  await new Promise(resolve => setTimeout(resolve, 800));
-
   return NextResponse.json({ success: true, lawyers: matchedLawyers });
 }

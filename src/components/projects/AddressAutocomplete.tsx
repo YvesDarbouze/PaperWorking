@@ -95,7 +95,7 @@ export default function AddressAutocomplete({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Sync external value (autocomplete mode)
   useEffect(() => {
@@ -251,7 +251,7 @@ export default function AddressAutocomplete({
   }, [manualStreet, manualCity, manualState, manualZip, onSelect]);
 
   // Auto-commit manual fields on blur of any field (debounced)
-  const manualCommitRef = useRef<ReturnType<typeof setTimeout>>();
+  const manualCommitRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const scheduleManualCommit = useCallback(() => {
     if (manualCommitRef.current) clearTimeout(manualCommitRef.current);
     manualCommitRef.current = setTimeout(commitManualAddress, 150);

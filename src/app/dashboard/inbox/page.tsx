@@ -23,7 +23,7 @@ function InboxSplitPane() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
-  const deals = useProjectStore((state) => state.deals);
+  const deals = useProjectStore((state) => state.projects);
   const { threads, loading, error, unreadTotal, markAsRead } = useInboxThreads();
 
   const threadId = searchParams.get('threadId') || searchParams.get('thread') || null;

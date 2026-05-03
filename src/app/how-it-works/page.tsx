@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: 'How It Works — PaperWorking',
     description:
       'MAO auto-calculation, Capital Stack dashboard, and LOI Wizard for REI investors.',
-    url: 'https://paperworking.io/how-it-works',
+    url: 'https://paperworking.co/how-it-works',
   },
 };
 

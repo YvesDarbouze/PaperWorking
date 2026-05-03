@@ -95,7 +95,7 @@ export default function ExitPanel() {
       if (d.id === currentProject.id) {
          return {
            ...d, status: 'Listed' as any,
-           exitAssets: { ...d.exitAssets, mlsListingLink: mlsLink, stagingImages: Array(imageCount).fill('https://mock-image-server.dev/staging.jpg') }
+           exitAssets: { ...d.exitAssets, mlsListingLink: mlsLink, stagingImages: [] }
          };
       }
       return d;

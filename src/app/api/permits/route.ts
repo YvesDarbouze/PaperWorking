@@ -8,9 +8,6 @@ import { NextResponse } from 'next/server';
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  // Simulate network querying latency
-  await new Promise(resolve => setTimeout(resolve, 1400));
-
   // In a production application, this would accept params to search an actual registry.
   // Here, we simply return a successful ping indicating permits have cleared.
   return NextResponse.json({

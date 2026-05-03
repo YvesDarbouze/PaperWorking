@@ -56,7 +56,7 @@ export default function GlobalInbox() {
 
     try {
       await communicationService.logMessage(selectedDealId, selectedDeal?.organizationId || 'primary-org', {
-        senderEmail: 'you@paperworking.io',
+        senderEmail: 'you@paperworking.co',
         senderName: 'You',
         body: replyText,
         type: 'INTERNAL_COMMENT',

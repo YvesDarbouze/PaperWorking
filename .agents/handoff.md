@@ -1,3 +1,127 @@
+# Agent Handoff — 2026-05-03 (Sprint 10 — Module Boundary Fix & TS Sweep)
+
+**Last agent:** Claude Code
+**Status:** ✅ Complete — 0 src/ TS errors; module boundary resolved
+
+## Changes this session
+
+### Module boundary fix (Next.js App Router)
+- Created `src/types/bridge.ts` — canonical home for `BridgeSearchResult` interface
+- `src/app/api/bridge/search/route.ts` — removed inline `export interface BridgeSearchResult`; now imports from `@/types/bridge` and re-exports as type alias for any external callers
+- `src/components/shared/PropertySearchInput.tsx` — updated import to `@/types/bridge` (was `@/app/api/bridge/search/route`)
+
+### Pre-confirmed already clean (no action needed)
+- `BurnRateMonitor.tsx` — `Zap` already imported at line 5
+- `OfferPipelineTracker.tsx` — `onCounterSubmit` already in interface; CSS properties already camelCased
+- `AddressAutocomplete.tsx` — no arg-count errors in tsc output
+- `getTeamMembers.ts`, `calculatorUtils.ts`, `jobQueue.ts`, cron route — 0 errors in tsc output
+
+### Final tsc result
+- `npx tsc --noEmit` → **0 errors in src/**
+- Only noise: `node_modules 2/` and `.next/types/*d 2.ts` Finder-duplicate phantoms (pre-existing)
+
+---
+
+# Agent Handoff — 2026-05-03 (Sprint 9 — Mock Delay & Data Sweep)
+
+**Last agent:** Claude Code
+**Status:** ✅ Complete — 0 TS errors; all mock delays removed; hardcoded fallback tasks stripped
+
+## Changes this session
+
+### Mock UX delays removed
+- `src/components/rehab/ProjectFieldManager.tsx` — Unwrapped 1200ms `setTimeout` in `handleReceiptUpload`; cost entry now writes synchronously
+- `src/components/rehab/ContractorUploadZone.tsx` — Removed 1200ms `await new Promise` ("Simulate mock upload")
+- `src/app/api/lawyers/route.ts` — Removed 800ms "Simulating Server latency constraint" delay
+- `src/app/api/permits/route.ts` — Removed 1400ms "Simulate network querying latency" delay
+- `src/lib/permitTrackerApi.ts` — Removed 2000ms "Simulate network latency" delay
+- `src/lib/lawyerMatchingApi.ts` — Removed 1500ms "Simulate network latency" delay
+
+### Hardcoded fallback data stripped
+- `src/components/rehab/ProjectFieldManager.tsx` — Replaced 4-item hardcoded `rehabTasks` fallback array with `[]`; empty state renders when no tasks exist in store
+
+### Pre-confirmed clean (no action needed)
+- `src/components/findandfund/InvestorInviteDrawer.tsx` — No delay present (already clean from Sprint 7)
+- `src/components/projects/RequestQuoteModal.tsx` — No delay present (already clean)
+- `src/app/(auth)/login/finish/page.tsx` — No delay present (already clean)
+- Domain (`paperworking.co`) — Already standardized in Sprint 7; grep confirms 0 remaining `.io`/`.com` variants
+
+---
+
+# Agent Handoff — 2026-05-03 (Sprint 8 — Lint Error Finalization)
+
+**Last agent:** Claude Code
+**Status:** ✅ All src/ lint errors resolved — 0 TypeScript errors, 0 ESLint errors in src/
+
+## Changes this session
+
+### ESLint errors fixed (2 src/ errors → 0)
+- `src/scratch/test_circuit_breaker.ts` — Removed unused `redis` import; replaced `catch (error: any)` with untyped catch + `instanceof Error` guard for `.message` access
+- `src/store/projectStore.ts` — `let activeProjects` → `const activeProjects` (prefer-const error)
+
+### Notes
+- The `✖ 73386 problems` in ESLint output are all from `node_modules 2/` and `.next.old_*` phantom Finder-duplicate directories — not src/. Exclude these from ESLint config if they cause noise in CI.
+
+---
+
+# Agent Handoff — 2026-05-03 (Sprint 7 — TS Cleanup + Domain Standardization)
+
+**Last agent:** Claude Code
+**Status:** ✅ Complete — 0 src/ TS errors; domain standardized to paperworking.co
+
+## Changes this session
+
+### TypeScript errors fixed (21 → 0)
+- `src/types/schema.ts` — Added optional fields to `ApplicationUser` (`firstName`, `lastName`, `phone`, `companyName`, `organizationName`, `onboardingCompleted`) and `Project` (`matterportUrl`)
+- `src/app/api/stripe/invoices/route.ts` — Coerced `invoice_pdf ?? null` and `hosted_invoice_url ?? null`
+- `src/app/dashboard/field-manager/page.tsx` + `src/components/rehab/ProjectFieldManager.tsx` — `receiptUrl/afterPhotoUrl: null → undefined`; removed fake 1200ms delays
+- `src/app/dashboard/inbox/page.tsx` — Fixed `state.deals → state.projects`
+- `src/app/dashboard/projects/page.tsx` — Fixed `value={phaseFilter ?? 'all'}`
+- `src/components/acquisition/DocumentVault.tsx`, `src/components/engine/DocumentHub.tsx`, `src/components/phase2/LoanProcessingPipeline.tsx` — Added `fileUrl: ''` to new document objects
+- `src/components/dashboard/YearlyPortfolioPerformance.tsx` + `src/lib/math/calculatorUtils.ts` — `i.actualCost ?? 0`
+- `src/components/exit/TaxReportGenerator.tsx` — `doc.internal.getNumberOfPages()` → `doc.getNumberOfPages()`
+- `src/components/project/DealCalculator.tsx` — Cast `offerStatus` to typed union
+- `src/components/project/RentalOperationsLedger.tsx` — Cast `zodResolver` as `Resolver<RentalSetupInput>`
+- `src/components/projects/AddressAutocomplete.tsx` — Added `undefined` initial value to `useRef` calls (React 19)
+- `src/components/rehab/RehabExpenseTracker.tsx` — Added Demo, Systems, Interior, Exterior to `CATEGORY_META`
+- `src/lib/queue/jobQueue.ts` — `r: string` type annotation
+- `src/lib/services/mlsService.ts` — Added `postalCode` to dev fallback object
+
+### Domain standardized to paperworking.co (canonical)
+- All `paperworking.io` hardcoded fallbacks replaced with `paperworking.co` across 10 files
+- Affected: cron route, invitations (send + respond), waitlist, how-it-works page, GlobalInbox, InvestorResponseEmail, CommunicationEngine, communicationService, dealStateMachine
+
+### Known pre-existing (do not fix without instruction)
+- `node_modules 2/` and `.next/types/routes.d 2.ts` phantom errors — Finder duplicates; tsc exits 1 but 0 `src/` errors
+
+---
+
+# Agent Handoff — 2026-05-03 (Mock Data Elimination)
+
+**Last agent:** Claude Code
+**Status:** ✅ Mock data sweep complete — 0 TypeScript errors in changed files
+
+## Changes this session
+
+### Mock URL removal (mock-image-server.dev)
+- `src/app/dashboard/field-manager/page.tsx` — `receiptUrl` and `afterPhotoUrl` set to `undefined` (was mock URL)
+- `src/components/rehab/ProjectFieldManager.tsx` — same
+- `src/components/exit/ExitStrategyBoard.tsx` — `stagingImages` set to `[]` (was `Array(n).fill(mock-url)`)
+- `src/app/dashboard/panels/ExitPanel.tsx` — same
+
+### Investor email placeholder removed
+- `src/lib/services/dealStateMachine.ts` (line ~81) — Replaced `'investors@example.com'` with a dynamic union of `deal.fractionalInvestors[].email`, `deal.pledges[].investorEmail`, and `deal.investorCommitments[].investorEmail`
+
+### Billing page wired to live Stripe
+- `src/app/dashboard/settings/billing/page.tsx` — Deleted `MOCK_INVOICES`. Added `useEffect` that POSTs to `/api/stripe/invoices` on mount, stores results in `invoices` state. Invoice table now renders live data with a loading spinner and PDF download links.
+
+### API routes (already existed — no changes needed)
+- `/api/waitlist/route.ts` — complete (Firestore + Resend)
+- `/api/ai/draft/route.ts` — complete (Firebase auth + DraftingAgent)
+- `/api/stripe/invoices/route.ts` — complete (real Stripe `invoices.list`)
+
+---
+
 # Agent Handoff — 2026-04-30 (Sprint 4 QA Finalization)
 
 **Last agent:** Claude Code

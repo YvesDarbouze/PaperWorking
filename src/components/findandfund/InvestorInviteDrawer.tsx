@@ -40,8 +40,6 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
   const handleSubmit = async () => {
     if (!name.trim() || !email.trim()) return;
     setSending(true);
-    // Simulate a small delay
-    await new Promise(r => setTimeout(r, 600));
     onInvite({
       name: name.trim(),
       email: email.trim(),

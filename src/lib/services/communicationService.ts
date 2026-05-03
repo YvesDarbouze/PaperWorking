@@ -42,7 +42,7 @@ export const communicationService = {
               organizationId: organizationId,
               type: message.type || 'INTERNAL_COMMENT',
               direction: message.type === 'EMAIL_INBOUND' ? 'IN' : 'OUT',
-              fromAddress: message.senderEmail || 'system@paperworking.io',
+              fromAddress: message.senderEmail || 'system@paperworking.co',
               toAddress: 'multiple', // Simplified for log
               subject: message.subject ?? '',
               body: message.body || '',
@@ -75,7 +75,7 @@ export const communicationService = {
     const mockProviderId = `msg_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
 
     await this.logMessage(projectId, organizationId, {
-      senderEmail: 'notifications@paperworking.io',
+      senderEmail: 'notifications@paperworking.co',
       senderName: 'PaperWorking System',
       type: 'EMAIL_OUTBOUND',
       subject: trackingSubject,

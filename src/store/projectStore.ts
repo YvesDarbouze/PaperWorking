@@ -745,7 +745,7 @@ export const useProjectStore = create<ProjectState>()(
         let totalPendingCosts = 0;
         let totalInvestment = 0;
         let totalProfit = 0;
-        let activeProjects = projects.length;
+        const activeProjects = projects.length;
         let totalCapitalCosts = 0;
         let totalHoldingCosts = 0;
 

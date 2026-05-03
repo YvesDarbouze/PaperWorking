@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     console.log(`[Invitations] Created invitation: ${invitationId} for deal ${projectId}`);
 
     // 4. Generate URL for email/distro
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.io'}/register?invite=${token}`;
+    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/register?invite=${token}`;
     
     return NextResponse.json({
       success: true,

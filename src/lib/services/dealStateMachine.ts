@@ -77,8 +77,14 @@ export async function transitionDealPhase(
           .map(m => m.email)
           .filter(Boolean);
 
-        // Always notify investors as well
-        const allRecipients = [...new Set([...teamEmails, 'investors@example.com'])];
+        // Collect investor emails from all syndication channels on this project
+        const investorEmails: string[] = [
+          ...(deal.fractionalInvestors ?? []).map((i: { email: string }) => i.email),
+          ...(deal.pledges ?? []).map((p: { investorEmail: string }) => p.investorEmail),
+          ...(deal.investorCommitments ?? []).map((c: { investorEmail: string }) => c.investorEmail),
+        ].filter(Boolean);
+
+        const allRecipients = [...new Set([...teamEmails, ...investorEmails])];
 
         // Branded subject and body for the agent / appraiser alert
         const agentSubject = `Action Required: ${deal.propertyName} — Renovation Complete, Ready for Exit Strategy`;
@@ -102,7 +108,7 @@ export async function transitionDealPhase(
       <li>Confirm your availability for showings and open house scheduling.</li>
       <li>Submit any outstanding documents to the Document Hub.</li>
     </ul>
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://app.paperworking.io'}/dashboard?lane=engine"
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/dashboard?lane=engine"
        style="display:inline-block;background:#111;color:#fff;padding:12px 24px;text-decoration:none;font-weight:600;border-radius:6px;font-size:14px">
       Open Deal in PaperWorking →
     </a>

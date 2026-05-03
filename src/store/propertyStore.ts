@@ -8,7 +8,15 @@ import { PropertyAsset, FinancialTransaction, PropertyUnit } from '@/types/schem
 interface PropertyState {
   properties: PropertyAsset[];
   transactions: FinancialTransaction[];
-  
+  isLoading: boolean;
+  error: string | null;
+
+  // Bulk setters (used by real-time sync hooks)
+  setProperties: (properties: PropertyAsset[]) => void;
+  setTransactions: (transactions: FinancialTransaction[]) => void;
+  setIsLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+
   // Actions - Properties
   addProperty: (property: PropertyAsset) => void;
   updateProperty: (propertyId: string, updates: Partial<PropertyAsset>) => void;
@@ -74,10 +82,18 @@ const MOCK_TRANSACTIONS: FinancialTransaction[] = [
 export const usePropertyStore = create<PropertyState>((set) => ({
   properties: MOCK_PROPERTIES,
   transactions: MOCK_TRANSACTIONS,
+  isLoading: false,
+  error: null,
+
+  // ── Bulk setters ────────────────────────────────────────
+  setProperties: (properties) => set({ properties }),
+  setTransactions: (transactions) => set({ transactions }),
+  setIsLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
 
   // ── Properties ──────────────────────────────────────────
-  addProperty: (property) => set((state) => ({ 
-    properties: [...state.properties, property] 
+  addProperty: (property) => set((state) => ({
+    properties: [...state.properties, property]
   })),
   
   updateProperty: (propertyId, updates) => set((state) => ({

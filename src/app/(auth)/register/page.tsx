@@ -77,8 +77,7 @@ export default function RegisterPage() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // signInWithRedirect navigates the browser away; the useEffect above
-      // handles the redirect to /dashboard when the user returns.
+      router.replace('/dashboard');
     } catch {
       setLoadingProvider(null);
     }
@@ -133,17 +132,7 @@ export default function RegisterPage() {
 
         <button
           type="button"
-          onClick={() => {
-            if (typeof window !== 'undefined' && (window as any).FB) {
-              setLoadingProvider('facebook');
-              (window as any).FB.login(
-                () => (window as any).checkLoginState(),
-                { scope: 'public_profile,email' }
-              );
-            } else {
-              handleSocialRegister('facebook');
-            }
-          }}
+          onClick={() => handleSocialRegister('facebook')}
           disabled={!!loadingProvider || isSubmitting}
           className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
         >

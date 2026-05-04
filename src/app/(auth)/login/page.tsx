@@ -93,7 +93,7 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // We don't router.push here because signInWithRedirect fully navigates the user away!
+      router.replace(redirectTo);
     } catch {
       setLoadingProvider(null);
     }
@@ -139,17 +139,7 @@ function LoginPageInner() {
 
         <button
           type="button"
-          onClick={() => {
-            if (typeof window !== 'undefined' && (window as any).FB) {
-              setLoadingProvider('facebook');
-              (window as any).FB.login(
-                () => (window as any).checkLoginState(),
-                { scope: 'public_profile,email' }
-              );
-            } else {
-              handleSocialLogin('facebook');
-            }
-          }}
+          onClick={() => handleSocialLogin('facebook')}
           disabled={!!loadingProvider || isSubmitting}
           className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group disabled:opacity-50"
         >

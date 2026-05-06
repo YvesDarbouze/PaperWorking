@@ -10,11 +10,8 @@ import { useProjectStore } from '@/store/projectStore';
 import Logo from '@/components/brand/Logo';
 import LaneIndicator from '@/components/dashboard/LaneIndicator';
 import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardView';
-import OnboardingWizard from '@/components/onboarding/OnboardingWizard';
 import AppSidebar from '@/components/layout/AppSidebar';
 import TopHeader from '@/components/layout/TopHeader';
-import { useUserStore } from '@/store/userStore';
-import { usePermissions } from '@/hooks/usePermissions';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 /* ═══════════════════════════════════════════════════════
@@ -112,13 +109,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <ErrorBoundary name="Dashboard Layout">
       <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardLayoutInner user={user}>{children}</DashboardLayoutInner>
+        <DashboardLayoutInner>{children}</DashboardLayoutInner>
       </Suspense>
     </ErrorBoundary>
   );
 }
 
-function DashboardLayoutInner({ children, user }: { children: React.ReactNode; user: any }) {
+function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const laneParam = searchParams.get('lane');
 
@@ -128,18 +125,12 @@ function DashboardLayoutInner({ children, user }: { children: React.ReactNode; u
     return idx >= 0 ? idx : 0;
   }, [laneParam]);
 
-  const { isNewUser, hasActiveSubscription } = useUserStore();
-  const { isLead } = usePermissions();
-
   return (
     <PanelProvider lanes={LANES} initialLane={initialLane}>
       <div
         className="dashboard-context horizontal-dashboard flex min-h-screen font-sans"
         style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
       >
-        {/* Onboarding Wizard (Fixed at top level) */}
-        {isNewUser && hasActiveSubscription && isLead && <OnboardingWizard />}
-
         {/* ══════ Fixed Left Sidebar ══════ */}
         <div className="hidden lg:block">
           <AppSidebar />

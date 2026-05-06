@@ -1,5 +1,6 @@
 import apiClient from '../apiClient';
 import prisma from '../prisma';
+import { getReplicationDatasetId } from '../../config/bridge';
 import { bridgeWorkerService } from './bridgeWorkerService';
 import { BridgeFeedHandler, BridgeRecord } from '../utils/BridgeFeedHandler';
 import { BridgeRateLimitError, BridgeServerError } from '../types/errors';
@@ -45,8 +46,13 @@ async function fetchWithRetry(url: string): Promise<any> {
  * datasets. Record persistence is delegated to PropertyIngestor.
  */
 class ReplicationWorker {
-  private readonly REPLICATION_ENDPOINT = 'Property/replication';
   private readonly MAX_BATCH_SIZE = 2000;
+
+  // Virtual datasets do NOT support /replication per Bridge docs.
+  // getReplicationDatasetId() prefers BRIDGE_DATASET_ID (real MLS code).
+  private get REPLICATION_ENDPOINT(): string {
+    return `${getReplicationDatasetId()}/Property/replication`;
+  }
 
   async sync(): Promise<{ success: boolean; syncedCount: number; error?: string }> {
     try {

@@ -38,12 +38,16 @@ export async function POST() {
 export async function GET() {
   try {
     const prisma = (await import('@/lib/prisma')).default;
-    const { jobQueue } = await import('@/lib/queue/jobQueue');
+    const state = await prisma.bridgeSyncState.findUnique({ where: { id: 'replication_watermark' } });
 
-    const [state, queueDepth] = await Promise.all([
-      prisma.bridgeSyncState.findUnique({ where: { id: 'replication_watermark' } }),
-      jobQueue.depth('bridge_sync'),
-    ]);
+    // Queue depth requires Redis — degrade gracefully when Redis is unavailable
+    let queueDepth: number | null = null;
+    try {
+      const { jobQueue } = await import('@/lib/queue/jobQueue');
+      queueDepth = await jobQueue.depth('bridge_sync');
+    } catch {
+      // Redis offline — queue depth unavailable
+    }
 
     return NextResponse.json({
       active: true,
@@ -51,7 +55,8 @@ export async function GET() {
       updatedAt: state?.updatedAt ?? 'None',
       queueDepth,
     });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('[BRIDGE SYNC GET]', error?.message ?? error);
     return NextResponse.json({ error: 'Failed to retrieve sync status.' }, { status: 500 });
   }
 }

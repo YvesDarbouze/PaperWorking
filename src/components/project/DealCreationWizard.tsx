@@ -1,20 +1,25 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ConversationalFormWrapper from '@/components/dashboard/ConversationalFormWrapper';
 import type { StepDescriptor } from '@/components/dashboard/ConversationalFormWrapper';
 import { projectsService } from '@/lib/firebase/projects';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
-import { DollarSign, Target, Users, Building2, FileText, CheckCircle2, X, AlertCircle, ShieldAlert } from 'lucide-react';
+import {
+  DollarSign, Target, Users, Building2, FileText, CheckCircle2, X,
+  AlertCircle, ShieldAlert, Wrench, Home, Tag, Key, FileSignature, HardHat,
+} from 'lucide-react';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
+import PropertySearchInput from '@/components/shared/PropertySearchInput';
+import type { BridgeSearchResult } from '@/types/bridge';
 import { useDealFormValidation, type DealFormData } from '@/hooks/useDealFormValidation';
 
 /* ═══════════════════════════════════════════════════════════════
    DealCreationWizard — REI Project Initialization Flow
 
    Steps:
-     1. Property Identity  — Name, address, asset class
+     1. Property Identity  — Name, REI status, MLS search / address
      2. Acquisition Metrics — Price, ARV, close date, leverage
      3. Strategy & Vision   — Investment profile + objectives
      4. Stakeholder Setup   — Lead operator + partner emails
@@ -35,8 +40,19 @@ const STEPS: StepDescriptor[] = [
   { id: 'review',   label: 'Document Review' },
 ];
 
+const REI_STATUSES: { value: string; label: string; icon: React.ReactNode }[] = [
+  { value: 'Target',             label: 'Target',              icon: <Target className="w-4 h-4" /> },
+  { value: 'In Contract',        label: 'In Contract',         icon: <FileSignature className="w-4 h-4" /> },
+  { value: 'Acquired',           label: 'Acquired',            icon: <Key className="w-4 h-4" /> },
+  { value: 'Rehabbing',          label: 'Rehabbing',           icon: <Wrench className="w-4 h-4" /> },
+  { value: 'Under Construction', label: 'Under Construction',  icon: <HardHat className="w-4 h-4" /> },
+  { value: 'Renting',            label: 'Renting',             icon: <Home className="w-4 h-4" /> },
+  { value: 'For Sale',           label: 'For Sale',            icon: <Tag className="w-4 h-4" /> },
+];
+
 const INITIAL_FORM: DealFormData = {
   propertyName: '',
+  reiStatus: '',
   address: '',
   street: '',
   city: '',
@@ -54,6 +70,14 @@ const INITIAL_FORM: DealFormData = {
   vision: '',
   leadEmail: '',
   partnerEmails: '',
+  mlsListingKey: undefined,
+  mlsListingId: undefined,
+  mlsListPrice: null,
+  mlsBeds: null,
+  mlsBaths: null,
+  mlsSqft: null,
+  mlsThumbnailUrl: null,
+  mlsStandardStatus: null,
 };
 
 export default function DealCreationWizard({ organizationId, onClose, onSuccess }: DealCreationWizardProps) {
@@ -61,6 +85,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleStep, setVisibleStep] = useState(0);
   const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false);
+  const [useManualAddress, setUseManualAddress] = useState(false);
 
   const [formData, setFormData] = useState<DealFormData>({
     ...INITIAL_FORM,
@@ -71,9 +96,6 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
-  // Stable object reference — only changes when individual address fields change.
-  // Prevents AddressAutocomplete's structuredValue effect from firing on every
-  // unrelated wizard render (e.g. typing the property name).
   const structuredAddress = useMemo(() => ({
     street: formData.street,
     city: formData.city,
@@ -83,7 +105,6 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
   const { isStepValid, addressErrors, isAddressComplete, acquisitionDateError } = useDealFormValidation(formData, visibleStep);
 
-  // Show address field errors only after the user has started interacting
   const [addressTouched, setAddressTouched] = useState(false);
 
   const handleAddressSelect = (parsed: ParsedAddress) => {
@@ -99,6 +120,44 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
     });
   };
 
+  const handlePropertySelect = useCallback((property: BridgeSearchResult) => {
+    updateForm({
+      address: property.address,
+      street: property.address.split(',')[0]?.trim() ?? property.address,
+      city: property.address.split(',')[1]?.trim() ?? '',
+      state: property.address.split(',')[2]?.trim()?.split(' ')[0] ?? '',
+      zip: property.address.split(',')[2]?.trim()?.split(' ')[1] ?? '',
+      lat: null,
+      lng: null,
+      mlsListingKey: property.listingKey,
+      mlsListingId: property.listingId,
+      mlsListPrice: property.listPrice,
+      mlsBeds: property.beds,
+      mlsBaths: property.baths,
+      mlsSqft: property.sqft,
+      mlsThumbnailUrl: property.thumbnailUrl,
+      mlsStandardStatus: property.standardStatus,
+    });
+  }, []);
+
+  const clearMlsSelection = () => {
+    updateForm({
+      mlsListingKey: undefined,
+      mlsListingId: undefined,
+      mlsListPrice: null,
+      mlsBeds: null,
+      mlsBaths: null,
+      mlsSqft: null,
+      mlsThumbnailUrl: null,
+      mlsStandardStatus: null,
+      address: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+    });
+  };
+
   const handleFinalCommit = async () => {
     if (!user) return;
     setIsSubmitting(true);
@@ -106,8 +165,6 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
       const projectId = await projectsService.createDeal({
         propertyName: formData.propertyName,
         address: formData.address,
-        // Structured address + acquisition date are passed as extra metadata
-        // and spread into the Firestore document via dealData
         ...(formData.street && { street: formData.street }),
         ...(formData.city && { city: formData.city }),
         ...(formData.state && { state: formData.state }),
@@ -115,6 +172,15 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         ...(formData.lat != null && { lat: formData.lat }),
         ...(formData.lng != null && { lng: formData.lng }),
         ...(formData.acquisitionDate && { acquisitionDate: formData.acquisitionDate }),
+        ...(formData.reiStatus && { reiStatus: formData.reiStatus }),
+        ...(formData.mlsListingKey && { mlsListingKey: formData.mlsListingKey }),
+        ...(formData.mlsListingId && { mlsListingId: formData.mlsListingId }),
+        ...(formData.mlsListPrice != null && { mlsListPrice: formData.mlsListPrice }),
+        ...(formData.mlsBeds != null && { mlsBeds: formData.mlsBeds }),
+        ...(formData.mlsBaths != null && { mlsBaths: formData.mlsBaths }),
+        ...(formData.mlsSqft != null && { mlsSqft: formData.mlsSqft }),
+        ...(formData.mlsThumbnailUrl && { mlsThumbnailUrl: formData.mlsThumbnailUrl }),
+        ...(formData.mlsStandardStatus && { mlsStandardStatus: formData.mlsStandardStatus }),
         ownerUid: user.uid,
         financials: {
           purchasePrice: parseFloat(formData.purchasePrice) * 100,
@@ -146,6 +212,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
       </div>
 
       <div className="grid gap-6">
+        {/* Project Name */}
         <div className="space-y-2">
           <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Project Name / Nickname</label>
           <input
@@ -158,39 +225,150 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Target Property Address</label>
-          <AddressAutocomplete
-            value={formData.address}
-            variant="dashboard"
-            structuredValue={structuredAddress}
-            onInputChange={(raw) => updateForm({ address: raw })}
-            onSelect={handleAddressSelect}
-          />
+        {/* REI Status Picker */}
+        <div className="space-y-3">
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Current Stage</label>
+          <div className="grid grid-cols-4 gap-2">
+            {REI_STATUSES.map(({ value, label, icon }) => {
+              const active = formData.reiStatus === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => updateForm({ reiStatus: value })}
+                  className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] transition-all"
+                  style={{
+                    background: active ? '#1A1A1A' : 'var(--bg-canvas)',
+                    border: active ? '1px solid #1A1A1A' : '1px solid var(--border-ui)',
+                    color: active ? '#FFFFFF' : 'var(--text-secondary)',
+                  }}
+                >
+                  {icon}
+                  <span className="text-center leading-tight">{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
-          {/* Address complete confirmation */}
-          {isAddressComplete && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: '#1A1A1A' }} aria-hidden="true" />
-              <span style={{ color: 'var(--text-primary)' }}>{formData.street}</span>
-              <span style={{ color: 'var(--text-secondary)' }}>· {formData.city}, {formData.state} {formData.zip}</span>
+        {/* MLS Property Search */}
+        <div className="space-y-2">
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>
+            {useManualAddress ? 'Property Address' : 'Search MLS Listings'}
+          </label>
+
+          {!useManualAddress && !formData.mlsListingKey && (
+            <>
+              <PropertySearchInput
+                value={formData.address}
+                onSelect={handlePropertySelect}
+                onManualChange={(raw) => updateForm({ address: raw })}
+              />
+              <button
+                type="button"
+                onClick={() => setUseManualAddress(true)}
+                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Enter address manually instead
+              </button>
+            </>
+          )}
+
+          {/* MLS listing confirmed card */}
+          {formData.mlsListingKey && (
+            <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-ui)' }}>
+              <div className="flex items-center justify-between px-4 py-2" style={{ background: '#1A1A1A' }}>
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#FFFFFF' }}>MLS Listing Confirmed</span>
+                <button
+                  type="button"
+                  onClick={clearMlsSelection}
+                  className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.1em] opacity-70 hover:opacity-100 transition-opacity"
+                  style={{ color: '#FFFFFF' }}
+                >
+                  <X className="w-3 h-3" /> Clear
+                </button>
+              </div>
+              <div className="flex gap-3 p-3" style={{ background: 'var(--bg-canvas)' }}>
+                {formData.mlsThumbnailUrl && (
+                  <img
+                    src={formData.mlsThumbnailUrl}
+                    alt="Property thumbnail"
+                    className="w-20 h-16 object-cover rounded-md shrink-0"
+                  />
+                )}
+                <div className="min-w-0 space-y-1">
+                  <p className="text-xs font-bold truncate" style={{ color: 'var(--text-primary)' }}>{formData.address}</p>
+                  <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px]" style={{ color: 'var(--text-secondary)' }}>
+                    {formData.mlsListPrice != null && (
+                      <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>
+                        ${formData.mlsListPrice.toLocaleString()}
+                      </span>
+                    )}
+                    {formData.mlsBeds != null && <span>{formData.mlsBeds} bd</span>}
+                    {formData.mlsBaths != null && <span>{formData.mlsBaths} ba</span>}
+                    {formData.mlsSqft != null && <span>{formData.mlsSqft.toLocaleString()} sqft</span>}
+                  </div>
+                  <div className="flex gap-2 text-[10px]">
+                    {formData.mlsStandardStatus && (
+                      <span className="px-2 py-0.5 rounded-full font-bold uppercase tracking-[0.1em]"
+                        style={{ background: '#F0FDF4', color: '#166534', border: '1px solid #BBF7D0' }}>
+                        {formData.mlsStandardStatus}
+                      </span>
+                    )}
+                    {formData.mlsListingId && (
+                      <span style={{ color: 'var(--text-secondary)' }}>MLS# {formData.mlsListingId}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          {/* Per-field missing field hints (shown after first interaction) */}
-          {addressTouched && !isAddressComplete && (
-            <div className="flex flex-col gap-1 px-3 py-2 rounded-lg text-xs" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
-              <div className="flex items-center gap-2 mb-1">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" style={{ color: '#B45309' }} aria-hidden="true" />
-                <span className="font-bold uppercase tracking-[0.12em] text-[10px]" style={{ color: '#B45309' }}>Missing required fields</span>
-              </div>
-              {Object.values(addressErrors).map((err) => (
-                <span key={err} style={{ color: 'var(--text-secondary)' }}>· {err}</span>
-              ))}
-            </div>
+          {/* Manual address fallback */}
+          {useManualAddress && !formData.mlsListingKey && (
+            <>
+              <AddressAutocomplete
+                value={formData.address}
+                variant="dashboard"
+                structuredValue={structuredAddress}
+                onInputChange={(raw) => updateForm({ address: raw })}
+                onSelect={handleAddressSelect}
+              />
+
+              {isAddressComplete && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: '#1A1A1A' }} aria-hidden="true" />
+                  <span style={{ color: 'var(--text-primary)' }}>{formData.street}</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>· {formData.city}, {formData.state} {formData.zip}</span>
+                </div>
+              )}
+
+              {addressTouched && !isAddressComplete && (
+                <div className="flex flex-col gap-1 px-3 py-2 rounded-lg text-xs" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" style={{ color: '#B45309' }} aria-hidden="true" />
+                    <span className="font-bold uppercase tracking-[0.12em] text-[10px]" style={{ color: '#B45309' }}>Missing required fields</span>
+                  </div>
+                  {Object.values(addressErrors).map((err) => (
+                    <span key={err} style={{ color: 'var(--text-secondary)' }}>· {err}</span>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setUseManualAddress(false)}
+                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1"
+                style={{ color: 'var(--text-secondary)' }}
+              >
+                Search MLS instead
+              </button>
+            </>
           )}
         </div>
 
+        {/* Asset Class */}
         <div className="space-y-2">
           <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Asset Classification</label>
           <select
@@ -241,7 +419,6 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
           }}
         />
 
-        {/* Inline validation error */}
         {acquisitionDateError && (
           <div
             id="acquisition-date-error"
@@ -406,20 +583,23 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         <div>
           {[
             { label: 'Property',       value: formData.propertyName },
+            { label: 'REI Stage',      value: formData.reiStatus || '—' },
             { label: 'Street',         value: formData.street || formData.address },
             { label: 'City / State',   value: [formData.city, formData.state].filter(Boolean).join(', ') || '—' },
             { label: 'ZIP',            value: formData.zip || '—' },
+            ...(formData.mlsListingId ? [{ label: 'MLS #',  value: formData.mlsListingId }] : []),
+            ...(formData.mlsListPrice != null ? [{ label: 'List Price', value: `$${formData.mlsListPrice.toLocaleString()}` }] : []),
             { label: 'Asset Class',    value: formData.assetClass },
             { label: 'Acquired',       value: formData.acquisitionDate ? new Date(formData.acquisitionDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
             { label: 'Purchase Price', value: formData.purchasePrice ? `$${Number(formData.purchasePrice).toLocaleString()}` : '—' },
             { label: 'Estimated ARV',  value: formData.estimatedARV ? `$${Number(formData.estimatedARV).toLocaleString()}` : '—' },
             { label: 'Leverage',       value: `${formData.leverage}%` },
             { label: 'Strategy',       value: formData.strategy },
-          ].map((item, idx) => (
+          ].map((item, idx, arr) => (
             <div
               key={item.label}
               className="grid grid-cols-2 px-5 py-3 text-xs"
-              style={{ borderBottom: idx < 8 ? '1px solid var(--border-ui)' : undefined }}
+              style={{ borderBottom: idx < arr.length - 1 ? '1px solid var(--border-ui)' : undefined }}
             >
               <span className="font-bold uppercase tracking-[0.12em]" style={{ color: 'var(--text-secondary)' }}>{item.label}</span>
               <span className="font-medium text-right tabular-nums" style={{ color: 'var(--text-primary)' }}>{item.value || '—'}</span>
@@ -450,9 +630,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
           <p className="text-sm font-medium leading-relaxed" style={{ color: '#78350F' }}>
             PaperWorking is a data-driven tool. Your insights are only as accurate as your inputs.
           </p>
-          <label
-            className="flex items-start gap-3 cursor-pointer group"
-          >
+          <label className="flex items-start gap-3 cursor-pointer group">
             <input
               type="checkbox"
               checked={hasAcknowledgedWarning}

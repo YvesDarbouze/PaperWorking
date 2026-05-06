@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk } from "next/font/google";
+import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
 import { AuthProvider } from "@/context/AuthContext";
 import ChatbotWidget from "@/components/shared/ChatbotWidget";

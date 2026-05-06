@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  distDir: '.next-app',
   output: 'standalone',
   serverExternalPackages: ['firebase-admin'],
   typescript: {
@@ -8,6 +9,13 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'lucide-react', 'recharts'],
+    turbopackFileSystemCacheForDev: false,
+  },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = false;
+    }
+    return config;
   },
   async headers() {
     return [

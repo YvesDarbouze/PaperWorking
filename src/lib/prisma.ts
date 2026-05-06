@@ -1,38 +1,35 @@
-import { PrismaClient } from '@prisma/client'
-
 /**
- * 🛠️ BigInt Serialization Fix
- * 
- * Since Prisma 7 uses native BigInt for currency/large integers, 
- * we must ensure JSON.stringify does not crash when encountering them.
+ * Prisma 7 requires a driver adapter — new PrismaClient() alone throws.
+ * We use PrismaNeonHttp (HTTP transport) which works in serverless/edge.
+ * @prisma/adapter-neon must be installed: npm i @prisma/adapter-neon
  */
+import { PrismaClient } from '@prisma/client';
+import { PrismaNeonHttp } from '@prisma/adapter-neon';
+
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
 };
 
-const prismaClientSingleton = () => {
-  return new PrismaClient()
+function createPrismaClient(): PrismaClient {
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error('DATABASE_URL is not set');
+  const adapter = new PrismaNeonHttp(url, {});
+  return new PrismaClient({ adapter });
 }
 
 declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+  // eslint-disable-next-line no-var
+  var _prisma: PrismaClient | undefined;
 }
 
-/**
- * Lazy Prisma accessor — only initializes the PrismaClient
- * when DATABASE_URL is available (i.e. at runtime, not build time).
- */
 function getPrismaClient(): PrismaClient {
-  if (!globalThis.prisma) {
-    globalThis.prisma = prismaClientSingleton();
+  if (!globalThis._prisma) {
+    globalThis._prisma = createPrismaClient();
   }
-  return globalThis.prisma;
+  return globalThis._prisma;
 }
 
-/**
- * Default export uses a Proxy to defer PrismaClient construction
- * until the first actual database call, preventing build-time crashes.
- */
+// Proxy defers construction until first DB call — safe at build time.
 const prisma: PrismaClient = new Proxy({} as PrismaClient, {
   get(_target, prop: string | symbol) {
     return (getPrismaClient() as any)[prop];
@@ -41,4 +38,3 @@ const prisma: PrismaClient = new Proxy({} as PrismaClient, {
 
 export { getPrismaClient, prisma };
 export default prisma;
-

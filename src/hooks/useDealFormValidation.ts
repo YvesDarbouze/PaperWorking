@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 
 export interface DealFormData {
   propertyName: string;
+  reiStatus: string;
   address: string;
   street: string;
   city: string;
@@ -27,6 +28,15 @@ export interface DealFormData {
   vision: string;
   leadEmail: string;
   partnerEmails: string;
+  // MLS fields — populated when user selects a listing from Bridge search
+  mlsListingKey?: string;
+  mlsListingId?: string;
+  mlsListPrice?: number | null;
+  mlsBeds?: number | null;
+  mlsBaths?: number | null;
+  mlsSqft?: number | null;
+  mlsThumbnailUrl?: string | null;
+  mlsStandardStatus?: string | null;
 }
 
 export interface AddressFieldErrors {
@@ -78,8 +88,11 @@ export function useDealFormValidation(formData: DealFormData, stepIndex: number)
 
   const isStepValid = useMemo((): boolean => {
     switch (stepIndex) {
-      case 0:
-        return !!(formData.propertyName.trim() && isAddressComplete);
+      case 0: {
+        // Address is satisfied either by an MLS listing selection or manual entry
+        const addressValid = !!formData.mlsListingKey || isAddressComplete;
+        return !!(formData.propertyName.trim() && formData.reiStatus && addressValid);
+      }
       case 1:
         return !!(formData.purchasePrice && formData.estimatedARV && isAcquisitionDateValid);
       case 3:
@@ -87,7 +100,7 @@ export function useDealFormValidation(formData: DealFormData, stepIndex: number)
       default:
         return true;
     }
-  }, [stepIndex, formData.propertyName, formData.purchasePrice, formData.estimatedARV, formData.leadEmail, isAddressComplete, isAcquisitionDateValid]);
+  }, [stepIndex, formData.propertyName, formData.reiStatus, formData.mlsListingKey, formData.purchasePrice, formData.estimatedARV, formData.leadEmail, isAddressComplete, isAcquisitionDateValid]);
 
   return { isStepValid, addressErrors, isAddressComplete, acquisitionDateError, isAcquisitionDateValid };
 }

@@ -3,7 +3,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { Plus, Info, Settings, UserCircle, Activity } from 'lucide-react';
+import { Plus, Settings, UserCircle, Activity } from 'lucide-react';
 import { useUserStore } from '@/store/userStore';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
@@ -52,7 +52,7 @@ export default function PipelinePanel() {
   const projects = useProjectStore(state => state.projects);
 
   const [activeDealId, setActiveDealId] = useState<string | null>(null);
-  const { isNewUser, hasActiveSubscription, onboardingStep, setNextStep } = useUserStore();
+  const { hasActiveSubscription } = useUserStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -71,9 +71,6 @@ export default function PipelinePanel() {
   const handleWizardSuccess = (projectId: string) => {
     setIsWizardOpen(false);
     setActiveDealId(projectId);
-    if (onboardingStep === 3) {
-      setNextStep();
-    }
   };
 
   if (!isLead) {
@@ -136,13 +133,7 @@ export default function PipelinePanel() {
                   </Suspense>
 
                   <div className="relative">
-                     {onboardingStep === 3 && (
-                        <div className="absolute -top-16 -left-4 bg-pw-black text-pw-white text-[11px] px-5 py-2.5 rounded-full font-medium tracking-tight flex items-center animate-bounce shadow-2xl z-50">
-                           <Info className="w-4 h-4 mr-2" /> Start the Tour — Add your first project here.
-                           <div className="absolute -bottom-1 left-10 w-2 h-2 bg-pw-black rotate-45"></div>
-                        </div>
-                     )}
-                      <button 
+                      <button
                         onClick={() => setIsInviteModalOpen(true)}
                         className="flex items-center gap-3 px-6 py-5 bg-bg-surface border border-pw-black text-text-primary text-sm font-black uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all shadow-sm"
                       >

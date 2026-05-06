@@ -12,9 +12,7 @@ import { OrgRole, InternalRole, OrgTeamMember } from '@/types/schema';
    ═══════════════════════════════════════════════════════ */
 
 interface UserState {
-  isNewUser: boolean;
   hasActiveSubscription: boolean;
-  onboardingStep: number;
   orgRole: OrgRole;
 
   // Account Tier Management
@@ -23,8 +21,6 @@ interface UserState {
   maxSeats: number;
 
   // Core Actions
-  setNextStep: () => void;
-  completeOnboarding: (userId: string, orgData: { name: string; market: string }) => Promise<void>;
   setOrgRole: (role: OrgRole) => void;
 
   // Account Tier Actions
@@ -37,38 +33,13 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
-  // Set to true by default to trigger the onboarding wizard sequence
-  isNewUser: true,
   hasActiveSubscription: true,
   orgRole: 'Lead Investor',
-  
+
   // Account Tier defaults
   accountTier: 'Individual',
   teamMembers: [],
   maxSeats: 1,
-
-  // Step 1: Organization Setup Modal
-  // Step 2: Team Invite Modal
-  // Step 3: Tooltip Highlight over "Add Target Property"
-  // Step 4: Tooltip Highlight over the newly created Property Row
-  // Step 5+: Complete
-  onboardingStep: 1,
-
-  setNextStep: () => set((state) => ({ onboardingStep: state.onboardingStep + 1 })),
-  
-  completeOnboarding: async (userId, orgData) => {
-    try {
-      const { usersService } = await import('@/lib/firebase/users');
-      await usersService.persistOnboarding(userId, orgData);
-      set({ 
-        isNewUser: false, 
-        onboardingStep: 3 
-      });
-    } catch (error) {
-       console.error('Critical Store Sync Failure:', error);
-       throw error;
-    }
-  },
 
   setOrgRole: (role) => set({ orgRole: role }),
 

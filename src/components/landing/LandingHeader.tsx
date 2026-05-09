@@ -17,11 +17,7 @@ import Logo from '@/components/brand/Logo';
 export default function LandingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { scrollY } = useScroll();
-  const backgroundColor = useTransform(
-    scrollY,
-    [0, 50],
-    ['rgba(242, 242, 242, 0)', 'rgba(242, 242, 242, 0.92)']
-  );
+  const headerOpacity = useTransform(scrollY, [0, 50], [0, 0.92]);
   const backdropFilter = useTransform(
     scrollY,
     [0, 50],
@@ -30,11 +26,12 @@ export default function LandingHeader() {
 
   return (
     <>
-      <motion.header
-        style={{ backgroundColor, backdropFilter }}
-        className="fixed w-full top-0 z-50 border-b border-transparent"
-      >
-        <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+      <header className="fixed w-full top-0 z-50 border-b border-transparent">
+        <motion.div
+          style={{ opacity: headerOpacity, backdropFilter }}
+          className="absolute inset-0 bg-[var(--pw-bg)]"
+        />
+        <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
           <div className="flex h-16 sm:h-20 items-center justify-between">
             {/* ── Logo ── */}
             <div className="flex items-center gap-8 shrink-0">

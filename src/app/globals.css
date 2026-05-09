@@ -46,23 +46,23 @@
 
 /* ─── Tailwind v4 @theme ─── */
 @theme {
-  --color-pw-black:   #0d0d0d;
-  --color-pw-white:   #ffffff;
-  --color-pw-bg:      #f2f2f2;
-  --color-pw-surface: #ffffff;
-  --color-pw-border:  #CCCCCC;
-  --color-pw-muted:   #a5a5a5;
-  --color-pw-subtle:  #7f7f7f;
-  --color-pw-fg:      #595959;
-  --color-pw-accent:  #1a73e8;
+  --color-pw-black:   var(--pw-black);
+  --color-pw-white:   var(--pw-white);
+  --color-pw-bg:      var(--pw-bg);
+  --color-pw-surface: var(--pw-surface);
+  --color-pw-border:  var(--pw-border);
+  --color-pw-muted:   var(--pw-muted);
+  --color-pw-subtle:  var(--pw-subtle);
+  --color-pw-fg:      var(--pw-fg);
+  --color-pw-accent:  var(--pw-accent);
 
   /* ─── Semantic Brand Palette ─── */
-  --color-bg-primary: #f2f2f2;
-  --color-bg-transactional: #cccccc;
-  --color-bg-surface: #ffffff;
-  --color-text-primary: #595959;
-  --color-text-secondary: #7f7f7f;
-  --color-border-accent: #a5a5a5;
+  --color-bg-primary: var(--pw-bg);
+  --color-bg-transactional: var(--phase-contract);
+  --color-bg-surface: var(--pw-surface);
+  --color-text-primary: var(--pw-fg);
+  --color-text-secondary: var(--pw-subtle);
+  --color-border-accent: var(--pw-muted);
 
   /* ─── Deal Lifecycle Phases ─── */
   --color-phase-sourcing: #f2f2f2;

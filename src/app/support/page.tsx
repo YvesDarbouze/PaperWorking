@@ -259,7 +259,7 @@ export default function SupportPage() {
               <button
                 key={tag}
                 onClick={() => handleTagClick(tag)}
-                className="text-xs font-medium text-[var(--pw-black)] bg-white border border-[var(--pw-border)] rounded-full px-4 py-2 hover:bg-[var(--pw-black)] hover:text-white transition-all shadow-sm"
+                className="text-xs font-medium text-pw-black bg-pw-surface border border-pw-border rounded-full px-4 py-2 hover:bg-pw-black hover:text-pw-white transition-all shadow-sm"
               >
                 {tag}
               </button>
@@ -280,16 +280,16 @@ export default function SupportPage() {
         >
           <Link
             href={`/support/${SUPPORT_ARTICLES[0].id}`}
-            className="group relative block w-full overflow-hidden rounded-[var(--radius-xl)] bg-[var(--pw-black)] text-white p-8 sm:p-10 lg:p-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            className="group relative block w-full overflow-hidden rounded-[var(--radius-xl)] bg-pw-black text-pw-white p-8 sm:p-10 lg:p-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
           >
             {/* Subtle background glow/texture to make it distinct */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-pw-white/10 to-transparent pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-surface/10 border border-white/20 mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pw-surface/10 border border-pw-white/20 mb-6">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-pw-white/90">
                     Featured SOP
                   </span>
                 </div>
@@ -297,7 +297,7 @@ export default function SupportPage() {
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl tracking-tighter font-medium mb-4">
                   {SUPPORT_ARTICLES[0].title}
                 </h2>
-                <p className="text-white/70 text-base sm:text-lg">
+                <p className="text-pw-white/70 text-base sm:text-lg">
                   {SUPPORT_ARTICLES[0].excerpt}
                 </p>
               </div>
@@ -406,8 +406,8 @@ export default function SupportPage() {
                     onClick={() => setExpandedCategory(isExpanded ? null : phase.id)}
                     className="flex items-start gap-5 w-full text-left focus:outline-none"
                   >
-                    <div className="w-12 h-12 rounded-lg bg-[var(--pw-bg)] flex items-center justify-center shrink-0 group-hover:bg-[var(--pw-black)] transition-colors duration-300">
-                      <phase.icon className="w-5 h-5 text-[var(--pw-black)] group-hover:text-white transition-colors duration-300" />
+                    <div className="w-12 h-12 rounded-lg bg-pw-bg flex items-center justify-center shrink-0 group-hover:bg-pw-black transition-colors duration-300">
+                      <phase.icon className="w-5 h-5 text-pw-black group-hover:text-pw-white transition-colors duration-300" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-base font-bold text-[var(--pw-black)] mb-1 group-hover:text-emerald-600 transition-colors">
@@ -522,10 +522,10 @@ export default function SupportPage() {
                 href={r.href}
                 className="group block bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] p-7 h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               >
-                <div className="w-11 h-11 rounded-full bg-[var(--pw-bg)] flex items-center justify-center mb-5 group-hover:bg-[var(--pw-black)] transition-colors duration-300">
-                  <r.icon className="w-5 h-5 text-[var(--pw-subtle)] group-hover:text-white transition-colors duration-300" />
+                <div className="w-11 h-11 rounded-full bg-pw-bg flex items-center justify-center mb-5 group-hover:bg-pw-black transition-colors duration-300">
+                  <r.icon className="w-5 h-5 text-pw-subtle group-hover:text-pw-white transition-colors duration-300" />
                 </div>
-                <h3 className="text-base font-semibold text-[var(--pw-black)] mb-2">
+                <h3 className="text-base font-semibold text-pw-black mb-2">
                   {r.title}
                 </h3>
                 <p className="text-sm text-[var(--pw-muted)] leading-relaxed mb-4">

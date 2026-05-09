@@ -81,7 +81,7 @@ export default function ChatbotWidget() {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-[var(--pw-black)] hover:bg-[var(--pw-black)]/90 text-white rounded-full shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--pw-black)] transition-transform hover:scale-105 active:scale-95"
+        className="w-14 h-14 bg-pw-black hover:bg-pw-black/90 text-pw-white rounded-full shadow-lg flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pw-black transition-transform hover:scale-105 active:scale-95"
         aria-label={isOpen ? "Close chat" : "Open chat"}
         aria-expanded={isOpen}
       >

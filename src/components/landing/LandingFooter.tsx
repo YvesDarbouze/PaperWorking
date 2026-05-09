@@ -73,24 +73,24 @@ const socialLinks = [
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-[var(--pw-black)] text-white">
+    <footer className="bg-pw-black text-pw-white">
       {/* ── Main Footer Content ── */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8 pt-16 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
 
           {/* ── Brand Column ── */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="text-white">
+            <div className="text-pw-white">
               <Logo size="sm" />
             </div>
-            <p className="text-sm leading-relaxed text-white/50 max-w-xs">
+            <p className="text-sm leading-relaxed text-pw-white/50 max-w-xs">
               Deal pipeline, rehab tracking, and closing docs — all in one place.
               Built for serious real estate investors.
             </p>
 
             {/* ── Newsletter ── */}
             <div className="space-y-3 pt-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/40">
+              <p className="text-xs font-semibold uppercase tracking-[0.15em] text-pw-white/40">
                 Get investor insights
               </p>
               <form
@@ -101,11 +101,11 @@ export default function LandingFooter() {
                   type="email"
                   placeholder="you@email.com"
                   aria-label="Email for newsletter"
-                  className="flex-1 min-w-0 bg-white/[0.07] border border-white/10 text-sm text-white placeholder:text-white/30 px-4 py-2.5 rounded-l-full focus:outline-none focus:border-white/30 transition-colors"
+                  className="flex-1 min-w-0 bg-pw-white/[0.07] border border-pw-white/10 text-sm text-pw-white placeholder:text-pw-white/30 px-4 py-2.5 rounded-l-full focus:outline-none focus:border-pw-white/30 transition-colors"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-white text-[var(--pw-black)] text-xs font-bold uppercase tracking-widest rounded-r-full hover:bg-white/90 transition-colors cursor-pointer whitespace-nowrap"
+                  className="px-5 py-2.5 bg-pw-white text-pw-black text-xs font-bold uppercase tracking-widest rounded-r-full hover:bg-pw-white/90 transition-colors cursor-pointer whitespace-nowrap"
                 >
                   Join
                 </button>
@@ -116,7 +116,7 @@ export default function LandingFooter() {
           {/* ── Link Columns ── */}
           {footerColumns.map((col) => (
             <div key={col.title} className="lg:col-span-2">
-              <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-white/40 mb-5">
+              <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-pw-white/40 mb-5">
                 {col.title}
               </h3>
               <ul className="space-y-3">
@@ -124,7 +124,7 @@ export default function LandingFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-white/60 hover:text-white transition-colors duration-200"
+                      className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
                     >
                       {link.label}
                     </Link>
@@ -136,14 +136,14 @@ export default function LandingFooter() {
 
           {/* ── Support + Social Column ── */}
           <div className="lg:col-span-2">
-            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-white/40 mb-5">
+            <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-pw-white/40 mb-5">
               Support
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/support"
-                  className="text-sm text-white/60 hover:text-white transition-colors duration-200"
+                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
                 >
                   Help Center
                 </Link>
@@ -151,7 +151,7 @@ export default function LandingFooter() {
               <li>
                 <Link
                   href="/support#faq"
-                  className="text-sm text-white/60 hover:text-white transition-colors duration-200"
+                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
                 >
                   FAQ
                 </Link>
@@ -159,7 +159,7 @@ export default function LandingFooter() {
               <li>
                 <a
                   href="mailto:support@paperworking.co"
-                  className="text-sm text-white/60 hover:text-white transition-colors duration-200"
+                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
                 >
                   support@paperworking.co
                 </a>
@@ -170,9 +170,9 @@ export default function LandingFooter() {
       </div>
 
       {/* ── Bottom Bar ── */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-pw-white/10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-xs text-white/30">
+          <span className="text-xs text-pw-white/30">
             © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
           </span>
 
@@ -184,7 +184,7 @@ export default function LandingFooter() {
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/30 hover:text-white transition-colors duration-200"
+                className="text-pw-white/30 hover:text-pw-white transition-colors duration-200"
                 aria-label={label}
               >
                 <Icon className="h-4 w-4" />

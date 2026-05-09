@@ -95,7 +95,7 @@ export default function DashboardPage() {
       ) : (
         <ErrorBoundary name="Command Center">
           <Suspense fallback={<PanelFallback />}>
-            <PanelTrack headerHeight={64}>
+            <PanelTrack>
               <ErrorBoundary name="Find & Fund Hub">
                 <FindAndFundPanel />
               </ErrorBoundary>

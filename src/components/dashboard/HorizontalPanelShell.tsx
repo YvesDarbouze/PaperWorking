@@ -8,6 +8,8 @@ import React, {
   useEffect,
 } from 'react';
 import { motion, useMotionValue, animate, PanInfo, MotionValue } from 'framer-motion';
+import toast from 'react-hot-toast';
+import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
 /* ═══════════════════════════════════════════════════════
    HorizontalPanelShell — Gesture-Driven Kanban Engine
@@ -40,6 +42,12 @@ interface PanelContextValue {
   viewMode: ViewMode;
   toggleViewMode: () => void;
   setViewMode: (mode: ViewMode) => void;
+  /** Lane IDs that are currently locked by the PhaseGate. */
+  lockedLanes: Set<string>;
+  setLockedLanes: (s: Set<string>) => void;
+  /** Callback for when a locked lane is attempted — shows gate message. */
+  onLockedLaneAttempt?: (laneId: string) => void;
+  setOnLockedLaneAttempt: (fn: (laneId: string) => void) => void;
 }
 
 const PanelContext = createContext<PanelContextValue>({
@@ -50,6 +58,10 @@ const PanelContext = createContext<PanelContextValue>({
   viewMode: 'expanded',
   toggleViewMode: () => {},
   setViewMode: () => {},
+  lockedLanes: new Set(),
+  setLockedLanes: () => {},
+  onLockedLaneAttempt: undefined,
+  setOnLockedLaneAttempt: () => {},
 });
 
 export function usePanelContext() {
@@ -80,6 +92,8 @@ export function PanelProvider({
   const [containerWidth, setContainerWidth] = useState(
     typeof window !== 'undefined' ? window.innerWidth : 1440
   );
+  const [lockedLanes, setLockedLanes] = useState<Set<string>>(new Set());
+  const [onLockedLaneAttempt, setOnLockedLaneAttempt] = useState<((laneId: string) => void) | undefined>(undefined);
 
   useEffect(() => {
     const handleResize = () => setContainerWidth(window.innerWidth);
@@ -92,6 +106,11 @@ export function PanelProvider({
   const scrollToPanel = useCallback(
     (index: number) => {
       const clamped = Math.max(0, Math.min(index, lanes.length - 1));
+      const targetLane = lanes[clamped];
+      if (targetLane && lockedLanes.has(targetLane.id)) {
+        onLockedLaneAttempt?.(targetLane.id);
+        return;
+      }
       setActiveIndex(clamped);
       animate(x, -(clamped * containerWidth), {
         type: 'spring',
@@ -100,7 +119,7 @@ export function PanelProvider({
         mass: 0.8,
       });
     },
-    [x, containerWidth, lanes.length]
+    [x, containerWidth, lanes, lockedLanes, onLockedLaneAttempt]
   );
 
   const toggleViewMode = useCallback(() => {
@@ -140,6 +159,10 @@ export function PanelProvider({
         viewMode,
         toggleViewMode,
         setViewMode,
+        lockedLanes,
+        setLockedLanes,
+        onLockedLaneAttempt,
+        setOnLockedLaneAttempt: (fn) => setOnLockedLaneAttempt(() => fn),
       }}
     >
       {/* Store motion value reference for child PanelTrack */}
@@ -165,17 +188,36 @@ const MotionXContext = createContext<{
    PanelTrack — Draggable horizontal strip
    ═══════════════════════════════════════════ */
 
+/**
+ * Returns the correct header offset in px for the panel height calculation.
+ * Desktop (≥1024px): only TopHeader (64px) — PhaseRailVertical is horizontal space.
+ * Mobile / Tablet (<1024px): TopHeader (64) + PhaseNavRail horizontal bar (44).
+ */
+function useResponsiveHeaderHeight(): number {
+  const [height, setHeight] = useState(() => {
+    if (typeof window === 'undefined') return 108;
+    return window.innerWidth >= 1024 ? 64 : 108;
+  });
+
+  useEffect(() => {
+    const update = () => setHeight(window.innerWidth >= 1024 ? 64 : 108);
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  return height;
+}
+
 interface PanelTrackProps {
+  /** @deprecated Pass nothing — PanelTrack computes this responsively. */
   headerHeight?: number;
   children: React.ReactNode[];
 }
 
-export function PanelTrack({
-  headerHeight = 64,
-  children,
-}: PanelTrackProps) {
+export function PanelTrack({ children }: PanelTrackProps) {
   const { activeIndex, scrollToPanel, lanes } = usePanelContext();
   const { x, containerWidth } = useContext(MotionXContext);
+  const headerHeight = useResponsiveHeaderHeight();
 
   const handleDragEnd = useCallback(
     (_: any, info: PanInfo) => {
@@ -199,6 +241,9 @@ export function PanelTrack({
 
   const panelHeight = `calc(100vh - ${headerHeight}px)`;
 
+  const activeLaneId = lanes[activeIndex]?.id;
+  const laneBackground = PHASE_BACKGROUNDS[activeLaneId ?? ''] ?? 'var(--pw-bg)';
+
   return (
     <div
       className="lane-shell"
@@ -207,7 +252,8 @@ export function PanelTrack({
         overflow: 'hidden',
         position: 'relative',
         touchAction: 'pan-y',
-        backgroundColor: 'var(--pw-bg)',
+        backgroundColor: laneBackground,
+        transition: 'background-color 400ms ease',
       }}
     >
       <motion.div

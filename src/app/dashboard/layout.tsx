@@ -13,6 +13,10 @@ import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardVie
 import AppSidebar from '@/components/layout/AppSidebar';
 import TopHeader from '@/components/layout/TopHeader';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { PhaseGateProvider } from '@/context/PhaseGateContext';
+import PhaseGateSyncer from '@/components/dashboard/PhaseGateSyncer';
+import PhaseNavRail from '@/components/dashboard/PhaseNavRail';
+import PhaseRailVertical from '@/components/dashboard/PhaseRailVertical';
 
 /* ═══════════════════════════════════════════════════════
    Dashboard Layout — Persistent Kanban Navigation Shell
@@ -108,9 +112,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <ErrorBoundary name="Dashboard Layout">
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardLayoutInner>{children}</DashboardLayoutInner>
-      </Suspense>
+      <PhaseGateProvider>
+        <Suspense fallback={<DashboardSkeleton />}>
+          <DashboardLayoutInner>{children}</DashboardLayoutInner>
+        </Suspense>
+      </PhaseGateProvider>
     </ErrorBoundary>
   );
 }
@@ -127,19 +133,26 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <PanelProvider lanes={LANES} initialLane={initialLane}>
+      <PhaseGateSyncer />
       <div
         className="dashboard-context horizontal-dashboard flex min-h-screen font-sans"
         style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
       >
-        {/* ══════ Fixed Left Sidebar ══════ */}
+        {/* ══════ Fixed Left Sidebar (desktop only) ══════ */}
         <div className="hidden lg:block">
           <AppSidebar />
         </div>
+
+        {/* ══════ Phase Rail — Vertical (desktop only) ══════ */}
+        <PhaseRailVertical />
 
         {/* ══════ Main Content Area ══════ */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* ── Sticky Top Header ── */}
           <TopHeader />
+
+          {/* ── Phase Nav Rail — Horizontal (mobile + tablet only) ── */}
+          <PhaseNavRail />
 
           {/* ── Main Scrollable Content ── */}
           <main

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePanelContext } from './HorizontalPanelShell';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, Lock } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
    LaneIndicator — Mobile Bottom Navigation
@@ -14,11 +14,11 @@ import { LayoutGrid } from 'lucide-react';
    ═══════════════════════════════════════════════════════ */
 
 export default function LaneIndicator() {
-  const { activeIndex, scrollToPanel, lanes, viewMode, toggleViewMode } = usePanelContext();
+  const { activeIndex, scrollToPanel, lanes, viewMode, toggleViewMode, lockedLanes } = usePanelContext();
 
   return (
     <nav
-      className="mobile-lane-nav fixed bottom-0 left-0 right-0 z-50 bg-bg-surface/95 backdrop-blur-md border-t border-border-accent"
+      className="mobile-lane-nav hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-surface/95 backdrop-blur-md border-t border-border-accent"
       style={{ height: 48 }}
       aria-label="Mobile dashboard navigation"
     >
@@ -44,29 +44,41 @@ export default function LaneIndicator() {
           {lanes.map((lane, i) => {
             const isActive = i === activeIndex;
             const isPast = i < activeIndex;
+            const isLocked = lockedLanes.has(lane.id);
             return (
               <button
                 key={lane.id}
                 onClick={() => scrollToPanel(i)}
                 className="flex flex-col items-center gap-0.5 group"
-                aria-label={`Go to ${lane.label}`}
+                aria-label={`${isLocked ? '(Locked) ' : ''}Go to ${lane.label}`}
                 aria-current={isActive ? 'step' : undefined}
+                aria-disabled={isLocked}
               >
-                <div
-                  className={`
-                    rounded-full transition-all duration-300
-                    ${isActive
-                      ? 'w-6 h-2 bg-gray-900'
-                      : isPast
-                        ? 'w-2 h-2 bg-gray-900'
-                        : 'w-2 h-2 bg-gray-300 group-hover:bg-gray-500'
-                    }
-                  `}
-                />
+                <div className="relative flex items-center justify-center">
+                  <div
+                    className={`
+                      rounded-full transition-all duration-300
+                      ${isActive
+                        ? 'w-6 h-2 bg-gray-900'
+                        : isPast && !isLocked
+                          ? 'w-2 h-2 bg-gray-900'
+                          : isLocked
+                            ? 'w-2 h-2 bg-gray-300'
+                            : 'w-2 h-2 bg-gray-300 group-hover:bg-gray-500'
+                      }
+                    `}
+                  />
+                  {isLocked && (
+                    <Lock
+                      className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 text-gray-400"
+                      aria-hidden
+                    />
+                  )}
+                </div>
                 <span
                   className={`
-                    text-xs font-semibold uppercase tracking-wider transition-colors
-                    ${isActive ? 'text-text-primary' : 'text-text-secondary'}
+                    text-xs font-semibold uppercase tracking-wider transition-colors mt-1
+                    ${isActive ? 'text-text-primary' : isLocked ? 'text-gray-400' : 'text-text-secondary'}
                   `}
                 >
                   {lane.shortLabel}

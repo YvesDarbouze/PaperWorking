@@ -11,7 +11,7 @@
   /* ─── Antigravity Grayscale Palette ─── */
   --pw-bg:        #f2f2f2; /* Sourcing - Lightest */
   --pw-surface:   #ffffff;
-  --pw-border:    #e8eaed; /* Subtle border — matches Antigravity card edges */
+  --pw-border:    #CCCCCC; /* Subtle border — palette step 0 */
   --pw-muted:     #a5a5a5; /* Rehab */
   --pw-subtle:    #7f7f7f; /* Listed */
   --pw-fg:        #595959; /* Closed - Darkest foreground */
@@ -24,8 +24,8 @@
   --phase-rehab:    #a5a5a5;
   --phase-listed:   #7f7f7f;
   --phase-closed:   #595959;
-  --phase-findandfund: #ccfbf1;         /* Teal-50 wash */
-  --phase-findandfund-accent: #0d9488;  /* Teal-600 */
+  --phase-findandfund: #CCCCCC;         /* Grayscale palette step 0 */
+  --phase-findandfund-accent: #595959;  /* Grayscale palette step 6 */
 
   --spacing-unit: 8px; /* Increased for 'Air' aesthetic */
 }
@@ -50,7 +50,7 @@
   --color-pw-white:   #ffffff;
   --color-pw-bg:      #f2f2f2;
   --color-pw-surface: #ffffff;
-  --color-pw-border:  #e8eaed;
+  --color-pw-border:  #CCCCCC;
   --color-pw-muted:   #a5a5a5;
   --color-pw-subtle:  #7f7f7f;
   --color-pw-fg:      #595959;
@@ -70,8 +70,8 @@
   --color-phase-rehab:    #a5a5a5;
   --color-phase-listed:   #7f7f7f;
   --color-phase-closed:   #595959;
-  --color-phase-findandfund: #ccfbf1;
-  --color-phase-findandfund-accent: #0d9488;
+  --color-phase-findandfund: #CCCCCC;
+  --color-phase-findandfund-accent: #595959;
 
   /* ─── Font System — Hanken Grotesk ─── */
   --font-sans: "Hanken Grotesk", system-ui, sans-serif;
@@ -176,13 +176,13 @@ html {
 /* ── Antigravity Secondary Pill Button ── */
 /* Light gray pill, dark text — matches "Download for Intel", "Get plan", "Explore use cases" */
 .ag-button-secondary {
-  background: #ebebeb;
+  background: #CCCCCC;
   color: var(--pw-black);
   border: 1px solid transparent;
 }
 
 .ag-button-secondary:hover {
-  background: #e0e0e0;
+  background: #B9B9B9;
 }
 
 /* Soft Card */

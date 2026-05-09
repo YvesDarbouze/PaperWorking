@@ -248,7 +248,7 @@ export default function BillingSettingsPage() {
                           <Download className="w-4 h-4" />
                         </a>
                       ) : (
-                        <span className="p-2 text-[#D5D5D5] inline-block">
+                        <span className="p-2 text-[#CCCCCC] inline-block">
                           <Download className="w-4 h-4" />
                         </span>
                       )}

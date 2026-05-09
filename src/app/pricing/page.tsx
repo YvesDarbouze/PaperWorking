@@ -9,12 +9,13 @@ import FeatureComparisonTable from '@/components/pricing/FeatureComparisonTable'
 import ProfessionalPricingSection from '@/components/pricing/LawyerPricingSection';
 import SocialProofBar from '@/components/pricing/SocialProofBar';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
-import CheckoutModal from '@/components/pricing/CheckoutModal';
 import StickyMobileCTA from '@/components/pricing/StickyMobileCTA';
+import { useAuth } from '@/context/AuthContext';
 
 export default function PricingPage() {
+  const { user } = useAuth();
   const [isAnnual, setIsAnnual] = useState(false);
-  const [activePlanSelection, setActivePlanSelection] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [showStickyCTA, setShowStickyCTA] = useState(false);
 
   // Track when pricing cards scroll out of view
@@ -40,15 +41,47 @@ export default function PricingPage() {
   const recommendedPrice = isAnnual ? '$999/yr' : '$99/mo';
   const recommendedPlanLabel = `${recommendedPlan} ${isAnnual ? 'Annual' : 'Monthly'}`;
 
+  const handleSelectPlan = async (planIdentifier: string) => {
+    setIsProcessing(planIdentifier);
+    const interval = planIdentifier.toLowerCase().includes('annual') ? 'annual' : 'monthly';
+    const parts = planIdentifier.split(' ');
+    const plan = parts.slice(0, -1).join(' ');
+
+    try {
+      const idToken = user ? await user.getIdToken() : undefined;
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan,
+          billingInterval: interval,
+          userId: user?.uid,
+          userEmail: user?.email,
+          idToken,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
+      window.location.href = data.url;
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message);
+      setIsProcessing(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-bg-primary font-sans text-text-primary selection:bg-pw-black selection:text-pw-white relative">
       
-      {/* Dynamic Checkout Overlay */}
-      {activePlanSelection && (
-         <CheckoutModal 
-            planIdentifier={activePlanSelection} 
-            onClose={() => setActivePlanSelection(null)} 
-         />
+      {/* Loader Overlay */}
+      {isProcessing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pw-black/60 backdrop-blur-md">
+          <div className="bg-bg-surface p-6 rounded-2xl shadow-2xl flex flex-col items-center">
+            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent rounded-full animate-spin mb-4" />
+            <p className="text-text-primary font-medium">Redirecting to Secure Checkout...</p>
+          </div>
+        </div>
       )}
 
       {/* Header — matches landing page nav */}
@@ -81,12 +114,11 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* Pricing Cards */}
         <section className="py-20 bg-bg-primary border-b border-border-accent">
            <PricingCards 
               isAnnual={isAnnual} 
               onToggleAnnual={setIsAnnual} 
-              onSelectPlan={setActivePlanSelection}
+              onSelectPlan={handleSelectPlan}
               cardsRef={cardsRef}
            />
         </section>
@@ -98,12 +130,12 @@ export default function PricingPage() {
 
         {/* Feature Comparison with Progressive Disclosure + Tooltips */}
         <section className="py-20 bg-bg-primary border-b border-border-accent">
-           <FeatureComparisonTable onSelectPlan={setActivePlanSelection} />
+           <FeatureComparisonTable onSelectPlan={handleSelectPlan} />
         </section>
 
         {/* Professional Verticals: Appraisers/Inspectors */}
         <section className="py-20 bg-bg-primary border-b border-border-accent">
-           <ProfessionalPricingSection onSelectPlan={setActivePlanSelection} />
+           <ProfessionalPricingSection onSelectPlan={handleSelectPlan} />
         </section>
 
         {/* Accordion FAQ */}
@@ -128,12 +160,11 @@ export default function PricingPage() {
          </div>
       </footer>
 
-      {/* Sticky Mobile CTA */}
       <StickyMobileCTA
         visible={showStickyCTA}
         planName={recommendedPlan}
         price={recommendedPrice}
-        onSelect={() => setActivePlanSelection(recommendedPlanLabel)}
+        onSelect={() => handleSelectPlan(recommendedPlanLabel)}
       />
 
     </div>

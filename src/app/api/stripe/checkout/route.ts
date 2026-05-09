@@ -80,6 +80,10 @@ export async function POST(request: Request) {
       client_reference_id: userId ?? undefined,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
+      subscription_data: {
+        trial_period_days: 14,
+        metadata: { userId: userId || 'guest', plan: canonicalPlan },
+      },
       metadata: { userId: userId || 'guest', plan: canonicalPlan, billingInterval: interval },
     });
 

@@ -6,12 +6,12 @@ import { Plus, Minus } from 'lucide-react';
 
 const FAQS = [
   {
-    question: "What is Paperworking.co?",
-    answer: "Paperworking organizes the Real Estate Investment process to make property flipping simple, organized and professional. It replaces messy spreadsheets and scattered emails with a unified, professional ledger that tracks every detail of your real estate investments."
+    question: "What is PaperWorking?",
+    answer: "PaperWorking is an operating system for real estate investors. It replaces spreadsheets and scattered emails with a unified pipeline that tracks every deal from sourcing to exit — including capital stack, holding costs, rehab budgets, and closing documents."
   },
   {
-    question: "How do I share a property with potential investors?",
-    answer: "Using our dashboard, you can track all properties from purchase to sale. You can send an email directly from the dashboard to potential investors. While non-account holders can receive emails, they must have a current subscription to view the full listing and comprehensive financial details of the property."
+    question: "How do I share a deal with potential investors?",
+    answer: "From your dashboard, you can invite partners to view a specific deal and its capital stack. Non-account holders receive an email link; they need a subscription to access full financial details and deal analytics. Every share is logged in the audit trail."
   },
   {
     question: "What is the 70% Rule in house flipping?",
@@ -39,10 +39,10 @@ export default function FAQSection() {
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-pw-accent mb-4">
-            System Mechanics
+            How It Works
           </p>
           <h2 className="text-4xl font-black tracking-tighter text-text-primary mb-6 uppercase">
-            Frequently Asked Questions
+            Common Questions
           </h2>
         </div>
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ScopeOfWorkItem, RehabExpenseCategory } from '@/types/schema';
 import { Plus, ClipboardList, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { NumberInput } from '@/components/ui/NumberInput';
 
 interface ScopeOfWorkFormProps {
   items: ScopeOfWorkItem[];
@@ -109,13 +110,12 @@ export function ScopeOfWorkForm({ items, onChange }: ScopeOfWorkFormProps) {
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 text-gray-700">Estimated Cost ($)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={newItem.estimatedCost || ''}
-                  onChange={e => setNewItem({...newItem, estimatedCost: Number(e.target.value)})}
-                  className="w-full px-3 py-2 rounded-md border bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                <NumberInput
+                  value={newItem.estimatedCost || undefined}
+                  onChange={(v) => setNewItem({...newItem, estimatedCost: v ?? 0})}
+                  min={0}
+                  step={0.01}
+                  prefix="$"
                 />
               </div>
             </div>

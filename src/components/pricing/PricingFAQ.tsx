@@ -87,10 +87,10 @@ export default function PricingFAQ() {
       <div className="w-full max-w-3xl mx-auto mt-24 mb-16 px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-medium tracking-tight text-text-primary">
-            Common Questions.
+            Everything you need to know.
           </h2>
           <p className="text-sm text-phase-3 mt-2">
-            Everything you need to know before getting started.
+            Still have questions? Email us at support@paperworking.co.
           </p>
         </div>
 

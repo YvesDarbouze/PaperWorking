@@ -9,6 +9,7 @@ import ProfitVarianceCard from '@/components/dashboard/ProfitVarianceCard';
 import ExitStrategyFork from '@/components/exit/ExitStrategyFork';
 import NetProceedsCard from '@/components/exit/NetProceedsCard';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
+import SoldPropertyForm from '@/components/dashboard/exit/SoldPropertyForm';
 
 const StagingVendorManager = lazy(() => import('@/components/exit/StagingVendorManager'));
 const PhotographyUploadManager = lazy(() => import('@/components/exit/PhotographyUploadManager'));
@@ -178,94 +179,92 @@ export default function ExitPanel() {
             </div>
           )}
 
-          {/* ═══ SELL PATH ═══ */}
-          {strategy === 'Sell' && (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-               
-               {/* Left Column: Tactical Control */}
-               <div className="lg:col-span-5 space-y-10">
-                  
-                  {/* Asset Packaging */}
-                  <div className="bg-bg-surface border border-border-accent p-8 relative overflow-hidden group">
-                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-border-accent">
-                        <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase flex items-center">
-                          <Camera className="w-3.5 h-3.5 mr-2" /> Asset_Packaging
-                        </h3>
-                        <span className="text-[10px] font-bold text-text-secondary">STAGING_v4</span>
-                     </div>
-                     <p className="text-[10px] font-bold text-text-secondary uppercase leading-relaxed mb-8 tracking-wider">
-                       Integrate high-resolution staging assets and syndicate coordinates to global market endpoints.
-                     </p>
-                     <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="p-4 border border-border-accent bg-bg-primary">
-                            <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Inventory_Count</label>
-                            <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none ag-data" />
-                          </div>
-                          <div className="flex items-center p-4">
-                             <span className="text-[10px] font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">.RAW / .4K_MP4 Virtual_Space</span>
-                          </div>
-                        </div>
-                        <div className="p-4 border border-border-accent bg-bg-primary">
-                          <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Syndication_Link [MLS]</label>
-                          <div className="relative flex items-center">
-                             <LinkIcon className="w-3.5 h-3.5 text-text-secondary mr-3" />
-                             <input type="url" placeholder="EX: https://zillow.com/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-transparent text-xs font-mono font-bold w-full focus:outline-none" />
-                          </div>
-                        </div>
-                        <button onClick={handleUpdateListing} className="w-full bg-pw-black text-pw-white font-black text-[10px] py-4 uppercase tracking-[0.4em] hover:bg-pw-accent transition-all active:scale-95 border border-pw-black">
-                           Sync_Market_Status
-                        </button>
-                     </div>
-                  </div>
+          {/* ═══ SELL / RENT PATH — Decision Tree Form ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
+            {/* Left Column: Decision Tree Form */}
+            <div className="lg:col-span-5 space-y-10">
+
+              {/* Asset Packaging */}
+              {strategy === 'Sell' && (
+                <div className="bg-bg-surface border border-border-accent p-8 relative overflow-hidden group">
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-border-accent">
+                    <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase flex items-center">
+                      <Camera className="w-3.5 h-3.5 mr-2" /> Asset_Packaging
+                    </h3>
+                    <span className="text-[10px] font-bold text-text-secondary">STAGING_v4</span>
+                  </div>
+                  <p className="text-[10px] font-bold text-text-secondary uppercase leading-relaxed mb-8 tracking-wider">
+                    Integrate high-resolution staging assets and syndicate coordinates to global market endpoints.
+                  </p>
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 border border-border-accent bg-bg-primary">
+                        <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Inventory_Count</label>
+                        <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none ag-data" />
+                      </div>
+                      <div className="flex items-center p-4">
+                        <span className="text-[10px] font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">.RAW / .4K_MP4 Virtual_Space</span>
+                      </div>
+                    </div>
+                    <div className="p-4 border border-border-accent bg-bg-primary">
+                      <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Syndication_Link [MLS]</label>
+                      <div className="relative flex items-center">
+                        <LinkIcon className="w-3.5 h-3.5 text-text-secondary mr-3" />
+                        <input type="url" placeholder="EX: https://zillow.com/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-transparent text-xs font-mono font-bold w-full focus:outline-none" />
+                      </div>
+                    </div>
+                    <button onClick={handleUpdateListing} className="w-full font-black text-[10px] py-4 uppercase tracking-[0.4em] transition-all active:scale-95" style={{ background: '#595959', color: '#ffffff', border: '1px solid #595959' }}>
+                      Sync_Market_Status
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {strategy === 'Sell' && (
+                <>
                   <Suspense fallback={<LazyFallback />}><StagingVendorManager /></Suspense>
                   <Suspense fallback={<LazyFallback />}><PhotographyUploadManager /></Suspense>
+                </>
+              )}
 
-                  {/* Settlement Protocol */}
-                  <div className="bg-bg-surface border-4 border-pw-black p-8 relative">
-                     <div className="flex items-center gap-2 mb-8">
-                        <DollarSign className="w-4 h-4 text-pw-accent" />
-                        <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">Settlement_Protocol</h3>
-                     </div>
-                     <div className="space-y-6">
-                        <div className="p-4 border border-border-accent bg-bg-surface">
-                          <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Gross_Settlement_Value [$]</label>
-                          <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter" />
-                        </div>
-                        <div className="grid grid-cols-2 gap-6">
-                          <div className="p-4 border border-border-accent bg-bg-surface">
-                            <label className="text-[9px] font-black text-text-secondary uppercase block mb-1 tracking-widest leading-none">Buyer_Comm (%)</label>
-                            <div className="flex items-center">
-                              <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
-                              <Percent className="w-3.5 h-3.5 text-text-secondary" />
-                            </div>
-                          </div>
-                          <div className="p-4 border border-border-accent bg-bg-surface">
-                            <label className="text-[9px] font-black text-text-secondary uppercase block mb-1 tracking-widest leading-none">Seller_Comm (%)</label>
-                            <div className="flex items-center">
-                              <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
-                              <Percent className="w-3.5 h-3.5 text-text-secondary" />
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 border border-border-accent bg-bg-surface">
-                          <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Final_Concessions + Costs [$]</label>
-                          <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
-                        </div>
-                        <button onClick={handleExecuteSale} className="w-full bg-pw-black text-pw-white font-black text-xs py-5 uppercase tracking-[0.5em] hover:bg-pw-accent transition-all active:scale-95 shadow-[8px_8px_0px_rgba(0,0,0,0.1)] hover:shadow-none border-2 border-pw-black">
-                           Execute_Final_Sale
-                        </button>
-                     </div>
-                  </div>
-               </div>
+              {/* ── Decision Tree Form ── */}
+              <div className="p-8" style={{ border: '2px solid #595959', background: '#ffffff' }}>
+                <div className="flex items-center gap-2 mb-8">
+                  <DollarSign className="w-4 h-4" style={{ color: '#595959' }} />
+                  <h3 className="text-xs font-black tracking-[0.3em] uppercase" style={{ color: '#595959' }}>
+                    {strategy === 'Sell' ? 'Settlement_Protocol' : 'Rental_Profile'}
+                  </h3>
+                </div>
+                <SoldPropertyForm
+                  project={currentProject}
+                  strategy={strategy}
+                  onSave={(updates) => {
+                    updateProjectFinancials(currentProject.id, updates as any);
+                    if (strategy === 'Sell') {
+                      const updatedDeals = projects.map(d =>
+                        d.id === currentProject.id ? { ...d, status: 'Sold' as any } : d
+                      );
+                      setDeals(updatedDeals);
+                    } else {
+                      const updatedDeals = projects.map(d =>
+                        d.id === currentProject.id ? { ...d, status: 'Rented' as any } : d
+                      );
+                      setDeals(updatedDeals);
+                    }
+                  }}
+                />
+              </div>
+            </div>
 
-               {/* Right Column: Financial Intelligence */}
-               <div className="lg:col-span-7 space-y-10">
+            {/* Right Column: Financial Intelligence */}
+            <div className="lg:col-span-7 space-y-10">
+              {strategy === 'Sell' && (
+                <>
                   <NetEngine deal={currentProject} />
 
                   <Suspense fallback={<LazyFallback />}>
-                    <SettlementLedger projectId={currentProject.id} salePrice={Number(actualSale) || 0} />
+                    <SettlementLedger projectId={currentProject.id} salePrice={currentProject.financials?.actualSalePrice || 0} />
                   </Suspense>
 
                   <Suspense fallback={<LazyFallback />}>
@@ -283,97 +282,81 @@ export default function ExitPanel() {
                   </Suspense>
 
                   {/* Market Status */}
-                  <div className="border border-pw-black bg-bg-surface overflow-hidden relative">
-                     <div className="flex h-56 w-full items-center justify-center bg-bg-primary relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-1000"></div>
-                        <div className="absolute inset-0 bg-pw-black/20"></div>
-                        <div className="relative z-10 flex flex-col items-center">
-                           <div className="bg-pw-black px-8 py-4 border border-pw-white/10 flex items-center space-x-4 mb-4 shadow-2xl">
-                              <div className={`w-2 h-2 rounded-full animate-pulse ${currentProject.status === 'Sold' ? 'bg-pw-accent' : 'bg-green-400'}`} />
-                              <span className="font-black text-pw-white tracking-[0.4em] uppercase text-xs">Entity_Status: {currentProject.status}</span>
-                           </div>
-                           {currentProject.exitAssets?.mlsListingLink && (
-                             <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="bg-bg-surface border border-pw-black px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-pw-white transition-all flex items-center">
-                               Audit_MLS_Listing <ExternalLink className="w-3 h-3 ml-2" />
-                             </a>
-                           )}
-                           {(currentProject.status !== 'Listed' && currentProject.status !== 'Sold') && (
-                              <p className="text-[10px] font-black text-text-primary uppercase tracking-widest opacity-60">Awaiting_Market_Injection</p>
-                           )}
+                  <div className="overflow-hidden relative" style={{ border: '1px solid #595959', background: '#ffffff' }}>
+                    <div className="flex h-56 w-full items-center justify-center bg-bg-primary relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-1000"></div>
+                      <div className="absolute inset-0" style={{ background: 'rgba(89,89,89,0.2)' }}></div>
+                      <div className="relative z-10 flex flex-col items-center">
+                        <div className="px-8 py-4 flex items-center space-x-4 mb-4 shadow-2xl" style={{ background: '#595959', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div className={`w-2 h-2 rounded-full animate-pulse ${currentProject.status === 'Sold' ? 'bg-white' : 'bg-white'}`} />
+                          <span className="font-black tracking-[0.4em] uppercase text-xs" style={{ color: '#ffffff' }}>
+                            Entity_Status: {currentProject.status}
+                          </span>
                         </div>
-                     </div>
+                        {currentProject.exitAssets?.mlsListingLink && (
+                          <a
+                            href={currentProject.exitAssets.mlsListingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all"
+                            style={{ background: '#ffffff', border: '1px solid #595959', color: '#595959' }}
+                          >
+                            Audit_MLS_Listing <ExternalLink className="w-3 h-3 ml-2" />
+                          </a>
+                        )}
+                        {(currentProject.status !== 'Listed' && currentProject.status !== 'Sold') && (
+                          <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#ffffff', opacity: 0.7 }}>
+                            Awaiting_Market_Injection
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
                   <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
-                     <div className="border border-border-accent p-1"><DealAutopsy deal={currentProject} /></div>
+                    <div style={{ border: '1px solid #cccccc', padding: 4 }}><DealAutopsy deal={currentProject} /></div>
                   </Suspense>
-               </div>
-            </div>
-          )}
+                </>
+              )}
 
-          {/* ═══ RENT / HOLD PATH ═══ */}
-          {strategy === 'Rent' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-               {/* Rental Cash Flow Inputs */}
-               <div className="bg-bg-surface border-2 border-pw-black p-8 space-y-6">
-                  <div className="flex items-center gap-2 pb-4 border-b border-border-accent">
-                     <Home className="w-4 h-4 text-pw-accent" />
-                     <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">Rental_Cash_Flow_Inputs</h3>
-                  </div>
-                  {[
-                    { label: 'Monthly_Rent [$]', value: monthlyRent, set: setMonthlyRent },
-                    { label: 'Vacancy_Rate [%]', value: vacancyRate, set: setVacancyRate, step: '0.5' },
-                    { label: 'Maintenance_Reserves [$/mo]', value: maintenanceReserves, set: setMaintenanceReserves },
-                    { label: 'Management_Fee [$/mo]', value: mgmtFee, set: setMgmtFee },
-                    { label: 'Mortgage_Payment [$/mo]', value: mortgagePayment, set: setMortgagePayment },
-                  ].map(f => (
-                    <div key={f.label} className="p-4 border border-border-accent bg-bg-primary">
-                      <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">{f.label}</label>
-                      <input type="number" step={f.step || '1'} value={f.value} onChange={e => f.set(e.target.value)} className="bg-transparent text-lg font-mono font-black w-full focus:outline-none" />
+              {strategy === 'Rent' && (
+                <div className="space-y-6">
+                  {/* NOI Dashboard */}
+                  <div className="overflow-hidden" style={{ border: '2px solid #595959', background: '#ffffff' }}>
+                    <div className="px-6 py-4 flex items-center gap-2" style={{ background: '#595959' }}>
+                      <TrendingUp className="w-4 h-4" style={{ color: '#ffffff' }} />
+                      <h3 className="text-xs font-black tracking-[0.3em] uppercase" style={{ color: '#ffffff' }}>NOI_Dashboard</h3>
                     </div>
-                  ))}
-                  <button onClick={handleSaveRentalData} className="w-full bg-pw-black text-pw-white font-black text-[10px] py-4 uppercase tracking-[0.4em] hover:bg-pw-accent transition-all active:scale-95 border border-pw-black">
-                     Save_Rental_Data
-                  </button>
-               </div>
-
-               {/* Rental NOI Dashboard */}
-               <div className="space-y-6">
-                  <div className="bg-bg-surface border-2 border-pw-black overflow-hidden">
-                     <div className="px-6 py-4 bg-pw-black text-pw-white flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4" />
-                        <h3 className="text-xs font-black tracking-[0.3em] uppercase">NOI_Dashboard</h3>
-                     </div>
-                     <div className="grid grid-cols-2 gap-px bg-pw-border">
-                        {[
-                          { label: 'Gross_Annual_Rent', value: grossRent },
-                          { label: 'Effective_Gross', value: effectiveGross },
-                          { label: 'Annual_Expenses', value: annualExpenses, negative: true },
-                          { label: 'Net_Operating_Income', value: noi, highlight: true },
-                          { label: 'Annual_Debt_Service', value: annualDebt, negative: true },
-                          { label: 'Annual_Cash_Flow', value: cashFlow, highlight: true },
-                        ].map(m => (
-                          <div key={m.label} className="bg-bg-surface px-5 py-4">
-                            <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest mb-1">{m.label}</p>
-                            <p className={`text-xl font-black font-mono tracking-tighter ${
-                              m.highlight ? (m.value >= 0 ? 'text-green-700' : 'text-red-700') : m.negative ? 'text-red-600' : 'text-text-primary'
-                            }`}>
-                              {m.negative && m.value > 0 ? '−' : ''}${Math.abs(m.value).toLocaleString(undefined, { minimumFractionDigits: 0 })}
-                            </p>
-                          </div>
-                        ))}
-                     </div>
-                     {/* Cash-on-Cash */}
-                     <div className="px-6 py-4 border-t-2 border-pw-black bg-bg-primary">
-                        <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest mb-1">Cash_on_Cash_Return</p>
-                        <p className="text-3xl font-black font-mono tracking-tighter text-text-primary">
-                          {currentProject.financials?.purchasePrice ? ((cashFlow / currentProject.financials.purchasePrice) * 100).toFixed(2) : '0.00'}%
-                        </p>
-                     </div>
+                    <div className="grid grid-cols-2 gap-px" style={{ background: '#cccccc' }}>
+                      {[
+                        { label: 'Gross_Annual_Rent', value: grossRent },
+                        { label: 'Effective_Gross', value: effectiveGross },
+                        { label: 'Annual_Expenses', value: annualExpenses, negative: true },
+                        { label: 'Net_Operating_Income', value: noi, highlight: true },
+                        { label: 'Annual_Debt_Service', value: annualDebt, negative: true },
+                        { label: 'Annual_Cash_Flow', value: cashFlow, highlight: true },
+                      ].map(m => (
+                        <div key={m.label} className="px-5 py-4" style={{ background: '#ffffff' }}>
+                          <p className="text-[9px] font-black uppercase tracking-widest mb-1" style={{ color: '#7f7f7f' }}>{m.label}</p>
+                          <p className="text-xl font-black font-mono tracking-tighter" style={{
+                            color: m.highlight ? (m.value >= 0 ? '#595959' : '#595959') : m.negative ? '#7f7f7f' : '#595959'
+                          }}>
+                            {m.negative && m.value > 0 ? '−' : ''}${Math.abs(m.value).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-6 py-4" style={{ borderTop: '2px solid #595959', background: '#f2f2f2' }}>
+                      <p className="text-[9px] font-black uppercase tracking-widest mb-1" style={{ color: '#7f7f7f' }}>Cash_on_Cash_Return</p>
+                      <p className="text-3xl font-black font-mono tracking-tighter" style={{ color: '#595959' }}>
+                        {currentProject.financials?.purchasePrice ? ((cashFlow / currentProject.financials.purchasePrice) * 100).toFixed(2) : '0.00'}%
+                      </p>
+                    </div>
                   </div>
-               </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
        </div>
     </div>

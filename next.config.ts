@@ -11,12 +11,12 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['framer-motion', 'lucide-react', 'recharts'],
     turbopackFileSystemCacheForDev: false,
   },
-  webpack: (config, { dev }) => {
-    if (dev) {
-      config.cache = false;
-    }
-    return config;
-  },
+  // webpack: (config, { dev }) => {
+  //   if (dev) {
+  //     config.cache = false;
+  //   }
+  //   return config;
+  // },
   async headers() {
     return [
       {

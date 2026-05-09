@@ -2,11 +2,13 @@
 
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 import { ClipboardCheck, Plus, Trash2 } from 'lucide-react';
 
 export default function VirtualInspection() {
   const currentProject = useProjectStore((state) => state.currentProject);
   const updateProjectFinancials = useProjectStore((state) => state.updateProjectFinancials);
+  const { profile } = useAuth();
 
   const [category, setCategory] = useState('');
   const [estimated, setEstimated] = useState('');
@@ -24,7 +26,7 @@ export default function VirtualInspection() {
       category: category.trim(),
       estimatedCost: parseFloat(estimated) || 0,
       actualCost: parseFloat(actual) || 0,
-      loggedBy: 'current-uid', // Mock
+      loggedBy: profile?.uid ?? 'unknown',
       status: 'Pending',
       notes: ''
     };

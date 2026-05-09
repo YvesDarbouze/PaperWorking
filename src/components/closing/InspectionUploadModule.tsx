@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { HardHat, Droplets, Zap, Wrench, Upload, AlertTriangle, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { storage, auth } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { HardHat, Droplets, Zap, Wrench, Upload, AlertTriangle, CheckCircle, ChevronDown, ChevronRight, Loader2, X, FileCheck2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
@@ -38,18 +40,19 @@ const SEVERITY_STYLES: Record<InspectionIssue['severity'], string> = {
   Cosmetic: 'bg-bg-primary text-text-secondary border-border-accent',
 };
 
-const SAMPLE_ISSUES: InspectionIssue[] = [
-  { id: '1', category: 'Structural', description: 'Load-bearing wall cracking in west wing', severity: 'Critical', estimatedRepairCost: 8500, resolved: false },
-  { id: '2', category: 'Plumbing', description: 'Galvanized pipe replacement needed (kitchen/bath)', severity: 'Major', estimatedRepairCost: 4200, resolved: false },
-  { id: '3', category: 'Electrical', description: 'Federal Pacific breaker panel — outdated', severity: 'Critical', estimatedRepairCost: 3800, resolved: false },
-  { id: '4', category: 'Roof', description: 'Missing shingles on south-facing slope', severity: 'Minor', estimatedRepairCost: 1200, resolved: true },
-];
+const ACCEPTED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
 export default function InspectionUploadModule() {
   const currentProject = useProjectStore(state => state.currentProject);
-  const [issues, setIssues] = useState<InspectionIssue[]>(SAMPLE_ISSUES);
+  const [issues, setIssues] = useState<InspectionIssue[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
-  const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'done'>('idle');
+  
+  // Upload state
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const toggleResolved = (id: string) => {
     setIssues(issues.map(i => i.id === id ? { ...i, resolved: !i.resolved } : i));
@@ -59,12 +62,103 @@ export default function InspectionUploadModule() {
     setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));
   };
 
-  const handleUpload = () => {
-    setUploadState('uploading');
-    setTimeout(() => {
-      setUploadState('done');
-      toast.success('Inspection report parsed. 4 issues extracted.');
-    }, 1500);
+  const handleFileSelect = useCallback((file: File) => {
+    if (!ACCEPTED_TYPES.includes(file.type)) {
+      toast.error('Invalid file type. Please upload a PDF, JPEG, or PNG.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File too large. Maximum 10MB.');
+      return;
+    }
+    setUploadFile(file);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file);
+  }, [handleFileSelect]);
+
+  const processOCR = async (fileUrl: string, mimeType: string): Promise<InspectionIssue[]> => {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const res = await fetch('/api/ocr/inspection', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ fileUrl, mimeType })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `OCR processing failed with status ${res.status}`);
+    }
+
+    const { data } = await res.json();
+    return data.issues.map((issue: any, index: number) => ({
+      id: `issue-${Date.now()}-${index}`,
+      category: issue.category,
+      description: issue.description,
+      severity: issue.severity,
+      estimatedRepairCost: issue.estimatedRepairCost,
+      resolved: false
+    }));
+  };
+
+  const handleUpload = async () => {
+    if (!currentProject?.id || !uploadFile) {
+      toast.error('Project or file not selected.');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const storagePath = `projects/${currentProject.id}/inspection_docs/${Date.now()}_${uploadFile.name}`;
+      const storageRef = ref(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageRef, uploadFile);
+
+      const downloadUrl = await new Promise<string>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setUploadProgress(progress);
+          },
+          (error) => reject(error),
+          async () => {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(url);
+          }
+        );
+      });
+
+      setIsUploading(false);
+      setIsProcessing(true);
+      toast.loading('Extracting inspection data...', { id: 'ocr-toast' });
+
+      const extractedIssues = await processOCR(downloadUrl, uploadFile.type);
+
+      setIssues(prev => [...prev, ...extractedIssues]);
+      
+      setIsProcessing(false);
+      toast.dismiss('ocr-toast');
+      toast.success(`Inspection report parsed. ${extractedIssues.length} issues extracted.`, { icon: '✨' });
+      
+      setUploadFile(null);
+    } catch (error: any) {
+      console.error('Upload Error:', error);
+      setIsUploading(false);
+      setIsProcessing(false);
+      toast.dismiss('ocr-toast');
+      toast.error(`Upload failed: ${error.message}`);
+    }
   };
 
   // Group by category
@@ -94,97 +188,150 @@ export default function InspectionUploadModule() {
         </div>
 
         {/* Upload Zone */}
-        {uploadState !== 'done' && (
+        <div className="mb-6">
           <div
-            onClick={handleUpload}
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition ${
-              uploadState === 'uploading'
-                ? 'border-gray-400 bg-bg-primary animate-pulse'
-                : 'border-border-accent hover:bg-bg-primary hover:border-gray-400'
+            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+              dragOver ? 'border-blue-400 bg-blue-50' : 'border-border-accent hover:border-gray-400'
             }`}
+            onClick={() => {
+              if (isUploading || isProcessing) return;
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = '.pdf,.jpg,.jpeg,.png';
+              input.onchange = e => {
+                const f = (e.target as HTMLInputElement).files?.[0];
+                if (f) handleFileSelect(f);
+              };
+              input.click();
+            }}
           >
-            <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
-            <p className="text-sm font-medium text-text-primary">
-              {uploadState === 'uploading' ? 'Parsing inspection PDF...' : 'Upload Inspection Report'}
-            </p>
-            <p className="text-xs text-text-secondary mt-1">PDF, DOCX — Auto-extracts structural/plumbing/electrical issues</p>
+            {uploadFile ? (
+              <div className="flex items-center justify-center gap-2">
+                <FileCheck2 className="w-5 h-5 text-emerald-600" />
+                <span className="text-sm font-medium text-text-primary">{uploadFile.name}</span>
+                <span className="text-xs text-text-secondary">({(uploadFile.size / 1024).toFixed(0)} KB)</span>
+                {!isUploading && !isProcessing && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setUploadFile(null); }}
+                    className="ml-2 text-text-secondary hover:text-red-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div>
+                <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-secondary">Drop inspection report here or click to browse</p>
+                <p className="text-xs text-text-secondary mt-1">PDF, JPEG, PNG — Auto-extracts issues</p>
+              </div>
+            )}
           </div>
-        )}
+          
+          {uploadFile && (
+            <button
+              onClick={handleUpload}
+              disabled={isUploading || isProcessing}
+              className="mt-3 w-full bg-gray-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-40 active:scale-[0.99] flex items-center justify-center gap-2"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Uploading ({uploadProgress.toFixed(0)}%)
+                </>
+              ) : isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  AI Extracting Data...
+                </>
+              ) : (
+                <>Upload & Scan Report</>
+              )}
+            </button>
+          )}
+        </div>
 
         {/* Summary Bar */}
-        <div className="grid grid-cols-3 gap-3 mt-4">
-          <div className="p-3 bg-bg-primary rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-text-secondary">Open Issues</p>
-            <p className="text-xl font-light text-text-primary">{unresolvedCount}</p>
+        {issues.length > 0 && (
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            <div className="p-3 bg-bg-primary rounded-lg text-center">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Open Issues</p>
+              <p className="text-xl font-light text-text-primary">{unresolvedCount}</p>
+            </div>
+            <div className="p-3 bg-bg-primary rounded-lg text-center">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Est. Repair</p>
+              <p className="text-xl font-light text-text-primary">${totalRepairCost.toLocaleString()}</p>
+            </div>
+            <div className="p-3 bg-bg-primary rounded-lg text-center">
+              <p className="text-xs uppercase tracking-widest text-text-secondary">Categories</p>
+              <p className="text-xl font-light text-text-primary">{Object.keys(grouped).length}</p>
+            </div>
           </div>
-          <div className="p-3 bg-bg-primary rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-text-secondary">Est. Repair</p>
-            <p className="text-xl font-light text-text-primary">${totalRepairCost.toLocaleString()}</p>
-          </div>
-          <div className="p-3 bg-bg-primary rounded-lg text-center">
-            <p className="text-xs uppercase tracking-widest text-text-secondary">Categories</p>
-            <p className="text-xl font-light text-text-primary">{Object.keys(grouped).length}</p>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Categorized Issue List */}
-      <div className="divide-y divide-gray-100">
-        {Object.entries(grouped).map(([category, categoryIssues]) => {
-          const catUnresolved = categoryIssues.filter(i => !i.resolved).length;
-          const isExpanded = expandedCategories[category] !== false; // default expanded
-          return (
-            <div key={category}>
-              <button
-                onClick={() => toggleCategory(category)}
-                className="w-full flex items-center justify-between px-6 py-3 hover:bg-bg-primary transition"
-              >
-                <div className="flex items-center space-x-2">
-                  {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-text-secondary" /> : <ChevronRight className="w-3.5 h-3.5 text-text-secondary" />}
-                  <span className="text-text-secondary flex-shrink-0">{CATEGORY_ICONS[category as InspectionCategory]}</span>
-                  <span className="text-sm font-medium text-text-primary">{category}</span>
-                </div>
-                <span className="text-xs text-text-secondary">
-                  {catUnresolved}/{categoryIssues.length} open
-                </span>
-              </button>
+      {issues.length > 0 && (
+        <div className="divide-y divide-gray-100">
+          {Object.entries(grouped).map(([category, categoryIssues]) => {
+            const catUnresolved = categoryIssues.filter(i => !i.resolved).length;
+            const isExpanded = expandedCategories[category] !== false; // default expanded
+            return (
+              <div key={category}>
+                <button
+                  onClick={() => toggleCategory(category)}
+                  className="w-full flex items-center justify-between px-6 py-3 hover:bg-bg-primary transition"
+                >
+                  <div className="flex items-center space-x-2">
+                    {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-text-secondary" /> : <ChevronRight className="w-3.5 h-3.5 text-text-secondary" />}
+                    <span className="text-text-secondary flex-shrink-0">{CATEGORY_ICONS[category as InspectionCategory] || <HardHat className="w-4 h-4" />}</span>
+                    <span className="text-sm font-medium text-text-primary">{category}</span>
+                  </div>
+                  <span className="text-xs text-text-secondary">
+                    {catUnresolved}/{categoryIssues.length} open
+                  </span>
+                </button>
 
-              {isExpanded && (
-                <div className="px-6 pb-3 space-y-2">
-                  {categoryIssues.map(issue => (
-                    <div
-                      key={issue.id}
-                      className={`flex items-start justify-between p-3 rounded-lg border transition ${
-                        issue.resolved ? 'bg-bg-primary border-border-accent opacity-60' : 'border-border-accent'
-                      }`}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <button
-                          onClick={() => toggleResolved(issue.id)}
-                          className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-emerald-500' : 'text-gray-300 hover:text-text-secondary'}`}
-                        >
-                          <CheckCircle className="w-4.5 h-4.5" />
-                        </button>
-                        <div>
-                          <p className={`text-sm ${issue.resolved ? 'line-through text-text-secondary' : 'text-text-primary'}`}>{issue.description}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded border ${SEVERITY_STYLES[issue.severity]}`}>
-                              {issue.severity}
-                            </span>
+                {isExpanded && (
+                  <div className="px-6 pb-3 space-y-2">
+                    {categoryIssues.map(issue => (
+                      <div
+                        key={issue.id}
+                        className={`flex items-start justify-between p-3 rounded-lg border transition ${
+                          issue.resolved ? 'bg-bg-primary border-border-accent opacity-60' : 'border-border-accent'
+                        }`}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <button
+                            onClick={() => toggleResolved(issue.id)}
+                            className={`mt-0.5 flex-shrink-0 ${issue.resolved ? 'text-emerald-500' : 'text-gray-300 hover:text-text-secondary'}`}
+                          >
+                            <CheckCircle className="w-4.5 h-4.5" />
+                          </button>
+                          <div>
+                            <p className={`text-sm ${issue.resolved ? 'line-through text-text-secondary' : 'text-text-primary'}`}>{issue.description}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded border ${SEVERITY_STYLES[issue.severity] || SEVERITY_STYLES['Minor']}`}>
+                                {issue.severity}
+                              </span>
+                            </div>
                           </div>
                         </div>
+                        <span className="text-sm font-mono text-text-secondary flex-shrink-0 ml-3">
+                          ${issue.estimatedRepairCost.toLocaleString()}
+                        </span>
                       </div>
-                      <span className="text-sm font-mono text-text-secondary flex-shrink-0 ml-3">
-                        ${issue.estimatedRepairCost.toLocaleString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

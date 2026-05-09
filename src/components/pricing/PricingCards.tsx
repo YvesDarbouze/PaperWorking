@@ -36,10 +36,10 @@ const tiers: PlanTier[] = [
   {
     id: 'individual',
     name: 'Individual',
-    tagline: 'Solo investors tracking projects and managing rehab budgets independently.',
+    tagline: 'Built for solo investors who want full pipeline visibility without a team subscription.',
     monthlyPrice: 59,
     annualPrice: 499,
-    ctaLabel: 'Start free trial',
+    ctaLabel: 'Start Free Trial',
     ctaMicrocopy: 'No credit card required',
     isAnchored: false,
     features: [
@@ -51,27 +51,27 @@ const tiers: PlanTier[] = [
       {
         label: 'Team Invites & RBAC',
         included: false,
-        lossAversion: 'Without Team, role-based access control and audit logs are unavailable.',
+        lossAversion: 'Role-based access and audit logs are Team-only. Your contractors will see your financials.',
       },
       {
         label: 'Google Drive Provisioning',
         included: false,
-        lossAversion: 'Automatic deal folder creation requires the Team plan.',
+        lossAversion: 'Auto-created deal folders in Google Drive require the Team plan.',
       },
     ],
   },
   {
     id: 'team',
     name: 'Team',
-    tagline: 'Built for investor groups scaling acquisitions with strict data isolation.',
+    tagline: 'For investor teams who need role-based access, shared workflows, and complete financial separation.',
     monthlyPrice: 99,
     annualPrice: 999,
-    ctaLabel: 'Deploy your team',
-    ctaMicrocopy: 'Cancel any time',
+    ctaLabel: 'Start Team Trial',
+    ctaMicrocopy: 'Cancel anytime',
     isAnchored: true,
     anchorBadge: 'Most teams choose Team',
     socialProof: {
-      quote: '"We closed 3 more projects in Q1 just by having everyone in the same workspace."',
+      quote: '"We closed 3 extra projects last quarter just by putting everyone in the same workspace."',
       author: '— J. Rivera, Valor Capital Partners',
     },
     features: [
@@ -87,11 +87,11 @@ const tiers: PlanTier[] = [
   {
     id: 'lawyer',
     name: 'Lawyer',
-    tagline: 'Receive deal requests from investors and execute closings from the app.',
+    tagline: 'Get matched with investor clients, manage closings, and track your deal pipeline — all in one place.',
     monthlyPrice: 59,
     annualPrice: 499,
-    ctaLabel: 'Join the network',
-    ctaMicrocopy: 'Cancel any time',
+    ctaLabel: 'Join the Waitlist',
+    ctaMicrocopy: 'Cancel anytime',
     isAnchored: false,
     features: [
       { label: 'Localized Deal Request Pipeline', included: true },

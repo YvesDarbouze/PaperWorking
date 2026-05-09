@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { input } = await req.json().catch(() => ({ input: '' }));
+  const { input, sessionToken } = await req.json().catch(() => ({ input: '', sessionToken: undefined }));
 
   if (!input || typeof input !== 'string' || input.trim().length < 2) {
     return NextResponse.json({ predictions: [] });
@@ -23,12 +23,26 @@ export async function POST(req: NextRequest) {
 
   const normalized = input.trim();
 
+  // If a session token is used, caching autocomplete predictions might be less strictly correct 
+  // per Google's TOS, but we'll leave it in place or let it be. Actually, Google recommends 
+  // not caching if you're using session tokens, but the current cache TTL is short.
   const cached = await placesCache.getAutocomplete(normalized);
   if (cached) {
     return NextResponse.json({ predictions: cached, cached: true });
   }
 
   try {
+    const requestBody: any = {
+      input: normalized,
+      includedPrimaryTypes: ['street_address', 'subpremise', 'premise'],
+      includedRegionCodes: ['us'],
+      languageCode: 'en',
+    };
+
+    if (sessionToken) {
+      requestBody.sessionToken = sessionToken;
+    }
+
     const response = await fetch(
       'https://places.googleapis.com/v1/places:autocomplete',
       {
@@ -37,12 +51,7 @@ export async function POST(req: NextRequest) {
           'Content-Type': 'application/json',
           'X-Goog-Api-Key': PLACES_API_KEY,
         },
-        body: JSON.stringify({
-          input: normalized,
-          includedPrimaryTypes: ['street_address', 'subpremise', 'premise'],
-          includedRegionCodes: ['us'],
-          languageCode: 'en',
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
 

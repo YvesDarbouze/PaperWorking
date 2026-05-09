@@ -28,33 +28,33 @@ const PHASES = [
   {
     number: '1',
     label: 'Acquisition',
-    subtitle: 'The Capital Gateway',
+    subtitle: 'Find the Deal. Lock the Capital.',
     icon: Landmark,
-    body: 'We centralize deal sourcing and syndication. Investors can identify targets, generate automated offer letters, and securely crowdfund capital commitments in one streamlined environment.',
+    body: 'Source targets, run your MAO calculation, and generate offer letters — all from the same screen. Partner capital commitments are tracked in real time before you make a move.',
     accentColor: '#4ade80', // green-400
   },
   {
     number: '2',
     label: 'Purchase',
-    subtitle: 'The Compliance Vault',
+    subtitle: 'No More Closing Chaos.',
     icon: ShieldCheck,
-    body: 'We eliminate closing chaos. PaperWorking acts as a secure digital vault for loan processing, attorney coordination, and strict document management, ensuring contingency deadlines are never missed.',
+    body: 'Loan docs, title reports, and contingency deadlines live in one secure vault. Attorneys and loan officers get role-based access — nothing falls between the cracks, no deadline gets missed.',
     accentColor: '#60a5fa', // blue-400
   },
   {
     number: '3',
     label: 'Hold',
-    subtitle: 'Margin Protection',
+    subtitle: 'Know Your Burn Rate. Every Single Day.',
     icon: Clock,
-    body: 'We protect your profit from the silent killer: time. The platform meticulously tracks daily holding costs, rehab timelines, and operational burn rates—expenses that routinely erode ROI if left unmonitored.',
+    body: 'Holding costs accumulate silently. PaperWorking tracks your daily burn from day of close — taxes, insurance, utilities, interest — and flags when your 70% rule is at risk.',
     accentColor: '#facc15', // yellow-400
   },
   {
     number: '4',
     label: 'Exit',
-    subtitle: 'Financial Reconciliation',
+    subtitle: 'Every Dollar Accounted For.',
     icon: BarChart3,
-    body: 'We finalize the math. Whether holding for rental flow or selling the asset, the platform aggregates all historical project costs, visualizes final metrics, and automatically generates clean, exportable tax documentation.',
+    body: 'ARV minus all costs — acquisition, rehab, holding, closing — calculated automatically. Generate partner distribution reports and export tax-ready documentation before you leave the closing table.',
     accentColor: '#f472b6', // pink-400
   },
 ];
@@ -178,25 +178,23 @@ export default function PlatformOverview() {
             className="text-[12px] font-bold uppercase tracking-[0.3em] mb-6 text-center"
             style={{ color: '#717171' }}
           >
-            Platform Overview
+            How It Works
           </motion.p>
 
-          {/* ── Main Header (EXACT COPY) ── */}
           <motion.h2
             variants={fadeUp}
             className="text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.75rem] tracking-tight leading-[1.15] mb-6 sm:mb-8 text-center max-w-4xl mx-auto"
             style={{ color: '#ffffff' }}
           >
-            PaperWorking: The Real Estate Investment Operating System
+            One System Mapped to Every Phase of Your Deal
           </motion.h2>
 
-          {/* ── Intro Paragraph (EXACT COPY) ── */}
           <motion.p
             variants={fadeUp}
             className="text-sm sm:text-base md:text-[17px] leading-[1.75] sm:leading-[1.8] mb-12 sm:mb-16 md:mb-20 text-center max-w-3xl mx-auto"
             style={{ color: '#b0b0b0' }}
           >
-            PaperWorking is an end-to-end operational framework built specifically for serious real estate investors. It replaces fragmented spreadsheets and legacy CRMs with a centralized system mapped directly to the four physical phases of the investment lifecycle. By aligning our software with the actual realities of real estate development, PaperWorking solves the critical pain points that cost investors time and capital:
+            Most investors lose time and money between phases — when docs get buried, costs go untracked, or partners are out of the loop. PaperWorking follows the actual lifecycle of every deal, from first contact to final distribution.
           </motion.p>
 
           {/* ── 4-Phase Grid ── */}
@@ -230,14 +228,14 @@ export default function PlatformOverview() {
               className="text-xl sm:text-2xl md:text-3xl tracking-tight mb-4 sm:mb-6"
               style={{ color: '#ffffff' }}
             >
-              The Value Proposition
+              Built for Operators, Not Hobbyists.
             </h3>
 
             <p
               className="text-base sm:text-[17px] leading-[1.8] mb-14"
               style={{ color: '#b0b0b0' }}
             >
-              PaperWorking is not just a project management tool; it is a risk mitigation platform. We transition investors from a state of operational liability (lost documents, untracked holding costs, messy closings) to institutional-grade precision. You cannot scale a real estate portfolio without structural integrity. Stop managing high-stakes capital on spreadsheets, and treat your investments like a business.
+              The investors who scale don&apos;t work harder — they operate with precision. PaperWorking replaces the spreadsheet chaos, missed deadlines, and cost overruns that quietly kill margins. This is what institutional-grade deal management looks like for independent operators.
             </p>
 
             {/* ── CTA Button ── */}
@@ -251,7 +249,7 @@ export default function PlatformOverview() {
                 boxShadow: '0 4px 24px rgba(255,255,255,0.12)',
               }}
             >
-              <span>Create Your Free Account</span>
+              <span>Start Your 14-Day Free Trial</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -259,7 +257,7 @@ export default function PlatformOverview() {
               className="mt-6 text-[13px]"
               style={{ color: '#5a5a5a' }}
             >
-              14-day free trial · No credit card required
+              No credit card required · Full Team access from day one
             </p>
           </motion.div>
         </motion.div>

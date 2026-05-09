@@ -86,6 +86,13 @@ export default function AddressAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [sessionToken, setSessionToken] = useState<string>('');
+
+  // Generate a session token on mount
+  useEffect(() => {
+    const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+    setSessionToken(generateToken());
+  }, []);
 
   // ─── Manual State ───────────────────────────────────
   const [manualStreet, setManualStreet] = useState(structuredValue?.street || '');
@@ -144,7 +151,7 @@ export default function AddressAutocomplete({
       const res = await fetch('/api/places/autocomplete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input }),
+        body: JSON.stringify({ input, sessionToken }),
       });
       const data = await res.json();
       setPredictions(data.predictions || []);
@@ -177,11 +184,15 @@ export default function AddressAutocomplete({
       const res = await fetch('/api/places/details', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ placeId: prediction.placeId }),
+        body: JSON.stringify({ placeId: prediction.placeId, sessionToken }),
       });
       const parsed: ParsedAddress = await res.json();
       setQuery(parsed.formattedAddress || prediction.description);
       onSelect(parsed);
+      
+      // Regenerate session token after a successful completion to start a new session
+      const generateToken = () => typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2);
+      setSessionToken(generateToken());
     } catch (err) {
       console.error('[AddressAutocomplete] Details error:', err);
       onSelect({

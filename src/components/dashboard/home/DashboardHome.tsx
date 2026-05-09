@@ -20,6 +20,10 @@ import { usePaywall } from '@/hooks/usePaywall';
 import { useAuth } from '@/context/AuthContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
+import DashboardKPIHeader from './DashboardKPIHeader';
+import GenerativeInsights from './GenerativeInsights';
+import RecentActivityTable from './RecentActivityTable';
+
 import toast from 'react-hot-toast';
 import { Project } from '@/types/schema';
 
@@ -260,221 +264,29 @@ export default function DashboardHome() {
         </section>
       )}
 
-      {/* ── 2-Column Main Grid (65% / 35%) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* ── Dashboard Content ── */}
+      <div className="flex flex-col gap-8">
         
-        {/* LEFT COLUMN (65%) */}
-        <div className="lg:col-span-8 flex flex-col gap-8">
-           
-           {/* Top Row: Profile + Active Deals */}
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              
-              {/* Profile Card */}
-              <div className="col-span-1 bg-[#FFFFFF] rounded-2xl border border-[#A5A5A5] p-6 flex flex-col items-center justify-center relative shadow-sm">
-                 <button className="absolute top-4 right-4 hover:opacity-70 transition-opacity">
-                    <RotateCw className="w-4 h-4 text-[#7F7F7F]" />
-                 </button>
-                 <div className="w-20 h-20 rounded-full border-4 border-[#A5A5A5]/20 mb-4 overflow-hidden bg-[#F2F2F2] flex items-center justify-center">
-                    <User className="w-8 h-8 text-[#A5A5A5]" />
-                 </div>
-                 <h2 className="text-lg font-medium text-[#595959] text-center line-clamp-1">{profile?.firstName || 'Investor'} {profile?.lastName || ''}</h2>
-                 <p className="text-sm text-[#7F7F7F] mb-6">Lead Investor</p>
-                 
-                 {/* KPI Badges (Dynamic Data) */}
-                 <div className="flex gap-2 w-full justify-center flex-wrap">
-                    <div className="flex items-center gap-1.5 bg-[#F2F2F2] px-3 py-1.5 rounded-full text-xs font-medium text-[#595959] shadow-sm" title="Team Members">
-                       <Users className="w-3.5 h-3.5 text-[#595959]" /> {isGuest ? '—' : teamMembersCount}
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-[#F2F2F2] px-3 py-1.5 rounded-full text-xs font-medium text-[#595959] shadow-sm" title="Deals Closed">
-                       <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> {isGuest ? '—' : dealsClosedCount}
-                    </div>
-                    <div className="flex items-center gap-1.5 bg-[#F2F2F2] px-3 py-1.5 rounded-full text-xs font-medium text-[#595959] shadow-sm" title="Active Deals">
-                       <Target className="w-3.5 h-3.5 text-red-500" /> {isGuest ? '—' : activeDeals.length}
-                    </div>
-                 </div>
-              </div>
+        {/* Generative Insights (Center-Top) */}
+        {!isGuest && (
+          <ErrorBoundary name="Generative Insights">
+            <GenerativeInsights />
+          </ErrorBoundary>
+        )}
 
-              {/* Active Projects (Up to 2) */}
-              {!isGuest && activeDeals.slice(0, 2).map((deal) => (
-                <div key={deal.id} className="col-span-1 bg-[#FFFFFF] rounded-2xl border border-[#A5A5A5] p-6 flex flex-col justify-between shadow-sm">
-                   <div className="flex justify-between items-start mb-4">
-                      <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center border border-[#A5A5A5]/50">
-                         <Clock className="w-5 h-5 text-[#7F7F7F]" />
-                      </div>
-                      <div className="w-8 h-8 rounded-full bg-[#F2F2F2] flex items-center justify-center border border-[#A5A5A5]/50">
-                         <CheckCircle2 className="w-4 h-4 text-[#7F7F7F]" />
-                      </div>
-                   </div>
-                   <div className="mt-auto">
-                      <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold mb-1">Project</p>
-                      <h3 className="text-lg font-medium text-[#595959] leading-tight line-clamp-2 min-h-[2.5rem]">{deal.address}</h3>
-                      <div className="mt-6 flex flex-col">
-                         <span className="text-4xl font-light text-[#595959] tracking-tighter">{calculatePhaseCompletion(deal.status)}%</span>
-                         <span className="text-xs text-[#7F7F7F] mt-1">Avg. Completed</span>
-                      </div>
-                   </div>
-                </div>
-              ))}
+        {/* KPI Header */}
+        {!isGuest && (
+          <ErrorBoundary name="KPI Header">
+            <DashboardKPIHeader />
+          </ErrorBoundary>
+        )}
 
-              {/* Empty state for active projects if less than 2 */}
-              {!isGuest && activeDeals.length < 2 && (
-                <div className="col-span-1 bg-[#FFFFFF]/50 rounded-2xl border border-[#A5A5A5] border-dashed p-6 flex flex-col items-center justify-center shadow-sm">
-                   <p className="text-sm text-[#7F7F7F]">No additional active projects</p>
-                </div>
-              )}
-              {!isGuest && activeDeals.length === 0 && (
-                <div className="col-span-1 bg-[#FFFFFF]/50 rounded-2xl border border-[#A5A5A5] border-dashed p-6 flex flex-col items-center justify-center shadow-sm">
-                   <p className="text-sm text-[#7F7F7F]">No active projects</p>
-                </div>
-              )}
-           </div>
+        {/* Recent Activity Table */}
+        <ErrorBoundary name="Recent Activity">
+          <RecentActivityTable />
+        </ErrorBoundary>
 
-           {/* Middle Row: Start New Project CTA */}
-           {!isGuest && (
-             <button 
-               onClick={handleCreateProject} 
-               className="w-full bg-[#F2F2F2] border border-[#A5A5A5] rounded-2xl py-6 flex items-center justify-center gap-3 hover:bg-[#A5A5A5]/10 transition-colors shadow-sm relative group"
-             >
-                {isPaid ? <Plus className="w-6 h-6 text-[#595959]" /> : <Lock className="w-6 h-6 text-[#7F7F7F]" />}
-                <span className="text-xl font-medium text-[#595959]">Start New Project</span>
-                <MoreHorizontal className="w-5 h-5 text-[#7F7F7F] absolute right-8 hidden md:block opacity-50 group-hover:opacity-100 transition-opacity" />
-             </button>
-           )}
-
-           {/* Bottom Row: Analytics */}
-           <div className="bg-[#FFFFFF] rounded-2xl border border-[#A5A5A5] p-6 shadow-sm">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                 <div>
-                    <h2 className="text-xl font-medium text-[#595959]">Analytics: Portfolio Performance</h2>
-                    <p className="text-sm text-[#7F7F7F] mt-1">Productivity analytics</p>
-                 </div>
-                 <div className="flex items-center gap-3 self-start md:self-auto">
-                    <span className="text-sm text-[#595959] font-medium hidden sm:block">Select Chart</span>
-                    <select className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-md px-3 py-1.5 text-sm text-[#595959] focus:outline-none focus:ring-1 focus:ring-[#595959]">
-                       <option>Holding Costs</option>
-                       <option>Portfolio ARV</option>
-                       <option>Net Profit</option>
-                    </select>
-                 </div>
-              </div>
-              
-              <div className="h-64 mb-6">
-                 {isGuest ? (
-                   <div className="h-full bg-[#F2F2F2] rounded-lg border border-[#A5A5A5]/30 flex items-center justify-center">
-                     <p className="text-sm text-[#7F7F7F]">Analytics hidden for guest accounts</p>
-                   </div>
-                 ) : (
-                   <ErrorBoundary name="Portfolio Analytics">
-                     <Suspense fallback={<div className="h-full bg-[#F2F2F2] animate-pulse rounded-lg border border-[#A5A5A5]/30" />}>
-                        <ROIChart projects={portfolioProjects} />
-                     </Suspense>
-                   </ErrorBoundary>
-                 )}
-              </div>
-
-              <div className="flex flex-col sm:flex-row justify-between sm:items-end border-t border-[#A5A5A5]/30 pt-6 mt-4 gap-4">
-                 <div className="flex flex-wrap items-center gap-6">
-                    <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-sm bg-[#595959]" />
-                       <span className="text-xs text-[#7F7F7F] font-medium uppercase tracking-wider">Cost per Lead/Deal</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                       <div className="w-3 h-3 rounded-sm bg-[#A5A5A5]" />
-                       <span className="text-xs text-[#7F7F7F] font-medium uppercase tracking-wider">After Repair Value (ARV)</span>
-                    </div>
-                 </div>
-                 <div className="text-left sm:text-right">
-                    <p className="text-4xl font-medium text-[#595959] tracking-tight">{isGuest ? '—' : '$441.00'}</p>
-                    <p className="text-xs text-[#7F7F7F] mt-1 uppercase tracking-widest font-bold">Avg. Daily Burn Rate</p>
-                 </div>
-              </div>
-           </div>
-        </div>
-
-        {/* RIGHT COLUMN (35%) */}
-        <div className="lg:col-span-4 flex flex-col gap-8">
-           
-           {/* My Messages Widget */}
-           <ErrorBoundary name="Activity Center">
-             <div className="bg-[#FFFFFF] rounded-2xl border border-[#A5A5A5] p-6 shadow-sm">
-                <div className="flex items-center justify-between mb-6">
-                   <h2 className="text-lg font-medium text-[#595959]">My Messages & Activity</h2>
-                   <Calendar className="w-5 h-5 text-[#7F7F7F]" />
-                </div>
-                
-                {/* Dummy activity feed for visual alignment */}
-                <div className="space-y-4">
-                   {[
-                     { time: '08:15 am', date: 'Tue, 11 Jul', title: 'Quick Daily Meeting', sub: 'Zoom', color: 'bg-blue-500' },
-                     { time: '09:30 pm', date: 'Tue, 11 Jul', title: 'John Onboarding', sub: 'Google Meet', color: 'bg-green-500' },
-                     { time: '02:30 pm', date: 'Tue, 12 Jul', title: 'Call With a New Team', sub: 'Google Meet', color: 'bg-green-500' },
-                     { time: '04:00 pm', date: 'Tue, 15 Jul', title: 'Lead Designers Event', sub: 'Zoom', color: 'bg-blue-500' }
-                   ].map((msg, i) => (
-                     <div key={i} className="flex items-center justify-between py-3 border-b border-[#A5A5A5]/20 last:border-0 group cursor-pointer">
-                        <div className="flex items-start gap-4">
-                           <div className="w-16 flex-shrink-0">
-                              <p className="text-xs text-[#7F7F7F] mb-0.5">{msg.date}</p>
-                              <p className="text-xs font-medium text-[#595959]">{msg.time}</p>
-                           </div>
-                           <div>
-                              <p className="text-sm font-medium text-[#595959] line-clamp-1">{msg.title}</p>
-                              <div className="flex items-center gap-1.5 mt-1">
-                                 <div className={`w-2 h-2 rounded-full ${msg.color}`} />
-                                 <p className="text-xs text-[#7F7F7F]">{msg.sub}</p>
-                              </div>
-                           </div>
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 text-[#A5A5A5] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                     </div>
-                   ))}
-                </div>
-                <button className="w-full text-center text-xs font-bold text-[#7F7F7F] uppercase tracking-widest mt-6 hover:text-[#595959] transition-colors">
-                   See all activity <ChevronRight className="w-3 h-3 inline -mt-0.5" />
-                </button>
-             </div>
-           </ErrorBoundary>
-
-           {/* Projects Pipeline */}
-           <ErrorBoundary name="Projects Pipeline">
-             <div className="bg-[#FFFFFF] rounded-2xl border border-[#A5A5A5] p-6 shadow-sm flex-1">
-                <div className="mb-6 flex justify-between items-end">
-                   <div>
-                      <h2 className="text-lg font-medium text-[#595959] leading-tight mb-1">Projects Pipeline</h2>
-                      <p className="text-xs text-[#7F7F7F]">Assigned / To Me</p>
-                   </div>
-                   <span className="text-[10px] uppercase font-bold text-[#7F7F7F] tracking-widest">Completion %</span>
-                </div>
-                
-                <div className="space-y-6 mt-8">
-                   {!isGuest && activeDeals.map(deal => {
-                     const pct = calculatePhaseCompletion(deal.status);
-                     return (
-                       <div key={deal.id} className="flex items-center gap-4">
-                          <p className="text-sm font-medium text-[#595959] w-28 truncate" title={deal.address || 'Unnamed'}>
-                             {deal.address || 'Unnamed'}
-                          </p>
-                          <div className="flex-1 h-1.5 bg-[#F2F2F2] rounded-full overflow-hidden">
-                             <div className="h-full bg-[#595959] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
-                          </div>
-                          <div className="w-14 text-right flex items-center justify-end gap-1.5">
-                             <span className="text-xs text-[#7F7F7F] font-bold">{pct}%</span>
-                             {pct < 50 ? <ArrowDownCircle className="w-3.5 h-3.5 text-[#A5A5A5]" /> : <ArrowUpCircle className="w-3.5 h-3.5 text-[#595959]" />}
-                          </div>
-                       </div>
-                     );
-                   })}
-                   {(!isGuest && activeDeals.length === 0) && (
-                      <p className="text-sm text-[#7F7F7F] text-center py-4">No active deals assigned to you.</p>
-                   )}
-                   {isGuest && (
-                      <p className="text-sm text-[#7F7F7F] text-center py-4">Pipeline hidden for guest accounts.</p>
-                   )}
-                </div>
-             </div>
-           </ErrorBoundary>
-        </div>
       </div>
-
     </div>
   );
 }

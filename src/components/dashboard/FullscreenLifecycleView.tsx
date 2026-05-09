@@ -25,7 +25,7 @@ const PHASES = [
 ];
 
 export default function FullscreenLifecycleView({ projectId, onExit }: FullscreenLifecycleViewProps) {
-  const { isLead, role } = usePermissions();
+  const { isLead, isContractor, role } = usePermissions();
   const projects = useProjectStore(state => state.projects);
   const ledgerItems = useProjectStore(state => state.ledgerItems);
   const deal = projects.find(d => d.id === projectId);
@@ -117,7 +117,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
              >
                 {currentPhase === 1 && <StaticPhase1 deal={deal} />}
                 {currentPhase === 2 && <StaticPhase2 deal={deal} />}
-                {currentPhase === 3 && <StaticPhase3 deal={deal} ledgerItems={ledgerItems[deal.id] || []} canAdd={isLead || role === 'General Contractor'} />}
+                {currentPhase === 3 && <StaticPhase3 deal={deal} ledgerItems={ledgerItems[deal.id] || []} canAdd={isLead || isContractor} />}
                 {currentPhase === 4 && <Phase4Outcome projectId={projectId} />}
              </motion.div>
           </AnimatePresence>

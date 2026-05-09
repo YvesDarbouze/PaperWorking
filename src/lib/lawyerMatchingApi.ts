@@ -1,43 +1,9 @@
 import { ApplicationUser } from '@/types/schema';
 
-// Generate some mock lawyer accounts acting as local DB entries
-const mockLawyers: ApplicationUser[] = [
-  {
-    uid: 'lawyer_001',
-    organizationId: 'org_zanelaw',
-    email: 'robert.zane@zanelaw.com',
-    displayName: 'Robert Zane, Esq.',
-    orgRole: 'Lead Investor',
-    subscriptionPlan: 'Lawyer Lead-Gen',
-    subscriptionStatus: 'active',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    uid: 'lawyer_002',
-    organizationId: 'org_pearsonhardman',
-    email: 'jessica.pearson@pearsonhardman.com',
-    displayName: 'Jessica Pearson, Esq.',
-    orgRole: 'Lead Investor',
-    subscriptionPlan: 'Lawyer Lead-Gen',
-    subscriptionStatus: 'active',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    uid: 'lawyer_003',
-    organizationId: 'org_pearsonhardman',
-    email: 'harvey.specter@pearsonhardman.com',
-    displayName: 'Harvey Specter, Esq.',
-    orgRole: 'Lead Investor',
-    subscriptionPlan: 'Lawyer Lead-Gen',
-    subscriptionStatus: 'inactive', // Should be filtered out
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
-
 export async function fetchStateMatchedLawyers(stateCode: string): Promise<ApplicationUser[]> {
-  // Return lawyers who have an 'active' subscription
-  return mockLawyers.filter(lawyer => lawyer.subscriptionStatus === 'active');
+  const res = await fetch(`/api/lawyers?state=${encodeURIComponent(stateCode)}`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  if (!data.success) return [];
+  return data.lawyers as ApplicationUser[];
 }

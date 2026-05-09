@@ -667,6 +667,7 @@ export interface ProjectFinancials {
   buyersAgentCommission?: number; // Represented as a percentage, e.g. 3 for 3%
   sellersAgentCommission?: number; // Represented as a percentage, e.g. 3 for 3%
   finalClosingCosts?: number; // Fixed dollar amount
+  totalHoldingCosts?: number; // Accumulated holding costs
   listingDate?: Date;   // Date the property was listed on MLS — used for exact DOM calculation
   soldDate?: Date;
   mlsNumber?: string; // Added for CRM-lite tracker

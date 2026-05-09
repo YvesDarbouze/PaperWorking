@@ -12,8 +12,8 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "PaperWorking",
-  description: "Real estate project management platform",
+  title: "PaperWorking — Real Estate Investment Operating System",
+  description: "Track deals, manage rehab budgets, and close faster. PaperWorking is the operating system for serious real estate investors — from sourcing to exit.",
 };
 
 export default function RootLayout({

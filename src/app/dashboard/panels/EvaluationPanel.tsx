@@ -6,7 +6,7 @@ import CostOfCapitalCalculator from '@/components/Calculators/CostOfCapitalCalcu
 import HoldingCostClock from '@/components/Calculators/HoldingCostClock';
 import RuleOf70Warning from '@/components/Calculators/RuleOf70Warning';
 import WhatIfSimulator from '@/components/Calculators/WhatIfSimulator';
-import LenderVault from '@/components/LenderVault/LenderVault';
+import LenderVault from '@/components/financing/LenderVault';
 import InspectionChecklist from '@/components/Inspection/InspectionChecklist';
 
 /* Phase-specific modules */

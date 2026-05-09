@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Project, ApplicationUser } from '@/types/schema';
+import { ApplicationUser } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
-import { fetchStateMatchedLawyers } from '@/lib/lawyerMatchingApi';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import ESignAction from '@/components/shared/ESignAction';
+import { usePermissions } from '@/hooks/usePermissions';
 
-// Mock generic file upload simulation
-const mockFileUpload = () => {
-    return `https://mockstorage.com/doc_${Math.random().toString(36).substring(7)}.pdf`;
-};
 
 interface ClosingRoomProps {
     projectId: string;
@@ -22,6 +18,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const projects = useProjectStore(state => state.projects);
     const updateClosingRoom = useProjectStore(state => state.updateClosingRoom);
     const deal = projects.find(d => d.id === projectId);
+    const { role } = usePermissions();
 
     const [isPinging, setIsPinging] = useState(false);
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
@@ -29,16 +26,25 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const [isSigned, setIsSigned] = useState(false);
 
     useEffect(() => {
-       if (!deal) return;
-       // Mock a search based on address extracting State
-       const discoverLawyers = async () => {
-         setIsSearchingLawyers(true);
-         // Simulate state based on property address length or just default "NY"
-         const lawyers = await fetchStateMatchedLawyers('NY');
-         setMatchingLawyers(lawyers);
-         setIsSearchingLawyers(false);
-       };
-       discoverLawyers();
+      if (!deal) return;
+      const discoverLawyers = async () => {
+        setIsSearchingLawyers(true);
+        // Extract 2-letter state abbreviation from address (e.g. "123 Main St, Miami, FL 33101")
+        const stateMatch = deal.address.match(/,\s*([A-Z]{2})(?:\s+\d{5})?/i);
+        const stateCode = stateMatch ? stateMatch[1].toUpperCase() : 'NY';
+        try {
+          const res = await fetch(`/api/lawyers?state=${stateCode}`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+          setMatchingLawyers(data.lawyers ?? []);
+        } catch (err) {
+          console.error('[ClosingRoomModal] Failed to fetch lawyers:', err);
+          toast.error('Could not load attorneys. Please try again.');
+        } finally {
+          setIsSearchingLawyers(false);
+        }
+      };
+      discoverLawyers();
     }, [projectId, deal]);
 
     if (!deal) return null;
@@ -63,25 +69,15 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 blockchainTxHash: res.blockchainTxHash
             });
             toast.success(`Title Registry Verified! Hash: ${res.blockchainTxHash?.slice(0,10)}...`, { id: 'web3' });
-        } catch (error) {
+        } catch {
             toast.error('Failed to communicate with title nodes', { id: 'web3' });
         } finally {
             setIsPinging(false);
         }
     };
 
-    const handleFileUpload = (type: 'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl') => {
-        toast.promise(
-            new Promise((resolve) => setTimeout(() => resolve(mockFileUpload()), 1000)),
-            {
-               loading: `Uploading Document...`,
-               success: (url) => {
-                   updateClosingRoom(deal.id, { [type]: url });
-                   return 'Document Secured';
-               },
-               error: 'Upload Failed'
-            }
-        );
+    const handleFileUpload = () => {
+        toast('Document upload — Firebase Storage integration pending.', { icon: '📎' });
     };
 
     const DocsComplete = closingRoom.titleInsuranceUrl && closingRoom.closingDisclosureUrl && closingRoom.wiringInstructionsUrl;
@@ -153,7 +149,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             ) : (
                                 <div className="bg-bg-primary border border-border-accent p-4 rounded-lg space-y-3">
-                                    <p className="text-xs text-text-secondary flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches in NY:</p>
+                                    <p className="text-xs text-text-secondary flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches Near Property:</p>
                                     {isSearchingLawyers ? (
                                         <p className="text-sm text-text-secondary">Scanning local subscriber registry...</p>
                                     ) : (
@@ -202,21 +198,21 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                            title="1. Title Insurance"
                            description="Scan of the abstract and insurance policy."
                            isUploaded={!!closingRoom.titleInsuranceUrl}
-                           onUpload={() => handleFileUpload('titleInsuranceUrl')}
+                           onUpload={handleFileUpload}
                         />
 
                         <DocumentZone 
                            title="2. Closing Disclosure (CD)"
                            description="Standardized HUD-1 or final CD statements."
                            isUploaded={!!closingRoom.closingDisclosureUrl}
-                           onUpload={() => handleFileUpload('closingDisclosureUrl')}
+                           onUpload={handleFileUpload}
                         />
 
                         <DocumentZone 
                            title="3. Wiring Instructions"
                            description="Verified ABA routing and transfer accounts."
                            isUploaded={!!closingRoom.wiringInstructionsUrl}
-                           onUpload={() => handleFileUpload('wiringInstructionsUrl')}
+                           onUpload={handleFileUpload}
                         />
 
                         {(!DocsComplete || !closingRoom.lawyerVerified) && (
@@ -241,7 +237,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                  <div className="mt-2 pt-3 border-t border-green-200 flex justify-end">
                                      <ESignAction 
                                         documentName="Final Closing Disclosures" 
-                                        signeeRole="Lead Investor"
+                                        signeeRole={role}
                                         isSigned={isSigned}
                                         onSigned={() => setIsSigned(true)}
                                      />

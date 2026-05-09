@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import { useProjectStore } from '@/store/projectStore';
 import {
   Search,
   ChevronDown,
@@ -40,16 +41,6 @@ interface ProjectRow {
   updatedAt: string; // ISO date
 }
 
-/* ── Mock data ── */
-const MOCK_PROJECTS: ProjectRow[] = [
-  { id: '1', projectName: '42 Elm Street Duplex',     address: '42 Elm St, Austin TX',        phase: 'Renovation',    status: 'Renovating',     updatedAt: '2026-04-25T14:30:00Z' },
-  { id: '2', projectName: 'Westlake Office Park',     address: '1200 Westlake Dr, Austin TX',  phase: 'Due Diligence', status: 'Under Contract',  updatedAt: '2026-04-24T09:15:00Z' },
-  { id: '3', projectName: 'Riverside 4-Plex',         address: '88 River Rd, San Antonio TX',  phase: 'Disposition',   status: 'Listed',          updatedAt: '2026-04-22T18:00:00Z' },
-  { id: '4', projectName: 'Montrose Bungalow',        address: '315 Montrose Blvd, Houston TX', phase: 'Sourcing',     status: 'Lead',            updatedAt: '2026-04-26T11:45:00Z' },
-  { id: '5', projectName: 'Downtown Loft Conversion', address: '900 Main St, Dallas TX',       phase: 'Closing',       status: 'Under Contract',  updatedAt: '2026-04-23T16:20:00Z' },
-  { id: '6', projectName: 'Kingswood Townhome',       address: '77 Kingswood Ln, Plano TX',    phase: 'Stabilization', status: 'Renovating',      updatedAt: '2026-04-20T08:00:00Z' },
-  { id: '7', projectName: 'Lakeside Retreat',         address: '450 Lake View Dr, Frisco TX',  phase: 'Disposition',   status: 'Sold',            updatedAt: '2026-04-15T12:00:00Z' },
-];
 
 const ALL_PHASES: PhaseLabel[] = ['Sourcing', 'Due Diligence', 'Closing', 'Renovation', 'Stabilization', 'Disposition'];
 const ALL_STATUSES: DealStatus[] = ['Active', 'Lead', 'Under Contract', 'Renovating', 'Listed', 'Sold'];
@@ -130,12 +121,33 @@ function SortIcon({ dir }: { dir: SortDir }) {
    ══════════════════════════════════════════ */
 
 export default function ProjectsPage() {
+  const storeProjects = useProjectStore(state => state.projects);
   const [search, setSearch] = useState('');
   const [phaseFilter, setPhaseFilter] = useState<PhaseLabel | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<DealStatus | 'all'>('all');
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>(null);
   const [openRowMenuId, setOpenRowMenuId] = useState<string | null>(null);
+
+  const PHASE_MAP: Record<string, PhaseLabel> = {
+    'Phase 1: Find & Fund':    'Sourcing',
+    'Phase 2: Acquisition':    'Due Diligence',
+    'Phase 3: Holding & Rehab': 'Renovation',
+    'Phase 4: Closing & Exit': 'Disposition',
+  };
+
+  const projectRows: ProjectRow[] = useMemo(() =>
+    storeProjects.map(p => ({
+      id: p.id,
+      projectName: p.propertyName,
+      address: p.address,
+      phase: (p.phaseStatus ? (PHASE_MAP[p.phaseStatus] ?? 'Sourcing') : 'Sourcing'),
+      status: (p.status as DealStatus) ?? 'Active',
+      updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : String(p.updatedAt ?? ''),
+    })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [storeProjects]
+  );
 
   /* Toggle sort on column click */
   const handleSort = (key: SortKey) => {
@@ -150,7 +162,7 @@ export default function ProjectsPage() {
 
   /* Filtered + sorted data */
   const rows = useMemo(() => {
-    let data = [...MOCK_PROJECTS];
+    let data = [...projectRows];
 
     // Search
     if (search.trim()) {

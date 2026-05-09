@@ -133,9 +133,12 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Guard: API key ───────────────────────────────────────
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const GEMINI_API_KEY =
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? process.env.GEMINI_API_KEY;
   if (!GEMINI_API_KEY) {
-    console.error('[OCR/settlement] GEMINI_API_KEY environment variable is not set');
+    console.error(
+      '[OCR/settlement] GOOGLE_GENERATIVE_AI_API_KEY environment variable is not set'
+    );
     return NextResponse.json({ error: 'OCR service is not configured' }, { status: 503 });
   }
 
@@ -220,7 +223,7 @@ export async function POST(req: NextRequest) {
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-pro',
+      model: 'gemini-2.0-flash',
       generationConfig: {
         responseMimeType: 'application/json',
         temperature: 0,

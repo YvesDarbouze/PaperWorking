@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DrawScheduleItem } from '@/types/schema';
 import { Plus, HandCoins, Trash2, CheckCircle, Clock, Calendar, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { NumberInput } from '@/components/ui/NumberInput';
 
 interface ContractorDrawScheduleProps {
   draws: DrawScheduleItem[];
@@ -256,26 +257,24 @@ export function ContractorDrawSchedule({ draws, totalBudget, onChange }: Contrac
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1 text-gray-700">Amount Dispersed ($)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
+                  <NumberInput
+                    value={newDraw.amount || undefined}
+                    onChange={(v) => setNewDraw({...newDraw, amount: v ?? 0})}
+                    min={0}
+                    step={0.01}
                     placeholder="0.00"
-                    value={newDraw.amount || ''}
-                    onChange={e => setNewDraw({...newDraw, amount: Number(e.target.value)})}
-                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    prefix="$"
                   />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1 text-gray-700">% of Overall Work (Optional)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
+                  <NumberInput
+                    value={newDraw.completionPercentage || undefined}
+                    onChange={(v) => setNewDraw({...newDraw, completionPercentage: v ?? 0})}
+                    min={0}
+                    max={100}
                     placeholder="e.g. 25"
-                    value={newDraw.completionPercentage || ''}
-                    onChange={e => setNewDraw({...newDraw, completionPercentage: Number(e.target.value)})}
-                    className="w-full px-3 py-2 rounded-md border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                    suffix="%"
                   />
                 </div>
               </div>

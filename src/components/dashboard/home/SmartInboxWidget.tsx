@@ -1,74 +1,21 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Project } from '@/types/schema';
 import {
-  Mail, MessageSquare, ChevronRight, ChevronDown,
-  Users, Building2, Landmark, Briefcase, X,
+  Mail, MessageSquare, ChevronRight,
+  Building2, X, Loader2
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useInboxThreads } from '@/hooks/useInboxThreads';
+import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════════════
-   SmartInboxWidget — Collapsible Inbox Grouped by Sender Role
-
-   Collapsed: Shows unread counts grouped by sender role
+   SmartInboxWidget — Real-time Inbox Grouped by Project
+   
+   Collapsed: Shows unread counts grouped by project
    Expanded:  Full slide-out overlay with message threads
    ═══════════════════════════════════════════════════════════════ */
-
-interface RoleMessageGroup {
-  role: string;
-  icon: React.ReactNode;
-  count: number;
-  messages: { id: string; sender: string; preview: string; time: string; read: boolean }[];
-}
-
-/**
- * Aggregates simulated message counts from project team members.
- * In production, this would pull from a real messaging/communication store.
- */
-function aggregateInboxByRole(projects: Project[]): RoleMessageGroup[] {
-  const roleBuckets: Record<string, { count: number; members: Set<string> }> = {};
-
-  projects.forEach(deal => {
-    deal.projectTeam?.forEach(member => {
-      if (member.status !== 'active') return;
-      const role = member.projectRole;
-      if (!roleBuckets[role]) {
-        roleBuckets[role] = { count: 0, members: new Set() };
-      }
-      roleBuckets[role].members.add(member.displayName);
-      // Simulate unread count based on deal activity
-      if (deal.status === 'Under Contract' || deal.status === 'Renovating') {
-        roleBuckets[role].count += 1;
-      }
-    });
-  });
-
-  const iconMap: Record<string, React.ReactNode> = {
-    'General Contractor':           <Building2 className="w-4 h-4" />,
-    'Real Estate Agent':            <Briefcase className="w-4 h-4" />,
-    'Title Company/Escrow Officer': <Landmark className="w-4 h-4" />,
-    'Loan Officer/Broker':          <Landmark className="w-4 h-4" />,
-    'Appraiser':                    <Users className="w-4 h-4" />,
-    'Closing Agent':                <Users className="w-4 h-4" />,
-  };
-
-  return Object.entries(roleBuckets)
-    .filter(([, data]) => data.count > 0)
-    .map(([role, data]) => ({
-      role,
-      icon: iconMap[role] || <Users className="w-4 h-4" />,
-      count: data.count,
-      messages: Array.from(data.members).map((name, i) => ({
-        id: `${role}-${i}`,
-        sender: name,
-        preview: `Regarding active deal updates — action required`,
-        time: 'Today',
-        read: false,
-      })),
-    }))
-    .sort((a, b) => b.count - a.count);
-}
 
 interface SmartInboxWidgetProps {
   projects: Project[];
@@ -76,14 +23,21 @@ interface SmartInboxWidgetProps {
 
 export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const groups = useMemo(() => aggregateInboxByRole(projects), [projects]);
-  const totalUnread = groups.reduce((sum, g) => sum + g.count, 0);
+  const { user } = useAuth();
+  const { threads, loading, error, unreadTotal, markAsRead } = useInboxThreads();
+  const uid = user?.uid;
+
+  const activeThreads = threads.filter(t => t.messages.length > 0);
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   return (
     <>
       {/* ── Collapsed Card ── */}
-      <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)]">
-        <div className="flex items-center justify-between mb-6">
+      <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] relative overflow-hidden">
+        <div className="flex items-center justify-between mb-6 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center">
               <Mail className="w-5 h-5 text-text-secondary" />
@@ -93,44 +47,67 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
               <h3 className="text-2xl font-light text-text-primary tracking-tighter">Messages</h3>
             </div>
           </div>
-          {totalUnread > 0 && (
+          {unreadTotal > 0 && (
             <div className="flex items-center gap-2 bg-pw-black text-pw-white px-4 py-1.5 rounded">
-              <span className="text-xs font-bold">{totalUnread}</span>
+              <span className="text-xs font-bold">{unreadTotal}</span>
               <span className="text-[9px] uppercase tracking-widest opacity-60">unread</span>
             </div>
           )}
         </div>
 
-        {groups.length === 0 ? (
-          <div className="py-8 text-center">
+        {loading ? (
+          <div className="py-8 flex flex-col items-center justify-center text-text-secondary opacity-50 relative z-10">
+            <Loader2 className="w-6 h-6 animate-spin mb-2" />
+            <p className="text-sm">Loading inbox...</p>
+          </div>
+        ) : error ? (
+          <div className="py-8 text-center relative z-10">
+            <p className="text-sm text-red-500 opacity-80">{error}</p>
+          </div>
+        ) : activeThreads.length === 0 ? (
+          <div className="py-8 text-center relative z-10">
             <MessageSquare className="w-8 h-8 mx-auto text-text-secondary opacity-20 mb-3" />
             <p className="text-sm text-text-secondary opacity-40">Inbox clear</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {groups.map(group => (
-              <div
-                key={group.role}
-                className="flex items-center justify-between px-4 py-3 rounded-md bg-bg-primary/50 border border-border-accent/10 hover:bg-bg-primary transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-text-secondary">{group.icon}</div>
-                  <span className="text-sm font-medium text-text-primary tracking-tight">{group.role}</span>
+          <div className="space-y-2 relative z-10">
+            {activeThreads.map(thread => {
+              const project = projects.find(p => p.id === thread.projectId);
+              const address = project?.address || project?.propertyName || 'Unknown Project';
+              return (
+                <div
+                  key={thread.projectId}
+                  className="flex items-center justify-between px-4 py-3 rounded-md bg-bg-primary/50 border border-border-accent/10 hover:bg-bg-primary transition-all cursor-pointer"
+                  onClick={() => setIsExpanded(true)}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="text-text-secondary flex-shrink-0"><Building2 className="w-4 h-4" /></div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-text-primary tracking-tight truncate max-w-[200px]">
+                        {address}
+                      </p>
+                      <p className="text-[10px] text-text-secondary truncate mt-0.5">
+                        {thread.lastMessage.subject || thread.lastMessage.body}
+                      </p>
+                    </div>
+                  </div>
+                  {thread.unreadCount > 0 && (
+                    <div className="flex items-center gap-2 ml-3 flex-shrink-0">
+                      <span className="text-[10px] font-bold text-pw-white bg-pw-black px-2 py-0.5 rounded">
+                        {thread.unreadCount} new
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-text-primary bg-bg-primary px-3 py-1 rounded border border-border-accent/30">
-                    {group.count}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
-        {groups.length > 0 && (
+        {activeThreads.length > 0 && !loading && (
           <button
             onClick={() => setIsExpanded(true)}
-            className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded bg-bg-primary text-text-primary text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all border border-border-accent/20"
+            className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 rounded bg-bg-primary text-text-primary text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-all border border-border-accent/20 relative z-10"
           >
             Expand Inbox
             <ChevronRight className="w-3.5 h-3.5" />
@@ -171,37 +148,83 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
               </div>
 
               <div className="p-6 space-y-6">
-                {groups.map(group => (
-                  <div key={group.role}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="text-text-secondary">{group.icon}</div>
-                      <h4 className="ag-label opacity-80 text-[10px]">{group.role}</h4>
-                      <span className="text-[9px] bg-bg-primary px-2 py-0.5 rounded text-text-secondary font-bold">{group.count}</span>
-                    </div>
-                    <div className="space-y-2">
-                      {group.messages.map(msg => (
-                        <div
-                          key={msg.id}
-                          className="flex items-start gap-3 px-4 py-4 rounded-md bg-bg-primary/30 border border-border-accent/10 hover:bg-bg-primary transition-all cursor-pointer"
-                        >
-                          <div className="w-8 h-8 rounded-md bg-pw-black text-pw-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                            {msg.sender[0]}
+                {activeThreads.length === 0 ? (
+                  <div className="py-12 text-center text-text-secondary opacity-50">
+                    <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                    <p>No messages found</p>
+                  </div>
+                ) : (
+                  activeThreads.map(thread => {
+                    const project = projects.find(p => p.id === thread.projectId);
+                    const address = project?.address || project?.propertyName || 'Unknown Project';
+                    const hasUnread = thread.unreadCount > 0;
+
+                    return (
+                      <div key={thread.projectId} className="border border-border-accent/10 rounded-lg p-4 bg-bg-primary/20">
+                        <div className="flex items-center justify-between mb-4 border-b border-border-accent/10 pb-3">
+                          <div className="flex items-center gap-2">
+                            <div className="text-text-secondary bg-bg-primary p-1.5 rounded"><Building2 className="w-4 h-4" /></div>
+                            <h4 className="font-medium text-sm text-text-primary truncate max-w-[180px]">{address}</h4>
+                            {hasUnread && (
+                              <span className="text-[10px] bg-pw-black text-pw-white px-2 py-0.5 rounded font-bold ml-2">
+                                {thread.unreadCount} unread
+                              </span>
+                            )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-text-primary tracking-tight">{msg.sender}</span>
-                              <span className="text-[10px] text-text-secondary opacity-40">{msg.time}</span>
-                            </div>
-                            <p className="text-xs text-text-secondary truncate">{msg.preview}</p>
-                          </div>
-                          {!msg.read && (
-                            <div className="w-2 h-2 rounded-full bg-pw-black flex-shrink-0 mt-2" />
+                          {hasUnread && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markAsRead(thread.projectId);
+                              }}
+                              className="text-[10px] text-text-secondary hover:text-pw-black uppercase font-bold tracking-wider"
+                            >
+                              Mark Read
+                            </button>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                        <div className="space-y-3">
+                          {thread.messages.map(msg => {
+                            const isMsgUnread = uid ? !msg.readByUid.includes(uid) : false;
+                            return (
+                              <div
+                                key={msg.id}
+                                className={`flex items-start gap-3 p-3 rounded-md transition-all ${
+                                  isMsgUnread 
+                                    ? 'bg-bg-primary/60 border-l-2 border-l-pw-black' 
+                                    : 'bg-bg-primary/20'
+                                }`}
+                              >
+                                <div className="w-8 h-8 rounded-full bg-border-accent/20 text-text-primary flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                  {msg.senderName?.[0]?.toUpperCase() || '?'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-sm font-medium text-text-primary tracking-tight truncate pr-2">
+                                      {msg.senderName || msg.senderEmail || 'System'}
+                                    </span>
+                                    <span className="text-[10px] text-text-secondary opacity-60 flex-shrink-0">
+                                      {formatTime(msg.createdAt)}
+                                    </span>
+                                  </div>
+                                  {msg.subject && (
+                                    <p className="text-xs font-medium text-text-primary mb-0.5 truncate">{msg.subject}</p>
+                                  )}
+                                  <p className="text-xs text-text-secondary line-clamp-2">
+                                    {msg.body}
+                                  </p>
+                                </div>
+                                {isMsgUnread && (
+                                  <div className="w-2 h-2 rounded-full bg-pw-black flex-shrink-0 mt-2" />
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </motion.div>
           </>

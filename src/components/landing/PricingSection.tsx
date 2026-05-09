@@ -657,7 +657,7 @@ function TestimonialRow() {
         className="text-center text-xs font-bold uppercase tracking-[0.3em] mb-12"
         style={{ color: '#a5a5a5' }}
       >
-        What Our Users Say
+        What Investors Are Saying
       </motion.p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -755,13 +755,13 @@ function PricingFAQAccordion() {
           className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
           style={{ color: '#a5a5a5' }}
         >
-          Common Questions
+          Before You Commit
         </p>
         <h3
           className="text-3xl sm:text-4xl font-black tracking-tighter"
           style={{ color: '#595959' }}
         >
-          We take the guesswork out.
+          No surprises. No fine print.
         </h3>
       </motion.div>
 
@@ -868,9 +868,9 @@ export default function PricingSection({
           className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black tracking-tighter leading-tight text-balance mb-6"
           style={{ color: '#595959' }}
         >
-          Simple, transparent pricing for every
+          Pick your plan.
           <br className="hidden sm:block" />
-          stage of your real estate business.
+          Start closing more deals.
         </motion.h2>
 
         <motion.p

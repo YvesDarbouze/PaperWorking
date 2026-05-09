@@ -3,53 +3,42 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import Logo from '@/components/brand/Logo';
 
-/* ═══════════════════════════════════════════════════════
-   PaperWorking — Auth Layout
-
-   Shared wrapper for all auth pages (login, register, 
-   forgot-password). Centers the auth card vertically
-   and horizontally on the #f2f2f2 canvas with the 
-   PaperWorking wordmark at the top.
-   ═══════════════════════════════════════════════════════ */
-
 export const metadata: Metadata = {
   title: 'Sign In — PaperWorking',
   robots: 'noindex, nofollow',
 };
 
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div
-      className="flex min-h-screen flex-col items-center justify-center px-6 py-12 bg-bg-transactional"
-    >
-      {/* ─── Logo Lockup ─── */}
-      <div className="mb-12">
-        <Logo href="/" size="md" />
+    <div className="relative min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden">
+
+      {/* Dot-grid texture */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          backgroundImage: 'radial-gradient(circle, #2b2b2b 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+        }}
+      />
+
+      {/* Logo — top-left */}
+      <div className="absolute top-6 left-8 z-20">
+        <Logo href="/" size="sm" />
       </div>
 
-      {/* ─── Auth Card Container (Antigravity v2 Geometry) ─── */}
-      <div
-        className="w-full max-w-[460px] rounded-[24px] bg-bg-surface border border-border-accent/10 px-10 py-12 shadow-[0_40px_100px_rgba(0,0,0,0.03)] animate-in fade-in zoom-in-95 duration-700"
-      >
+      {/* Auth content */}
+      <div className="relative z-10 w-full max-w-[420px] px-6 animate-in fade-in zoom-in-95 duration-500">
         {children}
       </div>
 
-      {/* ─── Footer ─── */}
-      <div className="mt-12 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary opacity-40">
-        <p>
-          © {new Date().getFullYear()} PaperWorking Infrastructure ·{' '}
-          <Link href="/privacy" className="hover:text-text-primary transition-colors">
-            Privacy
-          </Link>{' '}
-          / {' '}
-          <Link href="/terms" className="hover:text-text-primary transition-colors">
-            Terms
-          </Link>
-        </p>
+      {/* Footer */}
+      <div className="absolute bottom-6 left-0 right-0 text-center text-[11px] text-[#4a4a4a]">
+        <Link href="/terms" className="hover:text-[#888] transition-colors">Terms of service</Link>
+        <span className="mx-2">·</span>
+        <Link href="/privacy" className="hover:text-[#888] transition-colors">Privacy policy</Link>
+        <span className="mx-2">·</span>
+        <span>©{new Date().getFullYear()} PaperWorking</span>
       </div>
     </div>
   );

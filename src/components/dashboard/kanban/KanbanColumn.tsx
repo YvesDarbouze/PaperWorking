@@ -83,7 +83,7 @@ export default function KanbanColumn({ id, title, projects, onCardSelect, onMove
               ))
             ) : (
               <div className={`h-40 flex flex-col items-center justify-center border border-dashed rounded-[32px] ${isDarkPhase ? 'border-white/10' : 'border-black/5'}`}>
-                <p className={`text-[10px] font-bold ${isDarkPhase ? 'text-white/20' : 'text-text-secondary/40'} uppercase tracking-[0.2em]`}>
+                <p className={`text-[10px] font-bold ${isDarkPhase ? 'text-white/50' : 'text-text-secondary/60'} uppercase tracking-[0.2em]`}>
                   Neutral State
                 </p>
               </div>

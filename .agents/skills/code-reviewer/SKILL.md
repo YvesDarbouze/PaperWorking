@@ -1,135 +1,177 @@
 ---
-name: code-reviewer
-description: |
-  Thorough code review with focus on security, performance, and best practices.
-  Use when: reviewing code, performing security audits, checking for code quality, reviewing pull requests,
-  or when user mentions code review, PR review, security vulnerabilities, performance issues.
-license: MIT
-metadata:
-  author: awesome-llm-apps
-  version: "2.0.0"
+name: "code-reviewer"
+description: Code review automation for TypeScript, JavaScript, Python, Go, Swift, Kotlin. Analyzes PRs for complexity and risk, checks code quality for SOLID violations and code smells, generates review reports. Use when reviewing pull requests, analyzing code quality, identifying issues, generating review checklists.
 ---
 
 # Code Reviewer
 
-You are an expert code reviewer who identifies security vulnerabilities, performance issues, and code quality problems.
+Automated code review tools for analyzing pull requests, detecting code quality issues, and generating review reports.
 
-## When to Apply
+---
 
-Use this skill when:
-- Reviewing pull requests
-- Performing security audits
-- Checking code quality
-- Identifying performance bottlenecks
-- Ensuring best practices
-- Pre-deployment code review
+## Table of Contents
 
-## How to Use This Skill
+- [Tools](#tools)
+  - [PR Analyzer](#pr-analyzer)
+  - [Code Quality Checker](#code-quality-checker)
+  - [Review Report Generator](#review-report-generator)
+- [Reference Guides](#reference-guides)
+- [Languages Supported](#languages-supported)
 
-This skill contains **detailed rules** in the `rules/` directory, organized by category and priority.
+---
 
-### Quick Start
+## Tools
 
-1. **Review [AGENTS.md](AGENTS.md)** for a complete compilation of all rules with examples
-2. **Reference specific rules** from `rules/` directory for deep dives
-3. **Follow priority order**: Security → Performance → Correctness → Maintainability
+### PR Analyzer
 
-### Available Rules
+Analyzes git diff between branches to assess review complexity and identify risks.
 
-**Security (CRITICAL)**
-- [SQL Injection Prevention](rules/security-sql-injection.md)
-- [XSS Prevention](rules/security-xss-prevention.md)
+```bash
+# Analyze current branch against main
+python scripts/pr_analyzer.py /path/to/repo
 
-**Performance (HIGH)**
-- [Avoid N+1 Query Problem](rules/performance-n-plus-one.md)
+# Compare specific branches
+python scripts/pr_analyzer.py . --base main --head feature-branch
 
-**Correctness (HIGH)**
-- [Proper Error Handling](rules/correctness-error-handling.md)
+# JSON output for integration
+python scripts/pr_analyzer.py /path/to/repo --json
+```
 
-**Maintainability (MEDIUM)**
-- [Use Meaningful Variable Names](rules/maintainability-naming.md)
-- [Add Type Hints](rules/maintainability-type-hints.md)
+**What it detects:**
+- Hardcoded secrets (passwords, API keys, tokens)
+- SQL injection patterns (string concatenation in queries)
+- Debug statements (debugger, console.log)
+- ESLint rule disabling
+- TypeScript `any` types
+- TODO/FIXME comments
 
-## Review Process
+**Output includes:**
+- Complexity score (1-10)
+- Risk categorization (critical, high, medium, low)
+- File prioritization for review order
+- Commit message validation
 
-### 1. **Security First** (CRITICAL)
-Look for vulnerabilities that could lead to data breaches or unauthorized access:
-- SQL injection
-- XSS (Cross-Site Scripting)
-- Authentication/authorization bypasses
-- Hardcoded secrets
-- Insecure dependencies
+---
 
-### 2. **Performance** (HIGH)
-Identify code that will cause slow performance at scale:
-- N+1 database queries
-- Missing indexes
-- Inefficient algorithms
-- Memory leaks
-- Unnecessary API calls
+### Code Quality Checker
 
-### 3. **Correctness** (HIGH)
-Find bugs and edge cases:
-- Error handling gaps
-- Race conditions
-- Off-by-one errors
-- Null/undefined handling
-- Input validation
+Analyzes source code for structural issues, code smells, and SOLID violations.
 
-### 4. **Maintainability** (MEDIUM)
-Improve code quality for long-term health:
-- Clear naming
-- Type safety
-- DRY principle
-- Single responsibility
-- Documentation
+```bash
+# Analyze a directory
+python scripts/code_quality_checker.py /path/to/code
 
-### 5. **Testing**
-Verify adequate coverage:
-- Unit tests for new code
-- Edge case testing
-- Error path testing
-- Integration tests where needed
+# Analyze specific language
+python scripts/code_quality_checker.py . --language python
 
-## Review Output Format
+# JSON output
+python scripts/code_quality_checker.py /path/to/code --json
+```
 
-Structure your reviews as:
+**What it detects:**
+- Long functions (>50 lines)
+- Large files (>500 lines)
+- God classes (>20 methods)
+- Deep nesting (>4 levels)
+- Too many parameters (>5)
+- High cyclomatic complexity
+- Missing error handling
+- Unused imports
+- Magic numbers
 
-```markdown
-This function retrieves user data but has critical security and reliability issues.
+**Thresholds:**
 
-## Critical Issues 🔴
+| Issue | Threshold |
+|-------|-----------|
+| Long function | >50 lines |
+| Large file | >500 lines |
+| God class | >20 methods |
+| Too many params | >5 |
+| Deep nesting | >4 levels |
+| High complexity | >10 branches |
 
-1. **SQL Injection Vulnerability** (Line 2)
-   - **Problem:** User input directly interpolated into SQL query
-   - **Impact:** Attackers can execute arbitrary SQL commands
-   - **Fix:** Use parameterized queries
-   ```python
-   query = "SELECT * FROM users WHERE id = ?"
-   result = db.execute(query, (user_id,))
-   ```
+---
 
-## High Priority 🟠
+### Review Report Generator
 
-1. **No Error Handling** (Line 3-4)
-   - **Problem:** Assumes result always has data
-   - **Impact:** IndexError if user doesn't exist
-   - **Fix:** Check result before accessing
-   ```python
-   if not result:
-       return None
-   return result[0]
-   ```
+Combines PR analysis and code quality findings into structured review reports.
 
-2. **Missing Type Hints** (Line 1)
-   - **Problem:** No type annotations
-   - **Impact:** Reduces code clarity and IDE support
-   - **Fix:** Add type hints
-   ```python
-   def get_user(user_id: int) -> Optional[Dict[str, Any]]:
-   ```
+```bash
+# Generate report for current repo
+python scripts/review_report_generator.py /path/to/repo
 
-## Recommendations
-- Add logging for debugging
-- Consider using an ORM to prevent SQL injection
-- Add input validation for user_id
+# Markdown output
+python scripts/review_report_generator.py . --format markdown --output review.md
+
+# Use pre-computed analyses
+python scripts/review_report_generator.py . \
+  --pr-analysis pr_results.json \
+  --quality-analysis quality_results.json
+```
+
+**Report includes:**
+- Review verdict (approve, request changes, block)
+- Score (0-100)
+- Prioritized action items
+- Issue summary by severity
+- Suggested review order
+
+**Verdicts:**
+
+| Score | Verdict |
+|-------|---------|
+| 90+ with no high issues | Approve |
+| 75+ with ≤2 high issues | Approve with suggestions |
+| 50-74 | Request changes |
+| <50 or critical issues | Block |
+
+---
+
+## Reference Guides
+
+### Code Review Checklist
+`references/code_review_checklist.md`
+
+Systematic checklists covering:
+- Pre-review checks (build, tests, PR hygiene)
+- Correctness (logic, data handling, error handling)
+- Security (input validation, injection prevention)
+- Performance (efficiency, caching, scalability)
+- Maintainability (code quality, naming, structure)
+- Testing (coverage, quality, mocking)
+- Language-specific checks
+
+### Coding Standards
+`references/coding_standards.md`
+
+Language-specific standards for:
+- TypeScript (type annotations, null safety, async/await)
+- JavaScript (declarations, patterns, modules)
+- Python (type hints, exceptions, class design)
+- Go (error handling, structs, concurrency)
+- Swift (optionals, protocols, errors)
+- Kotlin (null safety, data classes, coroutines)
+
+### Common Antipatterns
+`references/common_antipatterns.md`
+
+Antipattern catalog with examples and fixes:
+- Structural (god class, long method, deep nesting)
+- Logic (boolean blindness, stringly typed code)
+- Security (SQL injection, hardcoded credentials)
+- Performance (N+1 queries, unbounded collections)
+- Testing (duplication, testing implementation)
+- Async (floating promises, callback hell)
+
+---
+
+## Languages Supported
+
+| Language | Extensions |
+|----------|------------|
+| Python | `.py` |
+| TypeScript | `.ts`, `.tsx` |
+| JavaScript | `.js`, `.jsx`, `.mjs` |
+| Go | `.go` |
+| Swift | `.swift` |
+| Kotlin | `.kt`, `.kts` |

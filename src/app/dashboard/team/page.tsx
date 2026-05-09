@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { Shield, ShieldAlert, Trash2, Mail, Users, CheckCircle2, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import type { ProjectTeamMember } from '@/types/schema';
+import { usePermissions } from '@/hooks/usePermissions';
 
 type UnifiedMemberType = 'Internal' | 'External';
 
@@ -27,7 +28,7 @@ export default function TeamDirectoryPage() {
 
   const [revokingEmail, setRevokingEmail] = useState<string | null>(null);
 
-  const isAdmin = profile?.orgRole === 'Lead Investor' || profile?.orgRole === 'Admin';
+  const { isLead: isAdmin } = usePermissions();
 
   // Aggregate and merge all team members
   const unifiedTeam = useMemo(() => {

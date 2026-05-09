@@ -26,25 +26,26 @@ export default function FinalCTA() {
       />
 
       <div className="relative mx-auto max-w-4xl px-6 lg:px-8 text-center">
-        {/* Urgency tag */}
+        {/* Trial tag */}
         <div className="inline-flex items-center space-x-2 mb-8">
           <span className="w-2 h-2 bg-black animate-pulse" />
           <span className="text-xs font-bold uppercase tracking-[0.25em] text-phase-3">
-            Limited Early Access
+            14-Day Free Trial · No Credit Card
           </span>
         </div>
 
-        {/* Same headline as hero */}
+        {/* Headline */}
         <h2 className="text-4xl font-medium tracking-tight text-text-primary sm:text-5xl lg:text-6xl mb-6">
           Stop Pushing Paper.
           <br />
           <span className="text-phase-2">Start Closing Deals.</span>
         </h2>
 
-        {/* Urgent subtext */}
+        {/* Subtext */}
         <p className="mx-auto max-w-xl text-base text-phase-3 leading-relaxed mb-10">
-          Every day without PaperWorking is another day of lost revenue.
-          Your competitors are already automating. Will you be next?
+          Every week you spend juggling spreadsheets is a week your margins
+          erode and your pipeline stalls. PaperWorking investors close
+          3.2× more deals per quarter.
         </p>
 
         {/* Stats row */}
@@ -66,17 +67,17 @@ export default function FinalCTA() {
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/pricing"
+            href="/register"
             className="px-8 py-4 bg-black text-white text-xs font-bold uppercase tracking-widest flex items-center space-x-2 hover:bg-phase-4 transition-colors"
           >
-            <span>Automate My First Document</span>
+            <span>Start My Free Trial</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            href="/dashboard"
+            href="/how-it-works"
             className="px-8 py-4 border border-phase-1 text-phase-4 text-xs font-bold uppercase tracking-widest hover:border-black hover:text-text-primary transition-colors"
           >
-            See It In Action
+            Watch a 3-Minute Demo
           </Link>
         </div>
 

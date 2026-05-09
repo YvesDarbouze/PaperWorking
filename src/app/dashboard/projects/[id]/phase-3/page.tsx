@@ -11,6 +11,7 @@ import { SiteVisitLogTracker } from '@/components/project/SiteVisitLogTracker';
 import { BurnRateKPI } from '@/components/project/BurnRateKPI';
 import { ScopeOfWorkForm } from '@/components/project/ScopeOfWorkForm';
 import { ContractorBids } from '@/components/project/ContractorBids';
+import GCBidUploader from '@/components/GCBidUploader';
 import { CapExComparativeTable } from '@/components/project/CapExComparativeTable';
 import { RehabSequenceTracker } from '@/components/project/RehabSequenceTracker';
 import { ContractorDrawSchedule } from '@/components/project/ContractorDrawSchedule';
@@ -240,10 +241,14 @@ export default function Phase3RehabPage() {
               items={scopeOfWork} 
               onChange={setScopeOfWork} 
             />
-            <ContractorBids 
-              bids={contractorBids} 
+            <GCBidUploader
+              projectId={projectId}
+              onBidSaved={bid => setContractorBids(prev => [...prev, bid])}
+            />
+            <ContractorBids
+              bids={contractorBids}
               baseBudget={totalBudget}
-              onChange={setContractorBids} 
+              onChange={setContractorBids}
             />
             <CapExComparativeTable 
               tasks={rehabTasks} 

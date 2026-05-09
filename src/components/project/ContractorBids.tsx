@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ContractorBid } from '@/types/schema';
 import { Plus, Users, Trash2, CheckCircle, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { NumberInput } from '@/components/ui/NumberInput';
 
 interface ContractorBidsProps {
   bids: ContractorBid[];
@@ -149,13 +150,12 @@ export function ContractorBids({ bids, baseBudget, onChange }: ContractorBidsPro
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1 text-gray-700">Total Bid Amount ($)</label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={newBid.totalAmount || ''}
-                  onChange={e => setNewBid({...newBid, totalAmount: Number(e.target.value)})}
-                  className="w-full px-3 py-2 rounded-md border bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                <NumberInput
+                  value={newBid.totalAmount || undefined}
+                  onChange={(v) => setNewBid({...newBid, totalAmount: v ?? 0})}
+                  min={0}
+                  step={0.01}
+                  prefix="$"
                 />
               </div>
               <div className="sm:col-span-2">

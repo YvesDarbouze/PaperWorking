@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Shield, CheckCircle, Clock, AlertTriangle, Search, FileText, Link as LinkIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useProjectStore } from '@/store/projectStore';
 
 /* ═══════════════════════════════════════════════════════
    Title Search Clearance — Phase 2 Module
@@ -38,23 +39,55 @@ const INITIAL_CHECKS: TitleCheckItem[] = [
 export default function TitleSearchClearance() {
   const [checks, setChecks] = useState<TitleCheckItem[]>(INITIAL_CHECKS);
   const [searching, setSearching] = useState(false);
+  const currentProject = useProjectStore(s => s.currentProject);
+  const updateClosingRoom = useProjectStore(s => s.updateClosingRoom);
 
-  const handleRunSearch = () => {
+  const handleRunSearch = async () => {
     setSearching(true);
-    toast.loading('Searching county records...', { id: 'title-search' });
-    setTimeout(() => {
-      setChecks(prev => prev.map(c => {
-        if (c.status === 'Pending') return { ...c, status: 'In Review' as ClearanceStatus };
-        return c;
-      }));
+    toast.loading('Contacting title registry...', { id: 'title-search' });
+    
+    try {
+      const response = await fetch('/api/closing/title-search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          projectId: currentProject?.id || 'unknown-project',
+          propertyAddress: currentProject?.propertyName
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch title records');
+      }
+
+      setChecks(result.data.findings);
+      
+      // Update global project store with title clearance status if project exists
+      if (currentProject) {
+        // Find if there are any issues
+        const hasIssues = result.data.findings.some((f: any) => f.status === 'Issue Found');
+        
+        updateClosingRoom(currentProject.id, {
+          chainOfTitleStatus: hasIssues ? 'failed' : 'verified'
+        });
+      }
+
+      toast.success('Title search completed successfully', { id: 'title-search' });
+    } catch (error) {
+      console.error('Title search failed:', error);
+      toast.error('Failed to run title search. Please try again.', { id: 'title-search' });
+    } finally {
       setSearching(false);
-      toast.success('Title search initiated for all pending items', { id: 'title-search' });
-    }, 2000);
+    }
   };
 
   const clearedCount = checks.filter(c => c.status === 'Cleared').length;
   const issueCount = checks.filter(c => c.status === 'Issue Found').length;
-  const isFullyCleared = clearedCount === checks.length;
+  const isFullyCleared = clearedCount === checks.length && checks.length > 0;
 
   return (
     <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">

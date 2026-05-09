@@ -1,192 +1,155 @@
 ---
 name: deep-research
-description: |
-  Comprehensive research assistant that synthesizes information from multiple sources with citations.
-  Use when: conducting in-depth research, gathering sources, writing research summaries, analyzing topics
-  from multiple perspectives, or when user mentions research, investigation, or needs synthesized analysis
-  with citations.
-license: MIT
-metadata:
-  author: awesome-llm-apps
-  version: "1.0.0"
+description: Multi-source deep research using firecrawl and exa MCPs. Searches the web, synthesizes findings, and delivers cited reports with source attribution. Use when the user wants thorough research on any topic with evidence and citations.
+origin: ECC
 ---
 
 # Deep Research
 
-You are an expert researcher who provides thorough, well-cited analysis by synthesizing information from multiple perspectives.
+Produce thorough, cited research reports from multiple web sources using firecrawl and exa MCP tools.
 
-## When to Apply
+## When to Activate
 
-Use this skill when:
-- Conducting in-depth research on a topic
-- Synthesizing information from multiple sources
-- Creating research summaries with proper citations
-- Analyzing different viewpoints and perspectives
-- Identifying key findings and trends
-- Evaluating the quality and credibility of sources
+- User asks to research any topic in depth
+- Competitive analysis, technology evaluation, or market sizing
+- Due diligence on companies, investors, or technologies
+- Any question requiring synthesis from multiple sources
+- User says "research", "deep dive", "investigate", or "what's the current state of"
 
-## Research Process
+## MCP Requirements
 
-Follow this systematic approach:
+At least one of:
+- **firecrawl** — `firecrawl_search`, `firecrawl_scrape`, `firecrawl_crawl`
+- **exa** — `web_search_exa`, `web_search_advanced_exa`, `crawling_exa`
 
-### 1. **Clarify the Research Question**
-- What exactly needs to be researched?
-- What level of detail is required?
-- Are there specific angles to prioritize?
-- What is the purpose of the research?
+Both together give the best coverage. Configure in `~/.claude.json` or `~/.codex/config.toml`.
 
-### 2. **Identify Key Aspects**
-- Break the topic into subtopics or dimensions
-- List main questions to answer
-- Note important context or background needed
+## Workflow
 
-### 3. **Gather Information**
-- Consider multiple perspectives
-- Look for primary and secondary sources
-- Check publication dates and currency
-- Evaluate source credibility
+### Step 1: Understand the Goal
 
-### 4. **Synthesize Findings**
-- Identify patterns and themes
-- Note areas of consensus and disagreement
-- Highlight key insights
-- Connect related information
+Ask 1-2 quick clarifying questions:
+- "What's your goal — learning, making a decision, or writing something?"
+- "Any specific angle or depth you want?"
 
-### 5. **Document Sources**
-- Use numbered citations [1], [2], etc.
-- List full sources at the end
-- Note if information is uncertain or contested
-- Indicate confidence levels where appropriate
+If the user says "just research it" — skip ahead with reasonable defaults.
 
-## Output Format
+### Step 2: Plan the Research
 
-Structure your research as:
+Break the topic into 3-5 research sub-questions. Example:
+- Topic: "Impact of AI on healthcare"
+  - What are the main AI applications in healthcare today?
+  - What clinical outcomes have been measured?
+  - What are the regulatory challenges?
+  - What companies are leading this space?
+  - What's the market size and growth trajectory?
 
-```markdown
-## Executive Summary
-[2-3 sentence overview of key findings]
+### Step 3: Execute Multi-Source Search
 
-## Key Findings
-- **[Finding 1]**: [Brief explanation] [1]
-- **[Finding 2]**: [Brief explanation] [2]
-- **[Finding 3]**: [Brief explanation] [3]
+For EACH sub-question, search using available MCP tools:
 
-## Detailed Analysis
-
-### [Subtopic 1]
-[In-depth analysis with citations]
-
-### [Subtopic 2]
-[In-depth analysis with citations]
-
-## Areas of Consensus
-[What sources agree on]
-
-## Areas of Debate
-[Where sources disagree or uncertainty exists]
-
-## Sources
-[1] [Full citation with credibility note]
-[2] [Full citation with credibility note]
-
-## Gaps and Further Research
-[What's still unknown or needs investigation]
+**With firecrawl:**
+```
+firecrawl_search(query: "<sub-question keywords>", limit: 8)
 ```
 
-## Source Evaluation Criteria
+**With exa:**
+```
+web_search_exa(query: "<sub-question keywords>", numResults: 8)
+web_search_advanced_exa(query: "<keywords>", numResults: 5, startPublishedDate: "2025-01-01")
+```
 
-When citing sources, note:
+**Search strategy:**
+- Use 2-3 different keyword variations per sub-question
+- Mix general and news-focused queries
+- Aim for 15-30 unique sources total
+- Prioritize: academic, official, reputable news > blogs > forums
 
-- **Peer-reviewed journals** - Highest credibility
-- **Official reports/statistics** - Authoritative data
-- **News from reputable outlets** - Timely, fact-checked
-- **Expert commentary** - Qualified opinions
-- **General websites** - verify independently
+### Step 4: Deep-Read Key Sources
 
-## Example
+For the most promising URLs, fetch full content:
 
-**User Request:** "Research the benefits and risks of intermittent fasting"
+**With firecrawl:**
+```
+firecrawl_scrape(url: "<url>")
+```
 
-**Response:**
+**With exa:**
+```
+crawling_exa(url: "<url>", tokensNum: 5000)
+```
+
+Read 3-5 key sources in full for depth. Do not rely only on search snippets.
+
+### Step 5: Synthesize and Write Report
+
+Structure the report:
+
+```markdown
+# [Topic]: Research Report
+*Generated: [date] | Sources: [N] | Confidence: [High/Medium/Low]*
 
 ## Executive Summary
+[3-5 sentence overview of key findings]
 
-Intermittent fasting (IF) shows promising benefits for weight loss and metabolic health based on current research, though long-term effects remain under study. Evidence supports its safety for most healthy adults, with certain populations requiring medical supervision [1][2].
+## 1. [First Major Theme]
+[Findings with inline citations]
+- Key point ([Source Name](url))
+- Supporting data ([Source Name](url))
 
-## Key Findings
+## 2. [Second Major Theme]
+...
 
-- **Weight Loss**: IF produces similar weight loss to calorie restriction (5-8% body weight over 12 weeks), with potentially better adherence [1]
-- **Metabolic Health**: May improve insulin sensitivity by 20-31% and reduce inflammation markers [2]
-- **Longevity**: Animal studies show promise; human long-term data is limited [3]
-- **Safety**: Not recommended for pregnant women, diabetics without supervision, or those with eating disorder history [4]
+## 3. [Third Major Theme]
+...
 
-## Detailed Analysis
-
-### Weight Management
-Studies comparing IF to traditional calorie restriction show similar weight loss outcomes. The main advantage appears to be adherence - many people find time-restricted eating easier to maintain than calorie counting [1]. Typical results show 5-8% body weight loss over 12-16 weeks.
-
-Common IF protocols:
-- **16:8** - 16 hours fasting, 8-hour eating window
-- **5:2** - Normal eating 5 days, restricted calories 2 days
-- **Alternate day** - Alternating between fasting and eating days
-
-### Metabolic Effects
-Research indicates improvements in several biomarkers [2]:
-- Fasting insulin levels decreased 20-31%
-- Blood pressure reductions (3-8 mmHg systolic)
-- Inflammatory marker (CRP) reductions
-- Improved lipid profiles in some studies
-
-However, individual responses vary significantly. Some people show dramatic improvements while others see minimal changes.
-
-### Potential Mechanisms
-Several explanations for observed benefits:
-1. **Caloric restriction** - IF naturally reduces total calories
-2. **Circadian alignment** - Eating during daytime hours aligns with metabolism
-3. **Autophagy** - Cellular cleanup processes activated during fasting
-4. **Hormetic stress** - Mild stress that improves adaptation
-
-### Safety Considerations
-While generally safe for healthy adults, certain groups should avoid IF or proceed with medical supervision [4]:
-- Pregnant or breastfeeding women
-- People with diabetes (risk of hypoglycemia)
-- History of eating disorders
-- Children and adolescents
-- Those taking medications requiring food
-
-Common side effects during adaptation (1-2 weeks):
-- Hunger and irritability
-- Headaches
-- Fatigue
-- Difficulty concentrating
-
-## Areas of Consensus
-
-- IF is as effective as traditional diets for weight loss
-- Short-term safety is established for healthy adults
-- Individual results vary considerably
-- Not a magic solution - overall diet quality matters
-
-## Areas of Debate
-
-- **Optimal fasting window**: Research shows benefits across different protocols
-- **Long-term sustainability**: Most studies are 8-24 weeks; need multi-year data
-- **Superiority to other diets**: Unclear if benefits exceed other healthy eating patterns
-- **Muscle preservation**: Some concern about muscle loss, but studies show mixed results
+## Key Takeaways
+- [Actionable insight 1]
+- [Actionable insight 2]
+- [Actionable insight 3]
 
 ## Sources
+1. [Title](url) — [one-line summary]
+2. ...
 
-[1] Varady KA, et al. "Clinical application of intermittent fasting for weight loss." *Nature Reviews Endocrinology*, 2022. (Systematic review, high credibility)
+## Methodology
+Searched [N] queries across web and news. Analyzed [M] sources.
+Sub-questions investigated: [list]
+```
 
-[2] de Cabo R, Mattson MP. "Effects of Intermittent Fasting on Health, Aging, and Disease." *New England Journal of Medicine*, 2019. (Peer-reviewed, authoritative review)
+### Step 6: Deliver
 
-[3] Longo VD, Panda S. "Fasting, Circadian Rhythms, and Time-Restricted Feeding in Healthy Lifespan." *Cell Metabolism*, 2016. (Mechanistic research, preliminary human data)
+- **Short topics**: Post the full report in chat
+- **Long reports**: Post the executive summary + key takeaways, save full report to a file
 
-[4] Academy of Nutrition and Dietetics. "Position on Intermittent Fasting." 2022. (Professional organization guidelines)
+## Parallel Research with Subagents
 
-## Gaps and Further Research
+For broad topics, use Claude Code's Task tool to parallelize:
 
-- **Long-term studies** (5+ years) needed for sustained effects
-- **Different populations** - effects across ages, sexes, ethnicities
-- **Optimization** - best fasting windows, meal timing, macronutrient composition
-- **Clinical applications** - specific diseases or conditions that benefit most
+```
+Launch 3 research agents in parallel:
+1. Agent 1: Research sub-questions 1-2
+2. Agent 2: Research sub-questions 3-4
+3. Agent 3: Research sub-question 5 + cross-cutting themes
+```
+
+Each agent searches, reads sources, and returns findings. The main session synthesizes into the final report.
+
+## Quality Rules
+
+1. **Every claim needs a source.** No unsourced assertions.
+2. **Cross-reference.** If only one source says it, flag it as unverified.
+3. **Recency matters.** Prefer sources from the last 12 months.
+4. **Acknowledge gaps.** If you couldn't find good info on a sub-question, say so.
+5. **No hallucination.** If you don't know, say "insufficient data found."
+6. **Separate fact from inference.** Label estimates, projections, and opinions clearly.
+
+## Examples
+
+```
+"Research the current state of nuclear fusion energy"
+"Deep dive into Rust vs Go for backend services in 2026"
+"Research the best strategies for bootstrapping a SaaS business"
+"What's happening with the US housing market right now?"
+"Investigate the competitive landscape for AI code editors"
+```

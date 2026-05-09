@@ -13,12 +13,12 @@ export default function ReinforcingStatement() {
     <section className="py-20 sm:py-24 bg-phase-4 border-b border-phase-4">
       <div className="mx-auto max-w-4xl px-6 lg:px-8 text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-phase-2 mb-6">
-          The Numbers Don&apos;t Lie
+          By The Numbers
         </p>
         <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-medium text-white leading-tight tracking-tight text-balance">
-          PaperWorking saves the average small business{' '}
+          Investor teams on PaperWorking reclaim{' '}
           <span className="text-dashboard">12 hours a week</span>{' '}
-          — that&apos;s 624 hours a year you&apos;re buying back.
+          — that&apos;s 624 hours a year back into your deal pipeline.
         </blockquote>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12">
           <div>

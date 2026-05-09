@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 import { Upload, DollarSign, List, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PendingReceipt } from '@/types/schema';
@@ -31,6 +32,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
     const updateRehabModule = useProjectStore(state => state.updateRehabModule);
     const projects = useProjectStore(state => state.projects);
     const deal = projects.find(d => d.id === projectId);
+    const { profile } = useAuth();
 
     const [amount, setAmount] = useState<string>('');
     const [lineItem, setLineItem] = useState<string>('');
@@ -54,7 +56,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
             budgetLineItem: lineItem,
             imageUrl: receiptUrl,
             status: 'pending',
-            submittedByUid: 'GC_MOCK_USER_ID',
+            submittedByUid: profile?.uid ?? 'unknown',
             submittedAt: new Date()
         };
 

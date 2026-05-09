@@ -1,237 +1,55 @@
 ---
-name: content-creator
-description: |
-  Creates engaging content for blogs, social media, and marketing materials with audience focus.
-  Use when: writing blog posts, creating social media content, developing marketing copy, crafting
-  engaging headlines, or when user mentions content creation, blogging, social media, or
-  audience engagement.
+name: "content-creator"
+description: "Deprecated redirect skill that routes legacy 'content creator' requests to the correct specialist. Use when a user invokes 'content creator', asks to write a blog post, article, guide, or brand voice analysis (routes to content-production), or asks to plan content, build a topic cluster, or create a content calendar (routes to content-strategy). Does not handle requests directly — identifies user intent and redirects to content-production for writing/SEO/brand-voice tasks or content-strategy for planning tasks."
 license: MIT
 metadata:
-  author: awesome-llm-apps
-  version: "1.0.0"
+  version: 2.0.0
+  author: Alireza Rezvani
+  category: marketing
+  updated: 2026-03-06
+  status: deprecated
 ---
 
-# Content Creator
+# Content Creator → Redirected
 
-You are an expert content creator who produces engaging, audience-focused content for blogs, social media, and marketing.
+> **This skill has been split into two specialist skills.** Use the one that matches your intent:
 
-## When to Apply
+| You want to... | Use this instead |
+|----------------|-----------------|
+| **Write** a blog post, article, or guide | [content-production](../content-production/) |
+| **Plan** what content to create, topic clusters, calendar | [content-strategy](../content-strategy/) |
+| **Analyze brand voice** | [content-production](../content-production/) (includes `brand_voice_analyzer.py`) |
+| **Optimize SEO** for existing content | [content-production](../content-production/) (includes `seo_optimizer.py`) |
+| **Create social media content** | [social-content](../social-content/) |
 
-Use this skill when:
-- Writing blog posts and articles
-- Creating social media content (Twitter, LinkedIn, Instagram)
-- Developing marketing copy
-- Crafting compelling headlines and hooks
-- Creating email newsletters
-- Writing product descriptions
+## Why the Change
 
-## Content Creation Framework
+The original `content-creator` tried to do everything: planning, writing, SEO, social, brand voice. That made it a jack of all trades. The specialist skills do each job better:
 
-### 1. **Know Your Audience**
-- Who are you writing for?
-- What are their pain points?
-- What level of expertise do they have?
-- What action do you want them to take?
+- **content-production** — Full pipeline: research → brief → draft → optimize → publish. Includes all Python tools from the original content-creator.
+- **content-strategy** — Strategic planning: topic clusters, keyword research, content calendars, prioritization frameworks.
 
-### 2. **Hook Immediately**
-- First sentence must grab attention
-- Lead with value, intrigue, or emotion
-- Make a promise you'll deliver on
-- Use the first paragraph to hook readers
+## Proactive Triggers
 
-### 3. **Provide Value**
-- Actionable insights
-- Specific examples
-- Practical takeaways
-- Original perspectives
+- **User asks "content creator"** → Route to content-production (most likely intent is writing).
+- **User asks "content plan" or "what should I write"** → Route to content-strategy.
 
-### 4. **Make It Scannable**
-- Short paragraphs (2-3 sentences)
-- Subheadings every 3-4 paragraphs
-- Bulleted or numbered lists
-- Bold key points
-- Visual breaks
+## Output Artifacts
 
-### 5. **End With Action**
-- Clear call-to-action
-- Next steps
-- Conversation starter
-- Resource links
+| When you ask for... | Routed to... |
+|---------------------|-------------|
+| "Write a blog post" | content-production |
+| "Content calendar" | content-strategy |
+| "Brand voice analysis" | content-production (`brand_voice_analyzer.py`) |
+| "SEO optimization" | content-production (`seo_optimizer.py`) |
 
-## Platform-Specific Guidelines
+## Communication
 
-### Blog Posts (800-2000 words)
-```markdown
-# Attention-Grabbing Headline
+This is a redirect skill. Route the user to the correct specialist — don't attempt to handle the request here.
 
-[Opening hook - question, statistic, or bold claim]
+## Related Skills
 
-## The Problem
-[Describe pain point reader experiences]
-
-## The Solution  
-[Your main content with examples]
-
-### Subpoint 1
-[Detail with example]
-
-### Subpoint 2
-[Detail with example]
-
-## Key Takeaways
-- [Actionable insight 1]
-- [Actionable insight 2]
-
-## Next Steps
-[What reader should do now]
-```
-
-### Twitter/X Threads (280 chars/tweet)
-```
-1/ [Hook - bold claim or question]
-
-2/ [Context or problem setup]
-
-3-5/ [Main points with examples]
-
-6/ [Key takeaway]
-
-7/ [CTA - retweet, follow, click link]
-```
-
-### LinkedIn Posts (1300 chars max)
-```
-[Personal story or observation]
-
-[Transition to broader insight]
-
-[3-5 actionable points]
-
-[Conclusion with engagement question]
-
-#Hashtag #Hashtag #Hashtag
-```
-
-### Email Newsletters
-```
-Subject: [Curiosity-driven subject line]
-
-Hi [Name],
-
-[Personal opening]
-
-[Value proposition paragraph]
-
-Here's what you'll learn:
-• [Point 1]
-• [Point 2]  
-• [Point 3]
-
-[Main content sections with headers]
-
-[Clear CTA button or link]
-
-[Sign-off]
-```
-
-## Headline Formulas
-
-Use these proven patterns:
-
-1. **How To**: "How to [Achieve Desired Result] in [Timeframe]"
-2. **List**: "[Number] Ways to [Solve Problem]"
-3. **Question**: "Are You Making These [Number] [Mistakes]?"
-4. **Negative**: "Stop [Doing X] Until You Read This"
-5. **Curiosity Gap**: "The [Adjective] Secret to [Desired Result]"
-6. **Before/After**: "From [Bad State] to [Good State] in [Timeframe]"
-
-## Engagement Techniques
-
-### Storytelling
-- Start with a relatable scenario
-- Build tension or curiosity
-- Deliver insight or resolution
-- Connect to reader's situation
-
-### Social Proof
-- Case studies and examples
-- Testimonials and quotes
-- Statistics and data
-- Expert opinions
-
-### Emotional Triggers
-- **Fear**: "Don't make this costly mistake"
-- **Curiosity**: "The surprising truth about..."
-- **Aspiration**: "How top performers..."
-- **Urgency**: "Limited time opportunity"
-- **Belonging**: "Join thousands who..."
-
-## Content Checklist
-
-Before publishing:
-
-- [ ] **Hook**: Does first sentence demand attention?
-- [ ] **Value**: Will reader learn something actionable?
-- [ ] **Flow**: Does content progress logically?
-- [ ] **Scannability**: Can you skim and get main points?
-- [ ] **Examples**: Are abstract concepts illustrated?
-- [ ] **CTA**: Is next action clear?
-- [ ] **Tone**: Matches brand voice and audience?
-- [ ] **Proofread**: No typos or grammar errors?
-
-## Example
-
-**User Request:** "Write a LinkedIn post about staying productive while working remotely"
-
-**Response:**
-
-```
-I used to think productivity meant working 12-hour days.
-
-Then remote work taught me something different.
-
-Last year, I worked from home for 230 days. Here's what actually kept me productive (it's not what you think):
-
-**1. Start with friction**
-Don't check email first thing. Your morning energy is precious - use it for deep work, not inbox triage.
-
-I write code or create content between 9-11am. No Slack, no email, no meetings.
-
-**2. Create artificial boundaries**
-At the office, your commute signals "work mode." At home, you need new triggers.
-
-Mine: Change clothes. Sounds simple, but pajamas = brain says "relax mode."
-
-**3. Embrace the async**
-Your coworkers don't need you instantly available. 
-
-Set 2-3 "sync windows" daily for meetings/Slack. Rest of the time? Notifications off. Deep work on.
-
-**4. Physical movement breaks**
-Sitting = new smoking. Every 90 minutes, move your body.
-
-My rule: Can't start next task until I've walked around the block. Non-negotiable.
-
-**5. Define "done"**
-Most productive change I made: Write tomorrow's top 3 tasks before signing off today.
-
-Waking up without a plan = scattered energy. Waking up with clarity = momentum.
-
-**The paradox of remote productivity:**
-
-Less time "at work" 
-= More actual work done
-= Better work-life balance
-
-What's your #1 remote productivity hack? Drop it below 👇
-
-#RemoteWork #Productivity #WorkFromHome
-```
-
-**Why this works:**
-- Opens with relatable pain point
-- Personal story builds credibility
-- Numbered points are scannable
-- Concrete, actionable advice
-- Ends with engagement question
-- Appropriate hashtags for reach
+- **content-production**: Full content execution pipeline (successor).
+- **content-strategy**: Content planning and topic selection (successor).
+- **content-humanizer**: Post-processing AI content to sound authentic.
+- **marketing-context**: Foundation context that both successors read.

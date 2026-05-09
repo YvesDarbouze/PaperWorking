@@ -101,7 +101,7 @@ export default function ClosingChecklist() {
     persist(
       items.map(item =>
         item.id === id
-          ? { ...item, documentUrl: `https://storage.example.com/docs/${item.type.replace(/\s/g, '_')}.pdf` }
+          ? { ...item, documentUrl: undefined }
           : item
       )
     );

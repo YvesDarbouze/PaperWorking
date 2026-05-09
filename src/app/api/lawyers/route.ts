@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { adminDb } from '@/lib/firebase/admin';
 
 export const dynamic = "force-dynamic";
 
@@ -10,38 +11,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'State code is required' }, { status: 400 });
   }
 
-  // Mocking the database query for Lawyers with Active Lead-Gen Subscriptions in specific physical domains
-  const mockLawyers = [
-    {
-      uid: 'lawyer_001',
-      displayName: 'Esquire Title & Trust LLC',
-      email: 'closings@esquiretrust.com',
-      state: 'FL',
-      subscriptionPlan: 'Lawyer Lead-Gen',
-      activeStatus: true,
-      verifiedTitleAgent: true
-    },
-    {
-      uid: 'lawyer_002',
-      displayName: 'TX Absolute Capital Law',
-      email: 'partners@txabsolute.com',
-      state: 'TX',
-      subscriptionPlan: 'Lawyer Lead-Gen',
-      activeStatus: true,
-      verifiedTitleAgent: true
-    },
-    {
-      uid: 'lawyer_003',
-      displayName: 'Universal Closings Alliance',
-      email: 'contact@uca-law.com',
-      state: stateCode, // Will dynamically match whichever state the UI requests for simulation
-      subscriptionPlan: 'Lawyer Lead-Gen',
-      activeStatus: true,
-      verifiedTitleAgent: true
-    }
-  ];
+  try {
+    const snapshot = await adminDb
+      .collection('users')
+      .where('subscriptionPlan', '==', 'Lawyer Lead-Gen')
+      .where('subscriptionStatus', '==', 'active')
+      .get();
 
-  const matchedLawyers = mockLawyers.filter(lw => lw.state.toUpperCase() === stateCode.toUpperCase());
+    const lawyers = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
 
-  return NextResponse.json({ success: true, lawyers: matchedLawyers });
+    return NextResponse.json({ success: true, lawyers });
+  } catch (error) {
+    console.error('Lawyer query failed:', error);
+    return NextResponse.json({ error: 'Failed to query lawyers' }, { status: 500 });
+  }
 }

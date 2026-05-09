@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { storage } from '@/lib/firebase/config';
+import { storage, auth } from '@/lib/firebase/config';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import type { SettlementDocument, SettlementDocumentType, ExitCostLineItem, ExitCostCategory } from '@/types/schema';
 import {
@@ -86,20 +86,34 @@ export default function SettlementDocPortal() {
     if (file) handleFileSelect(file);
   }, [handleFileSelect]);
 
-  const simulateOCR = async (fileName: string): Promise<Partial<SettlementDocument>> => {
-    // Artificial delay for "Wow" factor
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Simulate smart data extraction based on file name or random realistic values
-    const seed = fileName.length % 5;
+  const processOCR = async (fileUrl: string, mimeType: string, fileName: string): Promise<Partial<SettlementDocument>> => {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const res = await fetch('/api/ocr/settlement', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ fileUrl, mimeType })
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `OCR processing failed with status ${res.status}`);
+    }
+
+    const { data } = await res.json();
+
     return {
-      extractedAcquisitionCost: 350000 + (seed * 12500),
-      extractedDispositionCost: 425000 + (seed * 15000),
-      extractedLoanPayoff: 210000 + (seed * 8000),
-      extractedTitleFees: 1250 + (seed * 150),
-      extractedRecordingFees: 250 + (seed * 25),
-      extractedTransferTaxes: 3200 + (seed * 450),
-      notes: `Auto-extracted from ${fileName} via PaperWorking AI Scan.`,
+      extractedAcquisitionCost: data.acquisitionCost,
+      extractedDispositionCost: data.dispositionCost,
+      extractedLoanPayoff: data.payoffs,
+      extractedTitleFees: data.titleFees,
+      extractedRecordingFees: data.recordingFees,
+      extractedTransferTaxes: data.transferTaxes,
+      notes: `Extracted from ${fileName} via PaperWorking AI Scan (Confidence: ${data.confidence}).`,
     };
   };
 
@@ -137,8 +151,8 @@ export default function SettlementDocPortal() {
       setIsProcessing(true);
       toast.loading('Extracting financial data...', { id: 'ocr-toast' });
 
-      // 2. Simulated OCR Processing
-      const extractedData = await simulateOCR(uploadFile.name);
+      // 2. OCR Processing via API
+      const extractedData = await processOCR(downloadUrl, uploadFile.type, uploadFile.name);
 
       const newDoc: SettlementDocument = {
         id: `sd-${Date.now()}`,

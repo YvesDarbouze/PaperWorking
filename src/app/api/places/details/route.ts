@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { placeId } = await req.json().catch(() => ({ placeId: '' }));
+  const { placeId, sessionToken } = await req.json().catch(() => ({ placeId: '', sessionToken: undefined }));
 
   if (!placeId || typeof placeId !== 'string') {
     return NextResponse.json({ error: 'placeId is required' }, { status: 400 });
@@ -27,8 +27,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    const url = new URL(`https://places.googleapis.com/v1/places/${placeId}`);
+    if (sessionToken) {
+      url.searchParams.append('sessionToken', sessionToken);
+    }
+
     const response = await fetch(
-      `https://places.googleapis.com/v1/places/${placeId}`,
+      url.toString(),
       {
         method: 'GET',
         headers: {

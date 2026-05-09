@@ -82,7 +82,7 @@ export default function LandingHeader() {
                   borderRadius: '9999px',
                 }}
               >
-                Sign-in
+                Sign In
               </Link>
               <Link
                 href="/register"
@@ -94,7 +94,7 @@ export default function LandingHeader() {
                   borderRadius: '9999px',
                 }}
               >
-                Sign-up
+                Start Free Trial
               </Link>
             </div>
 
@@ -195,7 +195,7 @@ export default function LandingHeader() {
                     borderRadius: '9999px',
                   }}
                 >
-                  Sign-in
+                  Sign In
                 </Link>
                 <Link
                   href="/register"
@@ -208,7 +208,7 @@ export default function LandingHeader() {
                     borderRadius: '9999px',
                   }}
                 >
-                  Sign-up
+                  Start Free Trial
                 </Link>
               </div>
             </motion.nav>

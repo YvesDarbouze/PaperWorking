@@ -84,14 +84,14 @@ export default function LandingFooter() {
               <Logo size="sm" />
             </div>
             <p className="text-sm leading-relaxed text-white/50 max-w-xs">
-              The operating system for real estate investors. Automate paperwork,
-              track deals, and close faster.
+              Deal pipeline, rehab tracking, and closing docs — all in one place.
+              Built for serious real estate investors.
             </p>
 
             {/* ── Newsletter ── */}
             <div className="space-y-3 pt-2">
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-white/40">
-                Stay in the loop
+                Get investor insights
               </p>
               <form
                 onSubmit={(e) => e.preventDefault()}

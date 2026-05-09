@@ -3,22 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, TrendingUp, Calendar, ArrowUpRight, ArrowDownRight, Users, DollarSign } from 'lucide-react';
 import { formatCentsToDollars } from '@/lib/calculations/financials';
+import { useAuth } from '@/context/AuthContext';
 
 /**
  * Reports Dashboard
  * Visualizes the performance snapshots from the Reporting API.
  */
 export default function ReportsPage() {
+  const { profile } = useAuth();
   const [period, setPeriod] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!profile?.organizationId) return;
     const fetchReport = async () => {
       setLoading(true);
       try {
-        // Mocking organizationId for demo - in real use, this comes from user session
-        const res = await fetch(`/api/reports/${period}?organizationId=primary-org`);
+        const res = await fetch(`/api/reports/${period}?organizationId=${profile.organizationId}`);
         const json = await res.json();
         setData(json);
       } catch (error) {
@@ -28,7 +30,7 @@ export default function ReportsPage() {
       }
     };
     fetchReport();
-  }, [period]);
+  }, [period, profile]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">

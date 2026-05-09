@@ -12,8 +12,7 @@ import { CheckCircle2, XCircle, Clock, Shield, FileText, DollarSign, TrendingUp,
    Accept / Decline CTAs, and PaperWorking branding.
    ═══════════════════════════════════════════════════════ */
 
-// Mock token data — in production, this would be fetched from the API
-const MOCK_TOKEN_DATA: Record<string, {
+interface DealTokenData {
   investorName: string;
   investorEmail: string;
   dealName: string;
@@ -28,24 +27,7 @@ const MOCK_TOKEN_DATA: Record<string, {
   legalEntity: string;
   expiresAt: string;
   status: 'active' | 'used' | 'expired';
-}> = {
-  'demo-token-001': {
-    investorName: 'Sarah Johnson',
-    investorEmail: 'sarah@example.com',
-    dealName: '1422 N Oak St Flip',
-    propertyAddress: '1422 N Oak St, Atlanta, GA 30306',
-    purchasePrice: 200000,
-    estimatedARV: 340000,
-    expectedROI: 32,
-    investmentAmount: 50000,
-    equitySplit: 25,
-    termMonths: 12,
-    interestRate: 8,
-    legalEntity: 'Sunrise Capital Holdings LLC',
-    expiresAt: '2026-06-01',
-    status: 'active',
-  },
-};
+}
 
 export default function GuestPortalPage() {
   const params = useParams();
@@ -55,8 +37,24 @@ export default function GuestPortalPage() {
   const [hasSigned, setHasSigned] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [declined, setDeclined] = useState(false);
+  const [dealData, setDealData] = useState<DealTokenData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [tokenInvalid, setTokenInvalid] = useState(false);
 
-  const dealData = MOCK_TOKEN_DATA[token];
+  useEffect(() => {
+    if (!token) return;
+    fetch(`/api/invest/${token}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.deal) {
+          setDealData(data.deal as DealTokenData);
+        } else {
+          setTokenInvalid(true);
+        }
+      })
+      .catch(() => setTokenInvalid(true))
+      .finally(() => setLoading(false));
+  }, [token]);
 
   // ── Canvas Signature Logic ────────────────────────────
   const startDraw = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -106,8 +104,17 @@ export default function GuestPortalPage() {
     setDeclined(true);
   };
 
+  // ── Loading ──────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-600" />
+      </div>
+    );
+  }
+
   // ── Invalid / Expired Token ──────────────────────────
-  if (!dealData) {
+  if (tokenInvalid || !dealData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
         <div className="text-center max-w-sm">

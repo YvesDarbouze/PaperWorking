@@ -1,53 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Briefcase, 
-  Clock, 
-  CheckCircle, 
-  AlertCircle, 
-  DollarSign, 
-  FileUp, 
+import React, { useState, useEffect } from 'react';
+import {
+  Briefcase,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  DollarSign,
+  FileUp,
   ExternalLink,
   MessageSquare,
   Search,
   MoreVertical
 } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-const MOCK_REQUESTS = [
-  {
-    id: 'req_1',
-    dealName: 'Nashville Duplex Modernization',
-    investor: 'Nashville Metro Holdings',
-    status: 'PENDING',
-    type: 'Legal Review',
-    requestedAt: '2024-04-15',
-    sharedFolderId: 'folder_abc_123',
-  },
-  {
-    id: 'req_2',
-    dealName: 'Austin High-Rise Unit 402',
-    investor: 'Capital Equity Partners',
-    status: 'QUOTED',
-    type: 'Appraisal Report',
-    requestedAt: '2024-04-12',
-    quotedFee: 850,
-    sharedFolderId: 'folder_def_456',
-  },
-  {
-    id: 'req_3',
-    dealName: 'Atlanta Suburban Portfolio',
-    investor: 'PeachState Acquisitions',
-    status: 'ACCEPTED',
-    type: 'Title Insurance',
-    requestedAt: '2024-04-10',
-    quotedFee: 1200,
-    sharedFolderId: 'folder_ghi_789',
-  }
-];
+interface VendorRequest {
+  id: string;
+  dealName: string;
+  investor: string;
+  status: 'PENDING' | 'QUOTED' | 'ACCEPTED';
+  type: string;
+  requestedAt: string;
+  quotedFee?: number;
+  sharedFolderId?: string;
+}
 
 export default function VendorPortalDashboard() {
+  const { user, profile } = useAuth();
   const [filter, setFilter] = useState('All');
+  const [requests, setRequests] = useState<VendorRequest[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    user.getIdToken().then(idToken =>
+      fetch('/api/vendor-portal/requests', {
+        headers: { Authorization: `Bearer ${idToken}` },
+      })
+    ).then(res => res.json())
+      .then(data => {
+        if (data.success) setRequests(data.requests as VendorRequest[]);
+      })
+      .catch(() => { /* empty state handled by loadingRequests */ })
+      .finally(() => setLoadingRequests(false));
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-pw-dashboard flex">
@@ -72,11 +69,11 @@ export default function VendorPortalDashboard() {
         <div className="mt-auto p-12 bg-bg-surface/5 border-t border-white/10">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 border border-white/20 flex items-center justify-center text-xs font-black">
-              MS
+              {profile?.displayName?.slice(0, 2).toUpperCase() ?? '??'}
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-widest text-white">Marcus Sterling</p>
-              <p className="text-xs text-text-secondary font-bold tracking-widest uppercase">Verified Lawyer (TX)</p>
+              <p className="text-xs font-black uppercase tracking-widest text-white">{profile?.displayName ?? 'Vendor'}</p>
+              <p className="text-xs text-text-secondary font-bold tracking-widest uppercase">Verified Vendor</p>
             </div>
           </div>
         </div>
@@ -122,9 +119,19 @@ export default function VendorPortalDashboard() {
           </div>
 
           <div className="border border-border-accent bg-pw-border space-y-px">
-            {MOCK_REQUESTS.filter(r => filter === 'All' || r.status === filter).map((req) => (
-              <RequestRow key={req.id} request={req} />
-            ))}
+            {loadingRequests ? (
+              <div className="p-12 text-center text-xs font-black text-text-secondary uppercase tracking-widest">
+                Loading...
+              </div>
+            ) : requests.filter(r => filter === 'All' || r.status === filter).length === 0 ? (
+              <div className="p-12 text-center text-xs font-black text-text-secondary uppercase tracking-widest">
+                No requests found
+              </div>
+            ) : (
+              requests.filter(r => filter === 'All' || r.status === filter).map((req) => (
+                <RequestRow key={req.id} request={req} />
+              ))
+            )}
           </div>
         </section>
       </main>

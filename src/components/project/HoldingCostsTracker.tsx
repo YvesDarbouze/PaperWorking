@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HoldingCostEntry, HoldingCostType } from '@/types/schema';
 import { Plus, Calculator, Trash2, Droplet, Shield, Home, DollarSign, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { NumberInput } from '@/components/ui/NumberInput';
 
 interface HoldingCostsTrackerProps {
   holdingCosts: HoldingCostEntry[];
@@ -156,24 +157,20 @@ export function HoldingCostsTracker({ holdingCosts, onChange, daysHeld }: Holdin
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-medium mb-1 text-gray-700">Monthly Amt ($)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          value={newCost.monthlyAmount || ''}
-                          onChange={e => setNewCost({...newCost, monthlyAmount: Number(e.target.value)})}
-                          className="w-full px-3 py-2 rounded-md border bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-                          autoFocus
+                        <NumberInput
+                          value={newCost.monthlyAmount || undefined}
+                          onChange={(v) => setNewCost({...newCost, monthlyAmount: v ?? 0})}
+                          min={0}
+                          step={0.01}
+                          prefix="$"
                         />
                       </div>
                       <div>
                         <label className="block text-xs font-medium mb-1 text-gray-700">Est. Total Months</label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={newCost.totalMonths || ''}
-                          onChange={e => setNewCost({...newCost, totalMonths: Number(e.target.value)})}
-                          className="w-full px-3 py-2 rounded-md border bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                        <NumberInput
+                          value={newCost.totalMonths || undefined}
+                          onChange={(v) => setNewCost({...newCost, totalMonths: v ?? 0})}
+                          min={1}
                         />
                       </div>
                     </div>

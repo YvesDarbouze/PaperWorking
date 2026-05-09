@@ -46,10 +46,7 @@ type StatementSubTab = 'pl' | 'cashflow' | 'balance' | 'hud1';
 
 export default function EnginePanel() {
   useAllDealsSync();
-  const { can, role, isLead } = usePermissions();
-  
-  const isFinanceTeam = isLead || role === 'Accountant';
-  const isContractor = role === 'General Contractor';
+  const { can, role, isLead, isFinanceTeam, isContractor } = usePermissions();
   
   const [activeTab, setActiveTab] = useState<Tab>(isFinanceTeam ? 'cash' : 'docs');
   const [expandedLedgerProperties, setExpandedLedgerProperties] = useState<Record<string, boolean>>({});

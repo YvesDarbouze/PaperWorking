@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { CheckCircle, UploadCloud, Search, ShieldCheck, Link as LinkIcon, Scale, FileSignature } from 'lucide-react';
 import { pingBlockchainTitleRegistry } from '@/lib/web3/titleVerify';
 import toast from 'react-hot-toast';
 import { Project, ClosingDocument } from '@/types/schema';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const DealRoster = lazy(() => import('@/components/team/DealRoster'));
 const InspectionUploadModule = lazy(() => import('@/components/closing/InspectionUploadModule'));
@@ -33,6 +35,9 @@ export default function ClosingPanel() {
   const [isMining, setIsMining] = useState(false);
   const [searchingLawyers, setSearchingLawyers] = useState(false);
   const [availableLawyers, setAvailableLawyers] = useState<any[]>([]);
+  const [uploading, setUploading] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingUploadType = useRef<'Title Insurance' | 'Closing Disclosure' | 'Wiring Instructions' | null>(null);
 
   useEffect(() => {
     if (projects.length > 0 && !currentProject) {
@@ -52,34 +57,59 @@ export default function ClosingPanel() {
   const hasDoc = (type: string) => portal.documents.some(d => d.type === type);
   const isDocVerified = (type: string) => portal.documents.some(d => d.type === type && d.verifiedByLawyer);
 
-  const handleUploadMock = (type: 'Title Insurance' | 'Closing Disclosure' | 'Wiring Instructions') => {
-    setDeals(projects.map(d => {
-      if (d.id === currentProject.id) {
-        const docs = d.closingPortal?.documents || [];
-        if (docs.some(doc => doc.type === type)) return d;
-        return {
-          ...d,
-          closingPortal: {
-            ...(d.closingPortal || { blockchainTitleVerified: false }),
-            documents: [
-              ...docs,
-              {
-                id: Math.random().toString(),
-                type,
-                fileName: `Mock_${type.replace(' ', '')}_Encrypted.pdf`,
-                verifiedByLawyer: false,
-                uploadedAt: new Date()
-              }
-            ]
-          }
-        };
-      }
-      return d;
-    }));
-    toast.success(`${type} uploaded securely.`);
+  const handleDocumentUpload = (type: 'Title Insurance' | 'Closing Disclosure' | 'Wiring Instructions') => {
+    pendingUploadType.current = type;
+    fileInputRef.current?.click();
   };
 
-  const handleLawyerVerifyMock = (type: 'Title Insurance' | 'Closing Disclosure' | 'Wiring Instructions') => {
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const type = pendingUploadType.current;
+    if (!file || !type || !currentProject) return;
+
+    // Reset input so the same file can be selected again if needed
+    e.target.value = '';
+
+    setUploading(type);
+    try {
+      const storagePath = `closing/${currentProject.id}/${type.replace(/\s+/g, '_')}_${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, storagePath);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      setDeals(projects.map(d => {
+        if (d.id === currentProject.id) {
+          const docs = d.closingPortal?.documents || [];
+          if (docs.some(doc => doc.type === type)) return d;
+          return {
+            ...d,
+            closingPortal: {
+              ...(d.closingPortal || { blockchainTitleVerified: false }),
+              documents: [
+                ...docs,
+                {
+                  id: crypto.randomUUID(),
+                  type,
+                  fileName: file.name,
+                  fileUrl: downloadURL,
+                  verifiedByLawyer: false,
+                  uploadedAt: new Date(),
+                },
+              ],
+            },
+          };
+        }
+        return d;
+      }));
+      toast.success(`${type} uploaded securely.`);
+    } catch {
+      toast.error(`Upload failed. Please try again.`);
+    } finally {
+      setUploading(null);
+    }
+  };
+
+  const handleLawyerVerify = (type: 'Title Insurance' | 'Closing Disclosure' | 'Wiring Instructions') => {
     if (!portal.assignedLawyerUid) {
       toast.error('You must secure an Attorney before documents can be cryptographically verified.');
       return;
@@ -157,6 +187,15 @@ export default function ClosingPanel() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 max-w-6xl mx-auto space-y-8">
+      {/* Hidden file input for document uploads */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+        className="hidden"
+        onChange={handleFileSelected}
+      />
+
       <div>
         <h1 className="text-3xl font-light tracking-tight text-text-primary">The Closing Room</h1>
         <p className="text-text-secondary mt-1">Legally binding checkpoint protecting Acquisition boundaries.</p>
@@ -196,8 +235,10 @@ export default function ClosingPanel() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  {(['Title Insurance', 'Closing Disclosure', 'Wiring Instructions'] as const).map(type => (
-                   <div key={type} className={`border rounded-lg p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-border-accent bg-bg-primary' : 'border-dashed border-border-accent hover:bg-bg-primary cursor-pointer'}`} onClick={() => !hasDoc(type) && handleUploadMock(type)}>
-                      {hasDoc(type) ? (
+                   <div key={type} className={`border rounded-lg p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-border-accent bg-bg-primary' : 'border-dashed border-border-accent hover:bg-bg-primary cursor-pointer'}`} onClick={() => !hasDoc(type) && uploading !== type && handleDocumentUpload(type)}>
+                      {uploading === type ? (
+                         <div className="w-8 h-8 mb-2 animate-spin rounded-full border-b-2 border-indigo-500" />
+                      ) : hasDoc(type) ? (
                          isDocVerified(type) ? <CheckCircle className="w-8 h-8 text-green-500 mb-2" /> : <FileSignature className="w-8 h-8 text-indigo-500 mb-2" />
                       ) : (
                          <UploadCloud className="w-8 h-8 text-text-secondary mb-2" />
@@ -210,7 +251,7 @@ export default function ClosingPanel() {
 
                       {hasDoc(type) && !isDocVerified(type) && (
                          <button 
-                           onClick={(e) => { e.stopPropagation(); handleLawyerVerifyMock(type); }}
+                           onClick={(e) => { e.stopPropagation(); handleLawyerVerify(type); }}
                            className="mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded hover:bg-indigo-100"
                          >
                             Simulate Lawyer Verification

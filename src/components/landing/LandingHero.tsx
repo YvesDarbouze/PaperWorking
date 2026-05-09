@@ -39,9 +39,9 @@ export default function LandingHero() {
             text-[var(--pw-black)]
           "
         >
-          The Operating Engine for{' '}
+          Stop Losing Deals to{' '}
           <br className="hidden md:block" />
-          Modern Real Estate Investors.
+          Disorganized Paperwork.
         </h1>
 
         {/* ── Sub-copy ── */}
@@ -55,9 +55,8 @@ export default function LandingHero() {
             font-light
           "
         >
-          Consolidate your deal pipeline, financial modeling, and asset
-          management into a single, meticulously designed platform. Close
-          deals with unprecedented clarity and speed.
+          PaperWorking centralizes your deal pipeline, holding costs, and
+          closing docs so nothing slips through — and your margins stay intact.
         </p>
 
         {/* ── CTA ── */}
@@ -74,7 +73,7 @@ export default function LandingHero() {
               color: '#ffffff',
             }}
           >
-            Start Building Your Portfolio
+            Start Free — No Credit Card
           </Link>
         </div>
       </div>

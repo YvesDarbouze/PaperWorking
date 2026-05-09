@@ -119,8 +119,7 @@ export default function Phase1WorkspacePage() {
   /* ── Pipeline data ── */
   const { isPhaseComplete, snapshots, phase1Live } = usePipelineData();
   const phase1Locked = isPhaseComplete('phase-1');
-  const [advancing, setAdvancing]     = useState(false);
-  const [loanStatus, setLoanStatus]   = useState<LoanStatus | undefined>(undefined);
+  const [advancing, setAdvancing] = useState(false);
   const [investors, setInvestors]     = useState<Investor[]>([]);
 
   /* ── Data from shared WorkspaceContext (fetched once by layout) ── */
@@ -207,6 +206,12 @@ export default function Phase1WorkspacePage() {
       counterTerms: terms
     };
     await projectsService.updateDeal(project.id, { financials: merged });
+    refresh();
+  }
+
+  async function handleLoanStatusChange(status: LoanStatus) {
+    if (!project) return;
+    await projectsService.updateDeal(project.id, { loanStatus: status });
     refresh();
   }
 
@@ -496,8 +501,8 @@ export default function Phase1WorkspacePage() {
                 />
 
                 <LoanProcessingPipeline
-                  currentStatus={loanStatus}
-                  onStatusChange={setLoanStatus}
+                  currentStatus={project.loanStatus}
+                  onStatusChange={handleLoanStatusChange}
                 />
 
                 {/* LOI generator — rendered inside the same card */}

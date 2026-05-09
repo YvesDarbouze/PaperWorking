@@ -6,26 +6,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
-import { Loader2, Mail, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react';
-
-/* ═══════════════════════════════════════════════════════
-   PaperWorking — Forgot Password Page
-   
-   Single-field email form → Firebase sendPasswordResetEmail.
-   Success state replaces the form with a confirmation card.
-   ═══════════════════════════════════════════════════════ */
+import { Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
   const { resetPassword, error: authError, clearError } = useAuth();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting]     = useState(false);
+  const [isSuccess, setIsSuccess]           = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ForgotPasswordFormValues>({
+  const { register, handleSubmit, formState: { errors } } = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: '' },
   });
@@ -33,165 +22,99 @@ export default function ForgotPasswordPage() {
   const onSubmit = async (data: ForgotPasswordFormValues) => {
     setIsSubmitting(true);
     clearError();
-    try {
-      await resetPassword(data.email);
-    } catch {
-      // Directive 38: Fail silently — always show success to prevent
-      // email enumeration. Bad actors cannot verify registered emails.
-    }
-    // Always show success regardless of whether email exists
+    try { await resetPassword(data.email); } catch { /* fail silently — prevent email enumeration */ }
     setSubmittedEmail(data.email);
     setIsSuccess(true);
     setIsSubmitting(false);
   };
 
-  // ─── Success State (Directive 37) ───
+  /* ── Success state ── */
   if (isSuccess) {
     return (
-      <>
-        <div className="flex flex-col items-center text-center">
-          <div
-            className="mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: '#f0fdf4' }}
-          >
-            <CheckCircle2 className="h-6 w-6" style={{ color: '#16a34a' }} />
-          </div>
-          <h1
-            className="text-2xl font-semibold tracking-tight"
-            style={{ color: '#0a0a0a' }}
-          >
-            Check your inbox
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed" style={{ color: '#737373' }}>
-            A password reset link has been sent to{' '}
-            <strong style={{ color: '#262626' }}>{submittedEmail}</strong>.
-          </p>
-          <p className="mt-1 text-xs" style={{ color: '#a3a3a3' }}>
-            Didn&apos;t receive it? Check your spam folder or try again.
-          </p>
+      <div className="flex flex-col items-center text-center">
+        <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-950/60 border border-green-800/30">
+          <CheckCircle2 className="h-7 w-7 text-green-400" />
         </div>
+        <h1 className="text-[28px] font-semibold tracking-tight text-white">Check your inbox</h1>
+        <p className="mt-3 text-[14px] text-[#888] leading-relaxed max-w-[300px]">
+          A reset link was sent to{' '}
+          <span className="text-white font-medium">{submittedEmail}</span>.
+          Check your spam folder if it doesn&apos;t arrive within a minute.
+        </p>
 
-        <div className="mt-8 space-y-3">
+        <div className="mt-8 w-full flex flex-col gap-3">
           <button
             type="button"
-            onClick={() => {
-              setIsSuccess(false);
-              clearError();
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-bg-primary"
-            style={{ borderColor: '#d4d4d4', color: '#262626' }}
+            onClick={() => { setIsSuccess(false); clearError(); }}
+            className="w-full h-[52px] bg-[#1a1a1a] hover:bg-[#232323] border border-[#2e2e2e] rounded-xl text-[14px] font-semibold text-white transition-colors"
           >
             Try a different email
           </button>
           <Link
             href="/login"
-            className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-800"
-            style={{ backgroundColor: '#0a0a0a', color: '#ffffff' }}
+            className="w-full h-[52px] bg-[#2a2a2a] hover:bg-[#333] border border-[#3a3a3a] rounded-xl text-[14px] font-semibold text-white transition-colors flex items-center justify-center gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Return to Login
+            Return to sign in
           </Link>
         </div>
-      </>
+      </div>
     );
   }
 
-  // ─── Form State ───
+  /* ── Form state ── */
   return (
-    <>
-      {/* ─── Header (Directive 33) ─── */}
+    <div className="flex flex-col items-center">
       <div className="mb-8 text-center">
-        <h1
-          className="text-2xl font-semibold tracking-tight"
-          style={{ color: '#0a0a0a' }}
-        >
-          Reset your password
-        </h1>
-        <p className="mt-2 text-sm leading-relaxed" style={{ color: '#737373' }}>
-          Enter your email and we will send you a reset link.
+        <h1 className="text-[28px] font-semibold tracking-tight text-white">Reset your password</h1>
+        <p className="mt-2 text-[14px] text-[#888]">
+          Enter your email and we&apos;ll send you a reset link.
         </p>
       </div>
 
-      {/* ─── Auth Error Banner ─── */}
       {authError && (
-        <div
-          className="mb-6 flex items-start gap-3 rounded-lg border px-4 py-3 text-sm"
-          style={{
-            backgroundColor: '#fef2f2',
-            borderColor: '#fecaca',
-            color: '#991b1b',
-          }}
-          role="alert"
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{authError}</span>
+        <div className="w-full mb-5 px-4 py-3 bg-red-950/60 border border-red-800/40 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
+          <p className="text-xs font-medium text-red-300 leading-relaxed">{authError}</p>
         </div>
       )}
 
-      {/* ─── Form ─── */}
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="w-full space-y-3">
         <div>
-          <label
-            htmlFor="reset-email"
-            className="mb-1.5 block text-sm font-medium"
-            style={{ color: '#262626' }}
-          >
-            Email address
-          </label>
-          <div className="relative">
-            <Mail
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-              style={{ color: '#a3a3a3' }}
-              aria-hidden="true"
-            />
-            <input
-              id="reset-email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@company.com"
-              {...register('email')}
-              className="w-full rounded-lg border py-2.5 pl-10 pr-4 text-sm outline-none transition-colors focus:border-black"
-              style={{
-                borderColor: errors.email ? '#ef4444' : '#d4d4d4',
-                color: '#262626',
-              }}
-              aria-invalid={!!errors.email}
-              aria-describedby={errors.email ? 'reset-email-error' : undefined}
-            />
-          </div>
+          <input
+            id="reset-email"
+            type="email"
+            autoComplete="email"
+            placeholder="Enter your email address"
+            {...register('email')}
+            className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
+            aria-invalid={!!errors.email}
+          />
           {errors.email && (
-            <p id="reset-email-error" className="mt-1 text-xs" style={{ color: '#ef4444' }}>
-              {errors.email.message}
-            </p>
+            <p className="mt-1 text-[11px] text-red-400 pl-1">{errors.email.message}</p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
-          style={{ backgroundColor: '#0a0a0a', color: '#ffffff' }}
+          className="w-full h-[52px] bg-[#2a2a2a] hover:bg-[#333] border border-[#3a3a3a] rounded-xl text-[14px] font-semibold text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isSubmitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Sending...
-            </>
+            <><Loader2 className="h-4 w-4 animate-spin" /> Sending...</>
           ) : (
             'Send reset link'
           )}
         </button>
       </form>
 
-      {/* ─── Back to Login ─── */}
       <Link
         href="/login"
-        className="mt-6 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors hover:text-text-primary"
-        style={{ color: '#737373' }}
+        className="mt-6 flex items-center gap-1.5 text-[13px] text-[#555] hover:text-[#aaa] transition-colors"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to sign in
       </Link>
-    </>
+    </div>
   );
 }

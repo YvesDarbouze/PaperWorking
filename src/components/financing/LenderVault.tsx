@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { RoleGuard } from '@/components/RoleGuard';
 import { UploadCloud, FileText, CheckCircle2, Sliders, Info } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/lib/firebase/config';
 
 export default function LenderVault() {
   const currentProject = useProjectStore((state) => state.currentProject);
@@ -12,26 +15,30 @@ export default function LenderVault() {
   const [rollPoints, setRollPoints] = useState(false);
   const [sellerConcessions, setSellerConcessions] = useState(false);
 
-  // MOCK: Should pull from AuthContext
-  const userRole = 'Lead Investor'; 
 
   const docs = currentProject?.financials?.preApprovalDocuments || [];
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !currentProject) return;
     
     setUploading(true);
-    // Simulate a network upload to Firebase Storage
-    setTimeout(() => {
-      const fileName = e.target.files![0].name;
-      // In reality, this would be a real URL returned from Storage
-      const newDocs = [...docs, `https://mock-storage.com/${fileName}`];
+    try {
+      const file = e.target.files[0];
+      const storageRef = ref(storage, `projects/${currentProject.id}/lenderVault/${file.name}`);
+      
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      
+      const newDocs = [...docs, downloadURL];
       
       updateProjectFinancials(currentProject.id, {
         preApprovalDocuments: newDocs
       });
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
       setUploading(false);
-    }, 1500);
+    }
   };
 
   if (!currentProject) return null;
@@ -63,7 +70,6 @@ export default function LenderVault() {
       {/* Write Access: Investors and General Contractors */}
       <RoleGuard 
         allowedRoles={['Lead Investor', 'General Contractor']} 
-        currentRole={userRole as any}
         fallback={
            <p className="text-xs text-text-secondary text-center uppercase tracking-wider py-2">
              Read-Only View Enabled for Lender

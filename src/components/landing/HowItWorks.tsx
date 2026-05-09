@@ -347,12 +347,11 @@ export default function HowItWorks() {
             className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-snug tracking-tight text-balance"
             style={{ color: '#595959' }}
           >
-            Real Estate Investors can&apos;t grow as a business if they
-            don&apos;t have tools to manage their investments like a serious
-            modern business. It doesn&apos;t matter if you are a side hustle
-            house flipper or a big time multi-state developer — you need
-            organizing tools to track your investments and organize your Exit
-            Strategy.
+            Most investors don&apos;t lose deals at the negotiating table.
+            They lose them to disorganization — missed deadlines, ballooning
+            holding costs, and contractor disputes that silently eat into
+            margins. The investors who scale treat their portfolio like a
+            business. That starts with the right infrastructure.
           </motion.h2>
 
           {/* Visual divider */}

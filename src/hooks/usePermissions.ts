@@ -59,5 +59,19 @@ export function usePermissions() {
     return ROLE_PERMISSIONS[role]?.includes(permission) || false;
   };
 
-  return { can, role, isLead: role === 'Lead Investor' || role === 'Admin' };
+  const isLead = role === 'Lead Investor' || role === 'Admin';
+  const isAdmin = role === 'Admin' || role === 'Platform Admin';
+  const isContractor = role === 'General Contractor';
+  const isFinanceTeam = isLead || role === 'Accountant';
+  const isLender = role === 'Lender';
+
+  return { 
+    can, 
+    role, 
+    isLead,
+    isAdmin,
+    isContractor,
+    isFinanceTeam,
+    isLender
+  };
 }

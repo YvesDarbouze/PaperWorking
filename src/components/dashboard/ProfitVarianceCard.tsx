@@ -40,14 +40,14 @@ const ProfitVarianceCard: React.FC<ProfitVarianceCardProps> = ({
         <div className="grid grid-cols-2 gap-12 mb-10">
           <div className="space-y-2">
             <p className="text-[10px] font-bold text-text-secondary/60 uppercase tracking-[0.2em] mb-4">Projected Yield</p>
-            <p className="text-4xl font-light text-text-primary tracking-tighter leading-none">
+            <p className="text-4xl font-normal text-text-primary tracking-tighter leading-none">
               <span className="text-lg mr-1 opacity-20">$</span>{formatCentsToDollars(projectedProfit).replace('$', '').split('.')[0]}
               <span className="text-xl opacity-20">.{formatCentsToDollars(projectedProfit).split('.')[1]}</span>
             </p>
           </div>
           <div className="space-y-2 text-right">
             <p className="text-[10px] font-bold text-text-secondary/60 uppercase tracking-[0.2em] mb-4">Actual Settlement</p>
-            <p className="text-4xl font-light text-text-primary tracking-tighter leading-none">
+            <p className="text-4xl font-normal text-text-primary tracking-tighter leading-none">
               <span className="text-lg mr-1 opacity-20">$</span>{formatCentsToDollars(actualProfit).replace('$', '').split('.')[0]}
               <span className="text-xl opacity-20">.{formatCentsToDollars(actualProfit).split('.')[1]}</span>
             </p>
@@ -68,7 +68,7 @@ const ProfitVarianceCard: React.FC<ProfitVarianceCardProps> = ({
             {isPositive ? 'Performance Stable' : 'Drift Detected'}
           </span>
         </div>
-        <span className={`text-lg font-light tracking-tighter text-text-primary`}>
+        <span className={`text-lg font-normal tracking-tighter text-text-primary`}>
           {isPositive ? '+' : ''}{formatCentsToDollars(variance)}
         </span>
       </div>

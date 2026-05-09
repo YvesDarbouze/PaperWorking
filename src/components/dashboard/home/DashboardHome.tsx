@@ -1,6 +1,6 @@
 'use client';
 
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
@@ -11,6 +11,11 @@ const PortfolioKPIStrip = lazy(() => import('./PortfolioKPIStrip'));
 const MAOGaugeTracker = lazy(() => import('./MAOGaugeTracker'));
 const BurnRateMonitor = lazy(() => import('./BurnRateMonitor'));
 import { LayoutGrid, ArrowRight, Plus, Lock, Building2, TrendingUp, ChevronRight, Search, User, Users, CheckCircle2, Target, RotateCw, Clock, ArrowUpRight, ArrowDownCircle, ArrowUpCircle, MoreHorizontal, Calendar } from 'lucide-react';
+import {
+  PortfolioSummaryBar,
+  PhaseDistributionChart,
+  PortfolioROIHeatmap,
+} from '@/components/metrics/portfolio';
 import KPIGrid from '@/components/dashboard/KPIGrid';
 import TaskActivityFeed from '@/components/dashboard/TaskActivityFeed';
 import type { FeedEvent } from '@/components/dashboard/TaskActivityFeed';
@@ -19,6 +24,8 @@ import { useUIStore } from '@/store/uiStore';
 import { usePaywall } from '@/hooks/usePaywall';
 import { useAuth } from '@/context/AuthContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+
+const LifecycleMetricsDashboard = lazy(() => import('@/components/dashboard/charts/LifecycleMetricsDashboard'));
 
 import DashboardKPIHeader from './DashboardKPIHeader';
 import GenerativeInsights from './GenerativeInsights';
@@ -103,7 +110,7 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
           {project.status}
         </span>
       </div>
-      <h3 className="text-xl font-light text-[#595959] tracking-tight mb-1 leading-tight">
+      <h3 className="text-xl font-normal text-[#595959] tracking-tight mb-1 leading-tight">
         {project.propertyName || 'Unnamed Property'}
       </h3>
       <p className="text-sm text-[#7F7F7F] mb-5 leading-snug">{project.address}</p>
@@ -159,6 +166,10 @@ export default function DashboardHome() {
   const { user, profile } = useAuth();
   const { isPaid, isFree, isGuest, requireSubscription } = usePaywall();
 
+  // ── Portfolio chart data shapes ──────────────────────────────
+  // Derived inside the component so they react to store updates
+  // without a separate selector or context call.
+
 
   // Populate the store for paid/free users from the user's org.
   // No-op when profile is missing or org is placeholder.
@@ -173,6 +184,28 @@ export default function DashboardHome() {
   // State 3 (paid): full live portfolio.
   // State 4 (guest): widgets receive empty; invited projects shown separately.
   const portfolioProjects: Project[] = isPaid ? allProjects : [];
+
+  // Derived shapes for portfolio metric charts
+  const phaseDeals = useMemo(
+    () =>
+      portfolioProjects.map(p => ({
+        address: p.address ?? p.propertyName ?? 'Unknown',
+        financials: p.financials,
+        currentPhase: typeof p.currentPhase === 'number' ? p.currentPhase : 1,
+      })),
+    [portfolioProjects]
+  );
+
+  const heatmapDeals = useMemo(
+    () =>
+      portfolioProjects
+        .filter(p => p.financials && (p.financials.purchasePrice ?? 0) > 0)
+        .map(p => ({
+          address: p.address ?? p.propertyName ?? 'Unknown',
+          financials: p.financials,
+        })),
+    [portfolioProjects]
+  );
 
   const activeDeals = portfolioProjects.filter(p => {
     if (p.status === 'Sold' || p.status === 'Lead') return false;
@@ -279,6 +312,46 @@ export default function DashboardHome() {
           <ErrorBoundary name="KPI Header">
             <DashboardKPIHeader />
           </ErrorBoundary>
+        )}
+
+        {/* ── Portfolio Summary Bar ── */}
+        {!isGuest && (
+          <ErrorBoundary name="Portfolio Summary Bar">
+            <PortfolioSummaryBar
+              projects={portfolioProjects}
+              isLoading={false}
+              className="w-full"
+            />
+          </ErrorBoundary>
+        )}
+
+        {/* ── Lifecycle Metrics Dashboard ── */}
+        {!isGuest && (
+          <ErrorBoundary name="Lifecycle Metrics Dashboard">
+            <Suspense fallback={<ChartSkeleton />}>
+              <LifecycleMetricsDashboard projects={portfolioProjects} />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+
+        {/* ── Portfolio Overview: Phase Distribution + ROI Heatmap ── */}
+        {!isGuest && portfolioProjects.length >= 2 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ErrorBoundary name="Phase Distribution Chart">
+              <PhaseDistributionChart
+                deals={phaseDeals}
+                isLoading={false}
+              />
+            </ErrorBoundary>
+            {heatmapDeals.length >= 2 && (
+              <ErrorBoundary name="Portfolio ROI Heatmap">
+                <PortfolioROIHeatmap
+                  deals={heatmapDeals}
+                  isLoading={false}
+                />
+              </ErrorBoundary>
+            )}
+          </div>
         )}
 
         {/* Recent Activity Table */}

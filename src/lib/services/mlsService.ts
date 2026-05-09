@@ -22,23 +22,7 @@ export async function fetchMLSData(listingId: string): Promise<NormalizedPropert
     console.error(`[MLS SERVICE ERROR] ${listingId}:`, error);
   }
 
-  // Development / demo fallback
-  return {
-    mls_id: listingId,
-    address: '221B Baker St, London, NW1 6XE',
-    beds: 3,
-    baths: 2.5,
-    sqft: 1850,
-    lotSize: 0.15,
-    yearBuilt: 1890,
-    price: 45000000,
-    status: 'Listed',
-    description: 'A historic residence with classic Victorian architecture.',
-    photos: [
-      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1200',
-      'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1200',
-    ],
-  };
+  throw new Error(`[MLS NOT FOUND] Listing ${listingId} not returned by Bridge.`);
 }
 
 export interface QuarterlyPerformanceSummary {

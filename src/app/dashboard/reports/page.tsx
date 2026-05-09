@@ -44,7 +44,7 @@ export default function ReportsPage() {
             </div>
             <span className="text-xs font-bold text-emerald-600 uppercase tracking-[0.2em]">Institutional Intelligence</span>
           </div>
-          <h1 className="text-4xl font-light text-text-primary tracking-tight">Performance Snapshots</h1>
+          <h1 className="text-4xl font-normal text-text-primary tracking-tight">Performance Snapshots</h1>
           <p className="text-text-secondary font-medium mt-2">Aggregated yields and capital deployment analysis.</p>
         </div>
 
@@ -76,7 +76,7 @@ export default function ReportsPage() {
             <p className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 flex items-center">
               <TrendingUp className="w-3 h-3 mr-2" /> Aggregate Portfolio Yield
             </p>
-            <h2 className="text-6xl font-light tracking-tighter mb-4">
+            <h2 className="text-6xl font-normal tracking-tighter mb-4">
               {formatCentsToDollars(data?.summary?.netProfit || 0)}
             </h2>
             <div className="flex items-center space-x-4">
@@ -121,7 +121,7 @@ export default function ReportsPage() {
                 <div>
                   <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Core Residential</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-text-primary">$2.4M</span>
+                    <span className="text-3xl font-normal text-text-primary">$2.4M</span>
                     <span className="text-xs text-emerald-500 font-bold mb-1">+4.2%</span>
                   </div>
                   <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">
@@ -131,7 +131,7 @@ export default function ReportsPage() {
                 <div>
                   <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Value-Add Multifamily</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-text-primary">$1.1M</span>
+                    <span className="text-3xl font-normal text-text-primary">$1.1M</span>
                     <span className="text-xs text-rose-500 font-bold mb-1">-0.8%</span>
                   </div>
                   <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">
@@ -141,7 +141,7 @@ export default function ReportsPage() {
                 <div>
                   <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Institutional REO</p>
                   <div className="flex items-end space-x-4 mb-2">
-                    <span className="text-3xl font-light text-text-primary">$840K</span>
+                    <span className="text-3xl font-normal text-text-primary">$840K</span>
                     <span className="text-xs text-emerald-500 font-bold mb-1">+1.5%</span>
                   </div>
                   <div className="w-full h-1 bg-bg-primary rounded-full overflow-hidden">

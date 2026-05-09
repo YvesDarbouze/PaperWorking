@@ -228,7 +228,7 @@ function KPITile({
         </div>
         {band && BAND_ICON[band]}
       </div>
-      <h4 className={`text-xl font-light tracking-tight ${
+      <h4 className={`text-xl font-normal tracking-tight ${
         style ? style.text : 'text-text-primary'
       }`}>
         {value}
@@ -312,7 +312,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                 className="w-full flex items-center justify-between px-6 py-4 hover:bg-bg-primary/50 transition-colors text-left"
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-xl font-light text-text-primary tracking-tight">{ym.year}</span>
+                  <span className="text-xl font-normal text-text-primary tracking-tight">{ym.year}</span>
                   <span className="text-xs font-bold uppercase tracking-widest text-text-secondary bg-bg-primary px-2 py-0.5 rounded-full">
                     {ym.dealCount} flip{ym.dealCount !== 1 ? 's' : ''}
                   </span>

@@ -1,10 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+
+const SESSION_TIMESTAMP = Date.now();
 import { useProjectStore, selectActiveProjectMetrics } from '@/store/projectStore';
-import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle, Cloud } from 'lucide-react';
+import { ShieldAlert, FileText, Banknote, ListOrdered, Scale, ChevronRight, ChevronDown, CheckCircle2, Clock, BarChart3, UserCircle, Cloud, Hammer } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { usePermissions } from '@/hooks/usePermissions';
+
+/* Phase 3 Rehab Metric Components */
+import { RehabProgressChart, HoldingCostAccumulator } from '@/components/metrics/phase3';
+import type { CostEntry } from '@/types/schema';
 
 // Phase 4 Components
 import CostOfCapital from '@/components/Calculators/CostOfCapital';
@@ -41,12 +47,12 @@ const StatementExporter = lazy(() => import('@/components/reporting/StatementExp
    Extracted from /dashboard/engine-room/page.tsx
    ═══════════════════════════════════════════════════════ */
 
-type Tab = 'cash' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts' | 'sync';
+type Tab = 'cash' | 'ledger' | 'compliance' | 'statements' | 'valuation' | 'docs' | 'contacts' | 'sync' | 'rehab';
 type StatementSubTab = 'pl' | 'cashflow' | 'balance' | 'hud1';
 
 export default function EnginePanel() {
   useAllDealsSync();
-  const { can, role, isLead, isFinanceTeam, isContractor } = usePermissions();
+  const { isLead, isFinanceTeam, isContractor } = usePermissions();
   
   const [activeTab, setActiveTab] = useState<Tab>(isFinanceTeam ? 'cash' : 'docs');
   const [expandedLedgerProperties, setExpandedLedgerProperties] = useState<Record<string, boolean>>({});
@@ -58,6 +64,38 @@ export default function EnginePanel() {
   const currentProject = useProjectStore(state => state.currentProject);
   const setDeal = useProjectStore(state => state.setDeal);
   const dealMetrics = useProjectStore(selectActiveProjectMetrics);
+
+  // Rehab Metrics derived values
+  const monthsElapsed = (() => {
+    const f = currentProject?.financials;
+    if (!f) return 0;
+    const anchorDate = f.acquisitionDate
+      ? new Date(f.acquisitionDate)
+      : currentProject?.createdAt
+        ? new Date(currentProject.createdAt)
+        : null;
+    if (!anchorDate) return 0;
+    return Math.max(0, Math.floor((SESSION_TIMESTAMP - anchorDate.getTime()) / (1000 * 60 * 60 * 24 * 30)));
+  })();
+
+  const rehabCosts = useMemo((): CostEntry[] => {
+    if (!currentProject) return [];
+    const subItems = ledgerItems[currentProject.id] || [];
+    if (subItems.length > 0) {
+      return subItems.map(item => ({
+        id: item.id,
+        description: item.description,
+        amount: item.amount,
+        approved: item.status === 'Approved',
+        addedBy: item.submittedByUid,
+        createdAt: item.createdAt,
+        category: (item.category === 'General' ? 'Other' : item.category) as CostEntry['category'],
+        receiptUrl: item.receiptUrl,
+        status: (item.status === 'Pending' ? 'Pending Triage' : item.status) as CostEntry['status'],
+      }));
+    }
+    return currentProject.financials?.costs ?? [];
+  }, [currentProject, ledgerItems]);
 
   // Auto-select first deal if none is selected to ensure calculators work smoothly
   useEffect(() => {
@@ -105,7 +143,7 @@ export default function EnginePanel() {
       };
     }
     acc[entry.propertyName].entries.push(entry);
-    const isApproved = (entry as any).status === 'Approved' || (entry as any).approved;
+    const isApproved = (entry as { status?: string; approved?: boolean }).status === 'Approved' || (entry as { status?: string; approved?: boolean }).approved === true;
     if (isApproved) {
       acc[entry.propertyName].totalApproved += entry.amount;
     } else {
@@ -121,7 +159,7 @@ export default function EnginePanel() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-light tracking-tight text-text-primary">The Engine Room</h1>
+        <h1 className="text-3xl font-normal tracking-tight text-text-primary">The Engine Room</h1>
         <p className="text-text-secondary mt-1">Centralized financial command and compliance hub. (Live Matrix)</p>
       </div>
 
@@ -183,6 +221,16 @@ export default function EnginePanel() {
           </button>
           )}
 
+          {/* Rehab Metrics — accessible to finance team and contractors */}
+          <button
+            onClick={() => setActiveTab('rehab')}
+            className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
+              activeTab === 'rehab' ? 'border-orange-600 text-orange-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+            }`}
+          >
+            <Hammer className="mr-2 h-4 w-4" /> Rehab Metrics
+          </button>
+
           {/* Document Hub — accessible to all engine-room users */}
           <button
             onClick={() => setActiveTab('docs')}
@@ -226,23 +274,23 @@ export default function EnginePanel() {
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="p-4 bg-bg-primary rounded-lg">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Active Deal Reno</p>
-                <p className="text-2xl font-light text-text-primary">${dealMetrics.renovationCosts.toLocaleString()}</p>
+                <p className="text-2xl font-normal text-text-primary">${dealMetrics.renovationCosts.toLocaleString()}</p>
               </div>
               <div className="p-4 bg-bg-primary rounded-lg">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Total Approved Costs</p>
-                <p className="text-2xl font-light text-text-primary">${metrics.totalApprovedCosts.toLocaleString()}</p>
+                <p className="text-2xl font-normal text-text-primary">${metrics.totalApprovedCosts.toLocaleString()}</p>
               </div>
               <div className="p-4 bg-bg-primary rounded-lg border border-border-accent">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Pending AP (GC)</p>
-                <p className="text-2xl font-light text-text-primary">${metrics.totalPendingCosts.toLocaleString()}</p>
+                <p className="text-2xl font-normal text-text-primary">${metrics.totalPendingCosts.toLocaleString()}</p>
               </div>
               <div className="p-4 bg-bg-primary rounded-lg border border-border-accent">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Realized PnL ({metrics.soldProjects})</p>
-                <p className="text-2xl font-light text-text-primary">${metrics.totalRealizedProfit.toLocaleString()}</p>
+                <p className="text-2xl font-normal text-text-primary">${metrics.totalRealizedProfit.toLocaleString()}</p>
               </div>
               <div className={`p-4 rounded-lg border ${dealMetrics.netProfit >= 0 ? 'bg-bg-primary border-border-accent' : 'bg-red-50 border-red-100'}`}>
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Net Profit (Deal)</p>
-                <p className={`text-2xl font-light ${dealMetrics.netProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
+                <p className={`text-2xl font-normal ${dealMetrics.netProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
                   {dealMetrics.netProfit >= 0 ? '' : '-'}${Math.abs(dealMetrics.netProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </p>
               </div>
@@ -328,8 +376,8 @@ export default function EnginePanel() {
                                                 ${entry.amount.toLocaleString()}
                                              </td>
                                               <td className="px-4 py-3 whitespace-nowrap text-center">
-                                                 <span className={`inline-flex items-center px-2 py-0.5 border rounded text-xs font-medium uppercase tracking-wider ${((entry as any).status === 'Approved' || (entry as any).approved) ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-orange-50 border-orange-100 text-orange-700'}`}>
-                                                    {((entry as any).status === 'Approved' || (entry as any).approved) ? <><CheckCircle2 className="w-3 h-3 mr-1" /> Cleared</> : <><Clock className="w-3 h-3 mr-1" /> Pending</>}
+                                                 <span className={`inline-flex items-center px-2 py-0.5 border rounded text-xs font-medium uppercase tracking-wider ${((entry as { status?: string; approved?: boolean }).status === 'Approved' || (entry as { status?: string; approved?: boolean }).approved === true) ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-orange-50 border-orange-100 text-orange-700'}`}>
+                                                    {((entry as { status?: string; approved?: boolean }).status === 'Approved' || (entry as { status?: string; approved?: boolean }).approved === true) ? <><CheckCircle2 className="w-3 h-3 mr-1" /> Cleared</> : <><Clock className="w-3 h-3 mr-1" /> Pending</>}
                                                  </span>
                                               </td>
                                           </tr>
@@ -419,6 +467,44 @@ export default function EnginePanel() {
           </div>
         )}
         
+        {/* Rehab Metrics Tab */}
+        {activeTab === 'rehab' && (
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium text-text-primary">Rehab Metrics</h3>
+              <p className="text-sm text-text-secondary mt-1">
+                Budget vs actuals by cost category and cumulative holding cost timeline.
+              </p>
+            </div>
+
+            {!currentProject ? (
+              <div className="p-12 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-xl bg-bg-primary">
+                <Hammer className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-lg font-medium text-text-primary">No Property Selected</h3>
+                <p className="mt-1 text-sm">Select a property from the Command Center to view rehab metrics.</p>
+              </div>
+            ) : (
+              <>
+                {/* Rehab Progress Chart — budget vs actuals */}
+                <RehabProgressChart
+                  projectedRehabCost={rehabFinancials?.projectedRehabCost ?? 0}
+                  costs={rehabCosts}
+                  isLoading={false}
+                />
+
+                {/* Holding Cost Accumulator — cumulative timeline */}
+                {rehabFinancials && (
+                  <HoldingCostAccumulator
+                    financials={rehabFinancials}
+                    monthsElapsed={monthsElapsed}
+                    isLoading={false}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        )}
+
         {/* Document Hub */}
         {activeTab === 'docs' && (
           <DocumentHub />

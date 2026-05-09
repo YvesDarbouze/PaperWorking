@@ -88,7 +88,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
         {/* Header */}
         <div className="border-b border-gray-800 bg-black/80 p-5 flex justify-between items-center sticky top-0 z-10">
           <div>
-            <h2 className="text-xl font-light tracking-wide text-gray-200 flex items-center">
+            <h2 className="text-xl font-normal tracking-wide text-gray-200 flex items-center">
               The Exit Strategy Board <PhaseBadge status={currentProject.status} className="ml-3" />
             </h2>
             <p className="text-xs text-text-secondary mt-1">{currentProject.propertyName} • {currentProject.address}</p>
@@ -150,7 +150,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                  <div className="space-y-5">
                     <div>
                       <label className="text-xs text-text-secondary block mb-1">{isBrrrr ? 'Refinance Appraisal Value ($)' : 'Gross Sale Trigger ($)'}</label>
-                      <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-3 w-full text-lg font-light tracking-wide focus:border-emerald-500 focus:outline-none" />
+                      <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-3 w-full text-lg font-normal tracking-wide focus:border-emerald-500 focus:outline-none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

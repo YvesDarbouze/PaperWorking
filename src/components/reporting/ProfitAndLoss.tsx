@@ -236,20 +236,20 @@ export default function ProfitAndLoss() {
       <div className="grid grid-cols-3 gap-3">
         <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Gross Margin</p>
-          <p className={`text-lg font-light ${pl.grossProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal ${pl.grossProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
             {pl.revenue > 0 ? ((pl.grossProfit / pl.revenue) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
         <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Net Margin</p>
-          <p className={`text-lg font-light flex items-center justify-center gap-1 ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal flex items-center justify-center gap-1 ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
             {pl.netProfit >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {pl.revenue > 0 ? ((pl.netProfit / pl.revenue) * 100).toFixed(1) : '0.0'}%
           </p>
         </div>
         <div className="p-3 bg-bg-primary rounded-lg text-center border border-border-accent">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Net P&L</p>
-          <p className={`text-lg font-light ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal ${pl.netProfit >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
             {formatCurrency(pl.netProfit)}
           </p>
         </div>

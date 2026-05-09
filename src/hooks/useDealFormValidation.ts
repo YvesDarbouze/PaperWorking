@@ -23,6 +23,7 @@ export interface DealFormData {
   estimatedARV: string;
   acquisitionDate: string;
   closeDate: string;
+  dateOfSale?: string;
   leverage: string;
   strategy: string;
   vision: string;

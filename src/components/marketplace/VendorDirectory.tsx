@@ -1,61 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Search, Filter, ShieldCheck, Star, MapPin, Clock, Tag, ChevronRight, Calculator } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, ShieldCheck, Star, MapPin, Clock, Tag, ChevronRight, Calculator, Loader2 } from 'lucide-react';
 import { VendorProfile, VendorType } from '@/types/schema';
 import { motion } from 'framer-motion';
 import { VendorRequestModal } from './VendorRequestModal';
-
-const MOCK_VENDORS: VendorProfile[] = [
-  {
-    id: 'v1',
-    uid: 'u_l1',
-    type: 'Lawyer',
-    companyName: 'Shield & Gavel Real Estate Law',
-    licensingStates: ['TX', 'FL'],
-    specialties: ['Title Resolution', 'Wholesale Assignments', 'Foreclosure Defense'],
-    bio: 'Former Title Officer turned Attorney. We specialize in rapid wholesale contract review and clearing complex title clouds.',
-    avgTurnaroundDays: 2,
-    overallRating: 4.9,
-    totalReviews: 124,
-    availability: 'Available',
-    feeRangeLabel: '$750 - $1,500',
-    verified: true,
-    insuranceVerified: true
-  },
-  {
-    id: 'v2',
-    uid: 'u_a1',
-    type: 'Appraiser',
-    companyName: 'Precision Value Partners',
-    licensingStates: ['TX'],
-    specialties: ['Residential Fix-and-Flip', 'Commercial Multi-family'],
-    bio: 'Certified Residential Appraiser with 15 years Experience in the Austin Metro area.',
-    avgTurnaroundDays: 5,
-    overallRating: 4.7,
-    totalReviews: 89,
-    availability: 'Available in 1 week',
-    feeRangeLabel: '$600 - $850',
-    verified: true,
-    insuranceVerified: true
-  },
-  {
-    id: 'v3',
-    uid: 'u_l2',
-    type: 'Lawyer',
-    companyName: 'Heritage Closing Group',
-    licensingStates: ['FL', 'GA'],
-    specialties: ['Probate Real Estate', '1031 Exchange Counsel'],
-    bio: 'Specializing in complex estate-related real estate transactions.',
-    avgTurnaroundDays: 3,
-    overallRating: 4.2,
-    totalReviews: 42,
-    availability: 'Busy',
-    feeRangeLabel: '$1,200 - $2,500',
-    verified: true,
-    insuranceVerified: false
-  }
-];
 
 export default function VendorDirectory() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -64,16 +13,44 @@ export default function VendorDirectory() {
   const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [vendors, setVendors] = useState<VendorProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (stateFilter !== 'All') {
+          params.append('state', stateFilter);
+        }
+        const res = await fetch(`/api/vendors?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setVendors(data.vendors || []);
+        } else {
+          console.error('Failed to fetch vendors');
+        }
+      } catch (err) {
+        console.error('Vendor fetch error', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVendors();
+  }, [stateFilter]);
+
   const handleRequestQuote = (vendor: VendorProfile) => {
     setSelectedVendor(vendor);
     setIsModalOpen(true);
   };
 
-  const filteredVendors = MOCK_VENDORS.filter(v => {
-    const matchesSearch = v.companyName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         v.specialties.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredVendors = vendors.filter(v => {
+    const matchesSearch = v.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         v.specialties?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = typeFilter === 'All' || v.type === typeFilter;
-    const matchesState = stateFilter === 'All' || v.licensingStates.includes(stateFilter);
+    // state is already filtered on the server if changed, but we can keep it here for safety
+    const matchesState = stateFilter === 'All' || v.licensingStates?.includes(stateFilter);
     return matchesSearch && matchesType && matchesState;
   });
 

@@ -29,7 +29,7 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, is
              <Activity className="w-6 h-6 text-emerald-400" />
            </div>
            <div>
-             <h2 className="text-xl font-light tracking-wide text-white">Profitability Hub</h2>
+             <h2 className="text-xl font-normal tracking-wide text-white">Profitability Hub</h2>
              <p className="text-xs text-text-secondary font-mono tracking-widest uppercase">The Net Engine • {deal.status === 'Sold' ? 'FINAL REALIZED' : 'FORECASTED'}</p>
            </div>
          </div>
@@ -39,7 +39,7 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, is
         {/* Massive Net Profit Readout */}
         <div className="text-center mb-10">
            <p className="text-sm font-semibold text-text-secondary tracking-[0.2em] mb-2 uppercase">{isBrrrr ? 'Capital Pulled Out' : 'Total Net Profit'}</p>
-           <h1 className={`text-6xl font-light tracking-tighter ${netProfit >= 0 ? 'text-emerald-400' : 'text-red-500'}`}>
+           <h1 className={`text-6xl font-normal tracking-tighter ${netProfit >= 0 ? 'text-emerald-400' : 'text-red-500'}`}>
              {netProfit >= 0 ? '+' : '-'}${Math.abs(netProfit).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
            </h1>
            <div className="mt-4 flex items-center justify-center space-x-6">

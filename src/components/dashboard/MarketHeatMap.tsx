@@ -42,7 +42,7 @@ export default function MarketHeatMap() {
       <div className="px-8 py-10 flex items-center justify-between border-b border-border-accent/10">
           <div className="space-y-1">
             <p className="ag-label opacity-60">Market Telemetry</p>
-            <h3 className="text-3xl font-light text-text-primary tracking-tighter">Heat Vectors</h3>
+            <h3 className="text-3xl font-normal text-text-primary tracking-tighter">Heat Vectors</h3>
           </div>
           <div className="flex gap-2">
             {[...Array(3)].map((_, i) => (
@@ -65,7 +65,7 @@ export default function MarketHeatMap() {
                     </div>
                  </div>
                  <div className="text-right">
-                    <span className="text-2xl font-light text-text-primary tracking-tighter">
+                    <span className="text-2xl font-normal text-text-primary tracking-tighter">
                       {sector.value.toFixed(1)}%
                     </span>
                  </div>

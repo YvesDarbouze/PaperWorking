@@ -84,10 +84,10 @@ export const SUPPORT_ARTICLES: SupportArticle[] = [
   {
     id: 'generating-an-loi',
     categoryId: 'find-and-fund',
-    title: 'Generating an LOI for Fractional Investors',
-    excerpt: 'Learn how to generate and distribute a Letter of Intent (LOI) to syndication partners through the Guest Portal.',
+    title: 'Generate LOIs Without the Legal Chaos',
+    excerpt: 'Turn soft capital commitments into formal Letters of Intent in one click. No more chasing investors through email threads.',
     readTime: '4 min',
-    content: '<p>The Syndication Engine allows you to convert Funding Pledges into formal Letters of Intent...</p>',
+    content: '<p>You\'ve got the deal, and you\'ve got the soft commitments. But chasing down investors to sign formal Letters of Intent (LOIs) usually means drowning in email threads and confusing PDFs.</p><p>With PaperWorking, you can convert those early Funding Pledges into formal, trackable LOIs instantly. Your syndication partners receive a clean, secure link through the Guest Portal to review and sign—so you can lock in your capital faster and move to close.</p>',
   },
   {
     id: 'underwriting-criteria',

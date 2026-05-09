@@ -33,7 +33,7 @@ export default function WhatIfSimulator() {
       <div className="mb-8">
         <div className="flex justify-between items-end mb-2">
            <label className="text-sm font-medium text-indigo-200">Timeline Delay Simulator</label>
-           <span className="text-2xl font-light text-white">+{offset} mo</span>
+           <span className="text-2xl font-normal text-white">+{offset} mo</span>
         </div>
         
         <input 

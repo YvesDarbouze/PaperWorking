@@ -85,15 +85,15 @@ export default function ROIRenovationTasks() {
         <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="p-3 bg-bg-primary rounded-lg">
             <p className="text-xs uppercase tracking-widest text-text-secondary">Total Budget</p>
-            <p className="text-lg font-light text-text-primary">${totalCost.toLocaleString()}</p>
+            <p className="text-lg font-normal text-text-primary">${totalCost.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-bg-primary rounded-lg">
             <p className="text-xs uppercase tracking-widest text-text-secondary">Spent</p>
-            <p className="text-lg font-light text-text-primary">${completedCost.toLocaleString()}</p>
+            <p className="text-lg font-normal text-text-primary">${completedCost.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100">
             <p className="text-xs uppercase tracking-widest text-emerald-600">Projected ARV Lift</p>
-            <p className="text-lg font-light text-emerald-700">+${projectedLift.toLocaleString()}</p>
+            <p className="text-lg font-normal text-emerald-700">+${projectedLift.toLocaleString()}</p>
           </div>
         </div>
 

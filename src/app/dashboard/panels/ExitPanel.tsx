@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, lazy, Suspense, useMemo } from 'react';
 import { useProjectStore, selectActiveProjectMetrics } from '@/store/projectStore';
 import { Camera, Link as LinkIcon, DollarSign, Percent, ExternalLink, Target, Home, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -10,6 +10,14 @@ import ExitStrategyFork from '@/components/exit/ExitStrategyFork';
 import NetProceedsCard from '@/components/exit/NetProceedsCard';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import SoldPropertyForm from '@/components/dashboard/exit/SoldPropertyForm';
+import { computeAutopsyMetrics } from '@/lib/math/calculatorUtils';
+import { Project, ProjectFinancials } from '@/types/schema';
+import {
+  ExitMetricsSummaryBar,
+  ExitWaterfallChart,
+  CoCReturnCard,
+  YoYComparisonChart,
+} from '@/components/metrics/phase4';
 
 const StagingVendorManager = lazy(() => import('@/components/exit/StagingVendorManager'));
 const PhotographyUploadManager = lazy(() => import('@/components/exit/PhotographyUploadManager'));
@@ -21,7 +29,7 @@ const CrowdfundingReconciliation = lazy(() => import('@/components/exit/Crowdfun
 
 /* ═══════════════════════════════════════════════════════
    Exit Panel — Lane 4 (The Exit Hub)
-   
+
    Final disposition protocol with Exit Strategy Fork,
    Settlement Ledger, Escrow Reconciliation, Net Proceeds,
    and Tax Report Generator.
@@ -30,6 +38,89 @@ const CrowdfundingReconciliation = lazy(() => import('@/components/exit/Crowdfun
 const LazyFallback = () => (
   <div className="h-48 animate-shimmer border border-border-accent rounded-xl" />
 );
+
+/* ── Returns Analysis Section ─────────────────────────────────
+   Additively placed below DealAutopsy (Sell) or NOI dashboard (Rent).
+   DealAutopsy already covers: Net Profit, ROI, CoC, Profit Margin,
+   Hold Days, DOM, and the Estimates vs Actuals table — so this
+   section focuses on visual/chart-level analysis only.
+   ──────────────────────────────────────────────────────────── */
+function ReturnsAnalysisSection({
+  deal,
+  strategy,
+}: {
+  deal: Project;
+  strategy: 'Sell' | 'Rent';
+}) {
+  const m = useMemo(() => computeAutopsyMetrics(deal), [deal]);
+
+  const fin = deal.financials;
+  const actualSalePrice = fin?.actualSalePrice ?? 0;
+
+  // Annual cash flow for CoC card
+  const grossRent = (fin?.projectedMonthlyRent ?? 0) * 12;
+  const effectiveGross = grossRent * (1 - (fin?.vacancyRate ?? 5) / 100);
+  const annualExpenses = ((fin?.maintenanceReserves ?? 0) + (fin?.propertyManagementFee ?? 0)) * 12;
+  const noi = effectiveGross - annualExpenses;
+  const annualDebt = (fin?.longTermMortgagePayment ?? 0) * 12;
+  const annualCashFlow = strategy === 'Rent' ? noi - annualDebt : m.netProfit;
+
+  // YoY current-year metrics (derived from autopsy)
+  const currentYearMetrics = {
+    noi,
+    cashFlow: annualCashFlow,
+    capRate: actualSalePrice > 0 ? (noi / actualSalePrice) * 100 : 0,
+    cocReturn: m.coc,
+  };
+
+  // CoC breakdown for the card
+  const cocBreakdown = {
+    downPayment: Math.max(0, m.outOfPocketCash - m.acquisitionCosts - m.holdingCosts),
+    closingCosts: m.acquisitionCosts,
+    rehab: m.actualRehabCost,
+    holdingCosts: m.holdingCosts,
+  };
+
+  return (
+    <section aria-label="Returns Analysis" className="space-y-6 pt-4">
+      {/* Section Header */}
+      <div className="flex items-center gap-3 pb-2" style={{ borderBottom: '1px solid #cccccc' }}>
+        <div className="w-1.5 h-4 bg-pw-black" aria-hidden="true" />
+        <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-text-secondary">
+          Returns_Analysis
+        </h3>
+      </div>
+
+      {/* 4-KPI Summary Strip */}
+      <ExitMetricsSummaryBar
+        netProfit={m.netProfit}
+        roi={m.roi}
+        cocReturn={m.coc}
+        capRate={currentYearMetrics.capRate}
+        className="w-full"
+      />
+
+      {/* Waterfall Chart — only when actual sale price is recorded */}
+      {actualSalePrice > 0 && fin && (
+        <ExitWaterfallChart financials={fin} className="w-full" />
+      )}
+
+      {/* CoC Return Card — always shown (covers both sell CoC and rental CoC) */}
+      <CoCReturnCard
+        annualCashFlow={annualCashFlow}
+        totalCashInvested={m.outOfPocketCash}
+        breakdown={cocBreakdown}
+        className="w-full"
+      />
+
+      {/* YoY Comparison — always show; component handles "prior year estimated" badge */}
+      <YoYComparisonChart
+        currentYearMetrics={currentYearMetrics}
+        className="w-full"
+      />
+    </section>
+  );
+}
 
 export default function ExitPanel() {
   const projects = useProjectStore(state => state.projects);
@@ -64,6 +155,7 @@ export default function ExitPanel() {
     }
   }, [projects, currentProject, setDeal]);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (currentProject) {
       const fin = currentProject.financials;
@@ -81,6 +173,7 @@ export default function ExitPanel() {
       setMortgagePayment((fin?.longTermMortgagePayment || 0).toString());
     }
   }, [currentProject]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   if (!currentProject) {
     return (
@@ -95,7 +188,7 @@ export default function ExitPanel() {
     const updatedDeals = projects.map(d => {
       if (d.id === currentProject.id) {
          return {
-           ...d, status: 'Listed' as any,
+           ...d, status: 'Listed' as const,
            exitAssets: { ...d.exitAssets, mlsListingLink: mlsLink, stagingImages: [] }
          };
       }
@@ -113,7 +206,7 @@ export default function ExitPanel() {
        actualSalePrice: Number(actualSale), buyersAgentCommission: Number(buyerComm),
        sellersAgentCommission: Number(sellerComm), finalClosingCosts: Number(closingCosts), soldDate: new Date()
     });
-    const updatedDeals = projects.map(d => d.id === currentProject.id ? { ...d, status: 'Sold' as any } : d);
+    const updatedDeals = projects.map(d => d.id === currentProject.id ? { ...d, status: 'Sold' as const } : d);
     setDeals(updatedDeals);
     toast.success('PROTOCOL_COMPLETE: Asset realized.', { icon: '💎', style: { background: '#10b981', color: 'white' } });
   };
@@ -240,15 +333,15 @@ export default function ExitPanel() {
                   project={currentProject}
                   strategy={strategy}
                   onSave={(updates) => {
-                    updateProjectFinancials(currentProject.id, updates as any);
+                    updateProjectFinancials(currentProject.id, updates as Partial<ProjectFinancials>);
                     if (strategy === 'Sell') {
                       const updatedDeals = projects.map(d =>
-                        d.id === currentProject.id ? { ...d, status: 'Sold' as any } : d
+                        d.id === currentProject.id ? { ...d, status: 'Sold' as const } : d
                       );
                       setDeals(updatedDeals);
                     } else {
                       const updatedDeals = projects.map(d =>
-                        d.id === currentProject.id ? { ...d, status: 'Rented' as any } : d
+                        d.id === currentProject.id ? { ...d, status: 'Rented' as const } : d
                       );
                       setDeals(updatedDeals);
                     }
@@ -316,11 +409,17 @@ export default function ExitPanel() {
                   <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
                     <div style={{ border: '1px solid #cccccc', padding: 4 }}><DealAutopsy deal={currentProject} /></div>
                   </Suspense>
+
+                  {/* ── Returns Analysis ── */}
+                  <ReturnsAnalysisSection deal={currentProject} strategy={strategy} />
                 </>
               )}
 
               {strategy === 'Rent' && (
                 <div className="space-y-6">
+                  {/* ── Returns Analysis (Rent) ── */}
+                  <ReturnsAnalysisSection deal={currentProject} strategy={strategy} />
+
                   {/* NOI Dashboard */}
                   <div className="overflow-hidden" style={{ border: '2px solid #595959', background: '#ffffff' }}>
                     <div className="px-6 py-4 flex items-center gap-2" style={{ background: '#595959' }}>

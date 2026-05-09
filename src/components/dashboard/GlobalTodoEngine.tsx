@@ -204,7 +204,7 @@ export default function GlobalTodoEngine({ projects, onNavigateToDeal }: GlobalT
               <CheckCircle2 className="w-5 h-5 text-text-primary" />
               <p className="ag-label opacity-60">Task Rollup</p>
             </div>
-            <h3 className="text-3xl font-light text-text-primary tracking-tighter">Action Engine</h3>
+            <h3 className="text-3xl font-normal text-text-primary tracking-tighter">Action Engine</h3>
           </div>
           <div className="bg-bg-primary px-4 py-2 rounded-full border border-border-accent/50">
             <span className="text-[10px] font-bold text-text-primary tracking-widest uppercase">

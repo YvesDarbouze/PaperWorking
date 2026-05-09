@@ -121,19 +121,19 @@ export default function SiteVisitChecklist() {
             <div className="grid grid-cols-4 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Total Visits</p>
-                <p className="text-xl font-light text-text-primary">{visits.length}</p>
+                <p className="text-xl font-normal text-text-primary">{visits.length}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Photos</p>
-                <p className="text-xl font-light text-text-primary">{visits.reduce((s, v) => s + v.photosUploaded, 0)}</p>
+                <p className="text-xl font-normal text-text-primary">{visits.reduce((s, v) => s + v.photosUploaded, 0)}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Issues Found</p>
-                <p className="text-xl font-light text-text-primary">{totalIssues}</p>
+                <p className="text-xl font-normal text-text-primary">{totalIssues}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Unresolved</p>
-                <p className={`text-xl font-light ${unresolvedCount > 0 ? 'text-red-600' : 'text-green-600'}`}>{unresolvedCount}</p>
+                <p className={`text-xl font-normal ${unresolvedCount > 0 ? 'text-red-600' : 'text-green-600'}`}>{unresolvedCount}</p>
               </div>
             </div>
           </div>

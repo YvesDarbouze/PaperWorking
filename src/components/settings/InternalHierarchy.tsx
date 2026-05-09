@@ -3,7 +3,7 @@
 import React from 'react';
 import { useUserStore } from '@/store/userStore';
 import { useProjectStore } from '@/store/projectStore';
-import { Crown, KeyRound, ChevronDown } from 'lucide-react';
+import { Crown, KeyRound, ChevronDown, Building2, DollarSign, Settings2 } from 'lucide-react';
 import type { InternalRole } from '@/types/schema';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,30 @@ import toast from 'react-hot-toast';
    ═══════════════════════════════════════════════════════ */
 
 const ROLE_META: Record<InternalRole, { color: string; bg: string; icon: React.ReactNode; desc: string }> = {
+  'CEO': {
+    color: 'text-purple-700',
+    bg: 'bg-purple-50',
+    icon: <Building2 className="w-3 h-3" />,
+    desc: 'Chief Executive Officer — full strategic and operational authority',
+  },
+  'President': {
+    color: 'text-purple-700',
+    bg: 'bg-purple-50',
+    icon: <Building2 className="w-3 h-3" />,
+    desc: 'President — leads company operations and organizational strategy',
+  },
+  'CFO': {
+    color: 'text-emerald-700',
+    bg: 'bg-emerald-50',
+    icon: <DollarSign className="w-3 h-3" />,
+    desc: 'Chief Financial Officer — financial oversight and reporting',
+  },
+  'COO': {
+    color: 'text-slate-700',
+    bg: 'bg-slate-100',
+    icon: <Settings2 className="w-3 h-3" />,
+    desc: 'Chief Operating Officer — day-to-day operations management',
+  },
   'Admin': {
     color: 'text-amber-700',
     bg: 'bg-amber-50',
@@ -98,7 +122,7 @@ export default function InternalHierarchy() {
 
       {/* Role Legend */}
       <div className="px-6 py-3 bg-bg-primary/60 border-b border-border-accent flex gap-6">
-        {(['Admin', 'Deal Lead'] as InternalRole[]).map(role => (
+        {(['CEO', 'President', 'CFO', 'COO', 'Admin', 'Deal Lead'] as InternalRole[]).map(role => (
           <div key={role} className="flex items-center gap-2">
             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${ROLE_META[role].bg} ${ROLE_META[role].color}`}>
               {ROLE_META[role].icon}
@@ -142,6 +166,10 @@ export default function InternalHierarchy() {
                       backgroundSize: '1rem 1rem',
                     }}
                   >
+                    <option value="CEO">CEO</option>
+                    <option value="President">President</option>
+                    <option value="CFO">CFO</option>
+                    <option value="COO">COO</option>
                     <option value="Admin">Admin</option>
                     <option value="Deal Lead">Deal Lead</option>
                   </select>

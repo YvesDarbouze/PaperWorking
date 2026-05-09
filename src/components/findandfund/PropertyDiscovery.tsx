@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Search, MapPin, Home, DollarSign, TrendingUp, ChevronRight, X, Ruler } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, MapPin, Home, DollarSign, TrendingUp, ChevronRight, X, Ruler, Loader2 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
    PropertyDiscovery — MLS Search Hook + Property Card
 
-   Mock MLS typeahead → populates a "Property Card" with:
+   MLS typeahead via /api/mls/search → populates a "Property Card" with:
    • Property image placeholder
    • Bed/bath count, sqft
    • Owner's asking price (read-only from MLS or editable)
@@ -28,15 +28,6 @@ interface PropertyResult {
   imageUrl?: string;
 }
 
-// Mock MLS dataset
-const MOCK_PROPERTIES: PropertyResult[] = [
-  { id: 'mls_001', address: '1422 N Oak St', city: 'Atlanta', state: 'GA', zip: '30306', beds: 3, baths: 2, sqft: 1850, askingPrice: 285000, yearBuilt: 1962 },
-  { id: 'mls_002', address: '887 Peachtree Ln', city: 'Atlanta', state: 'GA', zip: '30308', beds: 4, baths: 3, sqft: 2400, askingPrice: 425000, yearBuilt: 1978 },
-  { id: 'mls_003', address: '2200 Broad Ave', city: 'Decatur', state: 'GA', zip: '30030', beds: 2, baths: 1, sqft: 1100, askingPrice: 175000, yearBuilt: 1955 },
-  { id: 'mls_004', address: '340 Vine St', city: 'Marietta', state: 'GA', zip: '30060', beds: 5, baths: 3, sqft: 3200, askingPrice: 520000, yearBuilt: 1985 },
-  { id: 'mls_005', address: '755 Elm Dr', city: 'Sandy Springs', state: 'GA', zip: '30328', beds: 3, baths: 2, sqft: 2000, askingPrice: 345000, yearBuilt: 1970 },
-];
-
 interface Props {
   onPropertySelected?: (data: {
     address: string;
@@ -50,16 +41,37 @@ interface Props {
 export default function PropertyDiscovery({ onPropertySelected }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState<PropertyResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<PropertyResult | null>(null);
   const [targetPrice, setTargetPrice] = useState('');
   const [rehabBudget, setRehabBudget] = useState('');
 
-  const results = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-    return MOCK_PROPERTIES.filter(
-      p => p.address.toLowerCase().includes(q) || p.city.toLowerCase().includes(q) || p.zip.includes(q)
-    );
+  useEffect(() => {
+    if (!searchQuery.trim() || searchQuery.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/mls/search?q=${encodeURIComponent(searchQuery)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setResults(Array.isArray(data) ? data : []);
+        } else {
+          setResults([]);
+        }
+      } catch (err) {
+        console.error('Search failed', err);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const handleSelect = (property: PropertyResult) => {

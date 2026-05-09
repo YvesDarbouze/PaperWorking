@@ -1,42 +1,47 @@
 ---
 name: debugging-strategies
-description: "Transform debugging from frustrating guesswork into systematic problem-solving with proven strategies, powerful tools, and methodical approaches."
-risk: safe
-source: community
-date_added: "2026-02-27"
+description: Strategies and methodologies for methodical and systematic debugging.
 ---
 
 # Debugging Strategies
 
 Transform debugging from frustrating guesswork into systematic problem-solving with proven strategies, powerful tools, and methodical approaches.
 
-## Use this skill when
+## When to Use This Skill
 
 - Tracking down elusive bugs
 - Investigating performance issues
-- Debugging production incidents
-- Analyzing crash dumps or stack traces
+- Understanding unfamiliar codebases
+- Debugging production issues
+- Analyzing crash dumps and stack traces
+- Profiling application performance
+- Investigating memory leaks
 - Debugging distributed systems
 
-## Do not use this skill when
+## Core Principles
 
-- There is no reproducible issue or observable symptom
-- The task is purely feature development
-- You cannot access logs, traces, or runtime signals
+### 1. The Scientific Method
+- **Observe:** Identify the symptoms and gather data.
+- **Hypothesize:** Propose a potential cause based on the data.
+- **Experiment:** Test the hypothesis (e.g., through isolation, logging, or debugging tools).
+- **Conclude:** Analyze the results. If the hypothesis is correct, fix it; if not, revise the hypothesis.
 
-## Instructions
+### 2. Isolate the Problem
+- Use binary search techniques to narrow down the source of the issue (e.g., `git bisect` for regressions, commenting out code blocks).
+- Ensure the bug is reproducible in a controlled environment.
 
-- Reproduce the issue and capture logs, traces, and environment details.
-- Form hypotheses and design controlled experiments.
-- Narrow scope with binary search and targeted instrumentation.
-- Document findings and verify the fix.
-- If detailed playbooks are required, open `resources/implementation-playbook.md`.
+### 3. Read the Error
+- Carefully read the entire error message, stack trace, and logs. Look for the exact line of code causing the failure.
 
-## Resources
+### 4. Rubber Duck Debugging
+- Explain the code and the problem step-by-step. Often, articulating the logic reveals flaws or missed edge cases.
 
-- `resources/implementation-playbook.md` for detailed debugging patterns and checklists.
+### 5. Check Assumptions
+- Don't assume the libraries, APIs, or basic language features are working flawlessly. Verify inputs, outputs, and intermediate states.
 
-## Limitations
-- Use this skill only when the task clearly matches the scope described above.
-- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
-- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.
+## General Workflow
+
+1. **Reproduce the Issue:** Always ensure you have a reliable way to trigger the bug.
+2. **Review Recent Changes:** Most bugs are introduced by recent commits. Check the git history.
+3. **Add Visibility:** Introduce logging or use a debugger to inspect variables at critical execution points.
+4. **Fix and Validate:** Apply the fix and verify that not only is the bug resolved, but no new regressions were introduced.

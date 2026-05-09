@@ -135,15 +135,15 @@ export default function RehabExpenseTracker() {
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Total Rehab</p>
-                <p className="text-xl font-light text-text-primary">${totalSpent.toLocaleString()}</p>
+                <p className="text-xl font-normal text-text-primary">${totalSpent.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Paid</p>
-                <p className="text-xl font-light text-green-700">${totalPaid.toLocaleString()}</p>
+                <p className="text-xl font-normal text-green-700">${totalPaid.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
-                <p className="text-xl font-light text-amber-700">${(totalSpent - totalPaid).toLocaleString()}</p>
+                <p className="text-xl font-normal text-amber-700">${(totalSpent - totalPaid).toLocaleString()}</p>
               </div>
             </div>
           </div>

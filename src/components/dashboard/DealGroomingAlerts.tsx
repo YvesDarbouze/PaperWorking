@@ -184,7 +184,7 @@ export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealG
               <AlertCircle className="w-5 h-5 text-text-primary" />
               <p className="ag-label opacity-60">Deal Hygiene</p>
             </div>
-            <h3 className="text-3xl font-light text-text-primary tracking-tighter">Grooming Portal</h3>
+            <h3 className="text-3xl font-normal text-text-primary tracking-tighter">Grooming Portal</h3>
           </div>
           {criticalCt > 0 && (
             <div className="bg-pw-black px-4 py-2 rounded-full flex items-center gap-2">

@@ -15,9 +15,13 @@ import type { OrgTeamMember, InternalRole } from '@/types/schema';
    Dynamically adapts based on billing tier (Individual vs Team).
    ═══════════════════════════════════════════════════════ */
 
-const ROLE_OPTIONS: InternalRole[] = ['Admin', 'Deal Lead'];
+const ROLE_OPTIONS: InternalRole[] = ['CEO', 'President', 'CFO', 'COO', 'Admin', 'Deal Lead'];
 
 const ROLE_DESCRIPTION: Record<InternalRole, string> = {
+  'CEO':       'Chief Executive Officer — full strategic and operational authority.',
+  'President': 'President — leads company operations and organizational strategy.',
+  'CFO':       'Chief Financial Officer — financial oversight and reporting.',
+  'COO':       'Chief Operating Officer — day-to-day operations management.',
   'Admin':     'Full access to all deals, financials, and team management.',
   'Deal Lead': 'Manage assigned deals only; no billing or team admin access.',
 };

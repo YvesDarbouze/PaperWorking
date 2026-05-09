@@ -9,6 +9,8 @@ import {
   X,
 } from 'lucide-react';
 import DealFolder from './DealFolder';
+import { usePermissions } from '@/hooks/usePermissions';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    MinimizedDashboardView — Board Overlay
@@ -91,7 +93,7 @@ export default function MinimizedDashboardView({ projects, onSelectDeal }: Minim
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-light tracking-tight text-text-primary">Board View</h2>
+          <h2 className="text-2xl font-normal tracking-tight text-text-primary">Board View</h2>
           <p className="text-sm text-text-secondary mt-0.5">
             All {projects.length} deal{projects.length !== 1 ? 's' : ''} across your workflow
           </p>
@@ -240,12 +242,22 @@ function MobileColumn({
 
 /* ─── Deal Card (delegates to standardized DealFolder) ─── */
 function DealCard({ deal, onClick }: { deal: Project; onClick: () => void }) {
+  const { can } = usePermissions();
+
   return (
-    <DealFolder
-      deal={deal}
-      size="sm"
-      showPrice
-      onClick={onClick}
-    />
+    <div className={`${!can('VIEW_FOLDER') && 'opacity-60 cursor-not-allowed'}`}>
+      <DealFolder
+        deal={deal}
+        size="sm"
+        showPrice
+        onClick={() => {
+          if (can('VIEW_FOLDER')) {
+            onClick();
+          } else {
+            toast.error('You do not have permission to view this project folder.');
+          }
+        }}
+      />
+    </div>
   );
 }

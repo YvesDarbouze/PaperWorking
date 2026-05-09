@@ -37,7 +37,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string) => Promise<void>;
+  register: (email: string, password: string, displayName: string, accountType?: 'investor' | 'vendor') => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
   sendMagicLink: (email: string) => Promise<void>;
@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, displayName: string) => {
+  const register = async (email: string, password: string, displayName: string, accountType: 'investor' | 'vendor' = 'investor') => {
     setError(null);
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
@@ -175,7 +175,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         uid: newUser.uid,
         email: newUser.email,
         displayName,
-        role: 'Lead Investor', 
+        role: accountType === 'vendor' ? 'Vendor' : 'Lead Investor',
+        accountType,
         organizationId: `org_${newUser.uid.slice(0, 8)}`,
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',

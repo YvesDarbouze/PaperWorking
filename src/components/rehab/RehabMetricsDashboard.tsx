@@ -79,7 +79,7 @@ export default function RehabMetricsDashboard() {
           <Target className="w-4 h-4 text-text-secondary" />
           <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">Target ARV</p>
         </div>
-        <p className="text-3xl font-light tracking-tight text-text-primary mb-2">
+        <p className="text-3xl font-normal tracking-tight text-text-primary mb-2">
           ${metrics.arv.toLocaleString()}
         </p>
         <div className="mt-auto text-xs text-text-secondary">
@@ -102,7 +102,7 @@ export default function RehabMetricsDashboard() {
             Rehab Contingency ({(metrics.bufferPct * 100).toFixed(0)}%)
           </p>
         </div>
-        <p className={`text-3xl font-light tracking-tight mb-1 ${contColor}`}>
+        <p className={`text-3xl font-normal tracking-tight mb-1 ${contColor}`}>
           {metrics.contingencyRemaining.toFixed(1)}%
         </p>
         <p className="text-xs text-text-secondary mb-3">
@@ -130,7 +130,7 @@ export default function RehabMetricsDashboard() {
           <TrendingUp className={`w-4 h-4 ${roiColor}`} />
           <p className="text-xs font-medium uppercase tracking-widest text-text-secondary">Projected ROI</p>
         </div>
-        <p className={`text-3xl font-light tracking-tight mb-1 ${roiColor}`}>
+        <p className={`text-3xl font-normal tracking-tight mb-1 ${roiColor}`}>
           {metrics.roi.toFixed(1)}%
         </p>
         <p className="text-xs text-text-secondary mb-3">

@@ -339,7 +339,7 @@ export default function HowItWorks() {
             className="text-xs font-bold uppercase tracking-[0.3em] mb-8"
             style={{ color: '#7f7f7f' }}
           >
-            The Problem We Solve
+            The Silent Profit Killer
           </motion.p>
 
           <motion.h2
@@ -349,9 +349,9 @@ export default function HowItWorks() {
           >
             Most investors don&apos;t lose deals at the negotiating table.
             They lose them to disorganization — missed deadlines, ballooning
-            holding costs, and contractor disputes that silently eat into
-            margins. The investors who scale treat their portfolio like a
-            business. That starts with the right infrastructure.
+            holding costs, and contractor disputes that silently bleed their
+            margins dry. The investors who scale treat their portfolio like a
+            ruthless business. Stop operating in chaos. Start operating with infrastructure.
           </motion.h2>
 
           {/* Visual divider */}
@@ -448,7 +448,7 @@ export default function HowItWorks() {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
               }}
             >
-              <span>Start Your Free Trial</span>
+              <span>Start Your 14-Day Free Trial</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>

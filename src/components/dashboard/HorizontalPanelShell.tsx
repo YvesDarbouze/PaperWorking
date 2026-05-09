@@ -149,6 +149,10 @@ export function PanelProvider({
     x.set(-(activeIndex * containerWidth));
   }, [containerWidth, activeIndex, x]);
 
+  const setOnLockedLaneAttemptWrapped = useCallback((fn: (laneId: string) => void) => {
+    setOnLockedLaneAttempt(() => fn);
+  }, []);
+
   return (
     <PanelContext.Provider
       value={{
@@ -162,7 +166,7 @@ export function PanelProvider({
         lockedLanes,
         setLockedLanes,
         onLockedLaneAttempt,
-        setOnLockedLaneAttempt: (fn) => setOnLockedLaneAttempt(() => fn),
+        setOnLockedLaneAttempt: setOnLockedLaneAttemptWrapped,
       }}
     >
       {/* Store motion value reference for child PanelTrack */}

@@ -88,14 +88,14 @@ export default function ROIChart({ projects }: ROIChartProps) {
             <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-pw-black">
               Performance Matrix
             </p>
-            <h3 className="text-2xl font-light text-text-primary tracking-tighter">Equity Growth & ROI</h3>
+            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Equity Growth & ROI</h3>
           </div>
         </div>
         
         {data.length > 0 && (
           <div className="text-right hidden sm:block">
             <p className="ag-label opacity-30 text-[9px] uppercase tracking-[0.2em] font-black">Total Realized</p>
-            <p className="text-2xl font-light font-mono text-text-primary tracking-tight">
+            <p className="text-2xl font-normal font-mono text-text-primary tracking-tight">
               {formatCurrency(data[data.length - 1].cumulativeProfit || 0)}
             </p>
           </div>

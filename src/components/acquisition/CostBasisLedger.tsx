@@ -194,15 +194,15 @@ export default function CostBasisLedger() {
         <div className="grid grid-cols-3 gap-3">
           <div className="p-3 bg-bg-primary rounded-lg text-center">
             <p className="text-xs uppercase tracking-widest text-text-secondary">Total Basis</p>
-            <p className="text-xl font-light text-text-primary">${totals.grandTotal.toLocaleString()}</p>
+            <p className="text-xl font-normal text-text-primary">${totals.grandTotal.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-bg-primary rounded-lg text-center">
             <p className="text-xs uppercase tracking-widest text-text-secondary">Paid</p>
-            <p className="text-xl font-light text-green-700">${totals.grandPaid.toLocaleString()}</p>
+            <p className="text-xl font-normal text-green-700">${totals.grandPaid.toLocaleString()}</p>
           </div>
           <div className="p-3 bg-bg-primary rounded-lg text-center">
             <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
-            <p className="text-xl font-light text-amber-700">
+            <p className="text-xl font-normal text-amber-700">
               ${(totals.grandTotal - totals.grandPaid).toLocaleString()}
             </p>
           </div>

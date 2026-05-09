@@ -49,7 +49,7 @@ export default function TransitionConfirmationModal({
                 </button>
               </div>
 
-              <h2 className="text-2xl font-light text-text-primary mb-2 tracking-tight">
+              <h2 className="text-2xl font-normal text-text-primary mb-2 tracking-tight">
                 Update Asset Status?
               </h2>
               <p className="text-sm text-text-secondary mb-8 leading-relaxed">

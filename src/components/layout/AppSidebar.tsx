@@ -142,7 +142,6 @@ function SidebarLink({ item }: { item: NavItem }) {
       {/* Label */}
       <span
         className="text-xs font-bold uppercase tracking-[0.15em] truncate"
-        style={{ fontWeight: isActive ? 700 : 500 }}
       >
         {item.label}
       </span>

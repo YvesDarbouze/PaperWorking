@@ -187,7 +187,7 @@ export default function GlobalTodoWidget({ projects, onNavigateToDeal }: GlobalT
           </div>
           <div>
             <p className="ag-label opacity-60">Tasks</p>
-            <h3 className="text-2xl font-light text-text-primary tracking-tighter">To-Do</h3>
+            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">To-Do</h3>
           </div>
         </div>
         <div className="bg-bg-primary px-3 py-1.5 rounded border border-border-accent/30">

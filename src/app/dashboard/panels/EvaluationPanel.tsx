@@ -1,6 +1,6 @@
 'use client';
 
-import React, { lazy, Suspense, useState } from 'react';
+import React, { lazy, Suspense, useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import CostOfCapitalCalculator from '@/components/Calculators/CostOfCapitalCalculator';
 import HoldingCostClock from '@/components/Calculators/HoldingCostClock';
@@ -8,6 +8,7 @@ import RuleOf70Warning from '@/components/Calculators/RuleOf70Warning';
 import WhatIfSimulator from '@/components/Calculators/WhatIfSimulator';
 import LenderVault from '@/components/financing/LenderVault';
 import InspectionChecklist from '@/components/Inspection/InspectionChecklist';
+import { DSCRGauge, CapitalStackChart } from '@/components/metrics/phase2';
 
 /* Phase-specific modules */
 const DealAnalyzer = lazy(() => import('@/components/evaluation/DealAnalyzer'));
@@ -35,7 +36,31 @@ export default function EvaluationPanel() {
   const [showCrowdfundModal, setShowCrowdfundModal] = useState(false);
 
   const totalEquity = currentProject?.fractionalInvestors?.reduce((s, i) => s + i.equityPercentage, 0) || 0;
-  
+
+  // ── Phase 2 underwriting calculations ─────────────────
+  const underwritingData = useMemo(() => {
+    const fin = currentProject?.financials;
+    if (!fin) return null;
+
+    const loanAmount = fin.loanAmount ?? 0;
+    const annualRate = (fin.loanInterestRate ?? 0) / 100;
+
+    // Use financingDebtService if explicitly set, otherwise estimate from loan terms
+    const debtService = fin.financingDebtService
+      ? fin.financingDebtService * 12
+      : loanAmount * annualRate;
+
+    // NOI: effective gross income minus operating expenses (~35%)
+    const grossRent = (fin.projectedMonthlyRent ?? fin.monthlyGrossRent ?? 0);
+    const otherIncome = fin.otherMonthlyIncome ?? 0;
+    const vacancyPct = (fin.vacancyRatePercent ?? fin.vacancyRate ?? 7) / 100;
+    const effectiveGrossIncome = (grossRent + otherIncome) * 12 * (1 - vacancyPct);
+    const operatingExpenses = effectiveGrossIncome * 0.35;
+    const noi = effectiveGrossIncome - operatingExpenses;
+
+    return { noi, annualDebtService: debtService };
+  }, [currentProject?.financials]);
+
   const shimmer = (
     <div className="h-40 border border-border-accent animate-shimmer rounded-xl flex items-center justify-center">
        <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">Module_Syncing...</span>
@@ -181,6 +206,35 @@ export default function EvaluationPanel() {
           </Suspense>
         </div>
       </section>
+
+      {/* ── Section 7: Underwriting Metrics ── */}
+      {currentProject.financials && (
+        <section className="pt-10 space-y-6">
+          <div className="flex items-center justify-between border-b border-pw-black pb-4">
+            <div>
+              <h2 className="text-xs font-black text-text-primary uppercase tracking-[0.3em]">Underwriting_Metrics</h2>
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1">DSCR analysis and capital deployment visualization</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {underwritingData && underwritingData.annualDebtService > 0 ? (
+              <DSCRGauge
+                noi={underwritingData.noi}
+                annualDebtService={underwritingData.annualDebtService}
+              />
+            ) : (
+              <div className="rounded-lg border border-[#CCCCCC] p-6 flex items-center justify-center min-h-[160px] bg-white">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-[#A5A5A5]">
+                  Enter loan amount &amp; interest rate to compute DSCR
+                </p>
+              </div>
+            )}
+
+            <CapitalStackChart financials={currentProject.financials} />
+          </div>
+        </section>
+      )}
 
       {/* Crowdfund Modal Overlay */}
       {showCrowdfundModal && (

@@ -259,15 +259,15 @@ export default function InspectionUploadModule() {
           <div className="grid grid-cols-3 gap-3 mt-4">
             <div className="p-3 bg-bg-primary rounded-lg text-center">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Open Issues</p>
-              <p className="text-xl font-light text-text-primary">{unresolvedCount}</p>
+              <p className="text-xl font-normal text-text-primary">{unresolvedCount}</p>
             </div>
             <div className="p-3 bg-bg-primary rounded-lg text-center">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Est. Repair</p>
-              <p className="text-xl font-light text-text-primary">${totalRepairCost.toLocaleString()}</p>
+              <p className="text-xl font-normal text-text-primary">${totalRepairCost.toLocaleString()}</p>
             </div>
             <div className="p-3 bg-bg-primary rounded-lg text-center">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Categories</p>
-              <p className="text-xl font-light text-text-primary">{Object.keys(grouped).length}</p>
+              <p className="text-xl font-normal text-text-primary">{Object.keys(grouped).length}</p>
             </div>
           </div>
         )}

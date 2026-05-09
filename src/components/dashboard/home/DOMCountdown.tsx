@@ -118,7 +118,7 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
                     {deal.address}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-light text-text-primary tracking-tight font-mono">
+                    <span className="text-xs font-normal text-text-primary tracking-tight font-mono">
                       {deal.currentDOM}
                       <span className="text-[10px] ml-0.5 opacity-40">d</span>
                     </span>

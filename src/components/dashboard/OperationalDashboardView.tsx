@@ -57,7 +57,7 @@ function OperationalDashboardContent() {
 
        <div className="mb-12">
           <p className="ag-label opacity-60">Operations</p>
-          <h1 className="text-5xl font-light text-text-primary tracking-tighter mt-2">Field Status</h1>
+          <h1 className="text-5xl font-normal text-text-primary tracking-tighter mt-2">Field Status</h1>
           <p className="text-text-secondary text-sm mt-3 font-normal">Active operational corridor for <strong className="text-text-primary font-medium">{role}</strong> personnel.</p>
        </div>
 
@@ -125,7 +125,7 @@ function OperationalDashboardContent() {
             <div className="ag-card bg-pw-black p-10 text-white shadow-2xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-48 h-48 bg-bg-surface/5 rounded-full blur-3xl -z-10 group-hover:bg-bg-surface/10 transition-colors duration-700" aria-hidden="true" />
                <p className="ag-label text-white/40 mb-6">Field Submission</p>
-               <div className="text-6xl font-light tracking-tighter mb-4" aria-label={`${activeTasks.filter(t => t.urgent).length} high-priority blockages`}>
+               <div className="text-6xl font-normal tracking-tighter mb-4" aria-label={`${activeTasks.filter(t => t.urgent).length} high-priority blockages`}>
                  {activeTasks.filter(t => t.urgent).length}
                </div>
                <p className="text-sm text-white/60 font-medium whitespace-nowrap">High-Priority Blockages</p>

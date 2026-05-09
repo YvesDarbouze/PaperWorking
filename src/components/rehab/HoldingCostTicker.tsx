@@ -149,19 +149,19 @@ export default function HoldingCostTicker() {
             <div className="grid grid-cols-4 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Monthly Burn</p>
-                <p className="text-lg font-light text-text-primary">${totals.totalMonthly.toLocaleString()}</p>
+                <p className="text-lg font-normal text-text-primary">${totals.totalMonthly.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Paid to Date</p>
-                <p className="text-lg font-light text-green-700">${totals.totalPaid.toLocaleString()}</p>
+                <p className="text-lg font-normal text-green-700">${totals.totalPaid.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Projected Total</p>
-                <p className="text-lg font-light text-text-primary">${totals.totalProjected.toLocaleString()}</p>
+                <p className="text-lg font-normal text-text-primary">${totals.totalProjected.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
-                <p className="text-lg font-light text-amber-700">${totals.outstanding.toLocaleString()}</p>
+                <p className="text-lg font-normal text-amber-700">${totals.outstanding.toLocaleString()}</p>
               </div>
             </div>
           </div>

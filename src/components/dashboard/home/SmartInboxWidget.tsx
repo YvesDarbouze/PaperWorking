@@ -44,7 +44,7 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
             </div>
             <div>
               <p className="ag-label opacity-60">Inbox</p>
-              <h3 className="text-2xl font-light text-text-primary tracking-tighter">Messages</h3>
+              <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Messages</h3>
             </div>
           </div>
           {unreadTotal > 0 && (
@@ -137,7 +137,7 @@ export default function SmartInboxWidget({ projects }: SmartInboxWidgetProps) {
               <div className="sticky top-0 bg-bg-surface/95 backdrop-blur-md px-6 py-5 border-b border-border-accent/20 flex items-center justify-between z-10">
                 <div>
                   <p className="ag-label opacity-60 mb-1">Inbox</p>
-                  <h3 className="text-xl font-light text-text-primary tracking-tighter">All Messages</h3>
+                  <h3 className="text-xl font-normal text-text-primary tracking-tighter">All Messages</h3>
                 </div>
                 <button
                   onClick={() => setIsExpanded(false)}

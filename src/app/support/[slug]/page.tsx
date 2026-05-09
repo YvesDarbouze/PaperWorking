@@ -5,10 +5,9 @@ import { SUPPORT_ARTICLES, SUPPORT_CATEGORIES } from '@/lib/cms/supportData';
 import { Metadata } from 'next';
 import { FeedbackWidget } from '@/components/support/FeedbackWidget';
 
+// Next.js 16: params is a Promise
 interface SupportArticlePageProps {
-  params: {
-    slug: string;
-  };
+  params: Promise<{ slug: string }>;
 }
 
 // Optionally, generate static params for all articles
@@ -19,7 +18,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: SupportArticlePageProps): Promise<Metadata> {
-  const article = SUPPORT_ARTICLES.find((a) => a.id === params.slug);
+  const { slug } = await params;
+  const article = SUPPORT_ARTICLES.find((a) => a.id === slug);
   if (!article) {
     return { title: 'Article Not Found' };
   }
@@ -29,8 +29,9 @@ export async function generateMetadata({ params }: SupportArticlePageProps): Pro
   };
 }
 
-export default function SupportArticlePage({ params }: SupportArticlePageProps) {
-  const article = SUPPORT_ARTICLES.find((a) => a.id === params.slug);
+export default async function SupportArticlePage({ params }: SupportArticlePageProps) {
+  const { slug } = await params;
+  const article = SUPPORT_ARTICLES.find((a) => a.id === slug);
 
   if (!article) {
     notFound();

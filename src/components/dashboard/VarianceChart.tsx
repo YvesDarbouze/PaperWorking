@@ -27,7 +27,7 @@ export default function VarianceChart() {
 
   // Group approved/projected spend across active projects for chart
   const data = {
-    labels: projects.slice(0, 5).map(d => d.propertyName.split(' ')[0]), // Mock labels (first word of property)
+    labels: projects.slice(0, 5).map(d => d.propertyName.split(' ')[0]),
     datasets: [
       {
         label: 'Approved Spend',

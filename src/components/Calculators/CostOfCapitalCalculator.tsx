@@ -67,7 +67,7 @@ export default function CostOfCapitalCalculator() {
         <div className="mt-4 p-4 bg-gray-900 rounded-lg flex items-center justify-between text-white">
           <div>
              <p className="text-xs text-text-secondary uppercase tracking-widest">Total Upfront Cost</p>
-             <p className="text-xl font-light">${upfrontCost.toLocaleString()}</p>
+             <p className="text-xl font-normal">${upfrontCost.toLocaleString()}</p>
           </div>
           <button onClick={handleCalculate} className="px-4 py-2 bg-bg-surface text-text-primary text-sm font-semibold rounded hover:bg-bg-primary transition">
              Sync to Ledger

@@ -16,45 +16,44 @@ import {
 
    Dark-on-light section placed directly below the Hero.
    Uses a near-black background (#1a1a1a) for maximum contrast.
-   All copy is injected VERBATIM per the CRO brief.
    WCAG AA verified:
      - #ffffff on #1a1a1a = 16.15:1 ✓
      - #b0b0b0 on #1a1a1a = 6.58:1  ✓ (paragraph text)
      - #d4d4d4 on #1a1a1a = 10.13:1 ✓ (sub-headers)
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Phase Data (copy is EXACT — not a single word changed) ─── */
+/* ─── Phase Data ─── */
 const PHASES = [
   {
     number: '1',
     label: 'Acquisition',
-    subtitle: 'Find the Deal. Lock the Capital.',
+    subtitle: 'Find the deal. Lock the capital.',
     icon: Landmark,
-    body: 'Source targets, run your MAO calculation, and generate offer letters — all from the same screen. Partner capital commitments are tracked in real time before you make a move.',
+    body: 'Source targets, calculate your MAO, and generate offer letters from a single screen. Track partner capital before you make a move, so you always buy right.',
     accentColor: '#4ade80', // green-400
   },
   {
     number: '2',
     label: 'Purchase',
-    subtitle: 'No More Closing Chaos.',
+    subtitle: 'Close without the chaos.',
     icon: ShieldCheck,
-    body: 'Loan docs, title reports, and contingency deadlines live in one secure vault. Attorneys and loan officers get role-based access — nothing falls between the cracks, no deadline gets missed.',
+    body: 'Keep loan docs, title reports, and deadlines in one secure vault. Give attorneys and loan officers instant access, so nothing falls between the cracks and you close on time.',
     accentColor: '#60a5fa', // blue-400
   },
   {
     number: '3',
     label: 'Hold',
-    subtitle: 'Know Your Burn Rate. Every Single Day.',
+    subtitle: 'Stop the silent margin killer.',
     icon: Clock,
-    body: 'Holding costs accumulate silently. PaperWorking tracks your daily burn from day of close — taxes, insurance, utilities, interest — and flags when your 70% rule is at risk.',
+    body: 'Holding costs eat your margins silently. PaperWorking tracks your daily burn—taxes, insurance, interest—and flags you the moment your 70% rule is at risk.',
     accentColor: '#facc15', // yellow-400
   },
   {
     number: '4',
     label: 'Exit',
-    subtitle: 'Every Dollar Accounted For.',
+    subtitle: 'Know exactly what you made.',
     icon: BarChart3,
-    body: 'ARV minus all costs — acquisition, rehab, holding, closing — calculated automatically. Generate partner distribution reports and export tax-ready documentation before you leave the closing table.',
+    body: 'Automatically calculate your true profit. Generate distribution reports and export tax-ready documentation before you even leave the closing table.',
     accentColor: '#f472b6', // pink-400
   },
 ];
@@ -178,7 +177,7 @@ export default function PlatformOverview() {
             className="text-[12px] font-bold uppercase tracking-[0.3em] mb-6 text-center"
             style={{ color: '#717171' }}
           >
-            How It Works
+            The Framework
           </motion.p>
 
           <motion.h2
@@ -186,7 +185,7 @@ export default function PlatformOverview() {
             className="text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.75rem] tracking-tight leading-[1.15] mb-6 sm:mb-8 text-center max-w-4xl mx-auto"
             style={{ color: '#ffffff' }}
           >
-            One System Mapped to Every Phase of Your Deal
+            Every phase of your deal. Organized.
           </motion.h2>
 
           <motion.p
@@ -194,7 +193,7 @@ export default function PlatformOverview() {
             className="text-sm sm:text-base md:text-[17px] leading-[1.75] sm:leading-[1.8] mb-12 sm:mb-16 md:mb-20 text-center max-w-3xl mx-auto"
             style={{ color: '#b0b0b0' }}
           >
-            Most investors lose time and money between phases — when docs get buried, costs go untracked, or partners are out of the loop. PaperWorking follows the actual lifecycle of every deal, from first contact to final distribution.
+            Every missed deadline and untracked expense silently kills your profit. PaperWorking is the institutional-grade platform that ensures you never lose margin to disorganized chaos again.
           </motion.p>
 
           {/* ── 4-Phase Grid ── */}
@@ -228,14 +227,14 @@ export default function PlatformOverview() {
               className="text-xl sm:text-2xl md:text-3xl tracking-tight mb-4 sm:mb-6"
               style={{ color: '#ffffff' }}
             >
-              Built for Operators, Not Hobbyists.
+              Built for serious operators, not hobbyists.
             </h3>
 
             <p
               className="text-base sm:text-[17px] leading-[1.8] mb-14"
               style={{ color: '#b0b0b0' }}
             >
-              The investors who scale don&apos;t work harder — they operate with precision. PaperWorking replaces the spreadsheet chaos, missed deadlines, and cost overruns that quietly kill margins. This is what institutional-grade deal management looks like for independent operators.
+              Scaling investors don't work harder—they operate with ruthless efficiency. PaperWorking eliminates the spreadsheet chaos and missed deadlines that are currently draining your profits. Stop losing money to disorganization.
             </p>
 
             {/* ── CTA Button ── */}
@@ -249,7 +248,7 @@ export default function PlatformOverview() {
                 boxShadow: '0 4px 24px rgba(255,255,255,0.12)',
               }}
             >
-              <span>Start Your 14-Day Free Trial</span>
+              <span>Start Your Free 14-Day Trial</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 

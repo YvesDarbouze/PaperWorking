@@ -88,10 +88,10 @@ export default function TestimonialSlider() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
-            What Teams Are Saying
+            Elite Investors Trust PaperWorking
           </p>
           <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
-            Results that speak for themselves.
+            Don&apos;t take our word for it. Look at their margins.
           </h2>
         </div>
 

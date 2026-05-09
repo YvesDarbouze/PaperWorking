@@ -86,27 +86,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
     }
 
-    // ── Mock path (no service account configured) ──────────
     const auth = buildGoogleAuth();
     if (!auth) {
-      const mockEventId = `mock_cal_${projectId}_${Date.now()}`;
-      await adminDb.collection('projects').doc(projectId).update({
-        [`calendarEvents.${eventType}`]: {
-          eventId: mockEventId,
-          title,
-          date,
-          eventType,
-          syncedAt: FieldValue.serverTimestamp(),
-          mock: true,
-        },
-        updatedAt: FieldValue.serverTimestamp(),
-      });
-      return NextResponse.json({
-        success: true,
-        mock: true,
-        eventId: mockEventId,
-        message: 'Calendar event mocked — set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY to enable live sync.',
-      });
+      return NextResponse.json(
+        { error: 'Google Service Account credentials missing. Cannot sync calendar.' },
+        { status: 500 }
+      );
     }
 
     // ── Live Google Calendar path ───────────────────────────

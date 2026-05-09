@@ -116,7 +116,7 @@ export default function AssetMixChart({ projects }: AssetMixChartProps) {
             <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-pw-black">
               Asset Concentration
             </p>
-            <h3 className="text-2xl font-light text-text-primary tracking-tighter">Portfolio Mix</h3>
+            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Portfolio Mix</h3>
           </div>
         </div>
       </div>

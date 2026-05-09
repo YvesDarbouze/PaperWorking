@@ -145,7 +145,7 @@ export default function MAOGaugeTracker({ projects }: MAOGaugeTrackerProps) {
             <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-pw-black">
               Acquisition Sentinel
             </p>
-            <h3 className="text-2xl font-light text-text-primary tracking-tighter">{rulePercent}% Rule</h3>
+            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">{rulePercent}% Rule</h3>
           </div>
         </div>
         
@@ -176,15 +176,15 @@ export default function MAOGaugeTracker({ projects }: MAOGaugeTrackerProps) {
           {/* Portfolio Summary Summary */}
           <div className="flex gap-4 p-1 bg-bg-primary/30 rounded-2xl border border-border-accent/5">
             <div className="flex-1 text-center py-5 rounded-xl bg-white/50 backdrop-blur-sm border border-border-accent/10 shadow-sm">
-              <p className="text-2xl font-light text-text-primary tracking-tighter font-mono">{withinCount}</p>
+              <p className="text-2xl font-normal text-text-primary tracking-tighter font-mono">{withinCount}</p>
               <p className="text-[9px] uppercase tracking-[0.2em] text-green-600 font-black mt-2">Within</p>
             </div>
             <div className="flex-1 text-center py-5 rounded-xl bg-white/50 backdrop-blur-sm border border-border-accent/10 shadow-sm">
-              <p className="text-2xl font-light text-amber-600 tracking-tighter font-mono">{approachingCount}</p>
+              <p className="text-2xl font-normal text-amber-600 tracking-tighter font-mono">{approachingCount}</p>
               <p className="text-[9px] uppercase tracking-[0.2em] text-amber-500 font-black mt-2">Warning</p>
             </div>
             <div className="flex-1 text-center py-5 rounded-xl bg-white/50 backdrop-blur-sm border border-border-accent/10 shadow-sm">
-              <p className="text-2xl font-light text-red-600 tracking-tighter font-mono">{exceededCount}</p>
+              <p className="text-2xl font-normal text-red-600 tracking-tighter font-mono">{exceededCount}</p>
               <p className="text-[9px] uppercase tracking-[0.2em] text-red-500 font-black mt-2">Over</p>
             </div>
           </div>

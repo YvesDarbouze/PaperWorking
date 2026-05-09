@@ -105,7 +105,7 @@ export default function PricingPage() {
         {/* Hero */}
         <section className="pt-24 pb-16 sm:pt-32 sm:pb-20 border-b border-border-accent">
           <div className="mx-auto max-w-4xl text-center px-6 lg:px-8">
-             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-text-primary leading-tight text-balance">
+             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-text-primary leading-tight text-balance">
                Pick your plan.<br className="hidden sm:block"/> Start closing faster.
              </h1>
              <p className="mt-8 text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">

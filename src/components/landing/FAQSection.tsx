@@ -6,24 +6,24 @@ import { Plus, Minus } from 'lucide-react';
 
 const FAQS = [
   {
-    question: "What is PaperWorking?",
-    answer: "PaperWorking is an operating system for real estate investors. It replaces spreadsheets and scattered emails with a unified pipeline that tracks every deal from sourcing to exit — including capital stack, holding costs, rehab budgets, and closing documents."
+    question: "Why should I upgrade from spreadsheets to PaperWorking?",
+    answer: "Spreadsheets leak money. PaperWorking is the institutional-grade operating system for elite real estate investors. We eliminate scattered emails and broken formulas by uniting your entire pipeline—from acquisition to exit—so you catch costly mistakes before they happen."
   },
   {
-    question: "How do I share a deal with potential investors?",
-    answer: "From your dashboard, you can invite partners to view a specific deal and its capital stack. Non-account holders receive an email link; they need a subscription to access full financial details and deal analytics. Every share is logged in the audit trail."
+    question: "Will this help me raise capital from investors faster?",
+    answer: "Yes. Capital follows professionalism. Instantly share a secure, beautiful deal portal with potential partners. You project institutional credibility, giving private lenders the confidence they need to wire funds today, not next week."
   },
   {
-    question: "What is the 70% Rule in house flipping?",
-    answer: "The 70% rule is a guideline that investors use to determine the maximum they should pay for a property. It states you should never pay more than 70% of the After Repair Value (ARV) minus the estimated cost of repairs. Our What-If Simulator actively enforces this calculation for you."
+    question: "How does PaperWorking protect my profit margins?",
+    answer: "By actively enforcing the 70% Rule and dynamically calculating your Maximum Allowable Offer (MAO). Our What-If Simulator prevents you from overpaying in competitive markets, shielding you from ruinous deals."
   },
   {
-    question: "Can I manage contingencies and hidden costs?",
-    answer: "Absolutely. Our platform encourages investors to add a 10–15% buffer for 'hidden' issues found behind walls. The Engine Room and Rehab trackers allow you to dynamically assign contingency budgets for materials and labor."
+    question: "Can I manage hidden rehab costs and scope creep?",
+    answer: "Scope creep destroys ROI. Our Engine Room forces you to assign hard contingency budgets for materials and labor. When unexpected issues hide behind the drywall, you're already financially prepared, preventing a delayed exit."
   },
   {
-    question: "Does the app help me track my holding costs?",
-    answer: "Yes. From the moment you close, the Acquisition tracker measures the 'carrying costs' while you own the home, accumulating property taxes, insurance, and utilities by the day until your Exit Strategy phase is complete."
+    question: "Does the platform track daily holding costs?",
+    answer: "Every day you hold a property, you bleed profit. Our Acquisition tracker automatically measures your daily carrying costs—property taxes, insurance, utilities, and debt service—so you feel the urgency to exit faster and maximize your net return."
   }
 ];
 
@@ -39,10 +39,10 @@ export default function FAQSection() {
       <div className="mx-auto max-w-4xl px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-pw-accent mb-4">
-            How It Works
+            Eliminate Uncertainty
           </p>
           <h2 className="text-4xl font-black tracking-tighter text-text-primary mb-6 uppercase">
-            Common Questions
+            Frequently Asked Questions
           </h2>
         </div>
 

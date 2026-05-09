@@ -45,7 +45,7 @@ export default function EquityPayoutManager() {
                     <p className={`text-xs font-bold tracking-widest uppercase ${isSold ? (targetProfit >= 0 ? 'text-emerald-600' : 'text-red-600') : 'text-blue-600'}`}>
                        {calculationStatus}
                     </p>
-                    <p className={`text-2xl font-light ${isSold ? (targetProfit >= 0 ? 'text-emerald-900' : 'text-red-900') : 'text-blue-900'}`}>
+                    <p className={`text-2xl font-normal ${isSold ? (targetProfit >= 0 ? 'text-emerald-900' : 'text-red-900') : 'text-blue-900'}`}>
                         ${targetProfit.toLocaleString()}
                     </p>
                   </div>

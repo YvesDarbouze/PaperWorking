@@ -174,17 +174,17 @@ export default function CashFlowStatement() {
         <div className="p-3 bg-emerald-50 rounded-lg text-center border border-emerald-100">
           <ArrowDownCircle className="w-4 h-4 text-emerald-600 mx-auto mb-1" />
           <p className="text-xs uppercase tracking-widest text-emerald-600">Total Inflows</p>
-          <p className="text-lg font-light text-emerald-800">{formatCurrency(totalInflows)}</p>
+          <p className="text-lg font-normal text-emerald-800">{formatCurrency(totalInflows)}</p>
         </div>
         <div className="p-3 bg-red-50 rounded-lg text-center border border-red-100">
           <ArrowUpCircle className="w-4 h-4 text-red-500 mx-auto mb-1" />
           <p className="text-xs uppercase tracking-widest text-red-600">Total Outflows</p>
-          <p className="text-lg font-light text-red-700">{formatCurrency(totalOutflows)}</p>
+          <p className="text-lg font-normal text-red-700">{formatCurrency(totalOutflows)}</p>
         </div>
         <div className={`p-3 rounded-lg text-center border ${totalInflows - totalOutflows >= 0 ? 'bg-bg-primary border-border-accent' : 'bg-red-50 border-red-100'}`}>
           <TrendingDown className="w-4 h-4 text-text-secondary mx-auto mb-1" />
           <p className="text-xs uppercase tracking-widest text-text-secondary">Net Cash Flow</p>
-          <p className={`text-lg font-light ${totalInflows - totalOutflows >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
+          <p className={`text-lg font-normal ${totalInflows - totalOutflows >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
             {formatCurrency(totalInflows - totalOutflows)}
           </p>
         </div>

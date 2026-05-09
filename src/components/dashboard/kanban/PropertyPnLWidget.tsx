@@ -25,7 +25,7 @@ function Row({ label, value, emphasis, positive, negative }: {
     ? 'text-xs font-black text-green-700 tabular-nums'
     : negative
     ? 'text-xs font-black text-red-600 tabular-nums'
-    : 'text-xs font-light text-text-primary tabular-nums';
+    : 'text-xs font-normal text-text-primary tabular-nums';
 
   return (
     <div className="flex items-center justify-between">

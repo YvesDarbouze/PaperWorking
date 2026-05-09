@@ -5,23 +5,26 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import PhaseBadge from '../ui/PhaseBadge';
-import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Play } from 'lucide-react';
 import Phase4Outcome from '@/components/exit/Phase4Outcome';
 import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
 import { projectsService } from '@/lib/firebase/projects';
 import { transitionDealPhase } from '@/lib/services/dealStateMachine';
+import ProjectTodoList from '../project/ProjectTodoList';
 
 interface FullscreenLifecycleViewProps {
   projectId: string;
   onExit: () => void;
 }
 
+import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
+
 const PHASES = [
-  { id: 1, title: 'Find & Fund', bg: 'bg-pw-subtle' },
-  { id: 2, title: 'Acquisition', bg: 'bg-pw-muted' },
-  { id: 3, title: 'Renovation', bg: 'bg-pw-muted' },
-  { id: 4, title: 'Outcome Strategy', bg: 'bg-pw-muted' },
+  { id: 1, title: 'Acquisition', bg: PHASE_BACKGROUNDS.findandfund || '#CCCCCC' },
+  { id: 2, title: 'Purchase', bg: PHASE_BACKGROUNDS.evaluation || '#A6A6A6' },
+  { id: 3, title: 'Hold', bg: PHASE_BACKGROUNDS.rehab || '#808080' },
+  { id: 4, title: 'Exit', bg: PHASE_BACKGROUNDS.exit || '#595959' },
 ];
 
 export default function FullscreenLifecycleView({ projectId, onExit }: FullscreenLifecycleViewProps) {
@@ -29,7 +32,9 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
   const projects = useProjectStore(state => state.projects);
   const ledgerItems = useProjectStore(state => state.ledgerItems);
   const deal = projects.find(d => d.id === projectId);
-  const [currentPhase, setCurrentPhase] = useState(1);
+  
+  // Start the fullscreen lifecycle view on the deal's current phase or phase 1
+  const [currentPhase, setCurrentPhase] = useState(deal?.currentPhase || 1);
 
   if (!deal) {
      onExit();
@@ -45,15 +50,30 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
   };
 
   // Determine physics-based framing
-  const activePhaseMap = PHASES[currentPhase - 1];
+  const activePhaseMap = PHASES[currentPhase - 1] || PHASES[0];
 
   return (
-    <div className={`fixed inset-0 z-50 flex flex-col transition-colors duration-1000 ease-in-out ${activePhaseMap.bg}`}>
+    <motion.div 
+      layoutId={`folder-${deal.id}`}
+      className={`fixed inset-0 z-50 flex flex-col transition-colors duration-1000 ease-in-out`}
+      style={{ backgroundColor: activePhaseMap.bg }}
+    >
        
        <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-40 bg-black/10 backdrop-blur-sm border-b border-black/5">
-          <button onClick={onExit} className="flex items-center text-text-primary/70 hover:text-text-primary font-medium transition-colors bg-bg-surface/20 px-4 py-2 rounded-lg">
-             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
-          </button>
+          <div className="flex items-center space-x-6">
+            <button onClick={onExit} className="flex items-center text-text-primary/70 hover:text-text-primary font-medium transition-colors bg-bg-surface/20 px-4 py-2 rounded-lg">
+               <ArrowLeft className="w-4 h-4 mr-2" /> Close Project
+            </button>
+            <div className="flex flex-col">
+               <p className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-60 text-text-primary mix-blend-color-burn">Phase Completion</p>
+               <div className="flex items-center space-x-2 mt-1">
+                 <div className="w-32 h-1.5 bg-black/10 rounded-full overflow-hidden">
+                    <div className="h-full bg-black/60 rounded-full" style={{ width: `${currentPhase * 25}%` }}></div>
+                 </div>
+                 <span className="text-xs font-bold mix-blend-color-burn">{currentPhase * 25}%</span>
+               </div>
+            </div>
+          </div>
           <div className="flex flex-col items-end">
              <h3 className="text-xl font-medium tracking-tight mix-blend-color-burn">{deal.propertyName}</h3>
              <p className="text-xs font-mono uppercase tracking-widest opacity-60 mix-blend-color-burn">Lifecycle View</p>
@@ -123,13 +143,22 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
           </AnimatePresence>
        </div>
 
-       {/* Bottom Timeline Indicator */}
-       <div className="absolute bottom-6 left-0 right-0 flex justify-center space-x-4 z-40">
+       {/* Top Kanban / Timeline Indicator */}
+       <div className="absolute top-24 left-0 right-0 flex justify-center space-x-2 z-40 px-6">
           {PHASES.map((p) => (
-             <div key={p.id} onClick={() => setCurrentPhase(p.id)} className={`h-1.5 rounded-full cursor-pointer transition-all duration-500 ${p.id === currentPhase ? 'w-16 bg-black/80' : 'w-8 bg-black/20 hover:bg-black/40'}`} />
+             <div 
+                key={p.id} 
+                onClick={() => setCurrentPhase(p.id)} 
+                className={`
+                  flex-1 max-w-xs h-10 rounded-lg cursor-pointer transition-all duration-500 flex items-center justify-center px-4 font-bold text-xs uppercase tracking-widest shadow-sm
+                  ${p.id === currentPhase ? 'bg-black/80 text-white shadow-md scale-[1.02]' : 'bg-black/10 hover:bg-black/20 text-black/60'}
+                `}
+              >
+                <span>{p.title}</span>
+              </div>
           ))}
        </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -139,25 +168,42 @@ const RefreshCw = ({ className }: { className: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
 );
 
+function ExplainerVideoPlaceholder({ phaseName }: { phaseName: string }) {
+  return (
+    <div className="w-full aspect-video bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-black/50 transition-colors group mb-8 shadow-inner">
+      <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg backdrop-blur-md">
+        <Play className="w-8 h-8 text-white opacity-80 group-hover:opacity-100 ml-1" />
+      </div>
+      <p className="mt-4 text-xs font-bold text-white/60 tracking-widest uppercase">Watch {phaseName} Explainer</p>
+    </div>
+  );
+}
+
 function StaticPhase1({ deal }: { deal: Project }) {
   return (
-    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20">
-       <h1 className="text-4xl font-light text-text-primary mb-4">Phase 1: Find & Fund</h1>
+    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20 mt-12">
+       <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 1: Acquisition</h1>
        <p className="text-text-secondary mb-8">Analyzing projections and fractional liquidity for {deal.address}.</p>
-       <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent text-left">
+       
+       <ExplainerVideoPlaceholder phaseName="Acquisition" />
+       <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent text-left mb-8">
           <p className="text-sm font-medium text-text-secondary uppercase">Purchase Matrix</p>
-          <p className="text-3xl font-light mt-2">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
+          <p className="text-3xl font-normal mt-2">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
        </div>
+       
+       <ProjectTodoList deal={deal} phase={1} />
     </div>
   );
 }
 
 function StaticPhase2({ deal }: { deal: Project }) {
   return (
-    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
-       <h1 className="text-4xl font-light text-text-primary mb-4 text-center">Phase 2: Acquisition</h1>
+    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12">
+       <h1 className="text-4xl font-normal text-text-primary mb-4 text-center">Phase 2: Purchase</h1>
        <p className="text-text-secondary mb-8 text-center">Clearing Web3 records and legal hurdles via the Closing Room.</p>
-       <div className="space-y-4">
+       
+       <ExplainerVideoPlaceholder phaseName="Purchase" />
+       <div className="space-y-4 mb-8">
           <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
              <span className="font-medium text-text-primary">Digital Title Search</span>
              <CheckCircle className="text-green-500 w-5 h-5" />
@@ -167,6 +213,8 @@ function StaticPhase2({ deal }: { deal: Project }) {
              <CheckCircle className="text-green-500 w-5 h-5" />
           </div>
        </div>
+       
+       <ProjectTodoList deal={deal} phase={2} />
     </div>
   );
 }
@@ -212,9 +260,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   const generalPrc = totalRehab > 0 ? (general / totalRehab) * 100 : 0;
 
   return (
-    <div className="w-full max-w-3xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20">
-       <h1 className="text-4xl font-light text-text-primary mb-4">Phase 3: Renovation</h1>
+    <div className="w-full max-w-3xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
+       <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 3: Hold</h1>
        <p className="text-text-secondary mb-8">Execute rehab workflows and triage General Contractor draw requests.</p>
+       
+       <ExplainerVideoPlaceholder phaseName="Hold" />
        
        <div className="bg-black/90 text-white rounded-xl p-8 border border-gray-700 shadow-xl flex flex-col items-center">
           
@@ -225,7 +275,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
                   Live Approved Rehab Spend
                </p>
-               <p className="text-4xl font-light mt-2 flex items-baseline">
+               <p className="text-4xl font-normal mt-2 flex items-baseline">
                  ${totalRehab.toLocaleString()} <span className="text-sm text-text-secondary ml-2">/ ${deal.financials.projectedRehabCost?.toLocaleString()} bgt</span>
                </p>
              </div>
@@ -301,6 +351,10 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                   <p className="text-text-secondary text-sm mt-4 text-center">No approved costs registered yet.</p>
                 )}
              </div>
+          </div>
+          
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <ProjectTodoList deal={deal} phase={3} />
           </div>
        </div>
     </div>

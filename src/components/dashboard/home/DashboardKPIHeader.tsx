@@ -70,7 +70,7 @@ export default function DashboardKPIHeader() {
                 </div>
               </div>
               <div className="flex flex-col mb-4">
-                <h3 className="text-3xl font-light tracking-tight text-[#595959]">{kpi.value}</h3>
+                <h3 className="text-3xl font-normal tracking-tight text-[#595959]">{kpi.value}</h3>
                 <p className="text-xs font-medium text-[#7F7F7F] uppercase tracking-wider">{kpi.title}</p>
               </div>
               <div className="h-16 w-full -mx-2 -mb-2 mt-2">

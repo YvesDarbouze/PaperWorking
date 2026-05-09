@@ -43,7 +43,7 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-light text-text-primary mb-1">Settings</h1>
+        <h1 className="text-2xl font-normal text-text-primary mb-1">Settings</h1>
         <p className="text-sm text-text-secondary">Manage your payment methods and billing preferences.</p>
       </div>
 

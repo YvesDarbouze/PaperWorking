@@ -72,7 +72,7 @@ export function CloudStorageMeter() {
 
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <span className="text-3xl font-light text-[#595959]">
+          <span className="text-3xl font-normal text-[#595959]">
             {usageGB.toFixed(2)} GB
           </span>
           <span className="text-base text-[#7F7F7F] ml-2">

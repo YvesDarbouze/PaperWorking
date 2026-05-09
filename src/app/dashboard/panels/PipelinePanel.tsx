@@ -123,7 +123,7 @@ export default function PipelinePanel() {
                         <p className="text-base font-medium text-text-primary tracking-tight">{user?.displayName || 'Operator'} <span className="text-text-secondary opacity-40">/</span> <span className="text-text-secondary">{role}</span></p>
                      </div>
                   </div>
-                  <h1 className="text-6xl font-light text-text-primary tracking-tighter leading-none">Command Center</h1>
+                  <h1 className="text-6xl font-normal text-text-primary tracking-tighter leading-none">Command Center</h1>
                   <p className="text-text-secondary text-lg font-normal tracking-tight max-w-xl">Real-time pipeline intelligence across all active organizational vectors.</p>
                </div>
                
@@ -185,7 +185,7 @@ export default function PipelinePanel() {
                    <div className="flex justify-between items-start mb-12">
                       <div>
                         <p className="ag-label mb-2">Budget Variance Report</p>
-                        <h2 className="text-3xl font-light text-text-primary tracking-tighter">Fiscal_Drift_Analysis</h2>
+                        <h2 className="text-3xl font-normal text-text-primary tracking-tighter">Fiscal_Drift_Analysis</h2>
                       </div>
                       <span className="bg-bg-primary text-text-primary text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-[0.2em] flex items-center shadow-inner">
                          <Activity className="w-3 h-3 mr-2 animate-pulse" aria-hidden="true" /> LIVE TELEMETRY

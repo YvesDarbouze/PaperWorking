@@ -23,6 +23,13 @@ export default function NewProjectPage() {
   const { profile } = useAuth();
   const { isPaid } = usePaywall();
 
+  /* ── Vendor guard: vendor accounts cannot create investor projects ── */
+  React.useEffect(() => {
+    if (profile && profile.accountType === 'vendor') {
+      router.replace('/vendor-portal');
+    }
+  }, [profile, router]);
+
   /* ── Paywall guard: free/guest users bounce to pricing ── */
   React.useEffect(() => {
     if (!isPaid) {

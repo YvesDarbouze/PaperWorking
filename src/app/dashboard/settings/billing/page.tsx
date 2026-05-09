@@ -118,7 +118,7 @@ export default function BillingSettingsPage() {
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Monthly Commitment</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-light text-[#595959]">{planInfo.price}</span>
+              <span className="text-3xl font-normal text-[#595959]">{planInfo.price}</span>
               <span className="text-sm text-[#7F7F7F]">{planInfo.period}</span>
             </div>
           </div>

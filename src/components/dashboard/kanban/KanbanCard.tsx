@@ -111,7 +111,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               <div className="flex justify-between items-end">
                 <div>
                   <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Est. Net Profit</p>
-                  <p className={`text-xl font-light tabular-nums ${flipMetrics.netProjectedProfit < 0 ? 'text-red-600' : 'text-text-primary'}`}>
+                  <p className={`text-xl font-normal tabular-nums ${flipMetrics.netProjectedProfit < 0 ? 'text-red-600' : 'text-text-primary'}`}>
                     ${flipMetrics.netProjectedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Monthly Rent</p>
-                  <p className="text-lg font-light text-text-primary tabular-nums">
+                  <p className="text-lg font-normal text-text-primary tabular-nums">
                     ${holdMetrics.monthlyRent.toLocaleString()}
                   </p>
                 </div>

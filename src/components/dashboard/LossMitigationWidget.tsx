@@ -43,7 +43,7 @@ const LossMitigationWidget: React.FC<LossMitigationWidgetProps> = ({
         </div>
         <div>
           <p className="ag-label opacity-60">Field Triage</p>
-          <h2 className="text-3xl font-light text-text-primary tracking-tighter">
+          <h2 className="text-3xl font-normal text-text-primary tracking-tighter">
             Mitigation Required
           </h2>
         </div>

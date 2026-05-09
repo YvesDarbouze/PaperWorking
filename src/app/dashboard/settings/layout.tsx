@@ -36,7 +36,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </Link>
 
         {/* ─── Page title ─── */}
-        <h1 className="text-3xl font-light tracking-tight text-text-primary mb-1">
+        <h1 className="text-3xl font-normal tracking-tight text-text-primary mb-1">
           Settings
         </h1>
         <p className="text-sm text-text-secondary mb-8">

@@ -77,15 +77,15 @@ export default function PhotographyUploadManager() {
       <div className="grid grid-cols-3 gap-2 mb-5">
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Photos</p>
-          <p className="text-lg font-light text-white">{photoCount}</p>
+          <p className="text-lg font-normal text-white">{photoCount}</p>
         </div>
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Videos</p>
-          <p className="text-lg font-light text-white">{videoCount}</p>
+          <p className="text-lg font-normal text-white">{videoCount}</p>
         </div>
         <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
           <p className="text-xs uppercase tracking-widest text-text-secondary">Total</p>
-          <p className="text-lg font-light text-white">{uploadedCount}</p>
+          <p className="text-lg font-normal text-white">{uploadedCount}</p>
         </div>
       </div>
 

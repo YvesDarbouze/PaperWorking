@@ -43,7 +43,7 @@ function KPICard({ icon, label, value, subtext, trend }: KPICardProps) {
       </div>
 
       <div className="mt-8 relative z-10">
-        <h3 className="text-4xl font-light text-text-primary tracking-tighter leading-none font-mono">
+        <h3 className="text-4xl font-normal text-text-primary tracking-tighter leading-none font-mono">
           {value}
         </h3>
         <p className="text-[11px] text-text-secondary mt-4 font-medium tracking-tight opacity-50 uppercase tracking-widest flex items-center gap-2">

@@ -8,7 +8,7 @@ export default function PrivacyPage() {
       <Link href="/" className="text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity">
         ← Back
       </Link>
-      <h1 className="mt-10 text-4xl font-light tracking-tighter text-text-primary">Privacy Mandates</h1>
+      <h1 className="mt-10 text-4xl font-normal tracking-tighter text-text-primary">Privacy Mandates</h1>
       <p className="mt-4 text-sm text-text-secondary">Privacy Policy · Last updated April 2026</p>
       <div className="mt-12 space-y-8 text-sm text-text-secondary leading-relaxed">
         <section>

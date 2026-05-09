@@ -15,9 +15,6 @@ import TopHeader from '@/components/layout/TopHeader';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { PhaseGateProvider } from '@/context/PhaseGateContext';
 import PhaseGateSyncer from '@/components/dashboard/PhaseGateSyncer';
-import PhaseNavRail from '@/components/dashboard/PhaseNavRail';
-import PhaseRailVertical from '@/components/dashboard/PhaseRailVertical';
-
 /* ═══════════════════════════════════════════════════════
    Dashboard Layout — Persistent Kanban Navigation Shell
 
@@ -28,11 +25,11 @@ import PhaseRailVertical from '@/components/dashboard/PhaseRailVertical';
    ═══════════════════════════════════════════════════════ */
 
 const LANES: LaneDef[] = [
-  { id: 'findandfund', label: 'Find & Fund',          shortLabel: 'Find' },
+  { id: 'findandfund', label: 'Acquisition',          shortLabel: 'Acquisition' },
   { id: 'pipeline',    label: 'Deal Pipeline',        shortLabel: 'Pipeline' },
   { id: 'evaluation',  label: 'Capital & Evaluation', shortLabel: 'Eval' },
-  { id: 'closing',     label: 'The Closing Room',     shortLabel: 'Closing' },
-  { id: 'rehab',       label: 'The Rehab Engine',     shortLabel: 'Rehab'   },
+  { id: 'closing',     label: 'Purchase',             shortLabel: 'Purchase' },
+  { id: 'rehab',       label: 'Hold',                 shortLabel: 'Hold'   },
   { id: 'engine',      label: 'The Engine Room',      shortLabel: 'Engine' },
   { id: 'exit',        label: 'The Exit Hub',         shortLabel: 'Exit' },
 ];
@@ -143,16 +140,12 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
           <AppSidebar />
         </div>
 
-        {/* ══════ Phase Rail — Vertical (desktop only) ══════ */}
-        <PhaseRailVertical />
 
         {/* ══════ Main Content Area ══════ */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* ── Sticky Top Header ── */}
           <TopHeader />
 
-          {/* ── Phase Nav Rail — Horizontal (mobile + tablet only) ── */}
-          <PhaseNavRail />
 
           {/* ── Main Scrollable Content ── */}
           <main

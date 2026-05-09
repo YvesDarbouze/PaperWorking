@@ -70,14 +70,14 @@ export default function FinalCTA() {
             href="/register"
             className="px-8 py-4 bg-black text-white text-xs font-bold uppercase tracking-widest flex items-center space-x-2 hover:bg-phase-4 transition-colors"
           >
-            <span>Start My Free Trial</span>
+            <span>Start Your Free 14-Day Trial</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/how-it-works"
             className="px-8 py-4 border border-phase-1 text-phase-4 text-xs font-bold uppercase tracking-widest hover:border-black hover:text-text-primary transition-colors"
           >
-            Watch a 3-Minute Demo
+            See How It Works
           </Link>
         </div>
 

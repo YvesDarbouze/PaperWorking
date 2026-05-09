@@ -155,19 +155,19 @@ export default function ExitCostLedger() {
             <div className="grid grid-cols-4 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Sale Price</p>
-                <p className="text-lg font-light text-text-primary">${salePrice.toLocaleString()}</p>
+                <p className="text-lg font-normal text-text-primary">${salePrice.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Total Exit Costs</p>
-                <p className="text-lg font-light text-red-600">${totals.totalExit.toLocaleString()}</p>
+                <p className="text-lg font-normal text-red-600">${totals.totalExit.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Paid</p>
-                <p className="text-lg font-light text-green-700">${totals.totalPaid.toLocaleString()}</p>
+                <p className="text-lg font-normal text-green-700">${totals.totalPaid.toLocaleString()}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Outstanding</p>
-                <p className="text-lg font-light text-amber-700">${totals.outstanding.toLocaleString()}</p>
+                <p className="text-lg font-normal text-amber-700">${totals.outstanding.toLocaleString()}</p>
               </div>
             </div>
           </div>

@@ -33,7 +33,7 @@ export default function FinancialSummaryHeader() {
                 <Banknote className="w-3 h-3 mr-1.5" />
                 Capital Deployed
               </div>
-              <div className="text-2xl font-light text-text-primary tracking-tight">
+              <div className="text-2xl font-normal text-text-primary tracking-tight">
                 ${portfolioMetrics.totalInvestedCapitalRealized.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
@@ -45,7 +45,7 @@ export default function FinancialSummaryHeader() {
                 <TrendingUp className="w-3 h-3 mr-1.5" />
                 Realized Profit
               </div>
-              <div className={`text-2xl font-light tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 ${portfolioMetrics.totalRealizedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function FinancialSummaryHeader() {
               </div>
               <div className="flex items-baseline gap-3">
                 <div className="flex items-baseline gap-1.5">
-                  <span className={`text-2xl font-light tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <span className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     ${Math.abs(portfolioMetrics.totalRealizedProfit).toLocaleString()}
                   </span>
                   <span className="text-[10px] text-text-secondary font-bold uppercase">Profit</span>

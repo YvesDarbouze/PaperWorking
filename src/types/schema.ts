@@ -105,7 +105,9 @@ export type Role =
   | 'Real Estate Agent'  // Contributor (Read all, Edit status/timeline)
   | 'Accountant'         // Viewer/Export (Read all, no edits unless authorized)
   | 'Lender'              // Read-Only (Read specific financial data)
-  | 'Vendor';            // External Professional (Marketplace access)
+  | 'Vendor'              // External Professional (Marketplace access)
+  | 'Standard'            // General user
+  | 'Guest';              // Very limited view
 
 // 1.1 Organization-Level Role (Account Holder Self-ID)
 export type OrgRole = 'Lead Investor' | 'Admin';
@@ -130,7 +132,7 @@ export interface ExternalAccessPermission {
 }
 
 // 1.4 Internal Account Role (within an organization)
-export type InternalRole = 'Admin' | 'Deal Lead';
+export type InternalRole = 'CEO' | 'President' | 'CFO' | 'COO' | 'Admin' | 'Deal Lead';
 
 // 1.45 Organization Team Member (org-level, not deal-specific)
 export interface OrgTeamMember {
@@ -174,6 +176,7 @@ export interface ApplicationUser {
   orgRole: OrgRole; // Account-holder self-designation
   subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Lawyer Lead-Gen';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
+  accountType?: 'investor' | 'vendor';
   inviteToken?: string; // Populated when user arrived via crowdfund invitation
   invitedToProjectId?: string; // Project they were invited to join
   
@@ -484,6 +487,8 @@ export interface Project {
   // Phase progression (1=Acquisition, 2=Purchase, 3=Hold, 4=Exit)
   currentPhase?: number;
 
+  actionItems?: any[]; // Persistent storage for ProjectTodoList tasks
+
   // Phase 4 Exit & Settlement
   settlementDocuments?: SettlementDocument[]; // HUD-1, Closing Disclosures
 
@@ -630,6 +635,7 @@ export interface ProjectFinancials {
 
   // Phase 1 Deal Analyzer — Sourcing intelligence
   acquisitionDate?: Date;          // Explicit close/acquisition date for timeline tracking
+  estimatedCloseDate?: Date;       // Expected or target close date
   fixedAcquisitionCosts?: number; // Buy-side closing costs deducted in MAO formula
   comparableSales?: ComparableSale[];
   leadSource?: LeadSource;
@@ -703,6 +709,17 @@ export interface ProjectFinancials {
   operatingExpenseInsurance?: number;
   financingCashInvested?: number;
   financingDebtService?: number;
+
+  // Rental Income Inputs (needed for NOI calculation — CCIM / NARPM conventions)
+  monthlyGrossRent?: number;             // Scheduled gross monthly rent
+  otherMonthlyIncome?: number;           // Parking, laundry, storage, etc.
+  vacancyRatePercent?: number;           // 0–100, default 7%
+  monthlyMaintenanceReserve?: number;    // Fixed monthly maintenance/CapEx reserve
+  monthlyHOA?: number;                   // HOA fees if applicable
+  numberOfUnits?: number;                // Total leasable units
+  occupiedUnits?: number;                // Currently occupied units
+  annualRentGrowthPercent?: number;      // YoY rent growth tracking
+  marketRentComparable?: number;         // Market rent for comparable units ($/mo)
 
   // Holding Costs Calculator
   projectedHoldTimeMonths?: number;

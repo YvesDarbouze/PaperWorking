@@ -79,6 +79,12 @@
       "skillPath": "skills/ad-creative/SKILL.md",
       "computedHash": "956fec294a322356f2df183877ae199ff23f583adf1a687bd5714e1a0cec94e5"
     },
+    "add-analytics": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/add-analytics/SKILL.md",
+      "computedHash": "acdcb8a54a3509d89f04650d5211c2ddb1643c21405308e532b7b3b8f603c43b"
+    },
     "add-announcement": {
       "source": "Agenta-AI/agenta",
       "sourceType": "github",
@@ -126,6 +132,18 @@
       "sourceType": "github",
       "skillPath": "skills/aegisops-ai/SKILL.md",
       "computedHash": "a30706a8f63d0961e58c73fe4d092594d46c5fba23256266d4cc38e2ecd50e6b"
+    },
+    "aeo-ready": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/aeo-ready/SKILL.md",
+      "computedHash": "d6bde23d4af895808080b0f4abc35edf20b4009b015d1362df7c867b2303e5b1"
+    },
+    "agent-browser": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/agent-browser/SKILL.md",
+      "computedHash": "b882c4276650d61f7ce262eabc4055a105be2c58cff74a5f68be7c88e997de9a"
     },
     "agent-designer": {
       "source": "alirezarezvani/claude-skills",
@@ -690,6 +708,12 @@
       "sourceType": "github",
       "skillPath": "skills/app-builder/SKILL.md",
       "computedHash": "01474ebc9f88153e36f45ce8e4fa97d3d6a1fcfd4a2b746c0ab117a866613fba"
+    },
+    "app-copy": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/app-copy/SKILL.md",
+      "computedHash": "a949775fcd4beddebb0eb928fee0937620cbcb4c98386c8c313cb575a76b1f12"
     },
     "app-store-changelog": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -1879,6 +1903,12 @@
       "skillPath": "skills/brainstorming/SKILL.md",
       "computedHash": "b27a55b85de6ca13c32212a41fe2e566705fdb59f2a74e0848146bfd481cc668"
     },
+    "brand-copy-guidelines": {
+      "source": "robinfaraj/one-context",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/brand-copy-guidelines/SKILL.md",
+      "computedHash": "8e43f8b7d6f50257ed7472c92128a878032b57dd96a329ac707131e5b2cfdf56"
+    },
     "brand-guidelines": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -2196,6 +2226,12 @@
       "sourceType": "github",
       "skillPath": "c-level-advisor/skills/change-management/SKILL.md",
       "computedHash": "d4cab1f9974bfad5f6e272f6bf8fac603a8f862449386904d4e9f14d8b2ed389"
+    },
+    "changelog": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/changelog/SKILL.md",
+      "computedHash": "6143a4acff4bc40649c525287031561d8ae13f67aac3f11dd8ad62077d94ccce"
     },
     "changelog-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2581,11 +2617,23 @@
       "skillPath": "skills/coding-standards/SKILL.md",
       "computedHash": "30be57d3bc2d6db11eea334d3d437b1c51b2a70156d041668b96b08cff0a1032"
     },
+    "coding-style": {
+      "source": "robinfaraj/one-context",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/coding-style/SKILL.md",
+      "computedHash": "bb04316871b505cf273f9606c9cdb9de1c64d62c611f1d7d4afce66d2c273f51"
+    },
     "cold-email": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/cold-email/SKILL.md",
       "computedHash": "ca5efc7db44e580dd14888c00f770a49ab7ba1f74666c2fc25d06c49b2a20462"
+    },
+    "cold-outreach-sequence": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/cold-outreach-sequence/SKILL.md",
+      "computedHash": "5468235ea645a6a3824ed63311c93ea80a653b6dc9f62982f98b06189bd8cfe0"
     },
     "comfyui-gateway": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2634,6 +2682,12 @@
       "sourceType": "github",
       "skillPath": "skills/competitor-alternatives/SKILL.md",
       "computedHash": "7fbab31288349fc65843a8f5267bcaa9d3186ae3567f4e109be31a11cf1aa690"
+    },
+    "compliance": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/compliance/SKILL.md",
+      "computedHash": "43e935d9a685f90794696f87e72f59f5c6798ffb8597c7432b77fe2f76b8c775"
     },
     "compose-multiplatform-patterns": {
       "source": "affaan-m/everything-claude-code",
@@ -2898,6 +2952,12 @@
       "sourceType": "github",
       "skillPath": "skills/contract-learner/SKILL.md",
       "computedHash": "4fdeb599741710647aba2e431770ad57b63576c3ce76496216bfbe9384114732"
+    },
+    "control-flow": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/control-flow/SKILL.md",
+      "computedHash": "3350293cc1535a9c27ce0c60216625ce9d8ea94eb3dd00adffc4a57a942d8789"
     },
     "conversation-memory": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3349,6 +3409,12 @@
       "skillPath": "skills/debugging-toolkit-smart-debug/SKILL.md",
       "computedHash": "81d0328b6c7440a1a5cff9765d9225a3956c8e63bd286fe387623b4f2e815433"
     },
+    "decision-doc": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/decision-doc/SKILL.md",
+      "computedHash": "b9668d8e64ba7f214f3e20275fc23006dd71eb294e8cc04524baffdb73e829b5"
+    },
     "decision-logger": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -3385,6 +3451,12 @@
       "skillPath": "engineering/demo-video/skills/demo-video/SKILL.md",
       "computedHash": "34ae2241c2fe9089d6693431a838988a75733fad947dde24382f0a50fa7ec474"
     },
+    "dependabot-merger": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/dependabot-merger/SKILL.md",
+      "computedHash": "b00e937d0aac8c2e4731514164bd1e1436c59cac9e27f3cd8726505ec79ded34"
+    },
     "dependency-auditor": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -3402,6 +3474,12 @@
       "sourceType": "github",
       "skillPath": "skills/dependency-upgrade/SKILL.md",
       "computedHash": "a624a22d38169e07cb2926753f724c106cffadfa409b5e756dec4bd6e6b0e76e"
+    },
+    "deploy-check": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/deploy-check/SKILL.md",
+      "computedHash": "ad107aa1c6d3201004913f05871eed514a554253f112dfbf1a92f05a38e76ed9"
     },
     "deployment-engineer": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3433,6 +3511,12 @@
       "skillPath": "skills/deployment-validation-config-validate/SKILL.md",
       "computedHash": "b1d09c35d53ffa40834aa87fb2d48becac685c902a42417995943995cf669bb1"
     },
+    "deps": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/deps/SKILL.md",
+      "computedHash": "d47ff6269e2e69b4e47037efebf06f3f825bb2e0a57fbe90fa9347e185279c2e"
+    },
     "design-md": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3456,6 +3540,12 @@
       "sourceType": "github",
       "skillPath": "skills/design-taste-frontend/SKILL.md",
       "computedHash": "e4ef0064c0986135fc0f5a6452db8cf262c67d0da80f1e489378fad3752f0785"
+    },
+    "dev": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/dev/SKILL.md",
+      "computedHash": "0e047ad9e99fa43b5452626d71ec28615541b9d3b37f73259aaaab410f2b443e"
     },
     "devcontainer-setup": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3637,6 +3727,12 @@
       "skillPath": "skills/docx-official/SKILL.md",
       "computedHash": "5ecbda8b60d439a7362f66e3b4845c24646925b8092515c17cb8fd54129202d5"
     },
+    "dodo-webhook": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/dodo-webhook/SKILL.md",
+      "computedHash": "1e6f34c1c1a45d9d3a8b2e982452be62402429e01cf5faaf992bfce1ae1a094e"
+    },
     "domain-driven-design": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3714,6 +3810,12 @@
       "sourceType": "github",
       "skillPath": "skills/ecc-tools-cost-audit/SKILL.md",
       "computedHash": "5c434e5483a5d80fd7ecc70d5315e9a4d1c2e96d4d607ff981ee148b71b1ada2"
+    },
+    "economics": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/economics/SKILL.md",
+      "computedHash": "e6c008cfe8dffcfb4415499530ed8231826776772dc6132c66ce2f17c087cb51"
     },
     "electron-development": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5689,6 +5791,12 @@
       "skillPath": "skills/lambdatest-agent-skills/SKILL.md",
       "computedHash": "1b6c1ce90a1203bc98db7c1e15b4df4ab46f509a85b1e212060ee814a1434c4f"
     },
+    "landing-copy": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/landing-copy/SKILL.md",
+      "computedHash": "54a478b64b65d5cb82b5219ee81c198d0827218c618f96127fac9c8c91731d53"
+    },
     "landing-page-generator": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -5772,6 +5880,12 @@
       "sourceType": "github",
       "skillPath": "skills/launch-strategy/SKILL.md",
       "computedHash": "b8d92fd36be1b422d92a69a5e664e80fa395e08d0aef5f356d6ec3ad38d1d18d"
+    },
+    "lead": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/lead/SKILL.md",
+      "computedHash": "bde9ff2f079ebbcc876a175f7becc8d9597249ff2869042de2289bea7fb65bb3"
     },
     "lead-intelligence": {
       "source": "affaan-m/everything-claude-code",
@@ -6073,11 +6187,23 @@
       "skillPath": "skills/mailchimp-automation/SKILL.md",
       "computedHash": "836912979c1b5932316527ab52914a4c12011c11e058b9cffa2670242cb8a1d9"
     },
+    "maintain": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/maintain/SKILL.md",
+      "computedHash": "1222c76ade83170f9c2f049ed00310557108199c87dcc232b080cd07861549af"
+    },
     "make-automation": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/make-automation/SKILL.md",
       "computedHash": "2085fe8b819424a3d872a7afbff4751801b2466637323fb89757e43bd43e2cf2"
+    },
+    "make-skill": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/make-skill/SKILL.md",
+      "computedHash": "c4992645a5c82439c24b4a05674cf122702fee29f5e5342422c899fb2787bc11"
     },
     "makepad-animation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -6337,6 +6463,12 @@
       "skillPath": "skills/metasploit-framework/SKILL.md",
       "computedHash": "bcd346155c42b73a382ea165fda89ff0b017a21246663d2790c0c39cab8ae3b7"
     },
+    "metrics-graphana": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/metrics-graphana/SKILL.md",
+      "computedHash": "efdaf33538eac1350faf6e89d76941c421da6ad37253c0e1d39c8c22d0d7f075"
+    },
     "micro-saas-launcher": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -6450,6 +6582,12 @@
       "sourceType": "github",
       "skillPath": "skills/mock-hunter/SKILL.md",
       "computedHash": "796d5b24c3e68ca88a8a1f060fceb37cd81eaf434947fd4f1affe1aebb435ea3"
+    },
+    "model-audit": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/model-audit/SKILL.md",
+      "computedHash": "759cb278694180412791e4f97b596b3a6749be5f8bc44b3e33ff74f169e7e7f0"
     },
     "modern-javascript-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -6582,6 +6720,12 @@
       "sourceType": "github",
       "skillPath": "skills/multi-platform-apps-multi-platform/SKILL.md",
       "computedHash": "fb859bd910b2c0f6c2881cb877dce3db6772588739b985dcc5cd74827dd16556"
+    },
+    "mvp-spec": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/mvp-spec/SKILL.md",
+      "computedHash": "2b47158f7316a04667017858b04498d6dc7a44d8e0f89e5f4b7da3299e928064"
     },
     "n8n-code-javascript": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7003,11 +7147,23 @@
       "skillPath": "skills/odoo-xml-views-builder/SKILL.md",
       "computedHash": "b438e67c6049de5ef082a0a1d52006ec877eb3b9cca737faf191d52a20228800"
     },
+    "office-hours": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/office-hours/SKILL.md",
+      "computedHash": "fee2bf8d2623fb0e794077db7f9c9a209875afe75ec281ea181219a563dc6ee4"
+    },
     "office-productivity": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/office-productivity/SKILL.md",
       "computedHash": "44080ad536810d6448bbc4c8b2531e6129edd045122afccb99c070323d902fb9"
+    },
+    "og-image": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/og-image/SKILL.md",
+      "computedHash": "8c83c23c53cca42fba4b1103aee5d75a4f0331940adf51ad6b3f124a239ae22e"
     },
     "on-call-handoff-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7315,6 +7471,12 @@
       "skillPath": "skills/plotly/SKILL.md",
       "computedHash": "d7e7edd09c830f7bc2d23098b0d0b17a5158763bfef703157bdf0d4e9f4200fa"
     },
+    "pm": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/pm/SKILL.md",
+      "computedHash": "af9fba82b313d137d77f77db0afc7e36011cb1c5a89a77155a158b661ba4e306"
+    },
     "pm-skills": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -7429,6 +7591,12 @@
       "skillPath": "skills/price-psychology-strategist/SKILL.md",
       "computedHash": "c2c6b4bada52d8f1158fa051191b9ce342a09c4794ce9cb577e79c9a8f4f70d0"
     },
+    "pricing-page": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/pricing-page/SKILL.md",
+      "computedHash": "640cddc2079c61821b626ef39d1ad88049a72e750c349beda7be32916dd1256a"
+    },
     "pricing-strategy": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7458,6 +7626,12 @@
       "sourceType": "github",
       "skillPath": "product-team/skills/product-analytics/SKILL.md",
       "computedHash": "fe3cb9075442055c0105581be19d64fb49684a4aba063578dd85ab5cae9c5cca"
+    },
+    "product-brief": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/product-brief/SKILL.md",
+      "computedHash": "a51db4487352e1efe19961f3b7c64cda3d823a8da0d75b7fe43707b336e78ad4"
     },
     "product-capability": {
       "source": "affaan-m/everything-claude-code",
@@ -7945,6 +8119,12 @@
       "skillPath": "skills/redesign-existing-projects/SKILL.md",
       "computedHash": "b96db9a87ede33d0de850b8b23f3a46817ed0d4b3d9c787a06fb5bdf147c2c8c"
     },
+    "refactor": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/refactor/SKILL.md",
+      "computedHash": "a299d4c3ce2922137702571d2b4b153746c4bc1f00cda78c77ccc95aea9ba5a7"
+    },
     "reference-builder": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7975,6 +8155,12 @@
       "skillPath": "skills/rehabilitation-analyzer/SKILL.md",
       "computedHash": "88510414b52c4d0e7c2a234645440d06bbd1c2ac4f3c4e8d30302ba0389a3f15"
     },
+    "release": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/release/SKILL.md",
+      "computedHash": "d04c5fd07dac90b876752f4488bc84cccbbe42b8f29a9929c2015b53d48adb3f"
+    },
     "release-manager": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -7998,6 +8184,12 @@
       "sourceType": "github",
       "skillPath": "skills/remotion-best-practices/SKILL.md",
       "computedHash": "ba044147f63c83894f41b1341159838c4f7b98d4eaa9cc3bb5ba0e00a44708a5"
+    },
+    "remotion-video": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/remotion-video/SKILL.md",
+      "computedHash": "a6a80ffa7585f71ef36aedf7c370012721c35e84b2f514f1e3f0ec397563b59d"
     },
     "remotion-video-creation": {
       "source": "affaan-m/everything-claude-code",
@@ -8383,6 +8575,12 @@
       "skillPath": "engineering/skills/secrets-vault-manager/SKILL.md",
       "computedHash": "b0d02cac2f02ede802cea09b1626dc6e63c24c6a5e26abb55d7c733e3f60c3dd"
     },
+    "security": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/security/SKILL.md",
+      "computedHash": "39978c44a2213088e9374fcaaa923bee33e038015d42c25adb27d2346ed2909b"
+    },
     "security-audit": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8472,6 +8670,12 @@
       "sourceType": "github",
       "skillPath": "skills/segment-cdp/SKILL.md",
       "computedHash": "c3f0158d53da8e83e04bd6cdfc61e114804b83c11846e01f75ac9597421e57b9"
+    },
+    "segment-users": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/segment-users/SKILL.md",
+      "computedHash": "55dcd474454804c47109de594db92baeccfa6af51889a5b2e2df88f9bffcf637"
     },
     "self-eval": {
       "source": "alirezarezvani/claude-skills",
@@ -8773,6 +8977,12 @@
       "skillPath": "skills/seo-programmatic/SKILL.md",
       "computedHash": "a549cd1f5b4cd50fb0056b965f69e46f12b1b7b337d9164e31517d01383bae2f"
     },
+    "seo-ready": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/seo-ready/SKILL.md",
+      "computedHash": "37937c6b83ec1a91658917c31cad0e6e92434be2c1a864295069a54df988fd43"
+    },
     "seo-schema": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8862,6 +9072,18 @@
       "sourceType": "github",
       "skillPath": "skills/shellcheck-configuration/SKILL.md",
       "computedHash": "123c45e3c14046cd14ced825483c642e6ba27be1f8d7cc7827b9f60381886a60"
+    },
+    "ship-credits": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/ship-credits/SKILL.md",
+      "computedHash": "64509f16ed198a7b4f426acbd9000cc7e2a441841f4f158e86c8fdd57e40e90f"
+    },
+    "ship-email": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/ship-email/SKILL.md",
+      "computedHash": "69c62c84aab594145a800a4f8a3fdaccdd272c77ad5adc207daf9569963a0dff"
     },
     "shodan-reconnaissance": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9613,6 +9835,12 @@
       "skillPath": "skills/team-composition-analysis/SKILL.md",
       "computedHash": "fdd6952637618f56d9855d8c7bc775fbabe0ad9c896075e1a863a27e75f4b908"
     },
+    "teardown": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/teardown/SKILL.md",
+      "computedHash": "668e5e09b69a124d18b59d541676d4b4337f3432d20ebce386b2ceb4357728dc"
+    },
     "tech-debt-tracker": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -9624,6 +9852,12 @@
       "sourceType": "github",
       "skillPath": "engineering-team/skills/tech-stack-evaluator/SKILL.md",
       "computedHash": "68446dfdaa97064943ecc0d7a5f62da82680d887705a91857bcf8ae19df8a350"
+    },
+    "tech-writer": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/tech-writer/SKILL.md",
+      "computedHash": "e2c0aa6eccc7bc281ea97b118d1b364eb3c6169e8b5369030c5115ebb9b5acb5"
     },
     "technical-change-tracker": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9673,6 +9907,12 @@
       "skillPath": "skills/temporal-python-testing/SKILL.md",
       "computedHash": "0eebf531d28991d0730c2a9a90e95a8e75ea2b6362197abe09353b16febe25a8"
     },
+    "terminal-emulator": {
+      "source": "slopus/happy",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/terminal-emulator/SKILL.md",
+      "computedHash": "e2b7d9ea8ba87f2ac5d304cfbc628dee3588b5fae839af7c1179f383704f2c4a"
+    },
     "terminal-ops": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
@@ -9715,6 +9955,12 @@
       "skillPath": "skills/terraform-specialist/SKILL.md",
       "computedHash": "fca06dbedbdf6fb65ff725b8f57b2217e760963adb8d298cd01a79f4b705ba46"
     },
+    "test": {
+      "source": "Pageloom/weft-id",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/test/SKILL.md",
+      "computedHash": "538ff18e5f9df1facf97f2dcf44e2ff01c829caf8e0c0e11df962c888c799e9b"
+    },
     "test-automator": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -9732,6 +9978,12 @@
       "sourceType": "github",
       "skillPath": "skills/test-fixing/SKILL.md",
       "computedHash": "d478821a82e73a39e2d5150e42fea982af1bfd53716614f8c5622581780edaa8"
+    },
+    "test-wave": {
+      "source": "robinfaraj/one-context",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/test-wave/SKILL.md",
+      "computedHash": "213adbc47871ad57d9a4004ace4b46889e5588480a9fb255486cf59fabd832ae"
     },
     "testing-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10261,6 +10513,12 @@
       "skillPath": "skills/vexor-cli/SKILL.md",
       "computedHash": "3ba9739070a39a367e5f45c32974727e722cce4a97ae425f06738cb1b3a68fc7"
     },
+    "vibe": {
+      "source": "foryourhealth111-pixel/Vibe-Skills",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "b080bba93d1cc32bbca7664d49339cbc105b279a0c0a983d44e72d0bfb32fde0"
+    },
     "vibe-code-auditor": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -10482,6 +10740,12 @@
       "sourceType": "github",
       "skillPath": "skills/windows-shell-reliability/SKILL.md",
       "computedHash": "5e57ec26b781b60a3b54187fd10838bfa2f75fdc407c7234e3295fbec8aace44"
+    },
+    "wire-auth": {
+      "source": "unknownking07/vibe-talent",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/wire-auth/SKILL.md",
+      "computedHash": "861677bb87713f2e1b021fec8356342e80342b20e153cadccb6b02a6be75ffca"
     },
     "wireshark-analysis": {
       "source": "sickn33/antigravity-awesome-skills",

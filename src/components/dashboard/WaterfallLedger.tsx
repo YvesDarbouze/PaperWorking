@@ -36,7 +36,7 @@ const WaterfallLedger: React.FC<WaterfallLedgerProps> = ({
       <div className="px-8 py-10 flex justify-between items-end shrink-0 border-b border-border-accent/10">
         <div className="space-y-2">
           <p className="ag-label text-text-secondary opacity-60">Payee Waterfall</p>
-          <h3 className="text-3xl font-light text-text-primary tracking-tighter">Settlement Ledger</h3>
+          <h3 className="text-3xl font-normal text-text-primary tracking-tighter">Settlement Ledger</h3>
           <p className="text-sm text-text-secondary font-normal tracking-tight">Active disbursement protocol for partner settlement.</p>
         </div>
         <div className="text-right">

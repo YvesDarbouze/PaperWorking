@@ -61,7 +61,7 @@ export default function HoldingCostClock() {
       <div className="flex flex-col space-y-4 relative z-10 mt-4">
         <div>
            <p className="text-xs uppercase tracking-widest text-text-secondary mb-1">Burned Today</p>
-           <p className="text-5xl font-light text-red-400 font-mono">
+           <p className="text-5xl font-normal text-red-400 font-mono">
               ${burnedToday.toFixed(4)}
            </p>
         </div>

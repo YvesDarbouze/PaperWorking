@@ -110,7 +110,7 @@ export default function KPICard({ title, value, trend, icon }: KPICardProps) {
       {/* ── Value ── */}
       <div className="mt-auto pt-6 relative z-10">
         <p
-          className="text-3xl font-light tracking-tighter leading-none"
+          className="text-3xl font-normal tracking-tighter leading-none"
           style={{
             color: 'var(--text-primary)',
             fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace',

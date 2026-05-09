@@ -101,7 +101,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
         </div>
         <div className="text-right">
           <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">Allocated</p>
-          <p className={`text-lg font-light ${totalEquity > 100 ? 'text-red-600' : 'text-text-primary'}`}>
+          <p className={`text-lg font-normal ${totalEquity > 100 ? 'text-red-600' : 'text-text-primary'}`}>
             {totalEquity.toFixed(1)}%
           </p>
         </div>

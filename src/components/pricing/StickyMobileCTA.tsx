@@ -37,7 +37,7 @@ export default function StickyMobileCTA({ visible, planName, price, onSelect }: 
             Recommended
           </p>
           <p className="text-sm font-semibold text-phase-4 truncate">
-            {planName} · <span className="font-light">{price}</span>
+            {planName} · <span className="font-normal">{price}</span>
           </p>
         </div>
 

@@ -220,7 +220,7 @@ function KPICard({
       </div>
 
       <div className="mt-6">
-        <h3 className={`text-4xl font-light tracking-tighter leading-none ${accent || 'text-text-primary'}`}>
+        <h3 className={`text-4xl font-normal tracking-tighter leading-none ${accent || 'text-text-primary'}`}>
           {value}
         </h3>
         <p className="text-[11px] text-text-secondary mt-4 font-normal tracking-tight opacity-50 leading-relaxed uppercase tracking-[0.05em]">

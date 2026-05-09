@@ -27,17 +27,27 @@ interface DealFolderProps {
   className?: string;
 }
 
+import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
+
 /* ─── Phase accent map ─── */
 const STATUS_COLOR: Record<string, string> = {
-  Lead:             '#F2F2F2',
-  Sourcing:         '#F2F2F2',
-  'Under Contract': '#CCCCCC',
-  Renovating:       '#A5A5A5',
-  Rehab:            '#A5A5A5',
-  Listed:           '#7F7F7F',
-  Sold:             '#595959',
-  Rented:           '#595959',
-  Closed:           '#595959',
+  Lead:             PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
+  Sourcing:         PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
+  'Under Contract': PHASE_BACKGROUNDS.evaluation || '#A6A6A6',
+  Renovating:       PHASE_BACKGROUNDS.rehab || '#808080',
+  Rehab:            PHASE_BACKGROUNDS.rehab || '#808080',
+  Listed:           PHASE_BACKGROUNDS.exit || '#595959',
+  Sold:             PHASE_BACKGROUNDS.exit || '#595959',
+  Rented:           PHASE_BACKGROUNDS.exit || '#595959',
+  Closed:           PHASE_BACKGROUNDS.exit || '#595959',
+};
+
+/* ─── 4-Stage Lifecycle mapping ─── */
+const PHASE_INDEX_COLOR: Record<number, string> = {
+  1: PHASE_BACKGROUNDS.findandfund || '#CCCCCC',
+  2: PHASE_BACKGROUNDS.evaluation || '#A6A6A6',
+  3: PHASE_BACKGROUNDS.rehab || '#808080',
+  4: PHASE_BACKGROUNDS.exit || '#595959',
 };
 
 /* ─── Size scale tokens ─── */
@@ -122,7 +132,7 @@ export default function DealFolder({
   className = '',
 }: DealFolderProps) {
   const t = SIZE_MAP[size];
-  const accent = STATUS_COLOR[deal.status] || '#cccccc';
+  const accent = (deal.currentPhase && PHASE_INDEX_COLOR[deal.currentPhase]) || STATUS_COLOR[deal.status] || '#cccccc';
   const streetLabel = extractStreetLabel(deal.address);
   const purchase = deal.financials?.purchasePrice || 0;
 

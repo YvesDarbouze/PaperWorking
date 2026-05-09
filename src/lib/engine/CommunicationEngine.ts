@@ -214,9 +214,7 @@ async function dispatchViaResend(payload: DispatchPayload): Promise<{ id: string
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
-    const mockId = `mock_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
-    console.log(`[CommunicationEngine] MOCK dispatch → ${payload.to.join(', ')} | ${payload.subject}`);
-    return { id: mockId, mock: true };
+    throw new Error('RESEND_API_KEY is missing. Cannot dispatch email.');
   }
 
   const body = {

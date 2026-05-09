@@ -95,7 +95,7 @@ function KPICard({ icon, label, value, subtext, band, locked }: KPICardProps) {
         </div>
       </div>
       <p className="text-[10px] font-mono tracking-widest text-text-secondary uppercase mb-1">{label}</p>
-      <p className={`text-2xl font-light tracking-tight ${s.value}`}>{value}</p>
+      <p className={`text-2xl font-normal tracking-tight ${s.value}`}>{value}</p>
       <p className="text-[10px] text-text-secondary mt-1">{subtext}</p>
     </div>
   );
@@ -128,7 +128,7 @@ interface DealAutopsyProps {
 
 export default function DealAutopsy({ deal }: DealAutopsyProps) {
   const m: AutopsyMetrics = useMemo(() => computeAutopsyMetrics(deal), [deal]);
-  const isSold = deal.status === 'Sold';
+  const isSold = deal.status === 'Sold' || deal.status === 'closed_won' || deal.status === 'closed_lost';
   const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleDownloadPDF = useCallback(async () => {
@@ -251,7 +251,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Days on Market</p>
-              <p className="text-lg font-light text-white mt-0.5" aria-label={`Days on market: ${m.dom !== null ? m.dom : 'unknown'}`}>
+              <p className="text-lg font-normal text-white mt-0.5" aria-label={`Days on market: ${m.dom !== null ? m.dom : 'unknown'}`}>
                 {m.dom !== null ? `${m.dom}d` : '—'}
               </p>
               <p className="text-[9px] text-text-secondary mt-0.5">
@@ -263,7 +263,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Total Hold Period</p>
-              <p className="text-lg font-light text-white mt-0.5" aria-label={`Hold period: ${m.holdDays !== null ? m.holdDays : 'unknown'} days`}>
+              <p className="text-lg font-normal text-white mt-0.5" aria-label={`Hold period: ${m.holdDays !== null ? m.holdDays : 'unknown'} days`}>
                 {m.holdDays !== null ? `${m.holdDays}d` : '—'}
               </p>
               <p className="text-[9px] text-text-secondary mt-0.5">Acquisition → closed</p>

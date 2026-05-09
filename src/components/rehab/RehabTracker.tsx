@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 import type { LedgerItem } from '@/types/schema';
 import {
   HardHat,
@@ -16,6 +17,7 @@ import {
   Users,
   FileCheck,
   TrendingUp,
+  Loader2,
 } from 'lucide-react';
 
 // ── Component-local types ─────────────────────────────────────
@@ -125,6 +127,8 @@ export default function RehabTracker() {
   const updateRehabModule = useProjectStore(s => s.updateRehabModule);
   const setLedgerItems = useProjectStore(s => s.setLedgerItems);
   const getLedgerItemsForDeal = useProjectStore(s => s.getLedgerItemsForDeal);
+  const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
 
   const [data, setData] = useState<TrackerData>(() => {
     const stored = (currentProject?.rehab as any)?.rehabTracker as TrackerData | undefined;
@@ -142,15 +146,19 @@ export default function RehabTracker() {
 
   // ── Persist to store + ledger rollup ─────────────────────────
   const persist = useCallback(
-    (next: TrackerData) => {
+    async (next: TrackerData) => {
       setData(next);
       if (!currentProject) return;
 
-      updateRehabModule(currentProject.id, {
+      const baseBudget = next.budgetLines.reduce((s, l) => s + l.estimated, 0);
+
+      const rehabUpdates = {
         rehabTracker: next,
-        baseBudget: next.budgetLines.reduce((s, l) => s + l.estimated, 0),
+        baseBudget,
         contingencyBufferPercentage: next.contingencyPct,
-      } as any);
+      };
+
+      updateRehabModule(currentProject.id, rehabUpdates as any);
 
       // Roll every actual cost entry into the global TransactionLedger so
       // recalculateMetrics() picks them up as 'Approved' renovation costs.
@@ -171,8 +179,28 @@ export default function RehabTracker() {
         createdAt: new Date(e.createdAt),
       }));
       setLedgerItems(currentProject.id, [...nonTracker, ...trackerItems]);
+
+      if (!user) return;
+      try {
+        setIsSaving(true);
+        const idToken = await user.getIdToken();
+        
+        await fetch('/api/projects/rehab', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+             idToken,
+             projectId: currentProject.id,
+             updates: rehabUpdates
+          })
+        });
+      } catch (err) {
+        console.error('Failed to save rehab state to backend', err);
+      } finally {
+        setIsSaving(false);
+      }
     },
-    [currentProject, updateRehabModule, getLedgerItemsForDeal, setLedgerItems]
+    [currentProject, updateRehabModule, getLedgerItemsForDeal, setLedgerItems, user]
   );
 
   // ── Derived values ────────────────────────────────────────────
@@ -343,24 +371,27 @@ export default function RehabTracker() {
           <div className="flex items-center gap-2.5">
             <HardHat className="w-5 h-5 text-amber-600" />
             <div>
-              <h2 className="text-lg font-medium tracking-tight text-text-primary">Rehab Tracker</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-medium tracking-tight text-text-primary">Rehab Tracker</h2>
+                {isSaving && <Loader2 className="w-4 h-4 animate-spin text-text-secondary" />}
+              </div>
               <p className="text-xs text-text-secondary mt-0.5">Construction velocity & budget burn rate — Phase 3</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Budget</p>
-              <p className="text-xl font-light text-text-primary">{fmt(totalEstimated)}</p>
+              <p className="text-xl font-normal text-text-primary">{fmt(totalEstimated)}</p>
             </div>
             <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Actual</p>
-              <p className={`text-xl font-light ${totalActual > totalEstimated ? 'text-red-600' : 'text-text-primary'}`}>
+              <p className={`text-xl font-normal ${totalActual > totalEstimated ? 'text-red-600' : 'text-text-primary'}`}>
                 {fmt(totalActual)}
               </p>
             </div>
             <div className="p-3 bg-bg-primary rounded-lg text-center min-w-[100px]">
               <p className="text-xs uppercase tracking-widest text-text-secondary">Variance</p>
-              <p className={`text-xl font-light ${totalVariance < 0 ? 'text-red-600' : 'text-green-700'}`}>
+              <p className={`text-xl font-normal ${totalVariance < 0 ? 'text-red-600' : 'text-green-700'}`}>
                 {totalVariance < 0 ? '−' : '+'}{fmt(Math.abs(totalVariance))}
               </p>
             </div>
@@ -621,17 +652,17 @@ export default function RehabTracker() {
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Reserve ({(contingencyPct * 100).toFixed(0)}%)</p>
-                <p className="text-xl font-light text-text-primary">{fmt(contingencyAmount)}</p>
+                <p className="text-xl font-normal text-text-primary">{fmt(contingencyAmount)}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Consumed by Overruns</p>
-                <p className={`text-xl font-light ${overBudgetTotal > 0 ? 'text-red-600' : 'text-text-secondary'}`}>
+                <p className={`text-xl font-normal ${overBudgetTotal > 0 ? 'text-red-600' : 'text-text-secondary'}`}>
                   {fmt(overBudgetTotal)}
                 </p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Remaining Reserve</p>
-                <p className={`text-xl font-light ${contingencyAmount - overBudgetTotal < 0 ? 'text-red-600' : 'text-green-700'}`}>
+                <p className={`text-xl font-normal ${contingencyAmount - overBudgetTotal < 0 ? 'text-red-600' : 'text-green-700'}`}>
                   {fmt(Math.max(0, contingencyAmount - overBudgetTotal))}
                 </p>
               </div>
@@ -807,15 +838,15 @@ export default function RehabTracker() {
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Total Loan</p>
-                <p className="text-xl font-light text-text-primary">{fmt(totalLoanAmount)}</p>
+                <p className="text-xl font-normal text-text-primary">{fmt(totalLoanAmount)}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Drawn to Date</p>
-                <p className="text-xl font-light text-green-700">{fmt(totalDrawn)}</p>
+                <p className="text-xl font-normal text-green-700">{fmt(totalDrawn)}</p>
               </div>
               <div className="p-3 bg-bg-primary rounded-lg text-center">
                 <p className="text-xs uppercase tracking-widest text-text-secondary">Pending Draw</p>
-                <p className="text-xl font-light text-amber-700">{fmt(totalPendingDraw)}</p>
+                <p className="text-xl font-normal text-amber-700">{fmt(totalPendingDraw)}</p>
               </div>
             </div>
 

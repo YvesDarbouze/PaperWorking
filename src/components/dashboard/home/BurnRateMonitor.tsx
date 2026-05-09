@@ -43,7 +43,7 @@ export default function BurnRateMonitor({ projects }: BurnRateMonitorProps) {
           <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.2em] text-[10px]">
             Deal Efficiency
           </p>
-          <h3 className="text-2xl font-light text-text-primary tracking-tighter">Velocity & Burn</h3>
+          <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Velocity & Burn</h3>
         </div>
       </div>
 

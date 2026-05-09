@@ -7,11 +7,11 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 /* ─── Panel Content Imports ─── */
 import PipelinePanel from './panels/PipelinePanel';
 import EvaluationPanel from './panels/EvaluationPanel';
-import ClosingPanel from './panels/ClosingPanel';
+import PurchasePanel from './panels/PurchasePanel';
 import EnginePanel from './panels/EnginePanel';
 import ExitPanel from './panels/ExitPanel';
-import RehabPanel from './panels/RehabPanel';
-import FindAndFundPanel from './panels/FindAndFundPanel';
+import HoldPanel from './panels/HoldPanel';
+import AcquisitionPanel from './panels/AcquisitionPanel';
 
 import { useUIStore } from '@/store/uiStore';
 import KanbanView from '@/components/dashboard/kanban/KanbanView';
@@ -96,8 +96,8 @@ export default function DashboardPage() {
         <ErrorBoundary name="Command Center">
           <Suspense fallback={<PanelFallback />}>
             <PanelTrack>
-              <ErrorBoundary name="Find & Fund Hub">
-                <FindAndFundPanel />
+              <ErrorBoundary name="Acquisition">
+                <AcquisitionPanel />
               </ErrorBoundary>
               <ErrorBoundary name="Acquisition Pipeline">
                 <PipelinePanel />
@@ -105,11 +105,11 @@ export default function DashboardPage() {
               <ErrorBoundary name="Due Diligence Evaluation">
                 <EvaluationPanel />
               </ErrorBoundary>
-              <ErrorBoundary name="Closing Room">
-                <ClosingPanel />
+              <ErrorBoundary name="Purchase">
+                <PurchasePanel />
               </ErrorBoundary>
-              <ErrorBoundary name="Hold & Rehab">
-                <RehabPanel />
+              <ErrorBoundary name="Hold">
+                <HoldPanel />
               </ErrorBoundary>
               <ErrorBoundary name="Operational Engine">
                 <EnginePanel />

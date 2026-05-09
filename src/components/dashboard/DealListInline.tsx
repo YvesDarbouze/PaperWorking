@@ -13,6 +13,8 @@ import DealFolder from './DealFolder';
    ═══════════════════════════════════════════════════════ */
 
 import PhaseBadge from '../ui/PhaseBadge';
+import { usePermissions } from '@/hooks/usePermissions';
+import toast from 'react-hot-toast';
 
 interface DealListInlineProps {
   projects: Project[];
@@ -20,11 +22,12 @@ interface DealListInlineProps {
 }
 
 export default function DealListInline({ projects, onSelectDeal }: DealListInlineProps) {
+  const { can } = usePermissions();
   return (
     <div className="w-full mx-auto">
       <div className="flex justify-between items-end mb-6 px-2">
         <div>
-          <h2 className="text-2xl font-light tracking-tight text-text-primary">Active Pipeline</h2>
+          <h2 className="text-2xl font-normal tracking-tight text-text-primary">Active Pipeline</h2>
           <p className="text-sm text-text-secondary mt-1">Select a property to enter the Lifecycle Framework.</p>
         </div>
       </div>
@@ -41,8 +44,14 @@ export default function DealListInline({ projects, onSelectDeal }: DealListInlin
               return (
                 <button
                   key={deal.id}
-                  onClick={() => onSelectDeal(deal.id)}
-                  className="group flex items-center justify-between w-full p-3 sm:p-4 hover:bg-bg-primary/80 transition-colors text-left"
+                  onClick={() => {
+                    if (can('VIEW_FOLDER')) {
+                      onSelectDeal(deal.id);
+                    } else {
+                      toast.error('You do not have permission to view this project folder.');
+                    }
+                  }}
+                  className={`group flex items-center justify-between w-full p-3 sm:p-4 hover:bg-bg-primary/80 transition-colors text-left ${!can('VIEW_FOLDER') && 'opacity-60 cursor-not-allowed'}`}
                 >
                   {/* ── Standardized Deal Folder ── */}
                   <DealFolder
@@ -55,7 +64,7 @@ export default function DealListInline({ projects, onSelectDeal }: DealListInlin
                   <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0 ml-4">
                     <PhaseBadge status={deal.status} />
                     {purchase > 0 && (
-                      <span className="text-sm font-light text-text-primary hidden sm:inline">
+                      <span className="text-sm font-normal text-text-primary hidden sm:inline">
                         {isRent && deal.financials.projectedMonthlyRent
                           ? `$${deal.financials.projectedMonthlyRent.toLocaleString()}/mo`
                           : `$${(deal.financials?.estimatedARV || purchase).toLocaleString()}`}

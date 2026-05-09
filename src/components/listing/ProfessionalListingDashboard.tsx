@@ -22,12 +22,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
   const [neighborhood, setNeighborhood] = useState<NeighborhoodData | null>(null);
   const [aiDescription, setAiDescription] = useState<string>('');
 
-  // Mock Comps Data
-  const [comps] = useState<CompSale[]>([
-    { id: '1', address: '452 Main St', price: 52500000, saleDate: '2026-03-12', distanceMiles: 0.2, sqft: 1900, beds: 3, baths: 2 },
-    { id: '2', address: '12 Echo Lane', price: 49500000, saleDate: '2026-04-01', distanceMiles: 0.5, sqft: 1750, beds: 3, baths: 2.5 },
-    { id: '3', address: '891 River Rd', price: 55000000, saleDate: '2026-02-28', distanceMiles: 0.8, sqft: 2100, beds: 4, baths: 3 },
-  ]);
+  const [comps, setComps] = useState<CompSale[]>([]);
 
   // Initial Data Ingestion
   const ingestMLSData = async () => {

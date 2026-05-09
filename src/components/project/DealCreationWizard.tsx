@@ -33,11 +33,11 @@ interface DealCreationWizardProps {
 }
 
 const STEPS: StepDescriptor[] = [
-  { id: 'identity', label: 'Property Identity' },
-  { id: 'metrics',  label: 'Acquisition Metrics' },
-  { id: 'strategy', label: 'Strategy & Vision' },
-  { id: 'team',     label: 'Stakeholder Setup' },
-  { id: 'review',   label: 'Document Review' },
+  { id: 'identity', label: 'What property are we working on?' },
+  { id: 'metrics',  label: 'Tell us about the numbers & dates' },
+  { id: 'strategy', label: 'What is the plan?' },
+  { id: 'team',     label: 'Who is on your team?' },
+  { id: 'review',   label: 'Review & Confirm' },
 ];
 
 const REI_STATUSES: { value: string; label: string; icon: React.ReactNode }[] = [
@@ -62,9 +62,8 @@ const INITIAL_FORM: DealFormData = {
   lng: null,
   assetClass: 'Residential',
   acquisitionDate: '',
-  purchasePrice: '',
-  estimatedARV: '',
   closeDate: '',
+  dateOfSale: '',
   leverage: '75',
   strategy: 'Fix & Flip',
   vision: '',
@@ -171,7 +170,6 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         ...(formData.zip && { zip: formData.zip }),
         ...(formData.lat != null && { lat: formData.lat }),
         ...(formData.lng != null && { lng: formData.lng }),
-        ...(formData.acquisitionDate && { acquisitionDate: formData.acquisitionDate }),
         ...(formData.reiStatus && { reiStatus: formData.reiStatus }),
         ...(formData.mlsListingKey && { mlsListingKey: formData.mlsListingKey }),
         ...(formData.mlsListingId && { mlsListingId: formData.mlsListingId }),
@@ -186,6 +184,9 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
           purchasePrice: parseFloat(formData.purchasePrice) * 100,
           estimatedARV: parseFloat(formData.estimatedARV) * 100,
           costs: [],
+          ...(formData.acquisitionDate && { acquisitionDate: new Date(formData.acquisitionDate + 'T00:00:00') }),
+          ...(formData.closeDate && { estimatedCloseDate: new Date(formData.closeDate + 'T00:00:00') }),
+          ...(formData.dateOfSale && { soldDate: new Date(formData.dateOfSale + 'T00:00:00') }),
         },
       }, organizationId);
 
@@ -207,14 +208,14 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 01</p>
-          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Property Identity</h2>
+          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>What property are we working on?</h2>
         </div>
       </div>
 
       <div className="grid gap-6">
         {/* Project Name */}
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Project Name / Nickname</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What should we call this project?</label>
           <input
             type="text"
             value={formData.propertyName}
@@ -227,7 +228,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
         {/* REI Status Picker */}
         <div className="space-y-3">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Current Stage</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What stage is this project currently in?</label>
           <div className="grid grid-cols-4 gap-2">
             {REI_STATUSES.map(({ value, label, icon }) => {
               const active = formData.reiStatus === value;
@@ -254,7 +255,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         {/* MLS Property Search */}
         <div className="space-y-2">
           <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>
-            {useManualAddress ? 'Property Address' : 'Search MLS Listings'}
+            {useManualAddress ? 'Where is this property located?' : 'Search MLS Listings for the property'}
           </label>
 
           {!useManualAddress && !formData.mlsListingKey && (
@@ -370,7 +371,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
         {/* Asset Class */}
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Asset Classification</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What type of asset is this?</label>
           <select
             value={formData.assetClass}
             onChange={(e) => updateForm({ assetClass: e.target.value })}
@@ -394,15 +395,15 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 02</p>
-          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Acquisition Metrics</h2>
+          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Tell us about the numbers & dates</h2>
         </div>
       </div>
 
       {/* ── Project Start / Acquisition Date ── */}
       <div className="space-y-2 mb-2">
-        <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Project Start / Acquisition Date</label>
+        <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>When did you acquire this property?</label>
         <p className="text-[11px] font-normal leading-relaxed -mt-0.5" style={{ color: 'var(--text-secondary)', opacity: 0.65 }}>
-          When was this project initiated or the property acquired?
+          If it hasn't been acquired yet, you can leave this blank or provide an estimate.
         </p>
         <input
           type="date"
@@ -436,7 +437,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
 
       <div className="grid grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Purchase Price ($)</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What was the purchase price? ($)</label>
           <input
             type="number"
             value={formData.purchasePrice}
@@ -448,7 +449,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Estimated ARV ($)</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What is the estimated ARV? ($)</label>
           <input
             type="number"
             value={formData.estimatedARV}
@@ -460,7 +461,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Target Close Date</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>When do you expect to close?</label>
           <input
             type="date"
             value={formData.closeDate}
@@ -471,7 +472,18 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Target Leverage (%)</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>If sold, what was the date of sale?</label>
+          <input
+            type="date"
+            value={formData.dateOfSale}
+            onChange={(e) => updateForm({ dateOfSale: e.target.value })}
+            className="w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+            style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What's the target leverage? (%)</label>
           <input
             type="number"
             value={formData.leverage}
@@ -492,13 +504,13 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 03</p>
-          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Strategy & Vision</h2>
+          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>What is the plan?</h2>
         </div>
       </div>
 
       <div className="grid gap-6">
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Investment Profile</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What is your investment strategy?</label>
           <select
             value={formData.strategy}
             onChange={(e) => updateForm({ strategy: e.target.value })}
@@ -513,7 +525,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Operational Objectives</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Can you describe your operational objectives?</label>
           <textarea
             value={formData.vision}
             onChange={(e) => updateForm({ vision: e.target.value })}
@@ -533,13 +545,13 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 04</p>
-          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Stakeholder Setup</h2>
+          <h2 className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Who is on your team?</h2>
         </div>
       </div>
 
       <div className="grid gap-6">
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Lead Operator Email</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Who is the lead operator for this project? (Email)</label>
           <input
             type="email"
             value={formData.leadEmail}
@@ -551,7 +563,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
         </div>
 
         <div className="space-y-2">
-          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Partner Emails (comma-separated)</label>
+          <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Are there any partner emails we should include? (comma-separated)</label>
           <input
             type="text"
             value={formData.partnerEmails}
@@ -591,6 +603,8 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
             ...(formData.mlsListPrice != null ? [{ label: 'List Price', value: `$${formData.mlsListPrice.toLocaleString()}` }] : []),
             { label: 'Asset Class',    value: formData.assetClass },
             { label: 'Acquired',       value: formData.acquisitionDate ? new Date(formData.acquisitionDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
+            { label: 'Close Date',     value: formData.closeDate ? new Date(formData.closeDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
+            { label: 'Date of Sale',   value: formData.dateOfSale ? new Date(formData.dateOfSale + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—' },
             { label: 'Purchase Price', value: formData.purchasePrice ? `$${Number(formData.purchasePrice).toLocaleString()}` : '—' },
             { label: 'Estimated ARV',  value: formData.estimatedARV ? `$${Number(formData.estimatedARV).toLocaleString()}` : '—' },
             { label: 'Leverage',       value: `${formData.leverage}%` },

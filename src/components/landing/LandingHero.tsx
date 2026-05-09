@@ -39,9 +39,9 @@ export default function LandingHero() {
             text-[var(--pw-black)]
           "
         >
-          Stop Losing Deals to{' '}
+          Stop bleeding margins to{' '}
           <br className="hidden md:block" />
-          Disorganized Paperwork.
+          disorganized deals.
         </h1>
 
         {/* ── Sub-copy ── */}
@@ -52,11 +52,10 @@ export default function LandingHero() {
             md:text-xl
             text-[var(--pw-subtle)]
             max-w-2xl mx-auto
-            font-light
+            font-normal
           "
         >
-          PaperWorking centralizes your deal pipeline, holding costs, and
-          closing docs so nothing slips through — and your margins stay intact.
+          Every day a deal is delayed, holding costs eat your profits. PaperWorking centralizes your pipeline, tracks real-time costs, and automates closing docs so you can close faster and scale without the chaos.
         </p>
 
         {/* ── CTA ── */}
@@ -73,8 +72,9 @@ export default function LandingHero() {
               color: '#ffffff',
             }}
           >
-            Start Free — No Credit Card
+            Start Your Free 14-Day Trial
           </Link>
+          <p className="mt-4 text-sm text-[var(--pw-subtle)]">No credit card required. Setup takes 2 minutes.</p>
         </div>
       </div>
     </section>

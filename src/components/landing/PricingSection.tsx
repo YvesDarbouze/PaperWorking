@@ -64,7 +64,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'individual',
     name: 'Individual Investor',
-    target: 'Solo flippers and side-hustlers.',
+    target: 'Solo flippers tired of spreadsheet chaos.',
     monthlyPrice: 59,
     annualPrice: '$599',
     annualPriceNum: 599,
@@ -76,7 +76,7 @@ const PLANS: PlanTier[] = [
       'Rehab Tracking & Budgets',
       'Exit Formula & ROI Calculator',
     ],
-    ctaLabel: 'Start Free Trial',
+    ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: false,
     icon: Users,
     variant: 'standard',
@@ -84,7 +84,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'team',
     name: 'Team / Firm',
-    target: 'Scaling REI businesses and multi-state developers.',
+    target: 'Scaling REI businesses managing multiple deals.',
     monthlyPrice: 99,
     annualPrice: '$999',
     annualPriceNum: 999,
@@ -96,7 +96,7 @@ const PLANS: PlanTier[] = [
       'Everything in Individual',
       'Priority onboarding support',
     ],
-    ctaLabel: 'Start Free Trial',
+    ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: true,
     badge: 'Most Popular',
     icon: Building2,
@@ -105,7 +105,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'vendor',
     name: 'Vendor Network',
-    target: 'Appraisers, Inspectors, GCs, Electricians, Plumbers.',
+    target: 'Appraisers, Inspectors, GCs, and tradespeople.',
     monthlyPrice: 39,
     annualPrice: '$390',
     annualPriceNum: 390,
@@ -155,7 +155,7 @@ const COMPARISON_FEATURES: ComparisonFeature[] = [
 const TESTIMONIALS = [
   {
     quote:
-      "I used to track everything on a messy spreadsheet. PaperWorking's pipeline view lets me see exactly where every deal is — and I closed 2 more flips last quarter.",
+      "I used to track everything on a messy spreadsheet. PaperWorking's pipeline view lets me see exactly where every deal is. I closed 2 more flips last quarter because I finally had clarity.",
     author: 'Marcus T.',
     role: 'Solo Flipper, Charlotte NC',
     icon: Users,

@@ -1,8 +1,9 @@
 import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
-import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout } from 'lucide-react';
+import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout, Lock } from 'lucide-react';
 import ProfessionalListingDashboard from '@/components/listing/ProfessionalListingDashboard';
+import { projectsService } from '@/lib/firebase/projects';
 
 const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
 
@@ -19,6 +20,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
   const [strategy, setStrategy] = useState<'Sell'|'Rent'>(financials?.exitStrategyType || 'Sell');
   const [viewMode, setViewMode] = useState<'Financials' | 'Listing'>('Financials');
+  const [isClosing, setIsClosing] = useState(false);
 
   // Sell States
   const [salePrice, setSalePrice] = useState(financials?.actualSalePrice?.toString() || financials?.estimatedARV?.toString() || '0');
@@ -83,12 +85,26 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
   const cashFlow = calculateCashFlow();
   const cashOnCash = totalCapitalDeployed > 0 ? ((cashFlow * 12) / totalCapitalDeployed) * 100 : 0;
 
+  const handleCloseProject = async () => {
+    if (!deal?.organizationId) return;
+    setIsClosing(true);
+    try {
+      await projectsService.closeProjectAndArchive(projectId, deal.organizationId, strategy);
+    } catch (error) {
+      console.error('Failed to close project:', error);
+    } finally {
+      setIsClosing(false);
+    }
+  };
+
+  const isClosed = deal.status === 'closed_won' || deal.status === 'closed_lost' || deal.status === 'Sold' || deal.status === 'Rented';
+
   return (
     <div className="w-full h-full flex flex-col p-8 sm:p-12 animate-in fade-in slide-in-from-bottom-8">
       
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-border-accent/30 pb-6 mb-8 gap-4">
          <div className="flex flex-col">
-            <h2 className="text-3xl font-light text-white tracking-tight flex items-center">
+            <h2 className="text-3xl font-normal text-white tracking-tight flex items-center">
                {strategy === 'Sell' ? 'Flip Strategy' : 'Hold Protocol'}
             </h2>
             <div className="flex items-center space-x-4 mt-2">
@@ -122,6 +138,13 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                Exit Strategy: Rent & Hold
             </button>
          </div>
+      </div>
+
+      <div className="w-full max-w-4xl mx-auto aspect-video bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-black/50 transition-colors group mb-8 shadow-inner">
+        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg backdrop-blur-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white opacity-80 group-hover:opacity-100 ml-1"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <p className="mt-4 text-xs font-bold text-white/60 tracking-widest uppercase">Watch Exit Explainer</p>
       </div>
 
       {viewMode === 'Listing' ? (
@@ -209,7 +232,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
               {strategy === 'Sell' ? (
                 <div>
                    <p className="text-lg text-text-secondary font-medium mb-2">Final Net Profit</p>
-                   <h1 className={`text-6xl font-light tracking-tighter ${calculateNetProfit() >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                   <h1 className={`text-6xl font-normal tracking-tighter ${calculateNetProfit() >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       ${calculateNetProfit().toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                    </h1>
                 </div>
@@ -217,19 +240,41 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                 <div className="space-y-8">
                    <div>
                      <p className="text-lg text-text-secondary font-medium mb-2">Monthly Cash Flow</p>
-                     <h1 className={`text-5xl font-light tracking-tighter ${cashFlow >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                     <h1 className={`text-5xl font-normal tracking-tighter ${cashFlow >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                         ${cashFlow.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} <span className="text-xl text-text-secondary font-normal">/mo</span>
                      </h1>
                    </div>
                    <div className="pt-6 border-t border-border-accent">
                      <p className="text-sm text-text-secondary font-medium mb-1">Cash-on-Cash Return (CoC)</p>
-                     <h2 className="text-3xl font-light text-text-primary">
+                     <h2 className="text-3xl font-normal text-text-primary">
                         {cashOnCash.toFixed(2)}%
                      </h2>
                    </div>
                 </div>
               )}
            </div>
+
+            {/* Action Buttons */}
+            {!isClosed && (
+              <button
+                onClick={handleCloseProject}
+                disabled={isClosing}
+                className="w-full py-4 mt-6 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-xl font-medium tracking-wide flex items-center justify-center space-x-2 transition-colors shadow-lg"
+              >
+                {isClosing ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Lock className="w-5 h-5" />
+                )}
+                <span>{isClosing ? 'Finalizing Autopsy...' : 'Close Project & Generate Autopsy'}</span>
+              </button>
+            )}
+            {isClosed && (
+              <div className="w-full py-4 mt-6 bg-white/5 border border-white/10 text-white/60 rounded-xl font-medium tracking-wide flex items-center justify-center space-x-2">
+                <Lock className="w-5 h-5" />
+                <span>Project Permanently Closed</span>
+              </div>
+            )}
         </div>
 
         </div>

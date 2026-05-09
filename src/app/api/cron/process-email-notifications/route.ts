@@ -11,8 +11,7 @@ async function sendViaResend(to: string[], subject: string, html: string): Promi
   const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@paperworking.co';
 
   if (!apiKey) {
-    console.log('[Mock Email] Would have sent to:', to, 'Subject:', subject);
-    return { id: `mock_${Date.now().toString(36)}` };
+    throw new Error('RESEND_API_KEY is missing. Cannot dispatch email.');
   }
 
   const res = await fetch('https://api.resend.com/emails', {

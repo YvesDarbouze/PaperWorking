@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { CheckCircle, UploadCloud, ClipboardList, Camera, AlertCircle, X, Send } from 'lucide-react';
+import { CheckCircle, UploadCloud, ClipboardList, Camera, AlertCircle, X, Send, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import TeamChatWidget from '@/components/shared/TeamChatWidget';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '@/lib/firebase/config';
 
 interface ProjectFieldManagerProps {
   projectId: string;
@@ -18,41 +20,68 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
 
   const [receiptAmount, setReceiptAmount] = useState('');
   const [receiptCategory, setReceiptCategory] = useState<any>('Plumbing');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!currentProject) return null;
 
   const rehabTasks = currentProject.financials?.rehabTasks || [];
 
-  const handleReceiptUpload = (e: React.FormEvent) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleReceiptUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!receiptAmount || isNaN(Number(receiptAmount))) {
       toast.error('Please enter a valid numeric amount.');
       return;
     }
+    if (!selectedFile) {
+      toast.error('Please attach a receipt photo or PDF.');
+      return;
+    }
 
     setIsUploading(true);
-    const mockCostEntry = {
-      id: `cost_${Date.now()}`,
-      description: `Field Receipt - ${receiptCategory}`,
-      amount: Number(receiptAmount),
-      approved: false,
-      addedBy: 'General Contractor',
-      createdAt: new Date(),
-      category: receiptCategory,
-      receiptUrl: undefined,
-      status: 'Pending Triage' as any,
-      propertyName: currentProject.propertyName
-    };
 
-    const currentCosts = currentProject.financials.costs || [];
-    updateProjectFinancials(currentProject.id, {
-      costs: [...currentCosts, mockCostEntry]
-    });
+    try {
+      const fileRef = ref(storage, `projects/${currentProject.id}/receipts/${Date.now()}_${selectedFile.name}`);
+      const snapshot = await uploadBytes(fileRef, selectedFile);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
 
-    setReceiptAmount('');
-    setIsUploading(false);
-    toast.success('Receipt transmitted to Engine Room Triage!');
+      const newCostEntry = {
+        id: `cost_${Date.now()}`,
+        description: `Field Receipt - ${receiptCategory}`,
+        amount: Number(receiptAmount),
+        approved: false,
+        addedBy: 'General Contractor',
+        createdAt: new Date(),
+        category: receiptCategory,
+        receiptUrl: downloadUrl,
+        status: 'Pending Triage' as any,
+        propertyName: currentProject.propertyName
+      };
+
+      const currentCosts = currentProject.financials.costs || [];
+      updateProjectFinancials(currentProject.id, {
+        costs: [...currentCosts, newCostEntry]
+      });
+
+      setReceiptAmount('');
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      toast.success('Receipt transmitted to Engine Room Triage!');
+    } catch (error) {
+      console.error('Upload failed:', error);
+      toast.error('Failed to upload receipt.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleTaskCompletion = (taskId: string) => {
@@ -106,7 +135,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
             <form onSubmit={handleReceiptUpload} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Budget Category</label>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1 border-border-accent">Budget Category</label>
                   <select 
                     value={receiptCategory}
                     onChange={(e) => setReceiptCategory(e.target.value)}
@@ -122,7 +151,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1">Total Amount ($)</label>
+                  <label className="block text-xs font-semibold text-text-secondary mb-1 border-b pb-1 border-border-accent">Total Amount ($)</label>
                   <input 
                     type="number" 
                     required
@@ -135,17 +164,42 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
               </div>
 
               <div className="flex flex-col space-y-4">
-                <div className="border-2 border-dashed border-border-accent rounded-lg p-4 flex-1 flex flex-col items-center justify-center bg-bg-primary text-text-secondary cursor-pointer hover:bg-bg-primary transition min-h-[120px]">
-                  <Camera className="w-6 h-6 mb-2" />
-                  <span className="text-xs font-medium text-center">Tap to snap photo<br/>or select PDF</span>
+                <div className="relative border-2 border-dashed border-border-accent rounded-lg flex-1 flex flex-col items-center justify-center bg-bg-primary hover:bg-bg-surface transition min-h-[120px] overflow-hidden group">
+                  <input 
+                    type="file" 
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    accept="image/*,.pdf"
+                  />
+                  {selectedFile ? (
+                    <div className="flex flex-col items-center justify-center p-4 text-center z-0">
+                      <CheckCircle className="w-8 h-8 mb-2 text-green-500" />
+                      <span className="text-xs font-semibold text-text-primary break-all px-2">{selectedFile.name}</span>
+                      <span className="text-[10px] text-text-secondary mt-1">Tap to change</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-4 text-center z-0 text-text-secondary group-hover:text-blue-500 transition-colors">
+                      <Camera className="w-8 h-8 mb-2" />
+                      <span className="text-xs font-medium">Tap to snap photo<br/>or select PDF</span>
+                    </div>
+                  )}
                 </div>
 
                 <button 
                   type="submit"
-                  disabled={isUploading}
-                  className={`w-full py-2.5 rounded-xl text-white font-bold text-sm shadow-md transition flex items-center justify-center space-x-2 ${isUploading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:scale-95'}`}
+                  disabled={isUploading || !selectedFile}
+                  className={`w-full py-2.5 rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-2 ${
+                    isUploading || !selectedFile 
+                      ? 'bg-gray-200 text-gray-500 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400' 
+                      : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                  }`}
                 >
-                  <Send className="w-4 h-4" />
+                  {isUploading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
                   <span>{isUploading ? 'Transmitting...' : 'Submit to Triage'}</span>
                 </button>
               </div>
@@ -187,7 +241,7 @@ export default function ProjectFieldManager({ projectId, onClose }: ProjectField
                    {task.status !== 'Complete' && (
                       <button 
                         onClick={() => handleTaskCompletion(task.id)}
-                        className="ml-2 text-xs px-3 py-1.5 bg-gray-900 text-white font-bold rounded hover:bg-gray-800 transition active:scale-95 shadow-sm"
+                        className="ml-2 text-xs px-3 py-1.5 bg-gray-900 text-white font-bold rounded hover:bg-gray-800 transition active:scale-95 shadow-sm dark:bg-white dark:text-gray-900"
                       >
                         MARK DONE
                       </button>

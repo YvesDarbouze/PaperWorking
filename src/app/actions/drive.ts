@@ -15,8 +15,7 @@ export async function createPropertyDriveFolder(projectId: string, propertyName:
     // 1. Authenticate with Google Drive using a Service Account Key
     // Must be provided in env logic as GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY
     if (!process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY) {
-      console.warn('Google Drive Service Account Key missing. Mocking success for Document Hub layout.');
-      return { success: true, folderId: 'mock_google_drive_folder_' + projectId };
+      throw new Error('Google Drive Service Account Key missing. Cannot create Document Hub folder.');
     }
 
     const credentials = JSON.parse(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY);

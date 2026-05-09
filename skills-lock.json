@@ -38,10 +38,10 @@
       "computedHash": "8cb4a8d98551e4e944173adcceba6597cd2315ad9b16b8724c9eb265d4656b8c"
     },
     "ab-test-setup": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/ab-test-setup/SKILL.md",
-      "computedHash": "b474726b1ced198be54af516076a3b7aa8690ca7e90e6516a3c1f78f8c6bffef"
+      "skillPath": "skills/ab-test-setup/SKILL.md",
+      "computedHash": "8ba2bd5cdc00b7b5b1dca0ddb36cce62deccae251b55c9dc16fb005c5942efdc"
     },
     "acceptance-orchestrator": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -74,10 +74,10 @@
       "computedHash": "d31d7e75aa45fe8aac3c7e29872681eb01ceae31fc212e0cc247514c5c6c490f"
     },
     "ad-creative": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/ad-creative/SKILL.md",
-      "computedHash": "69cdf855995c8bb651f51cd3a3212c78d20464d212589a7df51a4c35a3c99f19"
+      "skillPath": "skills/ad-creative/SKILL.md",
+      "computedHash": "956fec294a322356f2df183877ae199ff23f583adf1a687bd5714e1a0cec94e5"
     },
     "add-announcement": {
       "source": "Agenta-AI/agenta",
@@ -368,10 +368,10 @@
       "computedHash": "a0ce4e81a63adf1bd60f42ab71d85e063f2d12bb9d7b6d89d610e4e52bdfdcb1"
     },
     "ai-seo": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/ai-seo/SKILL.md",
-      "computedHash": "55ee3205945434ca94219e5521d47c713cf4133cab2da0c28fb50b7f39845250"
+      "skillPath": "skills/ai-seo/SKILL.md",
+      "computedHash": "e32c34e6ffaec3de9622bf9186407b41df6415e504c49ba930b3eccdc6662763"
     },
     "ai-studio-image": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -440,10 +440,10 @@
       "computedHash": "9516542dcf12f4a69c021ef45fff7d36e7fb772fdb4b871372c8de1ca6170805"
     },
     "analytics-tracking": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/analytics-tracking/SKILL.md",
-      "computedHash": "2f5e82d073aeceb4aa44c2f2b530f24e33d3f2c91a09fe1a156b9919091d813f"
+      "skillPath": "skills/analytics-tracking/SKILL.md",
+      "computedHash": "e5578c4950e06fdd03b602b81f162cc04408b3a15a421884c091eb888a36ad62"
     },
     "analyze-project": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -522,6 +522,12 @@
       "sourceType": "github",
       "skillPath": "skills/antigravity-workflows/SKILL.md",
       "computedHash": "4bb3bc25c4e7e8f0dcc7ed466259669a9b90ef86b4f9dfcd766d3928fe3ab4e9"
+    },
+    "aomi-transact": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/aomi-transact/SKILL.md",
+      "computedHash": "31ac0c853f6032827456de82ae4da0af12c631c0c3b030e42e3b09f71d94788d"
     },
     "api-connector-builder": {
       "source": "affaan-m/everything-claude-code",
@@ -692,10 +698,10 @@
       "computedHash": "a64999e511d21580c4eba0b08eeccbe45b55b8c7b07903f9b18ea5b0d7ff6043"
     },
     "app-store-optimization": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/app-store-optimization/SKILL.md",
-      "computedHash": "dfc5b5ca96b295aeca8162b2332db32883fbdcf2f6ff706108acce894a187e4f"
+      "skillPath": "skills/app-store-optimization/SKILL.md",
+      "computedHash": "716e0748b407db7b438b75e4cdcffd5d70d4f0ceeb3519465c31e31dae9417d0"
     },
     "appdeploy": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -728,10 +734,10 @@
       "computedHash": "98b5d7fa700e2cb98cb7a2e55fb3c8dab460b87cc802f23a09c86031668f72d4"
     },
     "architecture-decision-records": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/architecture-decision-records/SKILL.md",
-      "computedHash": "3108a62e2d812aad5f1d192281dc79d7c2891234ef179ca97cf79472286f5126"
+      "computedHash": "8b02a3fbfc6e87bbc9f58fdb9998364d25615f410f86df6154a253aac5fe1901"
     },
     "architecture-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -1832,10 +1838,10 @@
       "computedHash": "02083727dcd8e9daa83cf1b20d0ea18d5c6bd7124acd4aa0f233a08bd8ed8949"
     },
     "blueprint": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/blueprint/SKILL.md",
-      "computedHash": "b662737f0ae3e589b59f141d219d8cf837f68cdd078c0e860bd82f62392ba12d"
+      "computedHash": "2efc1f843cdec34bfe796a0a8481658ca89465863092c81b5ed87f367bc83f74"
     },
     "board": {
       "source": "alirezarezvani/claude-skills",
@@ -1874,10 +1880,10 @@
       "computedHash": "b27a55b85de6ca13c32212a41fe2e566705fdb59f2a74e0848146bfd481cc668"
     },
     "brand-guidelines": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/brand-guidelines/SKILL.md",
-      "computedHash": "01478bada459b8f2787c23a01d6cd8139449af17b48f7b9f994236cd9820abd6"
+      "skillPath": "skills/brand-guidelines/SKILL.md",
+      "computedHash": "d770e9abf1e322b37d094605a0b9d43a2d47729fb180d875785daedbe27d8742"
     },
     "brand-guidelines-anthropic": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -1922,10 +1928,10 @@
       "computedHash": "e19276180a92e015e1cffe1d6e8ce5a8cfc38c0031e741f2a02f47efb3206833"
     },
     "browser-automation": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "engineering/skills/browser-automation/SKILL.md",
-      "computedHash": "8a7f9c1087ca54d6f5eb8899271a1f50c563e487456c319e7d323c8e469d59b7"
+      "skillPath": "skills/browser-automation/SKILL.md",
+      "computedHash": "8357cb73c83a77f473af7bda0052395d9c429320765198e9db89816c418491a7"
     },
     "browser-extension-builder": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2108,10 +2114,10 @@
       "computedHash": "b31a576f2ec8599a9c20e4d61b5f4c6d6fbb6447061f52ba5396d4c6f86c8836"
     },
     "carrier-relationship-management": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/carrier-relationship-management/SKILL.md",
-      "computedHash": "29220ae73e0f0e3d10d579266406f658889439b2d2b2db5ffdf2a3461883ed58"
+      "computedHash": "bc20dde3676afb6d0ecdac84246f87b362d528353af726b87c7baa47ab81f4e8"
     },
     "cc-skill-backend-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2228,10 +2234,10 @@
       "computedHash": "4684c0c40654ae9a3316a3efb6996ded443ffad7444194456296703443cbd75d"
     },
     "churn-prevention": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/churn-prevention/SKILL.md",
-      "computedHash": "d4201b839f971ade85dde676ed405efb7c488ae192f0855fab47a5ce7c1436a2"
+      "skillPath": "skills/churn-prevention/SKILL.md",
+      "computedHash": "56216de0d0a3a6a1b5bb36d0898e0b08331b0203efc3cf4b806a9d985d39c984"
     },
     "ci-cd-pipeline-builder": {
       "source": "alirezarezvani/claude-skills",
@@ -2504,10 +2510,10 @@
       "computedHash": "c4d662900a8d2f85e8aae735baf5e9ee15ff127b1568d9567e59d5fd8bc7899f"
     },
     "code-reviewer": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "engineering-team/skills/code-reviewer/SKILL.md",
-      "computedHash": "1f8ffbb909c7038ef31d11b517a7f7f9407207e2ce234aa90551943ed85a5a78"
+      "skillPath": "skills/code-reviewer/SKILL.md",
+      "computedHash": "b33d78bb544b6c163c32b9c02c80b143b753f3a91b9d8fdcfe8e4f9ec93ab34b"
     },
     "code-simplifier": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2576,10 +2582,10 @@
       "computedHash": "30be57d3bc2d6db11eea334d3d437b1c51b2a70156d041668b96b08cff0a1032"
     },
     "cold-email": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/cold-email/SKILL.md",
-      "computedHash": "6c6762a2e1fd66f33a673b7ad5dd64b2c8d1487212e8ba13269b5484f47dcfd7"
+      "skillPath": "skills/cold-email/SKILL.md",
+      "computedHash": "ca5efc7db44e580dd14888c00f770a49ab7ba1f74666c2fc25d06c49b2a20462"
     },
     "comfyui-gateway": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2624,10 +2630,10 @@
       "computedHash": "67e34c1b2f60992e2b0413835166ee2c8786da2cbb50dcbd25713eee7405a7b7"
     },
     "competitor-alternatives": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/competitor-alternatives/SKILL.md",
-      "computedHash": "beede63a6e93a5dfc42059d7a2942737d86678b97a341a35670fefeb7af49638"
+      "skillPath": "skills/competitor-alternatives/SKILL.md",
+      "computedHash": "7fbab31288349fc65843a8f5267bcaa9d3186ae3567f4e109be31a11cf1aa690"
     },
     "compose-multiplatform-patterns": {
       "source": "affaan-m/everything-claude-code",
@@ -2738,10 +2744,10 @@
       "computedHash": "0b84bbdcd76972bdceafe44fd6adf9022e27445946b5fb504a6414fb69554a47"
     },
     "content-creator": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/content-creator/SKILL.md",
-      "computedHash": "408d010ab3a571a058cd301859f1d644db54e05bb65366e05f3a576180ce670c"
+      "skillPath": "skills/content-creator/SKILL.md",
+      "computedHash": "2c1d8c2d2c9eb78af4dab3c33d638d7855a469dc10c3e9361ad7524088a0624d"
     },
     "content-engine": {
       "source": "affaan-m/everything-claude-code",
@@ -2774,10 +2780,10 @@
       "computedHash": "01c6e29dc5e2bb041b001372881b6ed875dd2e8aa300b1ef8daa36f3510f5db0"
     },
     "content-strategy": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/content-strategy/SKILL.md",
-      "computedHash": "cefbfcafd96d4d42b58f4168b6c985d38eb39aa7cb38468d3f56ca0974919de6"
+      "skillPath": "skills/content-strategy/SKILL.md",
+      "computedHash": "14de4907b881528606d60862815e5d0fe09b7978e9379d99c5a3f71c8eefbeb6"
     },
     "context-agent": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2887,6 +2893,12 @@
       "skillPath": "business-growth/skills/contract-and-proposal-writer/SKILL.md",
       "computedHash": "ea7d35417b0096f0ca518133387d206fe4d651ce254768dddb74de0ec37d62b4"
     },
+    "contract-learner": {
+      "source": "keypo-us/keypo-cli",
+      "sourceType": "github",
+      "skillPath": "skills/contract-learner/SKILL.md",
+      "computedHash": "4fdeb599741710647aba2e431770ad57b63576c3ce76496216bfbe9384114732"
+    },
     "conversation-memory": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -2918,16 +2930,16 @@
       "computedHash": "198cac4ba521f51aa28aa394a5039369b3e955dd764c3ca27853aaaddded1112"
     },
     "copy-editing": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/copy-editing/SKILL.md",
-      "computedHash": "ec82d875e191db4f5346fb1adfdfa02656d5d64745a6178a3cdba27a6850fc3b"
+      "skillPath": "skills/copy-editing/SKILL.md",
+      "computedHash": "77f2eb2413301d095b4a774acfe9b2b7a590514b06ec5b53cee1f306fa01a040"
     },
     "copywriting": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/copywriting/SKILL.md",
-      "computedHash": "dcbabb6413769c7a8cd8e3c8fdf500d73c8abb44a265e372c798cad7b4e038b9"
+      "skillPath": "skills/copywriting/SKILL.md",
+      "computedHash": "dcbfcfcce735fc93cc9f3071499375c3eff51908d02fcbedc060cb47b8ad08c1"
     },
     "copywriting-psychologist": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3104,10 +3116,10 @@
       "computedHash": "725b87b28a43b3553cf8e4097b5ba5b6523d6589a5b6c251ddaa1c6e2c3f1218"
     },
     "customs-trade-compliance": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/customs-trade-compliance/SKILL.md",
-      "computedHash": "05196249a0a8611195deb87255a86e56b01a6f1bd094b063361a2aab2a4a2f8e"
+      "computedHash": "d562e0bd552c65fc8fd9cddcb9bd00a0483247ed063e3e251e2089d9a667aa14"
     },
     "daily": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3344,10 +3356,10 @@
       "computedHash": "f90d6d1d4c065960a85c417dd1d0b88d01ea6572cb9e43e21d2b0d120f790295"
     },
     "deep-research": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/deep-research/SKILL.md",
-      "computedHash": "cde6edb0b1a98534e20a5ddc764e5ef40b24238aed960dc9352771a23db31c8b"
+      "computedHash": "0ff6fa9901a11aca566911bbe261e2583a179131199e35041e18d0beec128517"
     },
     "defi-amm-security": {
       "source": "affaan-m/everything-claude-code",
@@ -3680,10 +3692,10 @@
       "computedHash": "52a9fa72f69d27c800b0ba6226d1a1d2ec8e5aa421dde63fcaee9f2b2444fc99"
     },
     "e2e-testing": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/e2e-testing/SKILL.md",
-      "computedHash": "b66c5a5415f07b48472049d5301e8327fe39cb23b706f7969668a2d823f62d11"
+      "computedHash": "8d3ba489e1e6e74b5b05b19c5fa2e28e0e2998a206b6eb2256866fc2fd4a6b1c"
     },
     "e2e-testing-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3728,10 +3740,10 @@
       "computedHash": "ba350b3fa13176e2fbc5b153add127a76740cad3f41466581094e8c85967cb2e"
     },
     "email-sequence": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/email-sequence/SKILL.md",
-      "computedHash": "946943bbe1b848a7adea3f3fc255db7bcdc20acb37afdda5cb46518cebf6efad"
+      "skillPath": "skills/email-sequence/SKILL.md",
+      "computedHash": "bb91d87f167e9ceed726d992bf0db3c1d0e1064d35128d29f82b6de9183d0854"
     },
     "email-systems": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3776,10 +3788,10 @@
       "computedHash": "ebef9d8dd67f1be3c8a63b642bcda99aded104c443831b76a4a9fd79453d3ea1"
     },
     "energy-procurement": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/energy-procurement/SKILL.md",
-      "computedHash": "05f8c2fa8e45c550bb021bc1b1edcb4508567a85204eb4d0b7bff7cbea0c8631"
+      "computedHash": "16caa8d61693b4ed8cdb8dec0a3ce719a9eee7e47b4f5c5903fef5f4ddaca656"
     },
     "engineering-advanced-skills": {
       "source": "alirezarezvani/claude-skills",
@@ -3932,10 +3944,10 @@
       "computedHash": "e2367198d2ca2c0f44dc56fa9c5184ed0b49dc7f5cb29fb0b00934fd4d41ab16"
     },
     "exa-search": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/exa-search/SKILL.md",
-      "computedHash": "16816278f0caaf2e916782d1d5356c5a567b6c501c6fedf553785c6ddbabf03b"
+      "computedHash": "77adbbb786b9900a9cd0761fcdd4551c5dc4581a68117a0ffec1edf1c1be24d1"
     },
     "executing-plans": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4262,10 +4274,10 @@
       "computedHash": "41a09bb23de2def6b4e641f0f5b97dd99231bd7c1fc3e9e9126c1becee4d379e"
     },
     "form-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/form-cro/SKILL.md",
-      "computedHash": "3377684a0234b8c9399397b482ec2e17445412c69b78be7f8b5f5985599b7eee"
+      "skillPath": "skills/form-cro/SKILL.md",
+      "computedHash": "9a27c024aeea9871fb8c648f1d0487e894370a316b9125e1f579c3def4116040"
     },
     "foundation-models-on-device": {
       "source": "affaan-m/everything-claude-code",
@@ -4388,10 +4400,10 @@
       "computedHash": "d9a69c604e4c3770492ffd99dfd34a46649fa3db978fd4eec9469483dce8839d"
     },
     "free-tool-strategy": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/free-tool-strategy/SKILL.md",
-      "computedHash": "a34dc7c091a96b3b520184e1c573bb8a010216218f2b147910c9b4266dde8528"
+      "skillPath": "skills/free-tool-strategy/SKILL.md",
+      "computedHash": "8ba7e3515efb4f1dee14d9391e69c049d9af8dcb2799168e4abd11653809160b"
     },
     "freshdesk-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4454,10 +4466,10 @@
       "computedHash": "6f7d6a582812d55da9a12d5fff7523501d1ec500c8fde77f6f7b04ce86d1c569"
     },
     "frontend-slides": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-slides/SKILL.md",
-      "computedHash": "8ee93ac0e6cf1eaf606a5a1755b34fe10af42732066b64be9fbbb08d9b81418b"
+      "computedHash": "4a4320901ef6cdfe9bdf8561ac90d15ae889f114b3926a44f526591d8d37d467"
     },
     "frontend-ui-dark-ts": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4589,7 +4601,7 @@
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/git-pr-review/SKILL.md",
-      "computedHash": "c8397d4d84f016115a3538dd9cf899315d904836709941d70d9763c8b6a58fc5"
+      "computedHash": "24d083f404d78a3c2b52f8a73ed44fc1efd83027b8844315cfcde4f0c8d2d9d0"
     },
     "git-pr-workflows-git-workflow": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5366,10 +5378,10 @@
       "computedHash": "12e4609bf39d1ebd0548ebbe5e7c1c2a3fa72b44d19ca00274791203d6c479d8"
     },
     "inventory-demand-planning": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/inventory-demand-planning/SKILL.md",
-      "computedHash": "61ab6d65a9beeae22d7140034c77cd2fa08ffcf2b0fb794b98a1be20b44d2f82"
+      "computedHash": "af4071e457313cc2df46137a025596eb958be55eedf41d1d7a700eb39667af20"
     },
     "investor-materials": {
       "source": "affaan-m/everything-claude-code",
@@ -5569,6 +5581,18 @@
       "skillPath": "engineering/karpathy-coder/skills/karpathy-coder/SKILL.md",
       "computedHash": "353a93e3c25fcae45cd4aba93ea247232ee99fd821886ca933fd7c19a79792ae"
     },
+    "keypo-signer": {
+      "source": "keypo-us/keypo-cli",
+      "sourceType": "github",
+      "skillPath": "skills/keypo-signer/SKILL.md",
+      "computedHash": "5b640f0e7b207cf1e1797575ae776825e1a96af4363ff8cee6617c0331e7f1a1"
+    },
+    "keypo-wallet": {
+      "source": "keypo-us/keypo-cli",
+      "sourceType": "github",
+      "skillPath": "skills/keypo-wallet/SKILL.md",
+      "computedHash": "4aafa3499d0fd1c958a6614f49c32094bb98cf527810f72f7edfa71cf61ab7e1"
+    },
     "keyword-extractor": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -5651,7 +5675,7 @@
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/kubestellar-console/SKILL.md",
-      "computedHash": "c9a3d0a431ffe9dc9dda5f5911f79569f754babdb3b35beb16d40004a7fab1fc"
+      "computedHash": "974af8f54a9d3dff6ac92160305a57c0e8bb8f548b30f214a9a350c38f93beae"
     },
     "lambda-lang": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5666,10 +5690,10 @@
       "computedHash": "1b6c1ce90a1203bc98db7c1e15b4df4ab46f509a85b1e212060ee814a1434c4f"
     },
     "landing-page-generator": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "product-team/skills/landing-page-generator/SKILL.md",
-      "computedHash": "9e4fb3ddbea332fa4cfbda4446ee908e114d686aac2628532440bd8889219a2a"
+      "skillPath": "skills/landing-page-generator/SKILL.md",
+      "computedHash": "749028608fd236b417406eac18c1c75c646eb088f3ee1b91f0cf31c9b080a83e"
     },
     "langchain-architecture": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5744,10 +5768,10 @@
       "computedHash": "6cf71f1f7c0c837a4bd712cfc1a6ae91fa0efdfb0d6935847d2bbb3847227ee2"
     },
     "launch-strategy": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/launch-strategy/SKILL.md",
-      "computedHash": "ca27bbb7d38cea54ec9466c172e79b26b6807af45cf6c55a279765574250d125"
+      "skillPath": "skills/launch-strategy/SKILL.md",
+      "computedHash": "b8d92fd36be1b422d92a69a5e664e80fa395e08d0aef5f356d6ec3ad38d1d18d"
     },
     "lead-intelligence": {
       "source": "affaan-m/everything-claude-code",
@@ -5978,16 +6002,16 @@
       "computedHash": "52edc575355f46f144f681760f243b40611688ca9fbb838120a13d7a3f20f214"
     },
     "logistics-exception-management": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/logistics-exception-management/SKILL.md",
-      "computedHash": "19a377f013e45a117620143325a26b1bb44236ca809618d5eb17d5a6bfc21a60"
+      "computedHash": "dc5a667daa47058c3dc0a915044922404e0f8b3e5af7086b6c9bd1c15acb19df"
     },
     "loki-mode": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/loki-mode/SKILL.md",
-      "computedHash": "0874fe1e3e52b7c61d3f72de59c63a2d9557dd3456e36527dad386a30d91c899"
+      "computedHash": "e427cbf94b42273f20299e4cf46b1e5ac080055c3d343c76fb96e435d8ba241e"
     },
     "loop": {
       "source": "alirezarezvani/claude-skills",
@@ -6182,10 +6206,10 @@
       "computedHash": "3fd480cb7f1e28264a12a08b78003fee3612b5ffb7f65d80ddd1cbdd63ec9f83"
     },
     "marketing-ideas": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/marketing-ideas/SKILL.md",
-      "computedHash": "7e689106e8692ad36996ca650b01cb9f706290bf54813656238fb30e1d5da50e"
+      "skillPath": "skills/marketing-ideas/SKILL.md",
+      "computedHash": "dcacc55c273a178b3bc508ffaaba799d31b3ce5ede114579b5b46e05856fa57d"
     },
     "marketing-ops": {
       "source": "alirezarezvani/claude-skills",
@@ -6194,10 +6218,10 @@
       "computedHash": "dbe4219d41bfc4bb00a90dcb4e621d44aba8971ebd7f19c73fb57b6c942940fd"
     },
     "marketing-psychology": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/marketing-psychology/SKILL.md",
-      "computedHash": "5fb5155f9da5d125527183497ab0d7c47a593e12b94ea4ba3997478419407737"
+      "skillPath": "skills/marketing-psychology/SKILL.md",
+      "computedHash": "138facd4c51ff0384dfb30970831b277c5aa7709ad279a7a7608600ea46685ca"
     },
     "marketing-skills": {
       "source": "alirezarezvani/claude-skills",
@@ -6421,6 +6445,12 @@
       "skillPath": "skills/mobile-security-coder/SKILL.md",
       "computedHash": "96380500369a505168da9363b00e4ed3255be8dfae911851fa15aac8c70b23e2"
     },
+    "mock-hunter": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mock-hunter/SKILL.md",
+      "computedHash": "796d5b24c3e68ca88a8a1f060fceb37cd81eaf434947fd4f1affe1aebb435ea3"
+    },
     "modern-javascript-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -6516,6 +6546,12 @@
       "sourceType": "github",
       "skillPath": "skills/multi-advisor/SKILL.md",
       "computedHash": "3cdc8351f5203ec4375ecf17c69a45d6fd29f2b74e49525485fc11eff8501c14"
+    },
+    "multi-agent-architect": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/multi-agent-architect/SKILL.md",
+      "computedHash": "441cdae072deca9e64ff02273a449fdab4ef08189c5abc3861c2c354a0d128ef"
     },
     "multi-agent-brainstorming": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -6980,10 +7016,10 @@
       "computedHash": "f9c9a8d39ad4d6e8156264f50d5d7fca69125cf54fe7304c2cbe1cdcd4701b1a"
     },
     "onboarding-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/onboarding-cro/SKILL.md",
-      "computedHash": "7e1c0c68083635560cb324efb7ca037ae28ec53c3322238186fe9768b5e45617"
+      "skillPath": "skills/onboarding-cro/SKILL.md",
+      "computedHash": "eea8649a5d0ccdaa9245d7953df07ef0f40c672ba1f6d7223b7a1d0355d9dffe"
     },
     "onboarding-psychologist": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7070,10 +7106,10 @@
       "computedHash": "e2c99d352914c169a7fcfd2686803103b4b9182ade4aee2dc4e15b7ff6629459"
     },
     "page-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/page-cro/SKILL.md",
-      "computedHash": "9d1906ca90d70cb0a5d17e84b8c57d8003ad11239a3b54663525bb232dcdf463"
+      "skillPath": "skills/page-cro/SKILL.md",
+      "computedHash": "7432a340c77d9e8c162d1894f934de16bfbcb8dec178db111c4887801b57aa90"
     },
     "pagerduty-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7082,10 +7118,10 @@
       "computedHash": "89cc28a73f7feea66df3622255847b25480a925b57aeb79301ab00497b453720"
     },
     "paid-ads": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/paid-ads/SKILL.md",
-      "computedHash": "63a357e252525eff444f1f2382ce437e799bedf262f02d9cd73321467cbc10ec"
+      "skillPath": "skills/paid-ads/SKILL.md",
+      "computedHash": "dfd6dd943dce0d95e33ae2309cba21c81cfc8939bb6fa5eb82c9efc6be584757"
     },
     "pakistan-payments-stack": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7112,10 +7148,10 @@
       "computedHash": "33a1c115fdcca581766000be0d6a5ba66438d03c44fdd3f27edf119dd263fe66"
     },
     "paywall-upgrade-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/paywall-upgrade-cro/SKILL.md",
-      "computedHash": "43e5b85229ac156978387bee479e1858b7abccb83469e69a5a3e7b10cfc0984f"
+      "skillPath": "skills/paywall-upgrade-cro/SKILL.md",
+      "computedHash": "9a8ed5a4fd9ac6302e48641c6c16574c4b12147f0654f9b960ae6687a9c80eea"
     },
     "pci-compliance": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7298,10 +7334,16 @@
       "computedHash": "ef7116a012acdff1d22f575fae5e1b39357c51e85f7ace04de6e0c516fc2cf11"
     },
     "popup-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/popup-cro/SKILL.md",
-      "computedHash": "510f66ebb5f31336bdbf16a3c6a3266152a134c67e1bff095a73db3b2025bc13"
+      "skillPath": "skills/popup-cro/SKILL.md",
+      "computedHash": "313f9faf64a808a709c2bd582f32f4e054cec272979d194ce2b50de2c7405f81"
+    },
+    "portfolio-tracker": {
+      "source": "keypo-us/keypo-cli",
+      "sourceType": "github",
+      "skillPath": "skills/portfolio-tracker/SKILL.md",
+      "computedHash": "6bb5575ff3033f46e5d148937fab3ede95b43baea0ac94582c96bd8fce83a735"
     },
     "posix-shell-pro": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7388,10 +7430,10 @@
       "computedHash": "c2c6b4bada52d8f1158fa051191b9ce342a09c4794ce9cb577e79c9a8f4f70d0"
     },
     "pricing-strategy": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/pricing-strategy/SKILL.md",
-      "computedHash": "485eb90e85199a0bf956d804aa54e84ecbac63569045a336b0b09bb612e6ece9"
+      "skillPath": "skills/pricing-strategy/SKILL.md",
+      "computedHash": "21c1fbd9b7f6d1bda7f9bc2f17ccecead961d316e61ebdd3242f02fe3dda6047"
     },
     "prisma-expert": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7454,10 +7496,10 @@
       "computedHash": "507de1d1fe87370e5b05d389c1bc5990fa6663cb47f9d7f9d94440f9dcbd7c27"
     },
     "product-manager-toolkit": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "product-team/skills/product-manager-toolkit/SKILL.md",
-      "computedHash": "4b76d886158498d4696e307c5bb1e8e7542e395644d0b4eed2070ab0d301f725"
+      "skillPath": "skills/product-manager-toolkit/SKILL.md",
+      "computedHash": "2ceda3574bf6a565d30d2901119109b3d8048871589d6b9a2e7a36cbfddafd03"
     },
     "product-marketing-context": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7481,7 +7523,7 @@
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/production-audit/SKILL.md",
-      "computedHash": "5b2f9e3ab3938cd37cac172dcf33563f978fe428ee7e13b1fed59d41f5236479"
+      "computedHash": "5feeef3b0f09dd3fe03c897fbad44d546a33ea321184c27fef368bc030330e4a"
     },
     "production-code-audit": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7490,10 +7532,10 @@
       "computedHash": "f70b69006effebca27869cfa74329c1a3c873202c5ba8826521023841969c967"
     },
     "production-scheduling": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/production-scheduling/SKILL.md",
-      "computedHash": "15bfc6c495d85133eb3f4b464833e13003b0a0e8d01d317fcfdaa9edc27c2344"
+      "computedHash": "26fa07d7b43dfedc37384af7ac1179578ab0bb67122c1e0b40f58ac8cd727373"
     },
     "professional-proofreader": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7502,10 +7544,10 @@
       "computedHash": "a026be6808c208d8e10d5abcac76e90fa27021821a5b0a791daa90e6e517f88e"
     },
     "programmatic-seo": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/programmatic-seo/SKILL.md",
-      "computedHash": "61d4f27c601894db02abc830e2df2b0e45b9a51f795c3eb060d264f930b0c8b9"
+      "skillPath": "skills/programmatic-seo/SKILL.md",
+      "computedHash": "fa86329f62c96d0a361852b406351e4104d45e7618e1505bac1bf3d35abac0c0"
     },
     "progressive-estimation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7658,10 +7700,10 @@
       "computedHash": "b76aa0da62130284f650c5940b0b3fe2d3368623fdd484e156530018bdf112e0"
     },
     "python-patterns": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/python-patterns/SKILL.md",
-      "computedHash": "16fa370e24821a211eff44d9deb129e05f4ccebfaa8c14277824fd4103635af5"
+      "computedHash": "ba930ea3d365ad8683c462533f7c1fc1e129779baf5cbb3ac72b6c93264e3633"
     },
     "python-performance-optimization": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7730,10 +7772,10 @@
       "computedHash": "74a784312655201d6b5c1fafe9ba00cd0d8a8378e48589d0105a369bf0b28613"
     },
     "quality-nonconformance": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/quality-nonconformance/SKILL.md",
-      "computedHash": "d8822173edc34d1f1ca034eef82c03dd15fc3e84cb01d1860ab0c25330751d52"
+      "computedHash": "d17dd6bbd9c3cb4da4dbf12f40dbbee67fb2cd23ec7d8b82c3b4bfa8962a4bb8"
     },
     "quant-analyst": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7910,10 +7952,10 @@
       "computedHash": "15761876d31c8242e1ef13772478844e5012a795f809f67fd79ad3a4d35276a1"
     },
     "referral-program": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/referral-program/SKILL.md",
-      "computedHash": "df8ca397e815b7ed6382c4b3b022b58f3536146937ec37165038eeea792678a1"
+      "skillPath": "skills/referral-program/SKILL.md",
+      "computedHash": "3a4efb07c7ca55d2480663a0943d3e3d7a81404483c480fab6505547ba202834"
     },
     "regex-vs-llm-structured-text": {
       "source": "affaan-m/everything-claude-code",
@@ -8006,10 +8048,10 @@
       "computedHash": "236ffe6896d2f4d820357e747f07ab918c59a8077e85b54373bf69bea7eabdb2"
     },
     "returns-reverse-logistics": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/returns-reverse-logistics/SKILL.md",
-      "computedHash": "9b339b6ff44d367675a0c20f0f8e973a98b278c3ec4e099543628c828f122369"
+      "computedHash": "f3bdf6eb81e9fa1ce5fd343a82f449987f6901c01a9b8faaf9cb85446fd6f778"
     },
     "revenue-operations": {
       "source": "alirezarezvani/claude-skills",
@@ -8034,6 +8076,12 @@
       "sourceType": "github",
       "skillPath": "skills/revops/SKILL.md",
       "computedHash": "f29387101563aa7d0ae9ced4d7723004be1a7dab5f119083d0c570c714dc0431"
+    },
+    "rich-elicitation": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/rich-elicitation/SKILL.md",
+      "computedHash": "952a0b85173437cf25ba71c4d804c88d22a55f2bcf84a5c01830881748e0d396"
     },
     "risk-management-specialist": {
       "source": "alirezarezvani/claude-skills",
@@ -8264,10 +8312,10 @@
       "computedHash": "b2569a4f2c8a6df071d7186ad765cfcc320801aabd806964720a8be6af9037c9"
     },
     "schema-markup": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/schema-markup/SKILL.md",
-      "computedHash": "1d4f0bf40a15e35a3ced7351f03f1fb03174cfe64513e9d09e295851a5418d5f"
+      "skillPath": "skills/schema-markup/SKILL.md",
+      "computedHash": "f3cd6e36091bb83821ed95930e1ffdf52802aeca99f4592ac129a26d8d66427d"
     },
     "scientific-writing": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8456,10 +8504,10 @@
       "computedHash": "e1d44c587c1528d7bf0be1f06b82780a9ad284434660b35d54ef45224df2e091"
     },
     "senior-architect": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "engineering-team/skills/senior-architect/SKILL.md",
-      "computedHash": "0152c1cb90512177153d936557a11bf760d5cbd21470a1305cc727d0a3af1df9"
+      "skillPath": "skills/senior-architect/SKILL.md",
+      "computedHash": "9bbe574ab4a0b6c7183e5631386b2bc44b31eaaa5d7843dd5d332631d8c25fe6"
     },
     "senior-backend": {
       "source": "alirezarezvani/claude-skills",
@@ -8492,16 +8540,16 @@
       "computedHash": "816ec10cb6ca6fcc2d218cbd0d14165a67b27d0515f42321d6586caa2b0394f3"
     },
     "senior-frontend": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "engineering-team/skills/senior-frontend/SKILL.md",
-      "computedHash": "876e6daaf3a8785f1628e90bc2b92675e869206fddfe352c1d95c634f146311b"
+      "skillPath": "skills/senior-frontend/SKILL.md",
+      "computedHash": "431bc32af5d82ceb3d0ad781c7c0ca2f0a585df5e7a768af85e23f0f67641e65"
     },
     "senior-fullstack": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "engineering-team/skills/senior-fullstack/SKILL.md",
-      "computedHash": "a1bbb5942526a19de7b94768555a5509d37337f74ba163399ea0f41bc95959e7"
+      "skillPath": "skills/senior-fullstack/SKILL.md",
+      "computedHash": "337a526661c4ab6916cf399209bc41628605b6299cb080cd5cddf9c587939af9"
     },
     "senior-ml-engineer": {
       "source": "alirezarezvani/claude-skills",
@@ -8546,10 +8594,10 @@
       "computedHash": "02120a4a96cded0aeff2cdadbe913765e5901a478b77302857959f6eb926c1ff"
     },
     "seo": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/seo/SKILL.md",
-      "computedHash": "bed0668abba0f43512ba190c9c2c46d3a7e983583997783bf600f2ed5587b351"
+      "computedHash": "f6f64ecf31f112c07ea1e3d49d52994e2067d85fed3ee9b0b03cdc7fcc2220cc"
     },
     "seo-aeo-blog-writer": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8600,10 +8648,10 @@
       "computedHash": "f74850e40641f54e3fb4408347691b0d757611d00d7b936ea45b733de90ac406"
     },
     "seo-audit": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/seo-audit/SKILL.md",
-      "computedHash": "553858ee272698dc53d1dbb23f555c0806c8027a865db32fc1f6d5790329a883"
+      "skillPath": "skills/seo-audit/SKILL.md",
+      "computedHash": "50abed9d8282dc3512802f3295e3adfad1aaf8f5a00b66a8e054d446f0c4c2ca"
     },
     "seo-authority-builder": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8840,10 +8888,10 @@
       "computedHash": "d313d08c047304de15381b672aeb940b7fd0b2487213f00b4c1041ed17413138"
     },
     "signup-flow-cro": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/signup-flow-cro/SKILL.md",
-      "computedHash": "425589a5e7416c36736716523a7084beac049d820b12989d08b5bd7da65d0704"
+      "skillPath": "skills/signup-flow-cro/SKILL.md",
+      "computedHash": "04ea784c8eb11585b2dfd7a3e7dcaf11dbc9fa81d1d3615adc10f095c869a7d1"
     },
     "similarity-search-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8858,10 +8906,10 @@
       "computedHash": "6ed13a18c5aa533063a87895a4532938c23bb5e489ae1198cac3e36c708e2a22"
     },
     "site-architecture": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/site-architecture/SKILL.md",
-      "computedHash": "025ee87502067fd8390400bfbc2ed3663ed1ad494eef61cd5657845c6b1057b1"
+      "skillPath": "skills/site-architecture/SKILL.md",
+      "computedHash": "7df2e00a343231596677202dfb991509cb28bd5ffe4af0d71e1907cffe7117d5"
     },
     "skill-audit": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8963,7 +9011,7 @@
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/skill-writer/SKILL.md",
-      "computedHash": "12f5763c1610c23f270ed8fa4521fe18b4bad8e5ec1d8b7bd072106548f10c68"
+      "computedHash": "ee345d5aa98d1c7327f0e2cf352379e2013b7905203093f0c05960a472d57628"
     },
     "skin-health-analyzer": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9026,10 +9074,10 @@
       "computedHash": "f5eefe69c0afb0ffbe0acb44bee8d690b08c02922ad533f48ef5b1d7f42cb345"
     },
     "social-content": {
-      "source": "alirezarezvani/claude-skills",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
-      "skillPath": "marketing-skill/skills/social-content/SKILL.md",
-      "computedHash": "a9cd650459b02b5d7d842982878469e198c9747c16d47b2525d583ce3d13603d"
+      "skillPath": "skills/social-content/SKILL.md",
+      "computedHash": "943cec2b49f9a3f09de2d3ec02f4ea383bc4896cde5179c39eab9ebd308be943"
     },
     "social-graph-ranker": {
       "source": "affaan-m/everything-claude-code",
@@ -9506,10 +9554,10 @@
       "computedHash": "d9d32fa1b5c2d6d0a66ef4bf689157ce4a9a475ddd137b0beceafff11d62e62e"
     },
     "tdd-workflow": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/tdd-workflow/SKILL.md",
-      "computedHash": "d10751717312fe7613c05c226013569edd1b6c1785a446897570c703cc9c5d02"
+      "computedHash": "9224d1024d1164ef2243358c40397a70f65800b6c431b92f6fbac42afcf4902e"
     },
     "tdd-workflows-tdd-cycle": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10021,6 +10069,12 @@
       "skillPath": "skills/unit-testing-test-generate/SKILL.md",
       "computedHash": "60b0c33801210bd79b53f05c6466cc32e77fbbfd9538b1d1ba2958ed78c723e3"
     },
+    "unity-ai-game-creator": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/unity-ai-game-creator/SKILL.md",
+      "computedHash": "c3d63b35033e20d9eb7ff0d6a0a8ab6d34897b2e9baf6de8499bfdff18641bfe"
+    },
     "unity-developer": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -10232,10 +10286,10 @@
       "computedHash": "909c41bee4962b9a84ef3e673e060fb3555c77ca82ba1ef80d49807af315a152"
     },
     "videodb": {
-      "source": "affaan-m/everything-claude-code",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/videodb/SKILL.md",
-      "computedHash": "f5cf0486e14f5e2521b575caea6add5b143a4ccac60adead8733fc466e2d7960"
+      "computedHash": "71e9d76848f9a653f3e900a4096e20d65210ad9146b8f76ef8b5590fd0c0a541"
     },
     "videodb-skills": {
       "source": "sickn33/antigravity-awesome-skills",

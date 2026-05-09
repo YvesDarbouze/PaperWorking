@@ -1,579 +1,353 @@
 ---
 name: hono
-description: Use when building Hono web applications or when the user asks about Hono APIs, routing, middleware, JSX, validation, testing, or streaming. TRIGGER when code imports from 'hono' or 'hono/*', or user mentions Hono. Use `npx hono request` to test endpoints.
+description: "Build ultra-fast web APIs and full-stack apps with Hono — runs on Cloudflare Workers, Deno, Bun, Node.js, and any WinterCG-compatible runtime."
+category: backend
+risk: safe
+source: community
+date_added: "2026-03-18"
+author: suhaibjanjua
+tags: [hono, edge, cloudflare-workers, bun, deno, api, typescript, web-standards]
+tools: [claude, cursor, gemini]
 ---
 
-# Hono Skill
+# Hono Web Framework
 
-Build Hono web applications. This skill provides inline API knowledge for AI. Use `npx hono request` to test endpoints. If the `hono-docs` MCP server is configured, prefer its tools for the latest documentation over the inline reference.
+## Overview
 
-## Hono CLI Usage
+Hono (炎, "flame" in Japanese) is a small, ultrafast web framework built on Web Standards (`Request`/`Response`/`fetch`). It runs anywhere: Cloudflare Workers, Deno Deploy, Bun, Node.js, AWS Lambda, and any WinterCG-compatible runtime — with the same code. Hono's router is one of the fastest available, and its middleware system, built-in JSX support, and RPC client make it a strong choice for edge APIs, BFFs, and lightweight full-stack apps.
 
-### Request Testing
+## When to Use This Skill
 
-Test endpoints without starting an HTTP server. Uses `app.request()` internally.
+- Use when building a REST or RPC API for edge deployment (Cloudflare Workers, Deno Deploy)
+- Use when you need a minimal but type-safe server framework for Bun or Node.js
+- Use when building a Backend for Frontend (BFF) layer with low latency requirements
+- Use when migrating from Express but wanting better TypeScript support and edge compatibility
+- Use when the user asks about Hono routing, middleware, `c.req`, `c.json`, or `hc()` RPC client
 
+## How It Works
+
+### Step 1: Project Setup
+
+**Cloudflare Workers (recommended for edge):**
 ```bash
-# GET request
-npx hono request [file] -P /path
-
-# POST request with JSON body
-npx hono request [file] -X POST -P /api/users -d '{"name": "test"}'
+npm create hono@latest my-api
+# Select: cloudflare-workers
+cd my-api
+npm install
+npm run dev    # Wrangler local dev
+npm run deploy # Deploy to Cloudflare
 ```
 
-**Note:** Do not pass credentials directly in CLI arguments. Use environment variables for sensitive values. `hono request` does not support Cloudflare Workers bindings (KV, D1, R2, etc.). When bindings are required, use `workers-fetch` instead:
-
+**Bun / Node.js:**
 ```bash
-npx workers-fetch /path
-npx workers-fetch -X POST -H "Content-Type:application/json" -d '{"name":"test"}' /api/users
+mkdir my-api && cd my-api
+bun init
+bun add hono
 ```
 
----
+```typescript
+// src/index.ts (Bun)
+import { Hono } from 'hono';
 
-## Hono API Reference
+const app = new Hono();
 
-### App Constructor
+app.get('/', c => c.text('Hello Hono!'));
 
-```ts
-import { Hono } from 'hono'
-
-const app = new Hono()
-
-// With TypeScript generics
-type Env = {
-  Bindings: { DATABASE: D1Database; KV: KVNamespace }
-  Variables: { user: User }
-}
-const app = new Hono<Env>()
+export default {
+  port: 3000,
+  fetch: app.fetch,
+};
 ```
 
-### Routing Methods
+### Step 2: Routing
 
-```ts
-app.get('/path', handler)
-app.post('/path', handler)
-app.put('/path', handler)
-app.delete('/path', handler)
-app.patch('/path', handler)
-app.options('/path', handler)
-app.all('/path', handler) // all HTTP methods
-app.on('PURGE', '/path', handler) // custom method
-app.on(['PUT', 'DELETE'], '/path', handler) // multiple methods
+```typescript
+import { Hono } from 'hono';
+
+const app = new Hono();
+
+// Basic methods
+app.get('/posts', c => c.json({ posts: [] }));
+app.post('/posts', c => c.json({ created: true }, 201));
+app.put('/posts/:id', c => c.json({ updated: true }));
+app.delete('/posts/:id', c => c.json({ deleted: true }));
+
+// Route params and query strings
+app.get('/posts/:id', async c => {
+  const id = c.req.param('id');
+  const format = c.req.query('format') ?? 'json';
+  return c.json({ id, format });
+});
+
+// Wildcard
+app.get('/static/*', c => c.text('static file'));
+
+export default app;
 ```
 
-### Routing Patterns
-
-```ts
-// Path parameters
-app.get('/user/:name', (c) => {
-  const name = c.req.param('name')
-  return c.json({ name })
-})
-
-// Multiple params
-app.get('/posts/:id/comments/:commentId', (c) => {
-  const { id, commentId } = c.req.param()
-})
-
-// Optional parameters
-app.get('/api/animal/:type?', (c) => c.text('Animal!'))
-
-// Wildcards
-app.get('/wild/*/card', (c) => c.text('Wildcard'))
-
-// Regexp constraints
-app.get('/post/:date{[0-9]+}/:title{[a-z]+}', (c) => {
-  const { date, title } = c.req.param()
-})
-
-// Chained routes
+**Chained routing:**
+```typescript
 app
-  .get('/endpoint', (c) => c.text('GET'))
-  .post((c) => c.text('POST'))
-  .delete((c) => c.text('DELETE'))
+  .get('/users', listUsers)
+  .post('/users', createUser)
+  .get('/users/:id', getUser)
+  .patch('/users/:id', updateUser)
+  .delete('/users/:id', deleteUser);
 ```
 
-### Route Grouping
+### Step 3: Middleware
 
-```ts
-// Using route()
-const api = new Hono()
-api.get('/users', (c) => c.json([]))
+Hono middleware works exactly like `fetch` interceptors — before and after handlers:
 
-const app = new Hono()
-app.route('/api', api) // mounts at /api/users
+```typescript
+import { Hono } from 'hono';
+import { logger } from 'hono/logger';
+import { cors } from 'hono/cors';
+import { bearerAuth } from 'hono/bearer-auth';
 
-// Using basePath()
-const app = new Hono().basePath('/api')
-app.get('/users', (c) => c.json([])) // GET /api/users
+const app = new Hono();
+
+// Built-in middleware
+app.use('*', logger());
+app.use('/api/*', cors({ origin: 'https://myapp.com' }));
+app.use('/api/admin/*', bearerAuth({ token: process.env.API_TOKEN! }));
+
+// Custom middleware
+app.use('*', async (c, next) => {
+  c.set('requestId', crypto.randomUUID());
+  await next();
+  c.header('X-Request-Id', c.get('requestId'));
+});
 ```
 
-### Error Handling
+**Available built-in middleware:** `logger`, `cors`, `csrf`, `etag`, `cache`, `basicAuth`, `bearerAuth`, `jwt`, `compress`, `bodyLimit`, `timeout`, `prettyJSON`, `secureHeaders`.
 
-```ts
-app.notFound((c) => c.json({ message: 'Not Found' }, 404))
+### Step 4: Request and Response Helpers
 
-app.onError((err, c) => {
-  console.error(err)
-  return c.json({ message: 'Internal Server Error' }, 500)
-})
+```typescript
+app.post('/submit', async c => {
+  // Parse body
+  const body = await c.req.json<{ name: string; email: string }>();
+  const form = await c.req.formData();
+  const text = await c.req.text();
+
+  // Headers and cookies
+  const auth = c.req.header('authorization');
+  const token = getCookie(c, 'session');
+
+  // Responses
+  return c.json({ ok: true });                        // JSON
+  return c.text('hello');                             // plain text
+  return c.html('<h1>Hello</h1>');                    // HTML
+  return c.redirect('/dashboard', 302);              // redirect
+  return new Response(stream, { status: 200 });       // raw Response
+});
 ```
 
----
+### Step 5: Zod Validator Middleware
 
-## Context (c)
+```typescript
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 
-### Response Methods
+const createPostSchema = z.object({
+  title: z.string().min(1).max(200),
+  body: z.string().min(1),
+  tags: z.array(z.string()).default([]),
+});
 
-```ts
-c.text('Hello') // text/plain
-c.json({ message: 'Hello' }) // application/json
-c.html('<h1>Hello</h1>') // text/html
-c.redirect('/new-path') // 302 redirect
-c.redirect('/new-path', 301) // 301 redirect
-c.body('raw body', 200, headers) // raw response
-c.notFound() // 404 response
-```
-
-### Headers & Status
-
-```ts
-c.status(201)
-c.header('X-Custom', 'value')
-c.header('Cache-Control', 'no-store')
-```
-
-### Variables (request-scoped data)
-
-```ts
-// In middleware
-c.set('user', { id: 1, name: 'Alice' })
-
-// In handler
-const user = c.get('user')
-// or
-const user = c.var.user
-```
-
-### Environment (Cloudflare Workers)
-
-```ts
-const value = await c.env.KV.get('key')
-const db = c.env.DATABASE
-c.executionCtx.waitUntil(promise)
-```
-
-### Renderer
-
-```ts
-app.use(async (c, next) => {
-  c.setRenderer((content) =>
-    c.html(
-      <html><body>{content}</body></html>
-    )
-  )
-  await next()
-})
-
-app.get('/', (c) => c.render(<h1>Hello</h1>))
-```
-
----
-
-## HonoRequest (c.req)
-
-```ts
-c.req.param('id') // path parameter
-c.req.param() // all path params as object
-c.req.query('page') // query string parameter
-c.req.query() // all query params as object
-c.req.queries('tags') // multiple values: ?tags=A&tags=B → ['A', 'B']
-c.req.header('Authorization') // request header
-c.req.header() // all headers (keys are lowercase)
-
-// Body parsing
-await c.req.json() // parse JSON body
-await c.req.text() // parse text body
-await c.req.formData() // parse as FormData
-await c.req.parseBody() // parse multipart/form-data or urlencoded
-await c.req.arrayBuffer() // parse as ArrayBuffer
-await c.req.blob() // parse as Blob
-
-// Validated data (used with validator middleware)
-c.req.valid('json')
-c.req.valid('query')
-c.req.valid('form')
-c.req.valid('param')
-
-// Properties
-c.req.url // full URL string
-c.req.path // pathname
-c.req.method // HTTP method
-c.req.raw // underlying Request object
-```
-
----
-
-## Middleware
-
-### Using Built-in Middleware
-
-```ts
-import { cors } from 'hono/cors'
-import { logger } from 'hono/logger'
-import { basicAuth } from 'hono/basic-auth'
-import { prettyJSON } from 'hono/pretty-json'
-import { secureHeaders } from 'hono/secure-headers'
-import { etag } from 'hono/etag'
-import { compress } from 'hono/compress'
-import { poweredBy } from 'hono/powered-by'
-import { timing } from 'hono/timing'
-import { cache } from 'hono/cache'
-import { bearerAuth } from 'hono/bearer-auth'
-import { jwt } from 'hono/jwt'
-import { csrf } from 'hono/csrf'
-import { ipRestriction } from 'hono/ip-restriction'
-import { bodyLimit } from 'hono/body-limit'
-import { requestId } from 'hono/request-id'
-import { methodOverride } from 'hono/method-override'
-import { trailingSlash, trimTrailingSlash } from 'hono/trailing-slash'
-
-// Registration
-app.use(logger()) // all routes
-app.use('/api/*', cors()) // specific path
-app.post('/api/*', basicAuth({ username: 'admin', password: 'secret' }))
-```
-
-### Custom Middleware
-
-```ts
-// Inline
-app.use(async (c, next) => {
-  const start = Date.now()
-  await next()
-  const elapsed = Date.now() - start
-  c.res.headers.set('X-Response-Time', `${elapsed}ms`)
-})
-
-// Reusable with createMiddleware
-import { createMiddleware } from 'hono/factory'
-
-const auth = createMiddleware(async (c, next) => {
-  const token = c.req.header('Authorization')
-  if (!token) return c.json({ error: 'Unauthorized' }, 401)
-  await next()
-})
-
-app.use('/api/*', auth)
-```
-
-### Middleware Execution Order
-
-Middleware executes in registration order. `await next()` calls the next middleware/handler, and code after `next()` runs on the way back:
-
-```
-Request → mw1 before → mw2 before → handler → mw2 after → mw1 after → Response
-```
-
-```ts
-app.use(async (c, next) => {
-  // before handler
-  await next()
-  // after handler
-})
-```
-
----
-
-## Validation
-
-Validation targets: `json`, `form`, `query`, `header`, `param`, `cookie`.
-
-### Zod Validator
-
-```ts
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-
-const schema = z.object({
-  title: z.string().min(1),
-  body: z.string()
-})
-
-app.post('/posts', zValidator('json', schema), (c) => {
-  const data = c.req.valid('json') // fully typed
-  return c.json(data, 201)
-})
-```
-
-### Valibot / Standard Schema Validator
-
-```ts
-import { sValidator } from '@hono/standard-validator'
-import * as v from 'valibot'
-
-const schema = v.object({ name: v.string(), age: v.number() })
-
-app.post('/users', sValidator('json', schema), (c) => {
-  const data = c.req.valid('json')
-  return c.json(data, 201)
-})
-```
-
----
-
-## JSX
-
-### Setup
-
-In `tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+app.post(
+  '/posts',
+  zValidator('json', createPostSchema),
+  async c => {
+    const data = c.req.valid('json'); // fully typed
+    const post = await db.post.create({ data });
+    return c.json(post, 201);
   }
-}
+);
 ```
 
-Or use pragma: `/** @jsxImportSource hono/jsx */`
+### Step 6: Route Groups and App Composition
 
-**Important:** Files using JSX must have a `.tsx` extension. Rename `.ts` to `.tsx` or the compiler will fail.
+```typescript
+// src/routes/posts.ts
+import { Hono } from 'hono';
 
-### Components
+const posts = new Hono();
 
-```tsx
-import type { PropsWithChildren } from 'hono/jsx'
+posts.get('/', async c => { /* list posts */ });
+posts.post('/', async c => { /* create post */ });
+posts.get('/:id', async c => { /* get post */ });
 
-const Layout = (props: PropsWithChildren) => (
-  <html>
-    <head>
-      <title>My App</title>
-    </head>
-    <body>{props.children}</body>
-  </html>
-)
-
-const UserCard = ({ name }: { name: string }) => (
-  <div class="card">
-    <h2>{name}</h2>
-  </div>
-)
-
-app.get('/', (c) => {
-  return c.html(
-    <Layout>
-      <UserCard name="Alice" />
-    </Layout>
-  )
-})
+export default posts;
 ```
 
-### jsxRenderer Middleware
+```typescript
+// src/index.ts
+import { Hono } from 'hono';
+import posts from './routes/posts';
+import users from './routes/users';
 
-Use `jsxRenderer` middleware for layouts. See `npx hono docs /docs/middleware/builtin/jsx-renderer` for details.
+const app = new Hono().basePath('/api');
 
-### Async Components
+app.route('/posts', posts);
+app.route('/users', users);
 
-```tsx
-const UserList = async () => {
-  const users = await fetchUsers()
-  return (
-    <ul>
-      {users.map((u) => (
-        <li>{u.name}</li>
-      ))}
-    </ul>
-  )
-}
+export default app;
 ```
 
-### Fragments
+### Step 7: RPC Client (End-to-End Type Safety)
 
-```tsx
-const Items = () => (
-  <>
-    <li>Item 1</li>
-    <li>Item 2</li>
-  </>
-)
+Hono's RPC mode exports route types that the `hc` client consumes — similar to tRPC but using fetch conventions:
+
+```typescript
+// server: src/routes/posts.ts
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
+
+const posts = new Hono()
+  .get('/', c => c.json({ posts: [{ id: '1', title: 'Hello' }] }))
+  .post(
+    '/',
+    zValidator('json', z.object({ title: z.string() })),
+    async c => {
+      const { title } = c.req.valid('json');
+      return c.json({ id: '2', title }, 201);
+    }
+  );
+
+export default posts;
+export type PostsType = typeof posts;
 ```
 
----
+```typescript
+// client: src/client.ts
+import { hc } from 'hono/client';
+import type { PostsType } from '../server/routes/posts';
 
-## Streaming
+const client = hc<PostsType>('/api/posts');
 
-```ts
-import { stream, streamText, streamSSE } from 'hono/streaming'
+// Fully typed — autocomplete on routes, params, and responses
+const { posts } = await client.$get().json();
+const newPost = await client.$post({ json: { title: 'New Post' } }).json();
+```
 
-// Basic stream
-app.get('/stream', (c) => {
-  return stream(c, async (stream) => {
-    stream.onAbort(() => console.log('Aborted'))
-    await stream.write(new Uint8Array([0x48, 0x65]))
-    await stream.pipe(readableStream)
-  })
-})
+## Examples
 
-// Text stream
-app.get('/stream-text', (c) => {
-  return streamText(c, async (stream) => {
-    await stream.writeln('Hello')
-    await stream.sleep(1000)
-    await stream.write('World')
-  })
-})
+### Example 1: JWT Auth Middleware
 
-// Server-Sent Events
-app.get('/sse', (c) => {
-  return streamSSE(c, async (stream) => {
-    let id = 0
-    while (true) {
-      await stream.writeSSE({
-        data: JSON.stringify({ time: new Date().toISOString() }),
-        event: 'time-update',
-        id: String(id++)
-      })
-      await stream.sleep(1000)
+```typescript
+import { Hono } from 'hono';
+import { jwt, sign } from 'hono/jwt';
+
+const app = new Hono();
+const SECRET = process.env.JWT_SECRET!;
+
+app.post('/login', async c => {
+  const { email, password } = await c.req.json();
+  const user = await validateUser(email, password);
+  if (!user) return c.json({ error: 'Invalid credentials' }, 401);
+
+  const token = await sign({ sub: user.id, exp: Math.floor(Date.now() / 1000) + 3600 }, SECRET);
+  return c.json({ token });
+});
+
+app.use('/api/*', jwt({ secret: SECRET }));
+app.get('/api/me', async c => {
+  const payload = c.get('jwtPayload');
+  const user = await getUserById(payload.sub);
+  return c.json(user);
+});
+
+export default app;
+```
+
+### Example 2: Cloudflare Workers with D1 Database
+
+```typescript
+// src/index.ts
+import { Hono } from 'hono';
+
+type Bindings = {
+  DB: D1Database;
+  API_TOKEN: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
+
+app.get('/users', async c => {
+  const { results } = await c.env.DB.prepare('SELECT * FROM users LIMIT 50').all();
+  return c.json(results);
+});
+
+app.post('/users', async c => {
+  const { name, email } = await c.req.json();
+  await c.env.DB.prepare('INSERT INTO users (name, email) VALUES (?, ?)')
+    .bind(name, email)
+    .run();
+  return c.json({ created: true }, 201);
+});
+
+export default app;
+```
+
+### Example 3: Streaming Response
+
+```typescript
+import { stream, streamText } from 'hono/streaming';
+
+app.get('/stream', c =>
+  streamText(c, async stream => {
+    for (const chunk of ['Hello', ' ', 'World']) {
+      await stream.write(chunk);
+      await stream.sleep(100);
     }
   })
-})
+);
 ```
-
----
-
-## Testing with app.request()
-
-Test endpoints without starting an HTTP server:
-
-```ts
-// GET
-const res = await app.request('/posts')
-expect(res.status).toBe(200)
-expect(await res.json()).toEqual({ posts: [] })
-
-// POST with JSON
-const res = await app.request('/posts', {
-  method: 'POST',
-  body: JSON.stringify({ title: 'Hello' }),
-  headers: { 'Content-Type': 'application/json' }
-})
-
-// POST with FormData
-const formData = new FormData()
-formData.append('name', 'Alice')
-const res = await app.request('/users', { method: 'POST', body: formData })
-
-// With mock env (Cloudflare Workers bindings)
-const res = await app.request('/api/data', {}, { KV: mockKV, DATABASE: mockDB })
-
-// Using Request object
-const req = new Request('http://localhost/api', { method: 'DELETE' })
-const res = await app.request(req)
-```
-
----
-
-## Hono Client (RPC)
-
-Type-safe API client using shared types between server and client.
-
-**IMPORTANT: Routes MUST be chained for type inference to work. Without chaining, the client cannot infer route types.**
-
-```ts
-// Server: routes MUST be chained to preserve types
-const route = app
-  .post('/posts', zValidator('json', schema), (c) => {
-    return c.json({ ok: true }, 201)
-  })
-  .get('/posts', (c) => {
-    return c.json({ posts: [] })
-  })
-export type AppType = typeof route
-
-// Client: use hc() with the exported type
-import { hc } from 'hono/client'
-import type { AppType } from './server'
-
-const client = hc<AppType>('http://localhost:8787/')
-const res = await client.posts.$post({ json: { title: 'Hello' } })
-const data = await res.json() // fully typed
-```
-
-Type utilities:
-
-```ts
-import type { InferRequestType, InferResponseType } from 'hono/client'
-
-type ReqType = InferRequestType<typeof client.posts.$post>
-type ResType = InferResponseType<typeof client.posts.$post, 200>
-```
-
----
-
-## Helpers
-
-Helpers are utility functions imported from `hono/<helper-name>`:
-
-```ts
-import { getConnInfo } from 'hono/conninfo'
-import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
-import { css, Style } from 'hono/css'
-import { createFactory } from 'hono/factory'
-import { html, raw } from 'hono/html'
-import { stream, streamText, streamSSE } from 'hono/streaming'
-import { testClient } from 'hono/testing'
-import { upgradeWebSocket } from 'hono/cloudflare-workers' // or other adapter
-```
-
-Available helpers: Accepts, Adapter, ConnInfo, Cookie, css, Dev, Factory, html, JWT, Proxy, Route, SSG, Streaming, Testing, WebSocket.
-
-For details, use `npx hono docs /docs/helpers/<helper-name>`.
-
-### Factory
-
-Use `createFactory` to define `Env` once and share it across app, middleware, and handlers:
-
-```ts
-import { createFactory } from 'hono/factory'
-
-const factory = createFactory<Env>()
-
-// Create app (Env type is inherited)
-const app = factory.createApp()
-
-// Create middleware (Env type is inherited, no need to pass generics)
-const mw = factory.createMiddleware(async (c, next) => {
-  await next()
-})
-
-// Create handlers separately (preserves type inference)
-const handlers = factory.createHandlers(logger(), (c) => c.json({ message: 'Hello' }))
-app.get('/api', ...handlers)
-```
-
----
 
 ## Best Practices
 
-- Write handlers inline in route definitions for proper type inference of path params.
-- Use `app.route()` to organize large apps by feature, not Rails-style controllers.
-- Use `createFactory()` to share Env type across app, middleware, and handlers.
-- Use `c.set()`/`c.get()` to pass data between middleware and handlers.
-- Chain validators for multiple request parts (param + query + json).
-- Export app type for RPC: `export type AppType = typeof routes`
-- Use `app.request()` for testing — no server startup needed.
+- ✅ Use route groups (sub-apps) to keep handlers in separate files — `app.route('/users', usersRouter)`
+- ✅ Use `zValidator` for all request body, query, and param validation
+- ✅ Type Cloudflare Workers bindings with the `Bindings` generic: `new Hono<{ Bindings: Env }>()`
+- ✅ Use the RPC client (`hc`) when your frontend and backend share the same repo
+- ✅ Prefer returning `c.json()`/`c.text()` over `new Response()` for cleaner code
+- ❌ Don't use Node.js-specific APIs (`fs`, `path`, `process`) if you want edge portability
+- ❌ Don't add heavy dependencies — Hono's value is its tiny footprint on edge runtimes
+- ❌ Don't skip middleware typing — use generics (`Variables`, `Bindings`) to keep `c.get()` type-safe
 
-## Adapters
+## Security & Safety Notes
 
-Hono runs on multiple runtimes. The default export works for Cloudflare Workers, Deno, and Bun. For Node.js, use the Node adapter:
+- Always validate input with `zValidator` before using data from requests.
+- Use Hono's built-in `csrf` middleware on mutation endpoints when serving HTML/forms.
+- For Cloudflare Workers, store secrets in `wrangler.toml` `[vars]` (non-secret) or `wrangler secret put` (secret) — never hardcode them in source.
+- When using `bearerAuth` or `jwt`, ensure tokens are validated server-side — do not trust client-provided user IDs.
+- Rate-limit sensitive endpoints (auth, password reset) with Cloudflare Rate Limiting or a custom middleware.
 
-```ts
-// Cloudflare Workers / Deno / Bun
-export default app
+## Common Pitfalls
 
-// Node.js
-import { serve } from '@hono/node-server'
-serve(app)
-```
+- **Problem:** Handler returns `undefined` — response is empty
+  **Solution:** Always `return` a response from handlers: `return c.json(...)` not just `c.json(...)`.
+
+- **Problem:** Middleware runs after the response is sent
+  **Solution:** Call `await next()` before post-response logic; Hono runs code after `next()` as the response travels back up the chain.
+
+- **Problem:** `c.env` is undefined on Node.js
+  **Solution:** Cloudflare `env` bindings only exist in Workers. Use `process.env` on Node.js.
+
+- **Problem:** Route not matching — gets a 404
+  **Solution:** Check that `app.route('/prefix', subRouter)` uses the same prefix your client calls. Sub-routers should **not** repeat the prefix in their own routes.
+
+## Related Skills
+
+- `@cloudflare-workers-expert` — Deep dive into Cloudflare Workers platform specifics
+- `@trpc-fullstack` — Alternative RPC approach for TypeScript full-stack apps
+- `@zod-validation-expert` — Detailed Zod schema patterns used with `@hono/zod-validator`
+- `@nodejs-backend-patterns` — When you need a Node.js-specific backend (not edge)
+
+## Limitations
+- Use this skill only when the task clearly matches the scope described above.
+- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
+- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

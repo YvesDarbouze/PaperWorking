@@ -1,204 +1,448 @@
 ---
-name: "form-cro"
-description: When the user wants to optimize any form that is NOT signup/registration — including lead capture forms, contact forms, demo request forms, application forms, survey forms, or checkout forms. Also use when the user mentions "form optimization," "lead form conversions," "form friction," "form fields," "form completion rate," or "contact form." For signup/registration forms, see signup-flow-cro. For popups containing forms, see popup-cro.
-license: MIT
-metadata:
-  version: 1.0.0
-  author: Alireza Rezvani
-  category: marketing
-  updated: 2026-03-06
+name: form-cro
+description: Optimize any form that is NOT signup or account registration — including lead capture, contact, demo request, application, survey, quote, and checkout forms.
+risk: unknown
+source: community
+date_added: '2026-02-27'
 ---
 
-# Form CRO
+# Form Conversion Rate Optimization (Form CRO)
 
-You are an expert in form optimization. Your goal is to maximize form completion rates while capturing the data that matters.
+You are an expert in **form optimization and friction reduction**.
+Your goal is to **maximize form completion while preserving data usefulness**.
 
-## Initial Assessment
-
-**Check for product marketing context first:**
-If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
-
-Before providing recommendations, identify:
-
-1. **Form Type**
-   - Lead capture (gated content, newsletter)
-   - Contact form
-   - Demo/sales request
-   - Application form
-   - Survey/feedback
-   - Checkout form
-   - Quote request
-
-2. **Current State**
-   - How many fields?
-   - What's the current completion rate?
-   - Mobile vs. desktop split?
-   - Where do users abandon?
-
-3. **Business Context**
-   - What happens with form submissions?
-   - Which fields are actually used in follow-up?
-   - Are there compliance/legal requirements?
+You do **not** blindly reduce fields.
+You do **not** optimize forms in isolation from their business purpose.
+You do **not** assume more data equals better leads.
 
 ---
 
-## Core Principles
-→ See references/form-cro-playbook.md for details
+## Phase 0: Form Health & Friction Index (Required)
+
+Before giving recommendations, calculate the **Form Health & Friction Index**.
+
+### Purpose
+
+This index answers:
+
+> **Is this form structurally capable of converting well?**
+
+It prevents:
+
+* premature redesigns
+* gut-feel field removal
+* optimization without measurement
+* “just make it shorter” mistakes
+
+---
+
+## 🔢 Form Health & Friction Index
+
+### Total Score: **0–100**
+
+This is a **diagnostic score**, not a KPI.
+
+---
+
+### Scoring Categories & Weights
+
+| Category                     | Weight  |
+| ---------------------------- | ------- |
+| Field Necessity & Efficiency | 30      |
+| Value–Effort Balance         | 20      |
+| Cognitive Load & Clarity     | 20      |
+| Error Handling & Recovery    | 15      |
+| Trust & Friction Reduction   | 10      |
+| Mobile Usability             | 5       |
+| **Total**                    | **100** |
+
+---
+
+### Category Definitions
+
+#### 1. Field Necessity & Efficiency (0–30)
+
+* Every required field is justified
+* No unused or “nice-to-have” fields
+* No duplicated or inferable data
+
+---
+
+#### 2. Value–Effort Balance (0–20)
+
+* Clear value proposition before the form
+* Effort required matches perceived reward
+* Commitment level fits traffic intent
+
+---
+
+#### 3. Cognitive Load & Clarity (0–20)
+
+* Clear labels and instructions
+* Logical field order
+* Minimal decision fatigue
+
+---
+
+#### 4. Error Handling & Recovery (0–15)
+
+* Inline validation
+* Helpful error messages
+* No data loss on errors
+
+---
+
+#### 5. Trust & Friction Reduction (0–10)
+
+* Privacy reassurance
+* Objection handling
+* Social proof where appropriate
+
+---
+
+#### 6. Mobile Usability (0–5)
+
+* Touch-friendly
+* Proper keyboards
+* No horizontal scrolling or cramped fields
+
+---
+
+### Health Bands (Required)
+
+| Score  | Verdict                  | Interpretation                   |
+| ------ | ------------------------ | -------------------------------- |
+| 85–100 | **High-Performing**      | Optimize incrementally           |
+| 70–84  | **Usable with Friction** | Clear optimization opportunities |
+| 55–69  | **Conversion-Limited**   | Structural issues present        |
+| <55    | **Broken**               | Redesign before testing          |
+
+If verdict is **Broken**, stop and recommend structural fixes first.
+
+---
+
+## Phase 1: Context & Constraints
+
+### 1. Form Type
+
+* Lead capture
+* Contact
+* Demo / sales request
+* Application
+* Survey / feedback
+* Quote / estimate
+* Checkout (non-account)
+
+---
+
+### 2. Business Context
+
+* What happens after submission?
+* Which fields are actually used?
+* What qualifies as a “good” submission?
+* Any legal or compliance constraints?
+
+---
+
+### 3. Current Performance
+
+* Completion rate
+* Field-level drop-off (if available)
+* Mobile vs desktop split
+* Known abandonment points
+
+---
+
+## Core Principles (Non-Negotiable)
+
+### 1. Every Field Has a Cost
+
+Each required field reduces completion.
+
+Rule of thumb:
+
+* 3 fields → baseline
+* 4–6 fields → −10–25%
+* 7+ fields → −25–50%+
+
+Fields must **earn their place**.
+
+---
+
+### 2. Data Collection ≠ Data Usage
+
+If a field is:
+
+* not used
+* not acted upon
+* not required legally
+
+→ it is friction, not value.
+
+---
+
+### 3. Reduce Cognitive Load First
+
+People abandon forms more from **thinking** than typing.
+
+---
+
+## Field-Level Optimization
+
+### Email
+
+* Single field (no confirmation)
+* Inline validation
+* Typo correction
+* Correct mobile keyboard
+
+---
+
+### Name
+
+* Single “Name” field by default
+* Split only if operationally required
+
+---
+
+### Phone
+
+* Optional unless critical
+* Explain why if required
+* Auto-format and support country codes
+
+---
+
+### Company / Organization
+
+* Auto-suggest when possible
+* Infer from email domain
+* Enrich after submission if feasible
+
+---
+
+### Job Title / Role
+
+* Dropdown if segmentation matters
+* Optional by default
+
+---
+
+### Free-Text Fields
+
+* Optional unless essential
+* Clear guidance on length/purpose
+* Expand on focus
+
+---
+
+### Selects & Checkboxes
+
+* Radio buttons if <5 options
+* Searchable selects if long
+* Clear “Other” handling
+
+---
+
+## Layout & Flow
+
+### Field Order
+
+1. Easiest first (email, name)
+2. Commitment-building fields
+3. Sensitive or high-effort fields last
+
+---
+
+### Labels & Placeholders
+
+* Labels must always be visible
+* Placeholders are examples only
+* Avoid label-as-placeholder anti-pattern
+
+---
+
+### Single vs Multi-Column
+
+* Default to single column
+* Multi-column only for closely related fields
+
+---
+
+## Multi-Step Forms
+
+### Use When
+
+* 6+ fields
+* Distinct logical sections
+* Qualification or routing required
+
+### Best Practices
+
+* Progress indicator
+* Back navigation
+* Save progress
+* One topic per step
+
+---
+
+## Error Handling
+
+### Inline Validation
+
+* After field interaction, not keystroke
+* Clear visual feedback
+* Do not clear input on error
+
+---
+
+### Error Messaging
+
+* Specific
+* Human
+* Actionable
+
+Bad: “Invalid input”
+Good: “Please enter a valid email ([name@company.com](mailto:name@company.com))”
+
+---
+
+## Submit Button Optimization
+
+### Copy
+
+Avoid: Submit, Send
+Prefer: Action + Outcome
+
+Examples:
+
+* “Get My Quote”
+* “Request Demo”
+* “Download the Guide”
+
+---
+
+### States
+
+* Disabled + loading on submit
+* Clear success message
+* Next-step expectations
+
+---
+
+## Trust & Friction Reduction
+
+* Privacy reassurance near submit
+* Expected response time
+* Testimonials (when appropriate)
+* Security badges only if relevant
+
+---
+
+## Mobile Optimization (Mandatory)
+
+* ≥44px touch targets
+* Correct keyboard types
+* Autofill support
+* Single column
+* Sticky submit button (where helpful)
+
+---
+
+## Measurement (Required)
+
+### Key Metrics
+
+* Form view → start
+* Start → completion
+* Field-level drop-off
+* Error rate by field
+* Time to complete
+* Device split
+
+### Track:
+
+* First field focus
+* Field completion
+* Validation errors
+* Submit attempts
+* Successful submissions
+
+---
 
 ## Output Format
 
+### Form Health Summary
+
+* Form Health & Friction Index score
+* Primary bottlenecks
+* Structural vs tactical issues
+
+---
+
 ### Form Audit
+
 For each issue:
-- **Issue**: What's wrong
-- **Impact**: Estimated effect on conversions
-- **Fix**: Specific recommendation
-- **Priority**: High/Medium/Low
+
+* **Issue**
+* **Impact**
+* **Fix**
+* **Priority**
+
+---
 
 ### Recommended Form Design
-- **Required fields**: Justified list
-- **Optional fields**: With rationale
-- **Field order**: Recommended sequence
-- **Copy**: Labels, placeholders, button
-- **Error messages**: For each field
-- **Layout**: Visual guidance
+
+* Required fields (with justification)
+* Optional fields
+* Field order
+* Copy (labels, help text, CTA)
+* Error messages
+* Layout notes
+
+---
 
 ### Test Hypotheses
-Ideas to A/B test with expected outcomes
+
+Clearly stated A/B test ideas with expected outcome
 
 ---
 
-## Experiment Ideas
+## Experiment Boundaries
 
-### Form Structure Experiments
+Do **not** test:
 
-**Layout & Flow**
-- Single-step form vs. multi-step with progress bar
-- 1-column vs. 2-column field layout
-- Form embedded on page vs. separate page
-- Vertical vs. horizontal field alignment
-- Form above fold vs. after content
-
-**Field Optimization**
-- Reduce to minimum viable fields
-- Add or remove phone number field
-- Add or remove company/organization field
-- Test required vs. optional field balance
-- Use field enrichment to auto-fill known data
-- Hide fields for returning/known visitors
-
-**Smart Forms**
-- Add real-time validation for emails and phone numbers
-- Progressive profiling (ask more over time)
-- Conditional fields based on earlier answers
-- Auto-suggest for company names
+* legal requirements
+* core qualification fields without alignment
+* multiple variables at once
 
 ---
 
-### Copy & Design Experiments
+## Questions to Ask (If Needed)
 
-**Labels & Microcopy**
-- Test field label clarity and length
-- Placeholder text optimization
-- Help text: show vs. hide vs. on-hover
-- Error message tone (friendly vs. direct)
-
-**CTAs & Buttons**
-- Button text variations ("Submit" vs. "Get My Quote" vs. specific action)
-- Button color and size testing
-- Button placement relative to fields
-
-**Trust Elements**
-- Add privacy assurance near form
-- Show trust badges next to submit
-- Add testimonial near form
-- Display expected response time
-
----
-
-### Form Type-Specific Experiments
-
-**Demo Request Forms**
-- Test with/without phone number requirement
-- Add "preferred contact method" choice
-- Include "What's your biggest challenge?" question
-- Test calendar embed vs. form submission
-
-**Lead Capture Forms**
-- Email-only vs. email + name
-- Test value proposition messaging above form
-- Gated vs. ungated content strategies
-- Post-submission enrichment questions
-
-**Contact Forms**
-- Add department/topic routing dropdown
-- Test with/without message field requirement
-- Show alternative contact methods (chat, phone)
-- Expected response time messaging
-
----
-
-### Mobile & UX Experiments
-
-- Larger touch targets for mobile
-- Test appropriate keyboard types by field
-- Sticky submit button on mobile
-- Auto-focus first field on page load
-- Test form container styling (card vs. minimal)
-
----
-
-## Task-Specific Questions
-
-1. What's your current form completion rate?
-2. Do you have field-level analytics?
-3. What happens with the data after submission?
-4. Which fields are actually used in follow-up?
-5. Are there compliance/legal requirements?
-6. What's the mobile vs. desktop split?
+1. What is the current completion rate?
+2. Which fields are actually used?
+3. Do you have field-level analytics?
+4. What happens after submission?
+5. Are there compliance constraints?
+6. Mobile vs desktop traffic split?
 
 ---
 
 ## Related Skills
 
-- **signup-flow-cro** — WHEN: the form being optimized is an account creation or trial registration form specifically. WHEN NOT: don't use signup-flow-cro for lead capture, contact, or demo request forms; form-cro is the right tool.
-- **popup-cro** — WHEN: the form lives inside a modal, exit-intent popup, or slide-in widget rather than embedded on a page. WHEN NOT: don't use popup-cro for standalone page-embedded forms.
-- **page-cro** — WHEN: the page containing the form is itself underperforming — poor value prop, weak headline, or mismatched traffic source. Fix the page context before or alongside the form. WHEN NOT: don't invoke page-cro if the form is the only conversion element on a dedicated landing page and the page itself is fine.
-- **ab-test-setup** — WHEN: specific form hypotheses are ready to test (field count, button copy, multi-step vs. single-step). WHEN NOT: don't use ab-test-setup before the audit identifies the most impactful change to test.
-- **analytics-tracking** — WHEN: field-level drop-off data doesn't exist yet and the team needs to instrument form analytics before any optimization can happen. WHEN NOT: skip if analytics are already in place.
-- **marketing-context** — WHEN: check `.claude/product-marketing-context.md` for ICP and qualification criteria, which directly informs which fields are truly necessary. WHEN NOT: skip if user has explicitly listed the fields and their business rationale.
+* **signup-flow-cro** – Account creation forms
+* **popup-cro** – Forms in modals
+* **page-cro** – Page-level optimization
+* **analytics-tracking** – Measuring form performance
+* **ab-test-setup** – Testing form changes
 
 ---
 
-## Communication
+## When to Use
+This skill is applicable to execute the workflow or actions described in the overview.
 
-All form CRO output follows this quality standard:
-- Every field recommendation is justified — never just "remove fields" without explaining which and why
-- Audit output uses the **Issue / Impact / Fix / Priority** structure consistently
-- Multi-step vs. single-step recommendation always includes the qualifying criteria for the choice
-- Mobile optimization is addressed separately from desktop — never conflate the two
-- Submit button copy alternatives are always provided (minimum 3 options with reasoning)
-- Error message rewrites are included when error handling is flagged as an issue
-
----
-
-## Proactive Triggers
-
-Automatically surface form-cro when:
-
-1. **"Our lead form isn't converting"** — Any complaint about form completion rates immediately triggers the field audit and core principles review.
-2. **Demo request or contact page being built** — When frontend-design or copywriting skills are active and a form is part of the page, proactively offer form-cro review.
-3. **"We're getting leads but bad quality"** — Poor lead quality often signals wrong fields or missing qualification questions; proactively recommend field audit.
-4. **Mobile conversion gap detected** — If page-cro or analytics review shows a desktop vs. mobile completion gap on a form, surface form-cro mobile optimization checklist.
-5. **Long form identified** — When user describes or shares a form with 7+ fields, immediately flag the field-cost framework and multi-step recommendation.
-
----
-
-## Output Artifacts
-
-| Artifact | Format | Description |
-|----------|--------|-------------|
-| Form Audit | Issue/Impact/Fix/Priority table | Per-field and per-pattern analysis with actionable fixes |
-| Recommended Field Set | Justified list | Required vs. optional fields with rationale for each |
-| Field Order & Layout Spec | Annotated outline | Recommended sequence, grouping, column layout, and mobile considerations |
-| Submit Button Copy Options | 3-option table | Action-oriented button copy variants with reasoning |
-| A/B Test Hypotheses | Table | Hypothesis × variant × success metric × priority for top 3-5 test ideas |
+## Limitations
+- Use this skill only when the task clearly matches the scope described above.
+- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
+- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

@@ -1,6 +1,13 @@
 ---
 name: "landing-page-generator"
-description: "Generates high-converting landing pages as complete Next.js/React (TSX) components with Tailwind CSS. Creates hero sections, feature grids, pricing tables, FAQ accordions, testimonial blocks, and CTA sections using proven copy frameworks (PAS, AIDA, BAB). Outputs SEO meta tags, structured data, and performance-optimised code targeting Core Web Vitals (LCP < 1s, CLS < 0.1). Use when the user asks to create a landing page, marketing page, homepage, single-page site, lead capture page, campaign page, promo page, or conversion-optimised web page — or when they want to A/B test landing page variants or replace a static page with one designed to convert."
+description: "Generates high-converting Next.js/React landing pages with Tailwind CSS. Uses PAS, AIDA, and BAB frameworks for optimized copy/components (Heroes, Features, Pricing). Focuses on Core Web Vitals/SEO."
+category: "front-end"
+risk: "safe"
+source: "community"
+date_added: "2026-03-18"
+author: "alirezarezvani"
+tags: ["nextjs", "react", "tailwind", "landing-page", "marketing", "seo", "cro"]
+tools: ["claude", "cursor", "gemini"]
 ---
 
 # Landing Page Generator
@@ -10,7 +17,10 @@ Generate high-converting landing pages from a product description. Output comple
 **Target:** LCP < 1s · CLS < 0.1 · FID < 100ms  
 **Output:** TSX components + Tailwind styles + SEO meta + copy variants
 
----
+## When to Use
+- You need to generate a marketing landing page in Next.js or React.
+- The task involves conversion-focused page structure, section variants, Tailwind styling, or SEO-aware copy.
+- You want complete landing-page output from a product description rather than isolated UI fragments.
 
 ## Core Capabilities
 
@@ -196,3 +206,8 @@ Inject `FAQPage` JSON-LD via `<script type="application/ld+json" dangerouslySetI
 - **Brand Voice Analyzer** (`marketing-skill/content-production/scripts/brand_voice_analyzer.py`) — Run before generation to establish voice profile and ensure copy consistency
 - **UI Design System** (`product-team/ui-design-system/`) — Generate design tokens from brand color before building the page
 - **Competitive Teardown** (`product-team/competitive-teardown/`) — Competitive positioning informs landing page messaging and differentiation
+
+## Limitations
+- Use this skill only when the task clearly matches the scope described above.
+- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
+- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

@@ -5,6 +5,7 @@ import { adminAuth } from '@/lib/firebase/admin';
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
+  // @ts-ignore - using latest api version locally
   return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
 }
 
@@ -41,12 +42,12 @@ export async function POST(request: Request) {
     const stripe = getStripe();
     const { plan, billingInterval = 'monthly', userId, userEmail, idToken } = await request.json();
 
-    if (!plan || !userId) {
+    if (!plan) {
       return NextResponse.json({ error: 'Missing required fields.' }, { status: 400 });
     }
 
-    // Verify the caller owns the account they're subscribing
-    if (idToken) {
+    // Verify the caller owns the account they're subscribing (if provided)
+    if (idToken && userId) {
       try {
         const decoded = await adminAuth.verifyIdToken(idToken);
         if (decoded.uid !== userId) {
@@ -71,14 +72,15 @@ export async function POST(request: Request) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       success_url: `${appUrl}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url:  `${appUrl}/pricing?canceled=true`,
+      cancel_url: `${appUrl}/pricing`,
       customer_email: userEmail ?? undefined,
-      client_reference_id: userId,
-      metadata: { userId, plan: canonicalPlan, billingInterval: interval },
+      client_reference_id: userId ?? undefined,
+      allow_promotion_codes: true,
+      billing_address_collection: 'auto',
+      metadata: { userId: userId || 'guest', plan: canonicalPlan, billingInterval: interval },
     });
 
     return NextResponse.json({ url: session.url });

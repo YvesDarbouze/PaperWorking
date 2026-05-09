@@ -280,7 +280,6 @@ For more streaming options (segment streams, search-to-stream, audio playback), 
 ```python
 import videodb
 from videodb import SearchType
-from videodb.exceptions import InvalidRequestError
 from videodb.timeline import Timeline
 from videodb.asset import VideoAsset, TextAsset, TextStyle
 
@@ -290,14 +289,8 @@ video = coll.get_video("your-video-id")
 
 # 1. Search for key moments
 video.index_spoken_words(force=True)
-try:
-    results = video.search("product announcement", search_type=SearchType.semantic)
-    shots = results.get_shots()
-except InvalidRequestError as exc:
-    if "No results found" in str(exc):
-        shots = []
-    else:
-        raise
+results = video.search("product announcement", search_type=SearchType.semantic)
+shots = results.get_shots()  # may be empty if no results
 
 # 2. Build timeline
 timeline = Timeline(conn)
@@ -320,7 +313,7 @@ stream_url = timeline.generate_stream()
 print(f"Highlight reel: {stream_url}")
 ```
 
-### Logo Overlay with Background Music
+### Picture-in-Picture with Background Music
 
 ```python
 import videodb
@@ -372,7 +365,6 @@ clips = [
 ]
 
 timeline = Timeline(conn)
-timeline_offset = 0.0
 
 for clip in clips:
     # Add a label as an overlay on each clip
@@ -384,8 +376,7 @@ for clip in clips:
     timeline.add_inline(
         VideoAsset(asset_id=clip["video_id"], start=clip["start"], end=clip["end"])
     )
-    timeline.add_overlay(timeline_offset, label)
-    timeline_offset += clip["end"] - clip["start"]
+    timeline.add_overlay(0, label)
 
 stream_url = timeline.generate_stream()
 print(f"Montage: {stream_url}")

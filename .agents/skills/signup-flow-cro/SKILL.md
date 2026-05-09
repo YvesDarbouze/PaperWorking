@@ -1,12 +1,9 @@
 ---
-name: "signup-flow-cro"
-description: When the user wants to optimize signup, registration, account creation, or trial activation flows. Also use when the user mentions "signup conversions," "registration friction," "signup form optimization," "free trial signup," "reduce signup dropoff," or "account creation flow." For post-signup onboarding, see onboarding-cro. For lead capture forms (not account creation), see form-cro.
-license: MIT
-metadata:
-  version: 1.0.0
-  author: Alireza Rezvani
-  category: marketing
-  updated: 2026-03-06
+name: signup-flow-cro
+description: "You are an expert in optimizing signup and registration flows. Your goal is to reduce friction, increase completion rates, and set users up for successful activation."
+risk: unknown
+source: community
+date_added: "2026-02-27"
 ---
 
 # Signup Flow CRO
@@ -14,9 +11,6 @@ metadata:
 You are an expert in optimizing signup and registration flows. Your goal is to reduce friction, increase completion rates, and set users up for successful activation.
 
 ## Initial Assessment
-
-**Check for product marketing context first:**
-If `.claude/product-marketing-context.md` exists, read it before asking questions. Use that context and only ask for information not already covered or specific to this task.
 
 Before providing recommendations, understand:
 
@@ -41,7 +35,183 @@ Before providing recommendations, understand:
 ---
 
 ## Core Principles
-→ See references/signup-cro-playbook.md for details
+
+### 1. Minimize Required Fields
+Every field reduces conversion. For each field, ask:
+- Do we absolutely need this before they can use the product?
+- Can we collect this later through progressive profiling?
+- Can we infer this from other data?
+
+**Typical field priority:**
+- Essential: Email (or phone), Password
+- Often needed: Name
+- Usually deferrable: Company, Role, Team size, Phone, Address
+
+### 2. Show Value Before Asking for Commitment
+- What can you show/give before requiring signup?
+- Can they experience the product before creating an account?
+- Reverse the order: value first, signup second
+
+### 3. Reduce Perceived Effort
+- Show progress if multi-step
+- Group related fields
+- Use smart defaults
+- Pre-fill when possible
+
+### 4. Remove Uncertainty
+- Clear expectations ("Takes 30 seconds")
+- Show what happens after signup
+- No surprises (hidden requirements, unexpected steps)
+
+---
+
+## Field-by-Field Optimization
+
+### Email Field
+- Single field (no email confirmation field)
+- Inline validation for format
+- Check for common typos (gmial.com → gmail.com)
+- Clear error messages
+
+### Password Field
+- Show password toggle (eye icon)
+- Show requirements upfront, not after failure
+- Consider passphrase hints for strength
+- Update requirement indicators in real-time
+
+**Better password UX:**
+- Allow paste (don't disable)
+- Show strength meter instead of rigid rules
+- Consider passwordless options
+
+### Name Field
+- Single "Full name" field vs. First/Last split (test this)
+- Only require if immediately used (personalization)
+- Consider making optional
+
+### Social Auth Options
+- Place prominently (often higher conversion than email)
+- Show most relevant options for your audience
+  - B2C: Google, Apple, Facebook
+  - B2B: Google, Microsoft, SSO
+- Clear visual separation from email signup
+- Consider "Sign up with Google" as primary
+
+### Phone Number
+- Defer unless essential (SMS verification, calling leads)
+- If required, explain why
+- Use proper input type with country code handling
+- Format as they type
+
+### Company/Organization
+- Defer if possible
+- Auto-suggest as they type
+- Infer from email domain when possible
+
+### Use Case / Role Questions
+- Defer to onboarding if possible
+- If needed at signup, keep to one question
+- Use progressive disclosure (don't show all options at once)
+
+---
+
+## Single-Step vs. Multi-Step
+
+### Single-Step Works When:
+- 3 or fewer fields
+- Simple B2C products
+- High-intent visitors (from ads, waitlist)
+
+### Multi-Step Works When:
+- More than 3-4 fields needed
+- Complex B2B products needing segmentation
+- You need to collect different types of info
+
+### Multi-Step Best Practices
+- Show progress indicator
+- Lead with easy questions (name, email)
+- Put harder questions later (after psychological commitment)
+- Each step should feel completable in seconds
+- Allow back navigation
+- Save progress (don't lose data on refresh)
+
+**Progressive commitment pattern:**
+1. Email only (lowest barrier)
+2. Password + name
+3. Customization questions (optional)
+
+---
+
+## Trust and Friction Reduction
+
+### At the Form Level
+- "No credit card required" (if true)
+- "Free forever" or "14-day free trial"
+- Privacy note: "We'll never share your email"
+- Security badges if relevant
+- Testimonial near signup form
+
+### Error Handling
+- Inline validation (not just on submit)
+- Specific error messages ("Email already registered" + recovery path)
+- Don't clear the form on error
+- Focus on the problem field
+
+### Microcopy
+- Placeholder text: Use for examples, not labels
+- Labels: Always visible (not just placeholders)
+- Help text: Only when needed, placed close to field
+
+---
+
+## Mobile Signup Optimization
+
+- Larger touch targets (44px+ height)
+- Appropriate keyboard types (email, tel, etc.)
+- Autofill support
+- Reduce typing (social auth, pre-fill)
+- Single column layout
+- Sticky CTA button
+- Test with actual devices
+
+---
+
+## Post-Submit Experience
+
+### Success State
+- Clear confirmation
+- Immediate next step
+- If email verification required:
+  - Explain what to do
+  - Easy resend option
+  - Check spam reminder
+  - Option to change email if wrong
+
+### Verification Flows
+- Consider delaying verification until necessary
+- Magic link as alternative to password
+- Let users explore while awaiting verification
+- Clear re-engagement if verification stalls
+
+---
+
+## Measurement
+
+### Key Metrics
+- Form start rate (landed → started filling)
+- Form completion rate (started → submitted)
+- Field-level drop-off (which fields lose people)
+- Time to complete
+- Error rate by field
+- Mobile vs. desktop completion
+
+### What to Track
+- Each field interaction (focus, blur, error)
+- Step progression in multi-step
+- Social auth vs. email signup ratio
+- Time between steps
+
+---
 
 ## Output Format
 
@@ -169,8 +339,9 @@ Organized by:
 
 ---
 
-## Task-Specific Questions
+## Questions to Ask
 
+If you need more context:
 1. What's your current signup completion rate?
 2. Do you have field-level analytics on drop-off?
 3. What data is absolutely required before they can use the product?
@@ -181,45 +352,15 @@ Organized by:
 
 ## Related Skills
 
-- **onboarding-cro** — WHEN: the signup flow itself completes well but users aren't activating or reaching their "aha moment" after account creation. WHEN NOT: don't jump to onboarding-cro when users are dropping off during the signup form itself.
-- **form-cro** — WHEN: the form being optimized is NOT account creation — lead capture, contact, demo request, or survey forms need form-cro instead. WHEN NOT: don't use form-cro for registration/account creation flows; signup-flow-cro has the right framework for authentication patterns (SSO, magic link, email+password).
-- **page-cro** — WHEN: the landing page or marketing page leading to the signup is the bottleneck — poor headline, weak value prop, or message mismatch. WHEN NOT: don't invoke page-cro when users are reaching the signup form but dropping inside it.
-- **ab-test-setup** — WHEN: hypotheses from the signup audit are ready to test (SSO vs. email, single-step vs. multi-step, credit card required vs. not). WHEN NOT: don't run A/B tests on the signup flow before instrumenting field-level drop-off analytics.
-- **paywall-upgrade-cro** — WHEN: the signup flow is freemium and the real challenge is converting free users to paid, not getting them to sign up. WHEN NOT: don't conflate trial-to-paid conversion with signup-flow optimization.
-- **marketing-context** — WHEN: check `.claude/product-marketing-context.md` for B2B vs. B2C context, compliance requirements, and qualification data needs before designing the field set. WHEN NOT: skip if user has provided explicit product and compliance context in the conversation.
+- **onboarding-cro**: For optimizing what happens after signup
+- **form-cro**: For non-signup forms (lead capture, contact)
+- **page-cro**: For the landing page leading to signup
+- **ab-test-setup**: For testing signup flow changes
 
----
+## When to Use
+This skill is applicable to execute the workflow or actions described in the overview.
 
-## Communication
-
-All signup flow CRO output follows this quality standard:
-- Recommendations are always organized as **Quick Wins → High-Impact → Test Hypotheses** — never a flat list
-- Every field removal recommendation is justified against the "do we need this before they can use the product?" test
-- SSO options are always considered and recommended when relevant — don't default to email-only flows
-- Post-submit experience (verification, success state, next steps) is always addressed — it's part of the flow
-- Mobile optimization is treated as a distinct section, not an afterthought
-- Experiment ideas distinguish between "fix this" (obvious) and "test this" (uncertain) — never recommend testing obvious improvements
-
----
-
-## Proactive Triggers
-
-Automatically surface signup-flow-cro when:
-
-1. **"Users sign up but don't activate"** — Low activation rate often traces back to signup friction or a broken post-submit experience; proactively audit the full signup-to-activation path.
-2. **"Our trial conversion is low"** — When the trial-to-paid rate is poor, check whether the signup flow is setting wrong expectations or collecting the wrong users.
-3. **Free trial or freemium product being built** — When product or engineering work on a new trial flow is detected, proactively offer signup-flow-cro review before launch.
-4. **"Should we require a credit card?"** — This question always triggers the full signup friction analysis and trial commitment experiment framework.
-5. **High mobile drop-off on signup** — When analytics or page-cro reveals a mobile gap specifically on the signup page, immediately surface the mobile signup optimization checklist.
-
----
-
-## Output Artifacts
-
-| Artifact | Format | Description |
-|----------|--------|-------------|
-| Signup Flow Audit | Issue/Impact/Fix/Priority table | Per-step and per-field analysis with severity ratings |
-| Recommended Field Set | Justified list | Required vs. deferrable fields with rationale, organized by signup step |
-| Flow Redesign Spec | Step-by-step outline | Recommended multi-step or single-step flow with copy for each screen |
-| SSO & Auth Options Recommendation | Decision table | Which auth methods to offer, placement, and priority for the target audience |
-| A/B Test Hypotheses | Table | Hypothesis × variant description × success metric × priority for top 3-5 tests |
+## Limitations
+- Use this skill only when the task clearly matches the scope described above.
+- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
+- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

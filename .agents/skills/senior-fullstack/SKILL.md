@@ -1,285 +1,220 @@
 ---
-name: "senior-fullstack"
-description: Fullstack development toolkit with project scaffolding for Next.js, FastAPI, MERN, and Django stacks, code quality analysis with security and complexity scoring, and stack selection guidance. Use when the user asks to "scaffold a new project", "create a Next.js app", "set up FastAPI with React", "analyze code quality", "audit my codebase", "what stack should I use", "generate project boilerplate", or mentions fullstack development, project setup, or tech stack comparison.
+name: senior-fullstack
+description: "Complete toolkit for senior fullstack with modern tools and best practices."
+risk: critical
+source: community
+date_added: "2026-02-27"
 ---
 
 # Senior Fullstack
 
-Fullstack development skill with project scaffolding and code quality analysis tools.
+Complete toolkit for senior fullstack with modern tools and best practices.
 
----
+## Quick Start
 
-## Table of Contents
+### Main Capabilities
 
-- [Trigger Phrases](#trigger-phrases)
-- [Tools](#tools)
-- [Workflows](#workflows)
-- [Reference Guides](#reference-guides)
+This skill provides three core capabilities through automated scripts:
 
----
+```bash
+# Script 1: Fullstack Scaffolder
+python scripts/fullstack_scaffolder.py [options]
 
-## Trigger Phrases
+# Script 2: Project Scaffolder
+python scripts/project_scaffolder.py [options]
 
-Use this skill when you hear:
-- "scaffold a new project"
-- "create a Next.js app"
-- "set up FastAPI with React"
-- "analyze code quality"
-- "check for security issues in codebase"
-- "what stack should I use"
-- "set up a fullstack project"
-- "generate project boilerplate"
+# Script 3: Code Quality Analyzer
+python scripts/code_quality_analyzer.py [options]
+```
 
----
+## Core Capabilities
 
-## Tools
+### 1. Fullstack Scaffolder
 
-### Project Scaffolder
+Automated tool for fullstack scaffolder tasks.
 
-Generates fullstack project structures with boilerplate code.
-
-**Supported Templates:**
-- `nextjs` - Next.js 14+ with App Router, TypeScript, Tailwind CSS
-- `fastapi-react` - FastAPI backend + React frontend + PostgreSQL
-- `mern` - MongoDB, Express, React, Node.js with TypeScript
-- `django-react` - Django REST Framework + React frontend
+**Features:**
+- Automated scaffolding
+- Best practices built-in
+- Configurable templates
+- Quality checks
 
 **Usage:**
-
 ```bash
-# List available templates
-python scripts/project_scaffolder.py --list-templates
-
-# Create Next.js project
-python scripts/project_scaffolder.py nextjs my-app
-
-# Create FastAPI + React project
-python scripts/project_scaffolder.py fastapi-react my-api
-
-# Create MERN stack project
-python scripts/project_scaffolder.py mern my-project
-
-# Create Django + React project
-python scripts/project_scaffolder.py django-react my-app
-
-# Specify output directory
-python scripts/project_scaffolder.py nextjs my-app --output ./projects
-
-# JSON output
-python scripts/project_scaffolder.py nextjs my-app --json
+python scripts/fullstack_scaffolder.py <project-path> [options]
 ```
 
-**Parameters:**
+### 2. Project Scaffolder
 
-| Parameter | Description |
-|-----------|-------------|
-| `template` | Template name (nextjs, fastapi-react, mern, django-react) |
-| `project_name` | Name for the new project directory |
-| `--output, -o` | Output directory (default: current directory) |
-| `--list-templates, -l` | List all available templates |
-| `--json` | Output in JSON format |
+Comprehensive analysis and optimization tool.
 
-**Output includes:**
-- Project structure with all necessary files
-- Package configurations (package.json, requirements.txt)
-- TypeScript configuration
-- Docker and docker-compose setup
-- Environment file templates
-- Next steps for running the project
-
----
-
-### Code Quality Analyzer
-
-Analyzes fullstack codebases for quality issues.
-
-**Analysis Categories:**
-- Security vulnerabilities (hardcoded secrets, injection risks)
-- Code complexity metrics (cyclomatic complexity, nesting depth)
-- Dependency health (outdated packages, known CVEs)
-- Test coverage estimation
-- Documentation quality
+**Features:**
+- Deep analysis
+- Performance metrics
+- Recommendations
+- Automated fixes
 
 **Usage:**
+```bash
+python scripts/project_scaffolder.py <target-path> [--verbose]
+```
+
+### 3. Code Quality Analyzer
+
+Advanced tooling for specialized tasks.
+
+**Features:**
+- Expert-level automation
+- Custom configurations
+- Integration ready
+- Production-grade output
+
+**Usage:**
+```bash
+python scripts/code_quality_analyzer.py [arguments] [options]
+```
+
+## Reference Documentation
+
+### Tech Stack Guide
+
+Comprehensive guide available in `references/tech_stack_guide.md`:
+
+- Detailed patterns and practices
+- Code examples
+- Best practices
+- Anti-patterns to avoid
+- Real-world scenarios
+
+### Architecture Patterns
+
+Complete workflow documentation in `references/architecture_patterns.md`:
+
+- Step-by-step processes
+- Optimization strategies
+- Tool integrations
+- Performance tuning
+- Troubleshooting guide
+
+### Development Workflows
+
+Technical reference guide in `references/development_workflows.md`:
+
+- Technology stack details
+- Configuration examples
+- Integration patterns
+- Security considerations
+- Scalability guidelines
+
+## Tech Stack
+
+**Languages:** TypeScript, JavaScript, Python, Go, Swift, Kotlin
+**Frontend:** React, Next.js, React Native, Flutter
+**Backend:** Node.js, Express, GraphQL, REST APIs
+**Database:** PostgreSQL, Prisma, NeonDB, Supabase
+**DevOps:** Docker, Kubernetes, Terraform, GitHub Actions, CircleCI
+**Cloud:** AWS, GCP, Azure
+
+## Development Workflow
+
+### 1. Setup and Configuration
 
 ```bash
-# Analyze current directory
-python scripts/code_quality_analyzer.py .
-
-# Analyze specific project
-python scripts/code_quality_analyzer.py /path/to/project
-
-# Verbose output with detailed findings
-python scripts/code_quality_analyzer.py . --verbose
-
-# JSON output
-python scripts/code_quality_analyzer.py . --json
-
-# Save report to file
-python scripts/code_quality_analyzer.py . --output report.json
-```
-
-**Parameters:**
-
-| Parameter | Description |
-|-----------|-------------|
-| `project_path` | Path to project directory (default: current directory) |
-| `--verbose, -v` | Show detailed findings |
-| `--json` | Output in JSON format |
-| `--output, -o` | Write report to file |
-
-**Output includes:**
-- Overall score (0-100) with letter grade
-- Security issues by severity (critical, high, medium, low)
-- High complexity files
-- Vulnerable dependencies with CVE references
-- Test coverage estimate
-- Documentation completeness
-- Prioritized recommendations
-
-**Sample Output:**
-
-```
-============================================================
-CODE QUALITY ANALYSIS REPORT
-============================================================
-
-Overall Score: 75/100 (Grade: C)
-Files Analyzed: 45
-Total Lines: 12,500
-
---- SECURITY ---
-  Critical: 1
-  High: 2
-  Medium: 5
-
---- COMPLEXITY ---
-  Average Complexity: 8.5
-  High Complexity Files: 3
-
---- RECOMMENDATIONS ---
-1. [P0] SECURITY
-   Issue: Potential hardcoded secret detected
-   Action: Remove or secure sensitive data at line 42
-```
-
----
-
-## Workflows
-
-### Workflow 1: Start New Project
-
-1. Choose appropriate stack based on requirements (see Stack Decision Matrix)
-2. Scaffold project structure
-3. Verify scaffold: confirm `package.json` (or `requirements.txt`) exists
-4. Run initial quality check — address any P0 issues before proceeding
-5. Set up development environment
-
-```bash
-# 1. Scaffold project
-python scripts/project_scaffolder.py nextjs my-saas-app
-
-# 2. Verify scaffold succeeded
-ls my-saas-app/package.json
-
-# 3. Navigate and install
-cd my-saas-app
+# Install dependencies
 npm install
+# or
+pip install -r requirements.txt
 
-# 4. Configure environment
-cp .env.example .env.local
-
-# 5. Run quality check
-python ../scripts/code_quality_analyzer.py .
-
-# 6. Start development
-npm run dev
+# Configure environment
+cp .env.example .env
 ```
 
-### Workflow 2: Audit Existing Codebase
-
-1. Run code quality analysis
-2. Review security findings — fix all P0 (critical) issues immediately
-3. Re-run analyzer to confirm P0 issues are resolved
-4. Create tickets for P1/P2 issues
+### 2. Run Quality Checks
 
 ```bash
-# 1. Full analysis
-python scripts/code_quality_analyzer.py /path/to/project --verbose
+# Use the analyzer script
+python scripts/project_scaffolder.py .
 
-# 2. Generate detailed report
-python scripts/code_quality_analyzer.py /path/to/project --json --output audit.json
-
-# 3. After fixing P0 issues, re-run to verify
-python scripts/code_quality_analyzer.py /path/to/project --verbose
+# Review recommendations
+# Apply fixes
 ```
 
-### Workflow 3: Stack Selection
+### 3. Implement Best Practices
 
-Use the tech stack guide to evaluate options:
+Follow the patterns and practices documented in:
+- `references/tech_stack_guide.md`
+- `references/architecture_patterns.md`
+- `references/development_workflows.md`
 
-1. **SEO Required?** → Next.js with SSR
-2. **API-heavy backend?** → Separate FastAPI or NestJS
-3. **Real-time features?** → Add WebSocket layer
-4. **Team expertise** → Match stack to team skills
+## Best Practices Summary
 
-See `references/tech_stack_guide.md` for detailed comparison.
+### Code Quality
+- Follow established patterns
+- Write comprehensive tests
+- Document decisions
+- Review regularly
 
----
+### Performance
+- Measure before optimizing
+- Use appropriate caching
+- Optimize critical paths
+- Monitor in production
 
-## Reference Guides
+### Security
+- Validate all inputs
+- Use parameterized queries
+- Implement proper authentication
+- Keep dependencies updated
 
-### Architecture Patterns (`references/architecture_patterns.md`)
+### Maintainability
+- Write clear code
+- Use consistent naming
+- Add helpful comments
+- Keep it simple
 
-- Frontend component architecture (Atomic Design, Container/Presentational)
-- Backend patterns (Clean Architecture, Repository Pattern)
-- API design (REST conventions, GraphQL schema design)
-- Database patterns (connection pooling, transactions, read replicas)
-- Caching strategies (cache-aside, HTTP cache headers)
-- Authentication architecture (JWT + refresh tokens, sessions)
+## Common Commands
 
-### Development Workflows (`references/development_workflows.md`)
+```bash
+# Development
+npm run dev
+npm run build
+npm run test
+npm run lint
 
-- Local development setup (Docker Compose, environment config)
-- Git workflows (trunk-based, conventional commits)
-- CI/CD pipelines (GitHub Actions examples)
-- Testing strategies (unit, integration, E2E)
-- Code review process (PR templates, checklists)
-- Deployment strategies (blue-green, canary, feature flags)
-- Monitoring and observability (logging, metrics, health checks)
+# Analysis
+python scripts/project_scaffolder.py .
+python scripts/code_quality_analyzer.py --analyze
 
-### Tech Stack Guide (`references/tech_stack_guide.md`)
+# Deployment
+docker build -t app:latest .
+docker-compose up -d
+kubectl apply -f k8s/
+```
 
-- Frontend frameworks comparison (Next.js, React+Vite, Vue)
-- Backend frameworks (Express, Fastify, NestJS, FastAPI, Django)
-- Database selection (PostgreSQL, MongoDB, Redis)
-- ORMs (Prisma, Drizzle, SQLAlchemy)
-- Authentication solutions (Auth.js, Clerk, custom JWT)
-- Deployment platforms (Vercel, Railway, AWS)
-- Stack recommendations by use case (MVP, SaaS, Enterprise)
-
----
-
-## Quick Reference
-
-### Stack Decision Matrix
-
-| Requirement | Recommendation |
-|-------------|---------------|
-| SEO-critical site | Next.js with SSR |
-| Internal dashboard | React + Vite |
-| API-first backend | FastAPI or Fastify |
-| Enterprise scale | NestJS + PostgreSQL |
-| Rapid prototype | Next.js API routes |
-| Document-heavy data | MongoDB |
-| Complex queries | PostgreSQL |
+## Troubleshooting
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| N+1 queries | Use DataLoader or eager loading |
-| Slow builds | Check bundle size, lazy load |
-| Auth complexity | Use Auth.js or Clerk |
-| Type errors | Enable strict mode in tsconfig |
-| CORS issues | Configure middleware properly |
+Check the comprehensive troubleshooting section in `references/development_workflows.md`.
+
+### Getting Help
+
+- Review reference documentation
+- Check script output messages
+- Consult tech stack documentation
+- Review error logs
+
+## Resources
+
+- Pattern Reference: `references/tech_stack_guide.md`
+- Workflow Guide: `references/architecture_patterns.md`
+- Technical Guide: `references/development_workflows.md`
+- Tool Scripts: `scripts/` directory
+
+## When to Use
+This skill is applicable to execute the workflow or actions described in the overview.
+
+## Limitations
+- Use this skill only when the task clearly matches the scope described above.
+- Do not treat the output as a substitute for environment-specific validation, testing, or expert review.
+- Stop and ask for clarification if required inputs, permissions, safety boundaries, or success criteria are missing.

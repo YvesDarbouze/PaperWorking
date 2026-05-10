@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Play,
-  Search,
+  Landmark,
   ShieldCheck,
-  Hammer,
-  TrendingUp,
+  Clock,
+  BarChart3,
   ArrowRight,
 } from 'lucide-react';
 
@@ -29,8 +29,9 @@ import {
 const STEPS = [
   {
     number: '01',
-    title: 'Find & Fund',
-    icon: Search,
+    title: 'Acquisition',
+    label: 'The Capital Gateway',
+    icon: Landmark,
     videoDuration: '2:34',
     bg: '#f2f2f2',
     textPrimary: '#595959', // 4.57:1 on #f2f2f2 — AA ✓
@@ -38,18 +39,19 @@ const STEPS = [
     accentBg: '#595959',
     accentText: '#f2f2f2',
     copy: {
-      headline: 'Discover Opportunities. Secure Capital.',
-      body: 'Track prospects across markets in a single pipeline. Invite partners to crowdfund deals with transparent capital-stack visibility — every dollar sourced, documented, and attributed before you make an offer.',
+      headline: 'Centralized Deal Sourcing & Syndication.',
+      body: 'Investors can identify targets, generate automated offer letters, and securely crowdfund capital commitments in one streamlined environment. Every dollar is sourced, documented, and attributed before you make an offer.',
       bullets: [
         'Centralized prospect tracking with market filters',
         'Partner crowdfunding with real-time capital commitments',
-        'ARV and comp analysis at a glance',
+        'Automated MAO calculation and offer letter generation',
       ],
     },
   },
   {
     number: '02',
-    title: 'Acquisition & Due Diligence',
+    title: 'Purchase',
+    label: 'The Compliance Vault',
     icon: ShieldCheck,
     videoDuration: '3:12',
     bg: '#cccccc',
@@ -58,19 +60,20 @@ const STEPS = [
     accentBg: '#595959',
     accentText: '#f2f2f2',
     copy: {
-      headline: 'Vet Every Detail. Assign Every Role.',
-      body: 'Upload inspections, appraisals, and title reports to a secure document vault. Assign vendors — appraisers, loan officers, inspectors — directly inside the deal record so nothing falls between the cracks.',
+      headline: 'Eliminate Closing Chaos.',
+      body: 'PaperWorking acts as a secure digital vault for loan processing, attorney coordination, and strict document management — ensuring contingency deadlines are never missed and closings happen on time.',
       bullets: [
         'Encrypted document vault with role-based access',
-        'Vendor assignment & status tracking',
-        'Title search and lien verification workflow',
+        'Vendor assignment & attorney coordination tracking',
+        'Title search, lien verification, and deadline management',
       ],
     },
   },
   {
     number: '03',
-    title: 'Holding & Rehab',
-    icon: Hammer,
+    title: 'Hold',
+    label: 'Margin Protection',
+    icon: Clock,
     videoDuration: '2:58',
     bg: '#a5a5a5',
     textPrimary: '#ffffff', // 2.68:1 on #a5a5a5 — large only; using white for max contrast
@@ -78,8 +81,8 @@ const STEPS = [
     accentBg: '#f2f2f2',
     accentText: '#595959',
     copy: {
-      headline: 'Control Your Burn Rate. Protect Your Margin.',
-      body: 'Monitor holding costs day-by-day with the 70% Rule enforced in real time. Set budget contingencies, track contractor disbursements, and flag overruns before they eat your profit.',
+      headline: 'Protect Your Profit From the Silent Killer: Time.',
+      body: 'The platform meticulously tracks daily holding costs, rehab timelines, and operational burn rates — expenses that routinely erode ROI if left unmonitored. The 70% Rule is enforced in real time so overruns are flagged before they eat your profit.',
       bullets: [
         'Daily burn-rate tracking from day of close',
         '70% Rule calculator with live threshold alerts',
@@ -89,8 +92,9 @@ const STEPS = [
   },
   {
     number: '04',
-    title: 'Closing & Exit',
-    icon: TrendingUp,
+    title: 'Exit',
+    label: 'Financial Reconciliation',
+    icon: BarChart3,
     videoDuration: '3:45',
     bg: '#7f7f7f',
     textPrimary: '#ffffff', // 4.02:1 on #7f7f7f — AA large text ✓
@@ -98,12 +102,12 @@ const STEPS = [
     accentBg: '#f2f2f2',
     accentText: '#595959',
     copy: {
-      headline: 'Calculate Your ROI. Close With Confidence.',
-      body: 'The final formula runs automatically: ARV minus acquisition, rehab, holding, and closing costs equals your true net profit. Generate closing checklists, verify HUD-1 line items, and distribute returns to partners — all from one screen.',
+      headline: 'We Finalize the Math.',
+      body: 'Whether holding for rental flow or selling the asset, the platform aggregates all historical project costs, visualizes final metrics, and automatically generates clean, exportable tax documentation.',
       bullets: [
         'Automated ROI and net-profit calculation',
-        'Closing checklist with document verification',
         'Partner waterfall distribution reports',
+        'Tax-ready documentation export',
       ],
     },
   },
@@ -251,17 +255,25 @@ function StepBlock({
                 className="text-xs font-bold uppercase tracking-[0.25em]"
                 style={{ color: step.textSecondary }}
               >
-                Step {step.number}
+                Phase {step.number}
               </span>
             </div>
 
             {/* Title */}
             <h3
-              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-6"
+              className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-2"
               style={{ color: step.textPrimary }}
             >
               {step.title}
             </h3>
+
+            {/* Label */}
+            <p
+              className="text-sm font-bold uppercase tracking-[0.2em] mb-6"
+              style={{ color: step.textSecondary, opacity: 0.7 }}
+            >
+              {step.label}
+            </p>
 
             {/* Headline */}
             <p
@@ -336,23 +348,34 @@ export default function HowItWorks() {
         >
           <motion.p
             variants={fadeUp}
-            className="text-xs font-bold uppercase tracking-[0.3em] mb-8"
+            className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
             style={{ color: '#7f7f7f' }}
           >
-            The Silent Profit Killer
+            Platform Overview
           </motion.p>
 
           <motion.h2
             variants={fadeUp}
-            className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-snug tracking-tight text-balance"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-8"
             style={{ color: '#595959' }}
           >
-            Most investors don&apos;t lose deals at the negotiating table.
-            They lose them to disorganization — missed deadlines, ballooning
-            holding costs, and contractor disputes that silently bleed their
-            margins dry. The investors who scale treat their portfolio like a
-            ruthless business. Stop operating in chaos. Start operating with infrastructure.
+            The Real Estate Investment
+            <br />
+            Operating System
           </motion.h2>
+
+          <motion.p
+            variants={fadeUp}
+            className="text-base sm:text-lg lg:text-xl leading-relaxed text-balance max-w-3xl mx-auto"
+            style={{ color: '#7f7f7f' }}
+          >
+            PaperWorking is an end-to-end operational framework built specifically
+            for serious real estate investors. It replaces fragmented spreadsheets
+            and legacy CRMs with a centralized system mapped directly to the four
+            physical phases of the investment lifecycle. By aligning our software
+            with the actual realities of real estate development, PaperWorking
+            solves the critical pain points that cost investors time and capital.
+          </motion.p>
 
           {/* Visual divider */}
           <motion.div
@@ -373,7 +396,7 @@ export default function HowItWorks() {
         <StepBlock key={step.number} step={step} index={index} />
       ))}
 
-      {/* ── 3. Buy Box CTA ── */}
+      {/* ── 3. Value Proposition + CTA ── */}
       <section
         style={{ backgroundColor: '#595959' }}
         className="relative overflow-hidden"
@@ -396,7 +419,7 @@ export default function HowItWorks() {
           className="relative z-10 mx-auto max-w-4xl px-6 lg:px-8 py-28 sm:py-36 text-center"
         >
           {/* Signal badge */}
-          <motion.div variants={fadeUp} className="flex justify-center mb-8">
+          <motion.div variants={fadeUp} className="flex justify-center mb-4">
             <div className="inline-flex items-center space-x-2">
               <span
                 className="w-2 h-2 animate-pulse"
@@ -409,7 +432,7 @@ export default function HowItWorks() {
                 className="text-xs font-bold uppercase tracking-[0.25em]"
                 style={{ color: '#a5a5a5' }}
               >
-                Ready to Start
+                The Value Proposition
               </span>
             </div>
           </motion.div>
@@ -417,12 +440,12 @@ export default function HowItWorks() {
           {/* Headline */}
           <motion.h2
             variants={fadeUp}
-            className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95] mb-6"
+            className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter leading-[0.95] mb-6"
             style={{ color: '#f2f2f2' }}
           >
-            Your deals deserve
+            Not a project management tool.
             <br />
-            <span style={{ color: '#cccccc' }}>better infrastructure.</span>
+            <span style={{ color: '#cccccc' }}>A risk mitigation platform.</span>
           </motion.h2>
 
           {/* Subtext */}
@@ -431,9 +454,11 @@ export default function HowItWorks() {
             className="text-base sm:text-lg leading-relaxed mb-12 mx-auto max-w-2xl"
             style={{ color: '#a5a5a5' }}
           >
-            Stop managing million-dollar investments with spreadsheets and
-            group texts. PaperWorking gives you the operating system your
-            portfolio needs — from sourcing to exit.
+            We transition investors from a state of operational liability — lost
+            documents, untracked holding costs, messy closings — to
+            institutional-grade precision. You cannot scale a real estate portfolio
+            without structural integrity. Stop managing high-stakes capital on
+            spreadsheets, and treat your investments like a business.
           </motion.p>
 
           {/* CTA Button */}
@@ -448,7 +473,7 @@ export default function HowItWorks() {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
               }}
             >
-              <span>Start Your 14-Day Free Trial</span>
+              <span>Create Your Free Account</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -459,7 +484,7 @@ export default function HowItWorks() {
             className="mt-8 text-xs"
             style={{ color: '#7f7f7f' }}
           >
-            Free for 14 days · No credit card required · Cancel anytime
+            14-day free trial · No credit card required
           </motion.p>
         </motion.div>
       </section>

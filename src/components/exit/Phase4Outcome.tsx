@@ -6,6 +6,7 @@ import ProfessionalListingDashboard from '@/components/listing/ProfessionalListi
 import { projectsService } from '@/lib/firebase/projects';
 
 const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
+const NOIDeepDive = lazy(() => import('@/components/dashboard/charts/NOIDeepDive'));
 
 interface Phase4OutcomeProps {
   projectId: string;
@@ -277,6 +278,19 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
             )}
         </div>
 
+        </div>
+
+        {/* ── NOI Deep Dive — Exit-stage property analysis ── */}
+        <div className="mt-12">
+          <Suspense
+            fallback={
+              <div className="animate-pulse bg-bg-surface/5 rounded-xl h-64 flex items-center justify-center">
+                <span className="text-xs text-text-secondary uppercase tracking-widest">Loading NOI Analytics…</span>
+              </div>
+            }
+          >
+            <NOIDeepDive projects={[deal]} />
+          </Suspense>
         </div>
 
         {/* ── Deal Autopsy: locks all KPIs once status = Sold ── */}

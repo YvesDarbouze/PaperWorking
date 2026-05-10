@@ -33,6 +33,12 @@ function LoginPageInner() {
     loading,
   } = useAuth();
 
+  // Clear any stale auth errors from previous pages
+  useEffect(() => {
+    clearError();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!loading && user) router.replace(redirectTo);
   }, [user, loading, router, redirectTo]);
@@ -87,7 +93,7 @@ function LoginPageInner() {
 
       {/* ── Heading ── */}
       <div className="mb-8 text-center">
-        <h1 className="text-[28px] font-semibold tracking-tight text-white">Sign in or sign up</h1>
+        <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Sign in or sign up</h1>
         <p className="mt-2 text-sm text-[#888]">Access your PaperWorking portfolio.</p>
       </div>
 

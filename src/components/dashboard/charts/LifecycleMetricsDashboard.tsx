@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, lazy, Suspense } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
+import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
@@ -12,13 +13,16 @@ import {
   ShieldCheck, ArrowUpRight, ArrowDownRight, Compass, Home, Map
 } from 'lucide-react';
 
+const NOIDeepDive = lazy(() => import('./NOIDeepDive'));
+
 /* ═══════════════════════════════════════════════════════════════
    LIFECYCLE METRICS DASHBOARD
    A comprehensive master dashboard handling 4 core 2026 REI metrics:
-   1. Property-Level Financials (Agent 1)
+   1. Property-Level Financials (Agent 1) — now powered by reiMetrics engine
    2. Operational & Property Management (Agent 2)
    3. Market & Portfolio Data (Agent 3)
    4. 2026 Strategic Focus Areas (Agent 4)
+   + NOI Deep Dive panel (new)
    ═══════════════════════════════════════════════════════════════ */
 
 interface Props {
@@ -26,21 +30,32 @@ interface Props {
 }
 
 // ─── AGENT 1: Property-Level Financial Metrics ───
+// Now uses the real computeNOIComponents engine instead of the crude 50% rule
 export function derivePropertyFinancials(projects: Project[]) {
   return projects.map((p) => {
-    const purchasePrice = p.financials?.purchasePrice || 0;
-    const arv = p.financials?.estimatedARV || purchasePrice;
-    const rent = p.financials?.projectedMonthlyRent || 0;
-    const noi = (rent * 12) * 0.5; // 50% rule estimate for NOI if not explicit
-    const capRate = arv > 0 ? (noi / arv) * 100 : 0;
+    const financials = p.financials;
+    if (!financials) {
+      return { name: (p.propertyName || 'Unknown').substring(0, 10), NOI: 0, CapRate: 0, DSCR: 0 };
+    }
+
+    // Use the real metrics engine
+    const noiComponents = computeNOIComponents(financials);
+    const noi = noiComponents.noi;
     
-    const loanPayment = (p.financials?.loanAmount || 0) * 0.007; // Est monthly mortgage
-    const dscr = loanPayment > 0 ? (noi / 12) / loanPayment : 0;
+    const purchasePrice = financials.purchasePrice ?? financials.estimatedARV ?? 0;
+    const capRate = computeCapRate(noi, purchasePrice);
+    
+    // Compute DSCR from real debt service
+    const loanAmount = financials.loanAmount ?? 0;
+    const loanInterestRate = financials.loanInterestRate ?? 0;
+    const loanTermMonths = 360; // 30-year conventional
+    const annualDebtService = computeAnnualDebtService(loanAmount, loanInterestRate, loanTermMonths);
+    const dscr = annualDebtService > 0 ? Math.round((noi / annualDebtService) * 100) / 100 : 0;
 
     return {
       name: (p.propertyName || 'Unknown').substring(0, 10),
-      NOI: noi,
-      CapRate: capRate,
+      NOI: Math.round(noi),
+      CapRate: Math.round(capRate * 100) / 100,
       DSCR: dscr,
     };
   }).slice(0, 5); // Limit to top 5 for chart clarity
@@ -88,6 +103,35 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
 
 // ─── AGENT 2: Operational & Property Management ───
 export function deriveOperationalData(projects: Project[]) {
+  // When projects have real data, use real OER from NOI components
+  if (projects.length > 0 && projects.some(p => p.financials)) {
+    let totalGPI = 0;
+    let totalOpEx = 0;
+    let totalVacancyLoss = 0;
+    let totalMaintenance = 0;
+
+    projects.forEach(p => {
+      if (!p.financials) return;
+      const c = computeNOIComponents(p.financials);
+      totalGPI += c.grossRentalIncome + c.otherIncome;
+      totalOpEx += c.totalOperatingExpenses;
+      totalVacancyLoss += c.vacancyLoss;
+      totalMaintenance += c.maintenance;
+    });
+
+    const oer = totalGPI > 0 ? Math.round((totalOpEx / totalGPI) * 100) : 0;
+    const occupancy = totalGPI > 0 ? Math.round((1 - totalVacancyLoss / totalGPI) * 100) : 100;
+
+    // Project quarterly trends using real baseline
+    return [
+      { quarter: 'Q1', Occupancy: Math.max(occupancy - 4, 0), OER: Math.min(oer + 3, 100), Maintenance: Math.round(totalMaintenance * 0.28) },
+      { quarter: 'Q2', Occupancy: Math.max(occupancy - 2, 0), OER: Math.min(oer + 1, 100), Maintenance: Math.round(totalMaintenance * 0.22) },
+      { quarter: 'Q3', Occupancy: occupancy, OER: oer, Maintenance: Math.round(totalMaintenance * 0.30) },
+      { quarter: 'Q4', Occupancy: Math.min(occupancy + 2, 100), OER: Math.max(oer - 2, 0), Maintenance: Math.round(totalMaintenance * 0.20) },
+    ];
+  }
+
+  // Fallback: synthetic data
   const projectCount = Math.max(projects.length, 1);
   const baseOcc = Math.min(85 + (projectCount * 2), 98);
   
@@ -277,6 +321,17 @@ export default function LifecycleMetricsDashboard({ projects: propProjects }: Pr
         <MarketPortfolioAgent projects={projects} />
         <StrategicFocusAgent />
       </div>
+
+      {/* ── NOI Deep Dive Panel ── */}
+      <Suspense
+        fallback={
+          <div className="bg-bg-surface border border-border-accent rounded-xl p-8 text-center">
+            <div className="animate-pulse text-sm text-text-secondary">Loading NOI analysis…</div>
+          </div>
+        }
+      >
+        <NOIDeepDive projects={projects} />
+      </Suspense>
     </div>
   );
 }

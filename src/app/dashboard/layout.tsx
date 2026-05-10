@@ -13,6 +13,7 @@ import MinimizedDashboardView from '@/components/dashboard/MinimizedDashboardVie
 import AppSidebar from '@/components/layout/AppSidebar';
 import TopHeader from '@/components/layout/TopHeader';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import CheckoutSuccessHandler from '@/components/billing/CheckoutSuccessHandler';
 import { PhaseGateProvider } from '@/context/PhaseGateContext';
 import PhaseGateSyncer from '@/components/dashboard/PhaseGateSyncer';
 /* ═══════════════════════════════════════════════════════
@@ -161,6 +162,9 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
 
         {/* ── Mobile Bottom Nav ── */}
         <LaneIndicator />
+
+        {/* ── Post-Checkout Success Overlay ── */}
+        <CheckoutSuccessHandler />
 
         <Toaster position="bottom-left" />
       </div>

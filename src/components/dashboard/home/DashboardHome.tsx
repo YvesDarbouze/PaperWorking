@@ -297,6 +297,37 @@ export default function DashboardHome() {
         </section>
       )}
 
+      {/* ── Create Project CTA — Primary Action ── */}
+      {!isGuest && (
+        <section className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <CreateProjectCTA onClick={handleCreateProject} locked={isFree} />
+            
+            {/* Quick stats beside the CTA */}
+            <div className="md:col-span-2 grid grid-cols-3 gap-4">
+              {[
+                { label: 'Active Deals', value: activeDeals.length, icon: Target },
+                { label: 'Deals Closed', value: dealsClosedCount, icon: CheckCircle2 },
+                { label: 'Team Members', value: teamMembersCount, icon: Users },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="flex flex-col justify-center items-center gap-2 rounded-xl py-6 transition-all"
+                  style={{
+                    background: 'var(--bg-surface, #FFFFFF)',
+                    border: '1px solid var(--border-ui, #A5A5A5)',
+                  }}
+                >
+                  <stat.icon className="w-5 h-5 text-[#7F7F7F]" aria-hidden="true" />
+                  <span className="text-2xl font-bold text-[#595959] tabular-nums">{stat.value}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#7F7F7F]">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Dashboard Content ── */}
       <div className="flex flex-col gap-8">
         

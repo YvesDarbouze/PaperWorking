@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
         <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-950/60 border border-green-800/30">
           <CheckCircle2 className="h-7 w-7 text-green-400" />
         </div>
-        <h1 className="text-[28px] font-semibold tracking-tight text-white">Check your inbox</h1>
+        <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Check your inbox</h1>
         <p className="mt-3 text-[14px] text-[#888] leading-relaxed max-w-[300px]">
           A reset link was sent to{' '}
           <span className="text-white font-medium">{submittedEmail}</span>.
@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex flex-col items-center">
       <div className="mb-8 text-center">
-        <h1 className="text-[28px] font-semibold tracking-tight text-white">Reset your password</h1>
+        <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Reset your password</h1>
         <p className="mt-2 text-[14px] text-[#888]">
           Enter your email and we&apos;ll send you a reset link.
         </p>

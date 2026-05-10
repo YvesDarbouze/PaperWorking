@@ -25,12 +25,14 @@ import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
   'Individual':      { label: 'Individual',          price: '$59',  period: '/mo' },
   'Team':            { label: 'Investor Team',       price: '$99',  period: '/mo' },
+  'Vendor Network':  { label: 'Vendor Network',      price: '$39',  period: '/mo' },
   'Lawyer Lead-Gen': { label: 'Service Professional', price: '$79', period: '/mo' },
   'None':            { label: 'No active plan',      price: '—',    period: ''    },
 };
 
 const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
   active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2  },
+  trialing: { label: 'Trial',    cls: 'bg-blue-50   text-blue-700  border-blue-200',   Icon: CheckCircle2  },
   past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle },
   canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',     Icon: AlertTriangle },
   inactive: { label: 'Inactive', cls: 'bg-bg-primary  text-text-secondary  border-border-accent',   Icon: AlertTriangle },
@@ -47,6 +49,7 @@ export default function AccountPage() {
   const tierMap: Record<string, string> = {
     'Individual':      'Basic',
     'Team':            'Pro',
+    'Vendor Network':  'Vendor',
     'Lawyer Lead-Gen': 'Enterprise',
     'None':            'No active plan'
   };

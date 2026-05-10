@@ -11,6 +11,23 @@ function getStripe() {
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+/* ═══════════════════════════════════════════════════════
+   Stripe → Firestore Status Mapping
+
+   Covers all Stripe subscription statuses:
+   https://docs.stripe.com/api/subscriptions/object#subscription_object-status
+   ═══════════════════════════════════════════════════════ */
+const STRIPE_STATUS_MAP: Record<string, string> = {
+  active: 'active',
+  trialing: 'trialing',
+  past_due: 'past_due',
+  canceled: 'canceled',
+  unpaid: 'canceled',
+  incomplete: 'incomplete',
+  incomplete_expired: 'canceled',
+  paused: 'paused',
+};
+
 /**
  * Resolves a Firebase UID from a Stripe Customer ID.
  * Queries the users collection for a document where stripeCustomerId matches.
@@ -26,18 +43,71 @@ async function resolveUidFromStripeCustomer(stripeCustomerId: string): Promise<s
   return snap.docs[0].id;
 }
 
+/**
+ * Idempotency guard: checks if we've already processed this event.
+ * Uses Firestore `stripe_events` collection as a dedup log.
+ */
+async function isEventProcessed(eventId: string): Promise<boolean> {
+  const doc = await adminDb.collection('stripe_events').doc(eventId).get();
+  return doc.exists;
+}
+
+async function markEventProcessed(eventId: string, eventType: string): Promise<void> {
+  await adminDb.collection('stripe_events').doc(eventId).set({
+    eventType,
+    processedAt: FieldValue.serverTimestamp(),
+  });
+}
+
+/**
+ * Batch-updates user and (optionally) organization documents.
+ */
+async function updateUserAndOrg(
+  uid: string,
+  userData: Record<string, any>
+): Promise<void> {
+  const userDoc = await adminDb.collection('users').doc(uid).get();
+  const organizationId = userDoc.data()?.organizationId;
+
+  const batch = adminDb.batch();
+  batch.update(adminDb.collection('users').doc(uid), {
+    ...userData,
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+
+  if (organizationId) {
+    // Only propagate subscription-related fields to org
+    const orgData: Record<string, any> = { updatedAt: FieldValue.serverTimestamp() };
+    if ('subscriptionPlan' in userData) orgData.subscriptionPlan = userData.subscriptionPlan;
+    if ('subscriptionStatus' in userData) orgData.subscriptionStatus = userData.subscriptionStatus;
+    batch.update(adminDb.collection('organizations').doc(organizationId), orgData);
+  }
+
+  await batch.commit();
+}
+
+/* ═══════════════════════════════════════════════════════
+   POST /api/stripe/webhook
+   ═══════════════════════════════════════════════════════ */
+
 export async function POST(request: Request) {
   const body = await request.text();
   const sig = request.headers.get('stripe-signature') as string;
   const stripe = getStripe();
 
+  // ── Signature Verification ─────────────────────────────
   let event: Stripe.Event;
-
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret as string);
   } catch (err: any) {
     console.error('Stripe Webhook Signature Verification Failed:', err.message);
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+  }
+
+  // ── Idempotency Check ──────────────────────────────────
+  if (await isEventProcessed(event.id)) {
+    console.log(`[Stripe Webhook] Skipping already-processed event: ${event.id}`);
+    return NextResponse.json({ received: true, deduplicated: true });
   }
 
   try {
@@ -50,115 +120,103 @@ export async function POST(request: Request) {
         const userId = session.client_reference_id || session.metadata?.userId;
         const plan = session.metadata?.plan;
 
-        if (userId && plan) {
-          const userDoc = await adminDb.collection('users').doc(userId).get();
-          const organizationId = userDoc.data()?.organizationId;
-
-          const batch = adminDb.batch();
-          batch.update(adminDb.collection('users').doc(userId), {
+        if (userId && userId !== 'guest' && plan) {
+          await updateUserAndOrg(userId, {
             subscriptionPlan: plan,
             subscriptionStatus: 'active',
             stripeCustomerId: session.customer as string,
-            updatedAt: FieldValue.serverTimestamp(),
+            stripeSubscriptionId: session.subscription as string,
           });
-
-          if (organizationId) {
-            batch.update(adminDb.collection('organizations').doc(organizationId), {
-              subscriptionPlan: plan,
-              subscriptionStatus: 'active',
-              updatedAt: FieldValue.serverTimestamp(),
-            });
-          }
-          await batch.commit();
         }
         break;
       }
 
+      // =========================================================
+      // INVOICE PAID — Renewal confirmation (skip initial create)
+      // =========================================================
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         const stripeCustomerId = invoice.customer as string;
+
+        // Skip the initial subscription creation invoice — already handled above
         if (invoice.billing_reason === 'subscription_create') break;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          const userDoc = await adminDb.collection('users').doc(uid).get();
-          const organizationId = userDoc.data()?.organizationId;
-
-          const batch = adminDb.batch();
-          batch.update(adminDb.collection('users').doc(uid), {
+          await updateUserAndOrg(uid, {
             subscriptionStatus: 'active',
-            updatedAt: FieldValue.serverTimestamp(),
           });
-
-          if (organizationId) {
-            batch.update(adminDb.collection('organizations').doc(organizationId), {
-              subscriptionStatus: 'active',
-              updatedAt: FieldValue.serverTimestamp(),
-            });
-          }
-          await batch.commit();
         }
         break;
       }
 
+      // =========================================================
+      // INVOICE PAYMENT FAILED — Flag the account
+      // =========================================================
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const stripeCustomerId = invoice.customer as string;
+
+        const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
+        if (uid) {
+          await updateUserAndOrg(uid, {
+            subscriptionStatus: 'past_due',
+          });
+        }
+        break;
+      }
+
+      // =========================================================
+      // SUBSCRIPTION DELETED — Full cancellation
+      // =========================================================
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          const userDoc = await adminDb.collection('users').doc(uid).get();
-          const organizationId = userDoc.data()?.organizationId;
-
-          const batch = adminDb.batch();
-          batch.update(adminDb.collection('users').doc(uid), {
+          await updateUserAndOrg(uid, {
             subscriptionStatus: 'canceled',
             subscriptionPlan: 'None',
-            updatedAt: FieldValue.serverTimestamp(),
+            stripeSubscriptionId: null,
           });
-
-          if (organizationId) {
-            batch.update(adminDb.collection('organizations').doc(organizationId), {
-              subscriptionStatus: 'canceled',
-              subscriptionPlan: 'None',
-              updatedAt: FieldValue.serverTimestamp(),
-            });
-          }
-          await batch.commit();
         }
         break;
       }
 
+      // =========================================================
+      // SUBSCRIPTION UPDATED — Status changes, plan upgrades/downgrades
+      // =========================================================
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          const userDoc = await adminDb.collection('users').doc(uid).get();
-          const organizationId = userDoc.data()?.organizationId;
+          const mappedStatus = STRIPE_STATUS_MAP[subscription.status] || 'inactive';
 
-          const statusMap: Record<string, string> = {
-            active: 'active',
-            past_due: 'past_due',
-            canceled: 'canceled',
-            unpaid: 'canceled',
-          };
-          const mappedStatus = statusMap[subscription.status] || 'inactive';
-
-          const batch = adminDb.batch();
-          batch.update(adminDb.collection('users').doc(uid), {
+          const updateData: Record<string, any> = {
             subscriptionStatus: mappedStatus,
-            updatedAt: FieldValue.serverTimestamp(),
-          });
+            stripeSubscriptionId: subscription.id,
+          };
 
-          if (organizationId) {
-            batch.update(adminDb.collection('organizations').doc(organizationId), {
-              subscriptionStatus: mappedStatus,
-              updatedAt: FieldValue.serverTimestamp(),
-            });
+          // If the subscription has plan metadata, sync it
+          const planFromMeta = subscription.metadata?.plan;
+          if (planFromMeta) {
+            updateData.subscriptionPlan = planFromMeta;
           }
-          await batch.commit();
+
+          // Track cancellation scheduling
+          if (subscription.cancel_at_period_end) {
+            updateData.cancelAtPeriodEnd = true;
+            updateData.currentPeriodEnd = subscription.current_period_end
+              ? new Date(subscription.current_period_end * 1000).toISOString()
+              : null;
+          } else {
+            updateData.cancelAtPeriodEnd = false;
+          }
+
+          await updateUserAndOrg(uid, updateData);
         }
         break;
       }
@@ -166,10 +224,16 @@ export async function POST(request: Request) {
       default:
         console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
     }
+
+    // ── Mark event as processed (after successful handling) ──
+    await markEventProcessed(event.id, event.type);
   } catch (processingError: any) {
     console.error('[Stripe Webhook] Processing error:', processingError);
-    // Return 200 to prevent Stripe retry storms — log the error for internal debugging
-    return NextResponse.json({ received: true, error: processingError.message }, { status: 200 });
+    // Return 500 so Stripe retries the event — do NOT swallow errors
+    return NextResponse.json(
+      { error: `Processing failed: ${processingError.message}` },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({ received: true });

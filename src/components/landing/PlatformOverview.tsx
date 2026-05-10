@@ -27,33 +27,33 @@ const PHASES = [
   {
     number: '1',
     label: 'Acquisition',
-    subtitle: 'Find the deal. Lock the capital.',
+    subtitle: 'The Capital Gateway',
     icon: Landmark,
-    body: 'Source targets, calculate your MAO, and generate offer letters from a single screen. Track partner capital before you make a move, so you always buy right.',
+    body: 'We centralize deal sourcing and syndication. Identify targets, generate automated offer letters, and securely crowdfund capital commitments — all in one streamlined environment.',
     accentColor: '#4ade80', // green-400
   },
   {
     number: '2',
     label: 'Purchase',
-    subtitle: 'Close without the chaos.',
+    subtitle: 'The Compliance Vault',
     icon: ShieldCheck,
-    body: 'Keep loan docs, title reports, and deadlines in one secure vault. Give attorneys and loan officers instant access, so nothing falls between the cracks and you close on time.',
+    body: 'We eliminate closing chaos. PaperWorking acts as a secure digital vault for loan processing, attorney coordination, and strict document management — ensuring contingency deadlines are never missed.',
     accentColor: '#60a5fa', // blue-400
   },
   {
     number: '3',
     label: 'Hold',
-    subtitle: 'Stop the silent margin killer.',
+    subtitle: 'Margin Protection',
     icon: Clock,
-    body: 'Holding costs eat your margins silently. PaperWorking tracks your daily burn—taxes, insurance, interest—and flags you the moment your 70% rule is at risk.',
+    body: 'We protect your profit from the silent killer: time. The platform meticulously tracks daily holding costs, rehab timelines, and operational burn rates — expenses that routinely erode ROI if left unmonitored.',
     accentColor: '#facc15', // yellow-400
   },
   {
     number: '4',
     label: 'Exit',
-    subtitle: 'Know exactly what you made.',
+    subtitle: 'Financial Reconciliation',
     icon: BarChart3,
-    body: 'Automatically calculate your true profit. Generate distribution reports and export tax-ready documentation before you even leave the closing table.',
+    body: 'We finalize the math. Whether holding for rental flow or selling the asset, the platform aggregates all historical project costs, visualizes final metrics, and automatically generates clean, exportable tax documentation.',
     accentColor: '#f472b6', // pink-400
   },
 ];
@@ -177,7 +177,7 @@ export default function PlatformOverview() {
             className="text-[12px] font-bold uppercase tracking-[0.3em] mb-6 text-center"
             style={{ color: '#717171' }}
           >
-            The Framework
+            Platform Overview
           </motion.p>
 
           <motion.h2
@@ -185,7 +185,7 @@ export default function PlatformOverview() {
             className="text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.75rem] tracking-tight leading-[1.15] mb-6 sm:mb-8 text-center max-w-4xl mx-auto"
             style={{ color: '#ffffff' }}
           >
-            Every phase of your deal. Organized.
+            The Real Estate Investment Operating System
           </motion.h2>
 
           <motion.p
@@ -193,7 +193,7 @@ export default function PlatformOverview() {
             className="text-sm sm:text-base md:text-[17px] leading-[1.75] sm:leading-[1.8] mb-12 sm:mb-16 md:mb-20 text-center max-w-3xl mx-auto"
             style={{ color: '#b0b0b0' }}
           >
-            Every missed deadline and untracked expense silently kills your profit. PaperWorking is the institutional-grade platform that ensures you never lose margin to disorganized chaos again.
+            PaperWorking is an end-to-end operational framework built specifically for serious real estate investors. It replaces fragmented spreadsheets and legacy CRMs with a centralized system mapped directly to the four physical phases of the investment lifecycle.
           </motion.p>
 
           {/* ── 4-Phase Grid ── */}
@@ -227,14 +227,14 @@ export default function PlatformOverview() {
               className="text-xl sm:text-2xl md:text-3xl tracking-tight mb-4 sm:mb-6"
               style={{ color: '#ffffff' }}
             >
-              Built for serious operators, not hobbyists.
+              Not a project management tool. A risk mitigation platform.
             </h3>
 
             <p
               className="text-base sm:text-[17px] leading-[1.8] mb-14"
               style={{ color: '#b0b0b0' }}
             >
-              Scaling investors don't work harder—they operate with ruthless efficiency. PaperWorking eliminates the spreadsheet chaos and missed deadlines that are currently draining your profits. Stop losing money to disorganization.
+              We transition investors from a state of operational liability — lost documents, untracked holding costs, messy closings — to institutional-grade precision. You cannot scale a real estate portfolio without structural integrity. Stop managing high-stakes capital on spreadsheets, and treat your investments like a business.
             </p>
 
             {/* ── CTA Button ── */}
@@ -248,7 +248,7 @@ export default function PlatformOverview() {
                 boxShadow: '0 4px 24px rgba(255,255,255,0.12)',
               }}
             >
-              <span>Start Your Free 14-Day Trial</span>
+              <span>Create Your Free Account</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -256,7 +256,7 @@ export default function PlatformOverview() {
               className="mt-6 text-[13px]"
               style={{ color: '#5a5a5a' }}
             >
-              No credit card required · Full Team access from day one
+              14-day free trial · No credit card required
             </p>
           </motion.div>
         </motion.div>

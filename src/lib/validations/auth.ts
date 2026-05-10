@@ -41,7 +41,7 @@ export const registerSchema = z
       .min(1, 'Please confirm your password'),
     acceptTerms: z
       .literal(true, {
-        error: 'You must accept the Terms of Service',
+        message: 'You must accept the Terms of Service',
       }),
   })
   .refine((data) => data.password === data.confirmPassword, {

@@ -10,8 +10,18 @@ function getStripe() {
 
 /**
  * POST /api/stripe/portal
- * Creates a Stripe Billing Portal session for the authenticated user.
- * Body: { idToken: string }
+ *
+ * Creates a Stripe Customer Portal session for subscription management.
+ * Allows users to:
+ *   - Update payment method
+ *   - View invoice history
+ *   - Cancel or reactivate subscription
+ *   - Upgrade/downgrade plan
+ *
+ * Requires authentication. Looks up the user's stripeCustomerId
+ * from Firestore and creates a portal session linked to it.
+ *
+ * Body: { idToken }
  * Returns: { url: string }
  */
 export async function POST(request: Request) {
@@ -19,31 +29,51 @@ export async function POST(request: Request) {
     const { idToken } = await request.json();
 
     if (!idToken) {
-      return NextResponse.json({ error: 'Missing idToken.' }, { status: 400 });
-    }
-
-    const decoded = await adminAuth.verifyIdToken(idToken);
-    const userSnap = await adminDb.collection('users').doc(decoded.uid).get();
-    const stripeCustomerId = userSnap.data()?.stripeCustomerId as string | undefined;
-
-    if (!stripeCustomerId) {
       return NextResponse.json(
-        { error: 'No billing account found. Subscribe first to manage billing.' },
-        { status: 400 }
+        { error: 'Authentication required.' },
+        { status: 401 }
       );
     }
 
+    // Verify Firebase auth token
+    let uid: string;
+    try {
+      const decoded = await adminAuth.verifyIdToken(idToken);
+      uid = decoded.uid;
+    } catch {
+      return NextResponse.json(
+        { error: 'Invalid authentication token.' },
+        { status: 401 }
+      );
+    }
+
+    // Look up the user's Stripe Customer ID
+    const userDoc = await adminDb.collection('users').doc(uid).get();
+    const userData = userDoc.data();
+    const stripeCustomerId = userData?.stripeCustomerId;
+
+    if (!stripeCustomerId) {
+      return NextResponse.json(
+        { error: 'No active subscription found. Please subscribe first.' },
+        { status: 404 }
+      );
+    }
+
+    // Create the portal session
     const stripe = getStripe();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
-    const session = await stripe.billingPortal.sessions.create({
+    const portalSession = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
       return_url: `${appUrl}/dashboard/settings/billing`,
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: portalSession.url });
   } catch (error: any) {
     console.error('[Stripe Portal]', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message || 'Failed to create portal session' },
+      { status: 500 }
+    );
   }
 }

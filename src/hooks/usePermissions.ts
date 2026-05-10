@@ -67,6 +67,8 @@ export function usePermissions() {
   const isContractor = role === 'General Contractor';
   const isFinanceTeam = isLead || role === 'Accountant';
   const isLender = role === 'Lender';
+  // Convenience: can the current user edit project content (todos, financials)?
+  const canEdit = can('EDIT_FINANCIALS') || can('SUBMIT_RECEIPTS');
 
   return { 
     can, 
@@ -75,6 +77,7 @@ export function usePermissions() {
     isAdmin,
     isContractor,
     isFinanceTeam,
-    isLender
+    isLender,
+    canEdit,
   };
 }

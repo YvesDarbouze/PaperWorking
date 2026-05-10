@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   User,
   onAuthStateChanged,
@@ -17,6 +17,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
+import type { UserProfile, AccountType } from '@/types/user';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 2.2)
@@ -33,11 +34,11 @@ import { auth, db } from '@/lib/firebase/config';
 
 interface AuthContextType {
   user: User | null;
-  profile: any | null;
+  profile: UserProfile | null;
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, displayName: string, accountType?: 'investor' | 'vendor') => Promise<void>;
+  register: (email: string, password: string, displayName: string, accountType?: AccountType) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
   sendMagicLink: (email: string) => Promise<void>;
@@ -58,17 +59,29 @@ async function provisionSocialUser(user: User) {
   const userDocSnap = await getDoc(userDocRef);
 
   if (!userDocSnap.exists()) {
+    // Check if the user selected an account type before social sign-in
+    const pendingAccountType = (typeof window !== 'undefined'
+      ? window.localStorage.getItem('pw_pending_account_type')
+      : null) as AccountType | null;
+    const acctType: AccountType = pendingAccountType || 'investor';
+
     await setDoc(userDocRef, {
       uid: user.uid,
       email: user.email,
       displayName: user.displayName || 'User',
-      role: 'Lead Investor',
+      role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
+      accountType: acctType,
       organizationId: `org_${user.uid.slice(0, 8)}`,
       subscriptionPlan: 'None',
       subscriptionStatus: 'inactive',
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+
+    // Clean up the pending flag
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('pw_pending_account_type');
+    }
   }
 }
 
@@ -97,11 +110,15 @@ async function syncSessionCookie(user: User | null) {
   }
 }
 
+/** Token refresh interval — 50 minutes (Firebase ID tokens expire in 60 minutes) */
+const TOKEN_REFRESH_MS = 50 * 60 * 1000;
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -113,13 +130,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profileUnsubscribe = null;
       }
 
+      // Clear any previous refresh timer
+      if (refreshTimerRef.current) {
+        clearInterval(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
+
       setUser(firebaseUser);
 
       if (firebaseUser) {
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
-          if (snap.exists()) setProfile(snap.data());
+          if (snap.exists()) setProfile(snap.data() as UserProfile);
         });
+
+        // Start token refresh interval — keeps __session cookie valid
+        refreshTimerRef.current = setInterval(async () => {
+          try {
+            await firebaseUser.getIdToken(true);
+            await syncSessionCookie(firebaseUser);
+          } catch (err) {
+            console.error('Token refresh failed:', err);
+          }
+        }, TOKEN_REFRESH_MS);
       } else {
         setProfile(null);
       }
@@ -134,6 +167,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       unsubscribe();
       if (profileUnsubscribe) profileUnsubscribe();
+      if (refreshTimerRef.current) {
+        clearInterval(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -167,7 +204,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const register = async (email: string, password: string, displayName: string, accountType: 'investor' | 'vendor' = 'investor') => {
+  const register = async (email: string, password: string, displayName: string, accountType: AccountType = 'investor') => {
     setError(null);
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);

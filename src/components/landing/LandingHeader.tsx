@@ -26,7 +26,7 @@ export default function LandingHeader() {
 
   return (
     <>
-      <header className="fixed w-full top-0 z-50 border-b border-transparent">
+      <motion.header className="fixed w-full top-0 z-50 border-b border-transparent">
         <motion.div
           style={{ opacity: headerOpacity, backdropFilter }}
           className="absolute inset-0 bg-[var(--pw-bg)]"

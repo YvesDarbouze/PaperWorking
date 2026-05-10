@@ -7,11 +7,16 @@ import { useProjectStore } from '@/store/projectStore';
 import PhaseBadge from '../ui/PhaseBadge';
 import { ArrowLeft, ChevronLeft, ChevronRight, CheckCircle, Play } from 'lucide-react';
 import Phase4Outcome from '@/components/exit/Phase4Outcome';
+import RentalPropertyCalculator from '../project/RentalPropertyCalculator';
 import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
 import { projectsService } from '@/lib/firebase/projects';
 import { transitionDealPhase } from '@/lib/services/dealStateMachine';
 import ProjectTodoList from '../project/ProjectTodoList';
+
+/* ── Lazy-loaded analytics panel ── */
+import { lazy, Suspense } from 'react';
+const NOIDeepDive = lazy(() => import('@/components/dashboard/charts/NOIDeepDive'));
 
 interface FullscreenLifecycleViewProps {
   projectId: string;
@@ -260,7 +265,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   const generalPrc = totalRehab > 0 ? (general / totalRehab) * 100 : 0;
 
   return (
-    <div className="w-full max-w-3xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
+    <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 3: Hold</h1>
        <p className="text-text-secondary mb-8">Execute rehab workflows and triage General Contractor draw requests.</p>
        
@@ -351,6 +356,29 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                   <p className="text-text-secondary text-sm mt-4 text-center">No approved costs registered yet.</p>
                 )}
              </div>
+          </div>
+
+          {/* ── Rental Property Calculator ── */}
+          <div className="w-full mt-8">
+            <RentalPropertyCalculator 
+              phaseColor={PHASE_BACKGROUNDS.rehab || '#808080'} 
+              projectId={deal.id} 
+              initialFinancials={deal.financials} 
+              readOnly={!canAdd}
+            />
+          </div>
+
+          {/* ── NOI Deep Dive — Per-Property Analytics ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense
+              fallback={
+                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading NOI Analytics…</span>
+                </div>
+              }
+            >
+              <NOIDeepDive projects={[deal]} />
+            </Suspense>
           </div>
           
           <div className="w-full mt-8 border-t border-gray-700/50 pt-6">

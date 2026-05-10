@@ -15,11 +15,24 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError, user, loading } = useAuth();
 
+  // Clear any stale auth errors from previous pages (e.g. failed login attempt)
+  useEffect(() => {
+    clearError();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!loading && user) router.replace('/dashboard');
   }, [user, loading, router]);
 
   const [accountType, setAccountType] = useState<AccountType | null>(null);
+
+  // Persist account type to localStorage so social SSO provisioning
+  // in AuthContext can read it via pw_pending_account_type
+  const selectAccountType = (type: AccountType) => {
+    setAccountType(type);
+    window.localStorage.setItem('pw_pending_account_type', type);
+  };
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,6 +86,8 @@ export default function RegisterPage() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
+      // Redirect after successful social sign-up
+      router.replace(accountType === 'vendor' ? '/vendor-portal' : '/dashboard');
     } catch {
       setLoadingProvider(null);
     }
@@ -93,52 +108,52 @@ export default function RegisterPage() {
         <ToastBanner />
 
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-normal tracking-tighter text-text-primary">Select Account Type.</h1>
-          <p className="mt-4 text-sm text-text-secondary font-normal">
-            Choose the role that describes how you'll use PaperWorking.
+          <h1 className="text-3xl font-normal tracking-tighter" style={{ color: '#ffffff' }}>Select Account Type.</h1>
+          <p className="mt-4 text-sm text-[#888] font-normal">
+            Choose the role that describes how you&apos;ll use PaperWorking.
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 mb-10">
           <button
             type="button"
-            onClick={() => setAccountType('investor')}
-            className="group relative flex items-start gap-5 p-6 border-2 border-border-accent/20 rounded-2xl bg-bg-primary/40 hover:border-pw-black hover:bg-bg-surface transition-all duration-200 text-left"
+            onClick={() => selectAccountType('investor')}
+            className="group relative flex items-start gap-5 p-6 border-2 border-[#2e2e2e] rounded-2xl bg-[#141414] hover:border-white hover:bg-[#1a1a1a] transition-all duration-200 text-left"
           >
-            <div className="w-12 h-12 rounded-xl bg-pw-black flex items-center justify-center shrink-0">
-              <Building2 className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shrink-0">
+              <Building2 className="w-6 h-6 text-black" />
             </div>
             <div>
-              <p className="text-sm font-bold text-text-primary uppercase tracking-widest mb-1">Real Estate Investor</p>
-              <p className="text-xs text-text-secondary leading-relaxed">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-1">Real Estate Investor</p>
+              <p className="text-xs text-[#888] leading-relaxed">
                 Create and manage deals, track acquisitions, run financials, and oversee your full investment portfolio.
               </p>
             </div>
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 border-border-accent/30 group-hover:border-pw-black group-hover:bg-pw-black transition-all" />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 border-[#555] group-hover:border-white group-hover:bg-white transition-all" />
           </button>
 
           <button
             type="button"
-            onClick={() => setAccountType('vendor')}
-            className="group relative flex items-start gap-5 p-6 border-2 border-border-accent/20 rounded-2xl bg-bg-primary/40 hover:border-pw-black hover:bg-bg-surface transition-all duration-200 text-left"
+            onClick={() => selectAccountType('vendor')}
+            className="group relative flex items-start gap-5 p-6 border-2 border-[#2e2e2e] rounded-2xl bg-[#141414] hover:border-white hover:bg-[#1a1a1a] transition-all duration-200 text-left"
           >
             <div className="w-12 h-12 rounded-xl bg-[#595959] flex items-center justify-center shrink-0">
               <Hammer className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-sm font-bold text-text-primary uppercase tracking-widest mb-1">Service Provider / Vendor</p>
-              <p className="text-xs text-text-secondary leading-relaxed">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-1">Service Provider / Vendor</p>
+              <p className="text-xs text-[#888] leading-relaxed">
                 List your services, receive quote requests from investors, submit bids, and manage your vendor profile.
               </p>
             </div>
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 border-border-accent/30 group-hover:border-pw-black group-hover:bg-pw-black transition-all" />
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full border-2 border-[#555] group-hover:border-white group-hover:bg-white transition-all" />
           </button>
         </div>
 
-        <div className="mt-4 text-center pt-8 border-t border-border-accent/10">
-          <p className="text-xs text-text-secondary">
+        <div className="mt-4 text-center pt-8 border-t border-[#2a2a2a]">
+          <p className="text-xs text-[#888]">
             Already have an account?{' '}
-            <Link href="/login" className="text-text-primary font-bold hover:underline transition-all">Log In</Link>
+            <Link href="/login" className="text-white font-bold hover:underline transition-all">Log In</Link>
           </p>
         </div>
       </div>
@@ -153,25 +168,25 @@ export default function RegisterPage() {
       <div className="text-center mb-10">
         <button
           type="button"
-          onClick={() => setAccountType(null)}
-          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors mb-6"
+          onClick={() => { setAccountType(null); window.localStorage.removeItem('pw_pending_account_type'); }}
+          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#666] hover:text-white transition-colors mb-6"
         >
           <ArrowLeft className="w-3 h-3" /> Change Account Type
         </button>
         <div className="flex justify-center mb-4">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pw-black text-white text-[10px] font-bold uppercase tracking-widest">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-black text-[10px] font-bold uppercase tracking-widest">
             {accountType === 'vendor' ? <Hammer className="w-3 h-3" /> : <Building2 className="w-3 h-3" />}
             {accountType === 'vendor' ? 'Vendor Account' : 'Investor Account'}
           </span>
         </div>
-        <h1 className="text-3xl font-normal tracking-tighter text-text-primary">Secure Onboarding.</h1>
-        <p className="mt-4 text-sm text-text-secondary font-normal">Initialize your institutional identity.</p>
+        <h1 className="text-3xl font-normal tracking-tighter" style={{ color: '#ffffff' }}>Secure Onboarding.</h1>
+        <p className="mt-4 text-sm text-[#888] font-normal">Initialize your institutional identity.</p>
       </div>
 
       {authError && (
-        <div className="mb-8 p-4 bg-pw-black text-white rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <p className="text-xs font-medium leading-relaxed uppercase tracking-wider">{authError}</p>
+        <div className="mb-8 p-4 bg-red-950/60 border border-red-800/40 text-white rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
+          <p className="text-xs font-medium leading-relaxed text-red-300">{authError}</p>
         </div>
       )}
 
@@ -183,9 +198,9 @@ export default function RegisterPage() {
               type="button"
               onClick={() => handleSocialRegister('google')}
               disabled={!!loadingProvider || isSubmitting}
-              className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
+              className="flex-1 flex items-center justify-center h-14 bg-[#1a1a1a] hover:bg-[#232323] border border-[#2e2e2e] rounded-full transition-all duration-300 group"
             >
-              {loadingProvider === 'google' ? <Loader2 className="w-5 h-5 animate-spin text-text-primary" /> : (
+              {loadingProvider === 'google' ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : (
                 <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                   <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -198,9 +213,9 @@ export default function RegisterPage() {
               type="button"
               onClick={() => handleSocialRegister('facebook')}
               disabled={!!loadingProvider || isSubmitting}
-              className="flex-1 flex items-center justify-center h-14 bg-bg-primary hover:bg-pw-border/20 border border-border-accent/10 rounded-full transition-all duration-300 group"
+              className="flex-1 flex items-center justify-center h-14 bg-[#1a1a1a] hover:bg-[#232323] border border-[#2e2e2e] rounded-full transition-all duration-300 group"
             >
-              {loadingProvider === 'facebook' ? <Loader2 className="w-5 h-5 animate-spin text-text-primary" /> : (
+              {loadingProvider === 'facebook' ? <Loader2 className="w-5 h-5 animate-spin text-white" /> : (
                 <svg className="w-6 h-6 group-hover:scale-110 transition-transform" fill="#1877F2" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.384C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
@@ -208,48 +223,48 @@ export default function RegisterPage() {
             </button>
           </div>
           <div className="relative mb-8 flex items-center gap-4">
-            <div className="flex-1 h-[1px] bg-pw-border/10" />
-            <p className="ag-label opacity-40 uppercase tracking-widest text-[9px] font-bold">or register with email</p>
-            <div className="flex-1 h-[1px] bg-pw-border/10" />
+            <div className="flex-1 h-[1px] bg-[#2a2a2a]" />
+            <p className="text-[9px] font-bold uppercase tracking-widest text-[#555]">or register with email</p>
+            <div className="flex-1 h-[1px] bg-[#2a2a2a]" />
           </div>
         </>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label htmlFor="reg-fullname" className="ag-label mb-3 block opacity-60">Full Identity</label>
+          <label htmlFor="reg-fullname" className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-3 block">Full Identity</label>
           <div className="relative group">
-            <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
+            <User className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666] group-hover:text-white transition-colors" />
             <input id="reg-fullname" type="text" autoComplete="name" {...register('fullName')} placeholder="Legal Full Name"
-              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none" />
+              className="w-full h-14 bg-[#1a1a1a] border border-[#2e2e2e] rounded-full pl-14 pr-6 text-sm font-medium text-white placeholder-[#555] focus:bg-[#232323] focus:border-[#555] transition-all outline-none" />
           </div>
           {errors.fullName && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.fullName.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="reg-email" className="ag-label mb-3 block opacity-60">Professional Email</label>
+          <label htmlFor="reg-email" className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-3 block">Professional Email</label>
           <div className="relative group">
-            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
+            <Mail className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666] group-hover:text-white transition-colors" />
             <input id="reg-email" type="email" autoComplete="email" {...register('email')} placeholder="direct@firm.com"
-              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-6 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none" />
+              className="w-full h-14 bg-[#1a1a1a] border border-[#2e2e2e] rounded-full pl-14 pr-6 text-sm font-medium text-white placeholder-[#555] focus:bg-[#232323] focus:border-[#555] transition-all outline-none" />
           </div>
           {errors.email && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="reg-password" className="ag-label mb-3 block opacity-60">Authentication Secret</label>
+          <label htmlFor="reg-password" className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-3 block">Authentication Secret</label>
           <div className="relative group">
-            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
+            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666] group-hover:text-white transition-colors" />
             <input id="reg-password" type={showPassword ? 'text' : 'password'} autoComplete="new-password" {...register('password')} placeholder="Complexity Required"
-              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none" />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
+              className="w-full h-14 bg-[#1a1a1a] border border-[#2e2e2e] rounded-full pl-14 pr-14 text-sm font-medium text-white placeholder-[#555] focus:bg-[#232323] focus:border-[#555] transition-all outline-none" />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-6 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors">
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {watchedPassword.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 px-6">
               {passwordRules.map((rule) => (
-                <div key={rule.label} className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest transition-opacity duration-300 ${rule.met ? 'text-text-primary opacity-100' : 'text-text-secondary opacity-30'}`}>
+                <div key={rule.label} className={`flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest transition-opacity duration-300 ${rule.met ? 'text-white opacity-100' : 'text-[#555] opacity-30'}`}>
                   <CheckCircle2 className="w-3 h-3" />{rule.label}
                 </div>
               ))}
@@ -259,40 +274,40 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="reg-confirm-password" className="ag-label mb-3 block opacity-60">Validate Security Key</label>
+          <label htmlFor="reg-confirm-password" className="text-[10px] font-bold uppercase tracking-widest text-[#666] mb-3 block">Validate Security Key</label>
           <div className="relative group">
-            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-hover:text-text-primary transition-colors" />
+            <Lock className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666] group-hover:text-white transition-colors" />
             <input id="reg-confirm-password" type={showConfirm ? 'text' : 'password'} autoComplete="new-password" {...register('confirmPassword')} placeholder="Repeat Secret"
-              className="w-full h-14 bg-bg-primary/30 border border-border-accent/10 rounded-full pl-14 pr-14 text-sm font-medium focus:bg-bg-surface focus:border-pw-black transition-all outline-none" />
-            <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-6 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
+              className="w-full h-14 bg-[#1a1a1a] border border-[#2e2e2e] rounded-full pl-14 pr-14 text-sm font-medium text-white placeholder-[#555] focus:bg-[#232323] focus:border-[#555] transition-all outline-none" />
+            <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-6 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors">
               {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.confirmPassword && <p className="mt-2 ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.confirmPassword.message}</p>}
         </div>
 
-        <div className="flex items-start gap-4 px-6 py-2">
-          <div className="relative flex items-center h-5">
-            <input type="checkbox" {...register('acceptTerms')} className="w-5 h-5 border-2 border-border-accent rounded cursor-pointer accent-pw-black" />
+        <div className="flex items-start gap-4 px-6 py-3">
+          <div className="relative flex items-center h-6 shrink-0">
+            <input type="checkbox" {...register('acceptTerms')} className="w-6 h-6 border-2 border-[#555] rounded cursor-pointer accent-white bg-[#1a1a1a]" />
           </div>
-          <p className="text-[10px] font-medium text-text-secondary leading-loose">
+          <p className="text-[11px] font-medium text-[#888] leading-relaxed">
             By initializing account, I confirm adherence to{' '}
-            <Link href="/terms" className="text-text-primary underline decoration-pw-border/30 underline-offset-4">Governance Protocols</Link> &amp;{' '}
-            <Link href="/privacy" className="text-text-primary underline decoration-pw-border/30 underline-offset-4">Privacy Mandates</Link>.
+            <Link href="/terms" className="text-white underline decoration-[#555] underline-offset-4 hover:decoration-white transition-colors">Governance Protocols</Link> &amp;{' '}
+            <Link href="/privacy" className="text-white underline decoration-[#555] underline-offset-4 hover:decoration-white transition-colors">Privacy Mandates</Link>.
           </p>
         </div>
         {errors.acceptTerms && <p className="ml-6 text-[10px] font-bold text-red-500 uppercase tracking-widest leading-none">{errors.acceptTerms.message}</p>}
 
         <button type="submit" disabled={isSubmitting || !!loadingProvider}
-          className="w-full h-14 bg-pw-black text-white rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 shadow-2xl">
+          className="w-full h-14 bg-white text-black rounded-full font-bold uppercase tracking-[0.2em] text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center disabled:opacity-50 shadow-2xl">
           {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Initialize Account'}
         </button>
       </form>
 
-      <div className="mt-12 text-center pt-8 border-t border-border-accent/10">
-        <p className="text-xs text-text-secondary">
+      <div className="mt-12 text-center pt-8 border-t border-[#2a2a2a]">
+        <p className="text-xs text-[#888]">
           Existing credentials found?{' '}
-          <Link href="/login" className="text-text-primary font-bold hover:underline transition-all">Authorize Log In</Link>
+          <Link href="/login" className="text-white font-bold hover:underline transition-all">Authorize Log In</Link>
         </p>
       </div>
     </div>

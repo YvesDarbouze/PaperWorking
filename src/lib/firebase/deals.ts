@@ -24,6 +24,34 @@ import { computeAutopsyMetrics } from '../math/calculatorUtils';
    management for PaperWorking Dashboard.
    ═══════════════════════════════════════════════════════ */
 
+/* ── REI Status → Lifecycle Phase Mapping ──
+   When a user creates a project that's already mid-lifecycle
+   (e.g., "Rehabbing"), we start it at the correct phase
+   instead of always Phase 1. */
+function derivePhaseFromREIStatus(reiStatus?: string): {
+  phaseStatus: string;
+  currentPhase: number;
+  status: string;
+} {
+  switch (reiStatus) {
+    case 'Target':
+      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+    case 'In Contract':
+      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+    case 'Acquired':
+      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+    case 'Rehabbing':
+    case 'Under Construction':
+      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Renovating' };
+    case 'Renting':
+      return { phaseStatus: 'Phase 3: Rehab & Hold', currentPhase: 3, status: 'Rented' };
+    case 'For Sale':
+      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+    default:
+      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+  }
+}
+
 export const projectsService = {
   
   /**
@@ -33,16 +61,26 @@ export const projectsService = {
     try {
       const projectsRef = collection(db, 'projects');
       const newDoc = doc(projectsRef);
+
+      // Derive lifecycle phase from the REI status selected in the wizard
+      const reiStatus = (dealData as any).reiStatus as string | undefined;
+      const { phaseStatus, currentPhase, status } = derivePhaseFromREIStatus(reiStatus);
+
+      // If a dateOfSale is provided, the deal is already sold → Phase 4
+      const hasSoldDate = !!(dealData.financials as any)?.soldDate;
+      const finalPhaseStatus = hasSoldDate ? 'Phase 4: Closing & Exit' : phaseStatus;
+      const finalPhase = hasSoldDate ? 4 : currentPhase;
+      const finalStatus = hasSoldDate ? 'Sold' : status;
       
       const deal: Project = {
         ...dealData as any,
         id: newDoc.id,
         organizationId,
-        // ── Schema Defaults (enforced server-side) ──
-        // Phase must be 1 (Find & Fund) for every new project
-        phaseStatus: 'Phase 1: Find & Fund',
-        // Status must be 'Active' for every new project
-        status: 'Active',
+        // ── Smart Phase Initialization ──
+        // Derived from the REI status the user selected in the wizard
+        phaseStatus: finalPhaseStatus,
+        currentPhase: finalPhase,
+        status: finalStatus,
         createdAt: new Date(),
         updatedAt: new Date(),
         ownerUid: dealData.ownerUid || '',

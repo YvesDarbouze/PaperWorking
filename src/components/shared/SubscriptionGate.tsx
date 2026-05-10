@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Lock, CreditCard } from 'lucide-react';
+import { STARTING_PRICE } from '@/lib/stripe/plans';
 
 /* ═══════════════════════════════════════════════════════
    SubscriptionGate — Blurred Preview + Subscribe CTA
@@ -17,9 +18,7 @@ interface Props {
 }
 
 export default function SubscriptionGate({ children, projectId, dealName }: Props) {
-  const checkoutUrl = projectId
-    ? `/api/stripe/checkout?deal=${projectId}`
-    : '/pricing';
+  const checkoutUrl = '/pricing';
 
   return (
     <div className="relative rounded-xl overflow-hidden">
@@ -47,7 +46,7 @@ export default function SubscriptionGate({ children, projectId, dealName }: Prop
             <CreditCard className="w-4 h-4" />
             Subscribe to View
           </a>
-          <p className="text-xs text-text-secondary mt-3">Starting at $29/month</p>
+          <p className="text-xs text-text-secondary mt-3">Starting at ${STARTING_PRICE}/month</p>
         </div>
       </div>
     </div>

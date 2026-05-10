@@ -153,8 +153,8 @@ export interface Organization {
   name: string;
   ownerUid: string; // The primary billing/admin user
   accountTier: 'Individual' | 'Team'; // Controls seat count and team features
-  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Lawyer Lead-Gen';
-  subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
+  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network' | 'Lawyer Lead-Gen';
+  subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   teamMembers: OrgTeamMember[]; // Up to 10 for Team accounts, 0 for Individual
   maxSeats: number; // 1 for Individual, 10 for Team
   
@@ -174,14 +174,15 @@ export interface ApplicationUser {
   displayName: string;
   organizationId: string; // REQUIRED: Enforces strict data containment to the Organization
   orgRole: OrgRole; // Account-holder self-designation
-  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Lawyer Lead-Gen';
-  subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled';
+  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network' | 'Lawyer Lead-Gen';
+  subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   accountType?: 'investor' | 'vendor';
   inviteToken?: string; // Populated when user arrived via crowdfund invitation
   invitedToProjectId?: string; // Project they were invited to join
   
   // Billing Metadata
   stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
   lastFour?: string;
   cardBrand?: string;
 
@@ -720,6 +721,8 @@ export interface ProjectFinancials {
   occupiedUnits?: number;                // Currently occupied units
   annualRentGrowthPercent?: number;      // YoY rent growth tracking
   marketRentComparable?: number;         // Market rent for comparable units ($/mo)
+  amortizationYears?: number;            // Loan amortization term in years
+  annualAppreciationPercent?: number;    // Estimated annual property appreciation
 
   // Holding Costs Calculator
   projectedHoldTimeMonths?: number;

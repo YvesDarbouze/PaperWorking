@@ -6,11 +6,11 @@ import HowItWorks from '@/components/landing/HowItWorks';
 export const metadata: Metadata = {
   title: 'How It Works — PaperWorking',
   description:
-    'Learn how PaperWorking automates MAO calculation, Capital Stack structuring, and LOI crowdfunding commitments — from lead to funded offer in under 48 hours.',
+    'PaperWorking is the end-to-end real estate investment operating system. Manage every phase — Acquisition, Purchase, Hold, and Exit — with institutional-grade precision.',
   openGraph: {
     title: 'How It Works — PaperWorking',
     description:
-      'MAO auto-calculation, Capital Stack dashboard, and LOI Wizard for REI investors.',
+      'The real estate investment operating system. Acquisition, Purchase, Hold, and Exit — all in one platform.',
     url: 'https://paperworking.co/how-it-works',
   },
 };

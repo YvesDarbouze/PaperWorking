@@ -17,7 +17,7 @@ function deriveTier(profile: any): SubscriptionTier {
   if (!profile) return 'free';
   if (profile.inviteToken && profile.invitedToProjectId) return 'guest';
   const status: string = profile.subscriptionStatus ?? '';
-  if (status === 'active' || status === 'past_due') return 'paid';
+  if (status === 'active' || status === 'trialing' || status === 'past_due') return 'paid';
   return 'free';
 }
 

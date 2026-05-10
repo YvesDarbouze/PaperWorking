@@ -19,6 +19,7 @@ import { Contingency } from '@/types/schema';
 import toast from 'react-hot-toast';
 import { Loader2, Lock } from 'lucide-react';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
+import MarketVitals from '@/components/metrics/MarketVitals';
 
 export default function Phase2AcquisitionPage() {
   const params    = useParams();
@@ -199,7 +200,13 @@ export default function Phase2AcquisitionPage() {
       </div>
 
       <main className="max-w-6xl mx-auto px-6 lg:px-12 py-16 space-y-16">
-        
+
+        {/* ── Market Vitals: demographics + zoning scan (full-width) ── */}
+        <MarketVitals
+          address={project.address}
+          projectId={projectId}
+        />
+
         {/* ── Two-column workspace grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           

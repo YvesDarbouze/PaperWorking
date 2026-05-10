@@ -187,6 +187,12 @@
       "skillPath": "skills/agent-manager-skill/SKILL.md",
       "computedHash": "923cedf85e7d951b101ae8ad4f7cf6644760563f45ac46d59ae9fbd7f01888e2"
     },
+    "agent-md-refactor": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/agent-md-refactor/SKILL.md",
+      "computedHash": "51c53259bba830ebad6741b2ab69d213d5a4d02835f7f27925a0e4e93515fc22"
+    },
     "agent-memory-mcp": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -246,6 +252,12 @@
       "sourceType": "github",
       "skillPath": "engineering/skills/agent-workflow-designer/SKILL.md",
       "computedHash": "d9a0bba5fd28029fd628f000fd356862ad46a2075e22da8f7c7da2bd2a20e2ca"
+    },
+    "agentation-watch-mode": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/agentation-watch-mode/SKILL.md",
+      "computedHash": "c8da686e9aa073ec81873627e470eda175c3b1c9b9b6639d5ad8028811c6aa12"
     },
     "agentflow": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -463,6 +475,12 @@
       "skillPath": "skills/analytics-tracking/SKILL.md",
       "computedHash": "e5578c4950e06fdd03b602b81f162cc04408b3a15a421884c091eb888a36ad62"
     },
+    "analyze-problem": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/analyze-problem/SKILL.md",
+      "computedHash": "102594840e9e1bfb18c203cc18326c2cf229be269542d315ae908c4d7ef4687b"
+    },
     "analyze-project": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -631,6 +649,12 @@
       "skillPath": "skills/api-testing-observability-api-mock/SKILL.md",
       "computedHash": "0ccb665b8a3cb2bd8234dce02c63d91a1a011ade09b71b4d73d408f53c74aa88"
     },
+    "api-versioning": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/api-versioning/SKILL.md",
+      "computedHash": "9a8dbb81fa5d42b4f9cb489179deda4ef84875383e42c883fd62663f48412c0e"
+    },
     "apify-actor-development": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -757,6 +781,12 @@
       "skillPath": "skills/architecture/SKILL.md",
       "computedHash": "98b5d7fa700e2cb98cb7a2e55fb3c8dab460b87cc802f23a09c86031668f72d4"
     },
+    "architecture-boundaries": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/architecture-boundaries/SKILL.md",
+      "computedHash": "80484c16073ff7b162ea177ead1f38e8b6cd61767a54de366e009f2e311c3e24"
+    },
     "architecture-decision-records": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -804,6 +834,12 @@
       "sourceType": "github",
       "skillPath": "skills/astropy/SKILL.md",
       "computedHash": "ab4e9e033813f425cbbd4feeba5eae30449542c7bc5c3b93a8e914abd2fbfdbe"
+    },
+    "async-jobs-and-events": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/async-jobs-and-events/SKILL.md",
+      "computedHash": "a2195466c7301124241bc13358c262b845a45228094b6b8db1ed2e4d43d8d533"
     },
     "async-python-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -858,6 +894,12 @@
       "sourceType": "github",
       "skillPath": "skills/auth-implementation-patterns/SKILL.md",
       "computedHash": "6e6cc8e11f8c77185d448e967b60897fe99ddd162671d0fece4664cedc6582f2"
+    },
+    "authentication": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/authentication/SKILL.md",
+      "computedHash": "bf981a96f909a4073de6b1b66dcb43015d341568c07395281246a9119d93594f"
     },
     "automation-audit-ops": {
       "source": "affaan-m/everything-claude-code",
@@ -1711,6 +1753,18 @@
       "skillPath": "skills/backend-security-coder/SKILL.md",
       "computedHash": "b62655410aaea528433b7adda9f8fb971a5a7d7a6db3a365474c52061a703ca5"
     },
+    "backend-to-frontend-handoff-docs": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/backend-to-frontend-handoff-docs/SKILL.md",
+      "computedHash": "d8c8af8cf6219c60b8cfc6da908dbe70e8aa7c387cef13bb490118ac493b5efd"
+    },
+    "backoffice": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/backoffice/SKILL.md",
+      "computedHash": "69ac6c07d0f4746b391f9abec998dbcc7612e52f6d3ab86f69a4e29ac60f5310"
+    },
     "backtesting-frameworks": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -1807,6 +1861,12 @@
       "skillPath": "skills/benchmark/SKILL.md",
       "computedHash": "6c2560a025dd28ca0e7d9c7c58c152a46ecd4d4e1ff301dd34f94dd9c55f0007"
     },
+    "better-auth-best-practices": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/better-auth-best-practices/SKILL.md",
+      "computedHash": "a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc"
+    },
     "bevy-ecs-expert": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -1818,6 +1878,12 @@
       "sourceType": "github",
       "skillPath": "skills/bill-gates/SKILL.md",
       "computedHash": "0ca19124aa079d5c40c4f11db8139e7dfbdfc5d8db7aba395b7d8ca384240a49"
+    },
+    "billing": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/billing/SKILL.md",
+      "computedHash": "b27f417c57c10f2eabed997c8fc626d0d84ebd19f56186ceb796c20d60954dbf"
     },
     "billing-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2071,6 +2137,12 @@
       "skillPath": "skills/c-pro/SKILL.md",
       "computedHash": "678b7e347fcb95421c6324d4742a66d821fe5a5b79c3bbd0eb429731e7d67a71"
     },
+    "c4-architecture": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/c4-architecture/SKILL.md",
+      "computedHash": "f35f57420c35f2e8413e1e22934ca3950cae8286499f6fbe978cff604c35cfcd"
+    },
     "c4-architecture-c4-architecture": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -2251,6 +2323,12 @@
       "skillPath": "skills/chat-widget/SKILL.md",
       "computedHash": "f1b7d1a6e9e8f756b450549377a646a5fed4057ba629cd02145a32375a48b87e"
     },
+    "checkout": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/checkout/SKILL.md",
+      "computedHash": "1adb868ae57c837a03f708fdbef21ecf52d736302aae6898145a8aa305615c03"
+    },
     "chief-of-staff": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -2280,6 +2358,12 @@
       "sourceType": "github",
       "skillPath": "engineering/skills/ci-cd-pipeline-builder/SKILL.md",
       "computedHash": "af05aab21f4226db4a22aad85bdcccb1eb98be04bd1c3851a1cab7c8c9fd3c61"
+    },
+    "ci-watchdog": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/ci-watchdog/SKILL.md",
+      "computedHash": "e023d539fcf15bb64fed60f4786eb4dc59a2f7bc49c9f538090990f6dae4efd3"
     },
     "cicd-automation-workflow-automate": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2557,6 +2641,12 @@
       "skillPath": "skills/code-simplifier/SKILL.md",
       "computedHash": "a9c801c78849f11e0a2c3651a481b02128b915265bc0d5e380fc197520d85868"
     },
+    "code-style": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/code-style/SKILL.md",
+      "computedHash": "c763a80e81d5f96cdeb786394889d83f0995439e54638181b4214f3120df7a30"
+    },
     "code-to-prd": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -2605,6 +2695,12 @@
       "skillPath": "skills/codebase-to-wordpress-converter/SKILL.md",
       "computedHash": "86457b5a877cf9fa1f3124e4267a310f003acf27283caf2212a584cadbd88a6f"
     },
+    "codex": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/codex/SKILL.md",
+      "computedHash": "4b7e8695807b567a7a7d467ab15b3da330aa0a847827067d79c654c540a72fe9"
+    },
     "codex-review": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -2641,6 +2737,12 @@
       "skillPath": "skills/comfyui-gateway/SKILL.md",
       "computedHash": "648da460a7c0debdaefa8748498302c0e095fa5be2f2a138de8d12b30a783dbc"
     },
+    "command-creator": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/command-creator/SKILL.md",
+      "computedHash": "b58ae6c69fa86fe48c4745db460fc190c7661ab0371d1e719d7272a36630880c"
+    },
     "command-guide": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -2652,6 +2754,12 @@
       "sourceType": "github",
       "skillPath": "skills/commit/SKILL.md",
       "computedHash": "3bcf0ec3de92c660eaa10d6882ab0a2bcd25f565492556dcbf92946c09f20f5a"
+    },
+    "commit-work": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/commit-work/SKILL.md",
+      "computedHash": "88cec816d028de357ae7ede3ace36a2bc235a225e3e7d2bb18cdb5190ab6c482"
     },
     "company-os": {
       "source": "alirezarezvani/claude-skills",
@@ -3067,6 +3175,12 @@
       "skillPath": "skills/cqrs-implementation/SKILL.md",
       "computedHash": "514ed54b2e1aac9d71a23ebf141c807447081b585ba63e1c5b3623877199d3bd"
     },
+    "crafting-effective-readmes": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/crafting-effective-readmes/SKILL.md",
+      "computedHash": "c931a8c22160e8925400778fcb2266b5d1df762f3052edba65f72479f79f2d6c"
+    },
     "create-branch": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3193,6 +3307,12 @@
       "skillPath": "skills/daily-gift/SKILL.md",
       "computedHash": "a0aca3682adce830e4b95889d3b6f97fb467047ca1e5cd53b57125142323cb33"
     },
+    "daily-meeting-update": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/daily-meeting-update/SKILL.md",
+      "computedHash": "605476190149d3ef518d0e787788ceba47600dc9d63b96b120edba80edcf7998"
+    },
     "daily-news-report": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3283,6 +3403,12 @@
       "skillPath": "skills/database-architect/SKILL.md",
       "computedHash": "f4540da3010d7322e83766266306bf617e6aba0ba226c588504f19245be9a0f3"
     },
+    "database-clickhouse-weaviate": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/database-clickhouse-weaviate/SKILL.md",
+      "computedHash": "e83fe745c355e2b4ee63e53baa0218a81298d47477390f61514c1c30bb9e7fb0"
+    },
     "database-cloud-optimization-cost-optimize": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3331,17 +3457,29 @@
       "skillPath": "skills/database-optimizer/SKILL.md",
       "computedHash": "124f11f6b7a93001325f09f1c4be41a9b50349d2235fac43048953adbcbd5373"
     },
-    "database-schema-designer": {
-      "source": "alirezarezvani/claude-skills",
+    "database-postgres": {
+      "source": "latitude-dev/latitude-llm",
       "sourceType": "github",
-      "skillPath": "engineering/skills/database-schema-designer/SKILL.md",
-      "computedHash": "24a1fa53fb456256b5ac9137b132eda4232a8c4ebf659af06f5bb8d8624bfc50"
+      "skillPath": ".agents/skills/database-postgres/SKILL.md",
+      "computedHash": "acc70ba42d1c6ecc402f1b83208a48187d2dd3a9e4214e07c559c8c6b4322aaa"
+    },
+    "database-schema-designer": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/database-schema-designer/SKILL.md",
+      "computedHash": "6a26ca15216bb4bfee66ebf813edcb1e31a8002f3f641f16f550df814b522217"
     },
     "datadog-automation": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/datadog-automation/SKILL.md",
       "computedHash": "aa58793edd0a8e21ed008dc0f36a3843202976bf2964ce724ed77555f59b9f6b"
+    },
+    "datadog-cli": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/datadog-cli/SKILL.md",
+      "computedHash": "adb5cff0dd3344e09c7b7b3fe4dc2d1f3c3b4c56a03fce55626e9ac0cec626f1"
     },
     "dbos-golang": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3469,6 +3607,12 @@
       "skillPath": "skills/dependency-management-deps-audit/SKILL.md",
       "computedHash": "170a2c46690024ec389ab18e4228c962ab502496fe97865d88bac26164f59dff"
     },
+    "dependency-updater": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/dependency-updater/SKILL.md",
+      "computedHash": "dc7f34bfa7a1371852fa6f640e14364c52f11fa8303d301ceeb2920623e92157"
+    },
     "dependency-upgrade": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3535,6 +3679,12 @@
       "skillPath": "skills/design-system/SKILL.md",
       "computedHash": "e94439a0e2704d3802c2c5b393444a65afd2a5e0f2b0809e5ec9189452f4734b"
     },
+    "design-system-starter": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/design-system-starter/SKILL.md",
+      "computedHash": "926f0a57017277d6c016f6067b40204c86826af0d9f7f9f7e7712857e4f4783b"
+    },
     "design-taste-frontend": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3582,6 +3732,12 @@
       "sourceType": "github",
       "skillPath": "skills/differential-review/SKILL.md",
       "computedHash": "15aa5f2a38195a07ebeb3e496f4fb288754b6e57292ae210fe019803650782cf"
+    },
+    "difficult-workplace-conversations": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/difficult-workplace-conversations/SKILL.md",
+      "computedHash": "08b4833493e79d09c048d388d837bb7b4bde0fc545f656ff22539f3a4aa0c40a"
     },
     "discord-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3685,6 +3841,12 @@
       "skillPath": "skills/docker-patterns/SKILL.md",
       "computedHash": "2750c564c7b600fbbfd44de2c693955c677c18c872d06019fa896ab770c69ed9"
     },
+    "docs": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/docs/SKILL.md",
+      "computedHash": "a6ec5828333114129c815e327ce61c4a9e5eb3ad9acc91c99ce21ef6e7be1600"
+    },
     "docs-architect": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3739,6 +3901,12 @@
       "skillPath": "skills/domain-driven-design/SKILL.md",
       "computedHash": "ceefaaaa48d99c70fd913367dcf0fe52ca995a038dfe559df2d8b78bc5a7d8e0"
     },
+    "domain-name-brainstormer": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/domain-name-brainstormer/SKILL.md",
+      "computedHash": "7da52fd4952154e23b74081bd863468689f08da566a5c73095f93fb48c1f9234"
+    },
     "dotnet-architect": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3762,6 +3930,12 @@
       "sourceType": "github",
       "skillPath": "skills/dotnet-patterns/SKILL.md",
       "computedHash": "9a4a413ca664d2e6112a75855d6dd11453fd02a375f36b09bee54bea7417112c"
+    },
+    "draw-io": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/draw-io/SKILL.md",
+      "computedHash": "ff19cab2266a29cbfd39defe0ced1999e9eaeddb1a23dc4fb418f9665646abd7"
     },
     "drizzle-orm-expert": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3816,6 +3990,18 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/economics/SKILL.md",
       "computedHash": "e6c008cfe8dffcfb4415499530ed8231826776772dc6132c66ce2f17c087cb51"
+    },
+    "edge-config": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/edge-config/SKILL.md",
+      "computedHash": "bb02552d2b82fc67b0aa6be78681d51b722613569a7c2119c816da96bf852da5"
+    },
+    "effect-and-errors": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/effect-and-errors/SKILL.md",
+      "computedHash": "82eb4e07a8eddc765447e032a11386a69d99189c328446ab68de97d8654995aa"
     },
     "electron-development": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3918,6 +4104,12 @@
       "sourceType": "github",
       "skillPath": "skills/enterprise-agent-ops/SKILL.md",
       "computedHash": "678cb4c12252f3c5df7cda046e40e12e94cd2ebd5cee6c633b0a9ff27824fb60"
+    },
+    "env-configuration": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/env-configuration/SKILL.md",
+      "computedHash": "14852d715b93dc22f939f9da9254175fceb80f54f8c4c8991e732d8a35726925"
     },
     "env-secrets-manager": {
       "source": "alirezarezvani/claude-skills",
@@ -4050,6 +4242,12 @@
       "sourceType": "github",
       "skillPath": "skills/exa-search/SKILL.md",
       "computedHash": "77adbbb786b9900a9cd0761fcdd4551c5dc4581a68117a0ffec1edf1c1be24d1"
+    },
+    "excalidraw": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/excalidraw/SKILL.md",
+      "computedHash": "5bbd88e287582f106beb1db21c64e48ba70e4a9bedf7690b80fa6c418f3add71"
     },
     "executing-plans": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4224,6 +4422,12 @@
       "sourceType": "github",
       "skillPath": "skills/fda-medtech-compliance-auditor/SKILL.md",
       "computedHash": "9757f9b2895aa594f5b2c093ca2902bc0dd5ff1a15eb7c277467af30ea9a6016"
+    },
+    "feedback-mastery": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/feedback-mastery/SKILL.md",
+      "computedHash": "d21080a65800d23edac34b85fcbff6db8a95f86c72695ee2c597fed101ec905b"
     },
     "ffuf-claude-skill": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4573,6 +4777,12 @@
       "skillPath": "skills/frontend-slides/SKILL.md",
       "computedHash": "4a4320901ef6cdfe9bdf8561ac90d15ae889f114b3926a44f526591d8d37d467"
     },
+    "frontend-to-backend-requirements": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-to-backend-requirements/SKILL.md",
+      "computedHash": "77cacde5178740272b622df1aaafb388821a555c7b591ca194084091195a73c4"
+    },
     "frontend-ui-dark-ts": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -4596,6 +4806,12 @@
       "sourceType": "github",
       "skillPath": "skills/full-stack-orchestration-full-stack-feature/SKILL.md",
       "computedHash": "c4800484b0e8a8bfa855361dfd02587d08ef897bdadcbbb7fe27376b4f68b4fe"
+    },
+    "game-changing-features": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/game-changing-features/SKILL.md",
+      "computedHash": "aa6f4b25f60cbad65bd0826f09e0eded14e588da06172995277511e9a86ee2d7"
     },
     "game-development": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4645,6 +4861,12 @@
       "skillPath": "ra-qm-team/skills/gdpr-dsgvo-expert/SKILL.md",
       "computedHash": "d5a47ec6067b92f891810f47eca10c8f6b617c27de430167e3d993b5ac82d57b"
     },
+    "gemini": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/gemini/SKILL.md",
+      "computedHash": "1ec196277a61cbb436fc4946f9d81383439390efd6f82f6370c0570d0dafb9fa"
+    },
     "gemini-api-dev": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -4674,6 +4896,18 @@
       "sourceType": "github",
       "skillPath": "skills/geoffrey-hinton/SKILL.md",
       "computedHash": "d7e3139e0dc75adaacd3af02073b6755ce4b235d28cdd25549181b9b8f446175"
+    },
+    "gepetto": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/gepetto/SKILL.md",
+      "computedHash": "ba7fd99fce9cb2ae4e1b8b670b977c035e62d6d5a0c3dda3e22ae3cb04c7ea05"
+    },
+    "gh-issue": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/gh-issue/SKILL.md",
+      "computedHash": "8cf9a10f055939e6d5a235a9cc0b32406133143c5e86f201529a75bb51ec97fc"
     },
     "gh-review-requests": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5275,6 +5509,12 @@
       "skillPath": "skills/humanize-chinese/SKILL.md",
       "computedHash": "5693169a802f77c674a5a0c0b92b1021666296f3317ac44e91535dcc74075df0"
     },
+    "humanizer": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/humanizer/SKILL.md",
+      "computedHash": "34a38e6acc60d4529612d41ffe740bca0060d3c5e89e2a0d24ae795f67157fbb"
+    },
     "hybrid-cloud-architect": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -5592,6 +5832,12 @@
       "sourceType": "github",
       "skillPath": "skills/javascript-typescript-typescript-scaffold/SKILL.md",
       "computedHash": "670e217b2258e9fe0c210fc4c2e187e9dfd9a4bcdb48b2111607dd963ff7b9c1"
+    },
+    "jira": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/jira/SKILL.md",
+      "computedHash": "be408703bd1bdebbdd1631c36ab030b7fd19606ca2d8550fadb0079fe88befd9"
     },
     "jira-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -5947,6 +6193,12 @@
       "skillPath": "skills/leiloeiro-risco/SKILL.md",
       "computedHash": "5c25306ec073be1b702f64c2d894105b72191a6ff9282b1f4a920c8a97030830"
     },
+    "lesson-learned": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/lesson-learned/SKILL.md",
+      "computedHash": "2bdf72af18ccc97c8c5580f252769610d2c0d814c36433ea7dd3f25c822ff6b7"
+    },
     "lex": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -5982,6 +6234,12 @@
       "sourceType": "github",
       "skillPath": "skills/linear-claude-skill/SKILL.md",
       "computedHash": "0585af56bcea1c7030faced15008fbce469474147a46d08ee6e92be036dc89b1"
+    },
+    "linear-ticket": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/linear-ticket/SKILL.md",
+      "computedHash": "f9a0d13caf3954c8f491808f60b56799fe79ef78a28063d9f3a8d88e142a8eaa"
     },
     "linkedin-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -6361,6 +6619,12 @@
       "skillPath": "marketing-skill/skills/marketing-strategy-pmm/SKILL.md",
       "computedHash": "4e6c18bc6754495642be108e132319c1d2d11140a6831105c1989ebf8cac716d"
     },
+    "marp-slide": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/marp-slide/SKILL.md",
+      "computedHash": "034f16b36b39726dd46b91686230ca2a5c753535fdb0d16b6a5bcb2a93a73df0"
+    },
     "matematico-tao": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -6415,6 +6679,12 @@
       "skillPath": "project-management/skills/meeting-analyzer/SKILL.md",
       "computedHash": "5d2b8203d77bc846ba78a9e79f3383ad61a9c1ffc637a3e858595dca88ed9457"
     },
+    "meme-factory": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/meme-factory/SKILL.md",
+      "computedHash": "2ad2c38e35d721515aea849b751e5222bb3996933055abd0085beb4fa486e2fa"
+    },
     "memory-forensics": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -6444,6 +6714,12 @@
       "sourceType": "github",
       "skillPath": "engineering/agenthub/skills/merge/SKILL.md",
       "computedHash": "f0e773ac2441a10acd3dbfecbbf9fa9d8affe2715405c235898a27830b18915e"
+    },
+    "mermaid-diagrams": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/mermaid-diagrams/SKILL.md",
+      "computedHash": "6d36e69adad781f106a2fb4b19ebc22bf0c211babdc0d1ae5822fa65abb48bd8"
     },
     "mermaid-expert": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -6679,6 +6955,12 @@
       "skillPath": "skills/mtls-configuration/SKILL.md",
       "computedHash": "e60392b3c55b01552c138473613e27347e26c99557f19dfc3a6b4039c30f8d14"
     },
+    "mui": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/mui/SKILL.md",
+      "computedHash": "42c7b1620ab65d1cb1d3bcbf931320757113f921bc6bf9f8883d0c402b9445a3"
+    },
     "multi-advisor": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -6720,6 +7002,12 @@
       "sourceType": "github",
       "skillPath": "skills/multi-platform-apps-multi-platform/SKILL.md",
       "computedHash": "fb859bd910b2c0f6c2881cb877dce3db6772588739b985dcc5cd74827dd16556"
+    },
+    "mutation-logs": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/mutation-logs/SKILL.md",
+      "computedHash": "8d242702daca9916b8cfedc4737084e17e4655df5a546d7bb79e3570899ac0e9"
     },
     "mvp-spec": {
       "source": "unknownking07/vibe-talent",
@@ -6768,6 +7056,12 @@
       "sourceType": "github",
       "skillPath": "skills/n8n-workflow-patterns/SKILL.md",
       "computedHash": "2ece8f755e471b6e7a02a9f9b0656203f11c836f6ad5112f8289a25f4f3d2ec2"
+    },
+    "naming-analyzer": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/naming-analyzer/SKILL.md",
+      "computedHash": "bf61ae4fe1e1fa8710d0cddce471b0a271219f3a3bd8b6286f62def6b4f8b366"
     },
     "nanobanana-ppt-skills": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7195,6 +7489,12 @@
       "skillPath": "skills/openapi-spec-generation/SKILL.md",
       "computedHash": "55081a25bff6693cca28b2f3e0b712b9939f46ce7302fea20f0b52263f74624f"
     },
+    "openapi-to-typescript": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/openapi-to-typescript/SKILL.md",
+      "computedHash": "525b39ee84d8fbc835d1dea710fb36b40fd4834441a4d18d75a8dafe985eeacd"
+    },
     "openclaw-github-repo-commander": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7206,6 +7506,12 @@
       "sourceType": "github",
       "skillPath": "skills/openclaw-persona-forge/SKILL.md",
       "computedHash": "1a6d917234bab5abe7d3c3944bd25435165f09c59b0b9c52880f694baf23c4a9"
+    },
+    "openlogs-server-logs": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/openlogs-server-logs/SKILL.md",
+      "computedHash": "8f05f0f8c7a0dbdd0b274ae4cb76cb887cc3ca794310907cc15f158c50bfd704"
     },
     "opensource-pipeline": {
       "source": "affaan-m/everything-claude-code",
@@ -7387,6 +7693,12 @@
       "skillPath": "skills/perl-testing/SKILL.md",
       "computedHash": "d67d2d4d39c5e34912baa6f585822bfe7e7ef56f8b58c3ba36bd1f4ffa11d1b6"
     },
+    "perplexity": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/perplexity/SKILL.md",
+      "computedHash": "a8c31732045ef978362c29b27c13ba6ee11b93d522a0019f08dd8568a08d7de6"
+    },
     "personal-tool-builder": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7470,6 +7782,12 @@
       "sourceType": "github",
       "skillPath": "skills/plotly/SKILL.md",
       "computedHash": "d7e7edd09c830f7bc2d23098b0d0b17a5158763bfef703157bdf0d4e9f4200fa"
+    },
+    "plugin-forge": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/plugin-forge/SKILL.md",
+      "computedHash": "39a07b89f1ca72fda7bf38aff702b20e4503be7ebe0ba6ac5b2d1eee77d4d3e0"
     },
     "pm": {
       "source": "Pageloom/weft-id",
@@ -7711,6 +8029,12 @@
       "skillPath": "skills/production-scheduling/SKILL.md",
       "computedHash": "26fa07d7b43dfedc37384af7ac1179578ab0bb67122c1e0b40f58ac8cd727373"
     },
+    "professional-communication": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/professional-communication/SKILL.md",
+      "computedHash": "4ecfeba923ab6dea1ac6e4a3d05a1a7f23b2af3dce690f4aad8167ae92b14397"
+    },
     "professional-proofreader": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7915,6 +8239,12 @@
       "skillPath": "skills/pytorch-patterns/SKILL.md",
       "computedHash": "05b98870477148924e3d5478d94acd61a246587eabf4a884aa2af8816ffbc5c2"
     },
+    "qa-test-planner": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/qa-test-planner/SKILL.md",
+      "computedHash": "c7a27e535b0a21a9ed22578ca0e37a00a00f43b775efe791a2d4be849ce8ffa9"
+    },
     "qiskit": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8017,6 +8347,12 @@
       "skillPath": "skills/react-component-performance/SKILL.md",
       "computedHash": "e34279fe3d30ad747eaeb5676ed75ec3a42df727fb033121d11de8feee59cc41"
     },
+    "react-dev": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/react-dev/SKILL.md",
+      "computedHash": "4ce3a30e2ad46fdb79f01e0e44701f961c055da7f25f9418af0283a7ad54b791"
+    },
     "react-flow-architect": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8064,6 +8400,12 @@
       "sourceType": "github",
       "skillPath": "skills/react-ui-patterns/SKILL.md",
       "computedHash": "6cf16ff01d66cf827c99ea0fdd215e6f2a62b1999737baabc4a85fb8e28adf94"
+    },
+    "react-useeffect": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/react-useeffect/SKILL.md",
+      "computedHash": "8c24990b50f431a570f3ad1f60632dee154431861547103047f6ce80092ca734"
     },
     "readme": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8118,6 +8460,12 @@
       "sourceType": "github",
       "skillPath": "skills/redesign-existing-projects/SKILL.md",
       "computedHash": "b96db9a87ede33d0de850b8b23f3a46817ed0d4b3d9c787a06fb5bdf147c2c8c"
+    },
+    "reducing-entropy": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/reducing-entropy/SKILL.md",
+      "computedHash": "b13a84c41dc386c758a3eec600314ad2753989bd556bc2628519277ae3739fe5"
     },
     "refactor": {
       "source": "Pageloom/weft-id",
@@ -8221,6 +8569,12 @@
       "skillPath": "skills/requesting-code-review/SKILL.md",
       "computedHash": "e6367f02fe8c5d8a529d799568d57f0be31f3bb3c23093f2ae7c5049c8d15256"
     },
+    "requirements-clarity": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/requirements-clarity/SKILL.md",
+      "computedHash": "27ab2b19ebb31ff719c2e19d1ae3c4122f37d964a447b180bfb838d7b2198a02"
+    },
     "research-ops": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
@@ -8262,6 +8616,12 @@
       "sourceType": "github",
       "skillPath": "engineering-team/playwright-pro/skills/review/SKILL.md",
       "computedHash": "293152a5037aa448113fd484a6c398d99e451bb984b3a685ab7b687c96592f15"
+    },
+    "review-pr-comments": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/review-pr-comments/SKILL.md",
+      "computedHash": "3e0dd40b3074fbb512c8d29518797236245eda92257bf3786763ebfafb97f239"
     },
     "revops": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8328,6 +8688,12 @@
       "sourceType": "github",
       "skillPath": "skills/robius-widget-patterns/SKILL.md",
       "computedHash": "712ebfa350664425f4c86476e2a15116f39aa51baf6772e88026bcf71bb56c6f"
+    },
+    "rolling-rollouts": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/rolling-rollouts/SKILL.md",
+      "computedHash": "87d4a33993792c60676e90004e859db704476575d8bf82da903cee2371b99542"
     },
     "ruby-pro": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9037,6 +9403,12 @@
       "skillPath": "skills/service-mesh-observability/SKILL.md",
       "computedHash": "c6f2e0cc340ce6a290163ca54c440a9a5262e961772c6072008c82d2c5dcb4cf"
     },
+    "session-handoff": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/session-handoff/SKILL.md",
+      "computedHash": "8a73adac79d965a57dc5e898a498c479b749a8fad5ba03b08aa033ad9b710437"
+    },
     "setup": {
       "source": "alirezarezvani/claude-skills",
       "sourceType": "github",
@@ -9084,6 +9456,12 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/ship-email/SKILL.md",
       "computedHash": "69c62c84aab594145a800a4f8a3fdaccdd272c77ad5adc207daf9569963a0dff"
+    },
+    "ship-learn-next": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/ship-learn-next/SKILL.md",
+      "computedHash": "f3c467866ff7db31add63d1cc90b8b86cea8aa64f22a2afbc0fdc1f72e777874"
     },
     "shodan-reconnaissance": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9180,6 +9558,12 @@
       "sourceType": "github",
       "skillPath": "skills/skill-installer/SKILL.md",
       "computedHash": "eef32de1591c93030021b3bf9f87a566df1db4954da0b5c2659105983a3e83b0"
+    },
+    "skill-judge": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/skill-judge/SKILL.md",
+      "computedHash": "ff132ba281d460d3cf7814601e304f24e795a606a8e20e78f1bd103258bc735c"
     },
     "skill-optimizer": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9889,6 +10273,12 @@
       "skillPath": "skills/telegram-mini-app/SKILL.md",
       "computedHash": "e19acb241d3d9d8dd2f275be5588dd129fd36f97f93d0dd18fa7b93b67d2e205"
     },
+    "temporal-developer": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/temporal-developer/SKILL.md",
+      "computedHash": "7e037b890e7a17c1388c592cc201d60a0aca46544e58af0caeb2086509300ee1"
+    },
     "temporal-golang-pro": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -9984,6 +10374,12 @@
       "sourceType": "github",
       "skillPath": ".claude/skills/test-wave/SKILL.md",
       "computedHash": "213adbc47871ad57d9a4004ace4b46889e5588480a9fb255486cf59fabd832ae"
+    },
+    "testing": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/testing/SKILL.md",
+      "computedHash": "cd0a94f3059a1e009c2fbb20a635d70b7ce32b9f6ea0d845d7f4ba59e117b174"
     },
     "testing-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10128,6 +10524,12 @@
       "sourceType": "github",
       "skillPath": "skills/tool-use-guardian/SKILL.md",
       "computedHash": "8b6c5ee74331e09da57398cb7182c733d87e609ecfd8ec8e0a01427f3d08b610"
+    },
+    "toolchain-commands": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/toolchain-commands/SKILL.md",
+      "computedHash": "c6c2d86b072b11651a185c788c2e9a899ffd9ae7169944237362e198a83f3868"
     },
     "top-web-vulnerabilities": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10627,6 +11029,12 @@
       "skillPath": "skills/web-design-guidelines/SKILL.md",
       "computedHash": "de44ccda534f5eaf1595f0d2c6403bcaaf96d6f060fa0bb1cdf0037fe1867c6c"
     },
+    "web-frontend": {
+      "source": "latitude-dev/latitude-llm",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/web-frontend/SKILL.md",
+      "computedHash": "232541e6592074cbf4d0fd65971f632589effd88eb0708e8f1424ef9c05258c9"
+    },
     "web-performance-optimization": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -10644,6 +11052,12 @@
       "sourceType": "github",
       "skillPath": "skills/web-security-testing/SKILL.md",
       "computedHash": "b9ab37bfdc67232e22456fc993892e3e9059180260004a3c6bb816b70a05fae9"
+    },
+    "web-to-markdown": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/web-to-markdown/SKILL.md",
+      "computedHash": "bb00770209da2d362b3db0e0f31eecf4cea30019d977a36a5f062eac2d216058"
     },
     "web3-testing": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10807,6 +11221,12 @@
       "skillPath": "skills/workflow-patterns/SKILL.md",
       "computedHash": "27b4fbbef25cc7ac539d98c5eff646b2f807bff1b2c629c39f6d41f55f08d179"
     },
+    "workflows": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/workflows/SKILL.md",
+      "computedHash": "c9283d8a3c6a745ac5cc26e4c6ff96e9511ef5de97acc008fab2274d0ac28180"
+    },
     "workspace-surface-audit": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
@@ -10818,6 +11238,18 @@
       "sourceType": "github",
       "skillPath": "skills/wrike-automation/SKILL.md",
       "computedHash": "72cd95e54933c24dd9e43523596f0bd905150ea1368bdb29e52e546eb4fcf6e7"
+    },
+    "write-test": {
+      "source": "useautumn/autumn",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/write-test/SKILL.md",
+      "computedHash": "978e37ce2a6ddbcb12eae832e71aee587da45e114ac9e747e2b0730171fc48a2"
+    },
+    "writing-clearly-and-concisely": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/writing-clearly-and-concisely/SKILL.md",
+      "computedHash": "136a0413255aa82d800459c775eabf041620b2e9cbf2d713b739bf1b87a3db3a"
     },
     "writing-plans": {
       "source": "sickn33/antigravity-awesome-skills",

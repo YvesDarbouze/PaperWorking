@@ -1,0 +1,302 @@
+# REI Acquisition — Ground Truth Rules
+# Phase 0: Canonical Standards for All AI Agents
+
+> Every formula, token, and convention in this file is **binding**.
+> Any component, calculator, or AI-generated code that touches REI financials
+> MUST derive its logic from these rules — not from training data or guesswork.
+
+---
+
+## 1. Tone & Voice
+
+| Attribute        | Standard                                                            |
+|------------------|---------------------------------------------------------------------|
+| Register         | Professional, institutional-grade. Write like a CCIM instructor.    |
+| Data Density     | High. Prefer numeric precision over narrative padding.              |
+| Currency Format  | `$XXX,XXX` — no cents in display unless sub-$100 line items.       |
+| Percentage Format| `XX.XX%` — two decimal places. Stored as `0–100`, not `0–1`.       |
+| Rounding         | `Math.round(value * 100) / 100` for all displayed metrics.         |
+| Error States     | Return `0` (not `NaN`, `null`, or `Infinity`) when a divisor is 0. |
+| Units            | Dollars (not cents) in all UI. Schema stores `purchasePrice` in **cents** (`× 100`). |
+
+---
+
+## 2. Design Tokens (Inherited from Antigravity v2)
+
+All acquisition UI components operate inside the `.dashboard-context` scope.
+
+### 2.1 Color Palette
+
+Source of truth: `src/lib/constants/colors.ts` + `src/app/globals.css`
+
+| Token                   | Value     | Usage                              |
+|-------------------------|-----------|-------------------------------------|
+| `--pw-black`            | `#0d0d0d` | Primary text, button fills          |
+| `--pw-fg`               | `#595959` | Body text (dashboard)               |
+| `--pw-subtle`           | `#7f7f7f` | Secondary labels                    |
+| `--pw-muted`            | `#a5a5a5` | Tertiary / disabled text            |
+| `--pw-border`           | `#d4d4d4` | Card and input borders              |
+| `--pw-bg`               | `#f2f2f2` | Canvas background                   |
+| `--pw-surface`          | `#ffffff` | Card / elevated surface             |
+| `--pw-accent`           | `#1a73e8` | Links, status highlights            |
+| `--bg-canvas`           | `#F2F2F2` | Dashboard canvas (scoped)           |
+| `--bg-surface`          | `#FFFFFF` | Dashboard card surface (scoped)     |
+| `--text-primary`        | `#595959` | Dashboard body text (scoped)        |
+| `--text-secondary`      | `#7F7F7F` | Dashboard secondary text (scoped)   |
+| `--border-ui`           | `#A5A5A5` | Dashboard input/table borders       |
+
+### 2.2 Phase Backgrounds (7-Phase Grayscale)
+
+Source of truth: `src/lib/constants/phaseMessages.ts`
+
+| Phase Key       | Hex       | Lifecycle Stage              |
+|-----------------|-----------|------------------------------|
+| `findandfund`   | `#CCCCCC` | Phase 1 — Find & Fund        |
+| `pipeline`      | `#B9B9B9` | Phase 2 — Deal Pipeline      |
+| `evaluation`    | `#A6A6A6` | Phase 3 — Capital Evaluation |
+| `closing`       | `#939393` | Phase 4 — Closing Room       |
+| `rehab`         | `#808080` | Phase 5 — Rehab Engine       |
+| `engine`        | `#6D6D6D` | Phase 6 — Operations         |
+| `exit`          | `#595959` | Phase 7 — Exit & Settlement  |
+
+**Dark text threshold**: Background hex ≤ `#808080` → use `#FFFFFF` text.
+
+### 2.3 Typography
+
+| Element    | Family              | Weight | Tracking       |
+|------------|---------------------|--------|----------------|
+| `h1`       | Hanken Grotesk      | 100    | `-0.025em`     |
+| `h2`, `h3` | Hanken Grotesk     | 300    | `-0.02em`      |
+| `h4`–`h6`  | Hanken Grotesk     | 200    | `-0.015em`     |
+| Body       | Hanken Grotesk      | 400    | `-0.015em`     |
+| Mono/Data  | IBM Plex Mono       | 400    | `0`            |
+| Labels     | Hanken Grotesk      | 600    | `0.1em` (caps) |
+
+### 2.4 Border Radius (Dashboard Context)
+
+Inside `.dashboard-context`, ALL radii are overridden to `8px`:
+
+```css
+--radius-sm: 8px;
+--radius-md: 8px;
+--radius-lg: 8px;
+```
+
+Landing page uses the soft Antigravity radii (`12px`–`100px`). Never mix contexts.
+
+### 2.5 Spacing
+
+Base unit: `--spacing-unit: 8px`. All padding/margin should be multiples of 8.
+
+---
+
+## 3. Formula Standards
+
+### 3.1 Maximum Allowable Offer (Deal Score / 70% Rule)
+
+```
+MAO = (ARV × 0.70) − Estimated Repair Costs
+```
+
+| Variable                | Source                                  |
+|-------------------------|-----------------------------------------|
+| `ARV`                   | `financials.estimatedARV`               |
+| `Estimated Repair Costs`| `financials.projectedRehabCost`         |
+| Factor                  | `0.70` (constant: `MAO_RULE_FACTOR`)    |
+
+**Canonical implementation**: `src/lib/constants/financials.ts → calculateMAO()`  
+**Autopsy implementation**: `src/lib/math/calculatorUtils.ts → calculateSeventyPercentRule()`
+
+**Verdicts:**
+- `purchasePrice ≤ MAO` → ✅ Deal is viable
+- `purchasePrice > MAO` → ⚠️ Overbought
+
+### 3.2 Capitalization Rate
+
+```
+Cap Rate = (NOI / Property Value) × 100
+```
+
+| Variable         | Source                                                     |
+|------------------|------------------------------------------------------------|
+| `NOI`            | `computeNOI(financials)` or `computeNOIComponents().noi`   |
+| `Property Value` | `financials.estimatedARV` (default) or current market value|
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeCapRate()`
+
+**Health Score thresholds** (used by `computeHealthScore()`):
+- `> 8%` → Excellent
+- `> 5%` → Good
+- `> 3%` → Fair
+- `≤ 3%` → Poor
+
+### 3.3 Debt Service Coverage Ratio (DSCR)
+
+```
+DSCR = NOI / Total Annual Debt Service
+```
+
+| Variable                  | Source                                          |
+|---------------------------|-------------------------------------------------|
+| `NOI`                     | `computeNOI(financials)`                        |
+| `Total Annual Debt Service`| `computeAnnualDebtService(loan, rate, term)`   |
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeDSCR()`
+
+**Interpretation:**
+- `DSCR ≥ 1.50` → Strong coverage (Excellent)
+- `DSCR ≥ 1.25` → Adequate (Good)
+- `DSCR ≥ 1.00` → Break-even (Fair)
+- `DSCR < 1.00` → Negative cash flow (Poor — deal does NOT service its debt)
+
+**Edge case**: When `annualDebtService === 0` and `NOI > 0`, return `Infinity` (all-cash deal).
+
+### 3.4 Net Operating Income (NOI)
+
+```
+NOI = (Gross Rental Income + Other Income) − Vacancy Loss − Operating Expenses
+```
+
+| Component              | Derivation                                    |
+|------------------------|-----------------------------------------------|
+| `Gross Rental Income`  | `monthlyGrossRent × 12`                       |
+| `Other Income`         | `otherMonthlyIncome × 12`                     |
+| `Vacancy Loss`         | `Gross Rental Income × (vacancyRate% / 100)`  |
+| `Operating Expenses`   | Sum of: taxes, insurance, utilities, mgmt, maintenance, HOA (all annualized) |
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeNOIComponents()`
+
+### 3.5 Cash-on-Cash Return (CoC)
+
+```
+CoC = (Annual Cash Flow / Total Cash Invested) × 100
+```
+
+| Variable              | Source                                              |
+|-----------------------|-----------------------------------------------------|
+| `Annual Cash Flow`    | `NOI − Annual Debt Service`                         |
+| `Total Cash Invested` | `Down Payment + Acquisition Costs + EMD + Rehab + (Monthly Holding × Months)` |
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeCoCReturn()`
+
+### 3.6 Return on Investment (ROI)
+
+```
+ROI = (Net Profit / Total Cost Basis) × 100
+```
+
+**Canonical implementation**: `src/lib/constants/financials.ts → calculateROI()`
+
+### 3.7 Annualized IRR (Approximation)
+
+```
+Annualized IRR = ROI × (365 / Hold Days)
+```
+
+**Canonical implementation**: `src/lib/constants/financials.ts → calculateAnnualizedIRR()`
+
+### 3.8 Loan-to-Value (LTV)
+
+```
+LTV = (Loan Amount / Property Value) × 100
+```
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeLTV()`
+
+### 3.9 Operating Expense Ratio (OER)
+
+```
+OER = (Total Operating Expenses / Gross Operating Income) × 100
+```
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeOER()`
+
+### 3.10 ARV Spread
+
+```
+ARV Spread = ARV − All-In Cost
+ARV Spread % = (ARV Spread / ARV) × 100
+All-In Cost = Purchase Price + Rehab + Fixed Acquisition Costs
+```
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeARVSpread()`
+
+### 3.11 Break-Even Occupancy
+
+```
+Break-Even Occupancy = ((Operating Expenses + Debt Service) / Gross Potential Rent) × 100
+```
+
+**Canonical implementation**: `src/lib/metrics/reiMetrics.ts → computeBreakEvenOccupancy()`
+
+### 3.12 Capital Gains Tax Estimation
+
+```
+Short-term (≤ 365 days): Marginal Tax Bracket (default 32%)
+Long-term  (> 365 days): 15% (≤ $492,300 income) or 20%
+Tax Liability = max(0, Net Profit × Tax Rate / 100)
+```
+
+**Canonical implementation**: `src/lib/math/calculatorUtils.ts → computeCapitalGainsTax()`
+
+---
+
+## 4. Health Score Matrix
+
+Source: `src/lib/metrics/reiMetrics.ts → computeHealthScore()`
+
+| Score       | Cap Rate | DSCR    | Cash-on-Cash |
+|-------------|----------|---------|--------------|
+| `excellent` | `> 8%`   | `> 1.5` | `> 12%`      |
+| `good`      | `> 5%`   | `> 1.25`| `> 8%`       |
+| `fair`      | `> 3%`   | `≥ 1.0` | any          |
+| `poor`      | `≤ 3%`   | `< 1.0` | any          |
+
+All three conditions must be met for `excellent` or `good`. Only Cap Rate + DSCR for `fair`.
+
+---
+
+## 5. Contingency & Safety Rules
+
+| Rule                           | Value  | Source                          |
+|--------------------------------|--------|---------------------------------|
+| MAO Factor                     | `0.70` | `MAO_RULE_FACTOR`               |
+| Contingency Buffer (min)       | `10%`  | `CONTINGENCY_BUFFER_MIN`        |
+| Contingency Buffer (max/default)| `15%` | `CONTINGENCY_BUFFER_MAX`        |
+| 1% Rule Threshold              | `1%`   | `ONE_PERCENT_RULE_THRESHOLD`    |
+| Holding Cost Warning Cliff     | `166d` | `HOLDING_COST_WARNING_DAYS`     |
+| Default Loan Term              | `360mo`| 30-year conventional (rental)   |
+| Default Vacancy Rate           | `7%`   | Hardcoded fallback in NOI calc  |
+
+---
+
+## 6. File Authority Map
+
+When an agent needs to modify or reference financial logic, it MUST use these canonical files:
+
+| Concern                          | Canonical File                                  |
+|----------------------------------|-------------------------------------------------|
+| MAO / 70% Rule                   | `src/lib/constants/financials.ts`               |
+| Cap Rate, DSCR, CoC, LTV, OER    | `src/lib/metrics/reiMetrics.ts`                 |
+| Autopsy KPIs (Net Profit, ROI)   | `src/lib/math/calculatorUtils.ts`               |
+| Settlement & Tax Estimation      | `src/lib/math/calculatorUtils.ts`               |
+| Phase Backgrounds & Messages     | `src/lib/constants/phaseMessages.ts`            |
+| Color Palette (JS)               | `src/lib/constants/colors.ts`                   |
+| Design Tokens (CSS)              | `src/app/globals.css`                           |
+| Deal Lifecycle State Machine     | `src/lib/constants/dealPhases.ts`               |
+| Project Type Definition          | `src/types/schema.ts → Project`                 |
+| Financial Type Definition        | `src/types/schema.ts → ProjectFinancials`       |
+| RBAC / Permissions               | `src/hooks/usePermissions.ts`                   |
+
+---
+
+## 7. Anti-Patterns (NEVER DO)
+
+1. **Never hardcode formula constants** — import from `src/lib/constants/financials.ts`.
+2. **Never store percentages as decimals** — `12` means 12%, not `0.12`.
+3. **Never duplicate calculator logic** — call the canonical function, don't re-derive.
+4. **Never use `opacity: 0.5` for disabled states** — use `DISABLED_STYLE` from `colors.ts`.
+5. **Never mix landing-page and dashboard radii** — check if you're in `.dashboard-context`.
+6. **Never return `NaN` or `Infinity` to the UI** — guard with `if (divisor === 0) return 0`.
+7. **Never use raw Tailwind colors** — use CSS variables (`var(--pw-*)` or `var(--text-*)`) only.
+8. **Never skip the `organizationId`** — every project mutation requires tenant isolation.

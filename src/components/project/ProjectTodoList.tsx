@@ -168,7 +168,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
                 subject: `Task Assigned: ${taskLabel}`,
                 html: `<div style="font-family:sans-serif;color:#333;">
                         <h2 style="margin-top:0;">You've been assigned a task</h2>
-                        <p>You have been assigned to the task <strong>${taskLabel}</strong> for the project <strong>${deal.name || 'Untitled Project'}</strong>.</p>
+                        <p>You have been assigned to the task <strong>${taskLabel}</strong> for the project <strong>${deal.propertyName || 'Untitled Project'}</strong>.</p>
                         <p>Please log in to the PaperWorking portal to complete this action.</p>
                        </div>`
              })

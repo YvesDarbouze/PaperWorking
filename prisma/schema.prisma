@@ -156,9 +156,65 @@ model Property {
 }
 
 model BridgeSyncState {
-  id                               String   @id @default("replication_watermark")
+  id                               String   @id // e.g. "replication_watermark", "member_watermark", "office_watermark"
   mostRecentModificationTimestamp  DateTime
   updatedAt                        DateTime @updatedAt
+}
+
+// ── Cached MLS Member (Agent) ────────────────────────────────
+// Populated by the Member replication worker from Bridge /Member.
+// Keeps a local copy for fast search + directory rendering without
+// hitting the Bridge API on every frontend request.
+
+model Member {
+  id                  String   @id @default(uuid())
+  memberKey           String   @unique
+  memberMlsId         String?
+  memberFullName      String?
+  memberFirstName     String?
+  memberLastName      String?
+  memberEmail         String?
+  memberDirectPhone   String?
+  memberMobilePhone   String?
+  memberStateLicense  String?
+  memberDesignation   String?  // JSON array
+  officeName          String?
+  officeKey           String?
+  officeMlsId         String?
+  media               String?  // JSON stringified Media array
+  modificationTimestamp DateTime?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([memberFullName])
+  @@index([officeKey])
+  @@index([modificationTimestamp])
+}
+
+// ── Cached MLS Office ────────────────────────────────────────
+// Populated by the Office replication worker from Bridge /Office.
+
+model Office {
+  id                      String   @id @default(uuid())
+  officeKey               String   @unique
+  officeMlsId             String?
+  officeName              String?
+  officePhone             String?
+  officeEmail             String?
+  officeAddress1          String?
+  officeCity              String?
+  officeStateOrProvince   String?
+  officePostalCode        String?
+  officeType              String?
+  officeStatus            String?
+  modificationTimestamp   DateTime?
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([officeName])
+  @@index([modificationTimestamp])
 }
 
 // ── Async Job Queue Audit Log ────────────────────────────────
@@ -168,7 +224,7 @@ model BridgeSyncState {
 
 model JobRecord {
   id          String    @id // matches jobQueue.Job.id
-  type        String    // 'bridge_sync' | 'webhook_process'
+  type        String    // 'bridge_sync' | 'member_sync' | 'office_sync' | 'webhook_process'
   status      String    @default("pending") // pending | processing | done | failed | dlq
   payload     String    // JSON
   attempts    Int       @default(0)

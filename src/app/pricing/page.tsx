@@ -44,9 +44,18 @@ export default function PricingPage() {
 
   const handleSelectPlan = async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
-    const interval = planIdentifier.toLowerCase().includes('annual') ? 'annual' : 'monthly';
-    const parts = planIdentifier.split(' ');
-    const plan = parts.slice(0, -1).join(' ');
+
+    // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
+    // Handles multi-word plan names correctly by suffix matching
+    const lower = planIdentifier.toLowerCase();
+    const isAnnual = lower.endsWith(' annual');
+    const isMonthly = lower.endsWith(' monthly');
+    const interval = isAnnual ? 'annual' : 'monthly';
+    const plan = isAnnual
+      ? planIdentifier.slice(0, -' Annual'.length)
+      : isMonthly
+        ? planIdentifier.slice(0, -' Monthly'.length)
+        : planIdentifier;
 
     try {
       const idToken = user ? await user.getIdToken() : undefined;
@@ -66,7 +75,7 @@ export default function PricingPage() {
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
       window.location.href = data.url;
     } catch (err: any) {
-      console.error(err);
+      console.error('[Checkout]', err);
       toast.error(err.message || 'Something went wrong. Please try again.', {
         id: 'checkout-error',
         duration: 6000,

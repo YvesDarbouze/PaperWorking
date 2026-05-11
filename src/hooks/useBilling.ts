@@ -83,19 +83,37 @@ export function useBilling() {
 
   /**
    * Initiates a checkout session for a given plan.
+   * Accepts either:
+   *   - "Vendor Marketplace Monthly" (auto-parses interval)
+   *   - ("Vendor Marketplace", "monthly") (explicit interval)
    */
   const startCheckout = useCallback(async (
     planName: string,
-    interval: 'monthly' | 'annual' = 'monthly'
+    explicitInterval?: 'monthly' | 'annual'
   ) => {
     setIsLoading(true);
     try {
+      // Parse interval from plan name suffix if not explicitly provided
+      let plan = planName;
+      let interval: 'monthly' | 'annual' = explicitInterval ?? 'monthly';
+
+      if (!explicitInterval) {
+        const lower = planName.toLowerCase();
+        if (lower.endsWith(' annual')) {
+          plan = planName.slice(0, -' Annual'.length);
+          interval = 'annual';
+        } else if (lower.endsWith(' monthly')) {
+          plan = planName.slice(0, -' Monthly'.length);
+          interval = 'monthly';
+        }
+      }
+
       const idToken = user ? await user.getIdToken() : undefined;
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          plan: planName,
+          plan,
           billingInterval: interval,
           userId: user?.uid,
           userEmail: user?.email,

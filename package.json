@@ -12,7 +12,7 @@
     "lint": "eslint",
     "test": "jest",
     "db:seed": "npx ts-node --compiler-options '{\"module\":\"commonjs\"}' scripts/seed.ts",
-    "postinstall": "prisma generate"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.0",

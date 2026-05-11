@@ -60,7 +60,7 @@ export default function ProfessionalPricingSection({ onSelectPlan }: AppraiserPr
             <span className="text-sm font-medium text-phase-2 ml-1">/mo flat fee</span>
           </div>
           <button
-            onClick={() => onSelectPlan('Appraiser / Inspector (Monthly)')}
+            onClick={() => onSelectPlan('Vendor Marketplace Monthly')}
             className="w-full bg-black text-white font-medium py-3.5 hover:bg-phase-4 transition active:scale-[0.97] flex justify-center items-center group"
           >
             Join the Network <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />

@@ -8,6 +8,7 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import PlatformOverview from '@/components/landing/PlatformOverview';
 import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function ParallaxLandingPage() {
   const { user } = useAuth();
@@ -24,9 +25,17 @@ export default function ParallaxLandingPage() {
 
   const handleSelectPlan = async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
-    const interval = planIdentifier.toLowerCase().includes('annual') ? 'annual' : 'monthly';
-    const parts = planIdentifier.split(' ');
-    const plan = parts.slice(0, -1).join(' ');
+
+    // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
+    const lower = planIdentifier.toLowerCase();
+    const isAnnual = lower.endsWith(' annual');
+    const isMonthly = lower.endsWith(' monthly');
+    const interval = isAnnual ? 'annual' : 'monthly';
+    const plan = isAnnual
+      ? planIdentifier.slice(0, -' Annual'.length)
+      : isMonthly
+        ? planIdentifier.slice(0, -' Monthly'.length)
+        : planIdentifier;
 
     try {
       const idToken = user ? await user.getIdToken() : undefined;
@@ -46,8 +55,11 @@ export default function ParallaxLandingPage() {
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
       window.location.href = data.url;
     } catch (err: any) {
-      console.error(err);
-      alert(err.message);
+      console.error('[Checkout]', err);
+      toast.error(err.message || 'Something went wrong. Please try again.', {
+        id: 'checkout-error',
+        duration: 6000,
+      });
       setIsProcessing(null);
     }
   };
@@ -92,6 +104,7 @@ export default function ParallaxLandingPage() {
         <LandingFooter />
       </div>
 
+      <Toaster position="bottom-center" />
     </div>
   );
 }

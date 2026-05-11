@@ -18,6 +18,7 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile, AccountType } from '@/types/user';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 2.2)
@@ -53,35 +54,46 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /**
  * Ensures a user document exists in Firestore for social sign-ins.
  * Does not overwrite existing roles or org IDs for returning users.
+ * 
+ * IMPORTANT: This function is deliberately non-throwing. A Firestore
+ * failure here must NOT block the auth flow — the user is already
+ * signed in with Firebase Auth, so we let them proceed to the dashboard
+ * and the profile will be created on the next attempt or via server-side logic.
  */
 async function provisionSocialUser(user: User) {
-  const userDocRef = doc(db, 'users', user.uid);
-  const userDocSnap = await getDoc(userDocRef);
+  try {
+    const userDocRef = doc(db, 'users', user.uid);
+    const userDocSnap = await getDoc(userDocRef);
 
-  if (!userDocSnap.exists()) {
-    // Check if the user selected an account type before social sign-in
-    const pendingAccountType = (typeof window !== 'undefined'
-      ? window.localStorage.getItem('pw_pending_account_type')
-      : null) as AccountType | null;
-    const acctType: AccountType = pendingAccountType || 'investor';
+    if (!userDocSnap.exists()) {
+      // Check if the user selected an account type before social sign-in
+      const pendingAccountType = (typeof window !== 'undefined'
+        ? window.localStorage.getItem('pw_pending_account_type')
+        : null) as AccountType | null;
+      const acctType: AccountType = pendingAccountType || 'investor';
 
-    await setDoc(userDocRef, {
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName || 'User',
-      role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
-      accountType: acctType,
-      organizationId: `org_${user.uid.slice(0, 8)}`,
-      subscriptionPlan: 'None',
-      subscriptionStatus: 'inactive',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || 'User',
+        role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
+        accountType: acctType,
+        organizationId: `org_${user.uid.slice(0, 8)}`,
+        subscriptionPlan: 'None',
+        subscriptionStatus: 'inactive',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
 
-    // Clean up the pending flag
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('pw_pending_account_type');
+      // Clean up the pending flag
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('pw_pending_account_type');
+      }
     }
+  } catch (err) {
+    // Non-fatal: user is already authenticated with Firebase Auth.
+    // Profile doc can be created later via onSnapshot or server-side.
+    console.error('[provisionSocialUser] Firestore write failed (non-fatal):', err);
   }
 }
 
@@ -149,8 +161,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             await firebaseUser.getIdToken(true);
             await syncSessionCookie(firebaseUser);
-          } catch (err) {
+          } catch (err: any) {
             console.error('Token refresh failed:', err);
+
+            // Surface the failure to the user so they can re-authenticate
+            if (err?.code === 'auth/network-request-failed') {
+              toast.error('Network error — your session may expire soon. Check your connection.', {
+                id: 'token-refresh-network', // Prevent duplicate toasts
+                duration: 8000,
+              });
+            } else {
+              // Token revoked, user disabled, or other fatal error
+              toast.error('Your session has expired. Please sign in again.', {
+                id: 'token-refresh-expired',
+                duration: 10000,
+              });
+              // Force logout to clear stale state
+              try { await signOut(auth); } catch { /* best effort */ }
+            }
           }
         }, TOKEN_REFRESH_MS);
       } else {
@@ -184,11 +212,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       case 'auth/wrong-password':
       case 'auth/invalid-credential': return 'Invalid email or password.';
       case 'auth/email-already-in-use': return 'An account with this email already exists.';
+      case 'auth/account-exists-with-different-credential':
+        return 'This email is already linked to another sign-in method. Try signing in with Google or email/password instead.';
       case 'auth/weak-password': return 'Password must be at least 8 characters.';
       case 'auth/too-many-requests': return 'Account temporarily locked. Try resetting your password.';
       case 'auth/network-request-failed': return 'Network error. Check your connection.';
       case 'auth/popup-closed-by-user': return 'Sign-in was cancelled. Please try again.';
+      case 'auth/popup-blocked': return 'Pop-up was blocked by your browser. Please allow pop-ups for this site and try again.';
       case 'auth/redirect-cancelled-by-user': return 'Sign-in redirect was cancelled.';
+      case 'auth/internal-error': return 'Authentication service error. Please try again in a moment.';
+      case 'auth/unauthorized-domain': return 'This domain is not authorized for sign-in. Contact support.';
       default: return 'An unexpected error occurred. Please try again.';
     }
   }
@@ -231,13 +264,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
       const result = await signInWithPopup(auth, provider);
       await provisionSocialUser(result.user);
       await syncSessionCookie(result.user);
     } catch (err: any) {
-      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-        setError(getAuthErrorMessage(err.code));
+      // Benign: user closed the popup or browser cancelled a duplicate request
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        return; // Silently absorb — don't set error, don't throw
       }
+      setError(getAuthErrorMessage(err.code));
       throw err;
     }
   };
@@ -246,13 +283,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     try {
       const provider = new FacebookAuthProvider();
+      provider.addScope('email');
+      provider.addScope('public_profile');
       const result = await signInWithPopup(auth, provider);
       await provisionSocialUser(result.user);
       await syncSessionCookie(result.user);
     } catch (err: any) {
-      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
-        setError(getAuthErrorMessage(err.code));
+      // Benign: user closed the popup or browser cancelled a duplicate request
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        return; // Silently absorb — don't set error, don't throw
       }
+      console.error('[loginWithFacebook] Auth error:', err.code, err.message);
+      setError(getAuthErrorMessage(err.code));
       throw err;
     }
   };

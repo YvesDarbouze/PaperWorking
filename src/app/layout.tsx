@@ -4,6 +4,7 @@ import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
 import { AuthProvider } from "@/context/AuthContext";
 import ChatbotWidget from "@/components/shared/ChatbotWidget";
+import { Toaster } from "react-hot-toast";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
@@ -26,6 +27,16 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans antialiased bg-bg-primary text-text-primary">
         <AuthProvider>
           <PresenceHeartbeat />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              style: {
+                background: '#1a1a2e',
+                color: '#e0e0e0',
+                border: '1px solid rgba(255,255,255,0.08)',
+              },
+            }}
+          />
           {children}
           <ChatbotWidget />
         </AuthProvider>

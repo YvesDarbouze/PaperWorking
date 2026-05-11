@@ -28,7 +28,49 @@ function encodeSubCookie(plan: string, status: string): string {
   return btoa(JSON.stringify({ plan, status }));
 }
 
+/**
+ * CSRF Protection — validates that the request originates from our own domain.
+ * Prevents cross-site cookie injection via forged POST/DELETE to /api/auth/session.
+ */
+function validateOrigin(request: Request): boolean {
+  const origin  = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+
+  // In production, strictly validate against the canonical domain
+  const allowedOrigins = [
+    process.env.NEXT_PUBLIC_APP_URL,            // https://paperworking.co
+    'https://paperworking.co',
+    'https://www.paperworking.co',
+  ].filter(Boolean);
+
+  // In development, also allow localhost
+  if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.push('http://localhost:3000', 'http://localhost:3001');
+  }
+
+  // Check Origin header first (set on all CORS and same-origin POST/DELETE)
+  if (origin) {
+    return allowedOrigins.some(allowed => origin === allowed);
+  }
+
+  // Fallback: check Referer header (always present in browsers)
+  if (referer) {
+    return allowedOrigins.some(allowed => allowed && referer.startsWith(allowed));
+  }
+
+  // No Origin or Referer — reject in production, allow in dev (curl/Postman)
+  return process.env.NODE_ENV !== 'production';
+}
+
 export async function POST(request: Request) {
+  // ── CSRF check ────────────────────────────────────
+  if (!validateOrigin(request)) {
+    return NextResponse.json(
+      { error: 'Forbidden: invalid origin' },
+      { status: 403 }
+    );
+  }
+
   try {
     const { idToken } = await request.json();
 
@@ -95,7 +137,15 @@ export async function POST(request: Request) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: Request) {
+  // ── CSRF check ────────────────────────────────────
+  if (!validateOrigin(request)) {
+    return NextResponse.json(
+      { error: 'Forbidden: invalid origin' },
+      { status: 403 }
+    );
+  }
+
   const response = NextResponse.json({ status: 'success' });
   const clear = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' as const, path: '/', maxAge: 0 };
   response.cookies.set(SESSION_COOKIE, '', clear);

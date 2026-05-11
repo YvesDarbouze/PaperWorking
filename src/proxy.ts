@@ -5,23 +5,44 @@ import type { NextRequest } from 'next/server';
    Proxy — Server-Side Auth Guard (Next.js 16+)
 
    Replaces the deprecated middleware.ts file convention.
-   Runs at the edge before routes are rendered.
+   Runs on the Node.js runtime before routes are rendered.
 
    1. Protects /dashboard/* routes — redirects to /login
-      if the __session cookie is missing.
+      if the __session cookie is missing or invalid.
    2. Redirects already-authenticated users away from
       auth pages (/login, /register, /forgot-password).
    3. Passes /invest/* (Guest Portal) through untouched.
+   4. Verifies JWT signature via Firebase Admin SDK for
+      defense-in-depth (not just cookie existence).
    ═══════════════════════════════════════════════════════ */
 
 const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
 const AUTH_PATHS = new Set(['/login', '/register', '/forgot-password']);
 
-export function proxy(request: NextRequest) {
+/**
+ * Lightweight JWT verification using Firebase Admin SDK.
+ * Returns the decoded token if valid, null if expired/invalid.
+ * Failures are treated as "no session" — the user is redirected.
+ */
+async function verifySessionToken(token: string): Promise<{ uid: string } | null> {
+  try {
+    const { adminAuth } = await import('@/lib/firebase/admin');
+    const decoded = await adminAuth.verifyIdToken(token);
+    return decoded?.uid ? { uid: decoded.uid } : null;
+  } catch (err: any) {
+    // Expected failures: expired token, revoked token, malformed JWT
+    if (err?.code !== 'auth/id-token-expired') {
+      console.warn('[Proxy] Token verification failed:', err?.code || err?.message);
+    }
+    return null;
+  }
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const session = request.cookies.get(SESSION_COOKIE)?.value;
-  const acct    = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
+  const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
+  const acct         = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
 
   // ── Guest Portal — always public ──────────────────
   if (pathname.startsWith('/invest')) {
@@ -30,11 +51,24 @@ export function proxy(request: NextRequest) {
 
   // ── Vendor Portal guard ────────────────────────────
   if (pathname.startsWith('/vendor-portal')) {
-    if (!session) {
+    if (!sessionToken) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', pathname);
       return NextResponse.redirect(loginUrl);
     }
+
+    // Verify the JWT is actually valid (not just present)
+    const verified = await verifySessionToken(sessionToken);
+    if (!verified) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirectTo', pathname);
+      loginUrl.searchParams.set('reason', 'session_expired');
+      // Clear the stale cookie so client-side can re-auth cleanly
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.set(SESSION_COOKIE, '', { path: '/', maxAge: 0 });
+      return response;
+    }
+
     // Investors who navigate directly to /vendor-portal get bounced back
     if (acct === 'investor') {
       return NextResponse.redirect(new URL('/dashboard', request.url));
@@ -44,11 +78,23 @@ export function proxy(request: NextRequest) {
 
   // ── Dashboard guard — require session, block vendors ──
   if (pathname.startsWith('/dashboard')) {
-    if (!session) {
+    if (!sessionToken) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
       return NextResponse.redirect(loginUrl);
     }
+
+    // Verify the JWT is actually valid (not just present)
+    const verified = await verifySessionToken(sessionToken);
+    if (!verified) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
+      loginUrl.searchParams.set('reason', 'session_expired');
+      const response = NextResponse.redirect(loginUrl);
+      response.cookies.set(SESSION_COOKIE, '', { path: '/', maxAge: 0 });
+      return response;
+    }
+
     // Vendor accounts are not allowed inside the investor dashboard
     if (acct === 'vendor') {
       return NextResponse.redirect(new URL('/vendor-portal', request.url));
@@ -57,7 +103,9 @@ export function proxy(request: NextRequest) {
   }
 
   // ── Auth pages — bounce authenticated users ───────
-  if (AUTH_PATHS.has(pathname) && session) {
+  if (AUTH_PATHS.has(pathname) && sessionToken) {
+    // For auth pages, we don't need to verify — if the cookie exists
+    // and is invalid, the user will re-auth naturally on the auth page.
     const dest = acct === 'vendor' ? '/vendor-portal' : '/dashboard';
     return NextResponse.redirect(new URL(dest, request.url));
   }

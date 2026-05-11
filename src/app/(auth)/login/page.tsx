@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
-import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   return (
@@ -21,6 +22,7 @@ function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '/dashboard';
+  const sessionReason = searchParams.get('reason');
 
   const {
     login,
@@ -84,8 +86,17 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
+      // If loginWith* returned without throwing, auth succeeded
       router.replace(redirectTo);
-    } catch { setLoadingProvider(null); }
+    } catch (err: any) {
+      // Real auth failures already set error in AuthContext.
+      // Popup cancellations return silently (no throw), so this
+      // catch only fires for actionable errors.
+      const msg = err?.message || authError || 'Sign-in failed. Please try again.';
+      toast.error(msg, { id: 'social-login-error', duration: 6000 });
+    } finally {
+      setLoadingProvider(null);
+    }
   };
 
   return (
@@ -96,6 +107,14 @@ function LoginPageInner() {
         <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Sign in or sign up</h1>
         <p className="mt-2 text-sm text-[#888]">Access your PaperWorking portfolio.</p>
       </div>
+
+      {/* ── Session expired notice (from proxy redirect) ── */}
+      {sessionReason === 'session_expired' && !authError && (
+        <div className="w-full mb-5 px-4 py-3 bg-amber-950/60 border border-amber-700/40 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+          <ShieldAlert className="w-4 h-4 mt-0.5 shrink-0 text-amber-400" />
+          <p className="text-xs font-medium text-amber-300 leading-relaxed">Your session expired. Please sign in again to continue.</p>
+        </div>
+      )}
 
       {/* ── Error banner ── */}
       {authError && (

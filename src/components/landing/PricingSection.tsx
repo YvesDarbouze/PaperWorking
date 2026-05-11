@@ -104,7 +104,7 @@ const PLANS: PlanTier[] = [
   },
   {
     id: 'vendor',
-    name: 'Vendor Network',
+    name: 'Vendor Marketplace',
     target: 'Appraisers, Inspectors, GCs, and tradespeople.',
     monthlyPrice: 39,
     annualPrice: '$390',
@@ -169,7 +169,7 @@ const TESTIMONIALS = [
   },
   {
     quote:
-      "Since listing on PaperWorking's Vendor Network, I get 3–5 qualified leads per week from investor teams who actually have projects ready to go.",
+      "Since listing on PaperWorking's Vendor Marketplace, I get 3–5 qualified leads per week from investor teams who actually have projects ready to go.",
     author: 'David R.',
     role: 'Licensed General Contractor, Miami FL',
     icon: Wrench,

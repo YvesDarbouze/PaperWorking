@@ -4,7 +4,7 @@ import React from 'react';
 import { Calculator, TrendingUp, Hammer, DollarSign, ArrowRight } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
-   DealAnalyzer — Financial Data Visualization
+   ProjectAnalyzer — Financial Data Visualization
    
    Design distinct, elevated #FFFFFF cards to capture and calculate
    the After Repair Value (ARV) and Estimated Rehab Costs. Prominently
@@ -12,19 +12,19 @@ import { Calculator, TrendingUp, Hammer, DollarSign, ArrowRight } from 'lucide-r
    Uses a large typography scale for the MAO output.
    ═══════════════════════════════════════════════════════════════ */
 
-interface DealAnalyzerProps {
+interface ProjectAnalyzerProps {
   arvCents?: number;
   rehabCents?: number;
   counterPriceCents?: number;
   phaseColor?: string;
 }
 
-export function DealAnalyzer({
+export function ProjectAnalyzer({
   arvCents = 0,
   rehabCents = 0,
   counterPriceCents,
   phaseColor = '#595959',
-}: DealAnalyzerProps) {
+}: ProjectAnalyzerProps) {
   const arv = arvCents / 100;
   const rehab = rehabCents / 100;
 

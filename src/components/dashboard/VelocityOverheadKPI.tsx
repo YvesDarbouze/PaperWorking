@@ -254,9 +254,9 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
       {/* ── 1. Average Cycle Time ── */}
       <KPICard
         icon={<Timer className="w-5 h-5" />}
-        label="Average Cycle"
+        label="Avg. Time to Exit"
         value={kpis.avgTTF !== null ? `${kpis.avgTTF}d` : '—'}
-        subtext={`${kpis.ttfDeals} Entity Exits Recorded`}
+        subtext={`Based on ${kpis.ttfDeals} completed deals`}
         accent="text-text-primary"
         badge={
           kpis.avgTTF !== null && (
@@ -268,20 +268,20 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
       {/* ── 2. Operational Burn ── */}
       <KPICard
         icon={<Flame className="w-5 h-5" />}
-        label="Operational Burn"
+        label="Monthly Overhead"
         value={kpis.monthlyOverhead > 0 ? `$${Math.round(kpis.monthlyOverhead).toLocaleString()}` : '$0'}
-        subtext="Fixed capital recurring burn rate"
+        subtext="Recurring fixed costs across portfolio"
         accent="text-text-primary"
       />
 
       {/* ── 3. CapEx Variance ── */}
       <KPICard
         icon={<BarChart3 className="w-5 h-5" />}
-        label="CapEx Variance"
+        label="Rehab Budget Variance"
         value={kpis.varianceDeals > 0
           ? `${kpis.constructionVariance >= 0 ? '+' : ''}${kpis.constructionVariance.toFixed(1)}%`
           : '—'}
-        subtext={`${kpis.varianceDeals} Asset Tracks Syncing`}
+        subtext={`Tracking ${kpis.varianceDeals} active rehab budgets`}
         accent={
           kpis.constructionVariance > 10 ? 'text-text-primary font-medium'
           : 'text-text-primary'
@@ -292,18 +292,18 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
       {/* ── 4. Capital Efficiency ── */}
       <KPICard
         icon={<Percent className="w-5 h-5" />}
-        label="Capital Efficiency"
+        label="Cash-on-Cash Return"
         value={kpis.cocDeals > 0 ? `${kpis.cashOnCash.toFixed(1)}%` : '—'}
-        subtext="Annualized efficiency ratio"
+        subtext="Annualized return on invested capital"
         accent="text-text-primary"
       />
 
       {/* ── 5. Portfolio Fluidity ── */}
       <KPICard
         icon={<Eye className="w-5 h-5" />}
-        label="Portfolio Fluidity"
+        label="Pipeline Ratio"
         value={`${Math.round(kpis.activePct)}:${Math.round(kpis.pendingSalePct)}`}
-        subtext={`$${Math.round(kpis.totalPortfolioValue / 1000)}k Total Value Locked`}
+        subtext={`$${Math.round(kpis.totalPortfolioValue / 1000)}k total portfolio value`}
         badge={
           <div className="flex h-1.5 w-16 bg-bg-primary rounded-full overflow-hidden border border-border-accent/20">
             <div

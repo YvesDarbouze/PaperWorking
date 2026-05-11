@@ -11,9 +11,9 @@ import AccessGateToggle from './AccessGateToggle';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   DealRoster — 8-Slot External Stakeholder Directory
+   ProjectRoster — 8-Slot External Stakeholder Directory
 
-   Replaces the old DealTeamManager with the full set of
+   Replaces the old ProjectTeamManager with the full set of
    external roles per the specification. Each slot has:
    • Invite form (name + email)
    • Access gate toggles (view / upload)
@@ -81,9 +81,9 @@ interface Props {
   projectId: string;
 }
 
-export default function DealRoster({ projectId }: Props) {
+export default function ProjectRoster({ projectId }: Props) {
   const currentProject = useProjectStore(s => s.projects.find(d => d.id === projectId));
-  const updateDealTeam = useProjectStore(s => s.updateDealTeam);
+  const updateProjectTeam = useProjectStore(s => s.updateProjectTeam);
   const team = currentProject?.projectTeam || [];
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
@@ -108,7 +108,7 @@ export default function DealRoster({ projectId }: Props) {
       status: 'invited',
     };
 
-    updateDealTeam(projectId, [...team, newMember]);
+    updateProjectTeam(projectId, [...team, newMember]);
     toast.success(`${role} invited: ${newMember.displayName}`);
     setInviteEmail('');
     setInviteName('');
@@ -119,7 +119,7 @@ export default function DealRoster({ projectId }: Props) {
     const updated = team.map(m =>
       m.id === memberId ? { ...m, status: 'removed' as const } : m
     );
-    updateDealTeam(projectId, updated);
+    updateProjectTeam(projectId, updated);
     toast.success('Stakeholder removed from deal.');
   };
 
@@ -127,7 +127,7 @@ export default function DealRoster({ projectId }: Props) {
     const updated = team.map(m =>
       m.id === memberId ? { ...m, permissions } : m
     );
-    updateDealTeam(projectId, updated);
+    updateProjectTeam(projectId, updated);
   };
 
   return (

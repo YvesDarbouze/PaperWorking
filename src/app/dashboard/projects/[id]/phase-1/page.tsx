@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { usePipelineData } from '@/context/ProjectPipelineContext';
-import DealCalculator from '@/components/project/DealCalculator';
+import ProjectCalculator from '@/components/project/ProjectCalculator';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { PhaseLockedBanner } from '@/components/project/PhaseLockedBanner';
 import ConversationalForm from '@/components/conversational/ConversationalForm';
@@ -15,7 +15,7 @@ import type { Phase1Snapshot, LoanStatus, PurchaseReadinessItem } from '@/types/
 import { CrowdfundingTracker, type Investor } from '@/components/project/CrowdfundingTracker';
 import LOIGenerator from '@/components/project/LOIGenerator';
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
-import { DealAnalyzer } from '@/components/project/DealAnalyzer';
+import { ProjectAnalyzer } from '@/components/project/ProjectAnalyzer';
 import { TargetIdentification } from '@/components/project/TargetIdentification';
 import { OfferPipelineTracker } from '@/components/project/OfferPipelineTracker';
 import { PurchaseReadinessChecklist } from '@/components/project/PurchaseReadinessChecklist';
@@ -175,26 +175,26 @@ export default function Phase1WorkspacePage() {
     if (!project) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merged = { ...(project.financials ?? {}), ...toFinancials(answers) } as any;
-    await projectsService.updateDeal(project.id, { financials: merged });
+    await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }
 
   async function handleTargetSave(updates: any) {
     if (!project) return;
-    await projectsService.updateDeal(project.id, updates);
+    await projectsService.updateProject(project.id, updates);
     refresh();
   }
 
   async function handleReadinessChange(updatedItems: PurchaseReadinessItem[]) {
     if (!project) return;
-    await projectsService.updateDeal(project.id, { purchaseReadinessChecklist: updatedItems });
+    await projectsService.updateProject(project.id, { purchaseReadinessChecklist: updatedItems });
     refresh();
   }
 
   async function handlePipelineStatusChange(status: string) {
     if (!project) return;
     const merged = { ...(project.financials ?? {}), offerStatus: status };
-    await projectsService.updateDeal(project.id, { financials: merged });
+    await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }
 
@@ -205,13 +205,13 @@ export default function Phase1WorkspacePage() {
       counterPriceCents: priceCents,
       counterTerms: terms
     };
-    await projectsService.updateDeal(project.id, { financials: merged });
+    await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }
 
   async function handleLoanStatusChange(status: LoanStatus) {
     if (!project) return;
-    await projectsService.updateDeal(project.id, { loanStatus: status });
+    await projectsService.updateProject(project.id, { loanStatus: status });
     refresh();
   }
 
@@ -220,7 +220,7 @@ export default function Phase1WorkspacePage() {
     const [year, month, day] = dateStr.split('-').map(Number);
     const newDate = new Date(year, month - 1, day);
     const merged = { ...(project.financials ?? {}), acquisitionDate: newDate };
-    await projectsService.updateDeal(project.id, { financials: merged });
+    await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }
 
@@ -232,7 +232,7 @@ export default function Phase1WorkspacePage() {
       emdVerified: verified,
       emdClearedDate: newDate || undefined
     };
-    await projectsService.updateDeal(project.id, { financials: merged });
+    await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }
 
@@ -257,7 +257,7 @@ export default function Phase1WorkspacePage() {
       await projectsService.capturePhaseSnapshot(project.id, 'phase-1', snapshot);
       
       // Update the phase status so the badge and tracking correctly reflect Phase 2
-      await projectsService.updateDeal(project.id, { phaseStatus: 'Phase 2: Acquisition' });
+      await projectsService.updateProject(project.id, { phaseStatus: 'Phase 2: Acquisition' });
       
       refresh();
       
@@ -372,11 +372,11 @@ export default function Phase1WorkspacePage() {
             {/* ════════════════════════════════════════════════════════
                 Conversational Form Engine (active phase)
                 vs.
-                Read-only DealCalculator summary (locked phase)
+                Read-only ProjectCalculator summary (locked phase)
                 ════════════════════════════════════════════════════════ */}
             {phase1Locked ? (
               /* ── Locked: show compact read-only summary ── */
-              <DealCalculator
+              <ProjectCalculator
                 phaseColor={PHASE_COLOR}
                 projectId={projectId}
                 propertyAddress={project.address}
@@ -423,7 +423,7 @@ export default function Phase1WorkspacePage() {
             )}
 
             {/* ── Deal Analyzer (Dynamic MAO Calculator) ── */}
-            <DealAnalyzer
+            <ProjectAnalyzer
               arvCents={phase1Live.estimatedARV ?? project.financials?.estimatedARV ?? 0}
               rehabCents={phase1Live.projectedRehabCost ?? project.financials?.projectedRehabCost ?? 0}
               counterPriceCents={project.financials?.counterPriceCents}

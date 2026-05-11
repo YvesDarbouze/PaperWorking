@@ -102,7 +102,7 @@ function ReadOnlyLine({ label, value, emphasis, positive, negative }: {
 
 // ── Main Component ───────────────────────────────────────
 
-export default function DealAnalyzer() {
+export default function ProjectAnalyzer() {
   const currentProject = useProjectStore(state => state.currentProject);
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
   const uid = useId();

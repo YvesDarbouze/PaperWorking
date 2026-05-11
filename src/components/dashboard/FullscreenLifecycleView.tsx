@@ -11,7 +11,7 @@ import RentalPropertyCalculator from '../project/RentalPropertyCalculator';
 import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
 import { projectsService } from '@/lib/firebase/projects';
-import { transitionDealPhase } from '@/lib/services/dealStateMachine';
+import { transitionProjectPhase } from '@/lib/services/projectStateMachine';
 import ProjectTodoList from '../project/ProjectTodoList';
 
 /* ── Lazy-loaded analytics panel ── */
@@ -101,7 +101,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                   const nextPhase = nextMap[deal.status];
                   if (nextPhase) {
                      try {
-                        await transitionDealPhase(deal.id, deal.status as any, nextPhase as any, 'system');
+                        await transitionProjectPhase(deal.id, deal.status as any, nextPhase as any, 'system');
                         toast.success(`Deal advanced to ${nextPhase}`);
                      } catch (e) {
                         toast.error('Failed to transition phase');

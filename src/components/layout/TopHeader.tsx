@@ -20,7 +20,7 @@ import { useInboxThreads } from '@/hooks/useInboxThreads';
 /* ── Tier label map ── */
 const TIER_LABELS: Record<string, string> = {
   Individual: 'Starter',
-  Team: 'Pro Tier',
+  Team: 'Pro',
 };
 
 export default function TopHeader() {
@@ -103,7 +103,7 @@ export default function TopHeader() {
             <input
               id="global-search"
               type="search"
-              placeholder="Search projects, files, or team..."
+              placeholder="Search deals, files, or team…"
               className="w-full pl-10 pr-4 py-2 text-sm rounded-lg transition-all duration-150 outline-none"
               style={{
                 background: 'var(--bg-surface)',
@@ -118,7 +118,7 @@ export default function TopHeader() {
                 e.currentTarget.style.borderColor = 'var(--border-ui)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
-              aria-label="Search projects, files, or team"
+              aria-label="Search deals, files, or team"
             />
           </div>
         </div>

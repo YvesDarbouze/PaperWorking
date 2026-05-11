@@ -73,7 +73,7 @@ export default function Phase3RehabPage() {
     if (!project) return;
     setIsSaving(true);
     try {
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         rehabExpenses,
         holdingCosts,
         siteVisitLogs,
@@ -111,7 +111,7 @@ export default function Phase3RehabPage() {
     if (!project) return;
     try {
       await handleSave(); // Save current state first
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         phaseStatus: 'Phase 4: Closing & Exit',
         updatedAt: new Date()
       });
@@ -149,7 +149,7 @@ export default function Phase3RehabPage() {
   const handleStageChange = async (stage: 'Demolition' | 'Rough-In/MEP' | 'Finishes' | 'Staging' | 'Complete') => {
     if (!project) return;
     try {
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         rehab: {
           baseBudget: 0,
           contingencyBufferPercentage: 0.15,
@@ -170,7 +170,7 @@ export default function Phase3RehabPage() {
   const handleStrategyChange = async (strategy: 'Sell' | 'Rent') => {
     if (!project) return;
     try {
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         financials: {
           ...project.financials,
           purchasePrice: project.financials?.purchasePrice || 0, // ensure required fields
@@ -190,7 +190,7 @@ export default function Phase3RehabPage() {
   const handleRentalSetupChange = async (updates: Partial<ProjectFinancials>) => {
     if (!project) return;
     try {
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         financials: {
           ...project.financials,
           purchasePrice: project.financials?.purchasePrice || 0,

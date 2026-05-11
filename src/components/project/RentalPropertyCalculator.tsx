@@ -185,7 +185,7 @@ export default function RentalPropertyCalculator({ phaseColor, projectId, initia
         annualAppreciationPercent: appreciation,
       };
 
-      await projectsService.updateDeal(projectId, { financials: updatedFinancials });
+      await projectsService.updateProject(projectId, { financials: updatedFinancials });
       
       setSaveMessage('Saved successfully!');
       setTimeout(() => setSaveMessage(''), 3000);

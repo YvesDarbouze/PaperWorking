@@ -1,14 +1,14 @@
 /**
- * src/hooks/useDealFormValidation.ts
+ * src/hooks/useProjectFormValidation.ts
  *
- * Extracted from DealCreationWizard to keep the component lean.
+ * Extracted from ProjectCreationWizard to keep the component lean.
  * Returns per-step validity + per-field error messages for the
  * address manual-entry fallback.
  */
 
 import { useMemo } from 'react';
 
-export interface DealFormData {
+export interface ProjectFormData {
   propertyName: string;
   reiStatus: string;
   address: string;
@@ -47,7 +47,7 @@ export interface AddressFieldErrors {
   zip?: string;
 }
 
-export function useDealFormValidation(formData: DealFormData, stepIndex: number) {
+export function useProjectFormValidation(formData: ProjectFormData, stepIndex: number) {
   const addressErrors: AddressFieldErrors = useMemo(() => {
     const errors: AddressFieldErrors = {};
     if (!formData.street.trim()) errors.street = 'Street is required';

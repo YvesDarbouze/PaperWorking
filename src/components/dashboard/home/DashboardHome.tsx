@@ -26,6 +26,8 @@ import { useAuth } from '@/context/AuthContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 const LifecycleMetricsDashboard = lazy(() => import('@/components/dashboard/charts/LifecycleMetricsDashboard'));
+const AgentDirectory = lazy(() => import('@/components/listing/AgentDirectory'));
+const OpenHouseCalendar = lazy(() => import('@/components/listing/OpenHouseCalendar'));
 
 import DashboardKPIHeader from './DashboardKPIHeader';
 import GenerativeInsights from './GenerativeInsights';
@@ -67,9 +69,9 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
       <div className="flex items-center gap-4">
         <TrendingUp className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
         <div>
-          <p className="text-sm font-bold tracking-tight">Unlock your full Command Center</p>
+          <p className="text-sm font-bold tracking-tight">Stop guessing. Start tracking every dollar.</p>
           <p className="text-xs text-white/70 mt-0.5 leading-snug">
-            Real-time deal tracking, live portfolio KPIs, and AI-powered analytics
+            Every day without data costs you money. Upgrade for real-time deal intelligence.
           </p>
         </div>
       </div>
@@ -77,7 +79,7 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
         onClick={onUpgrade}
         className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFFFFF] text-[#595959] rounded text-xs font-bold uppercase tracking-widest hover:bg-[#F2F2F2] transition-colors"
       >
-        View Plans
+        See What You&apos;re Missing
         <ChevronRight className="w-3 h-3" aria-hidden="true" />
       </button>
     </div>
@@ -138,9 +140,9 @@ function GuestAccessPanel() {
         <Lock className="w-6 h-6 text-[#7F7F7F]" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-[#595959] tracking-tight">Guest Access Active</p>
+        <p className="text-sm font-semibold text-[#595959] tracking-tight">Viewer Access</p>
         <p className="text-xs text-[#7F7F7F] max-w-[240px] leading-relaxed">
-          Portfolio financials are only visible to account owners. You can view the deals you&apos;ve been invited to.
+          You&apos;re viewing deals shared with you. Portfolio analytics are available to account holders.
         </p>
       </div>
     </div>
@@ -247,15 +249,15 @@ export default function DashboardHome() {
       {/* ── Page Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
          <div className="flex flex-col">
-           <h1 className="text-2xl font-semibold text-[#595959] tracking-tight">Welcome, {profile?.firstName || 'Investor'}</h1>
-           <p className="text-sm text-[#7F7F7F] mt-1">{profile?.organizationName || 'Real Estate Team'}</p>
+           <h1 className="text-2xl font-semibold text-[#595959] tracking-tight">{profile?.firstName || 'Investor'}&apos;s Portfolio</h1>
+           <p className="text-sm text-[#7F7F7F] mt-1">Your deals at a glance · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
          </div>
          <div className="flex items-center gap-4">
             <div className="relative">
                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7F7F7F]" />
                <input 
                  type="text" 
-                 placeholder="Search: For Properties" 
+                 placeholder="Search deals, documents, team…" 
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
                  className="pl-9 pr-4 py-2 bg-[#FFFFFF] border border-[#A5A5A5] rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-[#595959] text-[#595959] placeholder:text-[#7F7F7F] w-full md:w-64" 
@@ -270,7 +272,7 @@ export default function DashboardHome() {
       {/* ── State 4: Guest invited-project cards ── */}
       {isGuest && (
         <section className="mb-10">
-          <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold mb-6">Your Invited Deals</p>
+          <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold mb-6">Deals Shared With You</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guestLoading
               ? [0, 1].map(i => (
@@ -286,9 +288,9 @@ export default function DashboardHome() {
                 ))
               : (
                   <div className="col-span-3 bg-[#FFFFFF] border border-dashed border-[#A5A5A5] rounded-2xl flex flex-col items-center justify-center py-16 text-center">
-                    <p className="text-sm font-bold text-[#595959] uppercase tracking-widest mb-2">No Active Collaborations</p>
+                    <p className="text-sm font-bold text-[#595959] uppercase tracking-widest mb-2">No deals yet</p>
                     <p className="text-xs text-[#7F7F7F] max-w-xs leading-relaxed">
-                      You haven't been added to any deals yet. Check your email for an invite.
+                      When a team member shares a deal with you, it will appear here. Check your inbox for an invite link.
                     </p>
                   </div>
                 )
@@ -306,9 +308,9 @@ export default function DashboardHome() {
             {/* Quick stats beside the CTA */}
             <div className="md:col-span-2 grid grid-cols-3 gap-4">
               {[
-                { label: 'Active Deals', value: activeDeals.length, icon: Target },
-                { label: 'Deals Closed', value: dealsClosedCount, icon: CheckCircle2 },
-                { label: 'Team Members', value: teamMembersCount, icon: Users },
+                { label: 'In Progress', value: activeDeals.length, icon: Target },
+                { label: 'Exits Completed', value: dealsClosedCount, icon: CheckCircle2 },
+                { label: 'Team', value: teamMembersCount, icon: Users },
               ].map((stat) => (
                 <div
                   key={stat.label}
@@ -382,6 +384,22 @@ export default function DashboardHome() {
                 />
               </ErrorBoundary>
             )}
+          </div>
+        )}
+
+        {/* ── Agent Directory + Open House Calendar ── */}
+        {!isGuest && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ErrorBoundary name="Agent Directory">
+              <Suspense fallback={<ChartSkeleton />}>
+                <AgentDirectory />
+              </Suspense>
+            </ErrorBoundary>
+            <ErrorBoundary name="Open House Calendar">
+              <Suspense fallback={<ChartSkeleton />}>
+                <OpenHouseCalendar />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         )}
 

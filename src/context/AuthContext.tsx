@@ -15,7 +15,7 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
@@ -89,11 +89,50 @@ async function provisionSocialUser(user: User) {
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('pw_pending_account_type');
       }
+
+      // Reconcile any pending guest-checkout subscription
+      if (user.email) {
+        await reconcilePendingSubscription(user.uid, user.email);
+      }
     }
   } catch (err) {
     // Non-fatal: user is already authenticated with Firebase Auth.
     // Profile doc can be created later via onSnapshot or server-side.
     console.error('[provisionSocialUser] Firestore write failed (non-fatal):', err);
+  }
+}
+
+/**
+ * Reconciles a pending guest-checkout subscription with a newly created user.
+ * If the user checked out as a guest before registering, their subscription
+ * metadata is stored in `pending_subscriptions/{email}` by the webhook.
+ * This function links it to the new user document and cleans up.
+ */
+async function reconcilePendingSubscription(uid: string, email: string): Promise<void> {
+  try {
+    const pendingRef = doc(db, 'pending_subscriptions', email);
+    const pendingSnap = await getDoc(pendingRef);
+
+    if (pendingSnap.exists()) {
+      const pending = pendingSnap.data();
+      const userDocRef = doc(db, 'users', uid);
+
+      await setDoc(userDocRef, {
+        subscriptionPlan: pending.plan || 'None',
+        subscriptionStatus: 'active',
+        stripeCustomerId: pending.stripeCustomerId,
+        stripeSubscriptionId: pending.stripeSubscriptionId,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      // Clean up the pending record
+      await deleteDoc(pendingRef);
+      console.log(`[reconcilePendingSubscription] Linked pending subscription to user ${uid}`);
+    }
+  } catch (err) {
+    // Non-fatal — the subscription will still exist in Stripe
+    // and can be linked manually or on next webhook event.
+    console.error('[reconcilePendingSubscription] Failed (non-fatal):', err);
   }
 }
 
@@ -253,6 +292,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      // Reconcile any pending guest-checkout subscription
+      if (newUser.email) {
+        await reconcilePendingSubscription(newUser.uid, newUser.email);
+      }
+
       await syncSessionCookie(newUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));

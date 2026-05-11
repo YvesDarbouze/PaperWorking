@@ -10,7 +10,7 @@ import { storage } from '@/lib/firebase/config';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { DSCRGauge } from '@/components/metrics/phase2';
 
-const DealRoster = lazy(() => import('@/components/team/DealRoster'));
+const ProjectRoster = lazy(() => import('@/components/team/ProjectRoster'));
 const InspectionUploadModule = lazy(() => import('@/components/closing/InspectionUploadModule'));
 const TitleSearchClearance = lazy(() => import('@/components/closing/TitleSearchClearance'));
 
@@ -387,7 +387,7 @@ export default function PurchasePanel() {
 
             {/* Deal Roster — External Stakeholder Directory */}
             <Suspense fallback={<div className="h-32 animate-shimmer rounded-xl" />}>
-              <DealRoster projectId={currentProject.id} />
+              <ProjectRoster projectId={currentProject.id} />
             </Suspense>
          </div>
 

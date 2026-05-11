@@ -25,8 +25,7 @@ import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
   'Individual':      { label: 'Individual',          price: '$59',  period: '/mo' },
   'Team':            { label: 'Investor Team',       price: '$99',  period: '/mo' },
-  'Vendor Network':  { label: 'Vendor Network',      price: '$39',  period: '/mo' },
-  'Lawyer Lead-Gen': { label: 'Service Professional', price: '$79', period: '/mo' },
+  'Vendor Network':  { label: 'Vendor Marketplace',  price: '$39',  period: '/mo' },
   'None':            { label: 'No active plan',      price: '—',    period: ''    },
 };
 
@@ -50,7 +49,6 @@ export default function AccountPage() {
     'Individual':      'Basic',
     'Team':            'Pro',
     'Vendor Network':  'Vendor',
-    'Lawyer Lead-Gen': 'Enterprise',
     'None':            'No active plan'
   };
 
@@ -66,6 +64,13 @@ export default function AccountPage() {
 
   const openPortal = async () => {
     if (!user) return;
+
+    // Users without a subscription should go to the pricing page
+    if (rawPlan === 'None' || status === 'inactive') {
+      window.location.href = '/pricing';
+      return;
+    }
+
     setPortalLoading(true);
     setPortalError(null);
 
@@ -95,6 +100,49 @@ export default function AccountPage() {
           Manage your organizational profile and institutional subscription details.
         </p>
       </header>
+
+      {/* ─── Cancellation Banner ─── */}
+      {profile?.cancelAtPeriodEnd && (
+        <div
+          className="flex items-center justify-between px-5 py-4 rounded-lg border"
+          style={{
+            backgroundColor: '#fef3c7',
+            borderColor: '#fbbf24',
+          }}
+        >
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0" style={{ color: '#92400e' }} />
+            <div>
+              <p className="text-sm font-bold" style={{ color: '#92400e' }}>
+                Your subscription is scheduled to cancel
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: '#a16207' }}>
+                You'll retain access until{' '}
+                <strong>
+                  {profile.currentPeriodEnd
+                    ? new Date(profile.currentPeriodEnd).toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })
+                    : 'the end of your billing period'}
+                </strong>
+                . Reactivate anytime from the billing portal.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={openPortal}
+            className="text-xs font-bold px-4 py-2 rounded-lg flex-shrink-0 transition-colors"
+            style={{
+              backgroundColor: '#92400e',
+              color: '#fef3c7',
+            }}
+          >
+            Reactivate
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         

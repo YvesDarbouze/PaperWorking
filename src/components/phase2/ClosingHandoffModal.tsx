@@ -53,7 +53,7 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
       if (updatedProject) {
         try {
           // Persist the updated financials, ledger, and phase status
-          await projectsService.updateDeal(updatedProject.id, {
+          await projectsService.updateProject(updatedProject.id, {
             phaseStatus: updatedProject.phaseStatus,
             costBasisLedger: updatedProject.costBasisLedger,
             financials: updatedProject.financials,

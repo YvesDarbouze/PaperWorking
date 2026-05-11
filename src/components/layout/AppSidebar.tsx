@@ -49,20 +49,20 @@ interface NavItem {
 const WORKSPACE_ITEMS: NavItem[] = [
   {
     id: 'command-center',
-    label: 'Command Center',
+    label: 'Dashboard',
     href: '/dashboard',
     icon: <LayoutDashboard className="w-4 h-4" />,
     exact: true,
   },
   {
     id: 'projects',
-    label: 'Projects',
+    label: 'Deals',
     href: '/dashboard/projects',
     icon: <FolderOpen className="w-4 h-4" />,
   },
   {
     id: 'data-hub',
-    label: 'Data Hub',
+    label: 'Market Data',
     href: '/dashboard/data',
     icon: <Database className="w-4 h-4" />,
   },
@@ -90,7 +90,7 @@ const ACCOUNT_ITEMS: NavItem[] = [
   },
   {
     id: 'account',
-    label: 'Account & Billing',
+    label: 'Billing',
     href: '/dashboard/account',
     icon: <CreditCard className="w-4 h-4" />,
   },

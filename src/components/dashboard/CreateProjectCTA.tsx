@@ -31,7 +31,7 @@ export default function CreateProjectCTA({
     <button
       type="button"
       onClick={onClick}
-      aria-label={locked ? 'Upgrade to start a project' : 'Start a new project'}
+      aria-label={locked ? 'Upgrade to track deals' : 'Add a new deal'}
       className="group w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/20 rounded-xl"
     >
       <div
@@ -79,15 +79,15 @@ export default function CreateProjectCTA({
             className="text-sm font-bold uppercase tracking-[0.18em] transition-colors duration-200"
             style={{ color: 'var(--text-primary)' }}
           >
-            Start A Project
+            New Deal
           </span>
           <span
             className="text-[10px] leading-relaxed max-w-[200px] text-center"
             style={{ color: 'var(--text-secondary)' }}
           >
             {locked
-              ? 'Upgrade your plan to begin tracking deals'
-              : 'Create a new deal and start underwriting'
+              ? 'Unlock deal tracking \u2014 see what\u2019s possible \u2192'
+              : 'Add a property and start tracking financials'
             }
           </span>
         </div>

@@ -65,7 +65,7 @@ export function InspectionTracker({ projectId, initialInspections, onLocalChange
     setIsSaving(true);
     try {
       // Firestore supports dot notation keys for nested updates
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         'financials.inspections': itemsToSave
       } as any);
     } catch (error) {

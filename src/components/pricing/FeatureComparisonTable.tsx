@@ -13,62 +13,62 @@ interface Feature {
   tooltip?: string;
   individual: boolean | string;
   team: boolean | string;
-  lawyer: boolean | string;
+  vendor: boolean | string;
 }
 
 /* ─── Top 5 Decision-Maker Features (always visible) ─── */
 const decisionFeatures: Feature[] = [
-  { name: 'Unlimited Property Tracking', individual: true, team: true, lawyer: false },
-  { name: 'Full 4-Phase Lifecycle Kanban', individual: true, team: true, lawyer: false },
+  { name: 'Unlimited Property Tracking', individual: true, team: true, vendor: false },
+  { name: 'Full 4-Phase Lifecycle Kanban', individual: true, team: true, vendor: false },
   {
     name: 'Role-based Access Control',
     tooltip: 'Granular permissions that restrict what each team member can see, edit, or approve — isolating sensitive financials from Contractors.',
     individual: false,
     team: true,
-    lawyer: false,
+    vendor: false,
   },
-  { name: 'Localized Deal Request Pipeline', individual: false, team: false, lawyer: true },
+  { name: 'Localized Deal Request Pipeline', individual: false, team: false, vendor: true },
   {
     name: 'Google Drive Provisioning',
     tooltip: 'Automatically creates a structured folder tree (Closing Docs, Receipts, Permits) in Google Drive for every new deal.',
     individual: false,
     team: true,
-    lawyer: false,
+    vendor: false,
   },
 ];
 
 /* ─── Extended Features (collapsed by default) ─── */
 const extendedFeatures: Feature[] = [
-  { name: 'Engine Room Ledger', individual: true, team: true, lawyer: false },
-  { name: 'Standard Financial Reports', individual: true, team: true, lawyer: false },
-  { name: 'Holding Cost Clock', individual: true, team: true, lawyer: false },
-  { name: 'Team Invites (Agents, GCs)', individual: false, team: true, lawyer: false },
-  { name: 'Advanced Vendor Management', individual: false, team: true, lawyer: false },
-  { name: 'Title Search & Verification', individual: false, team: false, lawyer: true },
-  { name: 'Closing Room Document Access', individual: false, team: false, lawyer: true },
+  { name: 'Engine Room Ledger', individual: true, team: true, vendor: false },
+  { name: 'Standard Financial Reports', individual: true, team: true, vendor: false },
+  { name: 'Holding Cost Clock', individual: true, team: true, vendor: false },
+  { name: 'Team Invites (Agents, GCs)', individual: false, team: true, vendor: false },
+  { name: 'Advanced Vendor Management', individual: false, team: true, vendor: false },
+  { name: 'Title Search & Verification', individual: false, team: false, vendor: true },
+  { name: 'Closing Room Document Access', individual: false, team: false, vendor: true },
   {
     name: 'Escrow Integration & APIs',
     tooltip: 'Direct escrow API connection that streamlines fund disbursement and title verification within the deal lifecycle.',
     individual: false,
     team: true,
-    lawyer: true,
+    vendor: true,
   },
   {
     name: 'SSO / SAML Authentication',
     tooltip: 'Single Sign-On lets your team log in using your organization\'s identity provider (Okta, Azure AD, Google Workspace).',
     individual: false,
     team: true,
-    lawyer: false,
+    vendor: false,
   },
-  { name: 'White-Glove Onboarding', individual: false, team: true, lawyer: false },
+  { name: 'White-Glove Onboarding', individual: false, team: true, vendor: false },
 ];
 
-type TierKey = 'individual' | 'team' | 'lawyer';
+type TierKey = 'individual' | 'team' | 'vendor';
 
 const tierColumns: { key: TierKey; label: string; price: string; cta: string; planLabel: string }[] = [
   { key: 'individual', label: 'Individual', price: '$59/mo', cta: 'Start free trial', planLabel: 'Individual Monthly' },
   { key: 'team', label: 'Team', price: '$99/mo', cta: 'Deploy your team', planLabel: 'Team Monthly' },
-  { key: 'lawyer', label: 'Lawyer', price: '$59/mo', cta: 'Join the network', planLabel: 'Lawyer Monthly' },
+  { key: 'vendor', label: 'Vendor', price: '$39/mo', cta: 'Join the marketplace', planLabel: 'Vendor Marketplace Monthly' },
 ];
 
 function FeatureRow({ feature }: { feature: Feature }) {

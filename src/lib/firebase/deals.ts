@@ -55,9 +55,9 @@ function derivePhaseFromREIStatus(reiStatus?: string): {
 export const projectsService = {
   
   /**
-   * Create a new deal for an organization
+   * Create a new project for an organization
    */
-  async createDeal(dealData: Partial<Project>, organizationId: string) {
+  async createProject(dealData: Partial<Project>, organizationId: string) {
     try {
       const projectsRef = collection(db, 'projects');
       const newDoc = doc(projectsRef);
@@ -111,9 +111,9 @@ export const projectsService = {
   },
 
   /**
-   * Update deal meta-data (status, address, etc)
+   * Update project meta-data (status, address, etc)
    */
-  async updateDeal(projectId: string, updates: Partial<Project>) {
+  async updateProject(projectId: string, updates: Partial<Project>) {
     try {
       const dealRef = doc(db, 'projects', projectId);
 
@@ -127,8 +127,8 @@ export const projectsService = {
         updatedAt: serverTimestamp(),
       });
 
-      // SYNC: Fetch full deal and update Postgres
-      this.getDeal(projectId).then(fullDeal => {
+      // SYNC: Fetch full project and update Postgres
+      this.getProject(projectId).then(fullDeal => {
         if (fullDeal) financialsSyncService.syncProjectFinancials(fullDeal);
       });
     } catch (error) {
@@ -204,9 +204,9 @@ export const projectsService = {
   },
 
   /**
-   * Fetch a single deal by ID
+   * Fetch a single project by ID
    */
-  async getDeal(projectId: string) {
+  async getProject(projectId: string) {
     try {
       const dealRef = doc(db, 'projects', projectId);
       const snapshot = await getDoc(dealRef);
@@ -215,7 +215,7 @@ export const projectsService = {
       }
       return null;
     } catch (error) {
-       console.error(`Fetch Failure: Could not retrieve deal ${projectId}`, error);
+       console.error(`Fetch Failure: Could not retrieve project ${projectId}`, error);
        throw error;
     }
   },
@@ -224,7 +224,7 @@ export const projectsService = {
    * Find projects by MLS ID (ListingKey)
    * Essential for webhook ingestion where ListingKey is the primary identifier.
    */
-  async getDealsByMlsId(mlsId: string) {
+  async getProjectsByMlsId(mlsId: string) {
     try {
       const projectsRef = collection(db, 'projects');
       const q = query(projectsRef, where('mls_id', '==', mlsId));
@@ -278,8 +278,8 @@ export const projectsService = {
   async closeProjectAndArchive(projectId: string, organizationId: string, exitStrategy: 'Sell' | 'Rent') {
     try {
       // 1. Fetch the project and calculate final outcome using canonical math
-      const deal = await this.getDeal(projectId);
-      if (!deal) throw new Error('Deal not found');
+      const deal = await this.getProject(projectId);
+      if (!deal) throw new Error('Project not found');
 
       const metrics = computeAutopsyMetrics(deal);
       const profit = metrics.netProfit;

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { VendorRequest } from '@/types/schema';
 import { projectsService } from '@/lib/firebase/deals';
-import { acceptVendorQuote } from '@/lib/services/dealStateMachine';
+import { acceptVendorQuote } from '@/lib/services/projectStateMachine';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { Loader2, CheckCircle, Clock } from 'lucide-react';

@@ -55,7 +55,7 @@ export default function FinancialSummaryHeader() {
             <div className="flex flex-col">
               <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
                 <PieChart className="w-3 h-3 mr-1.5" />
-                Sales vs Losses
+                Sales & Returns
               </div>
               <div className="flex items-baseline gap-3">
                 <div className="flex items-baseline gap-1.5">
@@ -84,7 +84,7 @@ export default function FinancialSummaryHeader() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              FLIP TRACK
+              Flip Deals
             </button>
             <button
               onClick={() => toggleTrackMode()}
@@ -94,14 +94,14 @@ export default function FinancialSummaryHeader() {
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
-              HOLD TRACK
+              Hold Deals
             </button>
           </div>
 
           {/* Deep Focus Indicator */}
           <div className="hidden lg:flex items-center text-xs text-text-secondary font-medium bg-black/5 px-3 py-1.5 rounded-full">
             <Info className="w-3 h-3 mr-2 text-indigo-500" />
-            DEEP FOCUS MODE ENABLED
+            FULL ANALYTICS ACTIVE
           </div>
         </div>
 

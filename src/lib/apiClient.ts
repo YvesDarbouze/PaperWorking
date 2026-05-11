@@ -98,10 +98,20 @@ function createApiClient(): AxiosInstance {
       }
 
       // 2. Reactive Circuit Breaker: Monitor Bridge Platform response headers
-      const appRemaining = parseInt(response.headers['application-ratelimit-remaining'] as string, 10);
-      const burstRemaining = parseInt(response.headers['burst-ratelimit-remaining'] as string, 10);
-      const appLimit = parseInt(response.headers['application-ratelimit-limit'] as string, 10);
-      const burstLimit = parseInt(response.headers['burst-ratelimit-limit'] as string, 10);
+      //    Official spec: X-RateLimit-Limit-Hour, X-RateLimit-Remaining-Hour, etc.
+      //    Legacy headers: application-ratelimit-*, burst-ratelimit-*  (kept as fallback)
+      const appRemaining = parseInt(
+        (response.headers['x-ratelimit-remaining-hour'] ?? response.headers['application-ratelimit-remaining']) as string, 10
+      );
+      const burstRemaining = parseInt(
+        (response.headers['x-ratelimit-remaining-minute'] ?? response.headers['burst-ratelimit-remaining']) as string, 10
+      );
+      const appLimit = parseInt(
+        (response.headers['x-ratelimit-limit-hour'] ?? response.headers['application-ratelimit-limit']) as string, 10
+      );
+      const burstLimit = parseInt(
+        (response.headers['x-ratelimit-limit-minute'] ?? response.headers['burst-ratelimit-limit']) as string, 10
+      );
 
       // 3. Health Monitoring: Log metrics for the dashboard
       if (!isNaN(appLimit) && !isNaN(appRemaining)) {

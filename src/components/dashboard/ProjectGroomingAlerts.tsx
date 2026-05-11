@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
-   DealGroomingAlerts — Logic-Based Deal Health Monitor
+   ProjectGroomingAlerts — Logic-Based Deal Health Monitor
 
    Scans all active projects against a ruleset and emits alerts
    for projects that need attention ("grooming"). Each alert maps
@@ -72,7 +72,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
       ...base,
       id: `groom-stale-${deal.id}`,
       title: 'Stale — No Activity',
-      description: `${addr} hasn't been updated in ${daysSinceUpdate} days. Is this deal still active?`,
+      description: `${addr} hasn't been updated in ${daysSinceUpdate} days. Is this project still active?`,
       severity: 'warning',
       icon: <Clock className="w-4 h-4" />,
     });
@@ -159,12 +159,12 @@ const SEVERITY_CONFIG: Record<AlertSeverity, { border: string; bg: string; text:
   warning:  { border: 'border-border-accent/20', bg: 'bg-bg-primary/50 text-text-secondary', text: 'text-text-secondary', dot: 'bg-pw-muted', label: 'Monitor' },
 };
 
-interface DealGroomingAlertsProps {
+interface ProjectGroomingAlertsProps {
   projects: Project[];
   onNavigateToDeal: (projectId: string) => void;
 }
 
-export default function DealGroomingAlerts({ projects, onNavigateToDeal }: DealGroomingAlertsProps) {
+export default function ProjectGroomingAlerts({ projects, onNavigateToDeal }: ProjectGroomingAlertsProps) {
   const alerts = useMemo(() => {
     const collected: GroomingAlert[] = [];
     projects.forEach(d => evaluateDeal(d, collected));

@@ -13,7 +13,7 @@
 
 import redis from '../redis';
 
-export type JobType = 'bridge_sync' | 'webhook_process';
+export type JobType = 'bridge_sync' | 'member_sync' | 'office_sync' | 'webhook_process';
 
 export interface Job<T = unknown> {
   id: string;

@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 
+export const dynamic = 'force-dynamic';
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
@@ -65,7 +67,7 @@ export async function POST(request: Request) {
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,
-      return_url: `${appUrl}/dashboard/settings/billing`,
+      return_url: `${appUrl}/dashboard/account`,
     });
 
     return NextResponse.json({ url: portalSession.url });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Logo from '@/components/brand/Logo';
 
@@ -11,6 +11,7 @@ import SocialProofBar from '@/components/pricing/SocialProofBar';
 import PricingFAQ from '@/components/pricing/PricingFAQ';
 import StickyMobileCTA from '@/components/pricing/StickyMobileCTA';
 import { useAuth } from '@/context/AuthContext';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function PricingPage() {
   const { user } = useAuth();
@@ -66,7 +67,10 @@ export default function PricingPage() {
       window.location.href = data.url;
     } catch (err: any) {
       console.error(err);
-      alert(err.message);
+      toast.error(err.message || 'Something went wrong. Please try again.', {
+        id: 'checkout-error',
+        duration: 6000,
+      });
       setIsProcessing(null);
     }
   };
@@ -94,6 +98,9 @@ export default function PricingPage() {
             </Link>
             <button
                className="ag-button !py-2 !px-6"
+               onClick={() => {
+                 cardsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+               }}
             >
               Get Started
             </button>
@@ -152,9 +159,9 @@ export default function PricingPage() {
                <span className="ml-2">© {new Date().getFullYear()}</span>
             </div>
             <div className="flex space-x-8 text-[11px] font-bold uppercase tracking-widest">
-               <Link href="#" className="hover:text-text-primary transition-colors">Privacy Policy</Link>
-               <Link href="#" className="hover:text-text-primary transition-colors">Terms of Service</Link>
-               <Link href="#" className="hover:text-text-primary transition-colors">Contact</Link>
+               <Link href="/privacy" className="hover:text-text-primary transition-colors">Privacy Policy</Link>
+               <Link href="/terms" className="hover:text-text-primary transition-colors">Terms of Service</Link>
+               <Link href="/support" className="hover:text-text-primary transition-colors">Contact</Link>
                <Link href="/dashboard" className="text-text-primary hover:text-text-secondary transition-colors">Log In</Link>
             </div>
          </div>
@@ -167,6 +174,7 @@ export default function PricingPage() {
         onSelect={() => handleSelectPlan(recommendedPlanLabel)}
       />
 
+      <Toaster position="bottom-center" />
     </div>
   );
 }

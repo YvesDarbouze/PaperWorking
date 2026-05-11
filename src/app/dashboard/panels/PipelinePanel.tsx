@@ -17,7 +17,7 @@ import DealListInline from '@/components/dashboard/DealListInline';
 import FullscreenLifecycleView from '@/components/dashboard/FullscreenLifecycleView';
 import OperationalDashboardView from '@/components/dashboard/OperationalDashboardView';
 import VarianceChart from '@/components/dashboard/VarianceChart';
-import DealCreationWizard from '@/components/project/DealCreationWizard';
+import ProjectCreationWizard from '@/components/project/ProjectCreationWizard';
 import InvestorInviteModal from '@/components/dashboard/InvestorInviteModal';
 import { UserPlus } from 'lucide-react';
 
@@ -25,7 +25,7 @@ import { UserPlus } from 'lucide-react';
 const VelocityOverheadKPI = lazy(() => import('@/components/dashboard/VelocityOverheadKPI'));
 const MarketHeatMap = lazy(() => import('@/components/dashboard/MarketHeatMap'));
 const GlobalTodoEngine = lazy(() => import('@/components/dashboard/GlobalTodoEngine'));
-const DealGroomingAlerts = lazy(() => import('@/components/dashboard/DealGroomingAlerts'));
+const ProjectGroomingAlerts = lazy(() => import('@/components/dashboard/ProjectGroomingAlerts'));
 const OfferLetterQuickAction = lazy(() => import('@/components/dashboard/OfferLetterQuickAction'));
 const YearlyPortfolioPerformance = lazy(() => import('@/components/dashboard/YearlyPortfolioPerformance'));
 const AnalyticsSuite = lazy(() => import('@/components/dashboard/charts/AnalyticsSuite'));
@@ -82,7 +82,7 @@ export default function PipelinePanel() {
       
       {/* Deal Creation Protocol (Wizard) */}
       {isWizardOpen && profile?.organizationId && (
-        <DealCreationWizard
+        <ProjectCreationWizard
           organizationId={profile.organizationId}
           onClose={() => setIsWizardOpen(false)}
           onSuccess={handleWizardSuccess}
@@ -174,7 +174,7 @@ export default function PipelinePanel() {
 
               <ErrorBoundary name="Deal Grooming Alerts">
                 <Suspense fallback={<CardSkeleton className="h-[400px] opacity-70" />}>
-                  <DealGroomingAlerts projects={projects} onNavigateToDeal={setActiveDealId} />
+                  <ProjectGroomingAlerts projects={projects} onNavigateToDeal={setActiveDealId} />
                 </Suspense>
               </ErrorBoundary>
             </section>

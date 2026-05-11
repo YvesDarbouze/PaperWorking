@@ -72,7 +72,7 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
           <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><DollarSign className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Property Financials</h3>
-            <p className="text-xs text-text-secondary">NOI, Cap Rate, DSCR</p>
+            <p className="text-xs text-text-secondary">NOI · Cap Rate · DSCR</p>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center h-full text-text-secondary text-sm">No properties available</div>
+          <div className="flex items-center justify-center h-full text-text-secondary text-sm">Add a deal to see financial metrics here</div>
         )}
       </div>
     </div>
@@ -154,7 +154,7 @@ const OperationalDataAgent = ({ projects }: { projects: Project[] }) => {
           <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><Activity className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Operational Health</h3>
-            <p className="text-xs text-text-secondary">Occupancy & Expenses</p>
+            <p className="text-xs text-text-secondary">Occupancy · Operating Expense Ratio</p>
           </div>
         </div>
       </div>
@@ -216,8 +216,8 @@ const MarketPortfolioAgent = ({ projects }: { projects: Project[] }) => {
         <div className="flex items-center gap-2">
           <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><Map className="w-5 h-5" /></div>
           <div>
-            <h3 className="text-sm font-bold text-text-primary">Portfolio LTV & Market</h3>
-            <p className="text-xs text-text-secondary">Debt vs Equity Exposure</p>
+            <h3 className="text-sm font-bold text-text-primary">Leverage & Equity</h3>
+            <p className="text-xs text-text-secondary">Debt vs. Equity Exposure</p>
           </div>
         </div>
       </div>
@@ -261,8 +261,8 @@ const StrategicFocusAgent = () => {
         <div className="flex items-center gap-2">
           <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><Compass className="w-5 h-5" /></div>
           <div>
-            <h3 className="text-sm font-bold text-text-primary">2026 Focus Areas</h3>
-            <p className="text-xs text-text-secondary">Strategic Actions for Stabilization</p>
+            <h3 className="text-sm font-bold text-text-primary">Strategic Priorities</h3>
+            <p className="text-xs text-text-secondary">Recommended focus areas for your portfolio</p>
           </div>
         </div>
       </div>
@@ -271,30 +271,30 @@ const StrategicFocusAgent = () => {
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
             <Home className="w-4 h-4 text-blue-600" />
-            <h4 className="text-sm font-bold text-text-primary">Active Management</h4>
+            <h4 className="text-sm font-bold text-text-primary">Proactive Monitoring</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
-            Using AI and integrated tools to track NOI, maintenance costs, and resident satisfaction in real-time, preventing churn.
+            Track NOI, maintenance costs, and tenant satisfaction in real time — before small issues become costly problems.
           </p>
         </div>
 
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
             <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <h4 className="text-sm font-bold text-text-primary">Risk Management</h4>
+            <h4 className="text-sm font-bold text-text-primary">Debt Exposure Control</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
-            Monitoring Debt Service Coverage Ratios (DSCR) and LTV to strictly manage debt exposure against higher 2026 capital costs.
+            Monitor DSCR and LTV ratios to manage leverage against rising capital costs. Stay bankable.
           </p>
         </div>
 
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="w-4 h-4 text-emerald-600" />
-            <h4 className="text-sm font-bold text-text-primary">Strategic Growth</h4>
+            <h4 className="text-sm font-bold text-text-primary">Capital Allocation</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
-            Pivot capital toward high-growth BTR (Build-to-Rent) and Senior Housing, avoiding saturated multi-family markets.
+            Identify where to deploy capital next. Focus on high-growth segments; avoid saturated markets.
           </p>
         </div>
       </div>
@@ -311,8 +311,8 @@ export default function LifecycleMetricsDashboard({ projects: propProjects }: Pr
   return (
     <div className="w-full space-y-6">
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-text-primary tracking-tight">PaperWorking REI Metrics (2026)</h2>
-        <p className="text-sm text-text-secondary">Comprehensive multi-agent visualization of lifecycle performance</p>
+        <h2 className="text-lg font-bold text-text-primary tracking-tight">Portfolio Performance</h2>
+        <p className="text-sm text-text-secondary">Key financial indicators across your deals</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

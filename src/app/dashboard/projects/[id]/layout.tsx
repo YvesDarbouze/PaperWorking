@@ -297,7 +297,7 @@ export default function ProjectWorkspaceLayout({
   const fetchProject = useCallback(async () => {
     if (!projectId) return;
     try {
-      const deal = await projectsService.getDeal(projectId);
+      const deal = await projectsService.getProject(projectId);
       setProject(deal ?? null);
     } catch (err) {
       console.error('[WorkspaceLayout] Failed to load project:', err);

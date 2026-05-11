@@ -1,4 +1,4 @@
-import { DealPhase } from './dealStateMachine';
+import { ProjectPhase } from './projectStateMachine';
 import type { BridgeProperty } from '../types/bridge';
 import { BridgeMediaParser } from '../utils/BridgeMediaParser';
 
@@ -18,7 +18,7 @@ export interface NormalizedProperty {
   lotSize: number;
   yearBuilt: number;
   price: number;
-  status: DealPhase;
+  status: ProjectPhase;
   description: string;
   photos: string[];
 }
@@ -43,9 +43,9 @@ export function normalizeMLSData(rawData: BridgeProperty): NormalizedProperty {
 }
 
 /**
- * Translates RESO StandardStatus to internal DealPhase
+ * Translates RESO StandardStatus to internal ProjectPhase
  */
-export function mapStatusToPhase(status: string): DealPhase {
+export function mapStatusToPhase(status: string): ProjectPhase {
   switch (status) {
     case 'Active':
       return 'Listed';

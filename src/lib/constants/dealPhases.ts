@@ -1,8 +1,8 @@
-import type { DealPhaseDefinition, DealPhaseKey } from '@/types/schema';
+import type { ProjectPhaseDefinition, ProjectPhaseKey } from '@/types/schema';
 
 // Canonical phase map — single source of truth for the deal lifecycle.
-// dealStateMachine.ts and UI phase stepper both derive from this.
-export const DEAL_PHASES: Record<DealPhaseKey, DealPhaseDefinition> = {
+// projectStateMachine.ts and UI phase stepper both derive from this.
+export const DEAL_PHASES: Record<ProjectPhaseKey, ProjectPhaseDefinition> = {
   Sourcing: {
     key: 'Sourcing',
     label: 'Sourcing',
@@ -77,7 +77,7 @@ export const DEAL_PHASES: Record<DealPhaseKey, DealPhaseDefinition> = {
   },
 };
 
-export const DEAL_PHASE_ORDER: DealPhaseKey[] = [
+export const DEAL_PHASE_ORDER: ProjectPhaseKey[] = [
   'Sourcing',
   'Under Contract',
   'Rehab',

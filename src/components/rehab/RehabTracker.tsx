@@ -126,7 +126,7 @@ export default function RehabTracker() {
   const currentProject = useProjectStore(s => s.currentProject);
   const updateRehabModule = useProjectStore(s => s.updateRehabModule);
   const setLedgerItems = useProjectStore(s => s.setLedgerItems);
-  const getLedgerItemsForDeal = useProjectStore(s => s.getLedgerItemsForDeal);
+  const getLedgerItemsForProject = useProjectStore(s => s.getLedgerItemsForProject);
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -162,7 +162,7 @@ export default function RehabTracker() {
 
       // Roll every actual cost entry into the global TransactionLedger so
       // recalculateMetrics() picks them up as 'Approved' renovation costs.
-      const existing = getLedgerItemsForDeal(currentProject.id);
+      const existing = getLedgerItemsForProject(currentProject.id);
       const nonTracker = existing.filter(i => !i.id.startsWith('rehab-tracker-'));
       const trackerItems: LedgerItem[] = next.actualEntries.map(e => ({
         id: `rehab-tracker-${e.id}`,
@@ -200,7 +200,7 @@ export default function RehabTracker() {
         setIsSaving(false);
       }
     },
-    [currentProject, updateRehabModule, getLedgerItemsForDeal, setLedgerItems, user]
+    [currentProject, updateRehabModule, getLedgerItemsForProject, setLedgerItems, user]
   );
 
   // ── Derived values ────────────────────────────────────────────

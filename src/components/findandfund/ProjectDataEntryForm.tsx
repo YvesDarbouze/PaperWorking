@@ -17,7 +17,7 @@ import { useProjectStore } from '@/store/projectStore';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   DealDataEntryForm — Phase 1 "Find & Fund" Data Entry
+   ProjectDataEntryForm — Phase 1 "Find & Fund" Data Entry
 
    Two sections:
    1. Property Intelligence
@@ -271,7 +271,7 @@ interface Props {
   initialMAO?: number;
 }
 
-export default function DealDataEntryForm({
+export default function ProjectDataEntryForm({
   propertyAddress,
   mlsAskingPrice = 0,
   initialMAO = 0,
@@ -363,7 +363,7 @@ export default function DealDataEntryForm({
       loanInterestRate: parseCurrency(interestRate) || undefined,
     });
     setSaved(true);
-    toast.success('Deal financials saved');
+    toast.success('Project financials saved');
     setTimeout(() => setSaved(false), 3000);
   };
 

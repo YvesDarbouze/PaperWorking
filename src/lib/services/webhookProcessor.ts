@@ -8,7 +8,7 @@
  */
 
 import { bridgeWorkerService } from './bridgeWorkerService';
-import { DealPhase, transitionDealPhase } from './dealStateMachine';
+import { ProjectPhase, transitionProjectPhase } from './projectStateMachine';
 import { projectsService } from '../firebase/projects';
 import { normalizeMLSData } from './mlsShared';
 
@@ -41,7 +41,7 @@ export async function processWebhookPayload(payload: unknown): Promise<WebhookRe
   const normalized = normalizeMLSData(rawData);
   console.log(`📡 [WEBHOOK PROCESSOR] Processing ${normalized.mls_id} → status: ${normalized.status}`);
 
-  const projects = await projectsService.getDealsByMlsId(normalized.mls_id);
+  const projects = await projectsService.getProjectsByMlsId(normalized.mls_id);
 
   if (projects.length === 0) {
     console.log(`ℹ️ [WEBHOOK PROCESSOR] No projects linked to ${normalized.mls_id}.`);
@@ -51,9 +51,9 @@ export async function processWebhookPayload(payload: unknown): Promise<WebhookRe
   for (const deal of projects) {
     if (deal.status !== normalized.status) {
       console.log(`🔄 [WEBHOOK PROCESSOR] Deal ${deal.id}: ${deal.status} → ${normalized.status}`);
-      await transitionDealPhase(
+      await transitionProjectPhase(
         deal.id,
-        deal.status as DealPhase,
+        deal.status as ProjectPhase,
         normalized.status,
         'bridge_api_system',
         `Automated update via Bridge webhook (RESO: ${rawData.StandardStatus})`

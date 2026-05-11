@@ -92,7 +92,7 @@ export default function Phase2AcquisitionPage() {
         delete newFinancials.initialCapitalizedBasis;
       }
 
-      await projectsService.updateDeal(projectId, {
+      await projectsService.updateProject(projectId, {
         loanStatus,
         closingChecklist,
         projectTeam: teamMembers,
@@ -126,7 +126,7 @@ export default function Phase2AcquisitionPage() {
   const handleImmediateSave = async (updates: Partial<Project>) => {
     if (!project) return;
     try {
-      await projectsService.updateDeal(projectId, updates);
+      await projectsService.updateProject(projectId, updates);
     } catch (error) {
       console.error('Failed to save changes immediately:', error);
       toast.error('Failed to save changes');

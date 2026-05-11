@@ -280,16 +280,17 @@ export default function SupportPage() {
         >
           <Link
             href={`/support/${SUPPORT_ARTICLES[0].id}`}
-            className="group relative block w-full overflow-hidden rounded-[var(--radius-xl)] bg-pw-black text-pw-white p-8 sm:p-10 lg:p-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            className="group relative block w-full overflow-hidden rounded-[var(--radius-xl)] p-8 sm:p-10 lg:p-12 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            style={{ backgroundColor: '#0d0d0d', color: '#ffffff' }}
           >
             {/* Subtle background glow/texture to make it distinct */}
-            <div className="absolute inset-0 bg-gradient-to-br from-pw-white/10 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
             
             <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-pw-surface/10 border border-pw-white/20 mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-6">
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-pw-white/90">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
                     Featured SOP
                   </span>
                 </div>
@@ -297,7 +298,7 @@ export default function SupportPage() {
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl tracking-tighter font-medium mb-4">
                   {SUPPORT_ARTICLES[0].title}
                 </h2>
-                <p className="text-pw-white/70 text-base sm:text-lg">
+                <p className="text-white/70 text-base sm:text-lg">
                   {SUPPORT_ARTICLES[0].excerpt}
                 </p>
               </div>

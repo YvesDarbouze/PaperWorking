@@ -181,8 +181,19 @@ export class BridgeQueryBuilder {
   }
 
   /**
+   * Includes the total count of matching records in the response ($count=true).
+   * Returns @odata.count in the response body alongside the value array.
+   * Essential for pagination UX (e.g. "Showing 1–8 of 247 results").
+   */
+  count(): this {
+    this.params.set('$count', 'true');
+    return this;
+  }
+
+  /**
    * Expands navigation properties ($expand).
    * LOGIC GUARDRAIL: $expand is NOT supported for Media.
+   * Supported expansions include: ListAgent, ListOffice, BuyerAgent, BuyerOffice.
    */
   expand(field: string): this {
     if (field === 'Media') return this;

@@ -13,10 +13,10 @@ import {
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
 import type { BridgeSearchResult } from '@/types/bridge';
-import { useDealFormValidation, type DealFormData } from '@/hooks/useDealFormValidation';
+import { useProjectFormValidation, type ProjectFormData } from '@/hooks/useProjectFormValidation';
 
 /* ═══════════════════════════════════════════════════════════════
-   DealCreationWizard — REI Project Initialization Flow
+   ProjectCreationWizard — REI Project Initialization Flow
 
    Steps:
      1. Property Identity  — Name, REI status, MLS search / address
@@ -26,7 +26,7 @@ import { useDealFormValidation, type DealFormData } from '@/hooks/useDealFormVal
      5. Document Review     — Summary + final commit
    ═══════════════════════════════════════════════════════════════ */
 
-interface DealCreationWizardProps {
+interface ProjectCreationWizardProps {
   organizationId: string;
   onClose: () => void;
   onSuccess?: (projectId: string) => void;
@@ -50,7 +50,7 @@ const REI_STATUSES: { value: string; label: string; icon: React.ReactNode }[] = 
   { value: 'For Sale',           label: 'For Sale',            icon: <Tag className="w-4 h-4" /> },
 ];
 
-const INITIAL_FORM: DealFormData = {
+const INITIAL_FORM: ProjectFormData = {
   propertyName: '',
   reiStatus: '',
   address: '',
@@ -79,19 +79,19 @@ const INITIAL_FORM: DealFormData = {
   mlsStandardStatus: null,
 };
 
-export default function DealCreationWizard({ organizationId, onClose, onSuccess }: DealCreationWizardProps) {
+export default function ProjectCreationWizard({ organizationId, onClose, onSuccess }: ProjectCreationWizardProps) {
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleStep, setVisibleStep] = useState(0);
   const [hasAcknowledgedWarning, setHasAcknowledgedWarning] = useState(false);
   const [useManualAddress, setUseManualAddress] = useState(false);
 
-  const [formData, setFormData] = useState<DealFormData>({
+  const [formData, setFormData] = useState<ProjectFormData>({
     ...INITIAL_FORM,
     leadEmail: '',
   });
 
-  const updateForm = (updates: Partial<DealFormData>) => {
+  const updateForm = (updates: Partial<ProjectFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
@@ -102,7 +102,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
     zip: formData.zip,
   }), [formData.street, formData.city, formData.state, formData.zip]);
 
-  const { isStepValid, addressErrors, isAddressComplete, acquisitionDateError } = useDealFormValidation(formData, visibleStep);
+  const { isStepValid, addressErrors, isAddressComplete, acquisitionDateError } = useProjectFormValidation(formData, visibleStep);
 
   const [addressTouched, setAddressTouched] = useState(false);
 
@@ -161,7 +161,7 @@ export default function DealCreationWizard({ organizationId, onClose, onSuccess 
     if (!user) return;
     setIsSubmitting(true);
     try {
-      const projectId = await projectsService.createDeal({
+      const projectId = await projectsService.createProject({
         propertyName: formData.propertyName,
         address: formData.address,
         ...(formData.street && { street: formData.street }),

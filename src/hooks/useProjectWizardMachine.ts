@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
    States: IDLE → IDENTITY → METRICS → STRATEGY → TEAM → REVIEW → SUBMITTING → COMPLETE | ERROR
 
    Validation gates enforce data integrity at each transition.
-   The DealCreationWizard consumes this hook and renders
+   The ProjectCreationWizard consumes this hook and renders
    the UI for each state.
    ═══════════════════════════════════════════════════════ */
 
@@ -165,7 +165,7 @@ export function useProjectWizardMachine({ organizationId, onSuccess, onClose }: 
 
     setState('SUBMITTING');
     try {
-      const projectId = await projectsService.createDeal(
+      const projectId = await projectsService.createProject(
         {
           propertyName: formData.propertyName,
           address: formData.address,

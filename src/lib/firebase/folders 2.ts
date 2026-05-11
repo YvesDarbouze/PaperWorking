@@ -39,7 +39,7 @@ export const foldersService = {
   /**
    * provisionProjectFolders
    *
-   * Called once by projectsService.createDeal.
+   * Called once by projectsService.createProject.
    * Creates 5 phase-aligned folders in a single batch write so the filing
    * cabinet is ready the moment the project is saved.
    */

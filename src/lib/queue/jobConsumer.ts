@@ -11,6 +11,8 @@
 
 import { jobQueue, Job, JobType } from './jobQueue';
 import { replicationWorker } from '../services/replicationWorker';
+import { memberReplicationWorker } from '../services/memberReplicationWorker';
+import { officeReplicationWorker } from '../services/officeReplicationWorker';
 import { processWebhookPayload } from '../services/webhookProcessor';
 
 export interface DrainResult {
@@ -26,6 +28,18 @@ const handlers: Record<JobType, JobHandler> = {
     const result = await replicationWorker.sync();
     if (!result.success) throw new Error(result.error ?? 'bridge_sync failed');
     console.log(`✅ [CONSUMER] bridge_sync complete — ${result.syncedCount} records.`);
+  },
+
+  member_sync: async (_job) => {
+    const result = await memberReplicationWorker.sync();
+    if (!result.success) throw new Error(result.error ?? 'member_sync failed');
+    console.log(`✅ [CONSUMER] member_sync complete — ${result.syncedCount} members.`);
+  },
+
+  office_sync: async (_job) => {
+    const result = await officeReplicationWorker.sync();
+    if (!result.success) throw new Error(result.error ?? 'office_sync failed');
+    console.log(`✅ [CONSUMER] office_sync complete — ${result.syncedCount} offices.`);
   },
 
   webhook_process: async (job) => {
@@ -68,7 +82,7 @@ async function drainQueue(type: JobType, batchSize: number): Promise<DrainResult
  * @param batchSize Max jobs to consume per queue type per invocation.
  */
 export async function drainAll(batchSize = 5): Promise<Record<JobType, DrainResult>> {
-  const types: JobType[] = ['bridge_sync', 'webhook_process'];
+  const types: JobType[] = ['bridge_sync', 'member_sync', 'office_sync', 'webhook_process'];
   const results = {} as Record<JobType, DrainResult>;
 
   for (const type of types) {
@@ -77,3 +91,4 @@ export async function drainAll(batchSize = 5): Promise<Record<JobType, DrainResu
 
   return results;
 }
+

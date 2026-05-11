@@ -12,13 +12,32 @@ export async function GET(request: Request) {
   }
 
   try {
-    const snapshot = await adminDb
+    // Query Vendor Marketplace subscribers with a lawyer vendorType
+    const vendorSnapshot = await adminDb
+      .collection('users')
+      .where('subscriptionPlan', '==', 'Vendor Network')
+      .where('subscriptionStatus', '==', 'active')
+      .where('vendorType', '==', 'lawyer')
+      .get();
+
+    // Legacy fallback: users who subscribed under the old "Lawyer Lead-Gen" plan
+    const legacySnapshot = await adminDb
       .collection('users')
       .where('subscriptionPlan', '==', 'Lawyer Lead-Gen')
       .where('subscriptionStatus', '==', 'active')
       .get();
 
-    const lawyers = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
+    const seen = new Set<string>();
+    const lawyers = [
+      ...vendorSnapshot.docs,
+      ...legacySnapshot.docs,
+    ]
+      .filter((doc) => {
+        if (seen.has(doc.id)) return false;
+        seen.add(doc.id);
+        return true;
+      })
+      .map((doc) => ({ uid: doc.id, ...doc.data() }));
 
     return NextResponse.json({ success: true, lawyers });
   } catch (error) {

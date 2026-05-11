@@ -7,7 +7,7 @@ import type { ProjectTeamMember, ProjectRole } from '@/types/schema';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   DealTeamManager — Per-Deal Team Assignment
+   ProjectTeamManager — Per-Deal Team Assignment
 
    Renders slots for deal-specific professionals:
    RE Agent, RE Lawyer, Loan Processor, Bank.
@@ -25,9 +25,9 @@ interface Props {
   projectId: string;
 }
 
-export default function DealTeamManager({ projectId }: Props) {
+export default function ProjectTeamManager({ projectId }: Props) {
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
-  const updateDealTeam = useProjectStore((s) => s.updateDealTeam);
+  const updateProjectTeam = useProjectStore((s) => s.updateProjectTeam);
   const team = currentProject?.projectTeam || [];
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
@@ -50,7 +50,7 @@ export default function DealTeamManager({ projectId }: Props) {
       status: 'invited',
     };
 
-    updateDealTeam(projectId, [...team, newMember]);
+    updateProjectTeam(projectId, [...team, newMember]);
     toast.success(`${role} invited: ${newMember.displayName}`);
     setInviteEmail('');
     setInviteName('');
@@ -61,7 +61,7 @@ export default function DealTeamManager({ projectId }: Props) {
     const updated = team.map((m) =>
       m.id === memberId ? { ...m, status: 'removed' as const } : m
     );
-    updateDealTeam(projectId, updated);
+    updateProjectTeam(projectId, updated);
     toast.success('Team member removed.');
   };
 

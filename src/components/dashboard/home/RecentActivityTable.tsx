@@ -133,8 +133,8 @@ export default function RecentActivityTable() {
       <div className={`transition-all duration-300 ease-in-out h-full overflow-hidden ${selectedDoc ? 'w-full lg:w-2/3' : 'w-full'}`}>
         <Card className="h-full flex flex-col overflow-hidden">
           <div className="p-6 pb-0 mb-4 flex-shrink-0">
-            <h2 className="text-xl font-medium text-[#595959]">Recent Activity</h2>
-            <p className="text-sm text-[#7F7F7F] mt-1">Review and manage recent document workflows.</p>
+            <h2 className="text-xl font-medium text-[#595959]">Deal Activity</h2>
+            <p className="text-sm text-[#7F7F7F] mt-1">Documents, tasks, and expenses across your portfolio.</p>
           </div>
           <div className="flex-1 overflow-auto px-6 pb-6 relative">
             <Table>
@@ -152,7 +152,7 @@ export default function RecentActivityTable() {
                 {recentActivities.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-text-secondary">
-                      No recent activity found across your projects.
+                      Activity will appear here as you add deals and upload documents.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -261,7 +261,7 @@ export default function RecentActivityTable() {
                   </div>
                   
                   <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
-                    <p className="text-sm font-medium text-text-secondary bg-white px-4 py-2 border border-border-accent rounded shadow-sm">No file attached</p>
+                    <p className="text-sm font-medium text-text-secondary bg-white px-4 py-2 border border-border-accent rounded shadow-sm">No document uploaded yet</p>
                   </div>
                 </div>
               )}

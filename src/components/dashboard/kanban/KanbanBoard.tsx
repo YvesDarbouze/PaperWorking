@@ -5,7 +5,7 @@ import { motion, useMotionValue, animate, PanInfo } from 'framer-motion';
 import { useProjectStore } from '@/store/projectStore';
 import { Project } from '@/types/schema';
 import KanbanColumn from './KanbanColumn';
-import { transitionDealPhase, DealPhase } from '@/lib/services/dealStateMachine';
+import { transitionProjectPhase, ProjectPhase } from '@/lib/services/projectStateMachine';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 import TransitionConfirmationModal from './TransitionConfirmationModal';
@@ -13,9 +13,9 @@ import TransitionConfirmationModal from './TransitionConfirmationModal';
 const COLUMNS = [
   { id: 'Sourcing', title: 'Sourcing' },
   { id: 'Under Contract', title: 'Under Contract' },
-  { id: 'Rehab', title: 'Rehab' },
-  { id: 'Listed', title: 'Listed' },
-  { id: 'Closed', title: 'Closed' },
+  { id: 'Rehab', title: 'Renovation' },
+  { id: 'Listed', title: 'Listed for Sale' },
+  { id: 'Closed', title: 'Closed / Exited' },
 ];
 
 const SWIPE_VELOCITY_THRESHOLD = 300;
@@ -90,10 +90,10 @@ export default function KanbanBoard() {
     if (!pendingTransition || !user) return;
     const { deal, targetPhase } = pendingTransition;
     try {
-      await transitionDealPhase(
+      await transitionProjectPhase(
         deal.id,
-        deal.status as DealPhase,
-        targetPhase as DealPhase,
+        deal.status as ProjectPhase,
+        targetPhase as ProjectPhase,
         user.uid
       );
       toast.success(`Deal moved to ${targetPhase}`);

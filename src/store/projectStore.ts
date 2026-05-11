@@ -82,7 +82,7 @@ interface ProjectState {
   updateProjectFinancials: (projectId: string, updates: Partial<ProjectFinancials>) => void;
   updateClosingRoom: (projectId: string, updates: Partial<Project['closingRoom']>) => void;
   updateRehabModule: (projectId: string, updates: Partial<Project['rehab']>) => void;
-  updateDealTeam: (projectId: string, team: ProjectTeamMember[]) => void;
+  updateProjectTeam: (projectId: string, team: ProjectTeamMember[]) => void;
   updateInvestors: (projectId: string, investors: FractionalInvestor[]) => void;
 
   // Find & Fund Actions
@@ -121,8 +121,8 @@ interface ProjectState {
   recalculateMetrics: () => void;
   
   // Selectors
-  getSelectedDeal: () => Project | null;
-  getLedgerItemsForDeal: (projectId: string) => LedgerItem[];
+  getSelectedProject: () => Project | null;
+  getLedgerItemsForProject: (projectId: string) => LedgerItem[];
 }
 
 // ─── Default Values ──────────────────────────────────────────
@@ -393,7 +393,7 @@ export const useProjectStore = create<ProjectState>()(
         }
       },
 
-      updateDealTeam: (projectId, team) => {
+      updateProjectTeam: (projectId, team) => {
         const { projects, currentProject } = get();
         const updatedDeals = projects.map(d =>
           d.id === projectId ? { ...d, projectTeam: team } : d
@@ -876,8 +876,8 @@ export const useProjectStore = create<ProjectState>()(
         });
       },
 
-      getSelectedDeal: () => get().currentProject,
-      getLedgerItemsForDeal: (projectId) => get().ledgerItems[projectId] || [],
+      getSelectedProject: () => get().currentProject,
+      getLedgerItemsForProject: (projectId) => get().ledgerItems[projectId] || [],
     }),
     {
       name: 'pw-project-store',

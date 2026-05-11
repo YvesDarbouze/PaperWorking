@@ -33,6 +33,8 @@ export async function POST(req: NextRequest) {
 
     const depths = {
       bridge_sync: await jobQueue.depth('bridge_sync'),
+      member_sync: await jobQueue.depth('member_sync'),
+      office_sync: await jobQueue.depth('office_sync'),
       webhook_process: await jobQueue.depth('webhook_process'),
     };
 
@@ -64,6 +66,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       depths: {
         bridge_sync: await jobQueue.depth('bridge_sync'),
+        member_sync: await jobQueue.depth('member_sync'),
+        office_sync: await jobQueue.depth('office_sync'),
         webhook_process: await jobQueue.depth('webhook_process'),
       },
       dlq: { count: dlq.length, sample: dlq },
@@ -72,3 +76,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'status_failed', detail: error.message }, { status: 500 });
   }
 }
+

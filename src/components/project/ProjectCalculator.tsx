@@ -24,7 +24,7 @@ import LOIGenerator from './LOIGenerator';
 import { useRouter } from 'next/navigation';
 
 /* ═══════════════════════════════════════════════════════════════
-   DealCalculator — Financial Analysis Container
+   ProjectCalculator — Financial Analysis Container
 
    A modular card-based layout that houses the core financial
    inputs for REI deal analysis: ARV, Rehab Budget, and NOI.
@@ -42,7 +42,7 @@ import { useRouter } from 'next/navigation';
      estimatedARV  — existing ARV estimate (cents) from deal
    ═══════════════════════════════════════════════════════════════ */
 
-interface DealCalculatorProps {
+interface ProjectCalculatorProps {
   phaseColor: string;
   projectId: string;
   propertyAddress?: string;
@@ -136,7 +136,7 @@ function InputSection({
 }
 
 /* ── Main component ── */
-export default function DealCalculator({ phaseColor, projectId, propertyAddress, initialFinancials, onSaveSuccess, readOnly = false }: DealCalculatorProps) {
+export default function ProjectCalculator({ phaseColor, projectId, propertyAddress, initialFinancials, onSaveSuccess, readOnly = false }: ProjectCalculatorProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
@@ -296,7 +296,7 @@ export default function DealCalculator({ phaseColor, projectId, propertyAddress,
         costs: initialFinancials?.costs || []
       };
 
-      await projectsService.updateDeal(projectId, { financials: updatedFinancials });
+      await projectsService.updateProject(projectId, { financials: updatedFinancials });
       
       setSaveMessage('Saved successfully!');
       setTimeout(() => setSaveMessage(''), 3000);
@@ -366,7 +366,7 @@ export default function DealCalculator({ phaseColor, projectId, propertyAddress,
         <div className="flex items-center gap-3">
           <Calculator className="w-4 h-4" style={{ color: '#FFFFFF' }} aria-hidden="true" />
           <h2 className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: '#FFFFFF' }}>
-            Deal Calculator
+            Project Calculator
           </h2>
         </div>
         <div className="flex items-center gap-6">

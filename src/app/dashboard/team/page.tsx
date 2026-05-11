@@ -24,7 +24,7 @@ interface UnifiedMember {
 export default function TeamDirectoryPage() {
   const { profile } = useAuth();
   const { teamMembers: internalMembers } = useUserStore();
-  const { projects, updateDealTeam } = useProjectStore();
+  const { projects, updateProjectTeam } = useProjectStore();
 
   const [revokingEmail, setRevokingEmail] = useState<string | null>(null);
 
@@ -102,7 +102,7 @@ export default function TeamDirectoryPage() {
           const updatedTeam = p.projectTeam.map(m => 
             m.email.toLowerCase() === email.toLowerCase() ? { ...m, status: 'removed' as const } : m
           );
-          updateDealTeam(p.id, updatedTeam);
+          updateProjectTeam(p.id, updatedTeam);
         }
       });
     } catch (err) {

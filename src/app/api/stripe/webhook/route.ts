@@ -3,6 +3,10 @@ import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 
+// Webhook must never be cached and may need extra time for Firestore batch writes
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
@@ -117,8 +121,37 @@ export async function POST(request: Request) {
       // =========================================================
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-        const userId = session.client_reference_id || session.metadata?.userId;
+        let userId = session.client_reference_id || session.metadata?.userId;
         const plan = session.metadata?.plan;
+
+        // ── Guest Checkout Linking ──
+        // If userId is missing or 'guest', attempt to find the user by email.
+        // This handles the flow where a user checks out before registering.
+        if ((!userId || userId === 'guest') && session.customer_details?.email) {
+          const emailLookup = await adminDb
+            .collection('users')
+            .where('email', '==', session.customer_details.email)
+            .limit(1)
+            .get();
+
+          if (!emailLookup.empty) {
+            userId = emailLookup.docs[0].id;
+            console.log(`[Stripe Webhook] Linked guest checkout to existing user: ${userId}`);
+          } else {
+            // No user found — store the session for later linking
+            // This will be reconciled when the user registers
+            console.log(`[Stripe Webhook] Guest checkout for ${session.customer_details.email} — will link on registration`);
+            await adminDb.collection('pending_subscriptions').doc(session.customer_details.email).set({
+              plan,
+              stripeCustomerId: session.customer as string,
+              stripeSubscriptionId: session.subscription as string,
+              sessionId: session.id,
+              customerEmail: session.customer_details.email,
+              createdAt: FieldValue.serverTimestamp(),
+            });
+            break;
+          }
+        }
 
         if (userId && userId !== 'guest' && plan) {
           await updateUserAndOrg(userId, {

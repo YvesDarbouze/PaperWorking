@@ -24,7 +24,7 @@ import type {
    Single source of truth for cross-phase financial inheritance.
 
    Architecture:
-   ┌─ Phase 1 (DealCalculator) ─────────────────────────────────┐
+   ┌─ Phase 1 (ProjectCalculator) ─────────────────────────────────┐
    │  saves → project.financials.{purchasePrice, ARV, ...}      │
    │  on advance → writes phaseSnapshots/phase-1 (immutable)    │
    └────────────────────────────────────────────────────────────┘

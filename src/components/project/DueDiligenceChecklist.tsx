@@ -30,7 +30,7 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
       onChange(initialItems);
       // Auto-save initial required items if project ID is available
       if (projectId) {
-        projectsService.updateDeal(projectId, { dueDiligenceChecklist: initialItems }).catch(console.error);
+        projectsService.updateProject(projectId, { dueDiligenceChecklist: initialItems }).catch(console.error);
       }
     }
   }, [items, onChange, projectId]);
@@ -54,7 +54,7 @@ export function DueDiligenceChecklist({ projectId, items, onChange }: DueDiligen
     // Update database as required by state management specification
     if (projectId) {
       try {
-        await projectsService.updateDeal(projectId, { dueDiligenceChecklist: newItems });
+        await projectsService.updateProject(projectId, { dueDiligenceChecklist: newItems });
       } catch (error) {
         console.error('Failed to update due diligence checklist in database', error);
       }

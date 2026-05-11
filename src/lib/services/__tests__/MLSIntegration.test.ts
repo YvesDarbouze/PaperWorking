@@ -1,7 +1,7 @@
 import { normalizeMLSData } from '../mlsShared';
 import { processStatusChange } from '../mlsService';
 import { projectsService } from '../../firebase/projects';
-import { transitionDealPhase } from '../dealStateMachine';
+import { transitionProjectPhase } from '../projectStateMachine';
 import { bridgeWorkerService } from '../bridgeWorkerService';
 
 // Mock dependencies
@@ -15,7 +15,7 @@ jest.mock('../../firebase/config', () => ({
 }));
 
 jest.mock('../../firebase/projects');
-jest.mock('../dealStateMachine');
+jest.mock('../projectStateMachine');
 jest.mock('../bridgeWorkerService');
 jest.mock('../../redis', () => ({
   __esModule: true,
@@ -75,12 +75,12 @@ describe('MLS Integration (Normalization & State Changes)', () => {
   });
 
   describe('processStatusChange (Webhook Simulation)', () => {
-    it('triggers transitionDealPhase when statuses differ', async () => {
+    it('triggers transitionProjectPhase when statuses differ', async () => {
       // 1. Mock system state
       (bridgeWorkerService.isPaused as jest.Mock).mockResolvedValue(false);
       
       // 2. Mock finding an existing deal in 'Listed' state
-      (projectsService.getDealsByMlsId as jest.Mock).mockResolvedValue([
+      (projectsService.getProjectsByMlsId as jest.Mock).mockResolvedValue([
         { id: 'deal_abc', status: 'Listed', mls_id: 'MLS_999' }
       ]);
 
@@ -97,7 +97,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
       // 4. Verification
       expect(result.success).toBe(true);
       expect(result.count).toBe(1);
-      expect(transitionDealPhase).toHaveBeenCalledWith(
+      expect(transitionProjectPhase).toHaveBeenCalledWith(
         'deal_abc',
         'Listed',
         'Sold',
@@ -108,7 +108,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
 
     it('skips transition if statuses are already in sync', async () => {
       (bridgeWorkerService.isPaused as jest.Mock).mockResolvedValue(false);
-      (projectsService.getDealsByMlsId as jest.Mock).mockResolvedValue([
+      (projectsService.getProjectsByMlsId as jest.Mock).mockResolvedValue([
         { id: 'deal_xyz', status: 'Sold', mls_id: 'MLS_999' }
       ]);
 
@@ -118,7 +118,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
 
       await processStatusChange(payload);
 
-      expect(transitionDealPhase).not.toHaveBeenCalled();
+      expect(transitionProjectPhase).not.toHaveBeenCalled();
     });
 
     it('aborts processing if system is paused due to rate limiting', async () => {
@@ -129,7 +129,7 @@ describe('MLS Integration (Normalization & State Changes)', () => {
 
       expect(result.success).toBe(false);
       expect(result.reason).toBe('system_paused');
-      expect(projectsService.getDealsByMlsId).not.toHaveBeenCalled();
+      expect(projectsService.getProjectsByMlsId).not.toHaveBeenCalled();
     });
   });
 });

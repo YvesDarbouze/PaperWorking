@@ -10,7 +10,7 @@ import { Timestamp } from 'firebase/firestore';
 
 export type AccountType = 'investor' | 'vendor';
 export type UserRole = 'Lead Investor' | 'General Contractor' | 'Vendor' | 'Analyst' | 'Observer';
-export type SubscriptionPlan = 'None' | 'Individual' | 'Team' | 'Vendor Network' | 'Lawyer' | 'Lawyer Lead-Gen';
+export type SubscriptionPlan = 'None' | 'Individual' | 'Team' | 'Vendor Network';
 export type SubscriptionStatus = 'active' | 'inactive' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
 
 export interface UserProfile {

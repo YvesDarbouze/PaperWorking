@@ -9,7 +9,7 @@ import Link from 'next/link';
 const PLAN_LIMITS_GB: Record<string, number> = {
   'Individual': 5.0,
   'Team': 50.0,
-  'Lawyer Lead-Gen': 10.0,
+  'Vendor Network': 10.0,
   'None': 1.0,
 };
 

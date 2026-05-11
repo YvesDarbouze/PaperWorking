@@ -11,7 +11,7 @@ import { prisma } from "../prisma";
  * Manages strict lifecycle transitions for real estate assets.
  */
 
-export type DealPhase = 
+export type ProjectPhase = 
   | 'Sourcing' 
   | 'Under Contract' 
   | 'Rehab' 
@@ -19,7 +19,7 @@ export type DealPhase =
   | 'Sold' 
   | 'Rented';
 
-const PHASE_ORDER: DealPhase[] = [
+const PHASE_ORDER: ProjectPhase[] = [
   'Sourcing',
   'Under Contract',
   'Rehab',
@@ -31,15 +31,15 @@ const PHASE_ORDER: DealPhase[] = [
 /**
  * Transition a deal to a new phase and record the event.
  */
-export async function transitionDealPhase(
+export async function transitionProjectPhase(
   projectId: string,
-  fromPhase: DealPhase,
-  toPhase: DealPhase,
+  fromPhase: ProjectPhase,
+  toPhase: ProjectPhase,
   userUid: string,
   notes: string = ''
 ) {
   // 1. Update the main Deal document in Firestore
-  await projectsService.updateDeal(projectId, { 
+  await projectsService.updateProject(projectId, { 
     status: toPhase as any, 
     updatedAt: new Date(),
     lastPhaseTransitionAt: new Date(), // Phase 6: Reset aging clock on transition
@@ -68,7 +68,7 @@ export async function transitionDealPhase(
 
   if (isRenovationComplete) {
     try {
-      const deal = await projectsService.getDeal(projectId);
+      const deal = await projectsService.getProject(projectId);
       if (deal) {
         // Collect agent + appraiser emails from the project team
         const team = (deal.projectTeam || []) as { projectRole: string; email: string }[];
@@ -158,7 +158,7 @@ export async function transitionDealPhase(
  * Note: Real-world scenarios often require non-linear movements, 
  * but we prefer sequential order.
  */
-export function isValidTransition(from: DealPhase, to: DealPhase): boolean {
+export function isValidTransition(from: ProjectPhase, to: ProjectPhase): boolean {
   const fromIndex = PHASE_ORDER.indexOf(from);
   const toIndex = PHASE_ORDER.indexOf(to);
   
@@ -189,7 +189,7 @@ export async function acceptVendorQuote(
   };
 
   // 3. Inject into the proper category (Acquisition for Lawyers/Appraisers)
-  const deal = await projectsService.getDeal(projectId);
+  const deal = await projectsService.getProject(projectId);
   if (!deal) throw new Error('Deal not found');
 
   const currentLedger = deal.costBasisLedger || { directAcquisition: [], financing: [], preClosing: [] };
@@ -198,7 +198,7 @@ export async function acceptVendorQuote(
     directAcquisition: [...currentLedger.directAcquisition, newFeeItem]
   };
 
-  await projectsService.updateDeal(projectId, { 
+  await projectsService.updateProject(projectId, { 
     costBasisLedger: updatedLedger,
     updatedAt: new Date()
   });

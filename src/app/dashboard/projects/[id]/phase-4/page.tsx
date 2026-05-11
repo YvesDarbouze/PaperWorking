@@ -82,7 +82,7 @@ export default function Phase4WorkspacePage() {
 
   const handleStrategyChange = (next: 'Sell' | 'Rent') => {
     if (!project) return;
-    projectsService.updateDeal(projectId, {
+    projectsService.updateProject(projectId, {
       financials: { ...project.financials, exitStrategyType: next }
     }).then(() => refresh()).catch(console.error);
   };
@@ -133,7 +133,7 @@ export default function Phase4WorkspacePage() {
     }
 
     try {
-      await projectsService.updateDeal(projectId, { roleLinkedDocuments: newDocs });
+      await projectsService.updateProject(projectId, { roleLinkedDocuments: newDocs });
       refresh();
     } catch (err) {
       console.error('Failed to save documents:', err);

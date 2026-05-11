@@ -17,7 +17,7 @@
  * Canonical plan IDs stored in Firestore and Stripe metadata.
  * These NEVER change once set — they are the system-of-record values.
  */
-export type PlanId = 'individual' | 'team' | 'vendor' | 'lawyer';
+export type PlanId = 'individual' | 'team' | 'vendor';
 
 export type BillingInterval = 'monthly' | 'annual';
 
@@ -72,25 +72,13 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   vendor: {
     id: 'vendor',
     canonicalName: 'Vendor Network',
-    displayName: 'Vendor Network',
+    displayName: 'Vendor Marketplace',
     monthlyPrice: 39,
     annualPrice: 390,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_VENDOR_MONTHLY', 'STRIPE_PRICE_VENDOR'],
       annual: ['STRIPE_PRICE_VENDOR_ANNUAL'],
-    },
-  },
-  lawyer: {
-    id: 'lawyer',
-    canonicalName: 'Lawyer Lead-Gen',
-    displayName: 'Lawyer',
-    monthlyPrice: 59,
-    annualPrice: 499,
-    trialDays: 14,
-    envVars: {
-      monthly: ['STRIPE_PRICE_LAWYER_MONTHLY', 'STRIPE_PRICE_LAWYER'],
-      annual: ['STRIPE_PRICE_LAWYER_ANNUAL'],
     },
   },
 };
@@ -109,19 +97,20 @@ const DISPLAY_NAME_ALIASES: Record<string, PlanId> = {
   'individual': 'individual',
   'team': 'team',
   'vendor': 'vendor',
-  'lawyer': 'lawyer',
 
   // Landing page PricingSection display names
   'individual investor': 'individual',
   'team / firm': 'team',
   'team/firm': 'team',
   'vendor network': 'vendor',
+  'vendor marketplace': 'vendor',
 
   // PricingCards display names
   'investor team': 'team',
 
-  // Legacy/alias names
-  'lawyer lead-gen': 'lawyer',
+  // Lawyer is a vendor role, not a separate plan — route to vendor
+  'lawyer': 'vendor',
+  'lawyer lead-gen': 'vendor',
 };
 
 /**

@@ -42,7 +42,7 @@ export interface PhaseSnapshotMap {
 
 // ── Deal Phase System ─────────────────────────────────────────
 
-export type DealPhaseKey =
+export type ProjectPhaseKey =
   | 'Sourcing'
   | 'Under Contract'
   | 'Rehab'
@@ -50,11 +50,11 @@ export type DealPhaseKey =
   | 'Sold'
   | 'Rented';
 
-export interface DealPhaseDefinition {
-  key: DealPhaseKey;
+export interface ProjectPhaseDefinition {
+  key: ProjectPhaseKey;
   label: string;
   order: number;
-  allowedTransitions: DealPhaseKey[];
+  allowedTransitions: ProjectPhaseKey[];
   // Document types that must be verified before advancing to the next phase
   requiredDocuments: DocumentCategory[];
   // Human-readable gate conditions; all must be met to unlock the transition
@@ -153,7 +153,7 @@ export interface Organization {
   name: string;
   ownerUid: string; // The primary billing/admin user
   accountTier: 'Individual' | 'Team'; // Controls seat count and team features
-  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network' | 'Lawyer Lead-Gen';
+  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   teamMembers: OrgTeamMember[]; // Up to 10 for Team accounts, 0 for Individual
   maxSeats: number; // 1 for Individual, 10 for Team
@@ -174,7 +174,7 @@ export interface ApplicationUser {
   displayName: string;
   organizationId: string; // REQUIRED: Enforces strict data containment to the Organization
   orgRole: OrgRole; // Account-holder self-designation
-  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network' | 'Lawyer Lead-Gen';
+  subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   accountType?: 'investor' | 'vendor';
   inviteToken?: string; // Populated when user arrived via crowdfund invitation

@@ -34,13 +34,11 @@ const bridgeConfigSchema = z.object({
    * Defaults to BRIDGE_VIRTUAL_DATASET_ID when not separately configured.
    */
   BRIDGE_DATASET_ID: z.string().optional(),
-
-  /**
-   * Bridge has NO webhook support — the platform is pull-only.
-   * This field is reserved for future use only.
-   */
-  BRIDGE_WEBHOOK_SECRET: z.string().optional(),
 });
+
+// Note: Bridge has NO webhook support — the platform is pull-only.
+// Data synchronization must be driven by the /replication endpoint
+// via /api/bridge/sync (see replicationWorker.ts).
 
 type BridgeConfig = z.infer<typeof bridgeConfigSchema>;
 
@@ -59,7 +57,7 @@ export function getBridgeConfig(): BridgeConfig {
     BRIDGE_API_BASE_URL:       process.env.BRIDGE_API_BASE_URL,
     BRIDGE_VIRTUAL_DATASET_ID: process.env.BRIDGE_VIRTUAL_DATASET_ID,
     BRIDGE_DATASET_ID:         process.env.BRIDGE_DATASET_ID,
-    BRIDGE_WEBHOOK_SECRET:     process.env.BRIDGE_WEBHOOK_SECRET,
+
   };
 
   const result = bridgeConfigSchema.safeParse(env);

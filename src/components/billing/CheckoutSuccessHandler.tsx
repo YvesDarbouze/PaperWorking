@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle2, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { auth } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════
    CheckoutSuccessHandler
@@ -56,6 +57,25 @@ export default function CheckoutSuccessHandler() {
         if (res.ok && data.status === 'complete') {
           setSessionData(data);
           setPhase('success');
+
+          // Force-refresh the Firebase ID token so the auth context
+          // picks up updated subscription claims from the webhook.
+          // Then re-sync the session cookie for server-side middleware.
+          try {
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+              const freshToken = await currentUser.getIdToken(true);
+              await fetch('/api/auth/session', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idToken: freshToken }),
+              });
+            }
+          } catch (refreshErr) {
+            // Non-fatal: the Firestore onSnapshot listener in AuthContext
+            // will eventually pick up the updated profile data.
+            console.warn('[CheckoutSuccess] Token refresh failed (non-fatal):', refreshErr);
+          }
 
           // Auto-dismiss after 5 seconds
           setTimeout(() => {

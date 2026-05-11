@@ -11,7 +11,7 @@ import InspectionChecklist from '@/components/Inspection/InspectionChecklist';
 import { DSCRGauge, CapitalStackChart } from '@/components/metrics/phase2';
 
 /* Phase-specific modules */
-const DealAnalyzer = lazy(() => import('@/components/evaluation/DealAnalyzer'));
+const ProjectAnalyzer = lazy(() => import('@/components/evaluation/ProjectAnalyzer'));
 const MarketAnalysis = lazy(() => import('@/components/evaluation/MarketAnalysis'));
 const FundingSourceTracker = lazy(() => import('@/components/evaluation/FundingSourceTracker'));
 const SeventyPercentRule = lazy(() => import('@/components/Calculators/SeventyPercentRule'));
@@ -104,7 +104,7 @@ export default function EvaluationPanel() {
 
       {/* ── Section 0: Deal Analyzer ── */}
       <Suspense fallback={shimmer}>
-        <DealAnalyzer />
+        <ProjectAnalyzer />
       </Suspense>
 
       {/* ── Section 1: Operational Ledgers ── */}

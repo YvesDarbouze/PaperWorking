@@ -4,12 +4,12 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { usePaywall } from '@/hooks/usePaywall';
-import DealCreationWizard from '@/components/project/DealCreationWizard';
+import ProjectCreationWizard from '@/components/project/ProjectCreationWizard';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/new — Dedicated Project Initialization Route
 
-   This page renders the full-screen DealCreationWizard inside the
+   This page renders the full-screen ProjectCreationWizard inside the
    FocusedWorkflowLayout (ConversationalFormWrapper). 
 
    Access control:
@@ -57,7 +57,7 @@ export default function NewProjectPage() {
   }
 
   return (
-    <DealCreationWizard
+    <ProjectCreationWizard
       organizationId={orgId}
       onClose={() => router.push('/dashboard')}
       onSuccess={(projectId) => {

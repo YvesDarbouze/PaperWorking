@@ -2,10 +2,10 @@
 
 import React from 'react';
 
-type DealPhase = 'Lead' | 'Sourcing' | 'Under Contract' | 'Rehab' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'Closed';
+type ProjectPhase = 'Lead' | 'Sourcing' | 'Under Contract' | 'Rehab' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'Closed';
 
 interface PhaseBadgeProps {
-  status: string | DealPhase;
+  status: string | ProjectPhase;
   className?: string;
 }
 
@@ -17,7 +17,7 @@ interface PhaseBadgeProps {
  */
 export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) {
   // Normalize status for consistent mapping
-  const normalizedStatus = status as DealPhase;
+  const normalizedStatus = status as ProjectPhase;
 
   // Determine if the phase is "dark" (requires white text)
   const isDarkPhase = [

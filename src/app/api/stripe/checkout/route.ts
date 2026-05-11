@@ -9,6 +9,8 @@ import {
   type BillingInterval,
 } from '@/lib/stripe/plans';
 
+export const dynamic = 'force-dynamic';
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
@@ -103,6 +105,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error('[Stripe Checkout]', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'An error occurred while creating the checkout session. Please try again.' },
+      { status: 500 }
+    );
   }
 }

@@ -333,7 +333,7 @@ export default function SupportPage() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             <Link
-              href="/support/basics/account-setup"
+              href="/support/account-setup"
               className="group flex flex-col justify-center p-8 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] transition-all duration-300 hover:bg-[var(--pw-bg)] hover:border-[var(--pw-black)] hover:-translate-y-0.5"
             >
               <h3 className="text-lg font-semibold text-[var(--pw-black)] mb-3">
@@ -345,7 +345,7 @@ export default function SupportPage() {
             </Link>
 
             <Link
-              href="/support/basics/wiring-first-deal"
+              href="/support/wiring-first-deal"
               className="group flex flex-col justify-center p-8 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] transition-all duration-300 hover:bg-[var(--pw-bg)] hover:border-[var(--pw-black)] hover:-translate-y-0.5"
             >
               <h3 className="text-lg font-semibold text-[var(--pw-black)] mb-3">
@@ -357,7 +357,7 @@ export default function SupportPage() {
             </Link>
 
             <Link
-              href="/support/basics/digital-document-vault"
+              href="/support/digital-document-vault"
               className="group flex flex-col justify-center p-8 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-lg)] transition-all duration-300 hover:bg-[var(--pw-bg)] hover:border-[var(--pw-black)] hover:-translate-y-0.5"
             >
               <h3 className="text-lg font-semibold text-[var(--pw-black)] mb-3">

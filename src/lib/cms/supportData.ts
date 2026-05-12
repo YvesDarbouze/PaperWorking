@@ -80,6 +80,32 @@ export const SUPPORT_CATEGORIES: SupportCategory[] = [
 // ── Articles ───────────────────────────────────────────────────────────────
 
 export const SUPPORT_ARTICLES: SupportArticle[] = [
+  // Platform Basics — Getting Started guides
+  {
+    id: 'account-setup',
+    categoryId: 'find-and-fund',
+    title: 'Account Setup & Team Invites',
+    excerpt: 'Create your workspace, configure admin roles, and invite deal leaders with the right permissions from day one.',
+    readTime: '4 min',
+    content: '<p>Your PaperWorking workspace is the command center for every deal in your portfolio. Setting it up correctly from the start saves hours of cleanup later.</p><h3>Creating Your Workspace</h3><p>After signing up, you\'ll land on the Dashboard. Your first step is to complete your <strong>Organization Profile</strong> — business name, entity type, and primary contact. This information appears on generated documents, so get it right the first time.</p><h3>Inviting Team Members</h3><p>From the <strong>Team Directory</strong>, click <strong>Invite Member</strong>. Enter their email and assign a role:</p><ul><li><strong>Admin / Lead Investor</strong> — Full access to all deal data, team management, and billing.</li><li><strong>Deal Lead</strong> — Full access to assigned deals, no access to billing or team management.</li><li><strong>Accountant</strong> — Read access to financials only. Cannot view investor rosters or manage team members.</li><li><strong>Contractor</strong> — Access limited to assigned scopes of work, milestone submissions, and draw requests.</li></ul><h3>Security Permissions</h3><p>Each role has pre-configured permission boundaries. You can\'t accidentally give a contractor access to your P&L, and your accountant can\'t see individual investor pledges. The system enforces separation by design.</p><h3>Multi-Factor Authentication</h3><p>Enable MFA for all admin accounts. Go to <strong>Settings → Security</strong> and toggle on two-factor authentication. We support authenticator apps and SMS verification.</p>',
+  },
+  {
+    id: 'wiring-first-deal',
+    categoryId: 'find-and-fund',
+    title: 'Wiring Your First Deal',
+    excerpt: 'Initialize Phase 1: Acquisition — structure your capital stack, set underwriting criteria, and create your first project.',
+    readTime: '5 min',
+    content: '<p>Every investment in PaperWorking starts as a <strong>Project</strong>. Creating one initializes the 4-Phase lifecycle and gives you a structured workspace for every document, transaction, and decision from acquisition through exit.</p><h3>Creating a New Project</h3><p>From the Dashboard, click <strong>New Project</strong>. Enter the property address — the platform auto-populates county records, tax data, and zoning information where available. Give the project a name your team will recognize.</p><h3>Setting Up the Capital Stack</h3><p>Open the <strong>Capital Stack</strong> tab. Define your financing structure: equity contribution, hard money or bridge loan terms, and any syndication capital. Every dollar you plan to deploy should be accounted for here — it feeds every downstream calculation.</p><h3>Configuring Underwriting Criteria</h3><p>Set your deal-specific targets: Maximum Allowable Offer (MAO), target Cash-on-Cash return, and acceptable Cap Rate range. The platform flags metrics that fall outside your thresholds as you refine the deal.</p><h3>Phase 1: Acquisition Workflow</h3><p>With the project created, you\'re in Phase 1. This is where you track prospects, run underwriting models, craft offer letters, and manage your LOI pipeline. When the offer is accepted and your EMD is logged, the system unlocks the transition to Phase 2: Purchase.</p>',
+  },
+  {
+    id: 'digital-document-vault',
+    categoryId: 'compliance',
+    title: 'The Digital Document Vault',
+    excerpt: 'Securely upload, organize, and share deal documents with strict role-based vendor access controls.',
+    readTime: '4 min',
+    content: '<p>Every real estate deal generates a mountain of paperwork. The Document Vault gives you a secure, organized repository for every contract, receipt, inspection report, and closing document — accessible only to the people who need them.</p><h3>Uploading Documents</h3><p>Drag and drop files directly into the Vault from any deal workspace. The platform accepts PDFs, images, spreadsheets, and common document formats. Each upload is tagged with the deal name, phase, and document type automatically.</p><h3>Folder Structure</h3><p>Documents are organized by deal phase: Acquisition, Purchase, Hold, and Exit. Within each phase, files are grouped by type — contracts, financial records, inspection reports, and compliance documents. You can add custom folders for deal-specific needs.</p><h3>Role-Based Access</h3><p>This is where the Vault earns its name. Access to documents is controlled by the viewer\'s role:</p><ul><li><strong>Contractors</strong> see only their assigned scope of work and milestone documents.</li><li><strong>Accountants</strong> see financial records and settlement documents, but not investor communications.</li><li><strong>Investors</strong> see deal summaries and their own commitment documents through the Guest Portal.</li><li><strong>Admins</strong> see everything.</li></ul><h3>Version Control</h3><p>Upload a revised document and the Vault preserves the previous version. You can always see who uploaded what and when — creating an audit trail that protects you during disputes or compliance reviews.</p><h3>Sharing with External Parties</h3><p>Generate secure, time-limited share links for attorneys, title companies, or lenders. Each link logs when the recipient accessed the document and from where.</p>',
+  },
+
   // Phase 1: Acquisition (find-and-fund)
   {
     id: 'generating-an-loi',

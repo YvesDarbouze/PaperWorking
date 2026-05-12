@@ -102,7 +102,7 @@ export default function PricingPage() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
           <Logo href="/" size="sm" />
           <div className="flex items-center space-x-6">
-            <Link href="/dashboard" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
+            <Link href="/login" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
               Log In
             </Link>
             <button
@@ -171,7 +171,7 @@ export default function PricingPage() {
                <Link href="/privacy" className="hover:text-text-primary transition-colors">Privacy Policy</Link>
                <Link href="/terms" className="hover:text-text-primary transition-colors">Terms of Service</Link>
                <Link href="/support" className="hover:text-text-primary transition-colors">Contact</Link>
-               <Link href="/dashboard" className="text-text-primary hover:text-text-secondary transition-colors">Log In</Link>
+               <Link href="/login" className="text-text-primary hover:text-text-secondary transition-colors">Log In</Link>
             </div>
          </div>
       </footer>

@@ -105,7 +105,7 @@ export function CloudStorageMeter() {
           <div className="flex-1">
             <p className="text-sm text-red-800 font-bold">Storage Threshold Warning</p>
             <p className="text-xs text-red-700 mt-1 leading-relaxed">
-              Your organization has consumed over 90% of its institutional storage allocation. 
+              Your organization has consumed over 90% of its storage allocation. 
               To prevent document upload interruptions, please upgrade to a higher tier.
             </p>
           </div>

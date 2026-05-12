@@ -77,7 +77,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
             <div className="w-10 h-10 bg-pw-black flex items-center justify-center border border-pw-black">
               <Sparkles className="w-4 h-4 text-pw-accent" />
             </div>
-            <span className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">SYSTEM PHASE: AUDIT_PROTOCOL_v04</span>
+            <span className="text-sm font-black text-text-primary uppercase tracking-[0.4em]">AI Listing Review</span>
           </div>
           <h1 className="text-6xl sm:text-7xl font-black text-text-primary tracking-tighter uppercase leading-none">{deal.propertyName}</h1>
           <p className="text-text-secondary font-black uppercase tracking-[0.2em] flex items-center mt-4 group cursor-pointer text-sm">
@@ -149,7 +149,7 @@ const ProfessionalListingDashboard: React.FC<ProfessionalListingDashboardProps> 
                   <Database className="w-12 h-12 mx-auto mb-8 text-text-secondary opacity-20" />
                   <p className="text-sm text-text-secondary font-black uppercase tracking-widest leading-relaxed">
                     AWAITING CONTEXTUAL INGESTION. <br/>
-                    OPERATE [RE-INDEX AI] TO GENERATE INSTITUTIONAL BRIEF.
+                    OPERATE [RE-INDEX AI] TO GENERATE LISTING BRIEF.
                   </p>
                 </div>
               )}

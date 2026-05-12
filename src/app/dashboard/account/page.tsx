@@ -97,7 +97,7 @@ export default function AccountPage() {
       <header>
         <h1 className="text-xl font-bold" style={{ color: 'var(--pw-black)' }}>Account & Billing</h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-          Manage your organizational profile and institutional subscription details.
+          Manage your profile and subscription details.
         </p>
       </header>
 

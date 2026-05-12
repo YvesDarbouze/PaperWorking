@@ -25,7 +25,7 @@ export default function GoogleDriveSync() {
         {[
           'Auto-generate folder hierarchy on new deals',
           'Two-way sync for contractor uploads',
-          'Institutional security policies applied'
+          'Enterprise-grade encryption applied'
         ].map((feature, i) => (
           <div key={i} className="flex items-center gap-3 text-left p-3 border border-border-accent bg-bg-primary/50">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />

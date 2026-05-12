@@ -67,7 +67,7 @@ export default function SettingsDrawer({ isOpen, onClose }: Props) {
           {/* Additional Settings Sections */}
           <div className="bg-bg-surface rounded-xl border border-border-accent p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-text-primary mb-1 tracking-tight">Team Overview</h3>
-            <p className="text-xs text-text-secondary mb-4">Navigate to the Closing Panel to manage deal-specific teams, or the Evaluation Panel to view investor equity tables.</p>
+            <p className="text-xs text-text-secondary mb-4">Head to the Closing Panel to manage deal-specific teams, or the Evaluation Panel to view investor equity tables.</p>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between p-3 bg-bg-primary rounded-lg">

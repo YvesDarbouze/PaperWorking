@@ -22,7 +22,7 @@ export default function MarketplaceAnalytics() {
       <header className="mb-16">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.4em] text-text-secondary mb-3">Institutional Intelligence</p>
+            <p className="text-xs font-black uppercase tracking-[0.4em] text-text-secondary mb-3">Marketplace Intelligence</p>
             <h1 className="text-5xl font-black text-text-primary tracking-tighter uppercase">Marketplace Audits</h1>
           </div>
           <div className="flex gap-4">

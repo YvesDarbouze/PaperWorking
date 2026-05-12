@@ -7,13 +7,13 @@ import { Calculator, Layout, Users, TrendingUp, ShieldCheck, Zap } from 'lucide-
 const FEATURES = [
   {
     title: "OPERATIONAL MATH",
-    description: "Institutional-grade ROI calculators and waterfall distribution logic. Eliminate reliance on fragile spreadsheets for high-yield modeling.",
+    description: "Built-in ROI calculators and waterfall distribution logic. No more fragile spreadsheets for high-yield modeling.",
     icon: Calculator,
     details: ["Multi-tier waterfalls", "Equity modeling", "Instant P&L audits"]
   },
   {
     title: "DATA ROOMS",
-    description: "Centralized command for institutional data. Every document, deadline, and draw request structured precisely for professional audit trails.",
+    description: "Centralized command for deal-critical data. Every document, deadline, and draw request structured for professional audit trails.",
     icon: Layout,
     details: ["Dynamic Kanban tracks", "Digital Draw control", "Integration suite"]
   },
@@ -32,7 +32,7 @@ export default function ValuePropGrid() {
         <div className="mx-auto max-w-4xl mb-32">
            <p className="text-xs font-black uppercase tracking-[0.5em] text-pw-accent mb-6">SYSTEM CORE — CORE FUNCTIONALITY</p>
            <h2 className="text-5xl sm:text-7xl font-black text-text-primary tracking-tighter leading-none uppercase">
-             THE ENGINE BUILT <br/> FOR INSTITUTIONAL SCALE.
+             THE ENGINE BUILT <br/> FOR SERIOUS OPERATORS.
            </h2>
         </div>
 
@@ -71,13 +71,13 @@ export default function ValuePropGrid() {
           ))}
         </div>
         
-        {/* Institutional System Audit Box */}
+        {/* Portfolio Scale Proof Box */}
         <div className="mt-48 p-20 border border-border-accent bg-pw-black flex flex-col md:flex-row items-center gap-16">
            <div className="w-24 h-24 border-2 border-pw-white flex items-center justify-center flex-shrink-0 animate-pulse">
               <TrendingUp className="w-10 h-10 text-pw-white" />
            </div>
            <div className="flex-1 text-left">
-             <h4 className="text-3xl font-black text-pw-white mb-6 uppercase tracking-tight leading-none">Scale portfolio with institutional rigor</h4>
+             <h4 className="text-3xl font-black text-pw-white mb-6 uppercase tracking-tight leading-none">Scale your portfolio with real discipline</h4>
              <p className="max-w-3xl text-sm text-pw-white/50 font-black tracking-[0.2em] leading-loose uppercase">
                Standardized by family offices and full-time renovation teams to audit and manage 
                high-yield construction pipelines in excess of $1B globally. System integrity verified via Antigravity protocols.

@@ -201,7 +201,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         legalCosts: legalNum,
         soldDate: new Date(),
       } as any);
-      toast.success('PROTOCOL_COMPLETE: Sale data locked.', {
+      toast.success('Sale data saved.', {
         style: { background: C.action.bg, color: C.action.text },
       });
     } else {
@@ -443,10 +443,10 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         >
           {canSubmit ? (
             <span className="flex items-center justify-center gap-2">
-              <CheckCircle2 className="w-4 h-4" /> Execute_Final_Sale
+              <CheckCircle2 className="w-4 h-4" /> Finalize Sale
             </span>
           ) : (
-            'Complete_Mandatory_Fields_to_Finalize'
+            'Complete all required fields to continue'
           )}
         </button>
       </div>
@@ -563,10 +563,10 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
       >
         {canSubmit ? (
           <span className="flex items-center justify-center gap-2">
-            <TrendingUp className="w-4 h-4" /> Save_Rental_Profile
+            <TrendingUp className="w-4 h-4" /> Save Rental Profile
           </span>
         ) : (
-          'Complete_Mandatory_Fields_to_Continue'
+          'Complete all required fields to continue'
         )}
       </button>
     </div>

@@ -254,7 +254,7 @@ export default function ClosingPanel() {
                            onClick={(e) => { e.stopPropagation(); handleLawyerVerify(type); }}
                            className="mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded hover:bg-indigo-100"
                          >
-                            Simulate Lawyer Verification
+                            Verify Document (Demo)
                          </button>
                       )}
                    </div>
@@ -280,7 +280,7 @@ export default function ClosingPanel() {
                  <h3 className="text-lg font-medium tracking-tight">Smart Contract Title Integrity</h3>
                </div>
                <p className="text-indigo-200 text-sm mb-6 max-w-lg">
-                 Before releasing Capital to wire, we verify digital title hashes against immutable ledger parity to ensure unburdened structural ownership.
+                  Before releasing capital to wire, we check digital title hashes against the immutable ledger to confirm clean title before wiring funds.
                </p>
 
                {portal.blockchainTitleVerified ? (
@@ -297,7 +297,7 @@ export default function ClosingPanel() {
                    disabled={isMining}
                    className={`px-6 py-3 bg-bg-surface text-indigo-900 font-medium rounded-lg text-sm shadow-md transition ${isMining ? 'opacity-70' : 'hover:scale-105'} flex items-center`}
                  >
-                   {isMining ? 'Interrogating Network...' : 'Ping Blockchain Registry'}
+                    {isMining ? 'Verifying...' : 'Verify Title on Chain'}
                  </button>
                )}
              </div>
@@ -314,14 +314,14 @@ export default function ClosingPanel() {
               
               {!portal.assignedLawyerUid ? (
                  <>
-                   <p className="text-sm text-text-secondary mb-6">Scan your physical state domain (Simulated: FL) for certified Title Attorneys deployed through the PaperWorking subscription platform.</p>
+                   <p className="text-sm text-text-secondary mb-6">Find licensed Title Attorneys in your state through PaperWorking's professional network.</p>
                    {availableLawyers.length === 0 ? (
                       <button 
                          onClick={searchLawyersData}
                          disabled={searchingLawyers}
                          className="w-full flex justify-center items-center py-2.5 bg-gray-900 text-white rounded-md text-sm font-medium hover:bg-gray-800 transition"
                       >
-                         {searchingLawyers ? 'Deploying Array...' : <><Search className="w-4 h-4 mr-2"/> Scan Network</>}
+                         {searchingLawyers ? 'Searching...' : <><Search className="w-4 h-4 mr-2"/> Find Attorneys</>}
                       </button>
                    ) : (
                       <div className="space-y-3">
@@ -329,10 +329,10 @@ export default function ClosingPanel() {
                           <div key={lw.uid} className="p-3 border rounded-lg border-border-accent flex justify-between items-center">
                             <div>
                               <p className="text-sm font-medium">{lw.displayName}</p>
-                              <p className="text-xs text-text-secondary">{lw.state} Certified Target</p>
+                              <p className="text-xs text-text-secondary">{lw.state} Licensed Attorney</p>
                             </div>
                             <button onClick={() => assignLawyer(lw.uid)} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded hover:bg-blue-100">
-                               Recruit
+                               Assign
                             </button>
                           </div>
                         ))}
@@ -342,8 +342,8 @@ export default function ClosingPanel() {
               ) : (
                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                     <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
-                    <p className="text-sm font-medium text-green-900">Attorney Requisitioned</p>
-                    <p className="text-xs text-green-700 mt-1">Our certified legal entity is actively monitoring your Dropzones and acting as a compliance buffer.</p>
+                    <p className="text-sm font-medium text-green-900">Attorney Assigned</p>
+                    <p className="text-xs text-green-700 mt-1">Your assigned attorney is reviewing your closing docs and flagging anything that needs attention.</p>
                  </div>
               )}
             </div>

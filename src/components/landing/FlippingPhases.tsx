@@ -25,7 +25,7 @@ const PHASES = [
     text: '#595959',
     items: [
       { subtitle: 'Inspection', desc: 'Identify structural issues, plumbing, or electrical issues that could affect your capital position.' },
-      { subtitle: 'Title Search', desc: 'Ensure there are no liens or legal surprises attached to the property.' }
+      { subtitle: 'Title Search', desc: 'Confirm there are no liens or legal surprises attached to the property.' }
     ]
   },
   {
@@ -36,7 +36,7 @@ const PHASES = [
     text: '#f2f2f2',
     items: [
       { subtitle: 'Focus on ROI', desc: 'Prioritize kitchens and bathrooms. Avoid over-improving for the neighborhood.' },
-      { subtitle: 'Permits', desc: 'Ensure all work is legal to avoid massive headaches during the sale.' }
+      { subtitle: 'Permits', desc: 'Make sure all work is permitted — unpermitted renovations create massive headaches at sale.' }
     ]
   },
   {

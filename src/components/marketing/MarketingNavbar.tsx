@@ -63,7 +63,7 @@ export default function MarketingNavbar() {
                 : 'bg-bg-surface text-text-primary border-pw-white hover:bg-transparent hover:text-pw-white'
             }`}
           >
-            Deploy Environment
+            Get Started
           </Link>
         </div>
 
@@ -81,7 +81,7 @@ export default function MarketingNavbar() {
            <Link href="#features" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Features</Link>
            <Link href="#pricing" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Pricing</Link>
            <Link href="/login" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Log in</Link>
-           <Link href="/register" className="bg-pw-black text-pw-white py-5 text-center text-sm font-black uppercase tracking-[0.5em] border border-pw-black">Deploy Environment</Link>
+           <Link href="/register" className="bg-pw-black text-pw-white py-5 text-center text-sm font-black uppercase tracking-[0.5em] border border-pw-black">Get Started</Link>
         </div>
       )}
     </header>

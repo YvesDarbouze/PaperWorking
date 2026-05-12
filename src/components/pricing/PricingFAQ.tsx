@@ -42,7 +42,7 @@ const faqItems: FAQItem[] = [
   {
     question: 'Can I switch between Individual, Team, and Lawyer plans?',
     answer:
-      'Absolutely. Upgrades take effect immediately with a prorated charge for the remainder of your billing cycle. Downgrades apply at the start of your next billing period. Your data carries forward seamlessly in both directions.',
+      'Yes. Upgrades take effect immediately with a prorated charge for the rest of your billing cycle. Downgrades apply at the start of your next billing period. Your data stays intact in both directions.',
   },
 ];
 

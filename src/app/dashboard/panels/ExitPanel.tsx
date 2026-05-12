@@ -179,7 +179,7 @@ export default function ExitPanel() {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-bg-primary text-text-primary opacity-30">
         <Target className="w-12 h-12 mb-4" />
-        <p className="font-black uppercase tracking-[0.3em] text-xs">Awaiting_Exit_Entity</p>
+        <p className="font-black uppercase tracking-[0.3em] text-xs">Select a property to exit</p>
       </div>
     );
   }
@@ -198,7 +198,7 @@ export default function ExitPanel() {
     if (!currentProject.financials?.listingDate) {
       updateProjectFinancials(currentProject.id, { listingDate: new Date() });
     }
-    toast.success('DEBUT: Property synchronized with MLS.', { style: { background: 'black', color: 'white', border: '1px solid #333' } });
+    toast.success('Listing info saved.', { style: { background: 'black', color: 'white', border: '1px solid #333' } });
   };
 
   const handleExecuteSale = () => {
@@ -208,7 +208,7 @@ export default function ExitPanel() {
     });
     const updatedDeals = projects.map(d => d.id === currentProject.id ? { ...d, status: 'Sold' as const } : d);
     setDeals(updatedDeals);
-    toast.success('PROTOCOL_COMPLETE: Asset realized.', { icon: '💎', style: { background: '#10b981', color: 'white' } });
+    toast.success('Sale recorded successfully.', { icon: '💎', style: { background: '#10b981', color: 'white' } });
   };
 
   const handleSaveRentalData = () => {
@@ -238,7 +238,7 @@ export default function ExitPanel() {
                 <div className="w-2 h-2 bg-pw-black"></div>
                 <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">The_Exit_Hub</h1>
              </div>
-             <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em]">Final.Disposition.Protocol_v5.2</p>
+             <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em]">Sell or rent — your exit, your call.</p>
           </div>
           <select 
               className="bg-pw-black text-pw-white text-[10px] font-black uppercase tracking-widest border border-pw-black px-6 py-3 focus:outline-none hover:bg-pw-accent transition-colors"
@@ -285,23 +285,23 @@ export default function ExitPanel() {
                     <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase flex items-center">
                       <Camera className="w-3.5 h-3.5 mr-2" /> Asset_Packaging
                     </h3>
-                    <span className="text-[10px] font-bold text-text-secondary">STAGING_v4</span>
+                    <span className="text-[10px] font-bold text-text-secondary">STAGING</span>
                   </div>
                   <p className="text-[10px] font-bold text-text-secondary uppercase leading-relaxed mb-8 tracking-wider">
-                    Integrate high-resolution staging assets and syndicate coordinates to global market endpoints.
+                    Upload listing photos and paste your MLS link.
                   </p>
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 border border-border-accent bg-bg-primary">
-                        <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Inventory_Count</label>
+                        <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Photo Count</label>
                         <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none ag-data" />
                       </div>
                       <div className="flex items-center p-4">
-                        <span className="text-[10px] font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">.RAW / .4K_MP4 Virtual_Space</span>
+                        <span className="text-[10px] font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">Photos & Virtual Tour</span>
                       </div>
                     </div>
                     <div className="p-4 border border-border-accent bg-bg-primary">
-                      <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Syndication_Link [MLS]</label>
+                      <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">MLS Listing Link</label>
                       <div className="relative flex items-center">
                         <LinkIcon className="w-3.5 h-3.5 text-text-secondary mr-3" />
                         <input type="url" placeholder="EX: https://zillow.com/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-transparent text-xs font-mono font-bold w-full focus:outline-none" />
@@ -394,12 +394,12 @@ export default function ExitPanel() {
                             className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all"
                             style={{ background: '#ffffff', border: '1px solid #595959', color: '#595959' }}
                           >
-                            Audit_MLS_Listing <ExternalLink className="w-3 h-3 ml-2" />
+                            View MLS Listing <ExternalLink className="w-3 h-3 ml-2" />
                           </a>
                         )}
                         {(currentProject.status !== 'Listed' && currentProject.status !== 'Sold') && (
                           <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#ffffff', opacity: 0.7 }}>
-                            Awaiting_Market_Injection
+                            Not yet listed
                           </p>
                         )}
                       </div>

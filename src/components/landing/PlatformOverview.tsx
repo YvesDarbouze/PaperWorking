@@ -29,7 +29,7 @@ const PHASES = [
     label: 'Acquisition',
     subtitle: 'The Capital Gateway',
     icon: Landmark,
-    body: 'We centralize deal sourcing and syndication. Identify targets, generate automated offer letters, and securely crowdfund capital commitments — all in one streamlined environment.',
+    body: 'Source deals, generate offer letters, and collect capital commitments from your syndicate. No more toggling between CRMs, email threads, and shared drives to figure out where a deal stands.',
     accentColor: '#4ade80', // green-400
   },
   {
@@ -37,7 +37,7 @@ const PHASES = [
     label: 'Purchase',
     subtitle: 'The Compliance Vault',
     icon: ShieldCheck,
-    body: 'We eliminate closing chaos. PaperWorking acts as a secure digital vault for loan processing, attorney coordination, and strict document management — ensuring contingency deadlines are never missed.',
+    body: 'Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one place. You stop chasing PDFs through email and start closing on time.',
     accentColor: '#60a5fa', // blue-400
   },
   {
@@ -45,7 +45,7 @@ const PHASES = [
     label: 'Hold',
     subtitle: 'Margin Protection',
     icon: Clock,
-    body: 'We protect your profit from the silent killer: time. The platform meticulously tracks daily holding costs, rehab timelines, and operational burn rates — expenses that routinely erode ROI if left unmonitored.',
+    body: 'Every day you hold a property, it costs you money. The platform tracks your daily burn rate down to the penny so you know exactly what each extra week on market does to your ROI.',
     accentColor: '#facc15', // yellow-400
   },
   {
@@ -53,7 +53,7 @@ const PHASES = [
     label: 'Exit',
     subtitle: 'Financial Reconciliation',
     icon: BarChart3,
-    body: 'We finalize the math. Whether holding for rental flow or selling the asset, the platform aggregates all historical project costs, visualizes final metrics, and automatically generates clean, exportable tax documentation.',
+    body: 'Sale or refi, the platform pulls every cost from Phases 1 through 3 and calculates your actual ROI, IRR, and cash-on-cash return. Export a one-page deal summary or tax-ready CSV for your CPA.',
     accentColor: '#f472b6', // pink-400
   },
 ];
@@ -193,7 +193,7 @@ export default function PlatformOverview() {
             className="text-sm sm:text-base md:text-[17px] leading-[1.75] sm:leading-[1.8] mb-12 sm:mb-16 md:mb-20 text-center max-w-3xl mx-auto"
             style={{ color: '#b0b0b0' }}
           >
-            PaperWorking is an end-to-end operational framework built specifically for serious real estate investors. It replaces fragmented spreadsheets and legacy CRMs with a centralized system mapped directly to the four physical phases of the investment lifecycle.
+            Most investors manage six- and seven-figure deals on spreadsheets that break when you add a column. PaperWorking replaces that mess with one system organized around how deals actually work: four phases, acquisition through exit, with every dollar tracked along the way.
           </motion.p>
 
           {/* ── 4-Phase Grid ── */}
@@ -234,7 +234,7 @@ export default function PlatformOverview() {
               className="text-base sm:text-[17px] leading-[1.8] mb-14"
               style={{ color: '#b0b0b0' }}
             >
-              We transition investors from a state of operational liability — lost documents, untracked holding costs, messy closings — to institutional-grade precision. You cannot scale a real estate portfolio without structural integrity. Stop managing high-stakes capital on spreadsheets, and treat your investments like a business.
+              Lost documents. Untracked holding costs. Last-minute closings where nobody can find the right version of the HUD-1. That's what happens when your deal management lives in five different places. PaperWorking puts it all under one roof so you can scale without the chaos. You're running a business. Your tools should reflect that.
             </p>
 
             {/* ── CTA Button ── */}

@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
             Data currently unavailable
           </h3>
           <p className="text-xs text-[#7F7F7F] max-w-sm mb-6 leading-relaxed font-medium">
-            The {this.props.name || 'interface segment'} encountered an institutional sync error. 
+            The {this.props.name || 'interface segment'} hit a loading error. 
             The rest of your dashboard remains operational.
           </p>
           <button

@@ -42,7 +42,7 @@ export default function ReportsPage() {
             <div className="bg-emerald-600 p-1.5 rounded-lg">
               <BarChart3 className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-[0.2em]">Institutional Intelligence</span>
+            <span className="text-xs font-bold text-emerald-600 uppercase tracking-[0.2em]">Portfolio Intelligence</span>
           </div>
           <h1 className="text-4xl font-normal text-text-primary tracking-tight">Performance Snapshots</h1>
           <p className="text-text-secondary font-medium mt-2">Aggregated yields and capital deployment analysis.</p>
@@ -139,7 +139,7 @@ export default function ReportsPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Institutional REO</p>
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mb-4">Bank-Owned REO</p>
                   <div className="flex items-end space-x-4 mb-2">
                     <span className="text-3xl font-normal text-text-primary">$840K</span>
                     <span className="text-xs text-emerald-500 font-bold mb-1">+1.5%</span>

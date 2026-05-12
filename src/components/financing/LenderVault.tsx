@@ -99,7 +99,7 @@ export default function LenderVault() {
                     
                     <label className="flex items-center justify-between cursor-pointer p-2 hover:bg-bg-primary rounded-md transition">
                         <span className="text-sm font-medium text-text-primary flex flex-col">
-                            Utilize Seller Concessions
+                            Apply Seller Concessions
                             <span className="text-xs text-text-secondary font-normal mt-0.5">Credits closing costs heavily</span>
                         </span>
                         <div className="relative">

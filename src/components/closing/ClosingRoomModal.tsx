@@ -61,7 +61,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
     const handleWeb3Ping = async () => {
         setIsPinging(true);
-        toast.loading('Pinging inter-state web3 title nodes...', { id: 'web3' });
+        toast.loading('Verifying title on chain...', { id: 'web3' });
         try {
             const res = await pingDigitalRegistry(deal.address);
             updateClosingRoom(deal.id, {
@@ -151,7 +151,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 <div className="bg-bg-primary border border-border-accent p-4 rounded-lg space-y-3">
                                     <p className="text-xs text-text-secondary flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches Near Property:</p>
                                     {isSearchingLawyers ? (
-                                        <p className="text-sm text-text-secondary">Scanning local subscriber registry...</p>
+                                        <p className="text-sm text-text-secondary">Searching for attorneys nearby...</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {matchingLawyers.map(l => (
@@ -175,7 +175,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                       }}
                                       className="w-full bg-slate-900 text-white rounded-lg py-2 text-sm font-medium hover:bg-slate-800 transition"
                                    >
-                                      Simulate Lawyer Verification
+                                      Verify Document (Demo)
                                    </button>
                                 </div>
                             )}

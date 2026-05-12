@@ -32,7 +32,7 @@ export default function MarketVitals({ address, projectId, className = '' }: Mar
 
   const fetchDemographics = useCallback(async () => {
     if (!zip) {
-      setFetchError('No ZIP code found in property address. Ensure the address includes a 5-digit ZIP.');
+      setFetchError('No ZIP code found in property address. Make sure the address includes a 5-digit ZIP.');
       return;
     }
     setIsLoading(true);
@@ -106,7 +106,7 @@ export default function MarketVitals({ address, projectId, className = '' }: Mar
             Current address: <span className="font-mono">{address || '—'}</span>
           </p>
           <p className="text-[9px] mt-1" style={{ color: 'var(--pw-border)' }}>
-            Ensure the address includes a valid 5-digit ZIP code to load market demographics.
+            Make sure the address includes a valid 5-digit ZIP code to load market demographics.
           </p>
         </div>
       )}

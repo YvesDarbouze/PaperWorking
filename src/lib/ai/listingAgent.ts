@@ -32,7 +32,7 @@ export async function generatePropertyDescription(specs: ListingSpecs) {
     TARGET VALUE: $${(specs.arv / 100).toLocaleString()}
     
     STYLE REQUIREMENTS:
-    - Tone: Institutional, precise, and sophisticated (Antigravity Brand Voice).
+    - Tone: Direct, precise, and authoritative (PaperWorking Brand Voice).
     - Visuals: Describe spaces with architectural clarity (e.g., "Open-concept flow", "Natural light optimization").
     - Materials: Focus on the durability and premium nature of ${specs.renovations.join(', ')}.
     - Neighborhood DNA: Briefly touch on the long-term investment viability of the ${specs.neighborhood} area.

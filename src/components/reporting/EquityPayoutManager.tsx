@@ -52,7 +52,7 @@ export default function EquityPayoutManager() {
                </div>
                {!isSold && (
                  <div className="text-right ml-4">
-                    <p className="text-sm text-blue-700 font-medium tracking-tight">Property has not liquidated yet.</p>
+                    <p className="text-sm text-blue-700 font-medium tracking-tight">Property has not sold yet.</p>
                     <p className="text-xs text-blue-500">Amounts shown are projections.</p>
                  </div>
                )}
@@ -61,7 +61,7 @@ export default function EquityPayoutManager() {
             {/* Investor List */}
             {(investors?.length ?? 0) === 0 ? (
                <div className="py-6 text-center text-sm text-text-secondary bg-bg-primary rounded-lg border border-border-accent">
-                  No fractional investors found on the cap table for this asset. Operating 100% Sponsor Equity.
+                  No investors on this deal yet. You hold 100% equity.
                </div>
             ) : (
                <div className="border border-border-accent rounded-lg overflow-hidden">
@@ -95,7 +95,7 @@ export default function EquityPayoutManager() {
                                   disabled={!isSold || targetProfit <= 0 || payoutAmount <= 0}
                                   className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 rounded-full text-xs font-bold transition"
                                 >
-                                   <Wallet className="w-3 h-3" /> Execute Wire
+                                   <Wallet className="w-3 h-3" /> Send Payment
                                 </button>
                              </td>
                            </tr>

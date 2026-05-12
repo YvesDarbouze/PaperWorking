@@ -111,15 +111,15 @@ export default function BlogPostPage() {
           <div className="text-text-primary leading-loose space-y-8 text-base font-medium uppercase tracking-tight">
             {post.content}
             <p className="normal-case">
-              The transformation strategy focused primarily on structural flow and premium surface materials. 
-              By leveraging institutional-grade acquisitions data, we were able to identify a 30% discount 
-              to neighborhood comps, allowing for a higher rehab ceiling.
+              The strategy focused on structural flow and premium finishes. 
+              We pulled comps data that showed comparable properties trading at 30% above our 
+              basis, giving us room to push the rehab budget higher than usual.
             </p>
             <h4 className="text-2xl font-black tracking-tighter text-text-primary pt-12 uppercase">Operational Latency Control</h4>
             <p className="normal-case">
-              In high-stakes property flipping, the bottleneck is rarely capital; it&apos;s operational consistency. 
-              Our PaperWorking platform enabled the project manager to reduce communication latency across 
-              four distinct sub-contractor teams, resulting in a 14-day reduction in the total lifecycle timeline.
+              In flips like this, the bottleneck is rarely capital. It&apos;s coordination. 
+              PaperWorking cut the communication lag across four sub-contractor teams, 
+              shaving 14 days off the total project timeline.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function BlogPostPage() {
         <div className="bg-pw-black p-16 text-center text-white border border-pw-black group hover:bg-bg-surface hover:text-text-primary transition-all">
           <h4 className="text-3xl font-black tracking-tighter uppercase mb-6 transition-all">Scalability begins with visibility.</h4>
           <p className="text-white opacity-50 group-hover:text-text-secondary text-sm font-black uppercase tracking-widest mb-12 max-w-sm mx-auto transition-all">
-            Deploy professional operational protocols with institutional consistency.
+            See every dollar, every deadline, every contractor — in one place.
           </p>
           <Link 
             href="/#"

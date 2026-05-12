@@ -40,7 +40,7 @@ const STEPS = [
     accentText: '#f2f2f2',
     copy: {
       headline: 'Centralized Deal Sourcing & Syndication.',
-      body: 'Investors can identify targets, generate automated offer letters, and securely crowdfund capital commitments in one streamlined environment. Every dollar is sourced, documented, and attributed before you make an offer.',
+      body: 'Find the deal, run the numbers, and collect capital commitments from your syndicate. Every dollar is sourced, documented, and attributed before you make an offer. No spreadsheets. No email chains.',
       bullets: [
         'Centralized prospect tracking with market filters',
         'Partner crowdfunding with real-time capital commitments',
@@ -61,7 +61,7 @@ const STEPS = [
     accentText: '#f2f2f2',
     copy: {
       headline: 'Eliminate Closing Chaos.',
-      body: 'PaperWorking acts as a secure digital vault for loan processing, attorney coordination, and strict document management — ensuring contingency deadlines are never missed and closings happen on time.',
+      body: 'Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one workspace. You stop chasing PDFs through email and start closing on time.',
       bullets: [
         'Encrypted document vault with role-based access',
         'Vendor assignment & attorney coordination tracking',
@@ -82,7 +82,7 @@ const STEPS = [
     accentText: '#595959',
     copy: {
       headline: 'Protect Your Profit From the Silent Killer: Time.',
-      body: 'The platform meticulously tracks daily holding costs, rehab timelines, and operational burn rates — expenses that routinely erode ROI if left unmonitored. The 70% Rule is enforced in real time so overruns are flagged before they eat your profit.',
+      body: 'Your daily holding costs, rehab timeline, and burn rate update automatically from the day you close. The 70% Rule runs in real time, and the platform flags budget overruns before they eat your profit.',
       bullets: [
         'Daily burn-rate tracking from day of close',
         '70% Rule calculator with live threshold alerts',
@@ -369,12 +369,12 @@ export default function HowItWorks() {
             className="text-base sm:text-lg lg:text-xl leading-relaxed text-balance max-w-3xl mx-auto"
             style={{ color: '#7f7f7f' }}
           >
-            PaperWorking is an end-to-end operational framework built specifically
-            for serious real estate investors. It replaces fragmented spreadsheets
-            and legacy CRMs with a centralized system mapped directly to the four
-            physical phases of the investment lifecycle. By aligning our software
-            with the actual realities of real estate development, PaperWorking
-            solves the critical pain points that cost investors time and capital.
+            Most investors manage six- and seven-figure deals on spreadsheets that
+            break when you add a column. PaperWorking replaces that mess with one
+            system organized around how deals actually work: four phases,
+            acquisition through exit, with every dollar tracked along the way.
+            Because when your tools match how you operate, you stop losing money
+            to bad data.
           </motion.p>
 
           {/* Visual divider */}
@@ -454,11 +454,11 @@ export default function HowItWorks() {
             className="text-base sm:text-lg leading-relaxed mb-12 mx-auto max-w-2xl"
             style={{ color: '#a5a5a5' }}
           >
-            We transition investors from a state of operational liability — lost
-            documents, untracked holding costs, messy closings — to
-            institutional-grade precision. You cannot scale a real estate portfolio
-            without structural integrity. Stop managing high-stakes capital on
-            spreadsheets, and treat your investments like a business.
+            Lost documents. Untracked holding costs. Last-minute closings where
+            nobody can find the right version of the HUD-1. That's what happens
+            when your deal management lives in five different places. PaperWorking
+            puts it all under one roof so you can scale without the chaos.
+            You're running a business. Your tools should reflect that.
           </motion.p>
 
           {/* CTA Button */}

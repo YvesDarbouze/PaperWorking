@@ -7,11 +7,11 @@ import { Plus, Minus } from 'lucide-react';
 const FAQS = [
   {
     question: "Why should I upgrade from spreadsheets to PaperWorking?",
-    answer: "Spreadsheets leak money. PaperWorking is the institutional-grade operating system for elite real estate investors. We eliminate scattered emails and broken formulas by uniting your entire pipeline—from acquisition to exit—so you catch costly mistakes before they happen."
+    answer: "Spreadsheets leak money. A formula breaks, a tab gets deleted, and suddenly your cost basis is off by $30K. PaperWorking replaces all of that with one system that tracks every dollar from acquisition to exit, so you catch mistakes before they hit your bottom line."
   },
   {
     question: "Will this help me raise capital from investors faster?",
-    answer: "Yes. Capital follows professionalism. Instantly share a secure, beautiful deal portal with potential partners. You project institutional credibility, giving private lenders the confidence they need to wire funds today, not next week."
+    answer: "Yes. Capital follows professionalism. Share a secure deal portal with potential partners where they can review your track record, projected returns, and offering docs. It gives private lenders the confidence they need to wire funds today, not next week."
   },
   {
     question: "How does PaperWorking protect my profit margins?",

@@ -142,7 +142,7 @@ function VendorCard({ vendor, onRequestQuote }: { vendor: VendorProfile; onReque
            <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-1">{vendor.type}</p>
            {vendor.verified && (
              <p className="text-xs font-black text-text-primary uppercase tracking-widest flex items-center gap-1">
-               <ShieldCheck className="w-3 h-3" /> Institutional Profile
+               <ShieldCheck className="w-3 h-3" /> Verified Profile
              </p>
            )}
         </div>

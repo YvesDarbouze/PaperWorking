@@ -128,7 +128,7 @@ export default function VendorOnboardingWizard() {
                 <div>
                   <h4 className="text-xs font-black text-text-primary uppercase tracking-widest mb-2">E&O Requirement</h4>
                   <p className="text-sm font-medium text-text-secondary leading-relaxed">
-                    PaperWorking requires errors & omissions coverage of at least $1,000,000 to maintain institutional standing in the marketplace.
+                    PaperWorking requires errors & omissions coverage of at least $1,000,000 to maintain good standing in the marketplace.
                   </p>
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function VendorOnboardingWizard() {
               )}
               {currentStep === 'Complete' && (
                 <button className="px-12 py-5 bg-pw-black text-white rounded-none font-black text-xs uppercase tracking-[0.3em] hover:bg-pw-fg transition-all">
-                  Navigate to Marketplace
+                  Go to Marketplace
                 </button>
               )}
             </div>

@@ -36,7 +36,7 @@ export default function AnnouncementBanner() {
                 <span className="text-xs font-bold uppercase tracking-widest text-amber-400">New Release</span>
               </div>
               <p className="text-sm font-medium tracking-tight">
-                PaperWorking 2.0 is live: Institutional-grade portfolio analytics and deep-focus Kanban now available for all users.
+                PaperWorking 2.0 is live: Full portfolio analytics and deep-focus Kanban now available for all users.
               </p>
               <a 
                 href="/blog/q2-market-update-inventory-deficit"

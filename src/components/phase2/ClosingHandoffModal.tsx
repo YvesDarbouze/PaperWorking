@@ -76,8 +76,8 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
       <div className="bg-bg-surface rounded-2xl shadow-2xl border border-border-accent w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-6 border-b border-border-accent bg-gradient-to-b from-bg-primary/50 to-transparent">
-          <h2 className="text-xl font-bold text-text-primary tracking-tight">Execute Purchase</h2>
-          <p className="text-sm text-text-secondary mt-1.5 leading-relaxed">Finalize the HUD-1 costs to close out Phase 2 and lock the acquisition ledger.</p>
+          <h2 className="text-xl font-bold text-text-primary tracking-tight">Confirm Purchase</h2>
+          <p className="text-sm text-text-secondary mt-1.5 leading-relaxed">Enter your final HUD-1 closing costs to complete Phase 2 and lock your acquisition numbers.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">

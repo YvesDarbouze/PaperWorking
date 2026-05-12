@@ -6,7 +6,7 @@ import HowItWorks from '@/components/landing/HowItWorks';
 export const metadata: Metadata = {
   title: 'How It Works — PaperWorking',
   description:
-    'PaperWorking is the end-to-end real estate investment operating system. Manage every phase — Acquisition, Purchase, Hold, and Exit — with institutional-grade precision.',
+    'PaperWorking is the real estate investment operating system. Manage every phase of a deal — Acquisition, Purchase, Hold, and Exit — with every dollar tracked from day one.',
   openGraph: {
     title: 'How It Works — PaperWorking',
     description:

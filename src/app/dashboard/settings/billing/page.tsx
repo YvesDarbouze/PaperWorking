@@ -170,7 +170,7 @@ export default function BillingSettingsPage() {
         ) : (
           <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-[8px]">
             <CreditCard className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3" />
-            <p className="text-sm text-[#7F7F7F] mb-4">No institutional payment method detected.</p>
+            <p className="text-sm text-[#7F7F7F] mb-4">No payment method on file.</p>
             <Link href="/pricing" className="ag-button !w-auto !px-6 !text-xs">
               Configure Payment
             </Link>

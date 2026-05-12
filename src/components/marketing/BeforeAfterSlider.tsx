@@ -52,7 +52,7 @@ export default function BeforeAfterSlider({ beforeImage, afterImage }: BeforeAft
           style={{ width: `${100 / (sliderPos / 100)}%` }} // Maintain aspect ratio when clipped
         />
         <div className="absolute top-4 left-4 bg-emerald-500/80 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-widest whitespace-nowrap z-10">
-          After: Institutional Exit
+          After: Profitable Exit
         </div>
       </div>
 

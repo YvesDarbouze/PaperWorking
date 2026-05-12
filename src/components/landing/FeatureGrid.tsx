@@ -103,7 +103,7 @@ const features: Feature[] = [
     icon: <Icon70Rule />,
     title: 'The 70% Rule Calculator',
     description:
-      'Instantly validate acquisition profitability. Input ARV, repair costs, and purchase price — get a go/no-go decision backed by institutional-grade underwriting logic.',
+      'Plug in ARV, repair costs, and purchase price. The calculator tells you whether the deal works before you write the offer. If the numbers don\u0027t hit 70%, you walk.',
   },
   {
     icon: <IconLedger />,

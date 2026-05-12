@@ -16,7 +16,7 @@ export default function BlogIndexPage() {
         {/* Institutional Header Section */}
         <div className="max-w-3xl mb-32">
           <p className="text-xs font-black uppercase tracking-[0.4em] text-text-secondary mb-6">
-            Institutional intelligence ledger
+            Operator intelligence ledger
           </p>
           <h1 className="text-6xl sm:text-7xl font-black tracking-tighter text-text-primary leading-none uppercase mb-10">
             The Knowledge <br />
@@ -24,7 +24,7 @@ export default function BlogIndexPage() {
           </h1>
           <p className="text-text-secondary font-medium text-base leading-relaxed max-w-xl">
             Technical breakdowns, market reconnaissance, and operational protocols for modern high-yield real estate. 
-            Scaling from initial acquisition to institutional exit.
+            Scaling from initial acquisition to profitable exit.
           </p>
         </div>
 

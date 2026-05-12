@@ -187,7 +187,7 @@ export default function RegisterPage() {
           </span>
         </div>
         <h1 className="text-3xl font-normal tracking-tighter" style={{ color: '#ffffff' }}>Secure Onboarding.</h1>
-        <p className="mt-4 text-sm text-[#888] font-normal">Initialize your institutional identity.</p>
+        <p className="mt-4 text-sm text-[#888] font-normal">Set up your account to get started.</p>
       </div>
 
       {authError && (

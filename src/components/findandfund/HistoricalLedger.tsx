@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 /* ═══════════════════════════════════════════════════════
    HistoricalLedger — Track Record Intake
    
-   Institutional-grade ledger for logging past acquisitions.
+   Structured ledger for logging past acquisitions.
    Enforces document density and high-contrast clarity.
    ═══════════════════════════════════════════════════════ */
 

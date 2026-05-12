@@ -188,11 +188,11 @@ function StaticPhase1({ deal }: { deal: Project }) {
   return (
     <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20 mt-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 1: Acquisition</h1>
-       <p className="text-text-secondary mb-8">Analyzing projections and fractional liquidity for {deal.address}.</p>
+       <p className="text-text-secondary mb-8">Review your deal numbers and financing breakdown for {deal.address}.</p>
        
        <ExplainerVideoPlaceholder phaseName="Acquisition" />
        <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent text-left mb-8">
-          <p className="text-sm font-medium text-text-secondary uppercase">Purchase Matrix</p>
+          <p className="text-sm font-medium text-text-secondary uppercase">Purchase Price</p>
           <p className="text-3xl font-normal mt-2">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
        </div>
        
@@ -205,12 +205,12 @@ function StaticPhase2({ deal }: { deal: Project }) {
   return (
     <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4 text-center">Phase 2: Purchase</h1>
-       <p className="text-text-secondary mb-8 text-center">Clearing Web3 records and legal hurdles via the Closing Room.</p>
+       <p className="text-text-secondary mb-8 text-center">Verify title, upload closing docs, and assign your attorney in the Closing Room.</p>
        
        <ExplainerVideoPlaceholder phaseName="Purchase" />
        <div className="space-y-4 mb-8">
           <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
-             <span className="font-medium text-text-primary">Digital Title Search</span>
+             <span className="font-medium text-text-primary">Title Search</span>
              <CheckCircle className="text-green-500 w-5 h-5" />
           </div>
           <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
@@ -267,7 +267,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   return (
     <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 3: Hold</h1>
-       <p className="text-text-secondary mb-8">Execute rehab workflows and triage General Contractor draw requests.</p>
+       <p className="text-text-secondary mb-8">Track rehab spending, approve contractor draw requests, and monitor your budget.</p>
        
        <ExplainerVideoPlaceholder phaseName="Hold" />
        

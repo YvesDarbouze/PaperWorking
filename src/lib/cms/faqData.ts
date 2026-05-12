@@ -36,7 +36,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   // ── Getting Started ──
   {
     question: 'What is PaperWorking?',
-    answer: 'PaperWorking is an end-to-end real estate investment operating system. It manages every phase of the deal lifecycle — Acquisition, Purchase, Hold, and Exit — with institutional-grade precision, helping investors reduce risk and close faster.',
+    answer: 'PaperWorking is an operating system for real estate investors. It covers every phase of the deal lifecycle — Acquisition, Purchase, Hold, and Exit — with every dollar tracked from day one. Less risk, faster closings, numbers you can actually trust.',
     category: 'getting-started',
   },
   {
@@ -51,7 +51,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Can I invite team members to my account?',
-    answer: 'Yes. Navigate to Dashboard → Team to invite collaborators. You can assign roles such as Admin, Lead Investor, Accountant, or Contractor. Each role has specific permissions controlling what data they can view and edit.',
+    answer: 'Yes. Go to Dashboard → Team and invite collaborators by email. Assign roles — Admin, Lead Investor, Accountant, or Contractor — and each person only sees what their role allows.',
     category: 'getting-started',
   },
   {
@@ -93,7 +93,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Where do I upload the Closing Disclosure (CD) or HUD-1?',
-    answer: 'Navigate to the Engine Room → Financial Statements tab. Under Settlement Documents, upload the Closing Disclosure. The system automatically extracts key cost basis data including purchase price, closing costs, and prorations.',
+    answer: 'Open the Engine Room → Financial Statements tab. Under Settlement Documents, upload the Closing Disclosure. The system pulls the key cost basis data automatically — purchase price, closing costs, and prorations.',
     category: 'purchase',
   },
   {

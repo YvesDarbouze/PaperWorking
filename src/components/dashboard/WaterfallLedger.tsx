@@ -37,10 +37,10 @@ const WaterfallLedger: React.FC<WaterfallLedgerProps> = ({
         <div className="space-y-2">
           <p className="ag-label text-text-secondary opacity-60">Payee Waterfall</p>
           <h3 className="text-3xl font-normal text-text-primary tracking-tighter">Settlement Ledger</h3>
-          <p className="text-sm text-text-secondary font-normal tracking-tight">Active disbursement protocol for partner settlement.</p>
+          <p className="text-sm text-text-secondary font-normal tracking-tight">Track and confirm payouts to partners, lenders, and vendors at closing.</p>
         </div>
         <div className="text-right">
-          <p className="ag-label opacity-60 mb-2">Total Exposure</p>
+          <p className="ag-label opacity-60 mb-2">Total Owed</p>
           <p className="text-2xl font-medium text-text-primary tracking-tighter">{formatCentsToDollars(totalAmount)}</p>
         </div>
       </div>
@@ -57,10 +57,10 @@ const WaterfallLedger: React.FC<WaterfallLedgerProps> = ({
         <table className="w-full text-left border-collapse mt-4">
           <thead>
             <tr className="text-[10px] font-bold tracking-[0.2em] text-text-secondary uppercase">
-              <th className="px-6 py-4">Identity</th>
+              <th className="px-6 py-4">Payee</th>
               <th className="px-6 py-4">Allocation</th>
               <th className="px-6 py-4 text-right">Value</th>
-              <th className="px-6 py-4 text-center w-24">Auth</th>
+              <th className="px-6 py-4 text-center w-24">Confirm</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-pw-border/20">
@@ -117,7 +117,7 @@ const WaterfallLedger: React.FC<WaterfallLedgerProps> = ({
       <div className="p-10 bg-bg-surface border-t border-border-accent/10 shrink-0">
         <button className="ag-button w-full space-x-4">
           <DollarSign className="w-5 h-5" />
-          <span>Execute Batch Disbursement</span>
+          <span>Send All Payouts</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1" />
         </button>
         <p className="mt-6 text-[11px] text-text-secondary font-normal tracking-tight text-center italic opacity-60">

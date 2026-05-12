@@ -104,7 +104,7 @@ export function ClearToCloseMilestone({
               onClick={onExecutePurchase}
               className="flex items-center justify-center w-full px-8 py-3 rounded-lg font-bold shadow-md transform hover:scale-105 transition-all text-white bg-emerald-600 hover:bg-emerald-700 mt-2"
             >
-              Execute Purchase
+              Confirm Purchase
             </button>
           )}
           

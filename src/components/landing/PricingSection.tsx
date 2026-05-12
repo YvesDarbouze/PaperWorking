@@ -181,12 +181,12 @@ const PRICING_FAQ = [
   {
     question: 'Do Vendors get access to my financial data?',
     answer:
-      'Absolutely not. Vendor accounts are structurally isolated — they can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information. Access is enforced at the database level, not just the UI.',
+      'No. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information. Access is enforced at the database level, not just the UI.',
   },
   {
     question: 'Can I upgrade from Individual to Team later?',
     answer:
-      'Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the Team plan. All your existing deals, documents, and financial records carry forward seamlessly — no data migration needed.',
+      'Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the Team plan. All your existing deals, documents, and financial records stay intact. No data migration needed.',
   },
   {
     question: 'How does the free trial work?',

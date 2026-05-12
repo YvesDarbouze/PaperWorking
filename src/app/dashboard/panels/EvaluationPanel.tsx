@@ -129,7 +129,7 @@ export default function EvaluationPanel() {
       {/* ── Section 2: Deep Market Logic ── */}
       <section className="space-y-6">
          <div className="flex items-center justify-between border-b border-border-accent pb-4">
-            <h2 className="text-xs font-black text-text-primary uppercase tracking-[0.3em]">Institutional_Market_Analysis</h2>
+            <h2 className="text-xs font-black text-text-primary uppercase tracking-[0.3em]">Deep_Market_Analysis</h2>
             <span className="text-[10px] text-text-secondary font-bold tracking-widest">v4.2_ENGINE</span>
          </div>
          <Suspense fallback={shimmer}>

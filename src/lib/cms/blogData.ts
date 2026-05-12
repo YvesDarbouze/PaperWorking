@@ -35,7 +35,7 @@ export const BLOG_POSTS: BlogPost[] = [
     category: "Flip Case Studies",
     date: "April 12, 2024",
     readTime: "6 min",
-    excerpt: "How we transformed a distressed duplex into a premium rental exit while managing 28% variance in materials costs.",
+    excerpt: "How we turned a distressed duplex into a $142k exit while managing 28% variance in materials costs.",
     thumbnailUrl: "https://images.unsplash.com/photo-1580587767303-9bbef3012173?auto=format&fit=crop&w=800&q=80",
     author: {
       name: "Marcus Thorne",
@@ -57,7 +57,7 @@ export const BLOG_POSTS: BlogPost[] = [
     }
   },
   {
-    title: "1031 Exchange Strategies for Institutional Flippers",
+    title: "1031 Exchange Strategies for High-Volume Flippers",
     slug: "1031-exchange-strategies-2024",
     category: "Tax Strategies",
     date: "April 08, 2024",

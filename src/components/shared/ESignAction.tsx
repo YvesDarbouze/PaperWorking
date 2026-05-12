@@ -14,11 +14,11 @@ export default function ESignAction({ documentName, signeeRole, onSigned, isSign
 
   const handleSigning = async () => {
     setIsSigning(true);
-    toast.loading(`Initializing DocuSign API for ${signeeRole}...`, { id: 'esign' });
+    toast.loading(`Sending signature request to ${signeeRole}...`, { id: 'esign' });
     
     // Simulate external API call
     setTimeout(() => {
-      toast.success(`${documentName} legally executed via DocuSign!`, { id: 'esign' });
+      toast.success(`${documentName} signed successfully!`, { id: 'esign' });
       setIsSigning(false);
       onSigned();
     }, 2000);
@@ -27,7 +27,7 @@ export default function ESignAction({ documentName, signeeRole, onSigned, isSign
   if (isSigned) {
      return (
         <div className="flex items-center text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold">
-           <CheckCircle className="w-4 h-4 mr-1.5" /> Executed ({signeeRole})
+           <CheckCircle className="w-4 h-4 mr-1.5" /> Signed ({signeeRole})
         </div>
      );
   }

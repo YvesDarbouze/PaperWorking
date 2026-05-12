@@ -14,7 +14,7 @@ export const draftingAgent = {
   async draftDealUpdate(deal: Project, audience: 'investors' | 'contractors') {
     const prompt = `
       You are an AI assistant for PaperWorking, a premium real estate intelligence and syndication platform.
-      Your task is to draft a precise, institutional status update for the project: ${deal.propertyName}.
+      Your task is to draft a clear, precise status update for the project: ${deal.propertyName}.
       
       PROJECT METRICS:
       - Asset: ${deal.address}
@@ -24,7 +24,7 @@ export const draftingAgent = {
       
       STAKEHOLDER AUDIENCE: ${audience}
       
-      TONE: Institutional, precise, and sophisticated (Antigravity Brand Voice).
+      TONE: Direct, precise, and authoritative (PaperWorking Brand Voice).
       
       GUIDELINES:
       - Structure: Use short, punchy paragraphs. Avoid flowery adjectives or standard realtor clichés.

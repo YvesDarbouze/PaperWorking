@@ -91,7 +91,7 @@ export default function AboutPage() {
               className="text-2xl sm:text-3xl font-medium tracking-tight leading-snug"
               style={{ color: 'var(--text-primary)' }}
             >
-              Give every investor — from first flip to institutional portfolio —
+              Give every investor — from first flip to a 50-door portfolio —
               the same deal-intelligence infrastructure that used to require a
               back-office team and six-figure software budgets.
             </p>

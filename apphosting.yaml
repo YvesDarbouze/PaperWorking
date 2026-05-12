@@ -99,6 +99,47 @@ env:
     availability:
       - RUNTIME
 
+  - variable: STRIPE_SECRET_KEY
+    secret: STRIPE_SECRET_KEY
+    availability:
+      - RUNTIME
+
+  - variable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    secret: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    availability:
+      - BUILD
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_INDIVIDUAL_MONTHLY
+    secret: STRIPE_PRICE_INDIVIDUAL_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_INDIVIDUAL_ANNUAL
+    secret: STRIPE_PRICE_INDIVIDUAL_ANNUAL
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_TEAM_MONTHLY
+    secret: STRIPE_PRICE_TEAM_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_TEAM_ANNUAL
+    secret: STRIPE_PRICE_TEAM_ANNUAL
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_VENDOR_MONTHLY
+    secret: STRIPE_PRICE_VENDOR_MONTHLY
+    availability:
+      - RUNTIME
+
+  - variable: STRIPE_PRICE_VENDOR_ANNUAL
+    secret: STRIPE_PRICE_VENDOR_ANNUAL
+    availability:
+      - RUNTIME
+
   # ─── Bridge Interactive / MLS ──────────────────────────────────────────────
   - variable: BRIDGE_API_BASE_URL
     value: "https://api.bridgedataoutput.com/api/v2/OData/"

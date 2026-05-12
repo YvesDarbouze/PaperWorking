@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  distDir: '.next-app',
   output: 'standalone',
   serverExternalPackages: ['firebase-admin'],
   typescript: {

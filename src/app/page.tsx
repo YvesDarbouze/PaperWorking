@@ -37,16 +37,23 @@ export default function ParallaxLandingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
+    // ── Unauthenticated: save intent and route through auth ──
+    if (!user) {
+      sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
+      window.location.href = `/login?redirectTo=/pricing&plan=${encodeURIComponent(plan)}`;
+      return;
+    }
+
     try {
-      const idToken = user ? await user.getIdToken() : undefined;
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan,
           billingInterval: interval,
-          userId: user?.uid,
-          userEmail: user?.email,
+          userId: user.uid,
+          userEmail: user.email,
           idToken,
         }),
       });

@@ -42,6 +42,23 @@ export default function PricingPage() {
   const recommendedPrice = isAnnual ? '$999/yr' : '$99/mo';
   const recommendedPlanLabel = `${recommendedPlan} ${isAnnual ? 'Annual' : 'Monthly'}`;
 
+  // Auto-resume checkout if user just authenticated with a pending plan intent
+  useEffect(() => {
+    if (!user) return;
+    const raw = sessionStorage.getItem('pw_pending_plan');
+    if (!raw) return;
+
+    try {
+      const { plan, interval, identifier } = JSON.parse(raw);
+      sessionStorage.removeItem('pw_pending_plan');
+      // Reconstruct the plan identifier and trigger checkout
+      handleSelectPlan(identifier || `${plan} ${interval === 'annual' ? 'Annual' : 'Monthly'}`);
+    } catch {
+      sessionStorage.removeItem('pw_pending_plan');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const handleSelectPlan = async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
@@ -57,16 +74,25 @@ export default function PricingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
+    // ── Unauthenticated: save intent and route through auth ──
+    // This ensures the subscription is linked to a real user from the start,
+    // avoiding orphaned Stripe subscriptions that require manual reconciliation.
+    if (!user) {
+      sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
+      window.location.href = `/login?redirectTo=/pricing&plan=${encodeURIComponent(plan)}`;
+      return;
+    }
+
     try {
-      const idToken = user ? await user.getIdToken() : undefined;
+      const idToken = await user.getIdToken();
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan,
           billingInterval: interval,
-          userId: user?.uid,
-          userEmail: user?.email,
+          userId: user.uid,
+          userEmail: user.email,
           idToken,
         }),
       });

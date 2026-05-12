@@ -1,70 +1,32 @@
-# Agent Handoff — MLS Data Enrichment Pipeline
-**Last updated:** 2026-05-11T16:56:00Z
-**Agent:** Antigravity (Google DeepMind)
+# Agent Handoff — Auth + Checkout Overhaul
+
+## Last Agent: Antigravity (Google DeepMind)
+## Date: 2026-05-12T19:39Z
+## Status: ✅ Batch 1-3 Complete
 
 ## What Was Done
 
-### Task 1: Agent Directory + Open House Calendar Frontend ✅
+### Batch 1: Auth Migration (signInWithPopup → signInWithRedirect)
+- **`src/context/AuthContext.tsx`**: Replaced `signInWithPopup` with `signInWithRedirect` + `getRedirectResult`. Added redirect result handler that provisions user docs and syncs session cookies on return from Google/Facebook OAuth.
+- **`src/app/(auth)/login/page.tsx`**: Updated social login handler — removed `finally` block and `router.replace` since page navigates away with redirect auth.
+- **`next.config.ts`**: Tightened COOP header from `same-origin-allow-popups` to `same-origin` (maximum cross-origin isolation). Updated CSP frame-src comments.
 
-| Component | File | Hook | API Route |
-|-----------|------|------|-----------|
-| **Agent Directory** | `src/components/listing/AgentDirectory.tsx` | `useAgentDirectory.ts` | `/api/bridge/agents` |
-| **Open House Calendar** | `src/components/listing/OpenHouseCalendar.tsx` | `useOpenHouseCalendar.ts` | `/api/bridge/openhouses` |
-| **Geocoding** | `src/app/api/places/geocode/route.ts` | — | `/api/places/geocode` |
+### Batch 2: Checkout Infrastructure (Already Existed)
+- **Webhook handler**: `/api/stripe/webhook/route.ts` — already implemented with idempotent event deduplication, all 5 key events covered.
+- **Customer portal**: `/api/stripe/portal/route.ts` — already exists.
+- **NEW** `src/lib/stripe/subscription.ts`: Feature gating utility with grace period handling, plan tier comparison, and subscription state API.
 
-### Task 2: Cron-Based Replication Pipeline ✅
+### Batch 3: Plan Intent Persistence (User Journey Wiring)
+- **`src/app/pricing/page.tsx`**: Unauthenticated users → plan intent saved to `sessionStorage` → redirected to `/login` → on return, `useEffect` auto-resumes checkout.
+- **`src/app/page.tsx`**: Same pattern applied to landing page pricing section.
 
-Built a complete cron-scheduled replication pipeline for Members (agents) and Offices, extending the existing Property replication pattern.
+## Key Architecture Decisions
+1. **sessionStorage for plan intent** (not localStorage): Auto-clears on tab close, preventing stale intents.
+2. **getRedirectResult runs before onAuthStateChanged**: Ensures Firestore user doc is provisioned before the auth listener fires.
+3. **ref guard on redirect handler**: `redirectHandled.current` prevents double-processing in React StrictMode.
 
-#### Prisma Schema Changes (`prisma/schema.prisma`)
-- Added `Member` model — cached agent records with indexed `memberFullName`, `officeKey`, `modificationTimestamp`
-- Added `Office` model — cached office records with indexed `officeName`, `modificationTimestamp`
-- Updated `BridgeSyncState.id` to support multiple watermark keys (`replication_watermark`, `member_watermark`, `office_watermark`)
-- Extended `JobRecord.type` comment to document new types
-
-#### New Services
-
-| Service | File | Purpose |
-|---------|------|---------|
-| **Member Ingestor** | `src/lib/services/memberIngestor.ts` | Batch upsert Member records via Prisma |
-| **Office Ingestor** | `src/lib/services/officeIngestor.ts` | Batch upsert Office records via Prisma |
-| **Member Replication Worker** | `src/lib/services/memberReplicationWorker.ts` | Incremental Bridge `/Member` sync with watermark |
-| **Office Replication Worker** | `src/lib/services/officeReplicationWorker.ts` | Incremental Bridge `/Office` sync with watermark |
-
-#### Queue System Updates
-
-| File | Change |
-|------|--------|
-| `src/lib/queue/jobQueue.ts` | Extended `JobType` union: `member_sync`, `office_sync` |
-| `src/lib/queue/jobConsumer.ts` | Registered `member_sync` and `office_sync` handlers |
-| `src/app/api/worker/drain/route.ts` | Added depth reporting for all 4 queue types |
-
-#### Cron Trigger Route
-
-| Route | File | Purpose |
-|-------|------|---------|
-| `GET /api/cron/bridge-sync` | `src/app/api/cron/bridge-sync/route.ts` | Enqueues + auto-drains all 3 sync jobs |
-
-**Usage:**
-```bash
-# Sync everything (default)
-curl -H "Authorization: Bearer $CRON_SECRET" http://localhost:3000/api/cron/bridge-sync
-
-# Sync only members
-curl -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/cron/bridge-sync?resources=member"
-
-# Sync members + offices, skip properties
-curl -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/cron/bridge-sync?resources=member,office"
-
-# Enqueue without auto-draining
-curl -H "Authorization: Bearer $CRON_SECRET" "http://localhost:3000/api/cron/bridge-sync?drain=false"
-```
-
-## Build Status
-- **0 new TypeScript errors** — only 9 pre-existing TS2688 transitive type definition warnings
-- **Prisma client regenerated** successfully with Member + Office models
-
-## Pending
-- Run `npx prisma migrate dev` to apply the schema to the database
-- Configure external scheduler (Firebase Scheduler / Vercel Cron / cURL) to hit the cron endpoint
-- Optional: Build a "Sync Status" admin panel widget to monitor watermarks and queue depths
+## What's Left
+- [ ] Push to `main` and verify Firebase App Hosting deployment
+- [ ] Verify Google OAuth redirect URI is registered for `paperworking.co`
+- [ ] Verify Facebook OAuth redirect URI in Facebook App settings
+- [ ] End-to-end browser test: Visitor → Plan → Auth → Checkout → Success

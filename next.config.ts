@@ -21,8 +21,9 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // Required for Firebase signInWithPopup (Google/Facebook OAuth)
-          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+          // Maximum cross-origin isolation — popup auth no longer used.
+          // signInWithRedirect does not require allow-popups.
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           // Prevent MIME-type sniffing
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           // Clickjacking protection (belt-and-suspenders with CSP frame-ancestors)
@@ -52,7 +53,7 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.googleusercontent.com *.bridgedataoutput.com *.facebook.com *.fbcdn.net",
               // XHR/fetch/WebSocket: Firebase, Bridge API, Google Places, Stripe, Neon, FB OAuth
               "connect-src 'self' apis.google.com *.googleapis.com *.firebaseio.com wss://*.firebaseio.com *.firebaseapp.com api.bridgedataoutput.com places.googleapis.com *.stripe.com *.google-analytics.com *.analytics.google.com neon.tech *.neon.tech *.facebook.com graph.facebook.com",
-              // Frames: Firebase auth popups + Stripe + Facebook OAuth dialog
+              // Frames: Firebase auth SDK internal iframes + Stripe + Facebook OAuth
               "frame-src 'self' *.firebaseapp.com accounts.google.com *.stripe.com js.stripe.com *.facebook.com www.facebook.com",
               // Prevent this site from being framed by others
               "frame-ancestors 'self'",

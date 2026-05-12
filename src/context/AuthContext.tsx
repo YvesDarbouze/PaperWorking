@@ -10,7 +10,8 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
@@ -21,16 +22,17 @@ import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   PaperWorking — AuthContext (Phase 2.2)
+   PaperWorking — AuthContext (Phase 3.0)
    
    Single source of truth for Firebase Authentication.
    Provides:
      • user / loading / error state
      • login / register / logout / resetPassword actions
-     • Social SSO: Google & Facebook via Redirect (Rock Solid)
+     • Social SSO: Google & Facebook via signInWithRedirect
+       (production-grade — works on all browsers incl. mobile Safari)
      • Magic Link (Passwordless) Auth
      • Automatic server-side session cookie sync
-     • Robust Organization Context
+     • Plan intent persistence for checkout resumption
    ═══════════════════════════════════════════════════════ */
 
 interface AuthContextType {
@@ -171,7 +173,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 2. Listen to auth state changes + sync session cookie
+  // 2. Handle OAuth redirect result (fires on return from Google/Facebook)
+  // Must run BEFORE onAuthStateChanged to provision the user document
+  // before the listener fires for the newly authenticated user.
+  const redirectHandled = useRef(false);
+  useEffect(() => {
+    if (redirectHandled.current) return;
+    redirectHandled.current = true;
+
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result?.user) {
+          await provisionSocialUser(result.user);
+          await syncSessionCookie(result.user);
+        }
+      })
+      .catch((err: any) => {
+        // Benign: user cancelled the redirect or browser aborted
+        if (
+          err.code === 'auth/redirect-cancelled-by-user' ||
+          err.code === 'auth/popup-closed-by-user' ||
+          err.code === 'auth/cancelled-popup-request'
+        ) {
+          return;
+        }
+        console.error('[getRedirectResult] Auth error:', err.code, err.message);
+        setError(getAuthErrorMessage(err.code));
+      });
+  }, []);
+
+  // 3. Listen to auth state changes + sync session cookie
   useEffect(() => {
     let profileUnsubscribe: (() => void) | null = null;
 
@@ -311,14 +342,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
-      const result = await signInWithPopup(auth, provider);
-      await provisionSocialUser(result.user);
-      await syncSessionCookie(result.user);
+      // signInWithRedirect navigates away — result handled on return
+      // via getRedirectResult in the useEffect above.
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
-      // Benign: user closed the popup or browser cancelled a duplicate request
-      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-        return; // Silently absorb — don't set error, don't throw
-      }
       setError(getAuthErrorMessage(err.code));
       throw err;
     }
@@ -330,15 +357,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const provider = new FacebookAuthProvider();
       provider.addScope('email');
       provider.addScope('public_profile');
-      const result = await signInWithPopup(auth, provider);
-      await provisionSocialUser(result.user);
-      await syncSessionCookie(result.user);
+      await signInWithRedirect(auth, provider);
     } catch (err: any) {
-      // Benign: user closed the popup or browser cancelled a duplicate request
-      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-        return; // Silently absorb — don't set error, don't throw
-      }
-      console.error('[loginWithFacebook] Auth error:', err.code, err.message);
       setError(getAuthErrorMessage(err.code));
       throw err;
     }

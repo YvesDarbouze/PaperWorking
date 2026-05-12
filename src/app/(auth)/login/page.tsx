@@ -86,15 +86,14 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // If loginWith* returned without throwing, auth succeeded
-      router.replace(redirectTo);
+      // signInWithRedirect navigates away — the page unloads.
+      // On return, getRedirectResult (in AuthContext) handles the result
+      // and onAuthStateChanged fires, which triggers the user redirect
+      // via the useEffect above.
     } catch (err: any) {
-      // Real auth failures already set error in AuthContext.
-      // Popup cancellations return silently (no throw), so this
-      // catch only fires for actionable errors.
+      // Pre-redirect errors: unauthorized domain, network failure, etc.
       const msg = err?.message || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });
-    } finally {
       setLoadingProvider(null);
     }
   };

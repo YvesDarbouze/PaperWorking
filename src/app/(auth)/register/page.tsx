@@ -15,6 +15,14 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError, user, loading } = useAuth();
 
+  // Clear any stale auth errors from previous pages (e.g. failed login attempt)
+  useEffect(() => {
+    clearError();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const [accountType, setAccountType] = useState<AccountType | null>(null);
+
   // Compute the best redirect destination (same priority as login page):
   // 1. pw_pending_plan in sessionStorage → /pricing (checkout resume)
   // 2. pw_auth_redirect in sessionStorage (saved before social OAuth) → use it
@@ -46,7 +54,6 @@ export default function RegisterPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, router]);
 
-  const [accountType, setAccountType] = useState<AccountType | null>(null);
 
   // Persist account type to localStorage so social SSO provisioning
   // in AuthContext can read it via pw_pending_account_type

@@ -21,8 +21,38 @@ export default function LoginPage() {
 function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '/dashboard';
+  const urlRedirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '';
   const sessionReason = searchParams.get('reason');
+
+  // Compute the best redirect destination (priority order):
+  // 1. If pw_pending_plan exists in sessionStorage → go to /pricing (checkout resume)
+  // 2. If redirectTo URL param exists → use it
+  // 3. If pw_auth_redirect exists in sessionStorage (saved before social OAuth) → use it
+  // 4. Default → /dashboard
+  const getRedirectDestination = (): string => {
+    if (typeof window === 'undefined') return urlRedirectTo || '/dashboard';
+
+    // Highest priority: pending checkout intent
+    if (sessionStorage.getItem('pw_pending_plan')) {
+      sessionStorage.removeItem('pw_auth_redirect'); // clean up
+      return '/pricing';
+    }
+
+    // URL param (available for email/password login)
+    if (urlRedirectTo) {
+      sessionStorage.removeItem('pw_auth_redirect'); // clean up
+      return urlRedirectTo;
+    }
+
+    // Saved redirect from before social auth (survives the OAuth round-trip)
+    const savedRedirect = sessionStorage.getItem('pw_auth_redirect');
+    if (savedRedirect) {
+      sessionStorage.removeItem('pw_auth_redirect'); // one-time use
+      return savedRedirect;
+    }
+
+    return '/dashboard';
+  };
 
   const {
     login,
@@ -42,8 +72,12 @@ function LoginPageInner() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user) router.replace(redirectTo);
-  }, [user, loading, router, redirectTo]);
+    if (!loading && user) {
+      const dest = getRedirectDestination();
+      router.replace(dest);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading, router]);
 
   const [showPassword, setShowPassword]       = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
@@ -63,7 +97,8 @@ function LoginPageInner() {
     clearError();
     try {
       await login(data.email, data.password);
-      router.push(redirectTo);
+      const dest = getRedirectDestination();
+      router.push(dest);
     } catch { /* error set via AuthContext */ }
     finally { setIsSubmitting(false); }
   };
@@ -84,6 +119,14 @@ function LoginPageInner() {
     setLoadingProvider(provider);
     clearError();
     try {
+      // Persist redirectTo before the page unloads for OAuth.
+      // signInWithRedirect causes a full page navigation, so URL query params are lost.
+      // On return, getRedirectResult fires in AuthContext, and the login page useEffect
+      // reads this value from sessionStorage to redirect correctly.
+      if (typeof window !== 'undefined') {
+        const dest = urlRedirectTo || '/dashboard';
+        sessionStorage.setItem('pw_auth_redirect', dest);
+      }
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
       // signInWithRedirect navigates away — the page unloads.
@@ -95,6 +138,10 @@ function LoginPageInner() {
       const msg = err?.message || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });
       setLoadingProvider(null);
+      // Clean up on failure
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('pw_auth_redirect');
+      }
     }
   };
 

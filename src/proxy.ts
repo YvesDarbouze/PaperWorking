@@ -104,8 +104,12 @@ export async function proxy(request: NextRequest) {
 
   // ── Auth pages — bounce authenticated users ───────
   if (AUTH_PATHS.has(pathname) && sessionToken) {
-    // For auth pages, we don't need to verify — if the cookie exists
-    // and is invalid, the user will re-auth naturally on the auth page.
+    // If the user is already authenticated and lands on /login,
+    // respect their redirectTo param (e.g. coming from pricing → login → already authed).
+    const redirectTo = request.nextUrl.searchParams.get('redirectTo');
+    if (redirectTo && redirectTo.startsWith('/') && !AUTH_PATHS.has(redirectTo)) {
+      return NextResponse.redirect(new URL(redirectTo, request.url));
+    }
     const dest = acct === 'vendor' ? '/vendor-portal' : '/dashboard';
     return NextResponse.redirect(new URL(dest, request.url));
   }

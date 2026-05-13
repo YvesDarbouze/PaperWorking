@@ -659,7 +659,7 @@ export default function HowItWorksEntry() {
 
             <motion.div variants={fadeUp} className="flex gap-3">
               <Link
-                href="/register"
+                href="/pricing"
                 className="inline-flex items-center gap-2 px-8 py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:scale-[1.04] hover:shadow-xl"
                 style={{
                   backgroundColor: '#595959',

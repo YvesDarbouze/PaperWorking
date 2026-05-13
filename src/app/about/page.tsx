@@ -154,7 +154,7 @@ export default function AboutPage() {
             through exit — in one workspace.
           </p>
           <Link
-            href="/register"
+            href="/pricing"
             className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-colors"
             style={{ background: '#0d0d0d', color: '#FFFFFF' }}
           >

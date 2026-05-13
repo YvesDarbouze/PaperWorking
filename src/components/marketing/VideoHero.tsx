@@ -50,7 +50,7 @@ export default function VideoHero() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <Link
-              href="/register"
+              href="/pricing"
               className="group flex items-center space-x-4 bg-bg-surface text-text-primary px-12 py-6 text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent hover:text-pw-white shadow-2xl"
             >
               <span>START FLIPPING</span>

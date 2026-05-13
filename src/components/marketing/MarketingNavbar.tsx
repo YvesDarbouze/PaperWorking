@@ -56,7 +56,7 @@ export default function MarketingNavbar() {
           </Link>
           
           <Link
-            href="/register"
+            href="/pricing"
             className={`px-8 py-4 border text-xs font-black uppercase tracking-[0.3em] transition-all active:scale-95 ${
               scrolled 
                 ? 'bg-pw-black text-pw-white border-pw-black hover:bg-bg-surface hover:text-text-primary shadow-lg shadow-pw-black/5' 
@@ -81,7 +81,7 @@ export default function MarketingNavbar() {
            <Link href="#features" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Features</Link>
            <Link href="#pricing" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Pricing</Link>
            <Link href="/login" className="text-sm font-black uppercase tracking-[0.4em] text-text-secondary">Log in</Link>
-           <Link href="/register" className="bg-pw-black text-pw-white py-5 text-center text-sm font-black uppercase tracking-[0.5em] border border-pw-black">Get Started</Link>
+           <Link href="/pricing" className="bg-pw-black text-pw-white py-5 text-center text-sm font-black uppercase tracking-[0.5em] border border-pw-black">Get Started</Link>
         </div>
       )}
     </header>

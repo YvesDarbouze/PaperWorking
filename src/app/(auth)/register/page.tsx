@@ -15,14 +15,35 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError, user, loading } = useAuth();
 
-  // Clear any stale auth errors from previous pages (e.g. failed login attempt)
-  useEffect(() => {
-    clearError();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Compute the best redirect destination (same priority as login page):
+  // 1. pw_pending_plan in sessionStorage → /pricing (checkout resume)
+  // 2. pw_auth_redirect in sessionStorage (saved before social OAuth) → use it
+  // 3. Default → /dashboard (or /vendor-portal for vendors)
+  const getRedirectDestination = (): string => {
+    if (typeof window === 'undefined') return '/dashboard';
+
+    // Highest priority: pending checkout intent
+    if (sessionStorage.getItem('pw_pending_plan')) {
+      sessionStorage.removeItem('pw_auth_redirect');
+      return '/pricing';
+    }
+
+    // Saved redirect from before social auth
+    const savedRedirect = sessionStorage.getItem('pw_auth_redirect');
+    if (savedRedirect) {
+      sessionStorage.removeItem('pw_auth_redirect');
+      return savedRedirect;
+    }
+
+    return accountType === 'vendor' ? '/vendor-portal' : '/dashboard';
+  };
 
   useEffect(() => {
-    if (!loading && user) router.replace('/dashboard');
+    if (!loading && user) {
+      const dest = getRedirectDestination();
+      router.replace(dest);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, router]);
 
   const [accountType, setAccountType] = useState<AccountType | null>(null);
@@ -70,7 +91,8 @@ export default function RegisterPage() {
     clearError();
     try {
       await registerUser(data.email, data.password, data.fullName, accountType);
-      router.push(accountType === 'vendor' ? '/vendor-portal' : '/dashboard');
+      const dest = getRedirectDestination();
+      router.push(dest);
     } catch (err: any) {
       if (err?.code === 'auth/email-already-in-use') {
         setToast({ message: 'Email already registered. Try logging in.', type: 'error' });
@@ -84,17 +106,24 @@ export default function RegisterPage() {
     setLoadingProvider(provider);
     clearError();
     try {
+      // Persist redirect intent before the page unloads for OAuth.
+      // signInWithRedirect causes a full page navigation — all React state is lost.
+      if (typeof window !== 'undefined') {
+        const dest = accountType === 'vendor' ? '/vendor-portal' : '/dashboard';
+        sessionStorage.setItem('pw_auth_redirect', dest);
+      }
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // If loginWith* returned without throwing, auth succeeded.
-      // The useEffect on line 24-26 will also redirect if user is set,
-      // but we do an explicit redirect here for immediate UX.
-      router.replace(accountType === 'vendor' ? '/vendor-portal' : '/dashboard');
+      // signInWithRedirect navigates away — the page unloads.
+      // On return, getRedirectResult (in AuthContext) handles the result
+      // and onAuthStateChanged fires, which triggers the useEffect redirect above.
     } catch (err: any) {
-      // loginWith* only throws for real auth failures (not popup cancel).
-      // Show the error to the user via toast banner so they know what happened.
       const msg = err?.message || authError || 'Sign-in failed. Please try again.';
       setToast({ message: msg, type: 'error' });
+      // Clean up on failure
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('pw_auth_redirect');
+      }
     } finally {
       setLoadingProvider(null);
     }

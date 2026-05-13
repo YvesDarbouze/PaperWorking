@@ -177,7 +177,7 @@ export default function PricingCards({
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
       {/* ── Billing Toggle ── */}
-      <div className="flex justify-center mb-14">
+      <div className="flex justify-center mb-8">
         <div className="flex items-center p-1 bg-phase-1">
           <button
             onClick={() => onToggleAnnual(false)}

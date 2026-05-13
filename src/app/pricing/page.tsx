@@ -145,18 +145,18 @@ export default function PricingPage() {
 
       <main className="w-full">
         {/* Hero */}
-        <section className="pt-24 pb-16 sm:pt-32 sm:pb-20 border-b border-border-accent">
+        <section className="pt-12 pb-8 sm:pt-14 sm:pb-10 border-b border-border-accent">
           <div className="mx-auto max-w-4xl text-center px-6 lg:px-8">
              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-text-primary leading-tight text-balance">
                Pick your plan.<br className="hidden sm:block"/> Start closing faster.
              </h1>
-             <p className="mt-8 text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
+             <p className="mt-4 text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
                Every plan includes a 14-day free trial with full access. No credit card required. Upgrade, downgrade, or cancel anytime.
              </p>
           </div>
         </section>
 
-        <section className="py-20 bg-bg-primary border-b border-border-accent">
+        <section className="py-10 bg-bg-primary border-b border-border-accent">
            <PricingCards 
               isAnnual={isAnnual} 
               onToggleAnnual={setIsAnnual} 

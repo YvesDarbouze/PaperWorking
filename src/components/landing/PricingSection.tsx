@@ -853,11 +853,11 @@ export default function PricingSection({
         whileInView="visible"
         viewport={{ once: true, margin: '-60px' }}
         variants={stagger}
-        className="mx-auto max-w-5xl px-6 lg:px-8 pt-28 sm:pt-36 pb-16 text-center"
+        className="mx-auto max-w-5xl px-6 lg:px-8 pt-14 sm:pt-16 pb-8 text-center"
       >
         <motion.p
           variants={fadeUp}
-          className="text-xs font-bold uppercase tracking-[0.3em] mb-8"
+          className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
           style={{ color: '#a5a5a5' }}
         >
           Pricing
@@ -875,7 +875,7 @@ export default function PricingSection({
 
         <motion.p
           variants={fadeUp}
-          className="text-sm leading-relaxed mx-auto max-w-xl mb-14"
+          className="text-sm leading-relaxed mx-auto max-w-xl mb-8"
           style={{ color: '#7f7f7f' }}
         >
           14-day free trial on every plan. No credit card. Cancel anytime.

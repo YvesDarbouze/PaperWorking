@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
+
 import { motion } from 'framer-motion';
 import {
   Check,
@@ -445,14 +445,11 @@ function PricingCard({
         )}
       </div>
 
-      {/* CTA Button */}
-      <Link
-        href="/register"
-        onClick={(e) => {
-          e.preventDefault();
-          onSelect(`${plan.name} ${isAnnual ? 'Annual' : 'Monthly'}`);
-        }}
-        className="w-full py-4 text-sm font-bold uppercase tracking-[0.15em] text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center gap-2 hover:scale-[1.02] hover:opacity-90 active:scale-[0.97]"
+      {/* CTA Button — uses <button> not <Link> to avoid /register fallback */}
+      <button
+        type="button"
+        onClick={() => onSelect(`${plan.name} ${isAnnual ? 'Annual' : 'Monthly'}`)}
+        className="w-full py-4 text-sm font-bold uppercase tracking-[0.15em] text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center gap-2 hover:scale-[1.02] hover:opacity-90 active:scale-[0.97] cursor-pointer"
         style={{
           backgroundColor: s.ctaBg,
           color: s.ctaText,
@@ -462,7 +459,7 @@ function PricingCard({
       >
         {plan.ctaLabel}
         <ArrowRight className="w-4 h-4" />
-      </Link>
+      </button>
 
       {/* Microcopy */}
       <p

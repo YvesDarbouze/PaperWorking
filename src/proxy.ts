@@ -103,15 +103,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Auth pages — bounce authenticated users ───────
+  // IMPORTANT: Only redirect from auth pages when a redirectTo param is
+  // explicitly present. Otherwise, let the client-side login page handle
+  // the redirect via its useEffect — it has access to sessionStorage
+  // which may contain checkout intent (pw_pending_plan, pw_auth_redirect)
+  // that the server-side proxy cannot read.
   if (AUTH_PATHS.has(pathname) && sessionToken) {
-    // If the user is already authenticated and lands on /login,
-    // respect their redirectTo param (e.g. coming from pricing → login → already authed).
     const redirectTo = request.nextUrl.searchParams.get('redirectTo');
     if (redirectTo && redirectTo.startsWith('/') && !AUTH_PATHS.has(redirectTo)) {
       return NextResponse.redirect(new URL(redirectTo, request.url));
     }
-    const dest = acct === 'vendor' ? '/vendor-portal' : '/dashboard';
-    return NextResponse.redirect(new URL(dest, request.url));
+    // No explicit redirectTo — let the client-side useEffect decide.
+    // It will check: pw_pending_plan → pw_auth_redirect → /dashboard
   }
 
   return NextResponse.next();

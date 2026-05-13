@@ -61,7 +61,7 @@ export default function LandingHero() {
         {/* ── CTA ── */}
         <div className="pt-2 sm:pt-4">
           <Link
-            href="/register"
+            href="/pricing"
             className="
               ag-button
               text-base sm:text-lg

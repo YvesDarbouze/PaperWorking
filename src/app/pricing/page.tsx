@@ -1,48 +1,27 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import Logo from '@/components/brand/Logo';
-
-import PricingCards from '@/components/pricing/PricingCards';
-import FeatureComparisonTable from '@/components/pricing/FeatureComparisonTable';
-import ProfessionalPricingSection from '@/components/pricing/LawyerPricingSection';
-import SocialProofBar from '@/components/pricing/SocialProofBar';
-import PricingFAQ from '@/components/pricing/PricingFAQ';
-import StickyMobileCTA from '@/components/pricing/StickyMobileCTA';
+import { useState, useEffect, useCallback } from 'react';
+import LandingHeader from '@/components/landing/LandingHeader';
+import LandingFooter from '@/components/landing/LandingFooter';
+import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
 
+/**
+ * /pricing — Standalone pricing page.
+ *
+ * Uses the SAME PricingSection component as the landing page (/#pricing)
+ * to guarantee visual parity. The only additional logic here is:
+ *   1. Auto-resume checkout after login (pw_pending_plan in sessionStorage)
+ *   2. Stripe checkout initiation (handleSelectPlan)
+ */
 export default function PricingPage() {
   const { user } = useAuth();
-  const [isAnnual, setIsAnnual] = useState(false);
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
-  const [showStickyCTA, setShowStickyCTA] = useState(false);
 
-  // Track when pricing cards scroll out of view
-  const cardsRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = cardsRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowStickyCTA(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Recommended plan data (the anchored tier)
-  const recommendedPlan = 'Investor Team';
-  const recommendedPrice = isAnnual ? '$999/yr' : '$99/mo';
-  const recommendedPlanLabel = `${recommendedPlan} ${isAnnual ? 'Annual' : 'Monthly'}`;
-
-  // Auto-resume checkout if user just authenticated with a pending plan intent
+  // ── Auto-resume checkout after login ──────────────────────────
+  // If the user just authenticated with a pending plan intent in
+  // sessionStorage, automatically trigger the Stripe checkout.
   useEffect(() => {
     if (!user) return;
     const raw = sessionStorage.getItem('pw_pending_plan');
@@ -51,7 +30,6 @@ export default function PricingPage() {
     try {
       const { plan, interval, identifier } = JSON.parse(raw);
       sessionStorage.removeItem('pw_pending_plan');
-      // Reconstruct the plan identifier and trigger checkout
       handleSelectPlan(identifier || `${plan} ${interval === 'annual' ? 'Annual' : 'Monthly'}`);
     } catch {
       sessionStorage.removeItem('pw_pending_plan');
@@ -59,11 +37,11 @@ export default function PricingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const handleSelectPlan = async (planIdentifier: string) => {
+  // ── Plan selection / Stripe checkout ──────────────────────────
+  const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
     // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
-    // Handles multi-word plan names correctly by suffix matching
     const lower = planIdentifier.toLowerCase();
     const isAnnual = lower.endsWith(' annual');
     const isMonthly = lower.endsWith(' monthly');
@@ -74,9 +52,7 @@ export default function PricingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
-    // ── Unauthenticated: save intent and route through auth ──
-    // This ensures the subscription is linked to a real user from the start,
-    // avoiding orphaned Stripe subscriptions that require manual reconciliation.
+    // Unauthenticated → save intent and route through login
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
       window.location.href = `/login?redirectTo=/pricing&plan=${encodeURIComponent(plan)}`;
@@ -108,11 +84,11 @@ export default function PricingPage() {
       });
       setIsProcessing(null);
     }
-  };
+  }, [user]);
 
   return (
-    <div className="min-h-screen bg-bg-primary font-sans text-text-primary selection:bg-pw-black selection:text-pw-white relative">
-      
+    <div className="min-h-screen font-sans text-[var(--pw-fg)] relative" style={{ backgroundColor: '#f2f2f2' }}>
+
       {/* Loader Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pw-black/60 backdrop-blur-md">
@@ -123,91 +99,14 @@ export default function PricingPage() {
         </div>
       )}
 
-      {/* Header — matches landing page nav */}
-      <header className="sticky top-0 z-50 w-full bg-bg-primary/90 backdrop-blur-md border-b border-border-accent">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-          <Logo href="/" size="sm" />
-          <div className="flex items-center space-x-6">
-            <Link href="/login" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">
-              Log In
-            </Link>
-            <button
-               className="ag-button !py-2 !px-6"
-               onClick={() => {
-                 cardsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-               }}
-            >
-              Get Started
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Same header as the landing page */}
+      <LandingHeader />
 
-      <main className="w-full">
-        {/* Hero */}
-        <section className="pt-12 pb-8 sm:pt-14 sm:pb-10 border-b border-border-accent">
-          <div className="mx-auto max-w-4xl text-center px-6 lg:px-8">
-             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-normal tracking-tight text-text-primary leading-tight text-balance">
-               Pick your plan.<br className="hidden sm:block"/> Start closing faster.
-             </h1>
-             <p className="mt-4 text-lg text-text-secondary max-w-2xl mx-auto leading-relaxed">
-               Every plan includes a 14-day free trial with full access. No credit card required. Upgrade, downgrade, or cancel anytime.
-             </p>
-          </div>
-        </section>
+      {/* Same PricingSection as the landing page (/#pricing) */}
+      <PricingSection onSelectPlan={handleSelectPlan} />
 
-        <section className="py-10 bg-bg-primary border-b border-border-accent">
-           <PricingCards 
-              isAnnual={isAnnual} 
-              onToggleAnnual={setIsAnnual} 
-              onSelectPlan={handleSelectPlan}
-              cardsRef={cardsRef}
-           />
-        </section>
-
-        {/* Social Proof Bar */}
-        <section className="py-16 bg-bg-primary border-b border-border-accent">
-           <SocialProofBar />
-        </section>
-
-        {/* Feature Comparison with Progressive Disclosure + Tooltips */}
-        <section className="py-20 bg-bg-primary border-b border-border-accent">
-           <FeatureComparisonTable onSelectPlan={handleSelectPlan} />
-        </section>
-
-        {/* Professional Verticals: Appraisers/Inspectors */}
-        <section className="py-20 bg-bg-primary border-b border-border-accent">
-           <ProfessionalPricingSection onSelectPlan={handleSelectPlan} />
-        </section>
-
-        {/* Accordion FAQ */}
-        <section className="py-20 bg-bg-primary border-b border-border-accent">
-           <PricingFAQ />
-        </section>
-      </main>
-
-      {/* Footer — matches landing page */}
-      <footer className="bg-bg-primary py-12">
-         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center text-sm text-text-secondary">
-            <div className="mb-4 md:mb-0 flex items-center">
-               <Logo size="sm" />
-               <span className="ml-2">© {new Date().getFullYear()}</span>
-            </div>
-            <div className="flex space-x-8 text-[11px] font-bold uppercase tracking-widest">
-               <Link href="/privacy" className="hover:text-text-primary transition-colors">Privacy Policy</Link>
-               <Link href="/terms" className="hover:text-text-primary transition-colors">Terms of Service</Link>
-               <Link href="/support" className="hover:text-text-primary transition-colors">Contact</Link>
-               <Link href="/login" className="text-text-primary hover:text-text-secondary transition-colors">Log In</Link>
-            </div>
-         </div>
-      </footer>
-
-      <StickyMobileCTA
-        visible={showStickyCTA}
-        planName={recommendedPlan}
-        price={recommendedPrice}
-        onSelect={() => handleSelectPlan(recommendedPlanLabel)}
-      />
+      {/* Same footer as the landing page */}
+      <LandingFooter />
 
       <Toaster position="bottom-center" />
     </div>

@@ -19,24 +19,6 @@ export default function PricingPage() {
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
 
-  // ── Auto-resume checkout after login ──────────────────────────
-  // If the user just authenticated with a pending plan intent in
-  // sessionStorage, automatically trigger the Stripe checkout.
-  useEffect(() => {
-    if (!user) return;
-    const raw = sessionStorage.getItem('pw_pending_plan');
-    if (!raw) return;
-
-    try {
-      const { plan, interval, identifier } = JSON.parse(raw);
-      sessionStorage.removeItem('pw_pending_plan');
-      handleSelectPlan(identifier || `${plan} ${interval === 'annual' ? 'Annual' : 'Monthly'}`);
-    } catch {
-      sessionStorage.removeItem('pw_pending_plan');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
   // ── Plan selection / Stripe checkout ──────────────────────────
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
@@ -77,15 +59,33 @@ export default function PricingPage() {
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
       window.location.href = data.url;
-    } catch (err: any) {
+    } catch (err) {
       console.error('[Checkout]', err);
-      toast.error(err.message || 'Something went wrong. Please try again.', {
+      toast.error((err instanceof Error ? err.message : null) || 'Something went wrong. Please try again.', {
         id: 'checkout-error',
         duration: 6000,
       });
       setIsProcessing(null);
     }
   }, [user]);
+
+  // ── Auto-resume checkout after login ──────────────────────────
+  // If the user just authenticated with a pending plan intent in
+  // sessionStorage, automatically trigger the Stripe checkout.
+  useEffect(() => {
+    if (!user) return;
+    const raw = sessionStorage.getItem('pw_pending_plan');
+    if (!raw) return;
+
+    try {
+      const { plan, interval, identifier } = JSON.parse(raw);
+      sessionStorage.removeItem('pw_pending_plan');
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      handleSelectPlan(identifier || `${plan} ${interval === 'annual' ? 'Annual' : 'Monthly'}`);
+    } catch {
+      sessionStorage.removeItem('pw_pending_plan');
+    }
+  }, [user, handleSelectPlan]);
 
   return (
     <div className="min-h-screen font-sans text-[var(--pw-fg)] relative" style={{ backgroundColor: '#f2f2f2' }}>

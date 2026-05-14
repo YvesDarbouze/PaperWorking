@@ -149,9 +149,9 @@ function LoginPageInner() {
       // On return, getRedirectResult (in AuthContext) handles the result
       // and onAuthStateChanged fires, which triggers the user redirect
       // via the useEffect above.
-    } catch (err: any) {
+    } catch (err) {
       // Pre-redirect errors: unauthorized domain, network failure, etc.
-      const msg = err?.message || authError || 'Sign-in failed. Please try again.';
+      const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });
       setLoadingProvider(null);
       // Clean up on failure

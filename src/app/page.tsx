@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
@@ -23,7 +23,7 @@ export default function ParallaxLandingPage() {
   const heroY = useTransform(scrollY, [0, 1000], [0, 400]);
   const heroOpacity = useTransform(scrollY, [0, 600], [1, 0]);
 
-  const handleSelectPlan = async (planIdentifier: string) => {
+  const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
     // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
@@ -62,15 +62,15 @@ export default function ParallaxLandingPage() {
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
       window.location.href = data.url;
-    } catch (err: any) {
+    } catch (err) {
       console.error('[Checkout]', err);
-      toast.error(err.message || 'Something went wrong. Please try again.', {
+      toast.error((err instanceof Error ? err.message : null) || 'Something went wrong. Please try again.', {
         id: 'checkout-error',
         duration: 6000,
       });
       setIsProcessing(null);
     }
-  };
+  }, [user]);
 
   return (
     <div className="bg-[var(--pw-bg)] min-h-screen text-[var(--pw-fg)] relative">

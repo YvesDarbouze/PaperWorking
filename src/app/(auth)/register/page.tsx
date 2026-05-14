@@ -47,7 +47,7 @@ function RegisterPageInner() {
           setAccountType(derivedType);
           window.localStorage.setItem('pw_pending_account_type', derivedType);
         }
-      } catch (err) {
+      } catch {
         // ignore JSON parse errors
       }
     }
@@ -122,9 +122,10 @@ function RegisterPageInner() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: false as any },
+    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: false as unknown as true },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const watchedPassword = watch('password', '');
   const passwordRules = [
     { label: '8+ Characters', met: watchedPassword.length >= 8 },
@@ -139,10 +140,10 @@ function RegisterPageInner() {
     clearError();
     try {
       await registerUser(data.email, data.password, data.fullName, accountType);
-      const dest = getRedirectDestination();
-      router.push(dest);
-    } catch (err: any) {
-      if (err?.code === 'auth/email-already-in-use') {
+      // Redirect handled by useEffect([user, loading]) once Firebase auth state fires
+    } catch (err) {
+      const authErr = err as { code?: string };
+      if (authErr?.code === 'auth/email-already-in-use') {
         setToast({ message: 'Email already registered. Try logging in.', type: 'error' });
       }
     } finally {
@@ -167,8 +168,8 @@ function RegisterPageInner() {
       // signInWithRedirect navigates away — the page unloads.
       // On return, getRedirectResult (in AuthContext) handles the result
       // and onAuthStateChanged fires, which triggers the useEffect redirect above.
-    } catch (err: any) {
-      const msg = err?.message || authError || 'Sign-in failed. Please try again.';
+    } catch (err) {
+      const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       setToast({ message: msg, type: 'error' });
       // Clean up on failure
       if (typeof window !== 'undefined') {
@@ -239,7 +240,7 @@ function RegisterPageInner() {
         <div className="mt-4 text-center pt-8 border-t border-[#2a2a2a]">
           <p className="text-xs text-[#888]">
             Already have an account?{' '}
-            <Link href="/login" className="text-white font-bold hover:underline transition-all">Log In</Link>
+            <Link href={urlRedirectTo ? `/login?redirectTo=${encodeURIComponent(urlRedirectTo)}` : '/login'} className="text-white font-bold hover:underline transition-all">Log In</Link>
           </p>
         </div>
       </div>
@@ -391,7 +392,7 @@ function RegisterPageInner() {
       <div className="mt-12 text-center pt-8 border-t border-[#2a2a2a]">
         <p className="text-xs text-[#888]">
           Existing credentials found?{' '}
-          <Link href="/login" className="text-white font-bold hover:underline transition-all">Authorize Log In</Link>
+          <Link href={urlRedirectTo ? `/login?redirectTo=${encodeURIComponent(urlRedirectTo)}` : '/login'} className="text-white font-bold hover:underline transition-all">Authorize Log In</Link>
         </p>
       </div>
     </div>

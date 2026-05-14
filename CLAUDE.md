@@ -22,13 +22,12 @@ calls `npm run build`, the `NODE_OPTIONS` export must precede it in the same she
 The `package.json` build script also sets `--max-old-space-size=4096` internally as a
 safety floor. The environment variable takes precedence — 8192 MB is the effective cap.
 
-## 2. Middleware & Auth — proxy.ts is the Single Source of Truth
+## 2. Middleware & Auth — middleware.ts is the Single Source of Truth
 
 - All middleware logic (auth guards, redirects, session validation) lives in
-  [`src/proxy.ts`](src/proxy.ts).
-- Do NOT add auth logic to individual route files or `middleware.ts` unless it is
-  calling a helper defined in `proxy.ts`.
-- When modifying `proxy.ts`, run `npm run lint` and `npm run build` to confirm no
+  [`src/middleware.ts`](src/middleware.ts).
+- Do NOT add auth logic to individual route files — all guards belong in `middleware.ts`.
+- When modifying `middleware.ts`, run `npm run lint` and `npm run build` to confirm no
   regressions before committing.
 
 ## 3. Build Hang Recovery Protocol

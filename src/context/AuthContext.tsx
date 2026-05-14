@@ -146,13 +146,18 @@ async function syncSessionCookie(user: User | null) {
   if (user) {
     try {
       const idToken = await user.getIdToken();
-      await fetch('/api/auth/session', {
+      const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(`Session API failed: ${res.status} ${errData.error || ''}`);
+      }
     } catch (err) {
       console.error('Failed to sync session cookie:', err);
+      throw err; // Propagate the error so auth flows (login/register) can catch it
     }
   } else {
     try {
@@ -218,8 +223,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         refreshTimerRef.current = null;
       }
 
-      setUser(firebaseUser);
-
       if (firebaseUser) {
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
@@ -258,6 +261,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         await syncSessionCookie(firebaseUser);
       } finally {
+        setUser(firebaseUser);
         setLoading(false);
       }
     });

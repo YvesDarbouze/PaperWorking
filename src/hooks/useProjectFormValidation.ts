@@ -29,6 +29,27 @@ export interface ProjectFormData {
   vision: string;
   leadEmail: string;
   partnerEmails: string;
+  // NOI Input fields — mandatory data points for operational performance
+  monthlyGrossRent: string;
+  vacancyRatePercent: string;
+  monthlyTaxes: string;
+  monthlyInsurance: string;
+  monthlyMaintenance: string;
+  managementFeePercent: string;
+  monthlyUtilities: string;
+  monthlyHOA: string;
+  // Debt service fields — required for Cash Flow = NOI - Debt Service
+  loanAmount: string;
+  loanInterestRate: string;
+  loanTermYears: string;
+  // CoC Return — Total Cash Invested = Down Payment + Closing Costs + Rehab
+  closingCosts: string;
+  // Due Diligence — Acquisition forensics (schema fields that already exist)
+  projectedRehabCost: string;
+  estimatedTimelineDays: string;
+  sellerMotivation: string;
+  emdAmount: string;
+  leadSource: string;
   // MLS fields — populated when user selects a listing from Bridge search
   mlsListingKey?: string;
   mlsListingId?: string;
@@ -95,13 +116,14 @@ export function useProjectFormValidation(formData: ProjectFormData, stepIndex: n
         return !!(formData.propertyName.trim() && formData.reiStatus && addressValid);
       }
       case 1:
-        return !!(formData.purchasePrice && formData.estimatedARV && isAcquisitionDateValid);
+        // Monthly Gross Rent is required so NOI can be computed from day one
+        return !!(formData.purchasePrice && formData.estimatedARV && formData.monthlyGrossRent && isAcquisitionDateValid);
       case 3:
         return !!formData.leadEmail.trim();
       default:
         return true;
     }
-  }, [stepIndex, formData.propertyName, formData.reiStatus, formData.mlsListingKey, formData.purchasePrice, formData.estimatedARV, formData.leadEmail, isAddressComplete, isAcquisitionDateValid]);
+  }, [stepIndex, formData.propertyName, formData.reiStatus, formData.mlsListingKey, formData.purchasePrice, formData.estimatedARV, formData.monthlyGrossRent, formData.leadEmail, isAddressComplete, isAcquisitionDateValid]);
 
   return { isStepValid, addressErrors, isAddressComplete, acquisitionDateError, isAcquisitionDateValid };
 }

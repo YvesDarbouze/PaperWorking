@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus, DueDiligenceItem } from '@/types/schema';
+import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus, DueDiligenceItem, RehabScheduleTask } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
@@ -109,6 +109,7 @@ interface ProjectState {
   updateRehabExpenses: (projectId: string, expenses: RehabExpense[]) => void;
   updateHoldingCosts: (projectId: string, costs: HoldingCostEntry[]) => void;
   updateSiteVisitLogs: (projectId: string, logs: SiteVisitLog[]) => void;
+  updateRehabScheduleTasks: (projectId: string, tasks: RehabScheduleTask[]) => void;
 
   // Closing Settlement Actions
   updateClosingChecklist: (projectId: string, items: ClosingChecklistItem[]) => void;
@@ -687,6 +688,18 @@ export const useProjectStore = create<ProjectState>()(
         const { projects, currentProject } = get();
         const updatedDeals = projects.map(d =>
           d.id === projectId ? { ...d, siteVisitLogs: logs } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateRehabScheduleTasks: (projectId, tasks) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, rehabScheduleTasks: tasks } : d
         );
         set({ projects: updatedDeals });
         if (currentProject?.id === projectId) {

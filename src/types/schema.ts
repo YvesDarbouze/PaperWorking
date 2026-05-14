@@ -658,6 +658,7 @@ export interface ProjectFinancials {
   capitalStack?: CapitalSource[];
   loanAmount?: number; // Hard money loan amount
   loanInterestRate?: number; // e.g., 12 for 12%
+  loanTermYears?: number; // Loan term in years, e.g. 30 for a 30-year conventional
   loanOriginationPoints?: number; // Upfront percentage cost of loan value
   estimatedTimelineDays?: number; // Estimation for holding costs
   preApprovalDocuments?: string[]; // Array of strings/URLs
@@ -874,9 +875,14 @@ export interface ProratedEscrowItem {
 // 3.1 Rehab Expense Category (separate from Acquisition costs)
 export type RehabExpenseCategory = 'Demo' | 'Systems' | 'Interior' | 'Exterior' | 'Material' | 'Professional Labor' | 'Permits' | 'Dumpster Rental' | 'Other';
 
+// 3.1b Renovation Zone — ROI-focused grouping (orthogonal to trade-based category)
+// Kitchen + Bathroom = "Money Rooms" — should receive 50-60% of total rehab budget.
+export type RenovationZone = 'Kitchen' | 'Bathroom' | 'Curb Appeal' | 'Interior' | 'Structural';
+
 export interface RehabExpense {
   id: string;
   category: RehabExpenseCategory;
+  renovationZone?: RenovationZone;  // Which ROI zone this expense belongs to
   description: string;
   amount: number;
   vendor?: string;
@@ -988,6 +994,31 @@ export interface DrawScheduleItem {
   paidAt?: Date;
 }
 
+// 3.5 Rehab Schedule Task (Critical Path Method)
+export type RehabTrade =
+  | 'Demo' | 'Framing' | 'Plumbing' | 'Electrical'
+  | 'HVAC' | 'Insulation' | 'Drywall' | 'Painting'
+  | 'Flooring' | 'Cabinets' | 'Tile' | 'Roofing'
+  | 'Exterior' | 'Landscaping' | 'Final Inspection';
+
+export type RehabStage =
+  | 'Pre-Construction'
+  | 'Active Renovation'
+  | 'Punch List';
+
+export interface RehabScheduleTask {
+  id: string;
+  title: string;
+  trade: RehabTrade;
+  phase: RehabStage;
+  startDay: number;       // Day offset from acquisition date
+  durationDays: number;
+  dependsOn: string[];    // IDs of tasks that must complete first
+  status: 'Not Started' | 'In Progress' | 'Complete' | 'Blocked';
+  isCriticalPath?: boolean;
+  inspectionRequired?: boolean;
+}
+
 // ── Financial Statement Generator Types ──────────────────
 
 // Settlement Document Upload (HUD-1 / Closing Disclosure)
@@ -1031,6 +1062,7 @@ declare module './schema' {
     rehabExpenses?: RehabExpense[]; // Rehab: Separate expense ledger
     holdingCosts?: HoldingCostEntry[]; // Rehab: Recurring monthly costs
     siteVisitLogs?: SiteVisitLog[]; // Rehab: Field logistics
+    rehabScheduleTasks?: RehabScheduleTask[]; // Rehab: Critical Path Method schedule
     closingChecklist?: ClosingChecklistItem[]; // Closing: Validation checklist
     exitCosts?: ExitCostLineItem[]; // Closing: Exit cost ledger
     settlementDocuments?: SettlementDocument[]; // Financial Statements: HUD-1 / Closing Disclosures

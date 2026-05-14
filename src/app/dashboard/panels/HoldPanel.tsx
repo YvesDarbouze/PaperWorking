@@ -19,6 +19,11 @@ import {
   OccupancyCard,
 } from '@/components/metrics/phase3';
 
+/* Phase 3 Cost Intelligence & Scheduling */
+import YesterdayCostCard from '@/components/metrics/phase3/YesterdayCostCard';
+import RehabPhaseBar from '@/components/metrics/phase3/RehabPhaseBar';
+import CriticalPathGantt from '@/components/metrics/phase3/CriticalPathGantt';
+
 export default function HoldPanel() {
   const currentProject = useProjectStore(state => state.currentProject);
 
@@ -101,26 +106,42 @@ export default function HoldPanel() {
         </div>
       ) : (
         <div className="space-y-8 pb-32">
-          
-          {/* Burn Rate & Holding Cost Calculator */}
-          <section className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 space-y-6">
-            <div>
-               <h2 className="text-xl font-medium tracking-tight text-text-primary">Burn Rate & Capital</h2>
-               <p className="text-sm text-text-secondary mt-1">Real-time holding cost clock and monthly expense monitoring.</p>
+
+          {/* ── Yesterday's Cost Thumbnail + Burn Rate ─────────── */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <Suspense fallback={<div className="h-40 border border-border-accent animate-shimmer" />}>
+                <YesterdayCostCard />
+              </Suspense>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-               <div className="lg:col-span-8">
-                  <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
-                     <HoldingTimeline />
-                  </Suspense>
-               </div>
-               <div className="lg:col-span-4">
-                  <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
-                     <HoldingCostTicker />
-                  </Suspense>
-               </div>
+            <div className="lg:col-span-8 bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 space-y-6">
+              <div>
+                 <h2 className="text-xl font-medium tracking-tight text-text-primary">Burn Rate & Capital</h2>
+                 <p className="text-sm text-text-secondary mt-1">Real-time holding cost clock and monthly expense monitoring.</p>
+              </div>
+              <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                 <div className="xl:col-span-8">
+                    <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
+                       <HoldingTimeline />
+                    </Suspense>
+                 </div>
+                 <div className="xl:col-span-4">
+                    <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
+                       <HoldingCostTicker />
+                    </Suspense>
+                 </div>
+              </div>
             </div>
+          </section>
+
+          {/* ── Renovation Lifecycle & Critical Path ─────────── */}
+          <section className="space-y-4">
+            <Suspense fallback={<div className="h-20 border border-border-accent animate-shimmer" />}>
+              <RehabPhaseBar />
+            </Suspense>
+            <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer" />}>
+              <CriticalPathGantt />
+            </Suspense>
           </section>
 
           {/* High-ROI Budget Tracker */}

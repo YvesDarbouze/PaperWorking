@@ -22,7 +22,23 @@ function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlRedirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '';
+  const urlPlan       = searchParams.get('plan') || '';
   const sessionReason = searchParams.get('reason');
+
+  // Backward-compat: old live-site links used /login?plan=Individual%20Investor&redirectTo=/pricing.
+  // If that param arrives and there's no newer sessionStorage intent, mint one now so the
+  // post-auth redirect lands at /pricing and auto-resumes the Stripe checkout.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !urlPlan) return;
+    if (!sessionStorage.getItem('pw_pending_plan')) {
+      sessionStorage.setItem('pw_pending_plan', JSON.stringify({
+        plan: urlPlan,
+        interval: 'monthly',
+        identifier: `${urlPlan} Monthly`,
+      }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Compute the best redirect destination (priority order):
   // 1. If pw_pending_plan exists in sessionStorage → go to /pricing (checkout resume)

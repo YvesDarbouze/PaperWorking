@@ -36,30 +36,42 @@ function validateOrigin(request: Request): boolean {
   const origin  = request.headers.get('origin');
   const referer = request.headers.get('referer');
 
-  // In production, strictly validate against the canonical domain
+  // Allow localhost in dev
+  if (process.env.NODE_ENV !== 'production') {
+    if (!origin && !referer) return true;
+    const isLocal = (str: string) => str.includes('localhost:') || str.includes('127.0.0.1:');
+    if (origin && isLocal(origin)) return true;
+    if (referer && isLocal(referer)) return true;
+  }
+
+  // Canonical domains
   const allowedOrigins = [
-    process.env.NEXT_PUBLIC_APP_URL,            // https://paperworking.co
+    process.env.NEXT_PUBLIC_APP_URL,
     'https://paperworking.co',
     'https://www.paperworking.co',
   ].filter(Boolean);
 
-  // In development, also allow localhost
-  if (process.env.NODE_ENV !== 'production') {
-    allowedOrigins.push('http://localhost:3000', 'http://localhost:3001');
-  }
+  const isAllowedHost = (urlStr: string) => {
+    try {
+      const url = new URL(urlStr);
+      if (allowedOrigins.includes(url.origin)) return true;
+      // Allow Firebase hosting domains
+      if (url.hostname.endsWith('.hosted.app') || 
+          url.hostname.endsWith('.web.app') || 
+          url.hostname.endsWith('.firebaseapp.com')) {
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  };
 
-  // Check Origin header first (set on all CORS and same-origin POST/DELETE)
-  if (origin) {
-    return allowedOrigins.some(allowed => origin === allowed);
-  }
+  if (origin && isAllowedHost(origin)) return true;
+  if (referer && isAllowedHost(referer)) return true;
 
-  // Fallback: check Referer header (always present in browsers)
-  if (referer) {
-    return allowedOrigins.some(allowed => allowed && referer.startsWith(allowed));
-  }
-
-  // No Origin or Referer — reject in production, allow in dev (curl/Postman)
-  return process.env.NODE_ENV !== 'production';
+  console.warn('[Session CSRF] Rejected request from origin:', origin, 'referer:', referer);
+  return false;
 }
 
 export async function POST(request: Request) {

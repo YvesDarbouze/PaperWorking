@@ -40,7 +40,8 @@ export default function ParallaxLandingPage() {
     // ── Unauthenticated: save intent and route through auth ──
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
-      window.location.href = `/login?redirectTo=/pricing&plan=${encodeURIComponent(plan)}`;
+      const type = plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
+      window.location.href = `/register?type=${type}&redirectTo=/pricing`;
       return;
     }
 

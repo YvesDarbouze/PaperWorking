@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20"
+    "node": "22"
   },
   "scripts": {
     "dev": "next dev --webpack",
@@ -38,6 +38,7 @@
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^1.14.0",
     "next": "16.2.3",
+    "next-firebase-auth-edge": "^1.12.0",
     "react": "19.2.4",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.4",

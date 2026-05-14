@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
@@ -12,7 +12,20 @@ import { Eye, EyeOff, Loader2, Mail, Lock, AlertCircle, User, X, CheckCircle2, B
 type AccountType = 'investor' | 'vendor';
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className="h-[480px] w-full rounded-xl bg-[#141414] animate-pulse" />}>
+      <RegisterPageInner />
+    </Suspense>
+  );
+}
+
+function RegisterPageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlType       = searchParams.get('type');
+  const urlRedirectTo = searchParams.get('redirectTo') || '';
+  const initialType = (urlType === 'vendor' || urlType === 'investor') ? urlType : null;
+
   const { register: registerUser, loginWithGoogle, loginWithFacebook, error: authError, clearError, user, loading } = useAuth();
 
   // Clear any stale auth errors from previous pages (e.g. failed login attempt)
@@ -21,12 +34,34 @@ export default function RegisterPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [accountType, setAccountType] = useState<AccountType | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(initialType);
+
+  // If initialType wasn't in URL, try to recover from pending plan intent
+  useEffect(() => {
+    if (!accountType) {
+      try {
+        const raw = sessionStorage.getItem('pw_pending_plan');
+        if (raw) {
+          const pendingPlan = JSON.parse(raw);
+          const derivedType = pendingPlan.plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
+          setAccountType(derivedType);
+          window.localStorage.setItem('pw_pending_account_type', derivedType);
+        }
+      } catch (err) {
+        // ignore JSON parse errors
+      }
+    }
+    // Also ensure initialType from URL gets pushed to localStorage if it's set
+    if (initialType && typeof window !== 'undefined') {
+      window.localStorage.setItem('pw_pending_account_type', initialType);
+    }
+  }, [accountType, initialType]);
 
   // Compute the best redirect destination (same priority as login page):
   // 1. pw_pending_plan in sessionStorage → /pricing (checkout resume)
   // 2. pw_auth_redirect in sessionStorage (saved before social OAuth) → use it
-  // 3. Default → /dashboard (or /vendor-portal for vendors)
+  // 3. redirectTo URL param → use it (fallback when sessionStorage was cleared)
+  // 4. Default → /dashboard (or /vendor-portal for vendors)
   const getRedirectDestination = (): string => {
     if (typeof window === 'undefined') return '/dashboard';
 
@@ -41,6 +76,12 @@ export default function RegisterPage() {
     if (savedRedirect) {
       sessionStorage.removeItem('pw_auth_redirect');
       return savedRedirect;
+    }
+
+    // URL param fallback — covers the case where sessionStorage was cleared
+    // but the user still has redirectTo=/pricing in the URL
+    if (urlRedirectTo && urlRedirectTo.startsWith('/')) {
+      return urlRedirectTo;
     }
 
     return accountType === 'vendor' ? '/vendor-portal' : '/dashboard';
@@ -115,8 +156,10 @@ export default function RegisterPage() {
     try {
       // Persist redirect intent before the page unloads for OAuth.
       // signInWithRedirect causes a full page navigation — all React state is lost.
+      // pw_pending_plan (checkout intent) takes priority in getRedirectDestination,
+      // so pw_auth_redirect only matters when there's no pending plan.
       if (typeof window !== 'undefined') {
-        const dest = accountType === 'vendor' ? '/vendor-portal' : '/dashboard';
+        const dest = urlRedirectTo || (accountType === 'vendor' ? '/vendor-portal' : '/dashboard');
         sessionStorage.setItem('pw_auth_redirect', dest);
       }
       if (provider === 'google') await loginWithGoogle();

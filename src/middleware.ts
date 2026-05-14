@@ -20,15 +20,26 @@ const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
 const AUTH_PATHS = new Set(['/login', '/register', '/forgot-password']);
 
+// Initialize Firebase Auth for Edge runtime
+import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth';
+
+const auth = getFirebaseAuth({
+  serviceAccount: {
+    projectId: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
+    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : '',
+  },
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+});
+
 /**
- * Lightweight JWT verification using Firebase Admin SDK.
+ * Lightweight JWT verification using next-firebase-auth-edge.
  * Returns the decoded token if valid, null if expired/invalid.
  * Failures are treated as "no session" — the user is redirected.
  */
 async function verifySessionToken(token: string): Promise<{ uid: string } | null> {
   try {
-    const { adminAuth } = await import('@/lib/firebase/admin');
-    const decoded = await adminAuth.verifyIdToken(token);
+    const decoded = await auth.verifyIdToken(token);
     return decoded?.uid ? { uid: decoded.uid } : null;
   } catch (err: any) {
     // Expected failures: expired token, revoked token, malformed JWT
@@ -39,7 +50,7 @@ async function verifySessionToken(token: string): Promise<{ uid: string } | null
   }
 }
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
   const acct         = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
@@ -103,15 +114,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // ── Auth pages — bounce authenticated users ───────
+  // IMPORTANT: Only redirect from auth pages when a redirectTo param is
+  // explicitly present. Otherwise, let the client-side login page handle
+  // the redirect via its useEffect — it has access to sessionStorage
+  // which may contain checkout intent (pw_pending_plan, pw_auth_redirect)
+  // that the server-side proxy cannot read.
   if (AUTH_PATHS.has(pathname) && sessionToken) {
-    // If the user is already authenticated and lands on /login,
-    // respect their redirectTo param (e.g. coming from pricing → login → already authed).
     const redirectTo = request.nextUrl.searchParams.get('redirectTo');
     if (redirectTo && redirectTo.startsWith('/') && !AUTH_PATHS.has(redirectTo)) {
       return NextResponse.redirect(new URL(redirectTo, request.url));
     }
-    const dest = acct === 'vendor' ? '/vendor-portal' : '/dashboard';
-    return NextResponse.redirect(new URL(dest, request.url));
+    // No explicit redirectTo — let the client-side useEffect decide.
+    // It will check: pw_pending_plan → pw_auth_redirect → /dashboard
   }
 
   return NextResponse.next();

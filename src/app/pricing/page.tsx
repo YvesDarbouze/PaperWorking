@@ -55,7 +55,8 @@ export default function PricingPage() {
     // Unauthenticated → save intent and route through login
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
-      window.location.href = `/login?redirectTo=/pricing&plan=${encodeURIComponent(plan)}`;
+      const type = plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
+      window.location.href = `/register?type=${type}&redirectTo=/pricing`;
       return;
     }
 

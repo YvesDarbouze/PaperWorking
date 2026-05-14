@@ -12,11 +12,23 @@ import toast from 'react-hot-toast';
 import { usePermissions } from '@/hooks/usePermissions';
 import { projectsService } from '@/lib/firebase/projects';
 import { transitionProjectPhase } from '@/lib/services/projectStateMachine';
+import { computeNOIComponents, computeCapRate, computeContingencyBudget, computeDailyBurnRate, computeRenovationROI, computeOverImprovementRisk, computeRehabStageProgress, computeYesterdayCost, computeCriticalPath } from '@/lib/metrics/reiMetrics';
 import ProjectTodoList from '../project/ProjectTodoList';
 
 /* ── Lazy-loaded analytics panel ── */
 import { lazy, Suspense } from 'react';
 const NOIDeepDive = lazy(() => import('@/components/dashboard/charts/NOIDeepDive'));
+const CashFlowDeepDive = lazy(() => import('@/components/dashboard/charts/CashFlowDeepDive'));
+const CapRateDeepDive = lazy(() => import('@/components/dashboard/charts/CapRateDeepDive'));
+const CoCReturnDeepDive = lazy(() => import('@/components/dashboard/charts/CoCReturnDeepDive'));
+const GRMDeepDive = lazy(() => import('@/components/dashboard/charts/GRMDeepDive'));
+const DSCRDeepDive = lazy(() => import('@/components/dashboard/charts/DSCRDeepDive'));
+const IRRDeepDive = lazy(() => import('@/components/dashboard/charts/IRRDeepDive'));
+const OccupancyDeepDive = lazy(() => import('@/components/dashboard/charts/OccupancyDeepDive'));
+const ExpenseRatioDeepDive = lazy(() => import('@/components/dashboard/charts/ExpenseRatioDeepDive'));
+const AppreciationDeepDive = lazy(() => import('@/components/dashboard/charts/AppreciationDeepDive'));
+const FlipProfitabilityDashboard = lazy(() => import('@/components/dashboard/charts/FlipProfitabilityDashboard'));
+const MLSPropertyScout = lazy(() => import('@/components/acquisition/MLSPropertyScout'));
 
 interface FullscreenLifecycleViewProps {
   projectId: string;
@@ -185,40 +197,557 @@ function ExplainerVideoPlaceholder({ phaseName }: { phaseName: string }) {
 }
 
 function StaticPhase1({ deal }: { deal: Project }) {
+  const noiComponents = deal.financials ? computeNOIComponents(deal.financials) : null;
+  const capRate = noiComponents && deal.financials?.purchasePrice
+    ? computeCapRate(noiComponents.noi, deal.financials.purchasePrice)
+    : 0;
+  const hasNOIData = noiComponents && noiComponents.grossRentalIncome > 0;
+
   return (
-    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20 mt-12">
+    <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20 mt-12 mb-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 1: Acquisition</h1>
        <p className="text-text-secondary mb-8">Review your deal numbers and financing breakdown for {deal.address}.</p>
        
        <ExplainerVideoPlaceholder phaseName="Acquisition" />
-       <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent text-left mb-8">
-          <p className="text-sm font-medium text-text-secondary uppercase">Purchase Price</p>
-          <p className="text-3xl font-normal mt-2">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
+
+       {/* ── MLS Property Scout — Live Search for Comparables ── */}
+       <div className="text-left mb-4">
+         <Suspense
+           fallback={
+             <div className="animate-pulse bg-bg-surface/40 rounded-xl h-32 flex items-center justify-center">
+               <span className="text-xs text-text-secondary uppercase tracking-widest">Loading MLS Search…</span>
+             </div>
+           }
+         >
+           <MLSPropertyScout
+             currentAddress={deal.address}
+             currentListPrice={deal.financials?.purchasePrice || deal.financials?.listedPrice}
+           />
+         </Suspense>
        </div>
        
+       {/* ── KPI Strip ── */}
+       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+         <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Purchase Price</p>
+           <p className="text-xl font-bold tabular-nums text-text-primary mt-1">${(deal.financials.purchasePrice || 0).toLocaleString()}</p>
+         </div>
+         {deal.financials.estimatedARV ? (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">After-Repair Value</p>
+             <p className="text-xl font-bold tabular-nums text-text-primary mt-1">${deal.financials.estimatedARV.toLocaleString()}</p>
+           </div>
+         ) : null}
+         {deal.financials.estimatedARV && deal.financials.projectedRehabCost ? (() => {
+           const arv = deal.financials.estimatedARV || 0;
+           const rehab = deal.financials.projectedRehabCost || 0;
+           const closing = deal.financials.fixedAcquisitionCosts || 0;
+           const mao = Math.round((arv * 0.70) - rehab - closing);
+           const pp = deal.financials.purchasePrice || 0;
+           const diff = mao - pp;
+           return (
+             <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: diff >= 0 ? '#10B981' : '#EF4444' }}>
+               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">MAO (70% Rule)</p>
+               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: diff >= 0 ? '#10B981' : '#EF4444' }}>${mao.toLocaleString()}</p>
+               <p className="text-[9px] font-bold mt-1" style={{ color: diff >= 0 ? '#6EE7B7' : '#FCA5A5' }}>
+                 {diff >= 0 ? `$${diff.toLocaleString()} under` : `$${Math.abs(diff).toLocaleString()} over`}
+               </p>
+             </div>
+           );
+         })() : null}
+         {deal.financials.projectedRehabCost ? (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Rehab Budget</p>
+             <p className="text-xl font-bold tabular-nums text-text-primary mt-1">${deal.financials.projectedRehabCost.toLocaleString()}</p>
+             {deal.financials.estimatedTimelineDays ? (
+               <p className="text-[9px] text-text-secondary opacity-50 mt-1">{deal.financials.estimatedTimelineDays} days est.</p>
+             ) : null}
+           </div>
+         ) : null}
+         {hasNOIData && (
+           <>
+             <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Annual NOI</p>
+               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: noiComponents.noi >= 0 ? '#10B981' : '#EF4444' }}>${Math.round(noiComponents.noi).toLocaleString()}</p>
+             </div>
+             <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Cap Rate</p>
+               <p className="text-xl font-bold tabular-nums text-text-primary mt-1">{capRate.toFixed(2)}%</p>
+             </div>
+             <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Monthly NOI</p>
+               <p className="text-xl font-bold tabular-nums text-text-primary mt-1">${Math.round(noiComponents.noi / 12).toLocaleString()}</p>
+             </div>
+           </>
+         )}
+       </div>
+
+       {/* ── Full NOI Deep Dive — Waterfall + Donut + P&L ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading NOI Analytics…</span>
+               </div>
+             }
+           >
+             <NOIDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+       
+       {/* ── Cash Flow Deep Dive — NOI minus Debt Service ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading Cash Flow Analytics…</span>
+               </div>
+             }
+           >
+             <CashFlowDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Cap Rate Deep Dive — NOI ÷ Purchase Price ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading Cap Rate Analytics…</span>
+               </div>
+             }
+           >
+             <CapRateDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Cash-on-Cash Return — Annual CF ÷ Total Cash Invested ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading CoC Return Analytics…</span>
+               </div>
+             }
+           >
+             <CoCReturnDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Gross Rent Multiplier — Quick Screen ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading GRM Analytics…</span>
+               </div>
+             }
+           >
+             <GRMDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── DSCR — Can the property cover its mortgage? ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading DSCR Analytics…</span></div>}>
+             <DSCRDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── IRR — Total Lifecycle Return ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading IRR Analytics…</span></div>}>
+             <IRRDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Occupancy Rate ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Occupancy Analytics…</span></div>}>
+             <OccupancyDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Expense Ratio ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Expense Ratio Analytics…</span></div>}>
+             <ExpenseRatioDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Long-Term Appreciation ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Appreciation Analytics…</span></div>}>
+             <AppreciationDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Flip Profitability Dashboard ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
+             <FlipProfitabilityDashboard projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
        <ProjectTodoList deal={deal} phase={1} />
     </div>
   );
 }
 
 function StaticPhase2({ deal }: { deal: Project }) {
+  const noiComponents = deal.financials ? computeNOIComponents(deal.financials) : null;
+  const hasNOIData = noiComponents && noiComponents.grossRentalIncome > 0;
+
+  // ── Phase 2 Budget Planning Metrics ──
+  const contingency = deal.financials ? computeContingencyBudget(deal.financials) : null;
+  const burnRate = deal.financials ? computeDailyBurnRate(deal.financials) : null;
+  const hasBudgetData = contingency && contingency.repairCost > 0;
+
+  // LTV
+  const loanAmount = deal.financials?.loanAmount ?? 0;
+  const purchasePrice = deal.financials?.purchasePrice ?? 0;
+  const ltv = purchasePrice > 0 && loanAmount > 0 ? Math.round((loanAmount / purchasePrice) * 100) : 0;
+
   return (
-    <div className="w-full max-w-2xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12">
-       <h1 className="text-4xl font-normal text-text-primary mb-4 text-center">Phase 2: Purchase</h1>
-       <p className="text-text-secondary mb-8 text-center">Verify title, upload closing docs, and assign your attorney in the Closing Room.</p>
+    <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
+       <h1 className="text-4xl font-normal text-text-primary mb-2 text-center">Phase 2: Financing & Budget</h1>
+       <p className="text-text-secondary mb-8 text-center max-w-2xl mx-auto">
+         Secure capital, assign a dollar amount to every task, and create the financial roadmap for the entire project. A miscalculated budget erodes profit just as fast as overpaying for the property.
+       </p>
        
-       <ExplainerVideoPlaceholder phaseName="Purchase" />
-       <div className="space-y-4 mb-8">
-          <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
-             <span className="font-medium text-text-primary">Title Search</span>
-             <CheckCircle className="text-green-500 w-5 h-5" />
-          </div>
-          <div className="flex items-center justify-between bg-bg-surface rounded-lg p-4 shadow-sm">
-             <span className="font-medium text-text-primary">Closing Disclosures</span>
-             <CheckCircle className="text-green-500 w-5 h-5" />
-          </div>
+       <ExplainerVideoPlaceholder phaseName="Financing" />
+
+       {/* ── Budget Planning KPI Strip ── */}
+       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+         {/* Total Project Budget */}
+         <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Total Project Budget</p>
+           <p className="text-xl font-bold tabular-nums text-text-primary mt-1">
+             ${(contingency?.totalProjectBudget ?? 0).toLocaleString()}
+           </p>
+           <p className="text-[9px] text-text-secondary opacity-50 mt-1">Purchase + Repairs + Contingency + Closing</p>
+         </div>
+
+         {/* 15% Contingency */}
+         {hasBudgetData ? (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#F59E0B' }}>
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">15% Contingency Reserve</p>
+             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#F59E0B' }}>
+               ${contingency.contingencyAmount.toLocaleString()}
+             </p>
+             <p className="text-[9px] mt-1" style={{ color: '#FCD34D' }}>
+               For hidden surprises — not upgrades
+             </p>
+           </div>
+         ) : (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">15% Contingency</p>
+             <p className="text-sm text-text-secondary mt-1">Enter rehab budget to calculate</p>
+           </div>
+         )}
+
+         {/* Daily Burn Rate */}
+         {burnRate && burnRate.dailyBurnRate > 0 ? (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#EF4444' }}>
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Daily Burn Rate</p>
+             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#EF4444' }}>
+               ${burnRate.dailyBurnRate.toLocaleString()}/day
+             </p>
+             <p className="text-[9px] mt-1" style={{ color: '#FCA5A5' }}>
+               ${burnRate.totalMonthlyBurn.toLocaleString()}/mo holding cost
+             </p>
+           </div>
+         ) : (
+           <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Daily Burn Rate</p>
+             <p className="text-sm text-text-secondary mt-1">Enter holding costs to calculate</p>
+           </div>
+         )}
+
+         {/* LTV */}
+         <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
+           <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Loan-to-Value</p>
+           <p className="text-xl font-bold tabular-nums text-text-primary mt-1">{ltv}%</p>
+           {loanAmount > 0 && (
+             <p className="text-[9px] text-text-secondary opacity-50 mt-1">
+               ${loanAmount.toLocaleString()} of ${purchasePrice.toLocaleString()}
+             </p>
+           )}
+         </div>
        </div>
+
+       {/* ── Budget Breakdown Panel ── */}
+       {hasBudgetData && (
+         <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent mb-8">
+           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-4">
+             Budget Breakdown — 15% Contingency Rule
+           </h3>
+           <div className="space-y-3">
+             {/* Purchase */}
+             <div className="flex justify-between items-center">
+               <span className="text-sm text-text-primary">Purchase Price</span>
+               <span className="text-sm font-bold tabular-nums text-text-primary">${contingency.purchasePrice.toLocaleString()}</span>
+             </div>
+             {/* Repairs */}
+             <div className="flex justify-between items-center">
+               <span className="text-sm text-text-primary">Estimated Repairs</span>
+               <span className="text-sm font-bold tabular-nums text-text-primary">${contingency.repairCost.toLocaleString()}</span>
+             </div>
+             {/* Contingency */}
+             <div className="flex justify-between items-center">
+               <span className="text-sm flex items-center" style={{ color: '#F59E0B' }}>
+                 <span className="w-1.5 h-1.5 rounded-full mr-2" style={{ background: '#F59E0B' }} />
+                 Contingency ({Math.round(contingency.contingencyRate * 100)}%)
+               </span>
+               <span className="text-sm font-bold tabular-nums" style={{ color: '#F59E0B' }}>+ ${contingency.contingencyAmount.toLocaleString()}</span>
+             </div>
+             {/* Holding & Closing */}
+             <div className="flex justify-between items-center">
+               <span className="text-sm text-text-primary">Holding & Closing Costs</span>
+               <span className="text-sm font-bold tabular-nums text-text-primary">${contingency.holdingAndClosingCosts.toLocaleString()}</span>
+             </div>
+             <div className="border-t border-border-accent my-2" />
+             {/* Total */}
+             <div className="flex justify-between items-center">
+               <span className="text-base font-bold text-text-primary">Total Project Budget</span>
+               <span className="text-base font-bold tabular-nums text-text-primary">${contingency.totalProjectBudget.toLocaleString()}</span>
+             </div>
+           </div>
+
+           {/* Visual: Stacked Budget Bar */}
+           {contingency.totalProjectBudget > 0 && (() => {
+             const total = contingency.totalProjectBudget;
+             const purchasePrc = (contingency.purchasePrice / total) * 100;
+             const repairPrc = (contingency.repairCost / total) * 100;
+             const contingencyPrc = (contingency.contingencyAmount / total) * 100;
+             const holdingPrc = (contingency.holdingAndClosingCosts / total) * 100;
+             return (
+               <div className="mt-4">
+                 <div className="w-full h-4 rounded-full flex overflow-hidden bg-gray-800/30">
+                   <div style={{ width: `${purchasePrc}%` }} className="bg-blue-500 transition-all duration-500" />
+                   <div style={{ width: `${repairPrc}%` }} className="bg-emerald-500 transition-all duration-500" />
+                   <div style={{ width: `${contingencyPrc}%`, background: '#F59E0B' }} className="transition-all duration-500" />
+                   <div style={{ width: `${holdingPrc}%` }} className="bg-gray-400 transition-all duration-500" />
+                 </div>
+                 <div className="flex flex-wrap gap-x-5 gap-y-1 mt-2">
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5" /> Purchase ({purchasePrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5" /> Repairs ({repairPrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#F59E0B' }} /> Contingency ({contingencyPrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-gray-400 mr-1.5" /> Holding/Closing ({holdingPrc.toFixed(0)}%)</span>
+                 </div>
+               </div>
+             );
+           })()}
+         </div>
+       )}
+
+       {/* ── Burn Rate Detail ── */}
+       {burnRate && burnRate.dailyBurnRate > 0 && (
+         <div className="bg-bg-surface/80 rounded-xl p-6 border border-border-accent mb-8">
+           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-4">
+             Daily Burn Rate Breakdown — Every Day Costs Money
+           </h3>
+           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+             {burnRate.monthlyLoanInterest > 0 && (
+               <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Loan Interest</p>
+                 <p className="text-lg font-bold tabular-nums text-text-primary">${burnRate.monthlyLoanInterest.toLocaleString()}</p>
+                 <p className="text-[9px] text-text-secondary opacity-50">per month</p>
+               </div>
+             )}
+             {burnRate.monthlyInsurance > 0 && (
+               <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Insurance</p>
+                 <p className="text-lg font-bold tabular-nums text-text-primary">${burnRate.monthlyInsurance.toLocaleString()}</p>
+                 <p className="text-[9px] text-text-secondary opacity-50">per month</p>
+               </div>
+             )}
+             {burnRate.monthlyTaxes > 0 && (
+               <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Property Taxes</p>
+                 <p className="text-lg font-bold tabular-nums text-text-primary">${burnRate.monthlyTaxes.toLocaleString()}</p>
+                 <p className="text-[9px] text-text-secondary opacity-50">per month</p>
+               </div>
+             )}
+             {burnRate.monthlyUtilities > 0 && (
+               <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Utilities</p>
+                 <p className="text-lg font-bold tabular-nums text-text-primary">${burnRate.monthlyUtilities.toLocaleString()}</p>
+                 <p className="text-[9px] text-text-secondary opacity-50">per month</p>
+               </div>
+             )}
+             {burnRate.monthlyOther > 0 && (
+               <div>
+                 <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Other (HOA, Maint.)</p>
+                 <p className="text-lg font-bold tabular-nums text-text-primary">${burnRate.monthlyOther.toLocaleString()}</p>
+                 <p className="text-[9px] text-text-secondary opacity-50">per month</p>
+               </div>
+             )}
+           </div>
+           {/* Urgency callout */}
+           <div className="mt-4 p-3 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(239, 68, 68, 0.05)' }}>
+             <span className="text-lg">⏱️</span>
+             <p className="text-sm text-text-primary">
+               Every day past your timeline costs <strong style={{ color: '#EF4444' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
+               {deal.financials?.estimatedTimelineDays ? (
+                 <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#EF4444' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
+               ) : null}
+             </p>
+           </div>
+         </div>
+       )}
+
+       {/* ── Full NOI Deep Dive — Waterfall + Donut + P&L ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading NOI Analytics…</span>
+               </div>
+             }
+           >
+             <NOIDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
        
+       {/* ── Cash Flow Deep Dive — NOI minus Debt Service ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading Cash Flow Analytics…</span>
+               </div>
+             }
+           >
+             <CashFlowDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Cap Rate Deep Dive — NOI ÷ Purchase Price ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading Cap Rate Analytics…</span>
+               </div>
+             }
+           >
+             <CapRateDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Cash-on-Cash Return — Annual CF ÷ Total Cash Invested ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading CoC Return Analytics…</span>
+               </div>
+             }
+           >
+             <CoCReturnDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Gross Rent Multiplier — Quick Screen ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense
+             fallback={
+               <div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center">
+                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading GRM Analytics…</span>
+               </div>
+             }
+           >
+             <GRMDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── DSCR — Can the property cover its mortgage? ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading DSCR Analytics…</span></div>}>
+             <DSCRDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── IRR — Total Lifecycle Return ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading IRR Analytics…</span></div>}>
+             <IRRDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Occupancy Rate ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Occupancy Analytics…</span></div>}>
+             <OccupancyDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Expense Ratio ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Expense Ratio Analytics…</span></div>}>
+             <ExpenseRatioDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Long-Term Appreciation ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Appreciation Analytics…</span></div>}>
+             <AppreciationDeepDive projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── Flip Profitability Dashboard ── */}
+       {hasNOIData && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
+             <FlipProfitabilityDashboard projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
        <ProjectTodoList deal={deal} phase={2} />
     </div>
   );
@@ -254,25 +783,256 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
   };
 
   const costs = ledgerItems.length > 0 ? ledgerItems : (deal.financials.costs || []);
-  const totalRehab = costs.filter(c => c.status === 'Approved' || c.approved).reduce((acc, c) => acc + c.amount, 0) || 0; 
+  const totalRehab = costs.filter(c => c.status === 'Approved' || c.approved).reduce((acc, c) => acc + c.amount, 0) || 0;
 
-  const plumbing = costs.filter(c => c.description.toLowerCase().includes('plumbing')).reduce((acc, c) => acc + c.amount, 0);
-  const electrical = costs.filter(c => c.description.toLowerCase().includes('electrical')).reduce((acc, c) => acc + c.amount, 0);
-  const general = totalRehab - plumbing - electrical;
+  // ── Renovation ROI Engine ──
+  const renoROI = computeRenovationROI(costs, deal.financials.projectedRehabCost);
+  const arv = deal.financials.estimatedARV || 0;
+  const overImprovementRisk = computeOverImprovementRisk(renoROI.totalRehabCost, arv, renoROI.zones);
+  const budgetRemaining = (deal.financials.projectedRehabCost || 0) - totalRehab;
+  const burnRate = computeDailyBurnRate(deal.financials);
 
-  const plumbingPrc = totalRehab > 0 ? (plumbing / totalRehab) * 100 : 0;
-  const electricalPrc = totalRehab > 0 ? (electrical / totalRehab) * 100 : 0;
-  const generalPrc = totalRehab > 0 ? (general / totalRehab) * 100 : 0;
+  // ── Renovation Timeline & Critical Path ──
+  const rehabTasks = deal.rehabScheduleTasks || [];
+  const stageProgress = computeRehabStageProgress(rehabTasks, deal.financials.acquisitionDate, deal.financials.estimatedTimelineDays);
+  const criticalPath = computeCriticalPath(rehabTasks);
+  const yesterdayCost = computeYesterdayCost(
+    burnRate,
+    costs,
+    deal.financials.acquisitionDate,
+    deal.financials.estimatedTimelineDays,
+    deal.financials.projectedRehabCost ? deal.financials.projectedRehabCost + burnRate.totalMonthlyBurn * (deal.financials.projectedHoldTimeMonths || 3) : undefined
+  );
+
+  // Zone color map
+  const ZONE_COLORS: Record<string, string> = {
+    'Kitchen': '#3B82F6',      // Blue
+    'Bathroom': '#14B8A6',     // Teal
+    'Curb Appeal': '#10B981',  // Emerald
+    'Interior': '#9CA3AF',     // Gray
+    'Structural': '#F97316',   // Orange
+  };
+  const riskColors: Record<string, string> = { low: '#10B981', moderate: '#F59E0B', high: '#EF4444' };
 
   return (
     <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
-       <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 3: Hold</h1>
-       <p className="text-text-secondary mb-8">Track rehab spending, approve contractor draw requests, and monitor your budget.</p>
+       <h1 className="text-4xl font-normal text-text-primary mb-2">Phase 3: Hold</h1>
+       <p className="text-text-secondary mb-8">Every day you hold a property, it costs you money. Track rehab spending, manage renovations by ROI zone, and monitor your daily burn rate.</p>
        
        <ExplainerVideoPlaceholder phaseName="Hold" />
+
+       {/* ── Yesterday Cost Thumbnail + Project Timeline ── */}
+       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+
+         {/* Yesterday Cost Thumbnail */}
+         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+           <div>
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Yesterday Cost You</p>
+             <p className={`text-4xl font-bold tabular-nums ${yesterdayCost.yesterdayTotalCost > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+               ${yesterdayCost.yesterdayTotalCost.toLocaleString()}
+             </p>
+             <div className="flex gap-4 mt-3">
+               <div>
+                 <p className="text-[9px] text-text-secondary opacity-50">Holding</p>
+                 <p className="text-xs text-gray-300 tabular-nums">${yesterdayCost.yesterdayHoldingCost.toLocaleString()}</p>
+               </div>
+               <div>
+                 <p className="text-[9px] text-text-secondary opacity-50">Approved Spend</p>
+                 <p className="text-xs text-gray-300 tabular-nums">${yesterdayCost.yesterdayApprovedSpend.toLocaleString()}</p>
+               </div>
+             </div>
+           </div>
+           <div className="mt-4 pt-3 border-t border-gray-800">
+             <div className="flex justify-between text-[10px] text-text-secondary opacity-50 mb-1">
+               <span>Budget Used</span>
+               <span className="tabular-nums">{yesterdayCost.budgetUtilization}%</span>
+             </div>
+             <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+               <div
+                 className="h-full rounded-full transition-all duration-700"
+                 style={{
+                   width: `${Math.min(yesterdayCost.budgetUtilization, 100)}%`,
+                   background: yesterdayCost.isOverBudget ? '#EF4444' : yesterdayCost.budgetUtilization > 80 ? '#F59E0B' : '#10B981',
+                 }}
+               />
+             </div>
+             <div className="flex justify-between text-[9px] text-text-secondary opacity-40 mt-1">
+               <span>Day {yesterdayCost.daysElapsed}</span>
+               <span>{yesterdayCost.daysRemaining} days left</span>
+             </div>
+           </div>
+         </div>
+
+         {/* Cumulative Cost Card */}
+         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+           <div>
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Total Project Cost to Date</p>
+             <p className="text-3xl font-bold tabular-nums text-white">
+               ${yesterdayCost.cumulativeTotalCost.toLocaleString()}
+             </p>
+             <div className="grid grid-cols-2 gap-3 mt-3">
+               <div>
+                 <p className="text-[9px] text-text-secondary opacity-50">Holding Costs</p>
+                 <p className="text-xs text-orange-400 tabular-nums">${yesterdayCost.cumulativeHoldingCost.toLocaleString()}</p>
+               </div>
+               <div>
+                 <p className="text-[9px] text-text-secondary opacity-50">Rehab Spend</p>
+                 <p className="text-xs text-blue-400 tabular-nums">${yesterdayCost.cumulativeRehabSpend.toLocaleString()}</p>
+               </div>
+             </div>
+           </div>
+           <div className="mt-4 pt-3 border-t border-gray-800">
+             <p className="text-[9px] text-text-secondary opacity-50 mb-0.5">Projected Total at Current Burn</p>
+             <p className={`text-lg font-bold tabular-nums ${yesterdayCost.isOverBudget ? 'text-red-400' : 'text-white'}`}>
+               ${yesterdayCost.projectedTotalCost.toLocaleString()}
+             </p>
+           </div>
+         </div>
+
+         {/* Critical Path Summary Card */}
+         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+           <div>
+             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Critical Path</p>
+             {rehabTasks.length > 0 ? (
+               <>
+                 <p className="text-3xl font-bold tabular-nums text-white">
+                   {criticalPath.totalProjectDuration} <span className="text-sm font-normal text-text-secondary">days</span>
+                 </p>
+                 <p className="text-[10px] text-text-secondary opacity-50 mt-1">
+                   {criticalPath.criticalPathIds.length} critical task{criticalPath.criticalPathIds.length !== 1 ? 's' : ''} — zero float
+                 </p>
+                 <div className="mt-3">
+                   <p className="text-[9px] text-text-secondary opacity-50 mb-1">Schedule Status</p>
+                   <p className={`text-sm font-bold ${stageProgress.isOnSchedule ? 'text-emerald-400' : 'text-red-400'}`}>
+                     {stageProgress.isOnSchedule ? '✅ On Schedule' : '🚨 Behind Schedule'}
+                   </p>
+                 </div>
+               </>
+             ) : (
+               <>
+                 <p className="text-lg text-gray-400 mt-2">No tasks scheduled</p>
+                 <p className="text-[10px] text-text-secondary opacity-50 mt-1">Add rehab tasks to activate the Critical Path Method timeline</p>
+               </>
+             )}
+           </div>
+           <div className="mt-4 pt-3 border-t border-gray-800">
+             <p className="text-[9px] text-text-secondary opacity-50">Overall Progress</p>
+             <div className="flex items-center gap-2 mt-1">
+               <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                 <div className="h-full rounded-full bg-emerald-500 transition-all duration-700" style={{ width: `${stageProgress.overallPercent}%` }} />
+               </div>
+               <span className="text-xs text-white tabular-nums font-bold">{stageProgress.overallPercent}%</span>
+             </div>
+           </div>
+         </div>
+       </div>
+
+       {/* ── 3-Stage Renovation Timeline ── */}
+       <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl mb-6">
+         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-5">Project Timeline — Critical Path Method</p>
+         <div className="relative">
+           {/* Timeline connector line */}
+           <div className="absolute top-8 left-[12.5%] right-[12.5%] h-0.5 bg-gray-700" />
+           <div
+             className="absolute top-8 left-[12.5%] h-0.5 bg-emerald-500 transition-all duration-700"
+             style={{ width: `${Math.min(stageProgress.overallPercent, 100) * 0.75}%` }}
+           />
+
+           <div className="grid grid-cols-3 gap-4 relative z-10">
+             {stageProgress.stages.map((s, i) => {
+               const icons = ['📋', '⚙️', '🛋️'];
+               return (
+                 <div key={s.stage} className="flex flex-col items-center text-center">
+                   {/* Node */}
+                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-500 ${
+                     s.isComplete ? 'bg-emerald-500/20 border-2 border-emerald-500 shadow-lg shadow-emerald-500/20' :
+                     s.isActive ? 'bg-blue-500/20 border-2 border-blue-500 animate-pulse shadow-lg shadow-blue-500/20' :
+                     'bg-gray-800 border border-gray-700'
+                   }`}>
+                     {s.isComplete ? '✅' : icons[i]}
+                   </div>
+                   {/* Label */}
+                   <p className={`text-sm font-bold mt-3 ${s.isActive ? 'text-blue-400' : s.isComplete ? 'text-emerald-400' : 'text-gray-400'}`}>
+                     {s.label}
+                   </p>
+                   <p className="text-[10px] text-text-secondary opacity-50 mt-0.5">{s.estimatedWeeks}</p>
+                   {/* Progress for active/complete stages */}
+                   {s.totalTasks > 0 && (
+                     <div className="mt-2 w-full max-w-[120px]">
+                       <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                         <div
+                           className={`h-full rounded-full transition-all duration-500 ${s.isComplete ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                           style={{ width: `${s.percentComplete}%` }}
+                         />
+                       </div>
+                       <p className="text-[9px] text-text-secondary opacity-40 mt-1 tabular-nums">
+                         {s.completedTasks}/{s.totalTasks} tasks
+                         {s.inspectionsRequired > 0 && ` · ${s.inspectionsCleared}/${s.inspectionsRequired} inspections`}
+                       </p>
+                     </div>
+                   )}
+                 </div>
+               );
+             })}
+           </div>
+         </div>
+
+         {/* Timeline buffer recommendation */}
+         {stageProgress.timelineBufferDays > 0 && rehabTasks.length > 0 && (
+           <div className="mt-5 pt-3 border-t border-gray-800/50 flex items-center gap-2">
+             <span className="text-[10px]">💡</span>
+             <p className="text-[10px] text-text-secondary opacity-50">
+               Built-in {stageProgress.timelineBufferDays}-day buffer (17.5%) absorbs failed inspections, weather delays, and material shortages.
+               {!stageProgress.isOnSchedule && ' ⚠️ You have exceeded your estimated timeline — every additional day erodes profit.'}
+             </p>
+           </div>
+         )}
+       </div>
        
        <div className="bg-black/90 text-white rounded-xl p-8 border border-gray-700 shadow-xl flex flex-col items-center">
           
+          {/* ── Renovation ROI KPI Strip ── */}
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {/* KPI 1: Budget Remaining */}
+            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Budget Remaining</p>
+              <p className={`text-2xl font-bold tabular-nums mt-1 ${budgetRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                ${Math.abs(budgetRemaining).toLocaleString()}
+              </p>
+              <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">
+                {budgetRemaining >= 0 ? 'under budget' : 'OVER budget'}
+              </p>
+            </div>
+            {/* KPI 2: Highest ROI Zone */}
+            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Highest ROI Zone</p>
+              <p className="text-2xl font-bold mt-1" style={{ color: ZONE_COLORS[renoROI.highestROIZone] || '#fff' }}>
+                {renoROI.highestROIZone}
+              </p>
+              <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">
+                {renoROI.zones.find(z => z.zone === renoROI.highestROIZone)?.roi || 0}% ROI
+              </p>
+            </div>
+            {/* KPI 3: Money Rooms % */}
+            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Money Rooms</p>
+              <p className={`text-2xl font-bold tabular-nums mt-1 ${renoROI.moneyRoomsHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>
+                {renoROI.moneyRoomsPercent}%
+              </p>
+              <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">Kitchen + Bath (target: 50-60%)</p>
+            </div>
+            {/* KPI 4: Over-Improvement Risk */}
+            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Over-Improvement Risk</p>
+              <p className="text-2xl font-bold mt-1 uppercase" style={{ color: riskColors[overImprovementRisk.riskLevel] }}>
+                {overImprovementRisk.riskLevel}
+              </p>
+              <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">
+                {overImprovementRisk.rehabToARVPercent}% of ARV (max 30%)
+              </p>
+            </div>
+          </div>
+
           {/* Top Level Summary (Always Visible) */}
           <div className="w-full flex justify-between items-center mb-6">
              <div>
@@ -295,28 +1055,128 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
               )}
           </div>
 
-          {/* Scalable Visual Indicator: Horizontal Distribution Bar */}
+          {/* ── 5-Zone Budget Distribution Bar ── */}
           <div className="w-full mb-6">
              <div className="flex justify-between text-xs text-text-secondary uppercase tracking-widest mb-2 font-medium">
-               <span>Cost Distribution</span>
+               <span>Renovation Zone Distribution</span>
              </div>
-             <div className="w-full h-3 bg-gray-800 rounded-full flex overflow-hidden">
-                <div style={{ width: `${plumbingPrc}%` }} className="bg-blue-500 transition-all duration-500"></div>
-                <div style={{ width: `${electricalPrc}%` }} className="bg-yellow-500 transition-all duration-500"></div>
-                <div style={{ width: `${generalPrc}%` }} className="bg-gray-400 transition-all duration-500"></div>
+             <div className="w-full h-4 bg-gray-800 rounded-full flex overflow-hidden">
+                {renoROI.zones.filter(z => z.budgetPercent > 0).map(z => (
+                  <div
+                    key={z.zone}
+                    style={{ width: `${z.budgetPercent}%`, background: ZONE_COLORS[z.zone] || '#666' }}
+                    className="transition-all duration-500"
+                    title={`${z.zone}: ${z.budgetPercent}%`}
+                  />
+                ))}
              </div>
-             <div className="flex space-x-6 mt-3">
-                <div className="flex items-center text-xs text-gray-300">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div> Plumbing ({plumbingPrc.toFixed(0)}%)
-                </div>
-                <div className="flex items-center text-xs text-gray-300">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div> Electrical ({electricalPrc.toFixed(0)}%)
-                </div>
-                <div className="flex items-center text-xs text-gray-300">
-                  <div className="w-2 h-2 rounded-full bg-gray-400 mr-2"></div> General ({generalPrc.toFixed(0)}%)
-                </div>
+             <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3">
+                {renoROI.zones.map(z => (
+                  <div key={z.zone} className="flex items-center text-xs text-gray-300">
+                    <div className="w-2 h-2 rounded-full mr-1.5" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
+                    {z.zone} ({z.budgetPercent}%)
+                  </div>
+                ))}
              </div>
           </div>
+
+          {/* ── Over-Improvement Risk Alert ── */}
+          {arv > 0 && (
+            <div
+              className="w-full mb-6 p-4 rounded-lg border flex items-start gap-3"
+              style={{
+                borderColor: riskColors[overImprovementRisk.riskLevel],
+                background: `${riskColors[overImprovementRisk.riskLevel]}0D`,
+              }}
+            >
+              <span className="text-lg mt-0.5">{overImprovementRisk.riskLevel === 'high' ? '🚨' : overImprovementRisk.riskLevel === 'moderate' ? '⚠️' : '✅'}</span>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.12em] mb-1" style={{ color: riskColors[overImprovementRisk.riskLevel] }}>
+                  Over-Improvement {overImprovementRisk.riskLevel === 'low' ? 'Clear' : 'Warning'}
+                </p>
+                <p className="text-sm text-gray-300">{overImprovementRisk.explanation}</p>
+              </div>
+            </div>
+          )}
+
+          {/* ── Money Rooms Priority Callout ── */}
+          {renoROI.totalRehabCost > 0 && (
+            <div className="w-full mb-6 p-4 rounded-lg border border-gray-700/50 bg-gray-900/40">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-2">
+                🏠 Money Rooms — Kitchen + Bathroom
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(renoROI.moneyRoomsPercent, 100)}%`,
+                        background: renoROI.moneyRoomsHealthy ? '#10B981' : '#F59E0B',
+                      }}
+                    />
+                  </div>
+                </div>
+                <p className={`text-sm font-bold tabular-nums ${renoROI.moneyRoomsHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>
+                  {renoROI.moneyRoomsPercent}%
+                </p>
+              </div>
+              <p className="text-[10px] text-text-secondary opacity-50 mt-2">
+                {renoROI.moneyRoomsHealthy
+                  ? 'Your "Money Rooms" allocation is in the ideal 40-70% range. Kitchens and bathrooms sell houses.'
+                  : renoROI.moneyRoomsPercent < 40
+                    ? 'Below 40% — consider shifting more budget to kitchen and bathroom. These rooms deliver the highest buyer impact.'
+                    : 'Above 70% — make sure you\'re not neglecting curb appeal and interior finishes.'}
+              </p>
+            </div>
+          )}
+
+          {/* ── Zone ROI Detail Grid ── */}
+          {renoROI.zones.some(z => z.totalCost > 0) && (
+            <div className="w-full mb-6">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-3">
+                Per-Zone Cost vs. Estimated Value-Add
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                {renoROI.zones.map(z => (
+                  <div key={z.zone} className="bg-gray-900/60 rounded-lg p-3 border border-gray-800">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
+                      <p className="text-xs font-bold text-white">{z.zone}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[10px]">
+                        <span className="text-text-secondary">Cost</span>
+                        <span className="text-white tabular-nums font-medium">${z.totalCost.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-[10px]">
+                        <span className="text-text-secondary">Value Add</span>
+                        <span className="text-emerald-400 tabular-nums font-medium">${z.estimatedValueAdd.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-[10px]">
+                        <span className="text-text-secondary">ROI</span>
+                        <span className={`tabular-nums font-bold ${z.roi >= 70 ? 'text-emerald-400' : z.roi >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{z.roi}%</span>
+                      </div>
+                    </div>
+                    <p className="text-[9px] text-text-secondary opacity-40 mt-1.5">{z.itemCount} item{z.itemCount !== 1 ? 's' : ''}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── Daily Burn Rate Urgency ── */}
+          {burnRate && burnRate.dailyBurnRate > 0 && (
+            <div className="w-full mb-6 p-4 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(239, 68, 68, 0.05)' }}>
+              <span className="text-lg">⏱️</span>
+              <p className="text-sm text-white">
+                Every day past your timeline costs <strong style={{ color: '#EF4444' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
+                {deal.financials?.estimatedTimelineDays ? (
+                  <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#EF4444' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
+                ) : null}
+              </p>
+            </div>
+          )}
 
           {/* Progressive Disclosure Toggle */}
           <div className="w-full border-t border-gray-700/50 pt-4">
@@ -336,19 +1196,36 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                        <thead className="bg-pw-black text-text-secondary text-xs uppercase tracking-widest sticky top-0">
                          <tr>
                             <th className="px-4 py-3 font-medium">Description</th>
+                            <th className="px-4 py-3 font-medium">Zone</th>
                             <th className="px-4 py-3 font-medium">Cost</th>
                          </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-800">
-                         {costs.slice(0, 15).map((c, i) => (
-                           <tr key={i} className="hover:bg-pw-black transition-colors">
-                             <td className="px-4 py-3 text-gray-300">
-                               {c.description}
-                               {c.status && <span className={`ml-2 text-xs px-1 py-0.5 rounded ${c.status === 'Approved' ? 'bg-green-900/40 text-green-400' : 'bg-orange-900/40 text-orange-400'}`}>{c.status}</span>}
-                             </td>
-                             <td className="px-4 py-3 text-white font-medium">${c.amount.toLocaleString()}</td>
-                           </tr>
-                         ))}
+                         {costs.slice(0, 15).map((c, i) => {
+                           const zone = c.renovationZone || (c.description ? (() => {
+                             const d = c.description.toLowerCase();
+                             if (d.includes('kitchen') || d.includes('cabinet') || d.includes('countertop') || d.includes('appliance')) return 'Kitchen';
+                             if (d.includes('bath') || d.includes('vanity') || d.includes('tile') || d.includes('shower')) return 'Bathroom';
+                             if (d.includes('curb') || d.includes('landscap') || d.includes('front door') || d.includes('exterior paint') || d.includes('porch')) return 'Curb Appeal';
+                             if (d.includes('foundation') || d.includes('roof') || d.includes('hvac') || d.includes('electrical') || d.includes('plumbing')) return 'Structural';
+                             return 'Interior';
+                           })() : 'Interior');
+                           return (
+                             <tr key={i} className="hover:bg-pw-black transition-colors">
+                               <td className="px-4 py-3 text-gray-300">
+                                 {c.description}
+                                 {c.status && <span className={`ml-2 text-xs px-1 py-0.5 rounded ${c.status === 'Approved' ? 'bg-green-900/40 text-green-400' : 'bg-orange-900/40 text-orange-400'}`}>{c.status}</span>}
+                               </td>
+                               <td className="px-4 py-3">
+                                 <span className="inline-flex items-center gap-1 text-xs">
+                                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: ZONE_COLORS[zone] || '#666' }} />
+                                   <span className="text-gray-400">{zone}</span>
+                                 </span>
+                               </td>
+                               <td className="px-4 py-3 text-white font-medium">${c.amount.toLocaleString()}</td>
+                             </tr>
+                           );
+                         })}
                        </tbody>
                      </table>
                   </div>
@@ -380,7 +1257,101 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
               <NOIDeepDive projects={[deal]} />
             </Suspense>
           </div>
+
+          {/* ── Cash Flow Deep Dive — NOI minus Debt Service ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense
+              fallback={
+                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading Cash Flow Analytics…</span>
+                </div>
+              }
+            >
+              <CashFlowDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Cap Rate Deep Dive — NOI ÷ Purchase Price ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense
+              fallback={
+                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading Cap Rate Analytics…</span>
+                </div>
+              }
+            >
+              <CapRateDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Cash-on-Cash Return — Annual CF ÷ Total Cash Invested ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense
+              fallback={
+                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading CoC Return Analytics…</span>
+                </div>
+              }
+            >
+              <CoCReturnDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Gross Rent Multiplier — Quick Screen ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense
+              fallback={
+                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading GRM Analytics…</span>
+                </div>
+              }
+            >
+              <GRMDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
           
+          {/* ── DSCR — Can the property cover its mortgage? ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading DSCR Analytics…</span></div>}>
+              <DSCRDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── IRR — Total Lifecycle Return ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading IRR Analytics…</span></div>}>
+              <IRRDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Occupancy Rate ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Occupancy Analytics…</span></div>}>
+              <OccupancyDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Expense Ratio ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Expense Ratio Analytics…</span></div>}>
+              <ExpenseRatioDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Long-Term Appreciation ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Appreciation Analytics…</span></div>}>
+              <AppreciationDeepDive projects={[deal]} />
+            </Suspense>
+          </div>
+
+          {/* ── Flip Profitability Dashboard ── */}
+          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
+              <FlipProfitabilityDashboard projects={[deal]} />
+            </Suspense>
+          </div>
+
           <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
             <ProjectTodoList deal={deal} phase={3} />
           </div>

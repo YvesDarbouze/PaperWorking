@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import {
   DollarSign, Target, Users, Building2, FileText, CheckCircle2, X,
   AlertCircle, ShieldAlert, Wrench, Home, Tag, Key, FileSignature, HardHat,
+  TrendingUp,
 } from 'lucide-react';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
@@ -69,6 +70,26 @@ const INITIAL_FORM: ProjectFormData = {
   vision: '',
   leadEmail: '',
   partnerEmails: '',
+  // NOI defaults — vacancy 7% and mgmt 8% per NARPM convention
+  monthlyGrossRent: '',
+  vacancyRatePercent: '7',
+  monthlyTaxes: '',
+  monthlyInsurance: '',
+  monthlyMaintenance: '',
+  managementFeePercent: '8',
+  monthlyUtilities: '',
+  monthlyHOA: '',
+  // Debt service defaults — 30yr conventional
+  loanAmount: '',
+  loanInterestRate: '',
+  loanTermYears: '30',
+  closingCosts: '',
+  // Due Diligence — Acquisition forensics
+  projectedRehabCost: '',
+  estimatedTimelineDays: '',
+  sellerMotivation: '',
+  emdAmount: '',
+  leadSource: '',
   mlsListingKey: undefined,
   mlsListingId: undefined,
   mlsListPrice: null,
@@ -187,6 +208,27 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
           ...(formData.acquisitionDate && { acquisitionDate: new Date(formData.acquisitionDate + 'T00:00:00') }),
           ...(formData.closeDate && { estimatedCloseDate: new Date(formData.closeDate + 'T00:00:00') }),
           ...(formData.dateOfSale && { soldDate: new Date(formData.dateOfSale + 'T00:00:00') }),
+          // NOI inputs — written at project creation so NOI is computable from Phase 1
+          ...(formData.monthlyGrossRent && { monthlyGrossRent: parseFloat(formData.monthlyGrossRent) }),
+          ...(formData.vacancyRatePercent && { vacancyRatePercent: parseFloat(formData.vacancyRatePercent) }),
+          ...(formData.monthlyTaxes && { holdingCostTaxes: parseFloat(formData.monthlyTaxes) }),
+          ...(formData.monthlyInsurance && { holdingCostInsurance: parseFloat(formData.monthlyInsurance) }),
+          ...(formData.monthlyMaintenance && { monthlyMaintenanceReserve: parseFloat(formData.monthlyMaintenance) }),
+          ...(formData.managementFeePercent && { propertyManagementFeePercent: parseFloat(formData.managementFeePercent) }),
+          ...(formData.monthlyUtilities && { holdingCostUtilities: parseFloat(formData.monthlyUtilities) }),
+          ...(formData.monthlyHOA && { monthlyHOA: parseFloat(formData.monthlyHOA) }),
+          // Debt service — Cash Flow = NOI − Debt Service
+          ...(formData.loanAmount && { loanAmount: parseFloat(formData.loanAmount) }),
+          ...(formData.loanInterestRate && { loanInterestRate: parseFloat(formData.loanInterestRate) }),
+          ...(formData.loanTermYears && { loanTermYears: parseFloat(formData.loanTermYears) }),
+          // Closing costs — maps to fixedAcquisitionCosts for CoC Return
+          ...(formData.closingCosts && { fixedAcquisitionCosts: parseFloat(formData.closingCosts) }),
+          // Due Diligence — Acquisition forensics
+          ...(formData.projectedRehabCost && { projectedRehabCost: parseFloat(formData.projectedRehabCost) }),
+          ...(formData.estimatedTimelineDays && { estimatedTimelineDays: parseInt(formData.estimatedTimelineDays) }),
+          ...(formData.sellerMotivation && { sellerMotivation: formData.sellerMotivation }),
+          ...(formData.emdAmount && { emdAmount: parseFloat(formData.emdAmount) }),
+          ...(formData.leadSource && { leadSource: formData.leadSource }),
         },
       }, organizationId);
 
@@ -493,6 +535,446 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
             placeholder="75"
           />
         </div>
+
+        {/* ── Income & Operating Costs — NOI Inputs ── */}
+        <div className="mt-8 pt-8" style={{ borderTop: '1px solid var(--border-ui)' }}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#059669' }}>
+              <TrendingUp className="w-4 h-4" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Income & Operating Costs</h3>
+              <p className="text-[11px] font-normal" style={{ color: 'var(--text-secondary)', opacity: 0.65 }}>
+                These numbers power your NOI. Even estimates help — you can refine them later.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            {/* Monthly Gross Rent — required */}
+            <div className="space-y-2 col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>
+                What's the expected monthly rent? ($) <span style={{ color: '#B45309' }}>*</span>
+              </label>
+              <input
+                type="number"
+                value={formData.monthlyGrossRent}
+                onChange={(e) => updateForm({ monthlyGrossRent: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="e.g. 1950"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Vacancy rate (%)</label>
+              <input
+                type="number"
+                value={formData.vacancyRatePercent}
+                onChange={(e) => updateForm({ vacancyRatePercent: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="7"
+                step="0.5"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Management fee (%)</label>
+              <input
+                type="number"
+                value={formData.managementFeePercent}
+                onChange={(e) => updateForm({ managementFeePercent: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="8"
+                step="0.5"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Monthly property taxes ($)</label>
+              <input
+                type="number"
+                value={formData.monthlyTaxes}
+                onChange={(e) => updateForm({ monthlyTaxes: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="200"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Monthly insurance ($)</label>
+              <input
+                type="number"
+                value={formData.monthlyInsurance}
+                onChange={(e) => updateForm({ monthlyInsurance: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="58"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Monthly maintenance ($)</label>
+              <input
+                type="number"
+                value={formData.monthlyMaintenance}
+                onChange={(e) => updateForm({ monthlyMaintenance: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="195"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Monthly utilities ($)</label>
+              <input
+                type="number"
+                value={formData.monthlyUtilities}
+                onChange={(e) => updateForm({ monthlyUtilities: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="125"
+              />
+            </div>
+
+            <div className="space-y-2 col-span-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Monthly HOA fees ($)</label>
+              <input
+                type="number"
+                value={formData.monthlyHOA}
+                onChange={(e) => updateForm({ monthlyHOA: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="0"
+              />
+            </div>
+          </div>
+
+           {formData.monthlyGrossRent && (
+            <div className="mt-6 rounded-lg p-4 flex items-center justify-between" style={{ background: '#064E3B', border: '1px solid #059669' }}>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#6EE7B7' }}>Estimated Annual NOI</p>
+                <p className="text-xs mt-1" style={{ color: '#A7F3D0' }}>Based on your inputs — refine anytime in the Hold phase calculator.</p>
+              </div>
+              <p className="text-xl font-bold tabular-nums" style={{ color: '#ECFDF5' }}>
+                ${(() => {
+                  const rent = parseFloat(formData.monthlyGrossRent) || 0;
+                  const gri = rent * 12;
+                  const vac = gri * ((parseFloat(formData.vacancyRatePercent) || 7) / 100);
+                  const taxes = (parseFloat(formData.monthlyTaxes) || 0) * 12;
+                  const ins = (parseFloat(formData.monthlyInsurance) || 0) * 12;
+                  const maint = (parseFloat(formData.monthlyMaintenance) || 0) * 12;
+                  const mgmt = gri * ((parseFloat(formData.managementFeePercent) || 8) / 100);
+                  const utils = (parseFloat(formData.monthlyUtilities) || 0) * 12;
+                  const hoa = (parseFloat(formData.monthlyHOA) || 0) * 12;
+                  return Math.round(gri - vac - taxes - ins - maint - mgmt - utils - hoa).toLocaleString();
+                })()}
+              </p>
+            </div>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════
+             FINANCING & DEBT SERVICE
+             Cash Flow = NOI − Debt Service (Mortgage Payments)
+             ══════════════════════════════════════════════════════════ */}
+          <div className="mt-8 pt-8" style={{ borderTop: '2px dashed var(--border-ui)' }}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1E3A5F' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M2 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3l-2-2"/><path d="M12 17a5 5 0 0 0 10 0c0-2.76-2.5-5-5-3l-2-2"/><path d="M7 7h10"/><path d="M12 2v5"/></svg>
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>Financing & Debt Service</p>
+                <p className="text-[10px]" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>Cash Flow = NOI − Mortgage Payments</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Loan amount ($)</label>
+                <input
+                  type="number"
+                  value={formData.loanAmount}
+                  onChange={(e) => updateForm({ loanAmount: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="223200"
+                />
+                <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>80% of $279K = $223,200</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Interest rate (%)</label>
+                <input
+                  type="number"
+                  step="0.125"
+                  value={formData.loanInterestRate}
+                  onChange={(e) => updateForm({ loanInterestRate: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="7"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Loan term (years)</label>
+                <select
+                  value={formData.loanTermYears}
+                  onChange={(e) => updateForm({ loanTermYears: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                >
+                  <option value="15">15-Year</option>
+                  <option value="20">20-Year</option>
+                  <option value="25">25-Year</option>
+                  <option value="30">30-Year</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Closing costs — used for CoC Return */}
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Closing costs ($)</label>
+                <input
+                  type="number"
+                  value={formData.closingCosts}
+                  onChange={(e) => updateForm({ closingCosts: e.target.value })}
+                  className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                  style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                  placeholder="4500"
+                />
+                <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Title, escrow, lender fees, inspections, etc.</p>
+              </div>
+              {/* Down Payment — auto-calculated, shown for reference */}
+              {formData.purchasePrice && formData.loanAmount && (
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Down payment (auto-calculated)</label>
+                  <div
+                    className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums"
+                    style={{ background: 'var(--bg-inset)', border: '1px solid var(--border-ui)', color: 'var(--text-secondary)' }}
+                  >
+                    ${Math.max(0, (parseFloat(formData.purchasePrice) || 0) - (parseFloat(formData.loanAmount) || 0)).toLocaleString()}
+                  </div>
+                  <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Purchase Price − Loan Amount</p>
+                </div>
+              )}
+            </div>
+
+            {/* ── Live Cash Flow preview ── */}
+            {formData.monthlyGrossRent && formData.loanAmount && formData.loanInterestRate && (
+              <div className="mt-6 rounded-lg p-4" style={{ background: '#1E293B', border: '1px solid #334155' }}>
+                {(() => {
+                  const rent = parseFloat(formData.monthlyGrossRent) || 0;
+                  const gri = rent * 12;
+                  const vac = gri * ((parseFloat(formData.vacancyRatePercent) || 7) / 100);
+                  const taxes = (parseFloat(formData.monthlyTaxes) || 0) * 12;
+                  const ins = (parseFloat(formData.monthlyInsurance) || 0) * 12;
+                  const maint = (parseFloat(formData.monthlyMaintenance) || 0) * 12;
+                  const mgmt = gri * ((parseFloat(formData.managementFeePercent) || 8) / 100);
+                  const utils = (parseFloat(formData.monthlyUtilities) || 0) * 12;
+                  const hoa = (parseFloat(formData.monthlyHOA) || 0) * 12;
+                  const noi = gri - vac - taxes - ins - maint - mgmt - utils - hoa;
+
+                  const loanAmt = parseFloat(formData.loanAmount) || 0;
+                  const rate = parseFloat(formData.loanInterestRate) || 0;
+                  const termMonths = (parseFloat(formData.loanTermYears) || 30) * 12;
+                  let annualDebtService = 0;
+                  if (loanAmt > 0 && rate > 0 && termMonths > 0) {
+                    const r = rate / 100 / 12;
+                    const pow = Math.pow(1 + r, termMonths);
+                    const monthlyPayment = loanAmt * (r * pow) / (pow - 1);
+                    annualDebtService = monthlyPayment * 12;
+                  }
+                  const annualCashFlow = noi - annualDebtService;
+                  const monthlyCashFlow = annualCashFlow / 12;
+                  const isPositive = annualCashFlow >= 0;
+
+                  // CoC Return preview
+                  const purchPrice = parseFloat(formData.purchasePrice) || 0;
+                  const downPayment = Math.max(0, purchPrice - loanAmt);
+                  const closCosts = parseFloat(formData.closingCosts) || 0;
+                  const totalCashInvested = downPayment + closCosts;
+                  const cocReturn = totalCashInvested > 0 ? (annualCashFlow / totalCashInvested) * 100 : 0;
+
+                  return (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#94A3B8' }}>Estimated Cash Flow</p>
+                          <p className="text-xs mt-1" style={{ color: '#64748B' }}>
+                            NOI ${Math.round(noi).toLocaleString()} − Debt Service ${Math.round(annualDebtService).toLocaleString()}/yr
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold tabular-nums" style={{ color: isPositive ? '#34D399' : '#F87171' }}>
+                            {isPositive ? '+' : ''}${Math.round(monthlyCashFlow).toLocaleString()}/mo
+                          </p>
+                          <p className="text-[10px] font-bold tabular-nums" style={{ color: isPositive ? '#6EE7B7' : '#FCA5A5' }}>
+                            {isPositive ? '+' : ''}${Math.round(annualCashFlow).toLocaleString()}/yr
+                          </p>
+                        </div>
+                      </div>
+                      {/* CoC Return row */}
+                      {totalCashInvested > 0 && (
+                        <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid #334155' }}>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#94A3B8' }}>Cash-on-Cash Return</p>
+                            <p className="text-xs mt-1" style={{ color: '#64748B' }}>
+                              Cash Flow ${Math.round(annualCashFlow).toLocaleString()} ÷ Invested ${Math.round(totalCashInvested).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xl font-bold tabular-nums" style={{ color: cocReturn >= 8 ? '#34D399' : cocReturn >= 4 ? '#FBBF24' : '#F87171' }}>
+                              {cocReturn.toFixed(1)}%
+                            </p>
+                            <p className="text-[10px] font-bold" style={{ color: cocReturn >= 8 ? '#6EE7B7' : cocReturn >= 4 ? '#FCD34D' : '#FCA5A5' }}>
+                              {cocReturn >= 12 ? 'Excellent' : cocReturn >= 8 ? 'Strong' : cocReturn >= 4 ? 'Moderate' : 'Below Target'}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════
+           DUE DILIGENCE — Forensic acquisition analysis
+           These fields feed the Flip Profitability Dashboard
+           ══════════════════════════════════════════════════════════ */}
+        <div className="mt-8 pt-8" style={{ borderTop: '2px dashed var(--border-ui)' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#7C3AED' }}>
+              <ShieldAlert className="w-4 h-4" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>Due Diligence</p>
+              <p className="text-[10px]" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>This is where you make your money. Get these numbers right before the first hammer swings.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Estimated rehab budget ($)</label>
+              <input
+                type="number"
+                value={formData.projectedRehabCost}
+                onChange={(e) => updateForm({ projectedRehabCost: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="45000"
+              />
+              <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Total renovation budget — drives MAO and flip ROI calculations</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Estimated rehab timeline (days)</label>
+              <input
+                type="number"
+                value={formData.estimatedTimelineDays}
+                onChange={(e) => updateForm({ estimatedTimelineDays: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="90"
+              />
+              <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Used for holding cost projections and schedule variance tracking</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>How did you find this deal?</label>
+              <select
+                value={formData.leadSource}
+                onChange={(e) => updateForm({ leadSource: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium appearance-none cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+              >
+                <option value="">Select source…</option>
+                <option value="MLS">MLS Listing</option>
+                <option value="Wholesale">Wholesaler</option>
+                <option value="Direct Mail">Direct Mail</option>
+                <option value="Driving for Dollars">Driving for Dollars</option>
+                <option value="Auction">Auction / Foreclosure</option>
+                <option value="Referral">Referral / Network</option>
+                <option value="Off-Market">Off-Market / FSBO</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>What is the seller&apos;s motivation?</label>
+              <select
+                value={formData.sellerMotivation}
+                onChange={(e) => updateForm({ sellerMotivation: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium appearance-none cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+              >
+                <option value="">Select motivation…</option>
+                <option value="Foreclosure">Pre-Foreclosure / Distress</option>
+                <option value="Estate">Estate / Probate</option>
+                <option value="Relocation">Relocation</option>
+                <option value="Divorce">Divorce Settlement</option>
+                <option value="Downsizing">Downsizing</option>
+                <option value="Tired Landlord">Tired Landlord</option>
+                <option value="Tax Lien">Tax Lien / Delinquent</option>
+                <option value="Unknown">Unknown / Not Disclosed</option>
+              </select>
+            </div>
+
+            <div className="space-y-2 col-span-full md:col-span-1">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Earnest money deposit ($)</label>
+              <input
+                type="number"
+                value={formData.emdAmount}
+                onChange={(e) => updateForm({ emdAmount: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="5000"
+              />
+              <p className="text-[9px]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Good-faith deposit — typically 1-3% of purchase price</p>
+            </div>
+          </div>
+
+          {/* MAO Preview — shows if ARV + rehab are entered */}
+          {formData.estimatedARV && formData.projectedRehabCost && (
+            <div className="mt-6 rounded-lg p-4 flex items-center justify-between" style={{ background: '#312E81', border: '1px solid #6366F1' }}>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#A5B4FC' }}>Maximum Allowable Offer (70% Rule)</p>
+                <p className="text-xs mt-1" style={{ color: '#C7D2FE' }}>ARV × 70% − Rehab − Closing = your walk-away price</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xl font-bold tabular-nums" style={{ color: '#E0E7FF' }}>
+                  ${(() => {
+                    const arv = parseFloat(formData.estimatedARV) || 0;
+                    const rehab = parseFloat(formData.projectedRehabCost) || 0;
+                    const closing = parseFloat(formData.closingCosts) || 0;
+                    const mao = Math.round((arv * 0.70) - rehab - closing);
+                    return mao.toLocaleString();
+                  })()}
+                </p>
+                {formData.purchasePrice && (() => {
+                  const arv = parseFloat(formData.estimatedARV) || 0;
+                  const rehab = parseFloat(formData.projectedRehabCost) || 0;
+                  const closing = parseFloat(formData.closingCosts) || 0;
+                  const mao = Math.round((arv * 0.70) - rehab - closing);
+                  const pp = parseFloat(formData.purchasePrice) || 0;
+                  const diff = mao - pp;
+                  return (
+                    <p className="text-[10px] font-bold" style={{ color: diff >= 0 ? '#6EE7B7' : '#FCA5A5' }}>
+                      {diff >= 0 ? `✅ $${diff.toLocaleString()} under MAO` : `⚠️ $${Math.abs(diff).toLocaleString()} over MAO`}
+                    </p>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>,
 
@@ -609,6 +1091,26 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
             { label: 'Estimated ARV',  value: formData.estimatedARV ? `$${Number(formData.estimatedARV).toLocaleString()}` : '—' },
             { label: 'Leverage',       value: `${formData.leverage}%` },
             { label: 'Strategy',       value: formData.strategy },
+            // NOI data points
+            { label: 'Monthly Rent',   value: formData.monthlyGrossRent ? `$${Number(formData.monthlyGrossRent).toLocaleString()}` : '—' },
+            { label: 'Vacancy Rate',   value: `${formData.vacancyRatePercent || '7'}%` },
+            { label: 'Mgmt Fee',       value: `${formData.managementFeePercent || '8'}%` },
+            { label: 'Monthly Taxes',  value: formData.monthlyTaxes ? `$${Number(formData.monthlyTaxes).toLocaleString()}` : '—' },
+            { label: 'Monthly Insurance', value: formData.monthlyInsurance ? `$${Number(formData.monthlyInsurance).toLocaleString()}` : '—' },
+            { label: 'Maintenance Reserve', value: formData.monthlyMaintenance ? `$${Number(formData.monthlyMaintenance).toLocaleString()}` : '—' },
+            { label: 'Monthly Utilities', value: formData.monthlyUtilities ? `$${Number(formData.monthlyUtilities).toLocaleString()}` : '—' },
+            { label: 'Monthly HOA', value: formData.monthlyHOA ? `$${Number(formData.monthlyHOA).toLocaleString()}` : '—' },
+            // Debt service data points
+            { label: 'Loan Amount', value: formData.loanAmount ? `$${Number(formData.loanAmount).toLocaleString()}` : '—' },
+            { label: 'Interest Rate', value: formData.loanInterestRate ? `${formData.loanInterestRate}%` : '—' },
+            { label: 'Loan Term', value: `${formData.loanTermYears || '30'} years` },
+            { label: 'Closing Costs', value: formData.closingCosts ? `$${Number(formData.closingCosts).toLocaleString()}` : '—' },
+            // Due Diligence data points
+            { label: 'Rehab Budget', value: formData.projectedRehabCost ? `$${Number(formData.projectedRehabCost).toLocaleString()}` : '—' },
+            { label: 'Rehab Timeline', value: formData.estimatedTimelineDays ? `${formData.estimatedTimelineDays} days` : '—' },
+            { label: 'Lead Source', value: formData.leadSource || '—' },
+            { label: 'Seller Motivation', value: formData.sellerMotivation || '—' },
+            { label: 'Earnest Money', value: formData.emdAmount ? `$${Number(formData.emdAmount).toLocaleString()}` : '—' },
           ].map((item, idx, arr) => (
             <div
               key={item.label}

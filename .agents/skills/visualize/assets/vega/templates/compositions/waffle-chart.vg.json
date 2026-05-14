@@ -1,0 +1,241 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data — percentages must sum to 100",
+      "Update title and subtitle to reflect your context and units",
+      "Adjust 'cellSize' signal to resize squares",
+      "Change category field names in scales and tooltip"
+    ],
+    "dataFormat": "Array of objects with 'category' (nominal) and 'value' (quantitative, percentage 0-100) fields. Values must sum to 100."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "legend": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "values": [
+        {
+          "category": "Engineering",
+          "value": 45
+        },
+        {
+          "category": "Marketing",
+          "value": 25
+        },
+        {
+          "category": "Operations",
+          "value": 20
+        },
+        {
+          "category": "HR",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "name": "cumulative",
+      "source": "source",
+      "transform": [
+        {
+          "as": [
+            "cumSum"
+          ],
+          "fields": [
+            "value"
+          ],
+          "ops": [
+            "sum"
+          ],
+          "sort": {
+            "field": "category",
+            "order": "ascending"
+          },
+          "type": "window"
+        },
+        {
+          "as": "startCell",
+          "expr": "datum.cumSum - datum.value",
+          "type": "formula"
+        }
+      ]
+    },
+    {
+      "name": "grid",
+      "transform": [
+        {
+          "as": "cellIndex",
+          "start": 0,
+          "stop": 100,
+          "type": "sequence"
+        },
+        {
+          "as": "col",
+          "expr": "datum.cellIndex % 10",
+          "type": "formula"
+        },
+        {
+          "as": "row",
+          "expr": "floor(datum.cellIndex / 10)",
+          "type": "formula"
+        },
+        {
+          "as": [
+            "_startMatch"
+          ],
+          "fields": [
+            "cellIndex"
+          ],
+          "from": "cumulative",
+          "key": "startCell",
+          "type": "lookup"
+        },
+        {
+          "as": "category",
+          "expr": "datum.cellIndex < 45 ? 'Engineering' : datum.cellIndex < 70 ? 'Marketing' : datum.cellIndex < 90 ? 'Operations' : 'HR'",
+          "type": "formula"
+        }
+      ]
+    }
+  ],
+  "description": "Waffle chart showing budget allocation across 4 departments. Engineering leads at 45%, followed by Marketing at 25%, Operations at 20%, and HR at 10%.",
+  "height": 420,
+
+  "legends": [
+    {
+      "direction": "horizontal",
+      "fill": "color",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "padding": 8,
+      "title": "Department",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "cornerRadius": {
+            "value": 3
+          },
+          "height": {
+            "signal": "cellSize"
+          },
+          "tooltip": {
+            "signal": "{'Category': datum.category, 'Budget share': datum.category === 'Engineering' ? '45%' : datum.category === 'Marketing' ? '25%' : datum.category === 'Operations' ? '20%' : '10%', 'Cell': datum.cellIndex + 1 + ' of 100'}"
+          },
+          "width": {
+            "signal": "cellSize"
+          },
+          "x": {
+            "signal": "datum.col * (cellSize + cellGap) + 20"
+          },
+          "y": {
+            "signal": "datum.row * (cellSize + cellGap)"
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "category",
+            "scale": "color"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 1
+            },
+            {
+              "value": 0.2
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "grid"
+      },
+      "type": "rect"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": [
+        "Engineering",
+        "Marketing",
+        "Operations",
+        "HR"
+      ],
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678",
+        "#ae3ec9"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "cellSize",
+      "value": 36
+    },
+    {
+      "name": "cellGap",
+      "value": 3
+    },
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "rect:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rect:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Budget allocation by department, FY2024 (% of total)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Engineering dominates the annual budget at 45%"
+  },
+  "width": 600
+}

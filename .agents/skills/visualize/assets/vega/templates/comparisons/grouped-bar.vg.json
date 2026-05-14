@@ -1,0 +1,301 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales and marks to match your data",
+      "Update axis titles to include your units",
+      "Modify title and description for your context",
+      "Adjust 'regions' signal to list your subgroup values for correct scale domain ordering"
+    ],
+    "dataFormat": "Array of objects with 'category' (nominal grouping on x-axis), 'region' (nominal subgroup), and 'sales' (quantitative) fields. Each category has one entry per region."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6"
+    },
+    {
+      "domainColor": "#dee2e6",
+      "format": "$,.0f",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Sales ($)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "values": [
+        {
+          "category": "Q1 2024",
+          "region": "North",
+          "sales": 45000
+        },
+        {
+          "category": "Q1 2024",
+          "region": "South",
+          "sales": 38000
+        },
+        {
+          "category": "Q1 2024",
+          "region": "East",
+          "sales": 42000
+        },
+        {
+          "category": "Q2 2024",
+          "region": "North",
+          "sales": 52000
+        },
+        {
+          "category": "Q2 2024",
+          "region": "South",
+          "sales": 41000
+        },
+        {
+          "category": "Q2 2024",
+          "region": "East",
+          "sales": 48000
+        },
+        {
+          "category": "Q3 2024",
+          "region": "North",
+          "sales": 48000
+        },
+        {
+          "category": "Q3 2024",
+          "region": "South",
+          "sales": 44000
+        },
+        {
+          "category": "Q3 2024",
+          "region": "East",
+          "sales": 51000
+        },
+        {
+          "category": "Q4 2024",
+          "region": "North",
+          "sales": 61000
+        },
+        {
+          "category": "Q4 2024",
+          "region": "South",
+          "sales": 49000
+        },
+        {
+          "category": "Q4 2024",
+          "region": "East",
+          "sales": 55000
+        }
+      ]
+    }
+  ],
+  "description": "Grouped bar chart comparing quarterly sales across three regions (North, South, East). North leads in every quarter and extends its advantage to $61,000 in Q4, while East closes the gap with South.",
+  "height": 400,
+
+  "legends": [
+    {
+      "fill": "color",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "top",
+      "title": "Region",
+      "titleColor": "#495057",
+      "titleFontSize": 12
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "width": {
+            "band": 1,
+            "scale": "x"
+          },
+          "x": {
+            "field": "category",
+            "scale": "x"
+          }
+        }
+      },
+      "from": {
+        "facet": {
+          "data": "source",
+          "groupby": "category",
+          "name": "faceted"
+        }
+      },
+      "marks": [
+        {
+          "encode": {
+            "enter": {
+              "cornerRadiusTopLeft": {
+                "value": 2
+              },
+              "cornerRadiusTopRight": {
+                "value": 2
+              },
+              "tooltip": {
+                "signal": "{'Quarter': datum.category, 'Region': datum.region, 'Sales ($)': '$' + format(datum.sales, ',.0f')}"
+              },
+              "width": {
+                "band": 1,
+                "scale": "xGroup"
+              },
+              "x": {
+                "field": "region",
+                "scale": "xGroup"
+              },
+              "y": {
+                "field": "sales",
+                "scale": "y"
+              },
+              "y2": {
+                "scale": "y",
+                "value": 0
+              }
+            },
+            "update": {
+              "fill": {
+                "field": "region",
+                "scale": "color"
+              },
+              "opacity": [
+                {
+                  "test": "hovered === null || (hovered.category === datum.category && hovered.region === datum.region)",
+                  "value": 1
+                },
+                {
+                  "value": 0.3
+                }
+              ]
+            }
+          },
+          "from": {
+            "data": "faceted"
+          },
+          "type": "rect"
+        }
+      ],
+      "type": "group"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "category",
+        "sort": true
+      },
+      "name": "x",
+      "padding": 0.2,
+      "range": "width",
+      "type": "band"
+    },
+    {
+      "domain": [
+        "North",
+        "South",
+        "East"
+      ],
+      "name": "xGroup",
+      "padding": 0.1,
+      "range": {
+        "signal": "[0, bandwidth('x')]"
+      },
+      "type": "band"
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "sales"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": [
+        "North",
+        "South",
+        "East"
+      ],
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "rect:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rect:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Quarterly sales by region, 2024 ($)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "North holds the lead every quarter, widening by Q4"
+  },
+  "width": 600
+}

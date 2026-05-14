@@ -1,0 +1,224 @@
+<!--
+name: Dumbbell Chart (D3)
+     description: Standalone D3 dumbbell chart showing before/after range comparison with full keyboard navigation and ARIA support
+     chart-type: dumbbell-chart
+     engine: d3
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Customer satisfaction improved most in Support, up 24 points</title>
+    <link rel="stylesheet" href="../_shared/base.css" />
+    <link rel="stylesheet" href="../_shared/tooltip.css" />
+    <style>
+      .axis-label {
+        fill: var(--oc-gray-6);
+        font-size: 12px;
+      }
+      .axis-title {
+        fill: var(--oc-gray-7);
+        font-size: 13px;
+      }
+      .grid line {
+        stroke: var(--oc-gray-1);
+        stroke-dasharray: 2, 2;
+      }
+      .axis line,
+      .axis path {
+        stroke: var(--oc-gray-3);
+      }
+      .endpoint:focus {
+        outline: 2px solid var(--oc-blue-7);
+        outline-offset: 2px;
+      }
+      .endpoint:focus:not(:focus-visible) {
+        outline: none;
+      }
+      .legend {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        align-items: center;
+      }
+      .legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart-container">
+      <h1>Customer satisfaction improved most in Support, up 24 points</h1>
+      <p class="subtitle">Satisfaction score by department, 2022 vs 2024 (0–100 scale)</p>
+      <div class="legend">
+        <span>
+          <span class="legend-dot" style="background: #868e96"></span>
+          2022
+        </span>
+        <span>
+          <span class="legend-dot" style="background: #1c7ed6"></span>
+          2024
+        </span>
+      </div>
+      <svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+        <title id="chart-title">Customer satisfaction improved most in Support, up 24 points</title>
+        <desc id="chart-desc">
+          Dumbbell chart comparing satisfaction scores across 8 departments between 2022 and 2024.
+          Support saw the largest gain, rising from 54 to 78.
+        </desc>
+      </svg>
+      <div class="tooltip" id="tooltip"></div>
+      <details>
+        <summary>View data table</summary>
+        <div id="data-table"></div>
+      </details>
+    </div>
+
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@latest/+esm";
+
+      // --- DATA ---
+      const data = [
+        { metric: "Support", before: 54, after: 78 },
+        { metric: "Onboarding", before: 61, after: 82 },
+        { metric: "Billing", before: 67, after: 75 },
+        { metric: "Documentation", before: 58, after: 65 },
+        { metric: "Performance", before: 72, after: 79 },
+        { metric: "Reliability", before: 80, after: 85 },
+        { metric: "UI / UX", before: 63, after: 70 },
+        { metric: "Mobile App", before: 55, after: 68 },
+      ].sort((a, b) => b.after - b.before - (a.after - a.before)); // sort by gain desc
+
+      // --- DIMENSIONS ---
+      const margin = { top: 16, right: 48, bottom: 40, left: 130 };
+      const width = 640;
+      const height = 400;
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      // --- SVG ---
+      const svg = d3
+        .select("#chart")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("width", "100%");
+
+      const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // --- SCALES ---
+      const y = d3
+        .scaleBand()
+        .domain(data.map((d) => d.metric))
+        .range([0, innerHeight])
+        .padding(0.4);
+
+      const x = d3.scaleLinear().domain([0, 100]).range([0, innerWidth]);
+
+      // --- GRID ---
+      g.append("g")
+        .attr("class", "grid")
+        .call(d3.axisBottom(x).tickSize(innerHeight).tickFormat(""))
+        .call((g) => g.select(".domain").remove());
+
+      // --- AXES ---
+      g.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0,${innerHeight})`)
+        .call(d3.axisBottom(x).ticks(5))
+        .selectAll("text")
+        .attr("class", "axis-label");
+
+      g.append("g")
+        .attr("class", "axis")
+        .call(d3.axisLeft(y))
+        .selectAll("text")
+        .attr("class", "axis-label");
+
+      // --- ROWS ---
+      const rowGroups = g.selectAll(".row-group").data(data).join("g").attr("class", "row-group");
+
+      // Connecting lines
+      rowGroups
+        .append("line")
+        .attr("class", "connector")
+        .attr("x1", (d) => x(d.before))
+        .attr("x2", (d) => x(d.after))
+        .attr("y1", (d) => y(d.metric) + y.bandwidth() / 2)
+        .attr("y2", (d) => y(d.metric) + y.bandwidth() / 2)
+        .attr("stroke", (d) => (d.after >= d.before ? "#0ca678" : "#f03e3e"))
+        .attr("stroke-width", 2.5)
+        .attr("opacity", 0.5);
+
+      // Helper to build endpoint circles with shared interaction logic
+      function makeEndpoints(className, valueKey, fillColor, labelPrefix) {
+        const circles = rowGroups
+          .append("circle")
+          .attr("class", `endpoint ${className}`)
+          .attr("cx", (d) => x(d[valueKey]))
+          .attr("cy", (d) => y(d.metric) + y.bandwidth() / 2)
+          .attr("r", 8)
+          .attr("fill", fillColor)
+          .attr("tabindex", 0)
+          .attr("role", "listitem")
+          .attr("aria-label", (d) => `${d.metric} — ${labelPrefix}: ${d[valueKey]}`)
+          .on("pointerenter", function (event, d) {
+            showTooltip(
+              event,
+              `<strong>${d.metric}</strong><br>2022: ${d.before} &rarr; 2024: ${d.after}<br>Change: ${d.after - d.before > 0 ? "+" : ""}${d.after - d.before}`,
+            );
+          })
+          .on("pointermove", function (event, d) {
+            showTooltip(
+              event,
+              `<strong>${d.metric}</strong><br>2022: ${d.before} &rarr; 2024: ${d.after}<br>Change: ${d.after - d.before > 0 ? "+" : ""}${d.after - d.before}`,
+            );
+          })
+          .on("pointerleave", hideTooltip)
+          .on("focus", function (event, d) {
+            const rect = this.getBoundingClientRect();
+            showTooltip(
+              { pageX: rect.x + rect.width / 2, pageY: rect.y - 40 },
+              `<strong>${d.metric}</strong><br>2022: ${d.before} &rarr; 2024: ${d.after}<br>Change: ${d.after - d.before > 0 ? "+" : ""}${d.after - d.before}`,
+            );
+          })
+          .on("blur", hideTooltip);
+
+        circles.on("keydown", function (event) {
+          const nodes = circles.nodes();
+          const idx = nodes.indexOf(this);
+          if (event.key === "ArrowDown" && idx < nodes.length - 1) {
+            event.preventDefault();
+            nodes[idx + 1].focus();
+          } else if (event.key === "ArrowUp" && idx > 0) {
+            event.preventDefault();
+            nodes[idx - 1].focus();
+          }
+        });
+
+        return circles;
+      }
+
+      makeEndpoints("before-dot", "before", "#adb5bd", "2022");
+      makeEndpoints("after-dot", "after", "#1c7ed6", "2024");
+
+      // --- DATA TABLE ---
+      renderDataTable(
+        "data-table",
+        data.map((d) => [
+          d.metric,
+          d.before,
+          d.after,
+          `${d.after - d.before > 0 ? "+" : ""}${d.after - d.before}`,
+        ]),
+        ["Department", "2022 Score", "2024 Score", "Change"],
+      );
+    </script>
+    <script src="../_shared/tooltip.js"></script>
+    <script src="../_shared/data-table.js"></script>
+  </body>
+</html>

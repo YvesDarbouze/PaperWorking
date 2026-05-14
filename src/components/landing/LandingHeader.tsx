@@ -73,8 +73,8 @@ export default function LandingHeader() {
                 className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
                 style={{
                   backgroundColor: 'transparent',
-                  color: '#0d0d0d',
-                  border: '1px solid #cccccc',
+                  color: 'var(--pw-black)',
+                  border: '1px solid var(--pw-border)',
                   padding: '0.625rem 1.5rem',
                   borderRadius: '9999px',
                 }}
@@ -85,8 +85,8 @@ export default function LandingHeader() {
                 href="/pricing"
                 className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
                 style={{
-                  backgroundColor: '#0d0d0d',
-                  color: '#ffffff',
+                  backgroundColor: 'var(--pw-black)',
+                  color: 'var(--pw-white)',
                   padding: '0.625rem 1.5rem',
                   borderRadius: '9999px',
                 }}
@@ -186,8 +186,8 @@ export default function LandingHeader() {
                   className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-80 active:scale-[0.97]"
                   style={{
                     backgroundColor: 'transparent',
-                    color: '#0d0d0d',
-                    border: '1px solid #cccccc',
+                    color: 'var(--pw-black)',
+                    border: '1px solid var(--pw-border)',
                     padding: '0.875rem 1.75rem',
                     borderRadius: '9999px',
                   }}
@@ -199,8 +199,8 @@ export default function LandingHeader() {
                   onClick={() => setMobileOpen(false)}
                   className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
                   style={{
-                    backgroundColor: '#0d0d0d',
-                    color: '#ffffff',
+                    backgroundColor: 'var(--pw-black)',
+                    color: 'var(--pw-white)',
                     padding: '0.875rem 1.75rem',
                     borderRadius: '9999px',
                   }}

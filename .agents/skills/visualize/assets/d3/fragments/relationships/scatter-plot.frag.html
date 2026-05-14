@@ -1,0 +1,101 @@
+<!-- @section: frontmatter -->
+name: Scatter Plot (D3) description: Standalone D3 scatter plot with full keyboard navigation and
+ARIA support chart-type: scatter-plot engine: d3
+
+<!-- @section: head-title -->
+Height and weight correlate positively across all groups
+
+<!-- @section: chart-css -->
+.dot:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.dot:focus:not(:focus-visible) { outline: none; } .legend { font-size: 13px; }
+
+<!-- @section: body -->
+<h1>Height and weight correlate positively across all groups</h1>
+<p class="subtitle">Height (cm) vs Weight (kg) by group</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Height and weight correlate positively across all groups</title>
+  <desc id="chart-desc">
+    Scatter plot of 30 data points showing the relationship between height (cm) and weight (kg)
+    across three groups: A, B, and C. All groups show a positive correlation.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { x: 155, y: 52, group: "Group A" }, { x: 160, y: 57, group: "Group
+A" }, { x: 163, y: 60, group: "Group A" }, { x: 158, y: 55, group: "Group A" }, { x: 167, y: 64,
+group: "Group A" }, { x: 170, y: 68, group: "Group A" }, { x: 162, y: 59, group: "Group A" }, { x:
+165, y: 63, group: "Group A" }, { x: 172, y: 70, group: "Group A" }, { x: 168, y: 66, group: "Group
+A" }, { x: 175, y: 73, group: "Group B" }, { x: 178, y: 77, group: "Group B" }, { x: 180, y: 80,
+group: "Group B" }, { x: 176, y: 75, group: "Group B" }, { x: 182, y: 83, group: "Group B" }, { x:
+185, y: 87, group: "Group B" }, { x: 179, y: 79, group: "Group B" }, { x: 183, y: 84, group: "Group
+B" }, { x: 188, y: 90, group: "Group B" }, { x: 186, y: 88, group: "Group B" }, { x: 190, y: 92,
+group: "Group C" }, { x: 193, y: 96, group: "Group C" }, { x: 195, y: 99, group: "Group C" }, { x:
+191, y: 94, group: "Group C" }, { x: 197, y: 102, group: "Group C" }, { x: 200, y: 106, group:
+"Group C" }, { x: 194, y: 98, group: "Group C" }, { x: 198, y: 103, group: "Group C" }, { x: 203, y:
+110, group: "Group C" }, { x: 201, y: 107, group: "Group C" }, ]; // --- DIMENSIONS --- const margin
+= { top: 24, right: 120, bottom: 56, left: 64 }; const width = 640; const height = 420; const
+innerWidth = width - margin.left - margin.right; const innerHeight = height - margin.top -
+margin.bottom; const groups = [...new Set(data.map((d) => d.group))]; const colors = ["#1c7ed6",
+"#e8590c", "#0ca678"]; const colorScale = d3.scaleOrdinal().domain(groups).range(colors); // --- SVG
+--- const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width",
+"100%"); const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); //
+--- SCALES --- const x = d3 .scaleLinear() .domain([d3.min(data, (d) => d.x) - 5, d3.max(data, (d)
+=> d.x) + 5]) .nice() .range([0, innerWidth]); const y = d3 .scaleLinear() .domain([d3.min(data, (d)
+=> d.y) - 5, d3.max(data, (d) => d.y) + 5]) .nice() .range([innerHeight, 0]); // --- GRID ---
+g.append("g") .attr("class", "grid") .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(""))
+.call((g) => g.select(".domain").remove()); g.append("g") .attr("class", "grid") .attr("transform",
+`translate(0,${innerHeight})`) .call(d3.axisBottom(x).tickSize(-innerHeight).tickFormat(""))
+.call((g) => g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x).ticks(6)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label");
+g.append("g") .attr("class", "axis") .call(d3.axisLeft(y).ticks(6)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label"); //
+Axis titles g.append("text") .attr("class", "axis-title") .attr("x", innerWidth / 2) .attr("y",
+innerHeight + 44) .attr("text-anchor", "middle") .text("Height (cm)"); g.append("text")
+.attr("class", "axis-title") .attr("transform", "rotate(-90)") .attr("y", -48) .attr("x",
+-innerHeight / 2) .attr("text-anchor", "middle") .text("Weight (kg)"); // --- LEGEND --- const
+legend = svg .append("g") .attr("class", "legend") .attr("transform", `translate(${margin.left +
+innerWidth + 16}, ${margin.top})`); groups.forEach((group, i) => { const row =
+legend.append("g").attr("transform", `translate(0, ${i * 22})`); row.append("circle").attr("r",
+6).attr("fill", colorScale(group)).attr("opacity", 0.85); row .append("text") .attr("x", 12)
+.attr("y", 4) .attr("fill", "#495057") .attr("font-size", "12px") .text(group); }); // --- TOOLTIP
+--- const tooltip = d3.select("#tooltip"); function showTooltip(event, d) { tooltip
+.style("opacity", 1) .html(`
+<strong>${d.group}</strong>
+<br />
+Height: ${d.x} cm
+<br />
+Weight: ${d.y} kg`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY - 28}px`);
+} function hideTooltip() { tooltip.style("opacity", 0); } // --- DOTS --- const dots = g
+.selectAll(".dot") .data(data) .join("circle") .attr("class", "dot") .attr("cx", (d) => x(d.x))
+.attr("cy", (d) => y(d.y)) .attr("r", 7) .attr("fill", (d) => colorScale(d.group)) .attr("opacity",
+0.85) .attr("stroke", "white") .attr("stroke-width", 1.5) .attr("tabindex", 0) .attr("role",
+"listitem") .attr("aria-label", (d) => `${d.group}: height ${d.x} cm, weight ${d.y} kg`)
+.on("pointerenter", function (event, d) { d3.selectAll(".dot").attr("opacity", 0.2);
+d3.select(this).attr("opacity", 1).attr("r", 9); showTooltip(event, d); }) .on("pointermove",
+showTooltip) .on("pointerleave", function () { d3.selectAll(".dot").attr("opacity", 0.85).attr("r",
+7); hideTooltip(); }) .on("focus", function (event, d) { d3.selectAll(".dot").attr("opacity", 0.2);
+d3.select(this).attr("opacity", 1).attr("r", 9); const rect = this.getBoundingClientRect(); tooltip
+.style("opacity", 1) .html(`
+<strong>${d.group}</strong>
+<br />
+Height: ${d.x} cm
+<br />
+Weight: ${d.y} kg`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+52}px`); }) .on("blur", function () { d3.selectAll(".dot").attr("opacity", 0.85).attr("r", 7);
+hideTooltip(); }); // Keyboard navigation: arrow keys move between dots dots.on("keydown", function
+(event, d) { const nodes = dots.nodes(); const idx = nodes.indexOf(this); if (event.key ===
+"ArrowRight" && idx < nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if
+(event.key === "ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); //
+--- DATA TABLE --- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for scatter plot"); const thead =
+table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Group");
+thead.append("th").attr("scope", "col").text("Height (cm)"); thead.append("th").attr("scope",
+"col").text("Weight (kg)"); const tbody = table.append("tbody"); data.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(d.group); tr.append("td").text(d.x);
+tr.append("td").text(d.y); });

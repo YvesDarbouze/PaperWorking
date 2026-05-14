@@ -1,0 +1,340 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales and marks to match your data",
+      "Update axis title to reflect your units",
+      "Change 'low'/'high' dot colors in the color scale to match your legend meaning",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with 'metric' (nominal), 'low' (quantitative), and 'high' (quantitative) fields"
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6",
+      "title": "Satisfaction score (0–100)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    },
+    {
+      "domainColor": "#dee2e6",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6"
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "transform": [
+        {
+          "as": "range",
+          "expr": "datum.high - datum.low",
+          "type": "formula"
+        },
+        {
+          "sort": {
+            "field": "range",
+            "order": "descending"
+          },
+          "type": "collect"
+        }
+      ],
+      "values": [
+        {
+          "high": 91,
+          "low": 42,
+          "metric": "Delivery Speed"
+        },
+        {
+          "high": 95,
+          "low": 68,
+          "metric": "Product Quality"
+        },
+        {
+          "high": 88,
+          "low": 51,
+          "metric": "Customer Support"
+        },
+        {
+          "high": 82,
+          "low": 55,
+          "metric": "Pricing"
+        },
+        {
+          "high": 87,
+          "low": 60,
+          "metric": "Website UX"
+        },
+        {
+          "high": 79,
+          "low": 47,
+          "metric": "Returns Process"
+        },
+        {
+          "high": 90,
+          "low": 63,
+          "metric": "Communication"
+        },
+        {
+          "high": 93,
+          "low": 72,
+          "metric": "Packaging"
+        }
+      ]
+    }
+  ],
+  "description": "Dumbbell chart showing the min/max satisfaction scores per metric across 8 business dimensions. Delivery shows the widest range (42–91).",
+  "height": 400,
+
+  "legends": [
+    {
+      "fill": "color",
+      "labelColor": "#495057",
+      "labelFontSize": 11,
+      "orient": "top-right",
+      "symbolSize": 80,
+      "title": "Quarter",
+      "titleColor": "#495057",
+      "titleFontSize": 12
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "tooltip": {
+            "signal": "{'Metric': datum.metric, 'Worst quarter': datum.low, 'Best quarter': datum.high, 'Range': datum.range + ' pts'}"
+          },
+          "x": {
+            "field": "low",
+            "scale": "x"
+          },
+          "x2": {
+            "field": "high",
+            "scale": "x"
+          },
+          "y": {
+            "band": 0.5,
+            "field": "metric",
+            "scale": "y"
+          }
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.metric === datum.metric",
+              "value": 1
+            },
+            {
+              "value": 0.15
+            }
+          ],
+          "stroke": {
+            "value": "#adb5bd"
+          },
+          "strokeWidth": {
+            "value": 3
+          }
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "rule"
+    },
+    {
+      "encode": {
+        "enter": {
+          "shape": {
+            "value": "circle"
+          },
+          "size": {
+            "value": 120
+          },
+          "tooltip": {
+            "signal": "{'Metric': datum.metric, 'Worst quarter score': datum.low}"
+          },
+          "x": {
+            "field": "low",
+            "scale": "x"
+          },
+          "y": {
+            "band": 0.5,
+            "field": "metric",
+            "scale": "y"
+          }
+        },
+        "update": {
+          "fill": {
+            "value": "#f03e3e"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.metric === datum.metric",
+              "value": 1
+            },
+            {
+              "value": 0.15
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "symbol"
+    },
+    {
+      "encode": {
+        "enter": {
+          "shape": {
+            "value": "circle"
+          },
+          "size": {
+            "value": 120
+          },
+          "tooltip": {
+            "signal": "{'Metric': datum.metric, 'Best quarter score': datum.high}"
+          },
+          "x": {
+            "field": "high",
+            "scale": "x"
+          },
+          "y": {
+            "band": 0.5,
+            "field": "metric",
+            "scale": "y"
+          }
+        },
+        "update": {
+          "fill": {
+            "value": "#0ca678"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.metric === datum.metric",
+              "value": 1
+            },
+            {
+              "value": 0.15
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "symbol"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "metric"
+      },
+      "name": "y",
+      "padding": 0.4,
+      "range": "height",
+      "type": "band"
+    },
+    {
+      "domain": [
+        0,
+        100
+      ],
+      "name": "x",
+      "nice": true,
+      "range": "width",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": [
+        "Worst quarter",
+        "Best quarter"
+      ],
+      "name": "color",
+      "range": [
+        "#f03e3e",
+        "#0ca678"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "symbol:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rule:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "symbol:pointerout",
+          "update": "null"
+        },
+        {
+          "events": "rule:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Satisfaction score range by metric: worst vs best quarter, 2023 (0–100 scale)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Customer satisfaction gaps widest in Delivery and Support"
+  },
+  "width": 600
+}

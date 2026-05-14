@@ -1,0 +1,472 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Update the 'fields' signal to list your actual dimension field names",
+      "Update axis title labels in the 'axes' signal if renaming dimensions",
+      "Adjust the color scale domain and range to match your categories",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with a 'name' (nominal), 'category' (nominal for color grouping), and 5 numeric dimension fields: 'speed', 'efficiency', 'quality', 'cost', 'reliability'"
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "values": [
+        {
+          "category": "Platform A",
+          "cost": 55,
+          "efficiency": 74,
+          "name": "A1",
+          "quality": 88,
+          "reliability": 79,
+          "speed": 82
+        },
+        {
+          "category": "Platform A",
+          "cost": 60,
+          "efficiency": 80,
+          "name": "A2",
+          "quality": 85,
+          "reliability": 82,
+          "speed": 78
+        },
+        {
+          "category": "Platform A",
+          "cost": 65,
+          "efficiency": 77,
+          "name": "A3",
+          "quality": 80,
+          "reliability": 76,
+          "speed": 75
+        },
+        {
+          "category": "Platform A",
+          "cost": 58,
+          "efficiency": 71,
+          "name": "A4",
+          "quality": 83,
+          "reliability": 74,
+          "speed": 85
+        },
+        {
+          "category": "Platform A",
+          "cost": 62,
+          "efficiency": 76,
+          "name": "A5",
+          "quality": 87,
+          "reliability": 81,
+          "speed": 80
+        },
+        {
+          "category": "Platform B",
+          "cost": 80,
+          "efficiency": 88,
+          "name": "B1",
+          "quality": 70,
+          "reliability": 94,
+          "speed": 60
+        },
+        {
+          "category": "Platform B",
+          "cost": 85,
+          "efficiency": 91,
+          "name": "B2",
+          "quality": 68,
+          "reliability": 96,
+          "speed": 55
+        },
+        {
+          "category": "Platform B",
+          "cost": 78,
+          "efficiency": 86,
+          "name": "B3",
+          "quality": 72,
+          "reliability": 92,
+          "speed": 63
+        },
+        {
+          "category": "Platform B",
+          "cost": 82,
+          "efficiency": 89,
+          "name": "B4",
+          "quality": 66,
+          "reliability": 95,
+          "speed": 58
+        },
+        {
+          "category": "Platform B",
+          "cost": 79,
+          "efficiency": 84,
+          "name": "B5",
+          "quality": 71,
+          "reliability": 90,
+          "speed": 61
+        },
+        {
+          "category": "Platform D",
+          "cost": 45,
+          "efficiency": 62,
+          "name": "D1",
+          "quality": 76,
+          "reliability": 68,
+          "speed": 94
+        },
+        {
+          "category": "Platform D",
+          "cost": 48,
+          "efficiency": 65,
+          "name": "D2",
+          "quality": 73,
+          "reliability": 65,
+          "speed": 91
+        },
+        {
+          "category": "Platform D",
+          "cost": 42,
+          "efficiency": 59,
+          "name": "D3",
+          "quality": 78,
+          "reliability": 70,
+          "speed": 97
+        },
+        {
+          "category": "Platform D",
+          "cost": 50,
+          "efficiency": 68,
+          "name": "D4",
+          "quality": 75,
+          "reliability": 67,
+          "speed": 89
+        },
+        {
+          "category": "Platform D",
+          "cost": 46,
+          "efficiency": 61,
+          "name": "D5",
+          "quality": 72,
+          "reliability": 63,
+          "speed": 93
+        }
+      ]
+    },
+    {
+      "name": "fields",
+      "values": [
+        {
+          "field": "speed",
+          "label": "Speed"
+        },
+        {
+          "field": "efficiency",
+          "label": "Efficiency"
+        },
+        {
+          "field": "quality",
+          "label": "Quality"
+        },
+        {
+          "field": "cost",
+          "label": "Cost"
+        },
+        {
+          "field": "reliability",
+          "label": "Reliability"
+        }
+      ]
+    }
+  ],
+  "description": "Parallel coordinates chart comparing 15 products across 5 dimensions: speed, efficiency, quality, cost, and reliability. Grouped by 3 product categories.",
+  "height": 420,
+
+  "legends": [
+    {
+      "labelColor": "#495057",
+      "labelFontSize": 11,
+      "orient": "top-right",
+      "stroke": "color",
+      "symbolSize": 60,
+      "symbolStrokeWidth": 2,
+      "title": "Category",
+      "titleColor": "#495057",
+      "titleFontSize": 12
+    }
+  ],
+
+  "marks": [
+    {
+      "from": {
+        "data": "source"
+      },
+      "key": "datum.name",
+      "marks": [
+        {
+          "encode": {
+            "enter": {
+              "defined": {
+                "signal": "isValid(parent[datum.field])"
+              },
+              "strokeWidth": {
+                "value": 1.5
+              },
+              "tooltip": {
+                "signal": "{'Product': parent.name, 'Category': parent.category, 'Speed': parent.speed, 'Efficiency': parent.efficiency, 'Quality': parent.quality, 'Cost': parent.cost, 'Reliability': parent.reliability}"
+              },
+              "x": {
+                "field": "field",
+                "scale": "dimScale"
+              },
+              "y": {
+                "signal": "scale('yScore', parent[datum.field])"
+              }
+            },
+            "update": {
+              "opacity": [
+                {
+                  "test": "hovered === null || hovered === parent.name",
+                  "value": 0.75
+                },
+                {
+                  "value": 0.05
+                }
+              ],
+              "stroke": {
+                "scale": "color",
+                "signal": "parent.category"
+              }
+            }
+          },
+          "from": {
+            "data": "fields"
+          },
+          "type": "line"
+        }
+      ],
+      "type": "group"
+    },
+    {
+      "encode": {
+        "enter": {
+          "stroke": {
+            "value": "#dee2e6"
+          },
+          "strokeWidth": {
+            "value": 1
+          },
+          "x": {
+            "field": "field",
+            "scale": "dimScale"
+          },
+          "x2": {
+            "field": "field",
+            "scale": "dimScale"
+          },
+          "y": {
+            "value": 0
+          },
+          "y2": {
+            "signal": "height"
+          }
+        }
+      },
+      "from": {
+        "data": "fields"
+      },
+      "type": "rule"
+    },
+    {
+      "encode": {
+        "enter": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "fill": {
+            "value": "#495057"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "fontWeight": {
+            "value": "600"
+          },
+          "text": {
+            "field": "label"
+          },
+          "x": {
+            "field": "field",
+            "scale": "dimScale"
+          },
+          "y": {
+            "value": -10
+          }
+        }
+      },
+      "from": {
+        "data": "fields"
+      },
+      "type": "text"
+    },
+    {
+      "encode": {
+        "enter": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "bottom"
+          },
+          "fill": {
+            "value": "#868e96"
+          },
+          "fontSize": {
+            "value": 10
+          },
+          "text": {
+            "value": "100"
+          },
+          "x": {
+            "field": "field",
+            "scale": "dimScale"
+          },
+          "y": {
+            "value": -24
+          }
+        }
+      },
+      "from": {
+        "data": "fields"
+      },
+      "type": "text"
+    },
+    {
+      "encode": {
+        "enter": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "fill": {
+            "value": "#868e96"
+          },
+          "fontSize": {
+            "value": 10
+          },
+          "text": {
+            "value": "0"
+          },
+          "x": {
+            "field": "field",
+            "scale": "dimScale"
+          },
+          "y": {
+            "signal": "height + 14"
+          }
+        }
+      },
+      "from": {
+        "data": "fields"
+      },
+      "type": "text"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "fields",
+        "field": "field"
+      },
+      "name": "dimScale",
+      "range": "width",
+      "type": "point"
+    },
+    {
+      "domain": [
+        0,
+        100
+      ],
+      "name": "yScore",
+      "nice": true,
+      "range": "height",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": [
+        "Platform A",
+        "Platform B",
+        "Platform D"
+      ],
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#0ca678",
+        "#e8590c"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "line:pointerover",
+          "update": "datum.name"
+        },
+        {
+          "events": "line:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    },
+    {
+      "name": "fieldCount",
+      "update": "length(data('fields'))"
+    },
+    {
+      "name": "axisStep",
+      "update": "fieldCount > 1 ? width / (fieldCount - 1) : width"
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Multi-variate performance comparison across 15 products by category (scores 0–100)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Platform B dominates on reliability; Platform D leads in speed"
+  },
+  "width": 640
+}

@@ -1,0 +1,80 @@
+<!-- @section: frontmatter -->
+name: Bar Chart (D3) description: Standalone D3 bar chart with full keyboard navigation and ARIA
+support chart-type: bar-chart engine: d3
+
+<!-- @section: head-title -->
+Electronics leads product sales at $42.5K
+
+<!-- @section: chart-css -->
+.bar:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 1px; }
+.bar:focus:not(:focus-visible) { outline: none; }
+
+<!-- @section: body -->
+<h1>Electronics leads product sales at $42.5K</h1>
+<p class="subtitle">Sales by category, 2024 ($K)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Electronics leads product sales at $42.5K</title>
+  <desc id="chart-desc">
+    Bar chart comparing product sales across 6 retail categories. Electronics leads at $42,500,
+    followed by Clothing at $38,200.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { category: "Electronics", value: 42500 }, { category: "Clothing",
+value: 38200 }, { category: "Home & Garden", value: 31800 }, { category: "Books", value: 28400 }, {
+category: "Sports", value: 25600 }, { category: "Toys", value: 22100 }, ].sort((a, b) => b.value -
+a.value); // --- DIMENSIONS --- const margin = { top: 8, right: 24, bottom: 64, left: 72 }; const
+width = 600; const height = 400; const innerWidth = width - margin.left - margin.right; const
+innerHeight = height - margin.top - margin.bottom; const colors = ["#1c7ed6", "#e8590c", "#0ca678",
+"#f03e3e", "#ae3ec9", "#1098ad"]; const colorScale = d3 .scaleOrdinal() .domain(data.map((d) =>
+d.category)) .range(colors); // --- SVG --- const svg = d3 .select("#chart") .attr("viewBox", `0 0
+${width} ${height}`) .attr("width", "100%"); const g = svg.append("g").attr("transform",
+`translate(${margin.left},${margin.top})`); // --- SCALES --- const x = d3 .scaleBand()
+.domain(data.map((d) => d.category)) .range([0, innerWidth]) .padding(0.25); const y = d3
+.scaleLinear() .domain([0, d3.max(data, (d) => d.value)]) .nice() .range([innerHeight, 0]); // ---
+GRID --- g.append("g") .attr("class", "grid")
+.call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat("")) .call((g) =>
+g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label")
+.attr("transform", "rotate(-45)") .attr("text-anchor", "end") .attr("dx", "-0.5em") .attr("dy",
+"0.25em"); g.append("g") .attr("class", "axis") .call(d3.axisLeft(y).tickFormat((d) =>
+`$${d3.format(",.0f")(d)}`)) .call((g) => g.select(".domain").attr("stroke", "#dee2e6"))
+.selectAll("text") .attr("class", "axis-label"); // Y-axis title g.append("text") .attr("class",
+"axis-title") .attr("transform", "rotate(-90)") .attr("y", -56) .attr("x", -innerHeight / 2)
+.attr("text-anchor", "middle") .text("Sales ($)"); // --- TOOLTIP --- const tooltip =
+d3.select("#tooltip"); function showTooltip(event, d) { tooltip .style("opacity", 1) .html(`
+<strong>${d.category}</strong>
+<br />
+Sales: $${d3.format(",.0f")(d.value)}`) .style("left", `${event.pageX + 12}px`) .style("top",
+`${event.pageY - 28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // --- BARS ---
+const bars = g .selectAll(".bar") .data(data) .join("rect") .attr("class", "bar") .attr("x", (d) =>
+x(d.category)) .attr("y", (d) => y(d.value)) .attr("width", x.bandwidth()) .attr("height", (d) =>
+innerHeight - y(d.value)) .attr("fill", (d) => colorScale(d.category)) .attr("rx", 3) .attr("ry", 3)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => `${d.category}:
+$${d3.format(",.0f")(d.value)}`) .on("pointerenter", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); showTooltip(event,
+d); }) .on("pointermove", showTooltip) .on("pointerleave", function () {
+d3.selectAll(".bar").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${d.category}</strong>
+<br />
+Sales: $${d3.format(",.0f")(d.value)}`) .style("left", `${rect.x + rect.width / 2}px`) .style("top",
+`${rect.y - 40}px`); }) .on("blur", function () { d3.selectAll(".bar").attr("opacity", 1);
+hideTooltip(); }); // Keyboard navigation: arrow keys move between bars bars.on("keydown", function
+(event, d) { const nodes = bars.nodes(); const idx = nodes.indexOf(this); if (event.key ===
+"ArrowRight" && idx < nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if
+(event.key === "ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); //
+--- DATA TABLE --- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for bar chart"); const thead = table.append("thead").append("tr");
+thead.append("th").attr("scope", "col").text("Category"); thead.append("th").attr("scope",
+"col").text("Sales ($)"); const tbody = table.append("tbody"); data.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(d.category);
+tr.append("td").text(`$${d3.format(",.0f")(d.value)}`); });

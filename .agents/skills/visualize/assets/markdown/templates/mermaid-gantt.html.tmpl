@@ -1,0 +1,104 @@
+<!--
+name: Mermaid Gantt Chart (HTML)
+description: Project timeline with mermaid.js bundled; works wherever HTML opens
+chart-type: mermaid-gantt
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Q2 Migration Schedule Critical-Paths Through Database Cutover</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8f9fa;
+        color: #212529;
+      }
+      #chart-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      .subtitle {
+        font-size: 13px;
+        color: #868e96;
+        margin: 0 0 24px;
+      }
+      pre.mermaid {
+        background: transparent;
+        margin: 0;
+        font-family: inherit;
+      }
+      .source {
+        font-size: 12px;
+        color: #868e96;
+        margin-top: 24px;
+        border-top: 1px solid #e9ecef;
+        padding-top: 12px;
+      }
+      noscript {
+        display: block;
+        padding: 12px;
+        background: #fff3bf;
+        border: 1px solid #fcc419;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart-container">
+      <h1>Q2 Migration Schedule Critical-Paths Through Database Cutover</h1>
+      <p class="subtitle">Q2 2026 plan v3 (Platform team)</p>
+      <noscript>
+        Gantt schedule: Discovery (Apr 1-12) → Build (Apr 13-May 6) → Cutover
+        (May 7-17) → Cleanup (May 18-25). Critical path: Migration scripts →
+        Staging dry-run → Production cutover.
+      </noscript>
+      <pre class="mermaid">
+gantt
+    title Q2 2026 Migration Schedule
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Discovery
+    Audit existing schema       :done,    a1, 2026-04-01, 7d
+    Map consumer dependencies   :done,    a2, after a1, 5d
+
+    section Build
+    Compatibility shim          :active,  b1, 2026-04-13, 10d
+    Migration scripts           :         b2, after b1, 14d
+    Rollback procedures         :         b3, after b1, 7d
+
+    section Cutover
+    Staging dry-run             :crit,    c1, after b2, 3d
+    Production cutover          :crit,    c2, after c1, 1d
+    Soak window                 :         c3, after c2, 7d
+
+    section Cleanup
+    Remove shim                 :         d1, after c3, 5d
+    Archive old schema          :         d2, after d1, 3d
+      </pre>
+      <p class="source">
+        Source: migration plan v3 (Platform team). Critical path runs through
+        Migration scripts → Staging dry-run → Production cutover.
+      </p>
+    </div>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "default" });
+    </script>
+  </body>
+</html>

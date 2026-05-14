@@ -1,21 +1,54 @@
-# Implementing Liquid Glass Design in SwiftUI
+# Liquid Glass API Reference for SwiftUI
+
+## Contents
+
+- [Overview](#overview)
+- [glassEffect(_:in:)](#glasseffect_in)
+- [Glass](#glass)
+- [GlassEffectContainer](#glasseffectcontainer)
+- [glassEffectID(_:in:)](#glasseffectid_in)
+- [glassEffectUnion(id:namespace:)](#glasseffectunionidnamespace)
+- [glassEffectTransition(_:)](#glasseffecttransition_)
+- [GlassEffectTransition](#glasseffecttransition)
+- [Button Styles](#button-styles)
+- [DefaultGlassEffectShape](#defaultglasseffectshape)
+- [Scroll Edge Effect](#scroll-edge-effect)
+- [Background Extension (Split Views)](#background-extension-split-views)
+- [Availability Gating](#availability-gating)
+- [Performance Guidelines](#performance-guidelines)
+- [Accessibility Considerations](#accessibility-considerations)
+- [Best Practices Summary](#best-practices-summary)
+- [Apple Documentation Links](#apple-documentation-links)
 
 ## Overview
 
-Liquid Glass is a dynamic material introduced in iOS that combines the optical properties of glass with a sense of fluidity. It blurs content behind it, reflects color and light from surrounding content, and reacts to touch and pointer interactions in real time. This guide covers how to implement and customize Liquid Glass effects in SwiftUI applications. You should always seek guides on Liquid Glass when asked for help adopting new Apple design.
+Liquid Glass is a dynamic translucent material available on iOS 26.0+, iPadOS 26.0+,
+macOS 26.0+, Mac Catalyst 26.0+, tvOS 26.0+, and watchOS 26.0+. It blurs content
+behind it, reflects color and light from surrounding content, and reacts to touch and
+pointer interactions in real time. Standard SwiftUI components (tab bars, toolbars,
+navigation bars, sheets, popovers) adopt Liquid Glass automatically when built with
+the latest SDK.
 
-Key features of Liquid Glass:
-- Blurs content behind the material
-- Reflects color and light from surrounding content
-- Reacts to touch and pointer interactions
-- Can morph between shapes during transitions
-- Available for standard and custom components
+This reference covers the complete API surface for applying Liquid Glass to custom views.
 
-## Basic Implementation
+## glassEffect(_:in:)
 
-### Adding Liquid Glass to a View
+Applies the Liquid Glass effect behind a view.
 
-The simplest way to add Liquid Glass to a view is using the `glassEffect()` modifier:
+```swift
+nonisolated func glassEffect(
+    _ glass: Glass = .regular,
+    in shape: some Shape = DefaultGlassEffectShape()
+) -> some View
+```
+
+The system renders a shape anchored behind the view with the Liquid Glass material and
+applies foreground effects over the view content. The default shape is `Capsule`.
+
+Apply this modifier **after** other modifiers that affect the view's appearance (padding,
+frame, font, foregroundStyle).
+
+### Basic usage
 
 ```swift
 Text("Hello, World!")
@@ -24,11 +57,7 @@ Text("Hello, World!")
     .glassEffect()
 ```
 
-By default, this applies the regular variant of Glass within a Capsule shape behind the view's content.
-
-### Customizing the Shape
-
-You can specify a different shape for the Liquid Glass effect:
+### Custom shape
 
 ```swift
 Text("Hello, World!")
@@ -37,16 +66,9 @@ Text("Hello, World!")
     .glassEffect(in: .rect(cornerRadius: 16.0))
 ```
 
-Common shape options:
-- `.capsule` (default)
-- `.rect(cornerRadius: CGFloat)`
-- `.circle`
+Common shapes: `.capsule` (default), `.rect(cornerRadius:)`, `.circle`.
 
-## Customizing Liquid Glass Effects
-
-### Glass Variants and Properties
-
-You can customize the Liquid Glass effect by configuring the `Glass` structure:
+### Tinted and interactive
 
 ```swift
 Text("Hello, World!")
@@ -55,36 +77,59 @@ Text("Hello, World!")
     .glassEffect(.regular.tint(.orange).interactive())
 ```
 
-Key customization options:
-- `.regular` - Standard glass effect
-- `.tint(Color)` - Add a color tint to suggest prominence
-- `.interactive(Bool)` - Make the glass react to touch and pointer interactions
+## Glass
 
-### Making Interactive Glass
+A structure that defines the configuration of the Liquid Glass material. Conforms to
+`Equatable`, `Sendable`, and `SendableMetatype`.
 
-To make Liquid Glass react to touch and pointer interactions:
+### Type Properties
+
+| Property | Description |
+|---|---|
+| `.regular` | Standard Liquid Glass material |
+| `.clear` | Clear variant with minimal visual weight |
+| `.identity` | No-op; content appears as if no glass effect was applied |
+
+### Instance Methods
+
+| Method | Description |
+|---|---|
+| `.tint(_ color: Color)` | Returns a copy with a color tint to suggest prominence |
+| `.interactive(_ isInteractive: Bool = true)` | Returns a copy that reacts to touch and pointer interactions |
+
+Methods are chainable:
 
 ```swift
-Text("Hello, World!")
-    .font(.title)
-    .padding()
-    .glassEffect(.regular.interactive(true))
+.glassEffect(.regular.tint(.blue).interactive())
 ```
 
-Or more concisely:
+## GlassEffectContainer
+
+A view that combines multiple Liquid Glass shapes into a single rendering pass. Enables
+blending and morphing between individual shapes.
 
 ```swift
-Text("Hello, World!")
-    .font(.title)
-    .padding()
-    .glassEffect(.regular.interactive())
+@MainActor @preconcurrency
+struct GlassEffectContainer<Content> where Content : View
 ```
 
-## Working with Multiple Glass Effects
+Conforms to `View`, `Sendable`, `SendableMetatype`.
 
-### Using GlassEffectContainer
+### Initializer
 
-When applying Liquid Glass effects to multiple views, use `GlassEffectContainer` for better rendering performance and to enable blending and morphing effects:
+```swift
+init(spacing: CGFloat, @ViewBuilder content: () -> Content)
+```
+
+The `spacing` parameter controls how glass shapes interact:
+
+- **Larger spacing**: Shapes begin blending at greater distances; morphing starts sooner.
+- **Smaller spacing**: Shapes must be closer before blending occurs.
+
+Match the container spacing to the interior layout spacing so shapes remain separate at
+rest but merge during animated transitions.
+
+### Example
 
 ```swift
 GlassEffectContainer(spacing: 40.0) {
@@ -102,45 +147,25 @@ GlassEffectContainer(spacing: 40.0) {
 }
 ```
 
-The `spacing` parameter controls how the Liquid Glass effects interact with each other:
-- Smaller spacing: Views need to be closer to merge effects
-- Larger spacing: Effects merge at greater distances
+## glassEffectID(_:in:)
 
-### Uniting Multiple Glass Effects
-
-To combine multiple views into a single Liquid Glass effect, use the `glassEffectUnion` modifier:
+Associates a stable identity with a Liquid Glass effect for morphing during view
+hierarchy transitions.
 
 ```swift
-@Namespace private var namespace
-
-// Later in your view:
-GlassEffectContainer(spacing: 20.0) {
-    HStack(spacing: 20.0) {
-        ForEach(symbolSet.indices, id: \.self) { item in
-            Image(systemName: symbolSet[item])
-                .frame(width: 80.0, height: 80.0)
-                .font(.system(size: 36))
-                .glassEffect()
-                .glassEffectUnion(id: item < 2 ? "1" : "2", namespace: namespace)
-        }
-    }
-}
+nonisolated func glassEffectID(
+    _ id: (some Hashable & Sendable)?,
+    in namespace: Namespace.ID
+) -> some View
 ```
 
-This is useful when creating views dynamically or with views that live outside of an HStack or VStack.
+Use with `@Namespace`, `GlassEffectContainer`, and `withAnimation` to animate shapes
+morphing into each other when views appear or disappear.
 
-## Morphing Effects and Transitions
-
-### Creating Morphing Transitions
-
-To create morphing effects during transitions between views with Liquid Glass:
-
-1. Create a namespace using the `@Namespace` property wrapper
-2. Associate each Liquid Glass effect with a unique identifier using `glassEffectID`
-3. Use animations when changing the view hierarchy
+### Morphing example
 
 ```swift
-@State private var isExpanded: Bool = false
+@State private var isExpanded = false
 @Namespace private var namespace
 
 var body: some View {
@@ -171,110 +196,192 @@ var body: some View {
 }
 ```
 
-The morphing effect occurs when views with Liquid Glass appear or disappear due to view hierarchy changes.
+## glassEffectUnion(id:namespace:)
 
-## Button Styling with Liquid Glass
-
-### Glass Button Style
-
-SwiftUI provides built-in button styles for Liquid Glass:
+Merges multiple views into a single Liquid Glass shape. All effects with the same shape,
+Glass variant, and union ID combine into one rendered shape.
 
 ```swift
-Button("Click Me") {
-    // Action
-}
-.buttonStyle(.glass)
+@MainActor @preconcurrency func glassEffectUnion(
+    id: (some Hashable & Sendable)?,
+    namespace: Namespace.ID
+) -> some View
 ```
 
-### Glass Prominent Button Style
+Useful for dynamically created views or views outside a shared layout container.
 
-For a more prominent glass button:
+### Example
 
 ```swift
-Button("Important Action") {
-    // Action
+@Namespace private var namespace
+let symbols = ["cloud.bolt.rain.fill", "sun.rain.fill", "moon.stars.fill", "moon.fill"]
+
+GlassEffectContainer(spacing: 20.0) {
+    HStack(spacing: 20.0) {
+        ForEach(symbols.indices, id: \.self) { i in
+            Image(systemName: symbols[i])
+                .frame(width: 80.0, height: 80.0)
+                .font(.system(size: 36))
+                .glassEffect()
+                .glassEffectUnion(id: i < 2 ? "weather" : "night", namespace: namespace)
+        }
+    }
 }
-.buttonStyle(.glassProminent)
 ```
 
-## Advanced Techniques
+## glassEffectTransition(_:)
 
-### Background Extension Effect
+Controls how a glass effect appears or disappears during view hierarchy changes.
 
-To stretch content behind a sidebar or inspector with the background extension effect:
+```swift
+@MainActor @preconcurrency func glassEffectTransition(
+    _ transition: GlassEffectTransition
+) -> some View
+```
+
+## GlassEffectTransition
+
+A structure describing changes when a glass effect is added to or removed from the
+view hierarchy. Conforms to `Sendable` and `SendableMetatype`.
+
+### Type Properties
+
+| Transition | Behavior |
+|---|---|
+| `.matchedGeometry` | Morphs the shape to/from nearby glass effects. Default when within container spacing. |
+| `.materialize` | Fades content and animates the glass material in/out without geometry matching. Use for distant effects. |
+| `.identity` | No transition animation. |
+
+### Example with explicit transition
+
+```swift
+if isExpanded {
+    Image(systemName: "note")
+        .frame(width: 20, height: 20)
+        .glassEffect()
+        .glassEffectID("note", in: namespace)
+        .glassEffectTransition(.materialize)
+}
+```
+
+## Button Styles
+
+SwiftUI provides two built-in Liquid Glass button styles.
+
+### GlassButtonStyle
+
+Standard glass appearance for buttons.
+
+```swift
+Button("Action") { }
+    .buttonStyle(.glass)
+```
+
+### GlassProminentButtonStyle
+
+A more prominent glass appearance for primary actions.
+
+```swift
+Button("Confirm") { }
+    .buttonStyle(.glassProminent)
+```
+
+These button styles automatically include interactivity (touch/pointer reactions).
+Prefer these over manually applying `.glassEffect(.regular.interactive())` to buttons.
+
+## DefaultGlassEffectShape
+
+The default shape used by `glassEffect(_:in:)` when no shape is specified. Resolves
+to `Capsule`.
+
+## Scroll Edge Effect
+
+Configures the scroll edge effect style for scroll views within a view hierarchy.
+
+```swift
+nonisolated func scrollEdgeEffectStyle(
+    _ style: ScrollEdgeEffectStyle?,
+    for edges: Edge.Set
+) -> some View
+```
+
+Available styles include `.soft` (soft edge) and `.hard`. System bars adopt this
+automatically. Apply to custom bars that float over scrollable content.
+
+```swift
+.scrollEdgeEffectStyle(.soft, for: .top)
+```
+
+## Background Extension (Split Views)
+
+Extend content visually under sidebars and inspectors by duplicating the view into
+mirrored copies with a blur effect applied on top:
 
 ```swift
 NavigationSplitView {
-    // Sidebar content
+    // sidebar content
 } detail: {
-    // Detail content
-        .background {
-            // Background content that extends under the sidebar
-        }
+    ZStack {
+        BannerView()
+            .backgroundExtensionEffect()
+    }
 }
 ```
 
-### Extending Horizontal Scrolling Under Sidebar
+Also available as `backgroundExtensionEffect(isEnabled:)` for conditional use.
+Apply with discretion — typically to a single background view in the detail column.
 
-To extend horizontal scroll views under a sidebar or inspector:
+## Availability Gating
 
-```swift
-ScrollView(.horizontal) {
-    // Scrollable content
-}
-.scrollExtensionMode(.underSidebar)
-```
-
-## Best Practices
-
-1. **Container Usage**: Always use `GlassEffectContainer` when applying Liquid Glass to multiple views for better performance and morphing effects.
-
-2. **Effect Order**: Apply the `.glassEffect()` modifier after other modifiers that affect the appearance of the view.
-
-3. **Spacing Consideration**: Carefully choose spacing values in containers to control how and when glass effects merge.
-
-4. **Animation**: Use animations when changing view hierarchies to enable smooth morphing transitions.
-
-5. **Interactivity**: Add `.interactive()` to glass effects that should respond to user interaction.
-
-6. **Consistent Design**: Maintain consistent shapes and styles across your app for a cohesive look and feel.
-
-## Example: Custom Badge with Liquid Glass
+All Liquid Glass APIs require iOS 26.0+. Always provide a fallback:
 
 ```swift
-struct BadgeView: View {
-    let symbol: String
-    let color: Color
-
-    var body: some View {
-        ZStack {
-            Image(systemName: "hexagon.fill")
-                .foregroundColor(color)
-                .font(.system(size: 50))
-
-            Image(systemName: symbol)
-                .foregroundColor(.white)
-                .font(.system(size: 30))
-        }
+if #available(iOS 26, *) {
+    content
+        .padding()
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
-    }
-}
-
-// Usage:
-GlassEffectContainer(spacing: 20) {
-    HStack(spacing: 20) {
-        BadgeView(symbol: "star.fill", color: .blue)
-        BadgeView(symbol: "heart.fill", color: .red)
-        BadgeView(symbol: "leaf.fill", color: .green)
-    }
+} else {
+    content
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
 }
 ```
 
-## References
+## Performance Guidelines
 
-- [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views)
-- [Landmarks: Building an app with Liquid Glass](https://developer.apple.com/documentation/SwiftUI/Landmarks-Building-an-app-with-Liquid-Glass)
-- [SwiftUI View.glassEffect(_:in:isEnabled:)](https://developer.apple.com/documentation/SwiftUI/View/glassEffect(_:in:isEnabled:))
-- [SwiftUI GlassEffectContainer](https://developer.apple.com/documentation/SwiftUI/GlassEffectContainer)
-- [SwiftUI GlassEffectTransition](https://developer.apple.com/documentation/SwiftUI/GlassEffectTransition)
-- [SwiftUI GlassButtonStyle](https://developer.apple.com/documentation/SwiftUI/GlassButtonStyle)
+- Use `GlassEffectContainer` to batch multiple glass effects into a single render pass.
+- Limit the total number of glass effects visible on screen at once.
+- Avoid creating many separate `GlassEffectContainer` instances when one can suffice.
+- Profile with Instruments to check rendering performance.
+
+## Accessibility Considerations
+
+- Test with **Reduce Transparency** enabled (glass effects adapt automatically for
+  standard components; verify custom implementations).
+- Test with **Reduce Motion** enabled (morphing and fluid animations are simplified).
+- Ensure sufficient contrast for text and icons rendered over glass.
+- Standard components from SwiftUI adapt to these settings automatically.
+
+## Best Practices Summary
+
+1. Use `GlassEffectContainer` when multiple glass views coexist.
+2. Apply `.glassEffect()` after layout and appearance modifiers.
+3. Match container `spacing` to interior layout spacing.
+4. Use `.interactive()` only on tappable/focusable elements.
+5. Use `withAnimation` when toggling views with `glassEffectID` for morphing.
+6. Prefer `.buttonStyle(.glass)` / `.buttonStyle(.glassProminent)` for buttons.
+7. Avoid overusing Liquid Glass -- reserve it for key functional elements.
+8. Always gate with `if #available(iOS 26, *)` and provide fallback UI.
+9. Test with Reduce Transparency and Reduce Motion accessibility settings.
+
+## Apple Documentation Links
+
+- [Applying Liquid Glass to custom views](https://sosumi.ai/documentation/swiftui/Applying-Liquid-Glass-to-custom-views)
+- [Adopting Liquid Glass](https://sosumi.ai/documentation/technologyoverviews/adopting-liquid-glass)
+- [Landmarks: Building an app with Liquid Glass](https://sosumi.ai/documentation/swiftui/Landmarks-Building-an-app-with-Liquid-Glass)
+- [View.glassEffect(_:in:)](https://sosumi.ai/documentation/swiftui/View/glassEffect(_:in:))
+- [Glass](https://sosumi.ai/documentation/swiftui/Glass)
+- [GlassEffectContainer](https://sosumi.ai/documentation/swiftui/GlassEffectContainer)
+- [GlassEffectTransition](https://sosumi.ai/documentation/swiftui/GlassEffectTransition)
+- [GlassButtonStyle](https://sosumi.ai/documentation/swiftui/GlassButtonStyle)
+- [GlassProminentButtonStyle](https://sosumi.ai/documentation/swiftui/GlassProminentButtonStyle)

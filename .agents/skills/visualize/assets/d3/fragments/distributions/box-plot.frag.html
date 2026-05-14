@@ -1,0 +1,113 @@
+<!-- @section: frontmatter -->
+name: Box Plot (D3) description: Standalone D3 box plot with full keyboard navigation and ARIA
+support chart-type: box-plot engine: d3
+
+<!-- @section: head-title -->
+Team B shows highest median throughput but widest spread
+
+<!-- @section: chart-css -->
+.box-group:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.box-group:focus:not(:focus-visible) { outline: none; }
+
+<!-- @section: body -->
+<h1>Team B shows highest median throughput but widest spread</h1>
+<p class="subtitle">Weekly task throughput by team, Q1 (tasks/week)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Team B shows highest median throughput but widest spread</title>
+  <desc id="chart-desc">
+    Box plot comparing weekly task throughput across 4 engineering teams in Q1. Team B has the
+    highest median at 52 tasks/week but also the widest interquartile range, indicating high
+    variability.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- // Each group: min, q1, median, q3, max, and outliers const data = [ { group: "Team
+A", min: 28, q1: 34, median: 41, q3: 47, max: 56, outliers: [18, 64], }, { group: "Team B", min: 30,
+q1: 40, median: 52, q3: 62, max: 74, outliers: [12, 88], }, { group: "Team C", min: 35, q1: 42,
+median: 46, q3: 51, max: 58, outliers: [25], }, { group: "Team D", min: 22, q1: 30, median: 36, q3:
+43, max: 52, outliers: [70], }, ]; const colors = ["#1c7ed6", "#e8590c", "#0ca678", "#ae3ec9"]; //
+--- DIMENSIONS --- const margin = { top: 16, right: 32, bottom: 56, left: 64 }; const width = 700;
+const height = 440; const innerWidth = width - margin.left - margin.right; const innerHeight =
+height - margin.top - margin.bottom; // --- SCALES --- const x = d3 .scaleBand()
+.domain(data.map((d) => d.group)) .range([0, innerWidth]) .padding(0.4); const allValues =
+data.flatMap((d) => [d.min, ...d.outliers, d.max]); const y = d3 .scaleLinear()
+.domain([d3.min(allValues) - 5, d3.max(allValues) + 5]) .nice() .range([innerHeight, 0]); // --- SVG
+--- const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width",
+"100%"); const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); //
+--- GRID --- g.append("g") .attr("class", "grid")
+.call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat("")) .call((g) =>
+g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label");
+g.append("g") .attr("class", "axis") .call(d3.axisLeft(y)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label"); //
+Axis titles g.append("text") .attr("class", "axis-title") .attr("transform", "rotate(-90)")
+.attr("y", -50) .attr("x", -innerHeight / 2) .attr("text-anchor", "middle") .text("Tasks per week");
+// --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function hideTooltip() {
+tooltip.style("opacity", 0); } // --- BOX GROUPS --- const boxWidth = x.bandwidth(); const groups =
+g .selectAll(".box-group") .data(data) .join("g") .attr("class", "box-group") .attr("transform", (d)
+=> `translate(${x(d.group)},0)`) .attr("tabindex", 0) .attr("role", "listitem") .attr( "aria-label",
+(d) => `${d.group}: median ${d.median}, IQR ${d.q1}–${d.q3}, range
+${d.min}–${d.max}${d.outliers.length ? `, outliers: ${d.outliers.join(", ")}` : ""}`, ); // Whisker
+lines (min to q1, q3 to max) groups.each(function (d, i) { const grp = d3.select(this); const color
+= colors[i]; const cx = boxWidth / 2; const whiskerW = boxWidth * 0.3; // Lower whisker grp
+.append("line") .attr("x1", cx) .attr("x2", cx) .attr("y1", y(d.min)) .attr("y2", y(d.q1))
+.attr("stroke", color) .attr("stroke-width", 1.5); // Upper whisker grp .append("line") .attr("x1",
+cx) .attr("x2", cx) .attr("y1", y(d.q3)) .attr("y2", y(d.max)) .attr("stroke", color)
+.attr("stroke-width", 1.5); // Whisker caps grp .append("line") .attr("x1", cx - whiskerW)
+.attr("x2", cx + whiskerW) .attr("y1", y(d.min)) .attr("y2", y(d.min)) .attr("stroke", color)
+.attr("stroke-width", 1.5); grp .append("line") .attr("x1", cx - whiskerW) .attr("x2", cx +
+whiskerW) .attr("y1", y(d.max)) .attr("y2", y(d.max)) .attr("stroke", color) .attr("stroke-width",
+1.5); // IQR box grp .append("rect") .attr("x", 0) .attr("y", y(d.q3)) .attr("width", boxWidth)
+.attr("height", y(d.q1) - y(d.q3)) .attr("fill", color) .attr("fill-opacity", 0.15) .attr("stroke",
+color) .attr("stroke-width", 2) .attr("rx", 2); // Median line grp .append("line") .attr("x1", 0)
+.attr("x2", boxWidth) .attr("y1", y(d.median)) .attr("y2", y(d.median)) .attr("stroke", color)
+.attr("stroke-width", 2.5); // Outlier dots d.outliers.forEach((v) => { grp .append("circle")
+.attr("cx", cx) .attr("cy", y(v)) .attr("r", 4) .attr("fill", "none") .attr("stroke", color)
+.attr("stroke-width", 1.5); }); }); // Hover + focus interactions on group groups
+.on("pointerenter", function (event, d) { d3.selectAll(".box-group").attr("opacity", 0.3);
+d3.select(this).attr("opacity", 1); tooltip .style("opacity", 1) .html( `
+<strong>${d.group}</strong>
+<br />
+Median:
+<b>${d.median}</b>
+<br />
+IQR: ${d.q1}–${d.q3}
+<br />
+Range: ${d.min}–${d.max}${d.outliers.length ? `
+<br />
+Outliers: ${d.outliers.join(", ")}` : ""}`, ) .style("left", `${event.pageX + 12}px`) .style("top",
+`${event.pageY - 28}px`); }) .on("pointermove", function (event, d) { tooltip.style("left",
+`${event.pageX + 12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".box-group").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".box-group").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html( `
+<strong>${d.group}</strong>
+<br />
+Median:
+<b>${d.median}</b>
+<br />
+IQR: ${d.q1}–${d.q3}
+<br />
+Range: ${d.min}–${d.max}${d.outliers.length ? `
+<br />
+Outliers: ${d.outliers.join(", ")}` : ""}`, ) .style("left", `${rect.x + rect.width / 2}px`)
+.style("top", `${rect.y - 40}px`); }) .on("blur", function () {
+d3.selectAll(".box-group").attr("opacity", 1); hideTooltip(); }); // Keyboard navigation: arrow keys
+move between groups groups.on("keydown", function (event) { const nodes = groups.nodes(); const idx
+= nodes.indexOf(this); if (event.key === "ArrowRight" && idx < nodes.length - 1) {
+event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key === "ArrowLeft" && idx > 0) {
+event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE --- const table = d3
+.select("#data-table") .append("table") .attr("role", "table") .attr("aria-label", "Data table for
+box plot"); const thead = table.append("thead").append("tr"); ["Team", "Min", "Q1", "Median", "Q3",
+"Max", "Outliers"].forEach((col) => { thead.append("th").attr("scope", "col").text(col); }); const
+tbody = table.append("tbody"); data.forEach((d) => { const tr = tbody.append("tr");
+tr.append("td").text(d.group); tr.append("td").text(d.min); tr.append("td").text(d.q1);
+tr.append("td").text(d.median); tr.append("td").text(d.q3); tr.append("td").text(d.max);
+tr.append("td").text(d.outliers.length ? d.outliers.join(", ") : "—"); });

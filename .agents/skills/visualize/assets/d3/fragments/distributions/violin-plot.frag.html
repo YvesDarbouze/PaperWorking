@@ -1,0 +1,116 @@
+<!-- @section: frontmatter -->
+name: Violin Plot (D3) description: Standalone D3 violin plot with kernel density estimation, full
+keyboard navigation and ARIA support chart-type: violin-plot engine: d3
+
+<!-- @section: head-title -->
+Product A shows bimodal score distribution unlike its peers
+
+<!-- @section: chart-css -->
+.violin-group:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.violin-group:focus:not(:focus-visible) { outline: none; }
+
+<!-- @section: body -->
+<h1>Product A shows bimodal score distribution unlike its peers</h1>
+<p class="subtitle">User satisfaction scores by product, 50 responses each (0–100)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Product A shows bimodal score distribution unlike its peers</title>
+  <desc id="chart-desc">
+    Violin plot showing the distribution of user satisfaction scores (0–100) for three products.
+    Product A has a bimodal distribution with peaks near 30 and 75, while Products B and C show
+    unimodal distributions centered around 60 and 70 respectively.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const rawGroups = { "Product A": [ // Bimodal: cluster around 30 and 75 22, 25, 27,
+29, 31, 32, 33, 34, 35, 36, 38, 40, 68, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 30, 28,
+74, 73, 26, 37, 69, 71, 76, 35, 33, 29, 80, 72, 31, 34, 78, 75, 27, 32, 70, 77, 36, 74, ], "Product
+B": [ // Unimodal around 60, moderate spread 42, 45, 48, 50, 52, 54, 56, 57, 58, 59, 60, 61, 62, 63,
+64, 65, 66, 67, 68, 70, 53, 55, 61, 63, 65, 59, 57, 64, 66, 68, 47, 51, 55, 60, 62, 64, 67, 69, 58,
+61, 54, 56, 63, 65, 60, 62, 67, 70, 53, 58, ], "Product C": [ // Unimodal around 70, tight spread
+60, 63, 65, 66, 67, 68, 69, 70, 70, 71, 71, 72, 72, 73, 73, 74, 74, 75, 75, 76, 66, 68, 70, 72, 74,
+71, 69, 73, 75, 67, 64, 68, 71, 73, 75, 70, 72, 74, 76, 69, 65, 67, 70, 72, 74, 71, 73, 75, 68, 72,
+], }; const groups = Object.keys(rawGroups); const colors = ["#1c7ed6", "#e8590c", "#0ca678"]; //
+--- DIMENSIONS --- const margin = { top: 16, right: 32, bottom: 56, left: 64 }; const width = 700;
+const height = 460; const innerWidth = width - margin.left - margin.right; const innerHeight =
+height - margin.top - margin.bottom; // --- SCALES --- const x =
+d3.scaleBand().domain(groups).range([0, innerWidth]).padding(0.3); const y =
+d3.scaleLinear().domain([0, 100]).range([innerHeight, 0]); // --- KERNEL DENSITY ESTIMATION ---
+function kernelDensityEstimator(kernel, X) { return function (V) { return X.map((x) => [x,
+d3.mean(V, (v) => kernel(x - v))]); }; } function kernelEpanechnikov(k) { return function (v) {
+return Math.abs((v /= k)) <= 1 ? (0.75 * (1 - v * v)) / k : 0; }; } const kde =
+kernelDensityEstimator(kernelEpanechnikov(8), y.ticks(50)); // Compute density for each group const
+densities = groups.map((group, i) => { const density = kde(rawGroups[group]); const maxDensity =
+d3.max(density, (d) => d[1]); // Normalize to 0–1 const normalized = density.map(([val, den]) =>
+[val, den / maxDensity]); return { group, density: normalized, color: colors[i] }; }); // --- SVG
+--- const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width",
+"100%"); const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); //
+--- GRID --- g.append("g") .attr("class", "grid")
+.call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat("")) .call((g) =>
+g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label");
+g.append("g") .attr("class", "axis") .call(d3.axisLeft(y)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label"); //
+Axis titles g.append("text") .attr("class", "axis-title") .attr("transform", "rotate(-90)")
+.attr("y", -50) .attr("x", -innerHeight / 2) .attr("text-anchor", "middle") .text("Satisfaction
+score (0–100)"); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function hideTooltip() {
+tooltip.style("opacity", 0); } // Summary stats helper function stats(arr) { const sorted =
+[...arr].sort(d3.ascending); return { median: d3.median(sorted), q1: d3.quantile(sorted, 0.25), q3:
+d3.quantile(sorted, 0.75), min: sorted[0], max: sorted[sorted.length - 1], }; } // --- VIOLIN SHAPES
+--- const violinHalfWidth = x.bandwidth() / 2; const violinArea = d3 .area() .x0((d) => -d[1] *
+violinHalfWidth) .x1((d) => d[1] * violinHalfWidth) .y((d) => y(d[0])) .curve(d3.curveCatmullRom);
+const groups_sel = g .selectAll(".violin-group") .data(densities) .join("g") .attr("class",
+"violin-group") .attr("transform", (d) => `translate(${x(d.group) + x.bandwidth() / 2},0)`)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => { const s =
+stats(rawGroups[d.group]); return `${d.group}: median ${s.median.toFixed(0)}, IQR
+${s.q1.toFixed(0)}–${s.q3.toFixed(0)}, range ${s.min}–${s.max}`; }); // Draw violin body
+groups_sel.each(function (d) { const grp = d3.select(this); grp .append("path") .datum(d.density)
+.attr("d", violinArea) .attr("fill", d.color) .attr("fill-opacity", 0.2) .attr("stroke", d.color)
+.attr("stroke-width", 1.5); // Median dot const s = stats(rawGroups[d.group]); grp .append("circle")
+.attr("cx", 0) .attr("cy", y(s.median)) .attr("r", 4) .attr("fill", d.color) .attr("stroke",
+"white") .attr("stroke-width", 1.5); // IQR line grp .append("line") .attr("x1", 0) .attr("x2", 0)
+.attr("y1", y(s.q1)) .attr("y2", y(s.q3)) .attr("stroke", d.color) .attr("stroke-width", 3)
+.attr("stroke-opacity", 0.6); }); // Hover + focus groups_sel .on("pointerenter", function (event,
+d) { d3.selectAll(".violin-group").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const s
+= stats(rawGroups[d.group]); tooltip .style("opacity", 1) .html( `
+<strong>${d.group}</strong>
+<br />
+Median:
+<b>${s.median.toFixed(1)}</b>
+<br />
+IQR: ${s.q1.toFixed(1)}–${s.q3.toFixed(1)}
+<br />
+Range: ${s.min}–${s.max}`, ) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", function (event) { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".violin-group").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d)
+{ d3.selectAll(".violin-group").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const s =
+stats(rawGroups[d.group]); const rect = this.getBoundingClientRect(); tooltip .style("opacity", 1)
+.html( `
+<strong>${d.group}</strong>
+<br />
+Median:
+<b>${s.median.toFixed(1)}</b>
+<br />
+IQR: ${s.q1.toFixed(1)}–${s.q3.toFixed(1)}
+<br />
+Range: ${s.min}–${s.max}`, ) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y
+- 40}px`); }) .on("blur", function () { d3.selectAll(".violin-group").attr("opacity", 1);
+hideTooltip(); }); // Keyboard navigation groups_sel.on("keydown", function (event) { const nodes =
+groups_sel.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE
+--- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for violin plot"); const thead = table.append("thead").append("tr");
+["Product", "Min", "Q1", "Median", "Q3", "Max", "N"].forEach((col) => {
+thead.append("th").attr("scope", "col").text(col); }); const tbody = table.append("tbody");
+groups.forEach((group) => { const s = stats(rawGroups[group]); const tr = tbody.append("tr");
+tr.append("td").text(group); tr.append("td").text(s.min); tr.append("td").text(s.q1.toFixed(1));
+tr.append("td").text(s.median.toFixed(1)); tr.append("td").text(s.q3.toFixed(1));
+tr.append("td").text(s.max); tr.append("td").text(rawGroups[group].length); });

@@ -1,0 +1,396 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales, axes, and marks to match your data",
+      "Update axes titles to include your units",
+      "Adjust size scale range to control min/max bubble sizes",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with 'label' (nominal identifier), 'x' (quantitative), 'y' (quantitative), 'size' (quantitative for bubble area), and 'category' (nominal for color) fields."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6",
+      "title": "Revenue ($B)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    },
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Market Cap ($B)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "values": [
+        {
+          "category": "Consumer Electronics",
+          "label": "Apple",
+          "size": 164,
+          "x": 383,
+          "y": 2800
+        },
+        {
+          "category": "Software",
+          "label": "Microsoft",
+          "size": 221,
+          "x": 211,
+          "y": 2500
+        },
+        {
+          "category": "Internet Services",
+          "label": "Alphabet",
+          "size": 182,
+          "x": 282,
+          "y": 1700
+        },
+        {
+          "category": "E-commerce",
+          "label": "Amazon",
+          "size": 1540,
+          "x": 574,
+          "y": 1500
+        },
+        {
+          "category": "Internet Services",
+          "label": "Meta",
+          "size": 77,
+          "x": 117,
+          "y": 850
+        },
+        {
+          "category": "Semiconductors",
+          "label": "NVIDIA",
+          "size": 26,
+          "x": 61,
+          "y": 1200
+        },
+        {
+          "category": "Automotive",
+          "label": "Tesla",
+          "size": 128,
+          "x": 96,
+          "y": 650
+        },
+        {
+          "category": "Entertainment",
+          "label": "Netflix",
+          "size": 13,
+          "x": 32,
+          "y": 195
+        },
+        {
+          "category": "Software",
+          "label": "Salesforce",
+          "size": 73,
+          "x": 31,
+          "y": 215
+        },
+        {
+          "category": "Software",
+          "label": "Adobe",
+          "size": 29,
+          "x": 18,
+          "y": 240
+        },
+        {
+          "category": "Semiconductors",
+          "label": "Intel",
+          "size": 125,
+          "x": 54,
+          "y": 180
+        },
+        {
+          "category": "Software",
+          "label": "IBM",
+          "size": 282,
+          "x": 60,
+          "y": 155
+        },
+        {
+          "category": "Software",
+          "label": "Oracle",
+          "size": 143,
+          "x": 50,
+          "y": 320
+        },
+        {
+          "category": "Networking",
+          "label": "Cisco",
+          "size": 83,
+          "x": 57,
+          "y": 210
+        },
+        {
+          "category": "Transportation",
+          "label": "Uber",
+          "size": 32,
+          "x": 32,
+          "y": 125
+        }
+      ]
+    }
+  ],
+  "description": "Bubble chart showing 15 technology companies. Position encodes revenue (x) and market cap (y). Bubble area encodes employee count with sqrt scaling. Strong positive correlation between revenue and market cap. Amazon is a notable outlier with the largest workforce.",
+  "height": 440,
+
+  "legends": [
+    {
+      "encode": {
+        "labels": {
+          "update": {
+            "fill": {
+              "value": "#868e96"
+            },
+            "fontSize": {
+              "value": 11
+            }
+          }
+        },
+        "title": {
+          "update": {
+            "fill": {
+              "value": "#495057"
+            },
+            "fontSize": {
+              "value": 12
+            }
+          }
+        }
+      },
+      "fill": "color",
+      "orient": "top-right",
+      "title": "Sector"
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "shape": {
+            "value": "circle"
+          },
+          "stroke": {
+            "value": "#fff"
+          },
+          "strokeWidth": {
+            "value": 1.5
+          },
+          "tooltip": {
+            "signal": "{'Company': datum.label, 'Revenue ($B)': datum.x, 'Market Cap ($B)': datum.y, 'Employees (K)': datum.size, 'Sector': datum.category}"
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "category",
+            "scale": "color"
+          },
+          "fillOpacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 0.75
+            },
+            {
+              "value": 0.15
+            }
+          ],
+          "size": {
+            "field": "size",
+            "scale": "size"
+          },
+          "x": {
+            "field": "x",
+            "scale": "x"
+          },
+          "y": {
+            "field": "y",
+            "scale": "y"
+          }
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "symbol"
+    },
+    {
+      "encode": {
+        "enter": {
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fill": {
+            "value": "#495057"
+          },
+          "fontSize": {
+            "value": 9
+          }
+        },
+        "update": {
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.label === datum.label",
+              "value": 1
+            },
+            {
+              "value": 0.15
+            }
+          ],
+          "text": {
+            "field": "label"
+          },
+          "x": {
+            "field": "x",
+            "scale": "x"
+          },
+          "y": {
+            "field": "y",
+            "scale": "y"
+          }
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "text"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "x"
+      },
+      "name": "x",
+      "nice": true,
+      "range": "width",
+      "type": "linear",
+      "zero": false
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "y"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "reverse": true,
+      "type": "linear",
+      "zero": false
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "size"
+      },
+      "name": "size",
+      "range": [
+        50,
+        3000
+      ],
+      "type": "sqrt",
+      "zero": true
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "category"
+      },
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678",
+        "#f03e3e",
+        "#ae3ec9",
+        "#1098ad",
+        "#74b816",
+        "#d6336c"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "symbol:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "symbol:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Revenue vs. market cap for 15 tech companies; bubble size = employees (thousands)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Amazon's workforce dwarfs peers; NVIDIA commands outsized market cap per employee"
+  },
+  "width": 640
+}

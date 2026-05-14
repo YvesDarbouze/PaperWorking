@@ -1,0 +1,275 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales and marks to match your data",
+      "Update axis titles to include your units",
+      "Modify title and description for your context",
+      "To render as 100% stacked bars, add a 'stackedNorm' transform that normalizes by category total and bind y scale domain to [0,1]"
+    ],
+    "dataFormat": "Array of objects with 'category' (nominal), 'series' (nominal stack segment), and 'revenue' (quantitative) fields. Each category has one entry per series."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6"
+    },
+    {
+      "domainColor": "#dee2e6",
+      "format": "$,.0f",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Revenue ($)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "transform": [
+        {
+          "as": [
+            "y0",
+            "y1"
+          ],
+          "field": "revenue",
+          "groupby": [
+            "category"
+          ],
+          "sort": {
+            "field": "series",
+            "order": "ascending"
+          },
+          "type": "stack"
+        }
+      ],
+      "values": [
+        {
+          "category": "Q1 2024",
+          "revenue": 42000,
+          "series": "Hardware"
+        },
+        {
+          "category": "Q1 2024",
+          "revenue": 28000,
+          "series": "Software"
+        },
+        {
+          "category": "Q1 2024",
+          "revenue": 15000,
+          "series": "Services"
+        },
+        {
+          "category": "Q2 2024",
+          "revenue": 38000,
+          "series": "Hardware"
+        },
+        {
+          "category": "Q2 2024",
+          "revenue": 32000,
+          "series": "Software"
+        },
+        {
+          "category": "Q2 2024",
+          "revenue": 18000,
+          "series": "Services"
+        },
+        {
+          "category": "Q3 2024",
+          "revenue": 45000,
+          "series": "Hardware"
+        },
+        {
+          "category": "Q3 2024",
+          "revenue": 35000,
+          "series": "Software"
+        },
+        {
+          "category": "Q3 2024",
+          "revenue": 22000,
+          "series": "Services"
+        },
+        {
+          "category": "Q4 2024",
+          "revenue": 52000,
+          "series": "Hardware"
+        },
+        {
+          "category": "Q4 2024",
+          "revenue": 41000,
+          "series": "Software"
+        },
+        {
+          "category": "Q4 2024",
+          "revenue": 28000,
+          "series": "Services"
+        }
+      ]
+    }
+  ],
+  "description": "Stacked bar chart showing quarterly revenue composition across Hardware, Software, and Services. Total revenue grows from $85,000 in Q1 to $121,000 in Q4. Services grows fastest (+87%), shifting the mix toward recurring revenue.",
+  "height": 400,
+
+  "legends": [
+    {
+      "fill": "color",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "top",
+      "title": "Product Line",
+      "titleColor": "#495057",
+      "titleFontSize": 12
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "tooltip": {
+            "signal": "{'Quarter': datum.category, 'Product Line': datum.series, 'Revenue ($)': '$' + format(datum.revenue, ',.0f')}"
+          },
+          "width": {
+            "band": 1,
+            "scale": "x"
+          },
+          "x": {
+            "field": "category",
+            "scale": "x"
+          },
+          "y": {
+            "field": "y0",
+            "scale": "y"
+          },
+          "y2": {
+            "field": "y1",
+            "scale": "y"
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "series",
+            "scale": "color"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.series === datum.series",
+              "value": 1
+            },
+            {
+              "value": 0.3
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "rect"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "category",
+        "sort": true
+      },
+      "name": "x",
+      "padding": 0.25,
+      "range": "width",
+      "type": "band"
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "y1"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": [
+        "Hardware",
+        "Software",
+        "Services"
+      ],
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "rect:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rect:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Quarterly revenue by product line, 2024 ($)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Services is the fastest-growing segment — up 87% by Q4"
+  },
+  "width": 600
+}

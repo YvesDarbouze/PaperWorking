@@ -1,0 +1,26 @@
+---
+name: Emoji Heatmap
+description: Discrete categorical grid using emoji as colour bins; 3–5 step palette only
+chart-type: emoji-heatmap
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Activity Peaks Midweek at Midday
+
+```
+       Mon  Tue  Wed  Thu  Fri  Sat  Sun
+06:00  ⬜  ⬜  ⬜  ⬜  ⬜  ⬜  ⬜
+09:00  🟨  🟨  🟧  🟧  🟧  🟨  ⬜
+12:00  🟧  🟧  🟥  🟥  🟧  🟨  🟨
+15:00  🟧  🟧  🟥  🟥  🟧  🟨  🟨
+18:00  🟨  🟨  🟧  🟧  🟨  🟨  🟨
+21:00  ⬜  ⬜  🟨  🟨  ⬜  🟨  ⬜
+```
+
+Legend: ⬜ low (0–25)  🟨 moderate (25–50)  🟧 high (50–75)  🟥 peak (75–100)
+
+Source: hourly activity index averaged over 4 weeks ending 2026-03-31.
+Use this format only for categorical bins (3–5 levels). Emoji colour mapping is
+not a continuous gradient — readers cannot resolve fine differences.

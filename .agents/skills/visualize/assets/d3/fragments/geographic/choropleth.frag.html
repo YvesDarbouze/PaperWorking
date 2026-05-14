@@ -1,0 +1,116 @@
+<!-- @section: frontmatter -->
+name: Choropleth Map (D3) description: Standalone D3 US states choropleth with full keyboard
+navigation and ARIA support chart-type: choropleth engine: d3
+
+<!-- @section: head-title -->
+California and Texas lead US states by population
+
+<!-- @section: chart-css -->
+.state:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 1px; }
+.state:focus:not(:focus-visible) { outline: none; } #loading { color: var(--oc-gray-6); font-size:
+14px; padding: 40px 0; text-align: center; }
+
+<!-- @section: body -->
+<h1>California and Texas lead US states by population</h1>
+<p class="subtitle">Estimated population by state (millions)</p>
+<div id="loading">Loading map data…</div>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc" style="display: none">
+  <title id="chart-title">California and Texas lead US states by population</title>
+  <desc id="chart-desc">
+    Choropleth map of the United States showing estimated population by state. Darker blue indicates
+    higher population. California (39M) and Texas (30M) are the most populous states.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: extra-imports -->
+import * as topojson from "https://cdn.jsdelivr.net/npm/topojson-client@3/+esm";
+
+<!-- @section: chart-js -->
+// --- DATA: estimated US state populations (millions) --- // FIPS code → { name, population } const
+populationData = { "01": { name: "Alabama", pop: 5.07 }, "02": { name: "Alaska", pop: 0.73 }, "04":
+{ name: "Arizona", pop: 7.43 }, "05": { name: "Arkansas", pop: 3.05 }, "06": { name: "California",
+pop: 39.2 }, "08": { name: "Colorado", pop: 5.83 }, "09": { name: "Connecticut", pop: 3.61 }, 10: {
+name: "Delaware", pop: 1.02 }, 11: { name: "District of Columbia", pop: 0.68 }, 12: { name:
+"Florida", pop: 22.6 }, 13: { name: "Georgia", pop: 11.0 }, 15: { name: "Hawaii", pop: 1.44 }, 16: {
+name: "Idaho", pop: 1.94 }, 17: { name: "Illinois", pop: 12.6 }, 18: { name: "Indiana", pop: 6.83 },
+19: { name: "Iowa", pop: 3.21 }, 20: { name: "Kansas", pop: 2.94 }, 21: { name: "Kentucky", pop:
+4.52 }, 22: { name: "Louisiana", pop: 4.62 }, 23: { name: "Maine", pop: 1.37 }, 24: { name:
+"Maryland", pop: 6.18 }, 25: { name: "Massachusetts", pop: 7.03 }, 26: { name: "Michigan", pop: 10.1
+}, 27: { name: "Minnesota", pop: 5.72 }, 28: { name: "Mississippi", pop: 2.96 }, 29: { name:
+"Missouri", pop: 6.18 }, 30: { name: "Montana", pop: 1.12 }, 31: { name: "Nebraska", pop: 1.97 },
+32: { name: "Nevada", pop: 3.14 }, 33: { name: "New Hampshire", pop: 1.4 }, 34: { name: "New
+Jersey", pop: 9.27 }, 35: { name: "New Mexico", pop: 2.12 }, 36: { name: "New York", pop: 19.5 },
+37: { name: "North Carolina", pop: 10.7 }, 38: { name: "North Dakota", pop: 0.78 }, 39: { name:
+"Ohio", pop: 11.8 }, 40: { name: "Oklahoma", pop: 4.02 }, 41: { name: "Oregon", pop: 4.29 }, 42: {
+name: "Pennsylvania", pop: 13.0 }, 44: { name: "Rhode Island", pop: 1.1 }, 45: { name: "South
+Carolina", pop: 5.28 }, 46: { name: "South Dakota", pop: 0.9 }, 47: { name: "Tennessee", pop: 7.05
+}, 48: { name: "Texas", pop: 30.0 }, 49: { name: "Utah", pop: 3.38 }, 50: { name: "Vermont", pop:
+0.65 }, 51: { name: "Virginia", pop: 8.68 }, 53: { name: "Washington", pop: 7.74 }, 54: { name:
+"West Virginia", pop: 1.78 }, 55: { name: "Wisconsin", pop: 5.9 }, 56: { name: "Wyoming", pop: 0.58
+}, }; // --- DIMENSIONS --- const width = 900; const height = 540; // --- SVG --- const svg = d3
+.select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); // --- COLOR
+SCALE --- const maxPop = d3.max(Object.values(populationData), (d) => d.pop); const colorScale =
+d3.scaleSequential().domain([0, maxPop]).interpolator(d3.interpolateBlues); // --- TOOLTIP --- const
+tooltip = d3.select("#tooltip"); function showTooltip(event, name, pop) { const label = pop != null
+? `
+<strong>${name}</strong>
+<br />
+Population: ${pop.toFixed(2)}M` : `
+<strong>${name}</strong>
+<br />
+No data`; tooltip .style("opacity", 1) .html(label) .style("left", `${event.pageX + 12}px`)
+.style("top", `${event.pageY - 28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } //
+--- LOAD AND RENDER --- const us = await
+d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json"); d3.select("#loading").remove();
+d3.select("#chart").style("display", null); const projection = d3 .geoAlbersUsa() .fitSize([width,
+height - 60], topojson.feature(us, us.objects.states)); const path =
+d3.geoPath().projection(projection); const stateFeatures = topojson.feature(us,
+us.objects.states).features; const states = svg .append("g") .selectAll(".state")
+.data(stateFeatures) .join("path") .attr("class", "state") .attr("d", path) .attr("fill", (d) => {
+const fips = String(d.id).padStart(2, "0"); const entry = populationData[fips]; return entry ?
+colorScale(entry.pop) : "#dee2e6"; }) .attr("stroke", "white") .attr("stroke-width", 0.75)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => { const fips =
+String(d.id).padStart(2, "0"); const entry = populationData[fips]; return entry ? `${entry.name}:
+${entry.pop.toFixed(2)} million` : d.properties?.name || "Unknown state"; }) .on("pointerenter",
+function (event, d) { d3.select(this).attr("stroke", "#1c7ed6").attr("stroke-width", 2); const fips
+= String(d.id).padStart(2, "0"); const entry = populationData[fips]; showTooltip(event, entry?.name
+|| "Unknown", entry?.pop ?? null); }) .on("pointermove", function (event, d) { const fips =
+String(d.id).padStart(2, "0"); const entry = populationData[fips]; showTooltip(event, entry?.name ||
+"Unknown", entry?.pop ?? null); }) .on("pointerleave", function () { d3.select(this).attr("stroke",
+"white").attr("stroke-width", 0.75); hideTooltip(); }) .on("focus", function (event, d) {
+d3.select(this).attr("stroke", "#1c7ed6").attr("stroke-width", 2); const fips =
+String(d.id).padStart(2, "0"); const entry = populationData[fips]; const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html( entry ? `
+<strong>${entry.name}</strong>
+<br />
+Population: ${entry.pop.toFixed(2)}M` : "
+<strong>No data</strong>
+", ) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y - 44}px`); })
+.on("blur", function () { d3.select(this).attr("stroke", "white").attr("stroke-width", 0.75);
+hideTooltip(); }); // Keyboard navigation states.on("keydown", function (event) { const nodes =
+states.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- COLOR LEGEND
+--- const legendWidth = 200; const legendHeight = 12; const legendX = width / 2 - legendWidth / 2;
+const legendY = height - 36; const defs = svg.append("defs"); const gradient =
+defs.append("linearGradient").attr("id", "choro-legend"); gradient .selectAll("stop")
+.data(d3.range(0, 101, 10)) .join("stop") .attr("offset", (d) => `${d}%`) .attr("stop-color", (d) =>
+colorScale((maxPop * d) / 100)); svg .append("rect") .attr("x", legendX) .attr("y", legendY)
+.attr("width", legendWidth) .attr("height", legendHeight) .style("fill", "url(#choro-legend)"); svg
+.append("text") .attr("x", legendX) .attr("y", legendY - 6) .attr("font-size", "11px") .attr("fill",
+"#868e96") .text("0M"); svg .append("text") .attr("x", legendX + legendWidth) .attr("y", legendY -
+6) .attr("text-anchor", "end") .attr("font-size", "11px") .attr("fill", "#868e96")
+.text(`${maxPop.toFixed(0)}M`); svg .append("text") .attr("x", legendX + legendWidth / 2) .attr("y",
+legendY + legendHeight + 16) .attr("text-anchor", "middle") .attr("font-size", "11px") .attr("fill",
+"#868e96") .text("Population"); // --- DATA TABLE --- const tableData =
+Object.entries(populationData) .map(([fips, d]) => ({ fips, ...d })) .sort((a, b) => b.pop - a.pop);
+const table = d3 .select("#data-table") .append("table") .attr("role", "table") .attr("aria-label",
+"Data table for choropleth map"); const thead = table.append("thead").append("tr");
+thead.append("th").attr("scope", "col").text("State"); thead.append("th").attr("scope",
+"col").text("Population (M)"); const tbody = table.append("tbody"); tableData.forEach((d) => { const
+tr = tbody.append("tr"); tr.append("td").text(d.name); tr.append("td").text(d.pop.toFixed(2)); });

@@ -1,0 +1,374 @@
+<!--
+name: Tree Diagram (D3)
+description: Standalone D3 org chart tree with full keyboard navigation and ARIA support
+chart-type: tree-diagram
+engine: d3
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Engineering organization spans three levels from CTO to individual teams</title>
+    <style>
+      :root {
+        --oc-gray-0: #f8f9fa;
+        --oc-gray-1: #f1f3f5;
+        --oc-gray-2: #e9ecef;
+        --oc-gray-3: #dee2e6;
+        --oc-gray-4: #ced4da;
+        --oc-gray-5: #adb5bd;
+        --oc-gray-6: #868e96;
+        --oc-gray-7: #495057;
+        --oc-gray-8: #343a40;
+        --oc-gray-9: #212529;
+        --oc-blue-7: #1c7ed6;
+        --oc-orange-7: #e8590c;
+        --oc-teal-7: #0ca678;
+        --oc-red-7: #f03e3e;
+        --oc-grape-7: #ae3ec9;
+        --oc-cyan-7: #1098ad;
+        --oc-lime-7: #74b816;
+        --oc-pink-7: #d6336c;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        background: var(--oc-gray-0);
+        color: var(--oc-gray-9);
+      }
+      #chart-container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: white;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+        color: var(--oc-gray-9);
+      }
+      .subtitle {
+        font-size: 13px;
+        color: var(--oc-gray-6);
+        margin: 0 0 24px;
+      }
+      .tooltip {
+        position: absolute;
+        pointer-events: none;
+        background: white;
+        border: 1px solid var(--oc-gray-3);
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 13px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .axis-label {
+        fill: var(--oc-gray-6);
+        font-size: 12px;
+      }
+      .axis-title {
+        fill: var(--oc-gray-7);
+        font-size: 13px;
+      }
+      .grid line {
+        stroke: var(--oc-gray-1);
+        stroke-dasharray: 2, 2;
+      }
+      .axis line,
+      .axis path {
+        stroke: var(--oc-gray-3);
+      }
+      details {
+        margin-top: 24px;
+        border-top: 1px solid var(--oc-gray-2);
+        padding-top: 16px;
+      }
+      summary {
+        cursor: pointer;
+        color: var(--oc-gray-6);
+        font-size: 13px;
+      }
+      table {
+        border-collapse: collapse;
+        font-size: 13px;
+        width: 100%;
+        margin-top: 12px;
+      }
+      th,
+      td {
+        border: 1px solid var(--oc-gray-2);
+        padding: 8px 12px;
+        text-align: left;
+      }
+      th {
+        background: var(--oc-gray-1);
+        font-weight: 600;
+        color: var(--oc-gray-8);
+      }
+      tr:nth-child(even) {
+        background: var(--oc-gray-0);
+      }
+      .node-group:focus {
+        outline: 2px solid var(--oc-blue-7);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      .node-group:focus:not(:focus-visible) {
+        outline: none;
+      }
+      .link {
+        fill: none;
+        stroke: var(--oc-gray-3);
+        stroke-width: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart-container">
+      <h1>Engineering organization spans three levels from CTO to individual teams</h1>
+      <p class="subtitle">Org chart: reporting structure by department</p>
+      <svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+        <title id="chart-title">
+          Engineering organization spans three levels from CTO to individual teams
+        </title>
+        <desc id="chart-desc">
+          Tree diagram showing the engineering org chart. The CTO reports to the top level. Three
+          VPs (Platform, Product, Data) report to the CTO. Each VP has two to three teams reporting
+          to them, for a total of eight leaf teams across three departments.
+        </desc>
+      </svg>
+      <div class="tooltip" id="tooltip"></div>
+      <details>
+        <summary>View data table</summary>
+        <div id="data-table"></div>
+      </details>
+    </div>
+
+    <script type="module">
+      import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+
+      // --- DATA ---
+      const treeData = {
+        name: "CTO",
+        role: "Chief Technology Officer",
+        headcount: 42,
+        level: 0,
+        children: [
+          {
+            name: "VP Platform",
+            role: "VP of Platform Engineering",
+            headcount: 14,
+            level: 1,
+            children: [
+              { name: "Infra", role: "Infrastructure Team", headcount: 5, level: 2 },
+              { name: "Security", role: "Security Team", headcount: 4, level: 2 },
+              { name: "DevOps", role: "DevOps & Release Team", headcount: 5, level: 2 },
+            ],
+          },
+          {
+            name: "VP Product",
+            role: "VP of Product Engineering",
+            headcount: 18,
+            level: 1,
+            children: [
+              { name: "Frontend", role: "Frontend Team", headcount: 6, level: 2 },
+              { name: "Backend", role: "Backend Team", headcount: 7, level: 2 },
+              { name: "Mobile", role: "Mobile Team", headcount: 5, level: 2 },
+            ],
+          },
+          {
+            name: "VP Data",
+            role: "VP of Data & AI",
+            headcount: 10,
+            level: 1,
+            children: [
+              { name: "Analytics", role: "Analytics Team", headcount: 4, level: 2 },
+              { name: "ML/AI", role: "ML & AI Team", headcount: 6, level: 2 },
+            ],
+          },
+        ],
+      };
+
+      // Level colors
+      const levelColors = [
+        { fill: "#d0ebff", stroke: "#1c7ed6" }, // level 0 — blue
+        { fill: "#c3fae8", stroke: "#0ca678" }, // level 1 — teal
+        { fill: "#f3d9fa", stroke: "#ae3ec9" }, // level 2 — grape
+      ];
+
+      // --- DIMENSIONS ---
+      const margin = { top: 32, right: 40, bottom: 24, left: 40 };
+      const width = 880;
+      const height = 480;
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      // --- SVG ---
+      const svg = d3
+        .select("#chart")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("width", "100%");
+
+      const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // --- TREE LAYOUT ---
+      const root = d3.hierarchy(treeData);
+      const treeLayout = d3.tree().size([innerHeight, innerWidth]);
+      treeLayout(root);
+
+      // --- LINKS ---
+      g.selectAll(".link")
+        .data(root.links())
+        .join("path")
+        .attr("class", "link")
+        .attr(
+          "d",
+          d3
+            .linkHorizontal()
+            .x((d) => d.y)
+            .y((d) => d.x),
+        );
+
+      // --- TOOLTIP ---
+      const tooltip = d3.select("#tooltip");
+
+      function showTooltip(event, d) {
+        tooltip
+          .style("opacity", 1)
+          .html(
+            `<strong>${d.data.name}</strong><br>${d.data.role}<br>Headcount: ${d.data.headcount}`,
+          )
+          .style("left", `${event.pageX + 12}px`)
+          .style("top", `${event.pageY - 28}px`);
+      }
+      function hideTooltip() {
+        tooltip.style("opacity", 0);
+      }
+
+      // --- NODES ---
+      const NODE_W = 82;
+      const NODE_H = 34;
+
+      const nodeGroups = g
+        .selectAll(".node-group")
+        .data(root.descendants())
+        .join("g")
+        .attr("class", "node-group")
+        .attr("transform", (d) => `translate(${d.y},${d.x})`)
+        .attr("tabindex", 0)
+        .attr("role", "listitem")
+        .attr("aria-label", (d) => `${d.data.name}: ${d.data.role}, headcount ${d.data.headcount}`);
+
+      nodeGroups
+        .append("rect")
+        .attr("x", -NODE_W / 2)
+        .attr("y", -NODE_H / 2)
+        .attr("width", NODE_W)
+        .attr("height", NODE_H)
+        .attr("rx", 5)
+        .attr("fill", (d) => levelColors[d.data.level]?.fill ?? "#f1f3f5")
+        .attr("stroke", (d) => levelColors[d.data.level]?.stroke ?? "#adb5bd")
+        .attr("stroke-width", 1.5);
+
+      nodeGroups
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "-0.15em")
+        .attr("font-size", "12px")
+        .attr("font-weight", "600")
+        .attr("fill", "#212529")
+        .text((d) => d.data.name);
+
+      nodeGroups
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", "1em")
+        .attr("font-size", "10px")
+        .attr("fill", "#868e96")
+        .text((d) => `n=${d.data.headcount}`);
+
+      nodeGroups
+        .on("pointerenter", function (event, d) {
+          d3.select(this).select("rect").attr("opacity", 0.7);
+          showTooltip(event, d);
+        })
+        .on("pointermove", (event, d) => showTooltip(event, d))
+        .on("pointerleave", function () {
+          d3.select(this).select("rect").attr("opacity", 1);
+          hideTooltip();
+        })
+        .on("focus", function (event, d) {
+          d3.select(this).select("rect").attr("opacity", 0.7);
+          const rect = this.getBoundingClientRect();
+          tooltip
+            .style("opacity", 1)
+            .html(
+              `<strong>${d.data.name}</strong><br>${d.data.role}<br>Headcount: ${d.data.headcount}`,
+            )
+            .style("left", `${rect.x + rect.width / 2}px`)
+            .style("top", `${rect.y - 52}px`);
+        })
+        .on("blur", function () {
+          d3.select(this).select("rect").attr("opacity", 1);
+          hideTooltip();
+        });
+
+      // Keyboard navigation: arrow keys traverse the tree
+      nodeGroups.on("keydown", function (event, d) {
+        const nodes = nodeGroups.nodes();
+        const idx = nodes.indexOf(this);
+        if (event.key === "ArrowDown" && idx < nodes.length - 1) {
+          event.preventDefault();
+          nodes[idx + 1].focus();
+        } else if (event.key === "ArrowUp" && idx > 0) {
+          event.preventDefault();
+          nodes[idx - 1].focus();
+        } else if (event.key === "ArrowRight" && d.children) {
+          event.preventDefault();
+          // focus first child
+          const childIdx = nodes.findIndex((n) => n.__data__ === d.children[0]);
+          if (childIdx >= 0) nodes[childIdx].focus();
+        } else if (event.key === "ArrowLeft" && d.parent) {
+          event.preventDefault();
+          const parentIdx = nodes.findIndex((n) => n.__data__ === d.parent);
+          if (parentIdx >= 0) nodes[parentIdx].focus();
+        }
+      });
+
+      // --- DATA TABLE ---
+      const allNodes = root.descendants();
+      const table = d3
+        .select("#data-table")
+        .append("table")
+        .attr("role", "table")
+        .attr("aria-label", "Data table for tree diagram");
+      const thead = table.append("thead").append("tr");
+      thead.append("th").attr("scope", "col").text("Name");
+      thead.append("th").attr("scope", "col").text("Role");
+      thead.append("th").attr("scope", "col").text("Level");
+      thead.append("th").attr("scope", "col").text("Headcount");
+      thead.append("th").attr("scope", "col").text("Reports To");
+      const tbody = table.append("tbody");
+      allNodes.forEach((d) => {
+        const tr = tbody.append("tr");
+        tr.append("td").text(d.data.name);
+        tr.append("td").text(d.data.role);
+        tr.append("td").text(d.depth);
+        tr.append("td").text(d.data.headcount);
+        tr.append("td").text(d.parent ? d.parent.data.name : "—");
+      });
+    </script>
+  </body>
+</html>

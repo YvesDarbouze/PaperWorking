@@ -1,0 +1,116 @@
+<!-- @section: frontmatter -->
+name: Slope Chart (D3) description: Standalone D3 slope chart showing before/after change per
+department, with full keyboard navigation and ARIA support chart-type: slope-chart engine: d3
+
+<!-- @section: head-title -->
+Engineering budget rose 18%, while Marketing fell 9%
+
+<!-- @section: chart-css -->
+.slope-line:focus { outline: none; } .slope-endpoint:focus { outline: 2px solid var(--oc-blue-7);
+outline-offset: 2px; } .slope-endpoint:focus:not(:focus-visible) { outline: none; } .col-label {
+fill: var(--oc-gray-8); font-size: 13px; font-weight: 600; } .row-label { fill: var(--oc-gray-7);
+font-size: 12px; } .legend { display: flex; gap: 20px; margin-bottom: 16px; font-size: 13px;
+align-items: center; } .legend-line { width: 24px; height: 3px; display: inline-block; margin-right:
+4px; vertical-align: middle; border-radius: 2px; }
+
+<!-- @section: body -->
+<h1>Engineering budget rose 18%, while Marketing fell 9%</h1>
+<p class="subtitle">Department budget allocation, 2022 vs 2024 ($M)</p>
+<div class="legend">
+  <span>
+    <span class="legend-line" style="background: #0ca678"></span>
+    Increased
+  </span>
+  <span>
+    <span class="legend-line" style="background: #f03e3e"></span>
+    Decreased
+  </span>
+</div>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Engineering budget rose 18%, while Marketing fell 9%</title>
+  <desc id="chart-desc">
+    Slope chart showing budget changes for 6 departments between 2022 and 2024. Engineering rose
+    from $8.5M to $10.0M. Marketing fell from $5.5M to $5.0M.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { dept: "Engineering", before: 8.5, after: 10.0 }, { dept: "Product",
+before: 5.0, after: 6.2 }, { dept: "Design", before: 2.8, after: 3.5 }, { dept: "Sales", before:
+7.2, after: 7.8 }, { dept: "Marketing", before: 5.5, after: 5.0 }, { dept: "Operations", before:
+4.0, after: 3.6 }, ]; // --- DIMENSIONS --- const margin = { top: 40, right: 100, bottom: 40, left:
+100 }; const width = 560; const height = 420; const innerWidth = width - margin.left - margin.right;
+const innerHeight = height - margin.top - margin.bottom; const xLeft = 0; const xRight = innerWidth;
+const allValues = data.flatMap((d) => [d.before, d.after]); const yMin = Math.min(...allValues) *
+0.9; const yMax = Math.max(...allValues) * 1.05; // --- SVG --- const svg = d3 .select("#chart")
+.attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const y = d3.scaleLinear().domain([yMin, yMax]).range([innerHeight, 0]); // --- AXES (two vertical)
+--- const axisLeft = d3 .axisLeft(y) .ticks(6) .tickFormat((d) => `$${d}M`); const axisRight = d3
+.axisRight(y) .ticks(6) .tickFormat((d) => `$${d}M`); g.append("g") .attr("class", "axis")
+.call(axisLeft) .selectAll("text") .attr("class", "axis-label"); g.append("g") .attr("class",
+"axis") .attr("transform", `translate(${xRight},0)`) .call(axisRight) .selectAll("text")
+.attr("class", "axis-label"); // Column labels g.append("text") .attr("class", "col-label")
+.attr("x", xLeft) .attr("y", -16) .attr("text-anchor", "middle") .text("2022"); g.append("text")
+.attr("class", "col-label") .attr("x", xRight) .attr("y", -16) .attr("text-anchor", "middle")
+.text("2024"); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function hideTooltip() {
+tooltip.style("opacity", 0); } // --- SLOPES --- const slopeGroups = g .selectAll(".slope-group")
+.data(data) .join("g") .attr("class", "slope-group"); // Lines slopeGroups .append("line")
+.attr("class", "slope-line") .attr("x1", xLeft) .attr("x2", xRight) .attr("y1", (d) => y(d.before))
+.attr("y2", (d) => y(d.after)) .attr("stroke", (d) => (d.after >= d.before ? "#0ca678" : "#f03e3e"))
+.attr("stroke-width", 2.5) .attr("opacity", 0.7); // Left labels slopeGroups .append("text")
+.attr("class", "row-label") .attr("x", xLeft - 8) .attr("y", (d) => y(d.before))
+.attr("text-anchor", "end") .attr("dominant-baseline", "middle") .text((d) => d.dept); // Right
+labels with value slopeGroups .append("text") .attr("class", "row-label") .attr("x", xRight + 8)
+.attr("y", (d) => y(d.after)) .attr("text-anchor", "start") .attr("dominant-baseline", "middle")
+.attr("fill", (d) => (d.after >= d.before ? "#0ca678" : "#f03e3e")) .text((d) => { const pct =
+(((d.after - d.before) / d.before) * 100).toFixed(0); return `${d.after >= d.before ? "+" :
+""}${pct}%`; }); // Endpoint circles — before const beforeDots = slopeGroups .append("circle")
+.attr("class", "slope-endpoint") .attr("cx", xLeft) .attr("cy", (d) => y(d.before)) .attr("r", 6)
+.attr("fill", (d) => (d.after >= d.before ? "#0ca678" : "#f03e3e")) .attr("tabindex", 0)
+.attr("role", "listitem") .attr("aria-label", (d) => `${d.dept} 2022: $${d.before}M`)
+.on("pointerenter", function (event, d) { highlightRow(d, true); showTip(event, d); })
+.on("pointermove", (event) => { tooltip.style("left", `${event.pageX + 12}px`).style("top",
+`${event.pageY - 28}px`); }) .on("pointerleave", function (event, d) { dimAll(); hideTooltip(); })
+.on("focus", function (event, d) { highlightRow(d, true); const rect = this.getBoundingClientRect();
+tooltip .style("opacity", 1) .html(tipHtml(d)) .style("left", `${rect.x + rect.width / 2}px`)
+.style("top", `${rect.y - 40}px`); }) .on("blur", function () { dimAll(); hideTooltip(); }); //
+Endpoint circles — after const afterDots = slopeGroups .append("circle") .attr("class",
+"slope-endpoint") .attr("cx", xRight) .attr("cy", (d) => y(d.after)) .attr("r", 6) .attr("fill", (d)
+=> (d.after >= d.before ? "#0ca678" : "#f03e3e")) .attr("tabindex", 0) .attr("role", "listitem")
+.attr("aria-label", (d) => `${d.dept} 2024: $${d.after}M`) .on("pointerenter", function (event, d) {
+highlightRow(d, true); showTip(event, d); }) .on("pointermove", (event) => { tooltip.style("left",
+`${event.pageX + 12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+dimAll(); hideTooltip(); }) .on("focus", function (event, d) { highlightRow(d, true); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(tipHtml(d)) .style("left",
+`${rect.x + rect.width / 2}px`) .style("top", `${rect.y - 40}px`); }) .on("blur", function () {
+dimAll(); hideTooltip(); }); function tipHtml(d) { const pct = (((d.after - d.before) / d.before) *
+100).toFixed(1); return `
+<strong>${d.dept}</strong>
+<br />
+2022: $${d.before}M &rarr; 2024: $${d.after}M
+<br />
+Change: ${d.after >= d.before ? "+" : ""}${pct}%`; } function showTip(event, d) { tooltip
+.style("opacity", 1) .html(tipHtml(d)) .style("left", `${event.pageX + 12}px`) .style("top",
+`${event.pageY - 28}px`); } function highlightRow(d, focused) {
+slopeGroups.selectAll("line").attr("opacity", (sg) => (sg.dept === d.dept ? 1 : 0.1));
+slopeGroups.selectAll("circle").attr("opacity", (sg) => (sg.dept === d.dept ? 1 : 0.15)); } function
+dimAll() { slopeGroups.selectAll("line").attr("opacity", 0.7);
+slopeGroups.selectAll("circle").attr("opacity", 1); } // Keyboard navigation function
+addKeyNav(selection) { selection.on("keydown", function (event) { const nodes = selection.nodes();
+const idx = nodes.indexOf(this); if (event.key === "ArrowDown" && idx < nodes.length - 1) {
+event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key === "ArrowUp" && idx > 0) {
+event.preventDefault(); nodes[idx - 1].focus(); } }); } addKeyNav(beforeDots); addKeyNav(afterDots);
+// --- DATA TABLE --- const table = d3 .select("#data-table") .append("table") .attr("role",
+"table") .attr("aria-label", "Data table for slope chart"); const thead =
+table.append("thead").append("tr"); ["Department", "2022 ($M)", "2024 ($M)", "Change"].forEach((col)
+=> thead.append("th").attr("scope", "col").text(col), ); const tbody = table.append("tbody");
+data.forEach((d) => { const tr = tbody.append("tr"); const pct = (((d.after - d.before) / d.before)
+* 100).toFixed(1); tr.append("td").text(d.dept); tr.append("td").text(`$${d.before}M`);
+tr.append("td").text(`$${d.after}M`); tr.append("td").text(`${d.after >= d.before ? "+" :
+""}${pct}%`); });

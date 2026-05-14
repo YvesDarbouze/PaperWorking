@@ -1,0 +1,90 @@
+<!--
+name: Mermaid Flowchart (HTML)
+description: Process flowchart with mermaid.js bundled; works on any surface that opens HTML
+chart-type: mermaid-flowchart
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signup Flow Drops 38% of Users at Email Verification</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8f9fa;
+        color: #212529;
+      }
+      #chart-container {
+        max-width: 960px;
+        margin: 0 auto;
+        background: white;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 4px;
+      }
+      .subtitle {
+        font-size: 13px;
+        color: #868e96;
+        margin: 0 0 24px;
+      }
+      pre.mermaid {
+        background: transparent;
+        margin: 0;
+        font-family: inherit;
+      }
+      .source {
+        font-size: 12px;
+        color: #868e96;
+        margin-top: 24px;
+        border-top: 1px solid #e9ecef;
+        padding-top: 12px;
+      }
+      noscript {
+        display: block;
+        padding: 12px;
+        background: #fff3bf;
+        border: 1px solid #fcc419;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chart-container">
+      <h1>Signup Flow Drops 38% of Users at Email Verification</h1>
+      <p class="subtitle">Funnel for week of 2026-03-24 (user counts)</p>
+      <noscript>
+        This page renders a mermaid diagram and requires JavaScript. The underlying
+        sequence is: Visit signup → Enter email → Validate → Receive verification email
+        → Click verification link → Set password → Account created.
+      </noscript>
+      <pre class="mermaid">
+flowchart LR
+    A["Visit signup page (1,000)"] --> B["Enter email (820)"]
+    B --> C{Email valid?}
+    C -- yes --> D["Receive verification email (820)"]
+    C -- no --> E["Show error (0 lost)"]
+    D --> F["Click verification link (510)"]
+    F --> G["Set password (495)"]
+    G --> H["Account created (490)"]
+      </pre>
+      <p class="source">
+        Source: signup funnel telemetry, week of 2026-03-24. Largest drop: 38% between
+        verification email send and link click.
+      </p>
+    </div>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true, theme: "default" });
+    </script>
+  </body>
+</html>

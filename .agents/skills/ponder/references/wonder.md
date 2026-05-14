@@ -1,0 +1,1 @@
+Notice what seems surprising or counterintuitive about the situation. Ask generative questions using "what if," "what might happen," "how might." Follow interesting threads, letting one question lead to another. Treat confusion as information about what deserves attention. Use uncertainty as a starting point rather than an obstacle.

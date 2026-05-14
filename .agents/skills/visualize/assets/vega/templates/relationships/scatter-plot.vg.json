@@ -1,0 +1,381 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales, axes, and marks to match your data",
+      "Update axes titles to include your units",
+      "Adjust x/y scale domains and zero:false as needed for your data range",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with 'x' (quantitative), 'y' (quantitative), 'category' (nominal for color), and 'label' (nominal identifier) fields."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6",
+      "title": "Height (cm)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    },
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Weight (kg)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "values": [
+        {
+          "category": "Male",
+          "label": "Person 1",
+          "x": 170,
+          "y": 68
+        },
+        {
+          "category": "Male",
+          "label": "Person 2",
+          "x": 175,
+          "y": 72
+        },
+        {
+          "category": "Male",
+          "label": "Person 3",
+          "x": 168,
+          "y": 65
+        },
+        {
+          "category": "Male",
+          "label": "Person 4",
+          "x": 180,
+          "y": 78
+        },
+        {
+          "category": "Male",
+          "label": "Person 5",
+          "x": 165,
+          "y": 62
+        },
+        {
+          "category": "Male",
+          "label": "Person 6",
+          "x": 172,
+          "y": 70
+        },
+        {
+          "category": "Male",
+          "label": "Person 7",
+          "x": 178,
+          "y": 75
+        },
+        {
+          "category": "Male",
+          "label": "Person 8",
+          "x": 169,
+          "y": 67
+        },
+        {
+          "category": "Male",
+          "label": "Person 9",
+          "x": 182,
+          "y": 80
+        },
+        {
+          "category": "Male",
+          "label": "Person 10",
+          "x": 176,
+          "y": 73
+        },
+        {
+          "category": "Female",
+          "label": "Person 11",
+          "x": 160,
+          "y": 55
+        },
+        {
+          "category": "Female",
+          "label": "Person 12",
+          "x": 165,
+          "y": 58
+        },
+        {
+          "category": "Female",
+          "label": "Person 13",
+          "x": 158,
+          "y": 52
+        },
+        {
+          "category": "Female",
+          "label": "Person 14",
+          "x": 170,
+          "y": 62
+        },
+        {
+          "category": "Female",
+          "label": "Person 15",
+          "x": 162,
+          "y": 56
+        },
+        {
+          "category": "Female",
+          "label": "Person 16",
+          "x": 168,
+          "y": 60
+        },
+        {
+          "category": "Female",
+          "label": "Person 17",
+          "x": 164,
+          "y": 57
+        },
+        {
+          "category": "Female",
+          "label": "Person 18",
+          "x": 166,
+          "y": 59
+        },
+        {
+          "category": "Female",
+          "label": "Person 19",
+          "x": 172,
+          "y": 64
+        },
+        {
+          "category": "Female",
+          "label": "Person 20",
+          "x": 161,
+          "y": 54
+        },
+        {
+          "category": "Non-binary",
+          "label": "Person 21",
+          "x": 175,
+          "y": 70
+        },
+        {
+          "category": "Non-binary",
+          "label": "Person 22",
+          "x": 168,
+          "y": 63
+        },
+        {
+          "category": "Non-binary",
+          "label": "Person 23",
+          "x": 171,
+          "y": 66
+        }
+      ]
+    }
+  ],
+  "description": "Scatter plot showing the relationship between height and weight across 23 individuals in three categories. Strong positive correlation (r=0.95) — taller individuals tend to weigh more.",
+  "height": 400,
+
+  "legends": [
+    {
+      "encode": {
+        "labels": {
+          "update": {
+            "fill": {
+              "value": "#868e96"
+            },
+            "fontSize": {
+              "value": 11
+            }
+          }
+        },
+        "title": {
+          "update": {
+            "fill": {
+              "value": "#495057"
+            },
+            "fontSize": {
+              "value": 12
+            }
+          }
+        }
+      },
+      "fill": "color",
+      "orient": "top-right",
+      "title": "Category"
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "shape": {
+            "value": "circle"
+          },
+          "size": {
+            "value": 80
+          },
+          "tooltip": {
+            "signal": "{'Name': datum.label, 'Height (cm)': datum.x, 'Weight (kg)': datum.y, 'Category': datum.category}"
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "category",
+            "scale": "color"
+          },
+          "fillOpacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 0.7
+            },
+            {
+              "value": 0.15
+            }
+          ],
+          "stroke": {
+            "field": "category",
+            "scale": "color"
+          },
+          "strokeOpacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 1
+            },
+            {
+              "value": 0.1
+            }
+          ],
+          "strokeWidth": {
+            "value": 1
+          },
+          "x": {
+            "field": "x",
+            "scale": "x"
+          },
+          "y": {
+            "field": "y",
+            "scale": "y"
+          }
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "symbol"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "x"
+      },
+      "name": "x",
+      "nice": true,
+      "range": "width",
+      "type": "linear",
+      "zero": false
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "y"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "reverse": true,
+      "type": "linear",
+      "zero": false
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "category"
+      },
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678",
+        "#f03e3e",
+        "#ae3ec9",
+        "#1098ad",
+        "#74b816",
+        "#d6336c"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "symbol:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "symbol:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Height vs. weight, 23 individuals (cm, kg)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Height and weight correlate strongly across all groups (r=0.95)"
+  },
+  "width": 600
+}

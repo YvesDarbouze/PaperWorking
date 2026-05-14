@@ -1,126 +1,94 @@
 ---
 name: gtm-strategy
-description: When the user wants to plan go-to-market strategy, GTM framework, or market entry. Also use when the user mentions "GTM," "go-to-market," "market entry," "new market," "repositioning," "PLG," "sales-led," "product-led," "marketing-led," "ICP," "buyer persona," "GTM motion," or "market expansion." For launch checklist, use product-launch.
-metadata:
-  version: 1.2.0
+description: "Create a go-to-market strategy covering marketing channels, messaging, success metrics, and launch timeline. Use when planning a product launch, creating a GTM plan from scratch, or defining a launch strategy for a new market."
+---
+# GTM Strategy
+
+## Overview
+Create a comprehensive go-to-market strategy for a product launch. This skill covers marketing channels, messaging development, success metrics definition, and launch planning.
+
+## When to Use
+- Planning a product launch
+- Creating a GTM plan from scratch
+- Defining a launch strategy for a new market
+- Developing product-to-market fit strategy
+- Preparing a product go-live roadmap
+
+## How It Works
+
+### Step 1: Gather Research Data
+The system will help you load and analyze early research about your product and target market. Provide:
+- Product description and key features
+- Target market segment details
+- Market research or validation data
+- Competitive landscape information
+- Any available customer interviews or survey data
+
+### Step 2: Define Marketing Channels
+Evaluate which channels best reach your target audience:
+- Digital marketing channels (paid search, social media, display)
+- Content and inbound channels (blog, SEO, thought leadership)
+- Sales and outbound channels (direct outreach, partnerships)
+- Community and grassroots channels
+- Product-led and viral channels
+
+### Step 3: Develop Messaging
+Create audience-specific messaging that resonates:
+- Core value proposition for target segment
+- Key differentiators and competitive advantages
+- Pain point validation and solution mapping
+- Proof points and social proof strategies
+- Channel-specific messaging variations
+
+### Step 4: Define Success Metrics
+Establish measurable KPIs to track launch success:
+- Awareness metrics (impressions, reach, brand recall)
+- Engagement metrics (CTR, cost per engagement, time on site)
+- Conversion metrics (signups, demos requested, trials started)
+- Revenue metrics (MRR, customer acquisition cost, lifetime value)
+- Market metrics (market share, segment penetration)
+
+### Step 5: Create Launch Plan
+Build a phased launch timeline:
+- Pre-launch preparation (messaging, channels, timeline)
+- Launch day activities and announcements
+- Post-launch momentum (content, partnerships, communities)
+- Measurement and optimization cadence
+- Success criteria and go/no-go decision points
+
+## Input Format
+Use $ARGUMENTS to pass:
+- Product name and description
+- Target market segment
+- Research data or file path
+- Launch timeline and constraints
+- Budget or resource limitations
+
+## Output
+A structured GTM strategy document including:
+- Recommended marketing channels with justification
+- Channel-specific messaging and positioning
+- Launch timeline with key milestones
+- KPI targets and measurement framework
+- Risk mitigation strategies
+- 90-day execution roadmap
+
+## Framework
+This skill applies Product Compass GTM strategy methodology, focusing on market selection, channel fit, and message-market fit for sustainable product growth.
+
+## Tips
+- Start with your most confident customer segment
+- Validate assumptions through customer interviews before full launch
+- Focus on a few channels excellently rather than many channels poorly
+- Establish baseline metrics before launch to measure impact
+- Plan for feedback loops and optimization
+
 ---
 
-# Strategies: Go-to-Market
+### Further Reading
 
-Guides go-to-market (GTM) strategy—the blueprint for launching or repositioning a product that aligns product, marketing, sales, and customer success around reaching and winning target customers. Organizations with a defined GTM process see ~10pp higher launch success rates (63% vs 53%) and ~3× median revenue growth. However, ~72% of sales reps miss quota, often due to execution gaps. Use this skill when planning GTM for product launch, new market entry, repositioning, or feature launch.
-
-**When invoking**: On **first use**, if helpful, open with 1–2 sentences on what this skill covers and why it matters, then provide the main output. On **subsequent use** or when the user asks to skip, go directly to the main output.
-
-## GTM Scenarios
-
-| Scenario | Scope | Use |
-|----------|-------|-----|
-| **Product launch** | New product to market | Full GTM; see **product-launch** for launch execution |
-| **New market entry** | New geography or segment | Full GTM; different buying behaviors, competitors, regulations |
-| **Repositioning** | Shift who you serve, what you solve | Messaging, ICP, channel alignment; not just rebrand |
-| **Feature launch** | New capability in existing product | Tiered by impact; T1 (revenue) = full planning; T2/T3 = lighter |
-
-**GTM vs product launch**: GTM is the strategy; product launch is the execution phase. GTM applies to multiple scenarios—not just new products.
-
-## GTM Modes
-
-| Mode | When to Use | ACV | Buyer |
-|------|-------------|-----|-------|
-| **Product-led (PLG)** | Value in minutes; self-evaluate; simple adoption | &lt;$10K | Buyer = end user |
-| **Sales-led (SLG)** | Multi-stakeholder; complex procurement; implementation | &gt;$25K | Enterprise; negotiation |
-| **Marketing-led (MLG)** | Content, SEO, paid drive awareness; market education | Varies | Demand gen focus |
-| **Hybrid** | PLG for acquisition; sales for expansion | Common | Self-serve → sales handoff |
-
-**Decision factors**: ACV, product complexity, buyer profile, how customers want to buy. Target LTV:CAC ≥3:1; CAC payback &lt;12 months.
-
-## 90-Day Execution Framework
-
-| Phase | Weeks | Focus |
-|-------|-------|-------|
-| **Market analysis** | 1–3 | Validate demand; competitive landscape; TAM; buying signals |
-| **Strategy design** | 4–6 | ICP, personas; positioning; pricing; GTM mode; channels |
-| **Execution build** | 7–9 | Messaging, content, sales playbook; tech stack |
-| **Launch & iterate** | 10–12 | Go live; measure; iterate |
-
-**Key**: Connect plan to real buying activity within 90 days—not disconnected strategy documents.
-
-## ICP vs Buyer Persona
-
-| Type | Level | Defines |
-|------|-------|---------|
-| **ICP** | Company | Which organizations deliver best unit economics; firmographics (industry, size, revenue), technographics, problem intensity |
-| **Buyer persona** | Individual | Decision-makers within target companies; roles, goals, pain points, objections, preferred channels |
-
-**ICP impact**: Companies with clearly defined ICPs see higher conversion rates and lower CAC. Include negative profiles (explicit disqualifiers) to protect pipeline quality.
-
-## Market Analysis
-
-| Element | Purpose |
-|---------|---------|
-| **TAM** | Total addressable market; named account lists; primary TAM, serviceable TAM, accounts with buying signals |
-| **Competitive landscape** | Customer bases, strengths, weaknesses, positioning claims |
-| **Buying patterns** | Replace assumptions with data; customer pain points; decision criteria |
-
-## Enterprise / High-ACV Challenges
-
-| Challenge | Mitigation |
-|-----------|------------|
-| **Customization** | Product modularity; professional services; clear scope |
-| **Data security / private deployment** | On-prem or private cloud; compliance; security certifications |
-| **Procurement cycles** | Multi-stakeholder alignment; champion building; long sales cycles |
-| **Buy vs SaaS** | Total cost of ownership; flexibility; ongoing value |
-
-**Use**: When GTM targets enterprise or high-ACV—expect longer cycles, procurement, and security requirements.
-
-## New Market Entry
-
-~70% of international market entries fail within two years—often from overestimating demand, underestimating execution, spreading resources thin.
-
-| Entry model | Trade-off |
-|-------------|-----------|
-| **Organic expansion** | High control; slower; capital-intensive |
-| **Strategic partnerships** | Faster access; shared risk; reduced control |
-| **M&A / Acquisition** | Immediate presence; high integration risk |
-| **Asset-light** (EOR, outsourcing) | Fastest; minimal upfront; market testing |
-| **Pilot testing** | Lowest commitment; validation |
-
-**Critical**: Domestic playbook won't transfer. Buying behaviors vary (self-service US vs consultation-heavy Europe vs relationship-driven APAC); competitive landscapes shift; regulatory complexity multiplies (GDPR, data localization).
-
-## Repositioning
-
-**Repositioning** = Strategic shift in who you serve, what problem you solve, where you play. **Rebranding** = Visual/verbal expression (logo, voice). Repositioning ≠ rebrand.
-
-| When to reposition | Avoid |
-|--------------------|-------|
-| Moving upmarket (SMB → enterprise) | Quick fix for missed quarters |
-| New geography with different dynamics | Leadership boredom |
-| ICP fundamentally changed | |
-| Major pivot, launch, or acquisition | |
-
-**Success factors**: Research-driven (customer discovery, market analysis); cross-functional alignment (sales, marketing, product, clinical); sharp differentiation.
-
-## Cross-Functional Alignment
-
-- **RACI**: Responsible, Accountable, Consulted, Informed—clarify roles across teams
-- **Shared timelines, tools, accountability**
-- **Consistent messaging** across all channels
-
-## Output Format
-
-- **Scenario** (product launch, new market, repositioning, feature)
-- **GTM mode** (PLG/SLG/MLG/Hybrid) recommendation
-- **90-day** phase plan
-- **ICP** and **persona** (or link to project-context)
-- **Market analysis** checklist
-- **Launch** execution → see **product-launch**
-
-## Related Skills
-
-- **product-launch**: Launch execution; channels, timeline, checklist; implements GTM for product launch
-- **pmf-strategy**: Validate PMF before scaling GTM
-- **cold-start-strategy**: First users; differs from full GTM (0→1 vs commercialization)
-- **rebranding-strategy**: Domain change, 301, announcement; when repositioning includes rebrand
-- **localization-strategy**: New market entry; i18n, multilingual
-- **paid-ads-strategy**: Ad channel for GTM
-- **website-structure**: Pages needed for GTM
-- **branding**: Positioning, differentiation; GTM messaging foundation
+- [5 GTM Principles You Should Know as a PM](https://www.productcompass.pm/p/5-gtm-principles-with-frameworks-templates)
+- [OpenAI’s Product Leader Shares 3-Layer Distribution Framework To Win Mind & Market Share in the AI World](https://www.productcompass.pm/p/distribution-framework-ai-products)
+- [Product-Led Growth 101, Part 1/2](https://www.productcompass.pm/p/product-led-growth-101-12)
+- [How to Design a Value Proposition Customers Can't Resist?](https://www.productcompass.pm/p/how-to-design-value-proposition-template)
+- [How to Achieve Product-Market Fit? Part I: Market and Value Proposition](https://www.productcompass.pm/p/how-to-achieve-the-product-market)

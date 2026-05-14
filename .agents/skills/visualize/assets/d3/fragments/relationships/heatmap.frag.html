@@ -1,0 +1,99 @@
+<!-- @section: frontmatter -->
+name: Heatmap (D3) description: Standalone D3 heatmap with full keyboard navigation and ARIA support
+chart-type: heatmap engine: d3
+
+<!-- @section: head-title -->
+Activity peaks midweek at midday across the week
+
+<!-- @section: chart-css -->
+.cell:focus { outline: 2px solid #1c7ed6; outline-offset: 1px; } .cell:focus:not(:focus-visible) {
+outline: none; } .axis-label { fill: var(--oc-gray-6); font-size: 11px; }
+
+<!-- @section: body -->
+<h1>Activity peaks midweek at midday across the week</h1>
+<p class="subtitle">Hourly activity level by day of week (0–100)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Activity peaks midweek at midday across the week</title>
+  <desc id="chart-desc">
+    Heatmap showing activity levels across 7 days and 24 hours. Highest activity appears Wednesday
+    through Friday between 10am and 2pm. Weekends show lower overall activity.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]; const hours =
+d3.range(24); // Activity pattern: peaks midweek around midday, low on weekends and at night
+function activityValue(dayIdx, hour) { const dayFactor = [0.7, 0.85, 1.0, 0.95, 0.9, 0.4,
+0.35][dayIdx]; let hourFactor = 0; if (hour >= 8 && hour <= 20) { hourFactor = Math.sin(((hour - 8)
+/ 12) * Math.PI); } const base = Math.round(dayFactor * hourFactor * 90 + 5); // add slight noise
+const noise = Math.floor(Math.sin(dayIdx * 7 + hour * 13) * 8); return Math.max(0, Math.min(100,
+base + noise)); } const data = []; days.forEach((day, di) => { hours.forEach((hour) => { data.push({
+day, hour, value: activityValue(di, hour) }); }); }); // --- DIMENSIONS --- const margin = { top:
+32, right: 80, bottom: 56, left: 48 }; const width = 760; const height = 280; const innerWidth =
+width - margin.left - margin.right; const innerHeight = height - margin.top - margin.bottom; const
+cellWidth = innerWidth / 24; const cellHeight = innerHeight / 7; // --- SVG --- const svg = d3
+.select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const colorScale = d3.scaleSequential().domain([0, 100]).interpolator(d3.interpolateBlues); // ---
+AXES --- const xAxisTicks = [0, 3, 6, 9, 12, 15, 18, 21]; const xScale = d3 .scalePoint()
+.domain(xAxisTicks.map((h) => `${h}:00`)) .range([0, innerWidth - cellWidth]); g.append("g")
+.attr("class", "axis") .attr("transform", `translate(0,${innerHeight})`) .call( d3 .axisBottom( d3
+.scaleLinear() .domain([0, 23]) .range([0, innerWidth - cellWidth]), ) .tickValues(xAxisTicks)
+.tickFormat((h) => `${h}:00`), ) .call((g) => g.select(".domain").remove()) .call((g) =>
+g.selectAll(".tick line").remove()) .selectAll("text") .attr("class", "axis-label") .attr("dx",
+cellWidth / 2); g.append("g") .attr("class", "axis")
+.call(d3.axisLeft(d3.scaleBand().domain(days).range([0, innerHeight]).padding(0))) .call((g) =>
+g.select(".domain").remove()) .call((g) => g.selectAll(".tick line").remove()) .selectAll("text")
+.attr("class", "axis-label") .attr("dy", cellHeight / 2) .attr("y", 0); // Axis titles
+g.append("text") .attr("class", "axis-title") .attr("x", innerWidth / 2) .attr("y", innerHeight +
+44) .attr("text-anchor", "middle") .text("Hour of Day"); // --- COLOR LEGEND --- const legendWidth =
+12; const legendHeight = innerHeight; const legendX = innerWidth + 24; const defs =
+svg.append("defs"); const linearGradient = defs .append("linearGradient") .attr("id",
+"legend-gradient") .attr("x1", "0%") .attr("y1", "100%") .attr("x2", "0%") .attr("y2", "0%");
+linearGradient .selectAll("stop") .data(d3.range(0, 101, 10)) .join("stop") .attr("offset", (d) =>
+`${d}%`) .attr("stop-color", (d) => colorScale(d)); const lg = svg .append("g") .attr("transform",
+`translate(${margin.left + legendX}, ${margin.top})`); lg.append("rect") .attr("width", legendWidth)
+.attr("height", legendHeight) .style("fill", "url(#legend-gradient)"); lg.append("g")
+.attr("transform", `translate(${legendWidth}, 0)`) .call( d3 .axisRight(d3.scaleLinear().domain([0,
+100]).range([legendHeight, 0])) .ticks(5) .tickSize(4), ) .call((g) => g.select(".domain").remove())
+.selectAll("text") .attr("font-size", "11px") .attr("fill", "#868e96"); // --- TOOLTIP --- const
+tooltip = d3.select("#tooltip"); function hourLabel(h) { const ampm = h < 12 ? "am" : "pm"; const
+display = h % 12 === 0 ? 12 : h % 12; return `${display}:00 ${ampm}`; } function showTooltip(event,
+d) { tooltip .style("opacity", 1) .html(`
+<strong>${d.day} ${hourLabel(d.hour)}</strong>
+<br />
+Activity: ${d.value}`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // --- CELLS --- const cells = g
+.selectAll(".cell") .data(data) .join("rect") .attr("class", "cell") .attr("x", (d) => d.hour *
+cellWidth) .attr("y", (d) => days.indexOf(d.day) * cellHeight) .attr("width", cellWidth - 1)
+.attr("height", cellHeight - 1) .attr("fill", (d) => colorScale(d.value)) .attr("rx", 1)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => `${d.day}
+${hourLabel(d.hour)}: activity ${d.value}`) .on("pointerenter", function (event, d) {
+d3.select(this).attr("stroke", "#1c7ed6").attr("stroke-width", 2); showTooltip(event, d); })
+.on("pointermove", showTooltip) .on("pointerleave", function () { d3.select(this).attr("stroke",
+null); hideTooltip(); }) .on("focus", function (event, d) { d3.select(this).attr("stroke",
+"#1c7ed6").attr("stroke-width", 2); const rect = this.getBoundingClientRect(); tooltip
+.style("opacity", 1) .html(`
+<strong>${d.day} ${hourLabel(d.hour)}</strong>
+<br />
+Activity: ${d.value}`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+44}px`); }) .on("blur", function () { d3.select(this).attr("stroke", null); hideTooltip(); }); //
+Keyboard navigation: arrow keys move between cells cells.on("keydown", function (event, d) { const
+nodes = cells.nodes(); const idx = nodes.indexOf(this); const dayCount = days.length; const
+hourCount = 24; if (event.key === "ArrowRight" && d.hour < hourCount - 1) { event.preventDefault();
+nodes[idx + dayCount].focus(); } else if (event.key === "ArrowLeft" && d.hour > 0) {
+event.preventDefault(); nodes[idx - dayCount].focus(); } else if (event.key === "ArrowDown" &&
+days.indexOf(d.day) < dayCount - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if
+(event.key === "ArrowUp" && days.indexOf(d.day) > 0) { event.preventDefault(); nodes[idx -
+1].focus(); } }); // --- DATA TABLE --- const table = d3 .select("#data-table") .append("table")
+.attr("role", "table") .attr("aria-label", "Data table for heatmap"); const thead =
+table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Day");
+thead.append("th").attr("scope", "col").text("Hour"); thead.append("th").attr("scope",
+"col").text("Activity"); const tbody = table.append("tbody"); data.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(d.day); tr.append("td").text(hourLabel(d.hour));
+tr.append("td").text(d.value); });

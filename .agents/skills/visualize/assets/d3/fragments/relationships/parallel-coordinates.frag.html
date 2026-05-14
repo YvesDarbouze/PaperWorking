@@ -1,0 +1,104 @@
+<!-- @section: frontmatter -->
+name: Parallel Coordinates (D3) description: Standalone D3 parallel coordinates chart for 15 items
+across 5 dimensions, with hover highlight and full keyboard navigation and ARIA support chart-type:
+parallel-coordinates engine: d3
+
+<!-- @section: head-title -->
+High performers score consistently across all five dimensions
+
+<!-- @section: chart-css -->
+.pc-line:focus { outline: none; } .pc-line.focused { outline: none; } .pc-focus-handle:focus {
+outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.pc-focus-handle:focus:not(:focus-visible) { outline: none; } .axis-label { fill: var(--oc-gray-6);
+font-size: 11px; } .dim-label { fill: var(--oc-gray-8); font-size: 13px; font-weight: 600; } .axis
+line, .axis path { stroke: var(--oc-gray-4); }
+
+<!-- @section: body -->
+<h1>High performers score consistently across all five dimensions</h1>
+<p class="subtitle">Employee performance review scores, 15 employees × 5 dimensions (0–100)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">High performers score consistently across all five dimensions</title>
+  <desc id="chart-desc">
+    Parallel coordinates chart showing 15 employees rated on Delivery, Communication, Initiative,
+    Collaboration, and Growth. Lines that stay high across all axes indicate high performers.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const dimensions = ["Delivery", "Communication", "Initiative", "Collaboration",
+"Growth"]; const data = [ { name: "Alice", Delivery: 92, Communication: 88, Initiative: 85,
+Collaboration: 91, Growth: 87, }, { name: "Ben", Delivery: 78, Communication: 72, Initiative: 80,
+Collaboration: 75, Growth: 82, }, { name: "Carmen", Delivery: 65, Communication: 90, Initiative: 70,
+Collaboration: 88, Growth: 60, }, { name: "David", Delivery: 55, Communication: 60, Initiative: 50,
+Collaboration: 62, Growth: 58, }, { name: "Elena", Delivery: 88, Communication: 85, Initiative: 90,
+Collaboration: 84, Growth: 92, }, { name: "Frank", Delivery: 72, Communication: 68, Initiative: 65,
+Collaboration: 70, Growth: 74, }, { name: "Grace", Delivery: 95, Communication: 92, Initiative: 88,
+Collaboration: 95, Growth: 90, }, { name: "Hiro", Delivery: 60, Communication: 55, Initiative: 72,
+Collaboration: 58, Growth: 65, }, { name: "Ingrid", Delivery: 80, Communication: 78, Initiative: 75,
+Collaboration: 82, Growth: 78, }, { name: "James", Delivery: 45, Communication: 50, Initiative: 48,
+Collaboration: 52, Growth: 42, }, { name: "Keiko", Delivery: 85, Communication: 80, Initiative: 82,
+Collaboration: 79, Growth: 88, }, { name: "Luca", Delivery: 70, Communication: 75, Initiative: 68,
+Collaboration: 73, Growth: 71, }, { name: "Mia", Delivery: 90, Communication: 86, Initiative: 84,
+Collaboration: 89, Growth: 85, }, { name: "Nathan", Delivery: 62, Communication: 65, Initiative: 58,
+Collaboration: 60, Growth: 67, }, { name: "Olivia", Delivery: 76, Communication: 82, Initiative: 79,
+Collaboration: 85, Growth: 80, }, ]; const colors = [ "#1c7ed6", "#e8590c", "#0ca678", "#f03e3e",
+"#ae3ec9", "#1098ad", "#74b816", "#d6336c", "#495057", "#a9e34b", "#74c0fc", "#ffa94d", "#63e6be",
+"#f783ac", "#868e96", ]; // --- DIMENSIONS --- const margin = { top: 48, right: 40, bottom: 24,
+left: 40 }; const width = 720; const height = 440; const innerWidth = width - margin.left -
+margin.right; const innerHeight = height - margin.top - margin.bottom; // --- SVG --- const svg = d3
+.select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const xScale = d3.scalePoint().domain(dimensions).range([0, innerWidth]).padding(0.1); // One y
+scale per dimension const yScales = {}; dimensions.forEach((dim) => { yScales[dim] =
+d3.scaleLinear().domain([0, 100]).range([innerHeight, 0]); }); // Line path for one data row
+function linePath(d) { return d3.line()(dimensions.map((dim) => [xScale(dim),
+yScales[dim](d[dim])])); } // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+hideTooltip() { tooltip.style("opacity", 0); } // --- LINES --- const lines = g
+.selectAll(".pc-line") .data(data) .join("path") .attr("class", "pc-line") .attr("d", linePath)
+.attr("fill", "none") .attr("stroke", (d, i) => colors[i]) .attr("stroke-width", 1.8)
+.attr("opacity", 0.55); // Invisible wider hit areas for pointer interaction g.selectAll(".pc-hit")
+.data(data) .join("path") .attr("class", "pc-hit") .attr("d", linePath) .attr("fill", "none")
+.attr("stroke", "transparent") .attr("stroke-width", 12) .on("pointerenter", function (event, d) {
+lines .attr("opacity", (l) => (l.name === d.name ? 1 : 0.08)) .attr("stroke-width", (l) => (l.name
+=== d.name ? 3 : 1.8)); tooltip .style("opacity", 1) .html( `
+<strong>${d.name}</strong>
+<br />
+${dimensions.map((dim) => `${dim}: ${d[dim]}`).join("
+<br />
+")}`, ) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY - 28}px`); })
+.on("pointermove", (event) => { tooltip.style("left", `${event.pageX + 12}px`).style("top",
+`${event.pageY - 28}px`); }) .on("pointerleave", function () { lines.attr("opacity",
+0.55).attr("stroke-width", 1.8); hideTooltip(); }); // Keyboard-focusable handles — one per person,
+placed at the first axis const handles = g .selectAll(".pc-focus-handle") .data(data)
+.join("circle") .attr("class", "pc-focus-handle") .attr("cx", (d) => xScale(dimensions[0]))
+.attr("cy", (d) => yScales[dimensions[0]](d[dimensions[0]])) .attr("r", 5) .attr("fill", (d, i) =>
+colors[i]) .attr("opacity", 0) .attr("tabindex", 0) .attr("role", "listitem") .attr( "aria-label",
+(d) => `${d.name}: ${dimensions.map((dim) => `${dim} ${d[dim]}`).join(", ")}`, ) .on("focus",
+function (event, d) { d3.select(this).attr("opacity", 1); lines .attr("opacity", (l) => (l.name ===
+d.name ? 1 : 0.08)) .attr("stroke-width", (l) => (l.name === d.name ? 3 : 1.8)); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html( `
+<strong>${d.name}</strong>
+<br />
+${dimensions.map((dim) => `${dim}: ${d[dim]}`).join("
+<br />
+")}`, ) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y - 40}px`); })
+.on("blur", function () { d3.select(this).attr("opacity", 0); lines.attr("opacity",
+0.55).attr("stroke-width", 1.8); hideTooltip(); }); handles.on("keydown", function (event) { const
+nodes = handles.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowDown" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowUp" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- AXES ---
+dimensions.forEach((dim) => { const axisG = g .append("g") .attr("class", "axis") .attr("transform",
+`translate(${xScale(dim)},0)`) .call(d3.axisLeft(yScales[dim]).ticks(5));
+axisG.selectAll("text").attr("class", "axis-label"); // Dimension label above axis g.append("text")
+.attr("class", "dim-label") .attr("x", xScale(dim)) .attr("y", -16) .attr("text-anchor", "middle")
+.text(dim); }); // --- DATA TABLE --- const table = d3 .select("#data-table") .append("table")
+.attr("role", "table") .attr("aria-label", "Data table for parallel coordinates"); const thead =
+table.append("thead").append("tr"); ["Name", ...dimensions].forEach((col) =>
+thead.append("th").attr("scope", "col").text(col)); const tbody = table.append("tbody");
+data.forEach((d) => { const tr = tbody.append("tr"); tr.append("td").text(d.name);
+dimensions.forEach((dim) => tr.append("td").text(d[dim])); });

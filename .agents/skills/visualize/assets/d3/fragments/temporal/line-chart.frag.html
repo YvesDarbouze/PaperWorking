@@ -1,0 +1,78 @@
+<!-- @section: frontmatter -->
+name: Line Chart (D3) description: Standalone D3 line chart with monotone interpolation, point
+markers, keyboard navigation, and ARIA support chart-type: line-chart engine: d3
+
+<!-- @section: head-title -->
+Revenue climbs 48% over 2024, reaching $91K in December
+
+<!-- @section: chart-css -->
+.point:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.point:focus:not(:focus-visible) { outline: none; } .line-path { fill: none; stroke:
+var(--oc-blue-7); stroke-width: 2.5; }
+
+<!-- @section: body -->
+<h1>Revenue climbs 48% over 2024, reaching $91K in December</h1>
+<p class="subtitle">Monthly revenue, 2024 ($K)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Revenue climbs 48% over 2024, reaching $91K in December</title>
+  <desc id="chart-desc">
+    Line chart showing monthly revenue for 2024. Revenue starts at $61.5K in January and grows
+    steadily to $91K in December, a 48% increase over the year.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { month: "Jan", value: 61.5 }, { month: "Feb", value: 64.2 }, {
+month: "Mar", value: 67.8 }, { month: "Apr", value: 66.1 }, { month: "May", value: 70.4 }, { month:
+"Jun", value: 73.9 }, { month: "Jul", value: 72.5 }, { month: "Aug", value: 76.3 }, { month: "Sep",
+value: 79.1 }, { month: "Oct", value: 82.6 }, { month: "Nov", value: 87.4 }, { month: "Dec", value:
+91.0 }, ]; // --- DIMENSIONS --- const margin = { top: 16, right: 32, bottom: 48, left: 72 }; const
+width = 700; const height = 400; const innerWidth = width - margin.left - margin.right; const
+innerHeight = height - margin.top - margin.bottom; // --- SVG --- const svg = d3 .select("#chart")
+.attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const x = d3 .scalePoint() .domain(data.map((d) => d.month)) .range([0, innerWidth]) .padding(0.5);
+const yMin = d3.min(data, (d) => d.value) * 0.95; const yMax = d3.max(data, (d) => d.value) * 1.03;
+const y = d3.scaleLinear().domain([yMin, yMax]).nice().range([innerHeight, 0]); // --- GRID ---
+g.append("g") .attr("class", "grid") .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(""))
+.call((g) => g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x).tickSizeOuter(0)) .call((g)
+=> g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label");
+g.append("g") .attr("class", "axis") .call(d3.axisLeft(y).tickFormat((d) => `$${d}K`)) .call((g) =>
+g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class", "axis-label"); //
+Y-axis title g.append("text") .attr("class", "axis-title") .attr("transform", "rotate(-90)")
+.attr("y", -56) .attr("x", -innerHeight / 2) .attr("text-anchor", "middle") .text("Revenue ($K)");
+// --- LINE --- const lineGen = d3 .line() .x((d) => x(d.month)) .y((d) => y(d.value))
+.curve(d3.curveMonotoneX); g.append("path").datum(data).attr("class", "line-path").attr("d",
+lineGen); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function showTooltip(event, d) {
+tooltip .style("opacity", 1) .html(`
+<strong>${d.month}</strong>
+<br />
+Revenue: $${d.value}K`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // --- POINT MARKERS --- const
+points = g .selectAll(".point") .data(data) .join("circle") .attr("class", "point") .attr("cx", (d)
+=> x(d.month)) .attr("cy", (d) => y(d.value)) .attr("r", 5) .attr("fill", "#1c7ed6") .attr("stroke",
+"white") .attr("stroke-width", 2) .attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label",
+(d) => `${d.month}: $${d.value}K`) .on("pointerenter", function (event, d) {
+d3.select(this).attr("r", 7); showTooltip(event, d); }) .on("pointermove", showTooltip)
+.on("pointerleave", function () { d3.select(this).attr("r", 5); hideTooltip(); }) .on("focus",
+function (event, d) { d3.select(this).attr("r", 7); const rect = this.getBoundingClientRect();
+tooltip .style("opacity", 1) .html(`
+<strong>${d.month}</strong>
+<br />
+Revenue: $${d.value}K`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { d3.select(this).attr("r", 5); hideTooltip(); }); // Keyboard
+navigation: arrow keys move between points points.on("keydown", function (event) { const nodes =
+points.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE
+--- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for line chart"); const thead = table.append("thead").append("tr");
+thead.append("th").attr("scope", "col").text("Month"); thead.append("th").attr("scope",
+"col").text("Revenue ($K)"); const tbody = table.append("tbody"); data.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(d.month); tr.append("td").text(`$${d.value}K`); });

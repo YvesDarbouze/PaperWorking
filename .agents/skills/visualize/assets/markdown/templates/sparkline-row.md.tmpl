@@ -1,0 +1,20 @@
+---
+name: Sparkline Row
+description: One-line trend per series using block characters; ≤20 data points
+chart-type: sparkline-row
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Revenue Trending Up, Churn Spiked in Q3
+
+| Metric          | Trend (Jan–Dec)    | Latest |
+| --------------- | ------------------ | -----: |
+| Revenue ($M)    | `▁▂▃▃▄▅▅▆▇▇▇█`     |  12.4 |
+| Active users    | `▂▃▃▄▄▅▅▆▆▇▇█`     |  84.2K |
+| Churn (%)       | `▁▁▂▂▃▆▇▇▆▅▄▃`     |   3.1 |
+| NPS             | `▆▆▇▇▇█▇▇▇█▇█`     |     62 |
+
+Source: monthly product metrics, Jan–Dec 2025. Each sparkline shows 12 data points.
+Block height proportional to value within each row; rows are not directly comparable.

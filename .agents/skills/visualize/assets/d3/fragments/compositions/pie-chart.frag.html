@@ -1,0 +1,75 @@
+<!-- @section: frontmatter -->
+name: Pie Chart (D3) description: Standalone D3 pie chart with direct slice labels, full keyboard
+navigation and ARIA support chart-type: pie-chart engine: d3
+
+<!-- @section: head-title -->
+Cloud Services leads market share at 38%
+
+<!-- @section: chart-css -->
+.slice:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.slice:focus:not(:focus-visible) { outline: none; } .slice-label { font-size: 13px; font-weight:
+600; pointer-events: none; } .slice-pct { font-size: 11px; pointer-events: none; }
+
+<!-- @section: body -->
+<h1>Cloud Services leads market share at 38%</h1>
+<p class="subtitle">Market segment share, Q4 2024 (% of total revenue)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Cloud Services leads market share at 38%</title>
+  <desc id="chart-desc">
+    Pie chart showing market share across 4 segments. Cloud Services holds the largest share at 38%,
+    followed by Enterprise Software at 27%, Professional Services at 21%, and Hardware at 14%.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { segment: "Cloud Services", value: 38 }, { segment: "Enterprise
+Software", value: 27 }, { segment: "Professional Services", value: 21 }, { segment: "Hardware",
+value: 14 }, ]; const colors = ["#1c7ed6", "#e8590c", "#0ca678", "#ae3ec9"]; // --- DIMENSIONS ---
+const width = 640; const height = 460; const radius = Math.min(width, height) / 2 - 48; // --- SVG
+--- const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width",
+"100%"); const g = svg.append("g").attr("transform", `translate(${width / 2},${height / 2})`); //
+--- PIE + ARC --- const pie = d3 .pie() .value((d) => d.value) .sort(null) .padAngle(0.02); const
+arc = d3.arc().innerRadius(0).outerRadius(radius); const arcHover = d3 .arc() .innerRadius(0)
+.outerRadius(radius + 8); const labelArc = d3 .arc() .innerRadius(radius * 0.62) .outerRadius(radius
+* 0.62); const arcs = pie(data); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+hideTooltip() { tooltip.style("opacity", 0); } // --- SLICES --- const slices = g
+.selectAll(".slice") .data(arcs) .join("path") .attr("class", "slice") .attr("d", arc) .attr("fill",
+(d, i) => colors[i]) .attr("stroke", "white") .attr("stroke-width", 2) .attr("tabindex", 0)
+.attr("role", "listitem") .attr("aria-label", (d) => `${d.data.segment}: ${d.data.value}%`)
+.style("transition", "d 0.15s ease, opacity 0.15s"); slices .on("pointerenter", function (event, d)
+{ d3.selectAll(".slice").attr("opacity", 0.3); d3.select(this).attr("opacity", 1).attr("d",
+arcHover); tooltip .style("opacity", 1) .html(`
+<strong>${d.data.segment}</strong>
+<br />
+Share: ${d.data.value}%`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", function (event) { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".slice").attr("opacity", 1).attr("d", arc); hideTooltip(); }) .on("focus", function
+(event, d) { d3.selectAll(".slice").attr("opacity", 0.3); d3.select(this).attr("opacity",
+1).attr("d", arcHover); const rect = this.getBoundingClientRect(); tooltip .style("opacity", 1)
+.html(`
+<strong>${d.data.segment}</strong>
+<br />
+Share: ${d.data.value}%`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { d3.selectAll(".slice").attr("opacity", 1).attr("d", arc);
+hideTooltip(); }); // Keyboard navigation slices.on("keydown", function (event) { const nodes =
+slices.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DIRECT LABELS
+--- // Name label g.selectAll(".slice-label") .data(arcs) .join("text") .attr("class",
+"slice-label") .attr("transform", (d) => `translate(${labelArc.centroid(d)})`) .attr("text-anchor",
+"middle") .attr("fill", "white") .text((d) => d.data.segment.split(" ")[0]); // first word for space
+// Percentage label g.selectAll(".slice-pct") .data(arcs) .join("text") .attr("class", "slice-pct")
+.attr("transform", (d) => { const [x, y] = labelArc.centroid(d); return `translate(${x},${y + 14})`;
+}) .attr("text-anchor", "middle") .attr("fill", "white") .attr("fill-opacity", 0.9) .text((d) =>
+`${d.data.value}%`); // --- DATA TABLE --- const table = d3 .select("#data-table") .append("table")
+.attr("role", "table") .attr("aria-label", "Data table for pie chart"); const thead =
+table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Segment");
+thead.append("th").attr("scope", "col").text("Share (%)"); const tbody = table.append("tbody");
+data.forEach((d) => { const tr = tbody.append("tr"); tr.append("td").text(d.segment);
+tr.append("td").text(`${d.value}%`); });

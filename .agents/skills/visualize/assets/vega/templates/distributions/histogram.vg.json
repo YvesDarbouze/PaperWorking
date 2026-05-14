@@ -1,0 +1,443 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your observations",
+      "Change field name in the bin transform 'field' property and in marks",
+      "Adjust the bin transform 'maxbins' to control bin count",
+      "Update axes titles and units for your variable",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with a single 'value' (quantitative) field. Each object is one observation."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6",
+      "title": "Test Score (points)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    },
+    {
+      "domainColor": "#dee2e6",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Frequency (students)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "transform": [
+        {
+          "as": [
+            "bin0",
+            "bin1"
+          ],
+          "extent": [
+            40,
+            100
+          ],
+          "field": "value",
+          "maxbins": 12,
+          "type": "bin"
+        }
+      ],
+      "values": [
+        {
+          "value": 72
+        },
+        {
+          "value": 74
+        },
+        {
+          "value": 75
+        },
+        {
+          "value": 75
+        },
+        {
+          "value": 76
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 84
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 86
+        },
+        {
+          "value": 87
+        },
+        {
+          "value": 88
+        },
+        {
+          "value": 89
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 91
+        },
+        {
+          "value": 92
+        },
+        {
+          "value": 94
+        },
+        {
+          "value": 96
+        },
+        {
+          "value": 98
+        },
+        {
+          "value": 45
+        },
+        {
+          "value": 52
+        },
+        {
+          "value": 55
+        },
+        {
+          "value": 58
+        },
+        {
+          "value": 60
+        },
+        {
+          "value": 62
+        },
+        {
+          "value": 63
+        },
+        {
+          "value": 65
+        },
+        {
+          "value": 66
+        },
+        {
+          "value": 67
+        },
+        {
+          "value": 68
+        },
+        {
+          "value": 69
+        },
+        {
+          "value": 70
+        },
+        {
+          "value": 71
+        },
+        {
+          "value": 73
+        },
+        {
+          "value": 74
+        },
+        {
+          "value": 75
+        },
+        {
+          "value": 76
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 73
+        },
+        {
+          "value": 74
+        },
+        {
+          "value": 76
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 72
+        },
+        {
+          "value": 75
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 84
+        },
+        {
+          "value": 86
+        },
+        {
+          "value": 88
+        }
+      ]
+    },
+    {
+      "name": "bins",
+      "source": "source",
+      "transform": [
+        {
+          "as": [
+            "count"
+          ],
+          "groupby": [
+            "bin0",
+            "bin1"
+          ],
+          "ops": [
+            "count"
+          ],
+          "type": "aggregate"
+        }
+      ]
+    }
+  ],
+  "description": "Histogram showing the frequency distribution of test scores. The distribution is approximately normal, clustering between 70 and 85 points, with the bulk of observations in that range. Tails extend down to 45 and up to 98.",
+  "height": 400,
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "cornerRadiusTopLeft": {
+            "value": 2
+          },
+          "cornerRadiusTopRight": {
+            "value": 2
+          },
+          "tooltip": {
+            "signal": "{'Score range': format(datum.bin0, '.0f') + '–' + format(datum.bin1, '.0f') + ' pts', 'Students': datum.count}"
+          },
+          "x": {
+            "field": "bin0",
+            "offset": 1,
+            "scale": "x"
+          },
+          "x2": {
+            "field": "bin1",
+            "offset": -1,
+            "scale": "x"
+          },
+          "y": {
+            "field": "count",
+            "scale": "y"
+          },
+          "y2": {
+            "scale": "y",
+            "value": 0
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "bin0",
+            "scale": "color"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.bin0 === datum.bin0",
+              "value": 1
+            },
+            {
+              "value": 0.3
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "bins"
+      },
+      "type": "rect"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": [
+        40,
+        100
+      ],
+      "name": "x",
+      "range": "width",
+      "type": "linear",
+      "zero": false
+    },
+    {
+      "domain": {
+        "data": "bins",
+        "field": "count"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": {
+        "data": "bins",
+        "field": "bin0"
+      },
+      "name": "color",
+      "range": [
+        "#74b816",
+        "#1c7ed6"
+      ],
+      "type": "linear"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "rect:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rect:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Distribution of test scores (points, 0–100)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Scores cluster tightly between 70 and 85"
+  },
+  "width": 600
+}

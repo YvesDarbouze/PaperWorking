@@ -1,0 +1,227 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change field names in scales and marks to match your data",
+      "Update axes titles to include your units",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with 'category' (nominal) and 'value' (quantitative) fields"
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "axes": [
+    {
+      "domainColor": "#dee2e6",
+      "labelAlign": "right",
+      "labelAngle": -45,
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "bottom",
+      "scale": "x",
+      "tickColor": "#dee2e6"
+    },
+    {
+      "domainColor": "#dee2e6",
+      "format": "$,.0f",
+      "grid": true,
+      "gridColor": "#f1f3f5",
+      "gridDash": [
+        2,
+        2
+      ],
+      "labelColor": "#868e96",
+      "labelFontSize": 12,
+      "orient": "left",
+      "scale": "y",
+      "tickColor": "#dee2e6",
+      "title": "Sales ($)",
+      "titleColor": "#495057",
+      "titleFontSize": 13
+    }
+  ],
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "transform": [
+        {
+          "sort": {
+            "field": "value",
+            "order": "descending"
+          },
+          "type": "collect"
+        }
+      ],
+      "values": [
+        {
+          "category": "Electronics",
+          "value": 42500
+        },
+        {
+          "category": "Clothing",
+          "value": 38200
+        },
+        {
+          "category": "Home & Garden",
+          "value": 31800
+        },
+        {
+          "category": "Books",
+          "value": 28400
+        },
+        {
+          "category": "Sports",
+          "value": 25600
+        },
+        {
+          "category": "Toys",
+          "value": 22100
+        }
+      ]
+    }
+  ],
+  "description": "Bar chart comparing product sales across 6 retail categories. Electronics leads at $42,500, followed by Clothing at $38,200.",
+  "height": 400,
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "cornerRadiusTopLeft": {
+            "value": 3
+          },
+          "cornerRadiusTopRight": {
+            "value": 3
+          },
+          "tooltip": {
+            "signal": "{'Category': datum.category, 'Sales': '$' + format(datum.value, ',.0f')}"
+          },
+          "width": {
+            "band": 1,
+            "scale": "x"
+          },
+          "x": {
+            "field": "category",
+            "scale": "x"
+          },
+          "y": {
+            "field": "value",
+            "scale": "y"
+          },
+          "y2": {
+            "scale": "y",
+            "value": 0
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "category",
+            "scale": "color"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 1
+            },
+            {
+              "value": 0.3
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "rect"
+    }
+  ],
+  "padding": {
+    "bottom": 8,
+    "left": 8,
+    "right": 16,
+    "top": 8
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "category"
+      },
+      "name": "x",
+      "padding": 0.25,
+      "range": "width",
+      "type": "band"
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "value"
+      },
+      "name": "y",
+      "nice": true,
+      "range": "height",
+      "type": "linear",
+      "zero": true
+    },
+    {
+      "domain": {
+        "data": "source",
+        "field": "category"
+      },
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678",
+        "#f03e3e",
+        "#ae3ec9",
+        "#1098ad"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "rect:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "rect:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 8,
+    "subtitle": "Sales by category, 2024 ($K)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Electronics leads product sales at $42.5K"
+  },
+  "width": 600
+}

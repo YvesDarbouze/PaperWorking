@@ -1,0 +1,102 @@
+<!-- @section: frontmatter -->
+name: Treemap (D3) description: Standalone D3 treemap with 2-level hierarchy, full keyboard
+navigation and ARIA support chart-type: treemap engine: d3
+
+<!-- @section: head-title -->
+Infrastructure costs dominate Q4 spend at 44% of budget
+
+<!-- @section: chart-css -->
+.tree-cell:focus { outline: 2px solid var(--oc-blue-7); outline-offset: -2px; }
+.tree-cell:focus:not(:focus-visible) { outline: none; } .cell-label { font-size: 12px; font-weight:
+600; pointer-events: none; } .cell-value { font-size: 11px; pointer-events: none; }
+
+<!-- @section: body -->
+<h1>Infrastructure costs dominate Q4 spend at 44% of budget</h1>
+<p class="subtitle">Engineering budget allocation by category and line item, Q4 2024 ($K)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Infrastructure costs dominate Q4 spend at 44% of budget</title>
+  <desc id="chart-desc">
+    Treemap showing Q4 engineering budget broken into 3 categories: Infrastructure (44%), People
+    (36%), and Tooling (20%). Each category is subdivided into line items sized by spend.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const hierarchy = { name: "Budget", children: [ { name: "Infrastructure", children:
+[ { name: "Compute", value: 120 }, { name: "Storage", value: 85 }, { name: "Network", value: 55 }, {
+name: "CDN", value: 30 }, ], }, { name: "People", children: [ { name: "Salaries", value: 180 }, {
+name: "Contractors", value: 60 }, { name: "Benefits", value: 50 }, ], }, { name: "Tooling",
+children: [ { name: "SaaS", value: 60 }, { name: "Licenses", value: 40 }, { name: "Hardware", value:
+20 }, ], }, ], }; // Parent and child fill colors const parentFill = { Infrastructure: "#1c7ed6",
+People: "#e8590c", Tooling: "#0ca678", }; // Children inherit parent hue at different lightness
+const childFill = { Compute: "#74c0fc", Storage: "#339af0", Network: "#1c7ed6", CDN: "#1971c2",
+Salaries: "#ffa94d", Contractors: "#ff922b", Benefits: "#e8590c", SaaS: "#63e6be", Licenses:
+"#20c997", Hardware: "#0ca678", }; // --- DIMENSIONS --- const margin = { top: 4, right: 4, bottom:
+4, left: 4 }; const width = 800; const height = 480; const innerWidth = width - margin.left -
+margin.right; const innerHeight = height - margin.top - margin.bottom; // --- SVG --- const svg = d3
+.select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); // --- TREEMAP
+LAYOUT --- const root = d3 .hierarchy(hierarchy) .sum((d) => d.value) .sort((a, b) => b.value -
+a.value); d3 .treemap() .size([innerWidth, innerHeight]) .paddingOuter(6) .paddingTop(20) // room
+for parent label .paddingInner(3) .round(true)(root); const total = root.value; // --- TOOLTIP ---
+const tooltip = d3.select("#tooltip"); function hideTooltip() { tooltip.style("opacity", 0); } //
+--- PARENT GROUPS (depth=1) --- const parentGroups = svg .selectAll(".parent-group")
+.data(root.children) .join("g") .attr("class", "parent-group") .attr("transform",
+`translate(${margin.left},${margin.top})`); // Parent background rect parentGroups .append("rect")
+.attr("x", (d) => d.x0) .attr("y", (d) => d.y0) .attr("width", (d) => d.x1 - d.x0) .attr("height",
+(d) => d.y1 - d.y0) .attr("fill", (d) => parentFill[d.data.name] || "#868e96") .attr("fill-opacity",
+0.12) .attr("rx", 3); // Parent label parentGroups .append("text") .attr("x", (d) => d.x0 + 6)
+.attr("y", (d) => d.y0 + 14) .attr("font-size", "12px") .attr("font-weight", "700") .attr("fill",
+(d) => parentFill[d.data.name] || "#343a40") .text((d) => { const pct = ((d.value / total) *
+100).toFixed(0); return `${d.data.name} — ${pct}%`; }); // --- LEAF CELLS (depth=2) --- const leaves
+= svg .selectAll(".tree-cell") .data(root.leaves()) .join("g") .attr("class", "tree-cell")
+.attr("transform", `translate(${margin.left},${margin.top})`) .attr("tabindex", 0) .attr("role",
+"listitem") .attr("aria-label", (d) => { const pct = ((d.value / total) * 100).toFixed(1); return
+`${d.data.name} (${d.parent.data.name}): $${d.value}K, ${pct}% of total`; }); leaves .append("rect")
+.attr("x", (d) => d.x0) .attr("y", (d) => d.y0) .attr("width", (d) => d.x1 - d.x0) .attr("height",
+(d) => d.y1 - d.y0) .attr("fill", (d) => childFill[d.data.name] || "#adb5bd") .attr("fill-opacity",
+0.85) .attr("rx", 2); // Clip text to cell bounds const defs = svg.append("defs");
+root.leaves().forEach((d, i) => { defs .append("clipPath") .attr("id", `clip-${i}`) .append("rect")
+.attr("x", d.x0 + margin.left) .attr("y", d.y0 + margin.top) .attr("width", d.x1 - d.x0 - 4)
+.attr("height", d.y1 - d.y0 - 4); }); // Cell name label leaves .append("text") .attr("class",
+"cell-label") .attr("clip-path", (d, i) => `url(#clip-${i})`) .attr("x", (d) => d.x0 + 5) .attr("y",
+(d) => d.y0 + 14) .attr("fill", "white") .text((d) => (d.x1 - d.x0 > 40 ? d.data.name : "")); //
+Cell value label leaves .append("text") .attr("class", "cell-value") .attr("clip-path", (d, i) =>
+`url(#clip-${i})`) .attr("x", (d) => d.x0 + 5) .attr("y", (d) => d.y0 + 27) .attr("fill", "white")
+.attr("fill-opacity", 0.9) .text((d) => (d.x1 - d.x0 > 50 && d.y1 - d.y0 > 30 ? `$${d.value}K` :
+"")); // Hover + focus leaves .on("pointerenter", function (event, d) { d3.selectAll(".tree-cell
+rect").attr("opacity", 0.3); d3.select(this).select("rect").attr("opacity", 1); const pct =
+((d.value / total) * 100).toFixed(1); tooltip .style("opacity", 1) .html( `
+<strong>${d.data.name}</strong>
+<br />
+${d.parent.data.name}
+<br />
+$${d.value}K (${pct}%)`, ) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", function (event) { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".tree-cell rect").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event,
+d) { d3.selectAll(".tree-cell rect").attr("opacity", 0.3);
+d3.select(this).select("rect").attr("opacity", 1); const pct = ((d.value / total) * 100).toFixed(1);
+const rect = this.getBoundingClientRect(); tooltip .style("opacity", 1) .html( `
+<strong>${d.data.name}</strong>
+<br />
+${d.parent.data.name}
+<br />
+$${d.value}K (${pct}%)`, ) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { d3.selectAll(".tree-cell rect").attr("opacity", 1);
+hideTooltip(); }); // Keyboard navigation leaves.on("keydown", function (event) { const nodes =
+leaves.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE
+--- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for treemap"); const thead = table.append("thead").append("tr");
+["Category", "Line Item", "Spend ($K)", "% of Total"].forEach((col) => {
+thead.append("th").attr("scope", "col").text(col); }); const tbody = table.append("tbody");
+hierarchy.children.forEach((parent) => { parent.children.forEach((child, j) => { const pct =
+((child.value / total) * 100).toFixed(1); const tr = tbody.append("tr"); tr.append("td").text(j ===
+0 ? parent.name : ""); tr.append("td").text(child.name); tr.append("td").text(`$${child.value}K`);
+tr.append("td").text(`${pct}%`); }); });

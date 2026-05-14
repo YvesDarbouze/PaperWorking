@@ -1,0 +1,42 @@
+---
+name: Mermaid Gantt Chart (Markdown)
+description: Project timeline as a fenced mermaid block; renders on GitHub, GitLab, Notion
+chart-type: mermaid-gantt
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Q2 Migration Schedule Critical-Paths Through Database Cutover
+
+```mermaid
+gantt
+    title Q2 2026 Migration Schedule
+    dateFormat  YYYY-MM-DD
+    axisFormat  %b %d
+
+    section Discovery
+    Audit existing schema       :done,    a1, 2026-04-01, 7d
+    Map consumer dependencies   :done,    a2, after a1, 5d
+
+    section Build
+    Compatibility shim          :active,  b1, 2026-04-13, 10d
+    Migration scripts           :         b2, after b1, 14d
+    Rollback procedures         :         b3, after b1, 7d
+
+    section Cutover
+    Staging dry-run             :crit,    c1, after b2, 3d
+    Production cutover          :crit,    c2, after c1, 1d
+    Soak window                 :         c3, after c2, 7d
+
+    section Cleanup
+    Remove shim                 :         d1, after c3, 5d
+    Archive old schema          :         d2, after d1, 3d
+```
+
+Source: migration plan v3, owned by Platform team. Critical path runs through
+"Migration scripts" → "Staging dry-run" → "Production cutover". Each delay on
+those bars pushes the cutover date by the same amount.
+
+Use this format for surfaces that auto-render mermaid (GitHub, GitLab, Notion,
+Obsidian, recent VS Code). For surfaces that do not, use the `.html.tmpl` variant.

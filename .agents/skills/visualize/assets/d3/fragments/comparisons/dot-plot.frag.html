@@ -1,0 +1,84 @@
+<!-- @section: frontmatter -->
+name: Dot Plot / Lollipop Chart (D3) description: Standalone D3 lollipop chart with full keyboard
+navigation and ARIA support chart-type: dot-plot engine: d3
+
+<!-- @section: head-title -->
+Luxembourg leads GDP per capita at $133K
+
+<!-- @section: chart-css -->
+.dot:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.dot:focus:not(:focus-visible) { outline: none; }
+
+<!-- @section: body -->
+<h1>Luxembourg leads GDP per capita at $133K</h1>
+<p class="subtitle">GDP per capita by country, 2024 (USD, thousands)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Luxembourg leads GDP per capita at $133K</title>
+  <desc id="chart-desc">
+    Lollipop chart comparing GDP per capita across 8 countries. Luxembourg leads at $133,000,
+    followed by Switzerland at $98,000.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const data = [ { country: "Luxembourg", value: 133000 }, { country: "Switzerland",
+value: 98000 }, { country: "Norway", value: 89000 }, { country: "United States", value: 80000 }, {
+country: "Denmark", value: 68000 }, { country: "Netherlands", value: 62000 }, { country: "Germany",
+value: 54000 }, { country: "France", value: 46000 }, ].sort((a, b) => a.value - b.value); //
+ascending so highest is at top in horizontal layout // --- DIMENSIONS --- const margin = { top: 16,
+right: 48, bottom: 40, left: 130 }; const width = 640; const height = 380; const innerWidth = width
+- margin.left - margin.right; const innerHeight = height - margin.top - margin.bottom; const colors
+= [ "#1c7ed6", "#e8590c", "#0ca678", "#f03e3e", "#ae3ec9", "#1098ad", "#74b816", "#d6336c", ]; const
+colorScale = d3 .scaleOrdinal() .domain(data.map((d) => d.country)) .range(colors); // --- SVG ---
+const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%");
+const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // ---
+SCALES --- const y = d3 .scaleBand() .domain(data.map((d) => d.country)) .range([innerHeight, 0])
+.padding(0.35); const x = d3 .scaleLinear() .domain([0, d3.max(data, (d) => d.value)]) .nice()
+.range([0, innerWidth]); // --- GRID --- g.append("g") .attr("class", "grid")
+.call(d3.axisBottom(x).tickSize(innerHeight).tickFormat("")) .call((g) =>
+g.select(".domain").remove()) .attr("transform", `translate(0,0)`); // --- AXES --- g.append("g")
+.attr("class", "axis") .attr("transform", `translate(0,${innerHeight})`)
+.call(d3.axisBottom(x).tickFormat((d) => `$${d3.format(",.0f")(d / 1000)}K`)) .selectAll("text")
+.attr("class", "axis-label"); g.append("g") .attr("class", "axis") .call(d3.axisLeft(y))
+.selectAll("text") .attr("class", "axis-label"); // --- TOOLTIP --- const tooltip =
+d3.select("#tooltip"); function showTooltip(event, d) { tooltip .style("opacity", 1) .html(`
+<strong>${d.country}</strong>
+<br />
+GDP per capita: $${d3.format(",.0f")(d.value)}`) .style("left", `${event.pageX + 12}px`)
+.style("top", `${event.pageY - 28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } //
+--- STEMS (lines from 0 to dot) --- g.selectAll(".stem") .data(data) .join("line") .attr("class",
+"stem") .attr("x1", 0) .attr("x2", (d) => x(d.value)) .attr("y1", (d) => y(d.country) +
+y.bandwidth() / 2) .attr("y2", (d) => y(d.country) + y.bandwidth() / 2) .attr("stroke", (d) =>
+colorScale(d.country)) .attr("stroke-width", 2) .attr("opacity", 0.4); // --- DOTS --- const dots =
+g .selectAll(".dot") .data(data) .join("circle") .attr("class", "dot") .attr("cx", (d) =>
+x(d.value)) .attr("cy", (d) => y(d.country) + y.bandwidth() / 2) .attr("r", 8) .attr("fill", (d) =>
+colorScale(d.country)) .attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) =>
+`${d.country}: $${d3.format(",.0f")(d.value)} GDP per capita`) .on("pointerenter", function (event,
+d) { d3.selectAll(".dot").attr("opacity", 0.3); d3.selectAll(".stem").attr("opacity", 0.1);
+d3.select(this).attr("opacity", 1); d3.selectAll(".stem") .filter((s) => s.country === d.country)
+.attr("opacity", 0.6); showTooltip(event, d); }) .on("pointermove", showTooltip) .on("pointerleave",
+function () { d3.selectAll(".dot").attr("opacity", 1); d3.selectAll(".stem").attr("opacity", 0.4);
+hideTooltip(); }) .on("focus", function (event, d) { d3.selectAll(".dot").attr("opacity", 0.3);
+d3.selectAll(".stem").attr("opacity", 0.1); d3.select(this).attr("opacity", 1);
+d3.selectAll(".stem") .filter((s) => s.country === d.country) .attr("opacity", 0.6); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${d.country}</strong>
+<br />
+GDP per capita: $${d3.format(",.0f")(d.value)}`) .style("left", `${rect.x + rect.width / 2}px`)
+.style("top", `${rect.y - 40}px`); }) .on("blur", function () { d3.selectAll(".dot").attr("opacity",
+1); d3.selectAll(".stem").attr("opacity", 0.4); hideTooltip(); }); // Keyboard navigation: arrow
+keys move between dots dots.on("keydown", function (event, d) { const nodes = dots.nodes(); const
+idx = nodes.indexOf(this); if (event.key === "ArrowDown" && idx < nodes.length - 1) {
+event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key === "ArrowUp" && idx > 0) {
+event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE --- const sortedDesc =
+[...data].sort((a, b) => b.value - a.value); const table = d3 .select("#data-table")
+.append("table") .attr("role", "table") .attr("aria-label", "Data table for dot plot"); const thead
+= table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Country");
+thead.append("th").attr("scope", "col").text("GDP per Capita (USD)"); const tbody =
+table.append("tbody"); sortedDesc.forEach((d) => { const tr = tbody.append("tr");
+tr.append("td").text(d.country); tr.append("td").text(`$${d3.format(",.0f")(d.value)}`); });

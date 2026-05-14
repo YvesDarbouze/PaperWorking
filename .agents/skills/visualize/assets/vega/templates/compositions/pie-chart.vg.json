@@ -1,0 +1,212 @@
+{
+  "_metadata": {
+    "customization": [
+      "Replace 'values' array with your data",
+      "Change 'category' and 'value' field names in transforms, scales, and marks",
+      "Set innerRadius > 0 on arc marks to create a donut chart",
+      "Update the legend label and tooltip format for your units",
+      "Modify title and description for your context"
+    ],
+    "dataFormat": "Array of objects with 'category' (nominal) and 'value' (quantitative) fields. Each object represents one slice."
+  },
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "autosize": {
+    "contains": "padding",
+    "type": "fit"
+  },
+
+  "config": {
+    "aria": true,
+    "axis": {
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "titleFont": "system-ui, -apple-system, sans-serif"
+    },
+    "title": {
+      "font": "system-ui, -apple-system, sans-serif"
+    }
+  },
+
+  "data": [
+    {
+      "name": "source",
+      "transform": [
+        {
+          "endAngle": 6.2831853,
+          "field": "value",
+          "startAngle": 0,
+          "type": "pie"
+        }
+      ],
+      "values": [
+        {
+          "category": "Engineering",
+          "value": 350000
+        },
+        {
+          "category": "Marketing",
+          "value": 280000
+        },
+        {
+          "category": "Sales",
+          "value": 220000
+        },
+        {
+          "category": "Operations",
+          "value": 80000
+        },
+        {
+          "category": "Finance",
+          "value": 50000
+        },
+        {
+          "category": "Other",
+          "value": 20000
+        }
+      ]
+    }
+  ],
+  "description": "Pie chart showing budget allocation across 6 departments. Engineering leads at 35% ($350K), followed by Marketing at 28% ($280K) and Sales at 22% ($220K). Operations, Finance, and Other together account for the remaining 15%.",
+  "height": 360,
+
+  "legends": [
+    {
+      "fill": "color",
+      "labelColor": "#495057",
+      "labelFont": "system-ui, -apple-system, sans-serif",
+      "labelFontSize": 12,
+      "offset": 12,
+      "orient": "right",
+      "rowPadding": 4,
+      "symbolSize": 80,
+      "symbolType": "circle",
+      "title": "Department",
+      "titleColor": "#495057",
+      "titleFont": "system-ui, -apple-system, sans-serif",
+      "titleFontSize": 12
+    }
+  ],
+
+  "marks": [
+    {
+      "encode": {
+        "enter": {
+          "endAngle": {
+            "field": "endAngle"
+          },
+          "innerRadius": {
+            "value": 0
+          },
+          "outerRadius": {
+            "signal": "min(width / 2, height / 2) - 8"
+          },
+          "startAngle": {
+            "field": "startAngle"
+          },
+          "stroke": {
+            "value": "white"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "tooltip": {
+            "signal": "{'Department': datum.category, 'Budget': '$' + format(datum.value, ',.0f'), 'Share': format(datum.value / 1000000, '.0%')}"
+          },
+          "x": {
+            "signal": "cx"
+          },
+          "y": {
+            "signal": "cy"
+          }
+        },
+        "update": {
+          "fill": {
+            "field": "category",
+            "scale": "color"
+          },
+          "opacity": [
+            {
+              "test": "hovered === null || hovered.category === datum.category",
+              "value": 1
+            },
+            {
+              "value": 0.25
+            }
+          ],
+          "outerRadius": [
+            {
+              "signal": "min(width / 2, height / 2)",
+              "test": "hovered !== null && hovered.category === datum.category"
+            },
+            {
+              "signal": "min(width / 2, height / 2) - 8"
+            }
+          ]
+        }
+      },
+      "from": {
+        "data": "source"
+      },
+      "type": "arc"
+    }
+  ],
+  "padding": {
+    "bottom": 16,
+    "left": 24,
+    "right": 24,
+    "top": 16
+  },
+
+  "scales": [
+    {
+      "domain": {
+        "data": "source",
+        "field": "category"
+      },
+      "name": "color",
+      "range": [
+        "#1c7ed6",
+        "#e8590c",
+        "#0ca678",
+        "#f03e3e",
+        "#ae3ec9",
+        "#1098ad"
+      ],
+      "type": "ordinal"
+    }
+  ],
+
+  "signals": [
+    {
+      "name": "hovered",
+      "on": [
+        {
+          "events": "arc:pointerover",
+          "update": "datum"
+        },
+        {
+          "events": "arc:pointerout",
+          "update": "null"
+        }
+      ],
+      "value": null
+    },
+    {
+      "name": "cx",
+      "update": "width / 2"
+    },
+    {
+      "name": "cy",
+      "update": "height / 2"
+    }
+  ],
+  "title": {
+    "anchor": "start",
+    "fontSize": 16,
+    "offset": 16,
+    "subtitle": "Budget allocation by department ($USD)",
+    "subtitleColor": "#868e96",
+    "subtitleFontSize": 12,
+    "text": "Engineering and Marketing consume 63% of total budget"
+  },
+  "width": 500
+}

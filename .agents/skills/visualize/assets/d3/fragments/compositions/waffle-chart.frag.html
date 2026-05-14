@@ -1,0 +1,75 @@
+<!-- @section: frontmatter -->
+name: Waffle Chart (D3) description: Standalone D3 waffle chart showing part-of-whole proportions on
+a 10×10 grid with full keyboard navigation and ARIA support chart-type: waffle-chart engine: d3
+
+<!-- @section: head-title -->
+Software & Tech leads device usage at 34%
+
+<!-- @section: chart-css -->
+.cell:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 1px; }
+.cell:focus:not(:focus-visible) { outline: none; } .legend { display: flex; flex-wrap: wrap; gap:
+12px 24px; margin-top: 20px; font-size: 13px; } .legend-item { display: flex; align-items: center;
+gap: 6px; } .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+
+<!-- @section: body -->
+<h1>Software & Tech leads device usage at 34%</h1>
+<p class="subtitle">Share of devices by industry, 2024. Each square = 1%.</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Software & Tech leads device usage at 34%</title>
+  <desc id="chart-desc">
+    Waffle chart on a 10 by 10 grid showing part-of-whole proportions across 6 industries. Software
+    and Tech occupies 34 squares, Healthcare 22, Finance 18, Education 14, Retail 8, and Other 4.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<div class="legend" id="legend"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA (must sum to 100) --- const categories = [ { label: "Software & Tech", value: 34, color:
+"#1c7ed6" }, { label: "Healthcare", value: 22, color: "#0ca678" }, { label: "Finance", value: 18,
+color: "#ae3ec9" }, { label: "Education", value: 14, color: "#e8590c" }, { label: "Retail", value:
+8, color: "#1098ad" }, { label: "Other", value: 4, color: "#adb5bd" }, ]; // Build flat array of 100
+cell assignments const cells = []; categories.forEach((cat) => { for (let i = 0; i < cat.value; i++)
+cells.push(cat); }); // --- DIMENSIONS --- const cols = 10; const rows = 10; const cellSize = 40;
+const gap = 4; const pad = 8; const gridW = cols * cellSize + (cols - 1) * gap + pad * 2; const
+gridH = rows * cellSize + (rows - 1) * gap + pad * 2; // --- SVG --- const svg = d3
+.select("#chart") .attr("viewBox", `0 0 ${gridW} ${gridH}`) .attr("width", "100%")
+.attr("max-width", `${gridW}px`); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+hideTooltip() { tooltip.style("opacity", 0); } // --- CELLS --- const cellEls = svg
+.selectAll(".cell") .data(cells.map((cat, i) => ({ cat, i }))) .join("rect") .attr("class", "cell")
+.attr("x", (d) => pad + (d.i % cols) * (cellSize + gap)) .attr("y", (d) => pad + Math.floor(d.i /
+cols) * (cellSize + gap)) .attr("width", cellSize) .attr("height", cellSize) .attr("rx", 3)
+.attr("fill", (d) => d.cat.color) .attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label",
+(d) => `Square ${d.i + 1}: ${d.cat.label}`) .on("pointerenter", function (event, d) { // Dim cells
+of other categories cellEls.attr("opacity", (c) => (c.cat.label === d.cat.label ? 1 : 0.25));
+tooltip .style("opacity", 1) .html(`
+<strong>${d.cat.label}</strong>
+<br />
+${d.cat.value}% of total`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", (event) => { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+cellEls.attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+cellEls.attr("opacity", (c) => (c.cat.label === d.cat.label ? 1 : 0.25)); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${d.cat.label}</strong>
+<br />
+${d.cat.value}% of total`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { cellEls.attr("opacity", 1); hideTooltip(); }); // Keyboard
+navigation: arrow keys move through grid cellEls.on("keydown", function (event, d) { const nodes =
+cellEls.nodes(); const idx = nodes.indexOf(this); let next = -1; if (event.key === "ArrowRight")
+next = idx + 1; else if (event.key === "ArrowLeft") next = idx - 1; else if (event.key ===
+"ArrowDown") next = idx + cols; else if (event.key === "ArrowUp") next = idx - cols; if (next >= 0
+&& next < nodes.length) { event.preventDefault(); nodes[next].focus(); } }); // --- LEGEND --- const
+legendEl = d3.select("#legend"); categories.forEach((cat) => { const item =
+legendEl.append("div").attr("class", "legend-item"); item.append("div").attr("class",
+"legend-swatch").style("background", cat.color); item.append("span").text(`${cat.label}
+(${cat.value}%)`); }); // --- DATA TABLE --- const table = d3 .select("#data-table")
+.append("table") .attr("role", "table") .attr("aria-label", "Data table for waffle chart"); const
+thead = table.append("thead").append("tr"); ["Industry", "Share (%)"].forEach((col) =>
+thead.append("th").attr("scope", "col").text(col)); const tbody = table.append("tbody");
+categories.forEach((d) => { const tr = tbody.append("tr"); tr.append("td").text(d.label);
+tr.append("td").text(`${d.value}%`); });

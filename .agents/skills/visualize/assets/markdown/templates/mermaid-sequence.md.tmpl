@@ -1,0 +1,38 @@
+---
+name: Mermaid Sequence Diagram (Markdown)
+description: Sequence diagram of inter-service messages; renders on GitHub, GitLab, Notion
+chart-type: mermaid-sequence
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Auth Token Refresh Adds Two Round-Trips Per Request
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant API as API Gateway
+    participant Auth as Auth Service
+    participant DB as Database
+
+    C->>API: GET /resource (expired token)
+    API->>Auth: Validate token
+    Auth-->>API: 401 token expired
+    API-->>C: 401 (with refresh hint)
+    C->>Auth: POST /refresh (refresh_token)
+    Auth->>DB: Lookup refresh_token
+    DB-->>Auth: User + scopes
+    Auth-->>C: New access_token
+    C->>API: GET /resource (new token)
+    API->>Auth: Validate token
+    Auth-->>API: 200 OK + claims
+    API-->>C: 200 OK + payload
+```
+
+Source: auth flow trace from production span sampling, 2026-03-15. The expired-token
+path adds one full /refresh round-trip plus one re-validation round-trip — total two
+extra hops on the critical path.
+
+Use this format for surfaces that auto-render mermaid (GitHub, GitLab, Notion,
+Obsidian, recent VS Code). For surfaces that do not, use the `.html.tmpl` variant.

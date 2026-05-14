@@ -1,0 +1,110 @@
+<!-- @section: frontmatter -->
+name: Radar Chart (D3) description: Standalone D3 radar chart comparing 3 products across 6
+dimensions, with full keyboard navigation and ARIA support. Note: radar charts are perceptually weak
+— use parallel coordinates when precision matters. chart-type: radar-chart engine: d3
+
+<!-- @section: head-title -->
+Product A leads on Performance; Product C leads on Support
+
+<!-- @section: chart-css -->
+.subtitle { font-size: 13px; color: var(--oc-gray-6); margin: 0 0 8px; } .perceptual-note {
+font-size: 12px; background: #fff3bf; border-left: 3px solid #f59f00; padding: 8px 12px;
+border-radius: 0 4px 4px 0; color: var(--oc-gray-8); margin: 0 0 20px; } .radar-polygon:focus {
+outline: none; } .radar-vertex:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.radar-vertex:focus:not(:focus-visible) { outline: none; } .legend { display: flex; gap: 20px;
+margin-top: 16px; font-size: 13px; flex-wrap: wrap; } .legend-item { display: flex; align-items:
+center; gap: 6px; } .legend-swatch { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0;
+opacity: 0.5; border: 2px solid; }
+
+<!-- @section: body -->
+<h1>Product A leads on Performance; Product C leads on Support</h1>
+<p class="subtitle">Product comparison across 6 dimensions (score 0–100)</p>
+<p class="perceptual-note">
+  <strong>Note:</strong>
+  Radar charts are perceptually weak — area and angle distort magnitude comparisons. Use
+  <a href="../relationships/parallel-coordinates.html">parallel coordinates</a>
+  when precision matters.
+</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Product A leads on Performance; Product C leads on Support</title>
+  <desc id="chart-desc">
+    Radar chart comparing three products across six dimensions: Performance, Reliability, Ease of
+    Use, Features, Pricing, and Support. Product A scores highest on Performance. Product C scores
+    highest on Support.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<div class="legend" id="legend"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const axes = ["Performance", "Reliability", "Ease of Use", "Features", "Pricing",
+"Support"]; const products = [ { name: "Product A", color: "#1c7ed6", scores: { Performance: 88,
+Reliability: 82, "Ease of Use": 70, Features: 85, Pricing: 60, Support: 72, }, }, { name: "Product
+B", color: "#e8590c", scores: { Performance: 72, Reliability: 78, "Ease of Use": 85, Features: 70,
+Pricing: 80, Support: 75, }, }, { name: "Product C", color: "#0ca678", scores: { Performance: 65,
+Reliability: 70, "Ease of Use": 78, Features: 75, Pricing: 90, Support: 92, }, }, ]; // ---
+DIMENSIONS --- const size = 480; const cx = size / 2; const cy = size / 2; const radius = 180; const
+levels = 5; // concentric rings // --- SVG --- const svg = d3.select("#chart").attr("viewBox", `0 0
+${size} ${size}`).attr("width", "100%"); const g = svg.append("g"); // no translate, we use cx/cy
+directly const numAxes = axes.length; const angleSlice = (Math.PI * 2) / numAxes; // Convert score
+(0–100) and axis index to x/y function pt(score, i) { const angle = angleSlice * i - Math.PI / 2;
+const r = (score / 100) * radius; return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)]; }
+function axisEndPt(i) { const angle = angleSlice * i - Math.PI / 2; return [cx + radius *
+Math.cos(angle), cy + radius * Math.sin(angle)]; } // --- GRID RINGS --- for (let l = 1; l <=
+levels; l++) { const r = (l / levels) * radius; const pts = axes.map((_, i) => { const angle =
+angleSlice * i - Math.PI / 2; return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)]; });
+g.append("polygon") .attr("points", pts.map((p) => p.join(",")).join(" ")) .attr("fill", "none")
+.attr("stroke", "#dee2e6") .attr("stroke-width", 1); // Ring label (score) g.append("text")
+.attr("x", cx + 4) .attr("y", cy - r + 4) .attr("font-size", 10) .attr("fill", "#adb5bd")
+.text(Math.round((l / levels) * 100)); } // --- AXIS LINES & LABELS --- axes.forEach((axis, i) => {
+const [ex, ey] = axisEndPt(i); g.append("line") .attr("x1", cx) .attr("y1", cy) .attr("x2", ex)
+.attr("y2", ey) .attr("stroke", "#dee2e6") .attr("stroke-width", 1); // Position label slightly
+beyond the axis end const angle = angleSlice * i - Math.PI / 2; const labelR = radius + 28; const lx
+= cx + labelR * Math.cos(angle); const ly = cy + labelR * Math.sin(angle); g.append("text")
+.attr("x", lx) .attr("y", ly) .attr( "text-anchor", Math.abs(Math.cos(angle)) < 0.1 ? "middle" : lx
+< cx ? "end" : "start", ) .attr("dominant-baseline", "middle") .attr("font-size", 12) .attr("fill",
+"#495057") .attr("font-weight", 600) .text(axis); }); // --- TOOLTIP --- const tooltip =
+d3.select("#tooltip"); function hideTooltip() { tooltip.style("opacity", 0); } // --- POLYGONS ---
+products.forEach((product, pi) => { const polyPoints = axes.map((axis, i) =>
+pt(product.scores[axis], i)); const poly = g .append("polygon") .attr("class", "radar-polygon")
+.attr("points", polyPoints.map((p) => p.join(",")).join(" ")) .attr("fill", product.color)
+.attr("fill-opacity", 0.12) .attr("stroke", product.color) .attr("stroke-width", 2)
+.attr("tabindex", -1); // Vertex handles for keyboard/hover const vertices = g
+.selectAll(`.vertex-${pi}`) .data( axes.map((axis, i) => ({ axis, i, score: product.scores[axis],
+product, polyPt: pt(product.scores[axis], i), })), ) .join("circle") .attr("class", `radar-vertex
+vertex-${pi}`) .attr("cx", (d) => d.polyPt[0]) .attr("cy", (d) => d.polyPt[1]) .attr("r", 5)
+.attr("fill", product.color) .attr("opacity", 0.8) .attr("tabindex", 0) .attr("role", "listitem")
+.attr("aria-label", (d) => `${product.name}, ${d.axis}: ${d.score}`) .on("pointerenter", function
+(event, d) { // Dim other polygons d3.selectAll(".radar-polygon") .attr("fill-opacity", (p) => (p
+=== product ? 0.25 : 0.04)) .attr("stroke-opacity", (p) => (p === product ? 1 : 0.2)); tooltip
+.style("opacity", 1) .html(`
+<strong>${product.name}</strong>
+<br />
+${d.axis}: ${d.score}`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", (event) => { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".radar-polygon").attr("fill-opacity", 0.12).attr("stroke-opacity", 1); hideTooltip();
+}) .on("focus", function (event, d) { d3.selectAll(".radar-polygon") .attr("fill-opacity", (p) => (p
+=== product ? 0.25 : 0.04)) .attr("stroke-opacity", (p) => (p === product ? 1 : 0.2)); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${product.name}</strong>
+<br />
+${d.axis}: ${d.score}`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { d3.selectAll(".radar-polygon").attr("fill-opacity",
+0.12).attr("stroke-opacity", 1); hideTooltip(); }); vertices.on("keydown", function (event) { const
+nodes = vertices.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // Store reference
+on polygon element for opacity transitions poly.datum(product); }); // --- LEGEND --- const legendEl
+= d3.select("#legend"); products.forEach((p) => { const item = legendEl.append("div").attr("class",
+"legend-item"); item .append("div") .attr("class", "legend-swatch") .style("background", p.color)
+.style("border-color", p.color); item.append("span").text(p.name); }); // --- DATA TABLE --- const
+table = d3 .select("#data-table") .append("table") .attr("role", "table") .attr("aria-label", "Data
+table for radar chart"); const thead = table.append("thead").append("tr"); ["Dimension",
+...products.map((p) => p.name)].forEach((col) => thead.append("th").attr("scope", "col").text(col),
+); const tbody = table.append("tbody"); axes.forEach((axis) => { const tr = tbody.append("tr");
+tr.append("td").text(axis); products.forEach((p) => tr.append("td").text(p.scores[axis])); });

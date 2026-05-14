@@ -1,0 +1,81 @@
+<!-- @section: frontmatter -->
+name: Histogram (D3) description: Standalone D3 histogram with full keyboard navigation and ARIA
+support chart-type: histogram engine: d3
+
+<!-- @section: head-title -->
+Most API responses arrive between 100–300ms
+
+<!-- @section: chart-css -->
+.bar:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 1px; }
+.bar:focus:not(:focus-visible) { outline: none; }
+
+<!-- @section: body -->
+<h1>Most API responses arrive between 100–300ms</h1>
+<p class="subtitle">Distribution of response times, 100 requests (ms)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Most API responses arrive between 100–300ms</title>
+  <desc id="chart-desc">
+    Histogram showing the distribution of 100 API response times in milliseconds. The majority of
+    responses fall in the 100–300ms range, with a long tail toward higher latencies.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- // 100 simulated API response times in ms (seeded for reproducibility) const rawData
+= [ 48, 62, 71, 83, 95, 102, 108, 112, 118, 121, 124, 128, 131, 135, 138, 141, 143, 147, 150, 152,
+155, 157, 159, 162, 164, 167, 169, 171, 174, 176, 178, 181, 183, 185, 188, 190, 193, 195, 197, 200,
+202, 205, 207, 210, 212, 215, 218, 220, 223, 225, 228, 231, 234, 237, 240, 243, 246, 249, 252, 255,
+258, 262, 265, 268, 272, 276, 280, 284, 288, 292, 297, 302, 308, 314, 321, 329, 337, 346, 356, 367,
+379, 392, 406, 421, 437, 455, 474, 495, 518, 543, 571, 601, 634, 671, 712, 758, 810, 870, 941, 1024,
+]; // --- DIMENSIONS --- const margin = { top: 16, right: 24, bottom: 56, left: 64 }; const width =
+700; const height = 420; const innerWidth = width - margin.left - margin.right; const innerHeight =
+height - margin.top - margin.bottom; // --- SCALES --- const x = d3 .scaleLinear() .domain([0,
+d3.max(rawData)]) .nice() .range([0, innerWidth]); // --- BINS --- const bins =
+d3.bin().domain(x.domain()).thresholds(x.ticks(20))(rawData); const y = d3 .scaleLinear()
+.domain([0, d3.max(bins, (d) => d.length)]) .nice() .range([innerHeight, 0]); // --- SVG --- const
+svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const
+g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- GRID ---
+g.append("g") .attr("class", "grid") .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat(""))
+.call((g) => g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x).tickFormat((d) =>
+`${d}ms`)) .call((g) => g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text")
+.attr("class", "axis-label"); g.append("g") .attr("class", "axis") .call(d3.axisLeft(y).ticks(6))
+.call((g) => g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class",
+"axis-label"); // Axis titles g.append("text") .attr("class", "axis-title") .attr("transform",
+"rotate(-90)") .attr("y", -50) .attr("x", -innerHeight / 2) .attr("text-anchor", "middle")
+.text("Count"); g.append("text") .attr("class", "axis-title") .attr("x", innerWidth / 2) .attr("y",
+innerHeight + 48) .attr("text-anchor", "middle") .text("Response time (ms)"); // --- TOOLTIP ---
+const tooltip = d3.select("#tooltip"); function showTooltip(event, d) { tooltip .style("opacity", 1)
+.html(`
+<strong>${d.x0}–${d.x1}ms</strong>
+<br />
+Count: ${d.length}`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY - 28}px`);
+} function hideTooltip() { tooltip.style("opacity", 0); } // --- BARS --- const bars = g
+.selectAll(".bar") .data(bins) .join("rect") .attr("class", "bar") .attr("x", (d) => x(d.x0) + 1)
+.attr("y", (d) => y(d.length)) .attr("width", (d) => Math.max(0, x(d.x1) - x(d.x0) - 1))
+.attr("height", (d) => innerHeight - y(d.length)) .attr("fill", "#1c7ed6") .attr("rx", 2)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => `${d.x0}–${d.x1}ms:
+${d.length} requests`) .on("pointerenter", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); showTooltip(event,
+d); }) .on("pointermove", showTooltip) .on("pointerleave", function () {
+d3.selectAll(".bar").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${d.x0}–${d.x1}ms</strong>
+<br />
+Count: ${d.length}`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+40}px`); }) .on("blur", function () { d3.selectAll(".bar").attr("opacity", 1); hideTooltip(); }); //
+Keyboard navigation: arrow keys move between bars bars.on("keydown", function (event) { const nodes
+= bars.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); // --- DATA TABLE
+--- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for histogram"); const thead = table.append("thead").append("tr");
+thead.append("th").attr("scope", "col").text("Range (ms)"); thead.append("th").attr("scope",
+"col").text("Count"); const tbody = table.append("tbody"); bins.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(`${d.x0}–${d.x1}`); tr.append("td").text(d.length); });

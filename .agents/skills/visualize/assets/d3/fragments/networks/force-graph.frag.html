@@ -1,0 +1,122 @@
+<!-- @section: frontmatter -->
+name: Force-Directed Graph (D3) description: Standalone D3 force-directed network graph with drag,
+zoom, keyboard navigation and ARIA support chart-type: force-graph engine: d3
+
+<!-- @section: head-title -->
+High-degree hubs connect clusters in this knowledge network
+
+<!-- @section: chart-css -->
+.subtitle { font-size: 13px; color: var(--oc-gray-6); margin: 0 0 8px; } .hint { font-size: 12px;
+color: var(--oc-gray-5); margin: 0 0 20px; } .node:focus { outline: 2px solid var(--oc-blue-7);
+outline-offset: 3px; } .node:focus:not(:focus-visible) { outline: none; } #chart { display: block;
+border: 1px solid var(--oc-gray-2); border-radius: 4px; cursor: grab; } #chart:active { cursor:
+grabbing; }
+
+<!-- @section: body -->
+<h1>High-degree hubs connect clusters in this knowledge network</h1>
+<p class="subtitle">10 nodes · 15 edges — node size proportional to degree</p>
+<p class="hint">Drag nodes to reposition · Scroll to zoom · Arrow keys navigate focused node</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">High-degree hubs connect clusters in this knowledge network</title>
+  <desc id="chart-desc">
+    Force-directed graph with 10 nodes and 15 edges across three clusters: Data Science,
+    Engineering, and Strategy. Nodes "Systems" and "Analysis" serve as cross-cluster bridges with
+    degree 5 each.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const nodes = [ { id: "Analysis", group: "Data Science" }, { id: "Modeling", group:
+"Data Science" }, { id: "Reporting", group: "Data Science" }, { id: "Systems", group: "Engineering"
+}, { id: "Deployment", group: "Engineering" }, { id: "Testing", group: "Engineering" }, { id:
+"Security", group: "Engineering" }, { id: "Strategy", group: "Strategy" }, { id: "Planning", group:
+"Strategy" }, { id: "Metrics", group: "Strategy" }, ]; const links = [ { source: "Analysis", target:
+"Modeling" }, { source: "Analysis", target: "Reporting" }, { source: "Analysis", target: "Systems"
+}, { source: "Analysis", target: "Metrics" }, { source: "Modeling", target: "Systems" }, { source:
+"Modeling", target: "Deployment" }, { source: "Systems", target: "Deployment" }, { source:
+"Systems", target: "Testing" }, { source: "Systems", target: "Security" }, { source: "Systems",
+target: "Strategy" }, { source: "Deployment", target: "Testing" }, { source: "Testing", target:
+"Security" }, { source: "Strategy", target: "Planning" }, { source: "Strategy", target: "Metrics" },
+{ source: "Planning", target: "Metrics" }, ]; // Compute degree for each node const degreeMap = {};
+nodes.forEach((n) => { degreeMap[n.id] = 0; }); links.forEach((l) => { degreeMap[l.source]++;
+degreeMap[l.target]++; }); nodes.forEach((n) => { n.degree = degreeMap[n.id]; }); // --- DIMENSIONS
+--- const width = 880; const height = 520; const groups = [...new Set(nodes.map((d) => d.group))];
+const colors = ["#1c7ed6", "#e8590c", "#0ca678"]; const colorScale =
+d3.scaleOrdinal().domain(groups).range(colors); const radiusScale = d3 .scaleSqrt() .domain([1,
+d3.max(nodes, (d) => d.degree)]) .range([10, 26]); // --- SVG --- const svg = d3 .select("#chart")
+.attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); // Zoom container const zoomG =
+svg.append("g"); svg.call( d3 .zoom() .scaleExtent([0.3, 4]) .on("zoom", (event) =>
+zoomG.attr("transform", event.transform)), ); // --- FORCE SIMULATION --- const simulation = d3
+.forceSimulation(nodes) .force( "link", d3 .forceLink(links) .id((d) => d.id) .distance(90)
+.strength(0.7), ) .force("charge", d3.forceManyBody().strength(-280)) .force("center",
+d3.forceCenter(width / 2, height / 2)) .force( "collision", d3.forceCollide().radius((d) =>
+radiusScale(d.degree) + 8), ); // --- LINKS --- const linkSel = zoomG .append("g") .attr("stroke",
+"#dee2e6") .attr("stroke-width", 1.5) .selectAll("line") .data(links) .join("line")
+.attr("aria-hidden", "true"); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+showTooltip(event, d) { tooltip .style("opacity", 1) .html(`
+<strong>${d.id}</strong>
+<br />
+Group: ${d.group}
+<br />
+Degree: ${d.degree}`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // --- NODES --- const nodeG =
+zoomG.append("g"); const nodeGroups = nodeG .selectAll(".node-group") .data(nodes) .join("g")
+.attr("class", "node-group"); // Draggable circle const nodeCircles = nodeGroups .append("circle")
+.attr("class", "node") .attr("r", (d) => radiusScale(d.degree)) .attr("fill", (d) =>
+colorScale(d.group)) .attr("opacity", 0.85) .attr("stroke", "white") .attr("stroke-width", 2)
+.attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d) => `${d.id} (${d.group}):
+degree ${d.degree}`); // Node labels nodeGroups .append("text") .attr("text-anchor", "middle")
+.attr("dy", (d) => radiusScale(d.degree) + 13) .attr("font-size", "11px") .attr("fill", "#495057")
+.attr("pointer-events", "none") .text((d) => d.id); // --- DRAG --- function drag(simulation) {
+return d3 .drag() .on("start", (event, d) => { if (!event.active)
+simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }) .on("drag", (event, d) => { d.fx =
+event.x; d.fy = event.y; }) .on("end", (event, d) => { if (!event.active) simulation.alphaTarget(0);
+d.fx = null; d.fy = null; }); } nodeCircles.call(drag(simulation)); // Hover / focus interactions
+nodeCircles .on("pointerenter", function (event, d) { d3.selectAll(".node").attr("opacity", 0.2);
+d3.select(this) .attr("opacity", 1) .attr("r", radiusScale(d.degree) + 3); // highlight connected
+links linkSel .attr("stroke", (l) => l.source.id === d.id || l.target.id === d.id ? "#1c7ed6" :
+"#dee2e6", ) .attr("stroke-width", (l) => l.source.id === d.id || l.target.id === d.id ? 2.5 : 1.5,
+); showTooltip(event, d); }) .on("pointermove", showTooltip) .on("pointerleave", function (event, d)
+{ d3.selectAll(".node") .attr("opacity", 0.85) .attr("r", (n) => radiusScale(n.degree));
+linkSel.attr("stroke", "#dee2e6").attr("stroke-width", 1.5); hideTooltip(); }) .on("focus", function
+(event, d) { d3.selectAll(".node").attr("opacity", 0.2); d3.select(this) .attr("opacity", 1)
+.attr("r", radiusScale(d.degree) + 3); linkSel .attr("stroke", (l) => l.source.id === d.id ||
+l.target.id === d.id ? "#1c7ed6" : "#dee2e6", ) .attr("stroke-width", (l) => l.source.id === d.id ||
+l.target.id === d.id ? 2.5 : 1.5, ); const rect = this.getBoundingClientRect(); tooltip
+.style("opacity", 1) .html(`
+<strong>${d.id}</strong>
+<br />
+Group: ${d.group}
+<br />
+Degree: ${d.degree}`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y -
+52}px`); }) .on("blur", function (event, d) { d3.selectAll(".node") .attr("opacity", 0.85)
+.attr("r", (n) => radiusScale(n.degree)); linkSel.attr("stroke", "#dee2e6").attr("stroke-width",
+1.5); hideTooltip(); }); // Keyboard navigation nodeCircles.on("keydown", function (event, d) {
+const allNodes = nodeCircles.nodes(); const idx = allNodes.indexOf(this); if (event.key ===
+"ArrowRight" && idx < allNodes.length - 1) { event.preventDefault(); allNodes[idx + 1].focus(); }
+else if (event.key === "ArrowLeft" && idx > 0) { event.preventDefault(); allNodes[idx - 1].focus();
+} }); // --- SIMULATION TICK --- simulation.on("tick", () => { linkSel .attr("x1", (d) =>
+d.source.x) .attr("y1", (d) => d.source.y) .attr("x2", (d) => d.target.x) .attr("y2", (d) =>
+d.target.y); nodeGroups.attr("transform", (d) => `translate(${d.x},${d.y})`); }); // --- LEGEND ---
+const legend = svg.append("g").attr("transform", `translate(16, 16)`); groups.forEach((group, i) =>
+{ const row = legend.append("g").attr("transform", `translate(0, ${i * 20})`);
+row.append("circle").attr("r", 6).attr("fill", colorScale(group)).attr("opacity", 0.85); row
+.append("text") .attr("x", 12) .attr("y", 4) .attr("font-size", "12px") .attr("fill", "#495057")
+.text(group); }); // --- DATA TABLE --- const table = d3 .select("#data-table") .append("table")
+.attr("role", "table") .attr("aria-label", "Node data table for force-directed graph"); const thead
+= table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Node");
+thead.append("th").attr("scope", "col").text("Group"); thead.append("th").attr("scope",
+"col").text("Degree"); const tbody = table.append("tbody"); nodes.forEach((d) => { const tr =
+tbody.append("tr"); tr.append("td").text(d.id); tr.append("td").text(d.group);
+tr.append("td").text(d.degree); }); // Edge table const edgeTable = d3 .select("#data-table")
+.append("table") .attr("role", "table") .attr("aria-label", "Edge data table for force-directed
+graph") .style("margin-top", "16px"); const ethead = edgeTable.append("thead").append("tr");
+ethead.append("th").attr("scope", "col").text("Source"); ethead.append("th").attr("scope",
+"col").text("Target"); const etbody = edgeTable.append("tbody"); links.forEach((l) => { const tr =
+etbody.append("tr"); tr.append("td").text(typeof l.source === "object" ? l.source.id : l.source);
+tr.append("td").text(typeof l.target === "object" ? l.target.id : l.target); });

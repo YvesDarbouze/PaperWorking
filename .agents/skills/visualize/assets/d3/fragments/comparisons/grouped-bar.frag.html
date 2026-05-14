@@ -1,0 +1,94 @@
+<!-- @section: frontmatter -->
+name: Grouped Bar Chart (D3) description: Standalone D3 grouped bar chart with full keyboard
+navigation and ARIA support chart-type: grouped-bar engine: d3
+
+<!-- @section: head-title -->
+Product A leads revenue across all four quarters
+
+<!-- @section: chart-css -->
+.bar:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 1px; }
+.bar:focus:not(:focus-visible) { outline: none; } .legend { display: flex; gap: 20px; margin-bottom:
+16px; flex-wrap: wrap; } .legend-item { display: flex; align-items: center; gap: 6px; font-size:
+13px; color: var(--oc-gray-7); } .legend-swatch { width: 12px; height: 12px; border-radius: 2px;
+flex-shrink: 0; }
+
+<!-- @section: body -->
+<h1>Product A leads revenue across all four quarters</h1>
+<p class="subtitle">Revenue by product and quarter, 2024 ($K)</p>
+<div class="legend" id="legend"></div>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Product A leads revenue across all four quarters</title>
+  <desc id="chart-desc">
+    Grouped bar chart comparing quarterly revenue for three products across Q1–Q4 2024. Product A
+    consistently leads each quarter.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const products = ["Product A", "Product B", "Product C"]; const data = [ { quarter:
+"Q1", "Product A": 42, "Product B": 31, "Product C": 22 }, { quarter: "Q2", "Product A": 48,
+"Product B": 35, "Product C": 27 }, { quarter: "Q3", "Product A": 55, "Product B": 39, "Product C":
+30 }, { quarter: "Q4", "Product A": 61, "Product B": 44, "Product C": 34 }, ]; // --- DIMENSIONS ---
+const margin = { top: 8, right: 24, bottom: 48, left: 64 }; const width = 680; const height = 400;
+const innerWidth = width - margin.left - margin.right; const innerHeight = height - margin.top -
+margin.bottom; const colors = ["#1c7ed6", "#e8590c", "#0ca678"]; const colorScale =
+d3.scaleOrdinal().domain(products).range(colors); // --- LEGEND --- const legend =
+d3.select("#legend"); products.forEach((p) => { const item = legend.append("div").attr("class",
+"legend-item"); item.append("div").attr("class", "legend-swatch").style("background",
+colorScale(p)); item.append("span").text(p); }); // --- SVG --- const svg = d3 .select("#chart")
+.attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const x0 = d3 .scaleBand() .domain(data.map((d) => d.quarter)) .range([0, innerWidth])
+.padding(0.2); const x1 = d3.scaleBand().domain(products).range([0, x0.bandwidth()]).padding(0.08);
+const y = d3 .scaleLinear() .domain([0, d3.max(data, (d) => d3.max(products, (p) => d[p]))]) .nice()
+.range([innerHeight, 0]); // --- GRID --- g.append("g") .attr("class", "grid")
+.call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat("")) .call((g) =>
+g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call(d3.axisBottom(x0).tickSizeOuter(0))
+.call((g) => g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text") .attr("class",
+"axis-label"); g.append("g") .attr("class", "axis") .call(d3.axisLeft(y).tickFormat((d) =>
+`$${d}K`)) .call((g) => g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text")
+.attr("class", "axis-label"); // Y-axis title g.append("text") .attr("class", "axis-title")
+.attr("transform", "rotate(-90)") .attr("y", -50) .attr("x", -innerHeight / 2) .attr("text-anchor",
+"middle") .text("Revenue ($K)"); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+showTooltip(event, d) { tooltip .style("opacity", 1) .html(`
+<strong>${d.product}</strong>
+<br />
+${d.quarter}: $${d.value}K`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // --- GROUPED BARS --- //
+Flatten data for easier join const flatData = data.flatMap((d) => products.map((p) => ({ quarter:
+d.quarter, product: p, value: d[p] })), ); const quarterGroups = g .selectAll(".quarter-group")
+.data(data) .join("g") .attr("class", "quarter-group") .attr("transform", (d) =>
+`translate(${x0(d.quarter)},0)`); const bars = quarterGroups .selectAll(".bar") .data((d) =>
+products.map((p) => ({ quarter: d.quarter, product: p, value: d[p] }))) .join("rect") .attr("class",
+"bar") .attr("x", (d) => x1(d.product)) .attr("y", (d) => y(d.value)) .attr("width", x1.bandwidth())
+.attr("height", (d) => innerHeight - y(d.value)) .attr("fill", (d) => colorScale(d.product))
+.attr("rx", 2) .attr("ry", 2) .attr("tabindex", 0) .attr("role", "listitem") .attr("aria-label", (d)
+=> `${d.product}, ${d.quarter}: $${d.value}K`) .on("pointerenter", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); showTooltip(event,
+d); }) .on("pointermove", showTooltip) .on("pointerleave", function () {
+d3.selectAll(".bar").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".bar").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html(`
+<strong>${d.product}</strong>
+<br />
+${d.quarter}: $${d.value}K`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y
+- 40}px`); }) .on("blur", function () { d3.selectAll(".bar").attr("opacity", 1); hideTooltip(); });
+// Keyboard navigation: arrow keys move between bars bars.on("keydown", function (event) { const
+nodes = bars.nodes(); const idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx <
+nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key ===
+"ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } else if (event.key ===
+"ArrowUp" || event.key === "ArrowDown") { event.preventDefault(); // Move across products within
+same quarter (step by product count) const step = event.key === "ArrowDown" ? products.length :
+-products.length; const target = nodes[idx + step]; if (target) target.focus(); } }); // --- DATA
+TABLE --- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for grouped bar chart"); const thead =
+table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Quarter");
+products.forEach((p) => thead.append("th").attr("scope", "col").text(p)); const tbody =
+table.append("tbody"); data.forEach((d) => { const tr = tbody.append("tr");
+tr.append("td").text(d.quarter); products.forEach((p) => tr.append("td").text(`$${d[p]}K`)); });

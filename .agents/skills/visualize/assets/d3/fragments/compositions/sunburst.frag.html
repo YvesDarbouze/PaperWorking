@@ -1,0 +1,95 @@
+<!-- @section: frontmatter -->
+name: Sunburst (D3) description: Standalone D3 sunburst chart with 2-level hierarchy, full keyboard
+navigation and ARIA support chart-type: sunburst engine: d3
+
+<!-- @section: head-title -->
+Engineering dominates headcount at 52% of total org
+
+<!-- @section: chart-css -->
+.arc-path:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.arc-path:focus:not(:focus-visible) { outline: none; } .arc-label { font-size: 11px; pointer-events:
+none; }
+
+<!-- @section: body -->
+<h1>Engineering dominates headcount at 52% of total org</h1>
+<p class="subtitle">Organizational headcount by department and team (people)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Engineering dominates headcount at 52% of total org</title>
+  <desc id="chart-desc">
+    Sunburst chart showing organizational headcount. The inner ring shows 3 departments: Engineering
+    (52%), Product (28%), and Operations (20%). The outer ring breaks each department into its
+    constituent teams.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- const hierarchy = { name: "Org", children: [ { name: "Engineering", children: [ {
+name: "Platform", value: 34 }, { name: "Frontend", value: 28 }, { name: "Backend", value: 42 }, ],
+}, { name: "Product", children: [ { name: "Design", value: 22 }, { name: "PM", value: 18 }, { name:
+"Research", value: 14 }, ], }, { name: "Operations", children: [ { name: "Finance", value: 16 }, {
+name: "HR", value: 20 }, ], }, ], }; // Color palette: parent colors and lighter child variants
+const parentColors = { Engineering: "#1c7ed6", Product: "#e8590c", Operations: "#0ca678", }; const
+childColors = { Platform: "#339af0", Frontend: "#74c0fc", Backend: "#1c7ed6", Design: "#ff922b", PM:
+"#ffa94d", Research: "#e8590c", Finance: "#20c997", HR: "#0ca678", }; // --- DIMENSIONS --- const
+width = 600; const height = 560; const radius = Math.min(width, height) / 2 - 20; // --- SVG ---
+const svg = d3 .select("#chart") .attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%");
+const g = svg.append("g").attr("transform", `translate(${width / 2},${height / 2})`); // ---
+PARTITION LAYOUT --- const root = d3 .hierarchy(hierarchy) .sum((d) => d.value) .sort((a, b) =>
+b.value - a.value); d3.partition().size([2 * Math.PI, radius])(root); // Arc generator: maps depth
+to radial ring const innerRing = radius * 0.32; const outerRing = radius; const ringWidth =
+(outerRing - innerRing) / root.height; const arc = d3 .arc() .startAngle((d) => d.x0) .endAngle((d)
+=> d.x1) .padAngle((d) => Math.min((d.x1 - d.x0) / 2, 0.01)) .padRadius(radius / 2) .innerRadius((d)
+=> { if (d.depth === 0) return 0; return innerRing + (d.depth - 1) * ringWidth; }) .outerRadius((d)
+=> { if (d.depth === 0) return 0; return innerRing + d.depth * ringWidth - 2; }); // --- TOOLTIP ---
+const tooltip = d3.select("#tooltip"); function hideTooltip() { tooltip.style("opacity", 0); } const
+total = root.value; // --- ARCS --- const paths = g .selectAll(".arc-path")
+.data(root.descendants().filter((d) => d.depth > 0)) .join("path") .attr("class", "arc-path")
+.attr("d", arc) .attr("fill", (d) => { if (d.depth === 1) return parentColors[d.data.name] ||
+"#868e96"; return childColors[d.data.name] || "#adb5bd"; }) .attr("fill-opacity", (d) => (d.depth
+=== 1 ? 0.85 : 0.65)) .attr("stroke", "white") .attr("stroke-width", 1.5) .attr("tabindex", 0)
+.attr("role", "listitem") .attr("aria-label", (d) => { const pct = ((d.value / total) *
+100).toFixed(1); const parent = d.depth > 1 ? ` (${d.parent.data.name})` : ""; return
+`${d.data.name}${parent}: ${d.value} people, ${pct}%`; }); paths .on("pointerenter", function
+(event, d) { d3.selectAll(".arc-path").attr("opacity", 0.3); d3.select(this).attr("opacity", 1);
+const pct = ((d.value / total) * 100).toFixed(1); const parent = d.depth > 1 ? `
+<br />
+${d.parent.data.name}` : ""; tooltip .style("opacity", 1) .html(`
+<strong>${d.data.name}</strong>
+${parent}
+<br />
+${d.value} people (${pct}%)`) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); }) .on("pointermove", function (event) { tooltip.style("left", `${event.pageX +
+12}px`).style("top", `${event.pageY - 28}px`); }) .on("pointerleave", function () {
+d3.selectAll(".arc-path").attr("opacity", 1); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".arc-path").attr("opacity", 0.3); d3.select(this).attr("opacity", 1); const pct =
+((d.value / total) * 100).toFixed(1); const parent = d.depth > 1 ? `
+<br />
+${d.parent.data.name}` : ""; const rect = this.getBoundingClientRect(); tooltip .style("opacity", 1)
+.html(`
+<strong>${d.data.name}</strong>
+${parent}
+<br />
+${d.value} people (${pct}%)`) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y
+- 40}px`); }) .on("blur", function () { d3.selectAll(".arc-path").attr("opacity", 1); hideTooltip();
+}); // Keyboard navigation paths.on("keydown", function (event) { const nodes = paths.nodes(); const
+idx = nodes.indexOf(this); if (event.key === "ArrowRight" && idx < nodes.length - 1) {
+event.preventDefault(); nodes[idx + 1].focus(); } else if (event.key === "ArrowLeft" && idx > 0) {
+event.preventDefault(); nodes[idx - 1].focus(); } }); // --- ARC LABELS (depth=1 only, if arc is
+wide enough) --- g.selectAll(".arc-label") .data(root.descendants().filter((d) => d.depth === 1))
+.join("text") .attr("class", "arc-label") .attr("transform", (d) => { const [x, y] =
+arc.centroid(d); return `translate(${x},${y})`; }) .attr("text-anchor", "middle") .attr("fill",
+"white") .attr("font-weight", "600") .text((d) => (d.x1 - d.x0 > 0.3 ? d.data.name : "")); // Center
+label g.append("text") .attr("text-anchor", "middle") .attr("dy", "0.35em") .attr("font-size",
+"13px") .attr("fill", "#495057") .text(`${total} total`); // --- DATA TABLE --- const table = d3
+.select("#data-table") .append("table") .attr("role", "table") .attr("aria-label", "Data table for
+sunburst chart"); const thead = table.append("thead").append("tr"); ["Department", "Team",
+"Headcount", "% of Total"].forEach((col) => { thead.append("th").attr("scope", "col").text(col); });
+const tbody = table.append("tbody"); hierarchy.children.forEach((dept) => {
+dept.children.forEach((team, j) => { const pct = ((team.value / total) * 100).toFixed(1); const tr =
+tbody.append("tr"); tr.append("td").text(j === 0 ? dept.name : ""); tr.append("td").text(team.name);
+tr.append("td").text(team.value); tr.append("td").text(`${pct}%`); }); });

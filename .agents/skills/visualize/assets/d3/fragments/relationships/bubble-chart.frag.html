@@ -1,0 +1,123 @@
+<!-- @section: frontmatter -->
+name: Bubble Chart (D3) description: Standalone D3 bubble chart with sqrt area scaling, keyboard
+navigation and ARIA support chart-type: bubble-chart engine: d3
+
+<!-- @section: head-title -->
+Market leaders dominate by revenue with strong growth rates
+
+<!-- @section: chart-css -->
+.bubble:focus { outline: 2px solid var(--oc-blue-7); outline-offset: 2px; }
+.bubble:focus:not(:focus-visible) { outline: none; } .bubble-label { font-size: 11px; fill:
+var(--oc-gray-8); pointer-events: none; }
+
+<!-- @section: body -->
+<h1>Market leaders dominate by revenue with strong growth rates</h1>
+<p class="subtitle">Revenue ($M) vs Growth Rate (%) — bubble size = market share (%)</p>
+<svg id="chart" role="img" aria-labelledby="chart-title chart-desc">
+  <title id="chart-title">Market leaders dominate by revenue with strong growth rates</title>
+  <desc id="chart-desc">
+    Bubble chart of 15 companies across three sectors. X-axis shows revenue in millions, Y-axis
+    shows growth rate percentage, and bubble size represents market share percentage.
+  </desc>
+</svg>
+<div class="tooltip" id="tooltip"></div>
+<details>
+  <summary>View data table</summary>
+  <div id="data-table"></div>
+</details>
+
+<!-- @section: chart-js -->
+// --- DATA --- // x: revenue ($M), y: growth rate (%), size: market share (%), category: sector
+const data = [ { name: "Alpha", x: 420, y: 18, size: 22, category: "Technology" }, { name: "Beta",
+x: 310, y: 12, size: 14, category: "Technology" }, { name: "Gamma", x: 195, y: 28, size: 8,
+category: "Technology" }, { name: "Delta", x: 540, y: 8, size: 26, category: "Technology" }, { name:
+"Epsilon", x: 80, y: 35, size: 4, category: "Technology" }, { name: "Zeta", x: 360, y: 22, size: 16,
+category: "Healthcare" }, { name: "Eta", x: 250, y: 15, size: 11, category: "Healthcare" }, { name:
+"Theta", x: 130, y: 30, size: 6, category: "Healthcare" }, { name: "Iota", x: 480, y: 10, size: 20,
+category: "Healthcare" }, { name: "Kappa", x: 55, y: 42, size: 3, category: "Healthcare" }, { name:
+"Lambda", x: 390, y: 20, size: 18, category: "Finance" }, { name: "Mu", x: 220, y: 14, size: 10,
+category: "Finance" }, { name: "Nu", x: 160, y: 25, size: 7, category: "Finance" }, { name: "Xi", x:
+510, y: 9, size: 24, category: "Finance" }, { name: "Omicron", x: 95, y: 38, size: 5, category:
+"Finance" }, ]; // --- DIMENSIONS --- const margin = { top: 24, right: 140, bottom: 56, left: 64 };
+const width = 660; const height = 440; const innerWidth = width - margin.left - margin.right; const
+innerHeight = height - margin.top - margin.bottom; const categories = [...new Set(data.map((d) =>
+d.category))]; const colors = ["#1c7ed6", "#e8590c", "#0ca678"]; const colorScale =
+d3.scaleOrdinal().domain(categories).range(colors); // --- SVG --- const svg = d3 .select("#chart")
+.attr("viewBox", `0 0 ${width} ${height}`) .attr("width", "100%"); const g =
+svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`); // --- SCALES ---
+const x = d3 .scaleLinear() .domain([0, d3.max(data, (d) => d.x) * 1.1]) .nice() .range([0,
+innerWidth]); const y = d3 .scaleLinear() .domain([0, d3.max(data, (d) => d.y) * 1.15]) .nice()
+.range([innerHeight, 0]); // sqrt area scaling for bubble size const radiusScale = d3 .scaleSqrt()
+.domain([0, d3.max(data, (d) => d.size)]) .range([4, 36]); // --- GRID --- g.append("g")
+.attr("class", "grid") .call(d3.axisLeft(y).tickSize(-innerWidth).tickFormat("")) .call((g) =>
+g.select(".domain").remove()); g.append("g") .attr("class", "grid") .attr("transform",
+`translate(0,${innerHeight})`) .call(d3.axisBottom(x).tickSize(-innerHeight).tickFormat(""))
+.call((g) => g.select(".domain").remove()); // --- AXES --- g.append("g") .attr("class", "axis")
+.attr("transform", `translate(0,${innerHeight})`) .call( d3 .axisBottom(x) .ticks(6) .tickFormat((d)
+=> `$${d}`), ) .call((g) => g.select(".domain").attr("stroke", "#dee2e6")) .selectAll("text")
+.attr("class", "axis-label"); g.append("g") .attr("class", "axis") .call( d3 .axisLeft(y) .ticks(6)
+.tickFormat((d) => `${d}%`), ) .call((g) => g.select(".domain").attr("stroke", "#dee2e6"))
+.selectAll("text") .attr("class", "axis-label"); // Axis titles g.append("text") .attr("class",
+"axis-title") .attr("x", innerWidth / 2) .attr("y", innerHeight + 44) .attr("text-anchor", "middle")
+.text("Revenue ($M)"); g.append("text") .attr("class", "axis-title") .attr("transform",
+"rotate(-90)") .attr("y", -48) .attr("x", -innerHeight / 2) .attr("text-anchor", "middle")
+.text("Growth Rate (%)"); // --- LEGEND --- const legend = svg .append("g") .attr("transform",
+`translate(${margin.left + innerWidth + 16}, ${margin.top})`); categories.forEach((cat, i) => {
+const row = legend.append("g").attr("transform", `translate(0, ${i * 22})`);
+row.append("circle").attr("r", 6).attr("fill", colorScale(cat)).attr("opacity", 0.8); row
+.append("text") .attr("x", 12) .attr("y", 4) .attr("fill", "#495057") .attr("font-size", "12px")
+.text(cat); }); // size legend const sizeLegend = svg .append("g") .attr("transform",
+`translate(${margin.left + innerWidth + 16}, ${margin.top + 80})`); sizeLegend .append("text")
+.attr("font-size", "11px") .attr("fill", "#868e96") .attr("y", -4) .text("Market share:"); [5, 15,
+25].forEach((s, i) => { const r = radiusScale(s); sizeLegend .append("circle") .attr("cx", 8)
+.attr("cy", 20 + i * 44) .attr("r", r) .attr("fill", "none") .attr("stroke", "#adb5bd"); sizeLegend
+.append("text") .attr("x", r + 12) .attr("y", 24 + i * 44) .attr("font-size", "11px") .attr("fill",
+"#868e96") .text(`${s}%`); }); // --- TOOLTIP --- const tooltip = d3.select("#tooltip"); function
+showTooltip(event, d) { tooltip .style("opacity", 1) .html( `
+<strong>${d.name}</strong>
+(${d.category})
+<br />
+Revenue: $${d.x}M
+<br />
+Growth: ${d.y}%
+<br />
+Market share: ${d.size}%`, ) .style("left", `${event.pageX + 12}px`) .style("top", `${event.pageY -
+28}px`); } function hideTooltip() { tooltip.style("opacity", 0); } // Sort by size descending so
+smaller bubbles render on top const sorted = [...data].sort((a, b) => b.size - a.size); // ---
+BUBBLES --- const bubbles = g .selectAll(".bubble") .data(sorted) .join("circle") .attr("class",
+"bubble") .attr("cx", (d) => x(d.x)) .attr("cy", (d) => y(d.y)) .attr("r", (d) =>
+radiusScale(d.size)) .attr("fill", (d) => colorScale(d.category)) .attr("opacity", 0.75)
+.attr("stroke", "white") .attr("stroke-width", 1.5) .attr("tabindex", 0) .attr("role", "listitem")
+.attr( "aria-label", (d) => `${d.name} (${d.category}): revenue $${d.x}M, growth ${d.y}%, market
+share ${d.size}%`, ) .on("pointerenter", function (event, d) {
+d3.selectAll(".bubble").attr("opacity", 0.2); d3.select(this).attr("opacity", 0.9).attr("stroke",
+"#343a40").attr("stroke-width", 2); showTooltip(event, d); }) .on("pointermove", showTooltip)
+.on("pointerleave", function () { d3.selectAll(".bubble") .attr("opacity", 0.75) .attr("stroke",
+"white") .attr("stroke-width", 1.5); hideTooltip(); }) .on("focus", function (event, d) {
+d3.selectAll(".bubble").attr("opacity", 0.2); d3.select(this).attr("opacity", 0.9); const rect =
+this.getBoundingClientRect(); tooltip .style("opacity", 1) .html( `
+<strong>${d.name}</strong>
+(${d.category})
+<br />
+Revenue: $${d.x}M
+<br />
+Growth: ${d.y}%
+<br />
+Market share: ${d.size}%`, ) .style("left", `${rect.x + rect.width / 2}px`) .style("top", `${rect.y
+- 64}px`); }) .on("blur", function () { d3.selectAll(".bubble") .attr("opacity", 0.75)
+.attr("stroke", "white") .attr("stroke-width", 1.5); hideTooltip(); }); // Bubble labels for largest
+items g.selectAll(".bubble-label") .data(sorted.filter((d) => d.size >= 14)) .join("text")
+.attr("class", "bubble-label") .attr("x", (d) => x(d.x)) .attr("y", (d) => y(d.y) + 4)
+.attr("text-anchor", "middle") .text((d) => d.name); // Keyboard navigation bubbles.on("keydown",
+function (event, d) { const nodes = bubbles.nodes(); const idx = nodes.indexOf(this); if (event.key
+=== "ArrowRight" && idx < nodes.length - 1) { event.preventDefault(); nodes[idx + 1].focus(); } else
+if (event.key === "ArrowLeft" && idx > 0) { event.preventDefault(); nodes[idx - 1].focus(); } }); //
+--- DATA TABLE --- const table = d3 .select("#data-table") .append("table") .attr("role", "table")
+.attr("aria-label", "Data table for bubble chart"); const thead =
+table.append("thead").append("tr"); thead.append("th").attr("scope", "col").text("Name");
+thead.append("th").attr("scope", "col").text("Category"); thead.append("th").attr("scope",
+"col").text("Revenue ($M)"); thead.append("th").attr("scope", "col").text("Growth (%)");
+thead.append("th").attr("scope", "col").text("Market Share (%)"); const tbody =
+table.append("tbody"); data.forEach((d) => { const tr = tbody.append("tr");
+tr.append("td").text(d.name); tr.append("td").text(d.category); tr.append("td").text(d.x);
+tr.append("td").text(d.y); tr.append("td").text(d.size); });

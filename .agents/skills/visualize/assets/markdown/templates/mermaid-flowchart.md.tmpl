@@ -1,0 +1,29 @@
+---
+name: Mermaid Flowchart (Markdown)
+description: Process flowchart as a fenced mermaid block; renders on GitHub, GitLab, Notion
+chart-type: mermaid-flowchart
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Signup Flow Drops 38% of Users at Email Verification
+
+```mermaid
+flowchart LR
+    A[Visit signup page<br/>1,000 users] --> B[Enter email<br/>820]
+    B --> C{Email valid?}
+    C -- yes --> D[Receive verification email<br/>820]
+    C -- no --> E[Show error<br/>0 lost — same step]
+    D --> F[Click verification link<br/>510]
+    F --> G[Set password<br/>495]
+    G --> H[Account created<br/>490]
+```
+
+Source: signup funnel telemetry, week of 2026-03-24. Numbers are user counts at each
+step. Largest drop: between "Receive verification email" and "Click verification link"
+(38% of remaining funnel).
+
+Use this format for surfaces that auto-render mermaid (GitHub, GitLab, Notion,
+Obsidian, recent VS Code). For surfaces that do not (Slack, email, plain chat,
+generic tickets), emit the `mermaid-flowchart.html.tmpl` variant instead.

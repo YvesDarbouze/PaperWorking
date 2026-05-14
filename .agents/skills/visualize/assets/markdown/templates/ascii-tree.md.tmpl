@@ -1,0 +1,30 @@
+---
+name: ASCII Tree
+description: Hierarchy in plain-text indentation; fallback when mermaid is unavailable
+chart-type: ascii-tree
+engine: markdown
+project: example
+created: 2026-04-01T12:00:00Z
+---
+
+# Engineering Org Structure (52% of Total Headcount)
+
+```
+Engineering (104)
+├── Platform (38)
+│   ├── Infrastructure (16)
+│   ├── Data Platform (12)
+│   └── Developer Experience (10)
+├── Product Engineering (44)
+│   ├── Web (18)
+│   ├── Mobile (14)
+│   └── Backend Services (12)
+└── Quality (22)
+    ├── Test Engineering (14)
+    └── Site Reliability (8)
+```
+
+Source: HRIS headcount snapshot 2026-03-31. Numbers in parentheses are people counts.
+Use ASCII tree when mermaid is unavailable or the surface strips images. The tree
+preserves parent/child relationships but cannot encode quantitative weight beyond
+the numeric labels.

@@ -221,10 +221,10 @@ export default function ConversationalFormWrapper({
           disabled={!isStepValid || isSubmitting}
           className="flex items-center gap-3 px-7 py-3 rounded-lg text-xs font-bold uppercase tracking-[0.18em] transition-all duration-300 group"
           style={{
-            background: isStepValid && !isSubmitting ? '#1A1A1A' : '#d4d4d4',
-            color: isStepValid && !isSubmitting ? '#FFFFFF' : '#595959',
+            background: isStepValid && !isSubmitting ? 'var(--pw-black)' : '#d4d4d4',
+            color: isStepValid && !isSubmitting ? 'var(--pw-white)' : '#595959',
             cursor: isStepValid && !isSubmitting ? 'pointer' : 'not-allowed',
-            border: `1px solid ${isStepValid && !isSubmitting ? '#1A1A1A' : '#b0b0b0'}`,
+            border: `1px solid ${isStepValid && !isSubmitting ? 'var(--pw-black)' : '#b0b0b0'}`,
           }}
         >
           {isSubmitting ? (

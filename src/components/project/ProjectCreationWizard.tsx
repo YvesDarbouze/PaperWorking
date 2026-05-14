@@ -245,8 +245,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
     /* Step 1: Property Identity */
     <div key="identity" className="space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-          <Building2 className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: 'var(--pw-black)' }}>
+          <Building2 className="w-5 h-5" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 01</p>
@@ -281,9 +281,9 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
                   onClick={() => updateForm({ reiStatus: value })}
                   className="flex flex-col items-center gap-1.5 px-2 py-3 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] transition-all"
                   style={{
-                    background: active ? '#1A1A1A' : 'var(--bg-canvas)',
+                    background: active ? 'var(--pw-black)' : 'var(--bg-canvas)',
                     border: active ? '1px solid #1A1A1A' : '1px solid var(--border-ui)',
-                    color: active ? '#FFFFFF' : 'var(--text-secondary)',
+                    color: active ? 'var(--pw-white)' : 'var(--text-secondary)',
                   }}
                 >
                   {icon}
@@ -310,8 +310,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
               <button
                 type="button"
                 onClick={() => setUseManualAddress(true)}
-                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1"
-                style={{ color: 'var(--text-secondary)' }}
+                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1 hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--pw-black)' }}
               >
                 Enter address manually instead
               </button>
@@ -321,13 +321,13 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
           {/* MLS listing confirmed card */}
           {formData.mlsListingKey && (
             <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-ui)' }}>
-              <div className="flex items-center justify-between px-4 py-2" style={{ background: '#1A1A1A' }}>
-                <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#FFFFFF' }}>MLS Listing Confirmed</span>
+              <div className="flex items-center justify-between px-4 py-2" style={{ background: 'var(--pw-black)' }}>
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--pw-white)' }}>MLS Listing Confirmed</span>
                 <button
                   type="button"
                   onClick={clearMlsSelection}
                   className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.1em] opacity-70 hover:opacity-100 transition-opacity"
-                  style={{ color: '#FFFFFF' }}
+                  style={{ color: 'var(--pw-white)' }}
                 >
                   <X className="w-3 h-3" /> Clear
                 </button>
@@ -381,7 +381,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
 
               {isAddressComplete && (
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: '#1A1A1A' }} aria-hidden="true" />
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--pw-black)' }} aria-hidden="true" />
                   <span style={{ color: 'var(--text-primary)' }}>{formData.street}</span>
                   <span style={{ color: 'var(--text-secondary)' }}>· {formData.city}, {formData.state} {formData.zip}</span>
                 </div>
@@ -402,8 +402,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
               <button
                 type="button"
                 onClick={() => setUseManualAddress(false)}
-                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1"
-                style={{ color: 'var(--text-secondary)' }}
+                className="text-[10px] font-bold uppercase tracking-[0.12em] underline underline-offset-2 mt-1 hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--pw-black)' }}
               >
                 Search MLS instead
               </button>
@@ -432,8 +432,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
     /* Step 2: Acquisition Metrics */
     <div key="metrics" className="space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-          <DollarSign className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: 'var(--pw-black)' }}>
+          <DollarSign className="w-5 h-5" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 02</p>
@@ -540,7 +540,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
         <div className="mt-8 pt-8" style={{ borderTop: '1px solid var(--border-ui)' }}>
           <div className="flex items-center gap-4 mb-6">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#059669' }}>
-              <TrendingUp className="w-4 h-4" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+              <TrendingUp className="w-4 h-4" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
             </div>
             <div>
               <h3 className="text-sm font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Income & Operating Costs</h3>
@@ -851,7 +851,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
         <div className="mt-8 pt-8" style={{ borderTop: '2px dashed var(--border-ui)' }}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#7C3AED' }}>
-              <ShieldAlert className="w-4 h-4" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+              <ShieldAlert className="w-4 h-4" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>Due Diligence</p>
@@ -981,8 +981,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
     /* Step 3: Strategy & Vision */
     <div key="strategy" className="space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-          <Target className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: 'var(--pw-black)' }}>
+          <Target className="w-5 h-5" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 03</p>
@@ -1022,8 +1022,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
     /* Step 4: Stakeholder Setup */
     <div key="team" className="space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-          <Users className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: 'var(--pw-black)' }}>
+          <Users className="w-5 h-5" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 04</p>
@@ -1061,8 +1061,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
     /* Step 5: Document Review */
     <div key="review" className="space-y-6">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-          <FileText className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
+        <div className="w-11 h-11 rounded-lg flex items-center justify-center" style={{ background: 'var(--pw-black)' }}>
+          <FileText className="w-5 h-5" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
         </div>
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>Phase 05</p>
@@ -1071,8 +1071,8 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
       </div>
 
       <div className="rounded-lg overflow-hidden" style={{ border: '1px solid var(--border-ui)' }}>
-        <div className="px-5 py-3" style={{ background: '#1A1A1A' }}>
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: '#FFFFFF' }}>Project Summary</h3>
+        <div className="px-5 py-3" style={{ background: 'var(--pw-black)' }}>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--pw-white)' }}>Project Summary</h3>
         </div>
         <div>
           {[
@@ -1125,7 +1125,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
       </div>
 
       <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)' }}>
-        <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: '#1A1A1A' }} aria-hidden="true" />
+        <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: 'var(--pw-black)' }} aria-hidden="true" />
         <p className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>
           Data validated and ready for ledger write.
         </p>
@@ -1155,7 +1155,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
               style={{ borderColor: '#D97706' }}
               aria-label="I understand that data accuracy depends on my inputs"
             />
-            <span className="text-xs font-bold uppercase tracking-[0.12em] transition-colors" style={{ color: hasAcknowledgedWarning ? '#1A1A1A' : '#92400E' }}>
+            <span className="text-xs font-bold uppercase tracking-[0.12em] transition-colors" style={{ color: hasAcknowledgedWarning ? 'var(--pw-black)' : '#92400E' }}>
               I Understand
             </span>
           </label>

@@ -51,6 +51,7 @@ test_*.mjs
 package-lock 2.json
 *.log
 *.txt
+!public/robots.txt
 CPU.*.cpuprofile
 
 # macOS Finder duplicate directories

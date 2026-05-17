@@ -394,8 +394,11 @@ function LoginPageInner() {
       {/* ── Sign-up footer ── */}
       <p className="mt-8 text-[13px] text-[#555]">
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="text-white font-semibold hover:underline transition-all">
-          Sign up free
+        <Link
+          href={urlRedirectTo ? `/register?redirectTo=${encodeURIComponent(urlRedirectTo)}` : '/register'}
+          className="text-white font-semibold hover:underline transition-all"
+        >
+          Sign up
         </Link>
       </p>
     </div>

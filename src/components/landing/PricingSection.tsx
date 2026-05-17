@@ -466,7 +466,7 @@ function PricingCard({
         className="text-center text-xs mt-3 font-medium"
         style={{ color: s.textMuted }}
       >
-        14-day free trial · Cancel anytime
+        Credit card required · No charge for 14 days · Cancel anytime
       </p>
 
       {/* Feature List */}
@@ -875,7 +875,7 @@ export default function PricingSection({
           className="text-sm leading-relaxed mx-auto max-w-xl mb-8"
           style={{ color: '#7f7f7f' }}
         >
-          14-day free trial on every plan. Cancel anytime.
+          14-day trial on every plan. Credit card required. No charge until day 15.
         </motion.p>
 
         <motion.div variants={fadeUp}>

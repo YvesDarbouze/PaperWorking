@@ -30,7 +30,7 @@ export default function FinalCTA() {
         <div className="inline-flex items-center space-x-2 mb-8">
           <span className="w-2 h-2 bg-black animate-pulse" />
           <span className="text-xs font-bold uppercase tracking-[0.25em] text-phase-3">
-            14-Day Free Trial · Cancel Anytime
+            14-Day Trial · Credit Card Required · Cancel Anytime
           </span>
         </div>
 
@@ -67,10 +67,10 @@ export default function FinalCTA() {
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/#pricing"
+            href="/pricing"
             className="px-8 py-4 bg-black text-white text-xs font-bold uppercase tracking-widest flex items-center space-x-2 hover:bg-phase-4 transition-colors"
           >
-            <span>Start Your Free 14-Day Trial</span>
+            <span>Start Your 14-Day Trial</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
@@ -82,7 +82,7 @@ export default function FinalCTA() {
         </div>
 
         <p className="mt-6 text-xs text-phase-2">
-          Free for 14 days · Cancel anytime · You won&apos;t be charged until your trial ends
+          14-day trial · Credit card required · No charge until day 15 · Cancel anytime
         </p>
       </div>
     </section>

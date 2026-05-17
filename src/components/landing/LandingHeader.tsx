@@ -82,7 +82,7 @@ export default function LandingHeader() {
                 Sign In
               </Link>
               <Link
-                href="/#pricing"
+                href="/pricing"
                 className="inline-flex items-center justify-center gap-2 cursor-pointer text-sm font-medium transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
                 style={{
                   backgroundColor: 'var(--pw-black)',
@@ -195,7 +195,7 @@ export default function LandingHeader() {
                   Sign In
                 </Link>
                 <Link
-                  href="/#pricing"
+                  href="/pricing"
                   onClick={() => setMobileOpen(false)}
                   className="inline-flex items-center justify-center gap-2 cursor-pointer text-base font-medium text-center transition-all duration-200 hover:opacity-88 hover:-translate-y-px active:scale-[0.97]"
                   style={{

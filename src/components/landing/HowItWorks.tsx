@@ -464,7 +464,7 @@ export default function HowItWorks() {
           {/* CTA Button */}
           <motion.div variants={fadeUp}>
             <Link
-              href="/#pricing"
+              href="/pricing"
               className="inline-flex items-center justify-center space-x-3 px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
               style={{
                 backgroundColor: '#f2f2f2',
@@ -473,7 +473,7 @@ export default function HowItWorks() {
                 boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
               }}
             >
-              <span>Create Your Free Account</span>
+              <span>Start Your 14-Day Trial</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
@@ -484,7 +484,7 @@ export default function HowItWorks() {
             className="mt-8 text-xs"
             style={{ color: '#7f7f7f' }}
           >
-            14-day free trial · Cancel anytime
+            Credit card required · No charge for 14 days
           </motion.p>
         </motion.div>
       </section>

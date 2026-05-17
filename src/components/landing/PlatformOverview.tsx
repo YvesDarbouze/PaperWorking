@@ -239,7 +239,7 @@ export default function PlatformOverview() {
 
             {/* ── CTA Button ── */}
             <Link
-              href="/#pricing"
+              href="/pricing"
               className="inline-flex items-center justify-center gap-3 px-10 py-4 text-[15px] font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-[0.98]"
               style={{
                 backgroundColor: '#ffffff',
@@ -248,7 +248,7 @@ export default function PlatformOverview() {
                 boxShadow: '0 4px 24px rgba(255,255,255,0.12)',
               }}
             >
-              <span>Create Your Free Account</span>
+              <span>Start Your 14-Day Trial</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
@@ -256,7 +256,7 @@ export default function PlatformOverview() {
               className="mt-6 text-[13px]"
               style={{ color: '#5a5a5a' }}
             >
-              14-day free trial · Cancel anytime
+              Credit card required · No charge for 14 days
             </p>
           </motion.div>
         </motion.div>

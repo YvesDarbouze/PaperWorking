@@ -61,7 +61,7 @@ export default function LandingHero() {
         {/* ── CTA ── */}
         <div className="pt-2 sm:pt-4">
           <Link
-            href="/#pricing"
+            href="/pricing"
             className="
               ag-button
               text-base sm:text-lg
@@ -72,9 +72,9 @@ export default function LandingHero() {
               color: '#ffffff',
             }}
           >
-            Start Your Free 14-Day Trial
+            Start Your 14-Day Trial
           </Link>
-          <p className="mt-4 text-sm text-[var(--pw-subtle)]">14-day free trial. Cancel anytime. Setup takes 2 minutes.</p>
+          <p className="mt-4 text-sm text-[var(--pw-subtle)]">14-day trial. Credit card required. No charge until day 15.</p>
         </div>
       </div>
     </section>

@@ -200,3 +200,18 @@ All visualized per-project across Phases 1–3. Zero redundant data collection.
 4. **Folder metaphor** — tangible, familiar, clickable
 5. **Clear upgrade prompts** — Standard users prompted to invest/bid; free users prompted to upgrade
 6. **Production-grade, not MVP** — institutional-quality charts, expert-level UX
+
+---
+
+## Agent Session Notes — 2026-05-17 (Claude Code)
+
+### Sales Funnel & Auth Fixes
+
+**CTA routing**: All "Start Trial" buttons now route to `/pricing` (standalone page) instead of `/#pricing` (landing page anchor). Affected files:
+- `LandingHero.tsx`, `FinalCTA.tsx`, `LandingHeader.tsx` (desktop + mobile), `PlatformOverview.tsx`, `HowItWorks.tsx`, `PricingPreview.tsx`
+
+**Trial copy**: Removed "no credit card required" messaging. All trust lines now read "Credit card required · No charge for 14 days · Cancel anytime" or similar. CC is collected at checkout but not charged until day 15.
+
+**Auth flow fix**: Login page "Sign up" link now passes `redirectTo` param to `/register` so the plan → login → register → `/pricing` (checkout resume) chain is preserved even if sessionStorage is cleared between steps.
+
+**Intended funnel**: CTA → `/pricing` → pick plan → (unauthenticated: save `pw_pending_plan` → `/login?redirectTo=/pricing`) → login or register → auto-resume checkout at `/pricing` → Stripe checkout with CC required.

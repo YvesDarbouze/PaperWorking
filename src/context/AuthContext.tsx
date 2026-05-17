@@ -10,8 +10,7 @@ import {
   sendPasswordResetEmail,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
@@ -121,9 +120,10 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
 
       await setDoc(userDocRef, {
         subscriptionPlan: pending.plan || 'None',
-        subscriptionStatus: 'active',
+        subscriptionStatus: pending.subscriptionStatus || 'active',
         stripeCustomerId: pending.stripeCustomerId,
         stripeSubscriptionId: pending.stripeSubscriptionId,
+        ...(pending.trialEnd ? { trialEnd: pending.trialEnd } : {}),
         updatedAt: serverTimestamp(),
       }, { merge: true });
 
@@ -178,36 +178,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // 2. Handle OAuth redirect result (fires on return from Google/Facebook)
-  // Must run BEFORE onAuthStateChanged to provision the user document
-  // before the listener fires for the newly authenticated user.
-  const redirectHandled = useRef(false);
-  useEffect(() => {
-    if (redirectHandled.current) return;
-    redirectHandled.current = true;
 
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          await provisionSocialUser(result.user);
-          await syncSessionCookie(result.user);
-        }
-      })
-      .catch((err: any) => {
-        // Benign: user cancelled the redirect or browser aborted
-        if (
-          err.code === 'auth/redirect-cancelled-by-user' ||
-          err.code === 'auth/popup-closed-by-user' ||
-          err.code === 'auth/cancelled-popup-request'
-        ) {
-          return;
-        }
-        console.error('[getRedirectResult] Auth error:', err.code, err.message);
-        setError(getAuthErrorMessage(err.code));
-      });
-  }, []);
-
-  // 3. Listen to auth state changes + sync session cookie
+  // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
     let profileUnsubscribe: (() => void) | null = null;
 
@@ -346,9 +318,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
-      // signInWithRedirect navigates away — result handled on return
-      // via getRedirectResult in the useEffect above.
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      await provisionSocialUser(result.user);
+      await syncSessionCookie(result.user);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
@@ -361,7 +333,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const provider = new FacebookAuthProvider();
       provider.addScope('email');
       provider.addScope('public_profile');
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      await provisionSocialUser(result.user);
+      await syncSessionCookie(result.user);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;

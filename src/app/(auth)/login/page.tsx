@@ -157,29 +157,16 @@ function LoginPageInner() {
     setLoadingProvider(provider);
     clearError();
     try {
-      // Persist redirectTo before the page unloads for OAuth.
-      // signInWithRedirect causes a full page navigation, so URL query params are lost.
-      // On return, getRedirectResult fires in AuthContext, and the login page useEffect
-      // reads this value from sessionStorage to redirect correctly.
-      if (typeof window !== 'undefined') {
-        const dest = urlRedirectTo || '/dashboard';
-        sessionStorage.setItem('pw_auth_redirect', dest);
-      }
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // signInWithRedirect navigates away — the page unloads.
-      // On return, getRedirectResult (in AuthContext) handles the result
-      // and onAuthStateChanged fires, which triggers the user redirect
-      // via the useEffect above.
+      // Cookie is guaranteed set by loginWithGoogle/Facebook before they resolve.
+      // Redirect now — no race condition.
+      const dest = getRedirectDestination();
+      router.replace(dest);
     } catch (err) {
-      // Pre-redirect errors: unauthorized domain, network failure, etc.
       const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });
       setLoadingProvider(null);
-      // Clean up on failure
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('pw_auth_redirect');
-      }
     }
   };
 

@@ -83,13 +83,13 @@ export default function ARVSpreadChart({
 
   return (
     <div
-      className={`rounded-lg overflow-hidden border ${isWarning ? 'border-red-400' : 'border-[#CCCCCC]'} transition-colors ${className}`}
+      className={`rounded-lg overflow-hidden border ${isWarning ? 'border-[#CCCCCC]' : 'border-[#CCCCCC]'} transition-colors ${className}`}
       style={{ background: '#FFFFFF' }}
     >
       {isWarning && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-red-50 border-b border-red-200">
-          <AlertTriangle className="w-3.5 h-3.5 text-red-500 shrink-0" />
-          <span className="text-[10px] font-bold uppercase tracking-widest text-red-600">
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#F2F2F2] border-b border-[#CCCCCC]">
+          <AlertTriangle className="w-3.5 h-3.5 text-[#595959] shrink-0" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#595959]">
             All-In Cost exceeds 80% of ARV — deal compression risk
           </span>
         </div>
@@ -99,7 +99,7 @@ export default function ARVSpreadChart({
         <div className="flex items-start justify-between mb-6">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#7F7F7F]">ARV Spread Analysis</p>
-            <p className="text-2xl font-normal tracking-tighter text-[#595959] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-2xl font-normal tracking-tighter text-[#1A1A1A] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {formatCurrency(spread)}
             </p>
             <p className="text-[11px] text-[#A5A5A5] font-medium mt-0.5">
@@ -208,7 +208,7 @@ export default function ARVSpreadChart({
           </p>
           <p className="text-[9px] text-[#A5A5A5] font-medium">
             All-In / ARV ={' '}
-            <span className={`font-bold ${isWarning ? 'text-red-500' : 'text-[#7F7F7F]'}`}>
+            <span className={`font-bold ${isWarning ? 'text-[#595959]' : 'text-[#7F7F7F]'}`}>
               {(allInToARVRatio * 100).toFixed(1)}%
             </span>
           </p>

@@ -38,13 +38,24 @@ const auth = getFirebaseAuth({
  * Failures are treated as "no session" — the user is redirected.
  */
 async function verifySessionToken(token: string): Promise<{ uid: string } | null> {
+  // Bypass verification in local development if Firebase Admin SDK isn't configured
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    (!process.env.FIREBASE_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY === '')
+  ) {
+    console.warn('[Proxy] Skipping JWT verification in dev mode (missing FIREBASE_PRIVATE_KEY)');
+    return { uid: 'dev-bypass' };
+  }
+
   try {
     const decoded = await auth.verifyIdToken(token);
     return decoded?.uid ? { uid: decoded.uid } : null;
   } catch (err: any) {
     // Expected failures: expired token, revoked token, malformed JWT
     if (err?.code !== 'auth/id-token-expired') {
-      console.warn('[Proxy] Token verification failed:', err?.code || err?.message);
+      console.warn('[Proxy] Token verification failed:', err?.code || err?.message, err);
+    } else {
+      console.warn('[Proxy] Token expired');
     }
     return null;
   }
@@ -90,6 +101,7 @@ export async function middleware(request: NextRequest) {
   // ── Dashboard guard — require session, block vendors ──
   if (pathname.startsWith('/dashboard')) {
     if (!sessionToken) {
+      console.warn(`[Proxy] No session token for ${pathname}`);
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
       return NextResponse.redirect(loginUrl);
@@ -98,6 +110,7 @@ export async function middleware(request: NextRequest) {
     // Verify the JWT is actually valid (not just present)
     const verified = await verifySessionToken(sessionToken);
     if (!verified) {
+      console.warn(`[Proxy] Invalid session token for ${pathname}, redirecting to login`);
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
       loginUrl.searchParams.set('reason', 'session_expired');

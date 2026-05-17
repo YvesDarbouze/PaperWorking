@@ -38,20 +38,20 @@ export default function VelocityProjection({ projects }: VelocityProjectionProps
     <div className="space-y-8">
       {/* 1. Burn Rate Pulse */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl bg-bg-surface border border-border-accent/10 shadow-sm">
-          <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-1 font-black">Daily Portfolio Burn</p>
+        <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[#CCCCCC]/20 shadow-sm">
+          <p className="text-[9px] uppercase tracking-widest text-[#7F7F7F] opacity-40 mb-1 font-black">Daily Portfolio Burn</p>
           <div className="flex items-center gap-2">
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-lg font-mono font-bold text-text-primary">
+            <Zap className="w-3.5 h-3.5 text-[#595959]" />
+            <span className="text-lg font-mono font-bold text-[#1A1A1A]">
               {formatCurrency(data.totalDailyBurn)}
             </span>
           </div>
         </div>
-        <div className="p-4 rounded-xl bg-bg-surface border border-border-accent/10 shadow-sm">
-          <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-1 font-black">Monthly Overhead</p>
+        <div className="p-4 rounded-xl bg-[#FFFFFF] border border-[#CCCCCC]/20 shadow-sm">
+          <p className="text-[9px] uppercase tracking-widest text-[#7F7F7F] opacity-40 mb-1 font-black">Monthly Overhead</p>
           <div className="flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-red-500" />
-            <span className="text-lg font-mono font-bold text-text-primary">
+            <Activity className="w-3.5 h-3.5 text-[#1A1A1A]" />
+            <span className="text-lg font-mono font-bold text-[#1A1A1A]">
               {formatCurrency(data.totalMonthlyBurn)}
             </span>
           </div>
@@ -61,7 +61,7 @@ export default function VelocityProjection({ projects }: VelocityProjectionProps
       {/* 2. Inventory Aging Histogram */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
-          <TrendingDown className="w-3 h-3 text-text-secondary/40" />
+          <TrendingDown className="w-3 h-3 text-[#7F7F7F]/40" />
           <p className="ag-label opacity-40 text-[10px] font-bold uppercase tracking-[0.1em]">Inventory Aging (Days)</p>
         </div>
         
@@ -70,18 +70,18 @@ export default function VelocityProjection({ projects }: VelocityProjectionProps
             const pct = (d.value / maxAgeCount) * 100;
             return (
               <div key={d.label} className="flex-1 flex flex-col items-center gap-2 group/bar">
-                <div className="w-full relative bg-bg-primary rounded-t-sm h-full overflow-hidden">
+                <div className="w-full relative bg-[#F2F2F2] rounded-t-sm h-full overflow-hidden">
                   <div 
-                    className="absolute bottom-0 left-0 w-full bg-text-primary/20 group-hover/bar:bg-pw-black transition-all duration-500"
+                    className="absolute bottom-0 left-0 w-full bg-[#1A1A1A]/20 group-hover/bar:bg-[#1A1A1A] transition-all duration-500"
                     style={{ height: `${pct}%` }}
                   />
                   {d.value > 0 && (
-                    <span className="absolute bottom-1 w-full text-center text-[9px] font-mono font-bold text-text-primary/40 group-hover/bar:text-pw-white transition-colors">
+                    <span className="absolute bottom-1 w-full text-center text-[9px] font-mono font-bold text-[#1A1A1A]/40 group-hover/bar:text-[#FFFFFF] transition-colors">
                       {d.value}
                     </span>
                   )}
                 </div>
-                <span className="text-[8px] font-mono text-text-secondary opacity-40 uppercase">{d.label}</span>
+                <span className="text-[8px] font-mono text-[#7F7F7F] opacity-40 uppercase">{d.label}</span>
               </div>
             );
           })}
@@ -91,25 +91,25 @@ export default function VelocityProjection({ projects }: VelocityProjectionProps
       {/* 3. Projected Exit Timeline */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 px-1">
-          <Calendar className="w-3 h-3 text-text-secondary/40" />
+          <Calendar className="w-3 h-3 text-[#7F7F7F]/40" />
           <p className="ag-label opacity-40 text-[10px] font-bold uppercase tracking-[0.1em]">Projected Exit Velocity</p>
         </div>
 
         {data.projections.length === 0 ? (
-          <div className="py-8 text-center border border-dashed border-border-accent/20 rounded-xl">
-             <p className="text-[10px] font-bold uppercase tracking-widest text-text-secondary opacity-30">No Upcoming Exits</p>
+          <div className="py-8 text-center border border-dashed border-[#CCCCCC]/30 rounded-xl">
+             <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] opacity-30">No Upcoming Exits</p>
           </div>
         ) : (
           <div className="space-y-2">
             {data.projections.slice(0, 4).map((p, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-bg-surface border border-border-accent/5 hover:border-pw-black/10 transition-colors">
+              <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-[#FFFFFF] border border-[#CCCCCC]/20 hover:border-[#1A1A1A]/20 transition-colors">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-text-primary truncate max-w-[120px]">{p.address}</span>
-                  <span className="text-[9px] font-mono text-text-secondary opacity-40">{formatMonth(p.date)}</span>
+                  <span className="text-[10px] font-bold text-[#1A1A1A] truncate max-w-[120px]">{p.address}</span>
+                  <span className="text-[9px] font-mono text-[#7F7F7F] opacity-40">{formatMonth(p.date)}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-mono font-bold text-green-600">{formatCurrency(p.amount)}</span>
-                  <p className="text-[8px] uppercase tracking-tighter text-text-secondary opacity-30 font-black">Est. Liquidity</p>
+                  <span className="text-[10px] font-mono font-bold text-[#595959]">{formatCurrency(p.amount)}</span>
+                  <p className="text-[8px] uppercase tracking-tighter text-[#7F7F7F] opacity-30 font-black">Est. Liquidity</p>
                 </div>
               </div>
             ))}

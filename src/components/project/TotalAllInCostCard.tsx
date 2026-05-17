@@ -33,7 +33,7 @@ export function TotalAllInCostCard({ project }: TotalAllInCostCardProps) {
           </span>
         </div>
         <div className="group relative">
-          <Info className="w-3.5 h-3.5 text-[#CCCCCC] cursor-help transition-colors hover:text-[#595959]" />
+          <Info className="w-3.5 h-3.5 text-[#CCCCCC] cursor-help transition-colors hover:text-[#1A1A1A]" />
           <div className="absolute bottom-full right-0 mb-2 w-64 p-3 rounded-md bg-[#595959] text-white text-[10px] leading-relaxed opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-xl">
             <p className="font-bold mb-1 uppercase tracking-wider">Historical Cost Aggregation</p>
             <p>Calculated as: Basis ({fmtCurrency(metrics.purchasePrice + metrics.acquisitionCosts)}) + CapEx ({fmtCurrency(metrics.actualRehabCost)}) + Holding ({fmtCurrency(metrics.holdingCosts)})</p>

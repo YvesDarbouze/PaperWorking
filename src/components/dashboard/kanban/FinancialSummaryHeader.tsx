@@ -16,9 +16,9 @@ export default function FinancialSummaryHeader() {
   const portfolioMetrics = useProjectStore(state => state.metrics);
 
   const healthColors = {
-    green: { dot: 'bg-green-500', text: 'text-green-700' },
-    amber: { dot: 'bg-amber-400', text: 'text-amber-600' },
-    red:   { dot: 'bg-red-500',   text: 'text-red-600'   },
+    green: { dot: 'bg-[#1A1A1A]', text: 'text-[#1A1A1A]' },
+    amber: { dot: 'bg-[#7F7F7F]', text: 'text-[#7F7F7F]' },
+    red:   { dot: 'bg-[#595959]',   text: 'text-[#595959]'   },
   };
 
   return (
@@ -38,19 +38,19 @@ export default function FinancialSummaryHeader() {
               </div>
             </div>
 
-            <div className="h-10 w-px bg-gray-200" />
+            <div className="h-10 w-px bg-[#F2F2F2]" />
 
             <div className="flex flex-col">
               <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
                 <TrendingUp className="w-3 h-3 mr-1.5" />
                 Realized Profit
               </div>
-              <div className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+              <div className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                 ${portfolioMetrics.totalRealizedProfit.toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </div>
             </div>
 
-            <div className="h-10 w-px bg-gray-200" />
+            <div className="h-10 w-px bg-[#F2F2F2]" />
 
             <div className="flex flex-col">
               <div className="flex items-center text-text-secondary text-xs font-bold uppercase tracking-widest mb-1">
@@ -59,7 +59,7 @@ export default function FinancialSummaryHeader() {
               </div>
               <div className="flex items-baseline gap-3">
                 <div className="flex items-baseline gap-1.5">
-                  <span className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <span className={`text-2xl font-normal tracking-tight ${portfolioMetrics.totalRealizedProfit >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                     ${Math.abs(portfolioMetrics.totalRealizedProfit).toLocaleString()}
                   </span>
                   <span className="text-[10px] text-text-secondary font-bold uppercase">Profit</span>
@@ -90,7 +90,7 @@ export default function FinancialSummaryHeader() {
               onClick={() => toggleTrackMode()}
               className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                 trackMode === 'HOLD'
-                  ? 'bg-bg-surface text-emerald-600 shadow-sm'
+                  ? 'bg-bg-surface text-[#1A1A1A] shadow-sm'
                   : 'text-text-secondary hover:text-text-primary'
               }`}
             >
@@ -100,7 +100,7 @@ export default function FinancialSummaryHeader() {
 
           {/* Deep Focus Indicator */}
           <div className="hidden lg:flex items-center text-xs text-text-secondary font-medium bg-black/5 px-3 py-1.5 rounded-full">
-            <Info className="w-3 h-3 mr-2 text-indigo-500" />
+            <Info className="w-3 h-3 mr-2 text-[#7F7F7F]" />
             FULL ANALYTICS ACTIVE
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function FinancialSummaryHeader() {
                 return (
                   <div
                     key={deal.id}
-                    className="flex-shrink-0 flex items-center gap-2 bg-bg-primary border border-border-accent px-3 py-1.5 hover:border-gray-400 transition-colors cursor-default"
+                    className="flex-shrink-0 flex items-center gap-2 bg-bg-primary border border-border-accent px-3 py-1.5 hover:border-[#CCCCCC] transition-colors cursor-default"
                   >
                     <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dot}`} />
                     <span className="text-[10px] font-black text-text-primary uppercase tracking-tight max-w-[80px] truncate">

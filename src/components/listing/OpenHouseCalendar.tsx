@@ -98,7 +98,7 @@ function OpenHouseCard({ oh }: { oh: BridgeOpenHouseResult }) {
       <div className="flex items-start gap-3">
         {/* Time block */}
         <div className="flex-shrink-0 w-[72px] text-center py-2 px-1 rounded-lg bg-[#F2F2F2] border border-[#A5A5A5]/20">
-          <p className="text-xs font-bold text-[#595959]">
+          <p className="text-xs font-bold text-[#1A1A1A]">
             {formatTime(oh.startTime)}
           </p>
           <p className="text-[9px] text-[#A5A5A5] mt-0.5">
@@ -112,7 +112,7 @@ function OpenHouseCard({ oh }: { oh: BridgeOpenHouseResult }) {
           {oh.listingId && (
             <div className="flex items-center gap-1 mb-1.5">
               <Home className="w-3 h-3 text-[#A5A5A5]" aria-hidden="true" />
-              <span className="text-xs font-semibold text-[#595959] tracking-tight truncate">
+              <span className="text-xs font-semibold text-[#1A1A1A] tracking-tight truncate">
                 MLS# {oh.listingId}
               </span>
             </div>
@@ -138,7 +138,7 @@ function OpenHouseCard({ oh }: { oh: BridgeOpenHouseResult }) {
             <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#A5A5A5]/15">
               <User className="w-3 h-3 text-[#A5A5A5]" aria-hidden="true" />
               <span className="text-[10px] text-[#7F7F7F]">
-                Hosted by <strong className="text-[#595959]">{oh.showingAgent}</strong>
+                Hosted by <strong className="text-[#1A1A1A]">{oh.showingAgent}</strong>
               </span>
             </div>
           )}
@@ -179,7 +179,7 @@ export default function OpenHouseCalendar() {
               <Calendar className="w-4 h-4 text-[#7F7F7F]" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-[#595959] tracking-tight">Open Houses</h2>
+              <h2 className="text-sm font-bold text-[#1A1A1A] tracking-tight">Open Houses</h2>
               <p className="text-[10px] text-[#A5A5A5]">
                 {openHouses.length > 0
                   ? `${openHouses.length} upcoming event${openHouses.length === 1 ? '' : 's'}`
@@ -217,7 +217,7 @@ export default function OpenHouseCalendar() {
             <p className="text-xs text-[#7F7F7F]">{error}</p>
             <button
               onClick={() => fetchOpenHouses()}
-              className="mt-3 text-[10px] font-bold uppercase tracking-widest text-[#595959]
+              className="mt-3 text-[10px] font-bold uppercase tracking-widest text-[#1A1A1A]
                          hover:underline"
             >
               Try Again
@@ -228,7 +228,7 @@ export default function OpenHouseCalendar() {
         {!loading && !error && openHouses.length === 0 && (
           <div className="text-center py-16">
             <Calendar className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3" />
-            <p className="text-sm font-semibold text-[#595959]">No upcoming open houses</p>
+            <p className="text-sm font-semibold text-[#1A1A1A]">No upcoming open houses</p>
             <p className="text-xs text-[#7F7F7F] mt-1 max-w-[220px] mx-auto leading-relaxed">
               Open house events from MLS listings will appear here when available
             </p>

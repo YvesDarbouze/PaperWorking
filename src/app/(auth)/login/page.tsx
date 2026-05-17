@@ -25,6 +25,39 @@ function LoginPageInner() {
   const urlPlan       = searchParams.get('plan') || '';
   const sessionReason = searchParams.get('reason');
 
+  const {
+    login,
+    logout,
+    loginWithGoogle,
+    loginWithFacebook,
+    sendMagicLink,
+    error: authError,
+    clearError,
+    user,
+    loading,
+  } = useAuth();
+
+  const [handledExpired, setHandledExpired] = useState(false);
+
+  useEffect(() => {
+    if (loading) return;
+    if (sessionReason === 'session_expired' && !handledExpired) {
+      if (user) {
+        logout().catch(console.error).finally(() => {
+          setHandledExpired(true);
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete('reason');
+          router.replace(newUrl.pathname + newUrl.search);
+        });
+      } else {
+        setHandledExpired(true);
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('reason');
+        router.replace(newUrl.pathname + newUrl.search);
+      }
+    }
+  }, [sessionReason, user, loading, handledExpired, logout, router]);
+
   // Backward-compat: old live-site links used /login?plan=Individual%20Investor&redirectTo=/pricing.
   // If that param arrives and there's no newer sessionStorage intent, mint one now so the
   // post-auth redirect lands at /pricing and auto-resumes the Stripe checkout.
@@ -70,17 +103,6 @@ function LoginPageInner() {
     return '/dashboard';
   };
 
-  const {
-    login,
-    loginWithGoogle,
-    loginWithFacebook,
-    sendMagicLink,
-    error: authError,
-    clearError,
-    user,
-    loading,
-  } = useAuth();
-
   // Clear any stale auth errors from previous pages
   useEffect(() => {
     clearError();
@@ -88,12 +110,12 @@ function LoginPageInner() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!loading && user && !sessionReason) {
       const dest = getRedirectDestination();
       router.replace(dest);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, router]);
+  }, [user, loading, router, sessionReason]);
 
   const [showPassword, setShowPassword]       = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);

@@ -458,8 +458,8 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
           className="my-2 px-3 flex items-center gap-2 py-1"
           style={{ borderTop: '1px dashed var(--border-ui)' }}
         >
-          <ArrowRight className="w-3 h-3 text-amber-500" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-600">
+          <ArrowRight className="w-3 h-3 text-[#595959]" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#595959]">
             Vacancy & Operating Expenses
           </span>
         </div>
@@ -487,8 +487,8 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
           className="my-2 px-3 flex items-center gap-2 py-1"
           style={{ borderTop: '1px dashed var(--border-ui)' }}
         >
-          <ArrowRight className="w-3 h-3 text-red-500" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-red-600">
+          <ArrowRight className="w-3 h-3 text-[#595959]" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#595959]">
             Debt Service (Mortgage)
           </span>
         </div>

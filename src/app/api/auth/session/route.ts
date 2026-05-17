@@ -36,10 +36,21 @@ function validateOrigin(request: Request): boolean {
   const origin  = request.headers.get('origin');
   const referer = request.headers.get('referer');
 
-  // Allow localhost in dev
+  // Allow localhost and local IPs in dev
   if (process.env.NODE_ENV !== 'production') {
     if (!origin && !referer) return true;
-    const isLocal = (str: string) => str.includes('localhost:') || str.includes('127.0.0.1:');
+    const isLocal = (str: string) => {
+      try {
+        const hostname = new URL(str).hostname;
+        return hostname === 'localhost' || 
+               hostname === '127.0.0.1' || 
+               hostname.startsWith('192.168.') ||
+               hostname.startsWith('10.') ||
+               (hostname.startsWith('172.') && parseInt(hostname.split('.')[1]) >= 16 && parseInt(hostname.split('.')[1]) <= 31);
+      } catch {
+        return str.includes('localhost:') || str.includes('127.0.0.1:');
+      }
+    };
     if (origin && isLocal(origin)) return true;
     if (referer && isLocal(referer)) return true;
   }

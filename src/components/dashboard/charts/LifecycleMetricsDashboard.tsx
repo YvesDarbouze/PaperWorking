@@ -69,7 +69,7 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
     <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm flex flex-col h-[350px]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-blue-50 text-blue-600 rounded-lg"><DollarSign className="w-5 h-5" /></div>
+          <div className="p-2 bg-[#F2F2F2] text-[#7F7F7F] rounded-lg"><DollarSign className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Property Financials</h3>
             <p className="text-xs text-text-secondary">NOI · Cap Rate · DSCR</p>
@@ -151,7 +151,7 @@ const OperationalDataAgent = ({ projects }: { projects: Project[] }) => {
     <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm flex flex-col h-[350px]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg"><Activity className="w-5 h-5" /></div>
+          <div className="p-2 bg-[#F2F2F2] text-[#1A1A1A] rounded-lg"><Activity className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Operational Health</h3>
             <p className="text-xs text-text-secondary">Occupancy · Operating Expense Ratio</p>
@@ -214,7 +214,7 @@ const MarketPortfolioAgent = ({ projects }: { projects: Project[] }) => {
     <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm flex flex-col h-[350px]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-purple-50 text-purple-600 rounded-lg"><Map className="w-5 h-5" /></div>
+          <div className="p-2 bg-[#F2F2F2] text-[#7F7F7F] rounded-lg"><Map className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Leverage & Equity</h3>
             <p className="text-xs text-text-secondary">Debt vs. Equity Exposure</p>
@@ -259,7 +259,7 @@ const StrategicFocusAgent = () => {
     <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm flex flex-col h-[350px]">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-amber-50 text-amber-600 rounded-lg"><Compass className="w-5 h-5" /></div>
+          <div className="p-2 bg-[#F2F2F2] text-[#595959] rounded-lg"><Compass className="w-5 h-5" /></div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">Strategic Priorities</h3>
             <p className="text-xs text-text-secondary">Recommended focus areas for your portfolio</p>
@@ -270,7 +270,7 @@ const StrategicFocusAgent = () => {
       <div className="flex flex-col gap-4 overflow-y-auto pr-2 pb-2">
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
-            <Home className="w-4 h-4 text-blue-600" />
+            <Home className="w-4 h-4 text-[#7F7F7F]" />
             <h4 className="text-sm font-bold text-text-primary">Proactive Monitoring</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
@@ -280,7 +280,7 @@ const StrategicFocusAgent = () => {
 
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
+            <AlertTriangle className="w-4 h-4 text-[#595959]" />
             <h4 className="text-sm font-bold text-text-primary">Debt Exposure Control</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">
@@ -290,7 +290,7 @@ const StrategicFocusAgent = () => {
 
         <div className="p-3 rounded-lg border border-border-accent bg-bg-primary/30">
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+            <TrendingUp className="w-4 h-4 text-[#1A1A1A]" />
             <h4 className="text-sm font-bold text-text-primary">Capital Allocation</h4>
           </div>
           <p className="text-xs text-text-secondary leading-relaxed">

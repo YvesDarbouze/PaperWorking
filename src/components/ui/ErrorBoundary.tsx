@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-5">
             <AlertCircle className="w-6 h-6 text-[#A5A5A5]" />
           </div>
-          <h3 className="text-sm font-bold uppercase tracking-widest text-[#595959] mb-2">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-[#1A1A1A] mb-2">
             Data currently unavailable
           </h3>
           <p className="text-xs text-[#7F7F7F] max-w-sm mb-6 leading-relaxed font-medium">

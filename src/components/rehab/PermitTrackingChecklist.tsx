@@ -19,6 +19,8 @@ interface PermitItem {
   status: PermitStatus;
   filedDate?: string;
   inspectionDate?: string;
+  issueDate?: string;
+  permitFee?: number;
   notes?: string;
 }
 
@@ -32,11 +34,11 @@ const STATUS_CONFIG: Record<PermitStatus, { color: string; bg: string; icon: Rea
 };
 
 const INITIAL_PERMITS: PermitItem[] = [
-  { id: '1', type: 'Building / Structural', municipality: 'Miami-Dade County', status: 'Approved', filedDate: '2026-03-15', notes: 'Load-bearing wall modification approved' },
-  { id: '2', type: 'Electrical', municipality: 'Miami-Dade County', status: 'Filed', filedDate: '2026-04-01', notes: 'Panel upgrade 100A to 200A' },
-  { id: '3', type: 'Plumbing', municipality: 'Miami-Dade County', status: 'Under Review', filedDate: '2026-04-05' },
+  { id: '1', type: 'Building / Structural', municipality: 'Miami-Dade County', status: 'Approved', filedDate: '2026-03-15', issueDate: '2026-04-10', permitFee: 450, notes: 'Load-bearing wall modification approved' },
+  { id: '2', type: 'Electrical', municipality: 'Miami-Dade County', status: 'Filed', filedDate: '2026-04-01', permitFee: 150, notes: 'Panel upgrade 100A to 200A' },
+  { id: '3', type: 'Plumbing', municipality: 'Miami-Dade County', status: 'Under Review', filedDate: '2026-04-05', permitFee: 120 },
   { id: '4', type: 'HVAC / Mechanical', municipality: 'Miami-Dade County', status: 'Not Filed', notes: 'New ductwork — requires engineering sign-off' },
-  { id: '5', type: 'Demolition', municipality: 'Miami-Dade County', status: 'Approved', filedDate: '2026-03-10' },
+  { id: '5', type: 'Demolition', municipality: 'Miami-Dade County', status: 'Approved', filedDate: '2026-03-10', issueDate: '2026-03-25', permitFee: 300 },
   { id: '6', type: 'Final Inspection (CO)', municipality: 'Miami-Dade County', status: 'Not Filed', notes: 'Required before sale — all permits must be closed' },
 ];
 
@@ -149,15 +151,21 @@ export default function PermitTrackingChecklist() {
               <div className="flex items-center space-x-3">
                 <span className={config.color}>{config.icon}</span>
                 <div>
-                  <p className="text-sm font-medium text-text-primary">{permit.type}</p>
+                  <p className="text-sm font-medium text-contrast-high">{permit.type}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-text-secondary">{permit.municipality}</p>
+                    <p className="text-xs text-contrast-high">{permit.municipality}</p>
                     {permit.filedDate && (
-                      <p className="text-xs text-text-secondary">Filed: {permit.filedDate}</p>
+                      <p className="text-xs text-contrast-high">Filed: {permit.filedDate}</p>
+                    )}
+                    {permit.issueDate && (
+                      <p className="text-xs text-contrast-high font-semibold">Issued: {permit.issueDate}</p>
+                    )}
+                    {permit.permitFee !== undefined && (
+                      <p className="text-xs text-contrast-high font-bold bg-green-50 text-green-800 px-1.5 rounded">Fee: ${permit.permitFee}</p>
                     )}
                   </div>
                   {permit.notes && (
-                    <p className="text-xs text-text-secondary mt-0.5 italic">{permit.notes}</p>
+                    <p className="text-xs text-contrast-high mt-0.5 italic">{permit.notes}</p>
                   )}
                 </div>
               </div>

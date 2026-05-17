@@ -1,355 +1,409 @@
 ---
 name: app-store-optimization
-description: "Optimize App Store product pages for search visibility and conversion. Covers App Store Optimization ASO strategy, keyword research and keyword field optimization, app title and subtitle keyword placement, App Store description writing for conversion, promotional text rotation strategy, screenshot caption writing and ordering, in-app review prompt timing with RequestReviewAction and AppStore.requestReview, Custom Product Pages for audience segments, in-app events for search indexing, product page A/B testing experiments, localized metadata optimization across markets, and ratings and review management. Use when improving App Store discoverability, optimizing keyword strategy, writing App Store descriptions or promotional text, planning screenshot captions, setting up Custom Product Pages, configuring in-app review prompts, creating in-app events, running product page optimization tests, or developing a ratings management strategy."
+description: "Complete App Store Optimization (ASO) toolkit for researching, optimizing, and tracking mobile app performance on Apple App Store and Google Play Store"
+risk: unknown
+source: community
+date_added: "2026-02-27"
 ---
 
-# App Store Optimization (ASO)
+# App Store Optimization (ASO) Skill
 
-Search visibility and conversion optimization for App Store product pages. This skill covers strategic metadata decisions -- which keywords to target, how to structure descriptions for conversion, and how to use Custom Product Pages and in-app events for discoverability. For metadata compliance rules (character limits, screenshot device requirements, rejection triggers), see the `app-store-review` skill.
+This comprehensive skill provides complete ASO capabilities for successfully launching and optimizing mobile applications on the Apple App Store and Google Play Store.
 
-## Contents
+## Capabilities
 
-- [Overview](#overview)
-- [Title and Subtitle Strategy](#title-and-subtitle-strategy)
-- [Keyword Field Strategy](#keyword-field-strategy)
-- [Description Structure](#description-structure)
-- [Promotional Text](#promotional-text)
-- [Screenshot and Preview Optimization](#screenshot-and-preview-optimization)
-- [In-App Review Prompts](#in-app-review-prompts)
-- [Custom Product Pages](#custom-product-pages)
-- [In-App Events](#in-app-events)
-- [Product Page Optimization](#product-page-optimization)
-- [Ratings and Review Management](#ratings-and-review-management)
-- [Localized Metadata Optimization](#localized-metadata-optimization)
-- [Common Mistakes](#common-mistakes)
-- [Review Checklist](#review-checklist)
-- [References](#references)
+### Research & Analysis
+- **Keyword Research**: Analyze keyword volume, competition, and relevance for app discovery
+- **Competitor Analysis**: Deep-dive into top-performing apps in your category
+- **Market Trend Analysis**: Identify emerging trends and opportunities in your app category
+- **Review Sentiment Analysis**: Extract insights from user reviews to identify strengths and issues
+- **Category Analysis**: Evaluate optimal category and subcategory placement strategies
 
-## Overview
+### Metadata Optimization
+- **Title Optimization**: Create compelling titles with optimal keyword placement (platform-specific character limits)
+- **Description Optimization**: Craft both short and full descriptions that convert and rank
+- **Subtitle/Promotional Text**: Optimize Apple-specific subtitle (30 chars) and promotional text (170 chars)
+- **Keyword Field**: Maximize Apple's 100-character keyword field with strategic selection
+- **Category Selection**: Data-driven recommendations for primary and secondary categories
+- **Icon Best Practices**: Guidelines for designing high-converting app icons
+- **Screenshot Optimization**: Strategies for creating screenshots that drive installs
+- **Preview Video**: Best practices for app preview videos
+- **Localization**: Multi-language optimization strategies for global reach
 
-ASO has two pillars:
+### Conversion Optimization
+- **A/B Testing Framework**: Plan and track metadata experiments for continuous improvement
+- **Visual Asset Testing**: Test icons, screenshots, and videos for maximum conversion
+- **Store Listing Optimization**: Comprehensive page optimization for impression-to-install conversion
+- **Call-to-Action**: Optimize CTAs in descriptions and promotional materials
 
-1. **Search visibility** -- ranking for relevant queries so users find the app.
-2. **Conversion rate** -- convincing users who land on the product page to download.
+### Rating & Review Management
+- **Review Monitoring**: Track and analyze user reviews for actionable insights
+- **Response Strategies**: Templates and best practices for responding to reviews
+- **Rating Improvement**: Tactical approaches to improve app ratings organically
+- **Issue Identification**: Surface common problems and feature requests from reviews
 
-Apply this skill when a developer asks about improving discoverability, keyword strategy, download conversion, or any product page element that affects either pillar.
+### Launch & Update Strategies
+- **Pre-Launch Checklist**: Complete validation before submitting to stores
+- **Launch Timing**: Optimize release timing for maximum visibility and downloads
+- **Update Cadence**: Plan optimal update frequency and feature rollouts
+- **Feature Announcements**: Craft "What's New" sections that re-engage users
+- **Seasonal Optimization**: Leverage seasonal trends and events
 
-For metadata format rules and compliance guardrails, see the `app-store-review` skill. This skill assumes the developer is working within those constraints and focuses on strategy.
+### Analytics & Tracking
+- **ASO Score**: Calculate overall ASO health score across multiple factors
+- **Keyword Rankings**: Track keyword position changes over time
+- **Conversion Metrics**: Monitor impression-to-install conversion rates
+- **Download Velocity**: Track download trends and momentum
+- **Performance Benchmarking**: Compare against category averages and competitors
 
-## Title and Subtitle Strategy
+### Platform-Specific Requirements
+- **Apple App Store**:
+  - Title: 30 characters
+  - Subtitle: 30 characters
+  - Promotional Text: 170 characters (editable without app update)
+  - Description: 4,000 characters
+  - Keywords: 100 characters (comma-separated, no spaces)
+  - What's New: 4,000 characters
+- **Google Play Store**:
+  - Title: 50 characters (formerly 30, increased in 2021)
+  - Short Description: 80 characters
+  - Full Description: 4,000 characters
+  - No separate keyword field (keywords extracted from title and description)
 
-Apple indexes the app name and subtitle for search. Together they provide 60 characters (30 + 30) of indexed, high-visibility keyword real estate.
+## Input Requirements
 
-### Positioning framework
-
-| Pattern | When to use | Example |
-|---------|-------------|---------|
-| **Brand -- Keyword** | Established brand with recognition | `Notion -- Notes & Docs` |
-| **Keyword -- Brand** | New app competing on category terms | `Budget Tracker -- Pennywise` |
-| **Brand + Keyword blend** | Brand name contains a keyword naturally | `Headspace: Sleep & Meditation` |
-
-### Rules
-
-- Do not repeat words between the name and subtitle -- Apple indexes both, so duplicates waste characters.
-- Front-load the highest-value keyword in whichever field has more room.
-- Avoid generic filler words ("the", "best", "app") -- they consume space without search value.
-- The subtitle should communicate the primary value proposition, not a tagline.
-
-## Keyword Field Strategy
-
-The keyword field is 100 characters, comma-separated, no spaces after commas. See the `app-store-review` skill for the full format rules. This section focuses on which keywords to choose and how to prioritize them.
-
-### Research process
-
-1. **Competitor audit** -- identify the top 5-10 competitors in the category and note which keywords appear in their titles, subtitles, and descriptions.
-2. **Category analysis** -- identify terms users associate with the app's category that competitors may be missing.
-3. **Search Ads signals** -- run Apple Search Ads discovery campaigns to surface high-intent queries with actual impression and tap data.
-4. **Iterate each release** -- update keywords based on Search Ads performance, App Analytics impressions, and conversion data.
-
-### Prioritization
-
-Rank candidate keywords by three factors:
-
-| Factor | Weight | Signal |
-|--------|--------|--------|
-| **Relevance** | Highest | Does the keyword describe what the app actually does? |
-| **Search volume** | Medium | Are users actually searching for this term? |
-| **Competition** | Lower | How many apps target this keyword? |
-
-Relevance always wins. A high-volume keyword that does not describe the app will get impressions but not conversions.
-
-### Tactical rules
-
-- Deduplicate against title and subtitle -- Apple already indexes those words.
-- Use singular forms only -- Apple matches both singular and plural from singular.
-- Omit the category name -- Apple adds the app's primary category to search automatically.
-- Omit spaces after commas -- they count against the 100-character limit.
-- Consider abbreviations and common misspellings if they are genuine search terms.
-- Place highest-value keywords first -- there is some evidence that position affects ranking weight.
-
-**See:** [references/keyword-research-methodology.md](references/keyword-research-methodology.md) for the full research process, scoring framework, and indexing details.
-
-## Description Structure
-
-The App Store description does not affect search ranking -- Apple does not index it for keyword matching. It does affect conversion: users who expand the description are evaluating whether to download.
-
-### Four-part structure
-
-1. **Hook** (first 1-3 lines) -- the only text visible before the "more" fold. Lead with the strongest benefit or differentiator. This is the most important copy on the page.
-2. **Feature highlights** -- 4-6 short feature descriptions. Use Unicode bullet characters (•) since the App Store does not render markdown. Focus on outcomes, not technical details.
-3. **Social proof** -- awards, press quotes, user count milestones, or notable ratings. One or two lines.
-4. **Call to action** -- a closing line encouraging the download. Keep it short and benefit-focused.
-
-### Formatting notes
-
-- The App Store does not render markdown, HTML, or rich text. Use plain text with Unicode characters for structure.
-- Short paragraphs with line breaks between them. Walls of text kill conversion.
-- Write per locale -- translate the structure, not the words. See [Localized Metadata Optimization](#localized-metadata-optimization).
-
-## Promotional Text
-
-Promotional text is the only metadata field changeable without submitting a new binary. It appears above the description and is limited to 170 characters.
-
-### Rotation strategy
-
-Update promotional text to match current context:
-
-| Trigger | Example text |
-|---------|-------------|
-| **Feature launch** | `New: Collaborate in real time with shared workspaces` |
-| **Seasonal event** | `Plan your holiday travel -- route sharing now available` |
-| **Award or press** | `Winner of Apple Design Award 2025` |
-| **Sale or promotion** | `Premium features free through January` |
-| **In-app event** | `Join the Spring Challenge -- starts March 15` |
-
-Do not leave promotional text static across releases. If there is nothing timely to promote, rotate between the app's strongest selling points.
-
-## Screenshot and Preview Optimization
-
-Most users never scroll past the first 3 visible screenshots. These slots determine whether a user engages with the full product page or moves on.
-
-### First 3 screenshots
-
-- Lead with the primary value proposition -- the screen that best demonstrates why someone should download.
-- Never place onboarding, splash, or loading screens in the first 3 slots.
-- Each screenshot should demonstrate a different benefit or feature.
-
-### Caption writing
-
-- Write benefit-oriented captions, not feature labels. "Never miss a deadline" converts better than "Calendar View".
-- Keep captions to 2-5 words above the screenshot and one short line below.
-- Use action verbs: "Track", "Share", "Discover", "Build".
-
-### Ordering strategy
-
-| Slot | Purpose |
-|------|---------|
-| 1 | Primary value proposition -- the single best reason to download |
-| 2 | Core differentiator -- what sets this app apart from competitors |
-| 3 | Secondary feature -- the next strongest selling point |
-| 4+ | Supporting features, social proof, or edge cases |
-
-### App preview video
-
-If a preview video is present, it occupies the first slot. The first frame becomes the poster image when autoplay is disabled -- choose a frame that works as a standalone screenshot.
-
-For screenshot device requirements and compliance rules, see the `app-store-review` skill.
-
-## In-App Review Prompts
-
-StoreKit provides two APIs for requesting ratings:
-
-**SwiftUI** -- use `RequestReviewAction` via the environment:
-
-```swift
-@Environment(\.requestReview) private var requestReview
-
-func onTaskCompleted() {
-    requestReview()
+### Keyword Research
+```json
+{
+  "app_name": "MyApp",
+  "category": "Productivity",
+  "target_keywords": ["task manager", "productivity", "todo list"],
+  "competitors": ["Todoist", "Any.do", "Microsoft To Do"],
+  "language": "en-US"
 }
 ```
 
-**UIKit** -- use `AppStore.requestReview(in:)`:
-
-```swift
-if let scene = view.window?.windowScene {
-    AppStore.requestReview(in: scene)
+### Metadata Optimization
+```json
+{
+  "platform": "apple" | "google",
+  "app_info": {
+    "name": "MyApp",
+    "category": "Productivity",
+    "target_audience": "Professionals aged 25-45",
+    "key_features": ["Task management", "Team collaboration", "AI assistance"],
+    "unique_value": "AI-powered task prioritization"
+  },
+  "current_metadata": {
+    "title": "Current Title",
+    "subtitle": "Current Subtitle",
+    "description": "Current description..."
+  },
+  "target_keywords": ["productivity", "task manager", "todo"]
 }
 ```
 
-### System behavior
-
-- The system enforces a maximum of 3 prompts per 365-day period per device for users who have not yet rated the app.
-- The API is a request, not a guarantee -- StoreKit decides whether to show the prompt.
-- During development, the prompt always appears. In TestFlight, it never appears.
-
-### Prompt timing
-
-| Good triggers | Bad triggers |
-|---------------|-------------|
-| After completing a meaningful task | On first launch |
-| After achieving a milestone or streak | Immediately after an error or crash |
-| After a positive in-app moment | During onboarding |
-| After the user has been active for several sessions | In response to a button tap |
-
-Do not gate the prompt behind a "Rate this app?" dialog -- Apple discourages intercepting the system prompt and may reject apps that pre-screen.
-
-### Persistent review link
-
-For a settings screen or "Rate us" option, link directly to the App Store review page using the URL format:
-
-```
-https://apps.apple.com/app/id{APP_ID}?action=write-review
+### Review Analysis
+```json
+{
+  "app_id": "com.myapp.app",
+  "platform": "apple" | "google",
+  "date_range": "last_30_days" | "last_90_days" | "all_time",
+  "rating_filter": [1, 2, 3, 4, 5],
+  "language": "en"
+}
 ```
 
-This opens the review writing screen directly and is not subject to the 3x/year system limit.
+### ASO Score Calculation
+```json
+{
+  "metadata": {
+    "title_quality": 0.8,
+    "description_quality": 0.7,
+    "keyword_density": 0.6
+  },
+  "ratings": {
+    "average_rating": 4.5,
+    "total_ratings": 15000
+  },
+  "conversion": {
+    "impression_to_install": 0.05
+  },
+  "keyword_rankings": {
+    "top_10": 5,
+    "top_50": 12,
+    "top_100": 18
+  }
+}
+```
 
-For the full StoreKit API surface, see the `storekit` skill.
+## Output Formats
 
-## Custom Product Pages
+### Keyword Research Report
+- List of recommended keywords with search volume estimates
+- Competition level analysis (low/medium/high)
+- Relevance scores for each keyword
+- Strategic recommendations for primary vs. secondary keywords
+- Long-tail keyword opportunities
 
-Custom Product Pages allow up to 35 variant product pages per app. Each variant can have different screenshots, app preview videos, and promotional text -- tailored to a specific audience or acquisition channel.
+### Optimized Metadata Package
+- Platform-specific title (with character count validation)
+- Subtitle/promotional text (Apple)
+- Short description (Google)
+- Full description (both platforms)
+- Keyword field (Apple - 100 chars)
+- Character count validation for all fields
+- Keyword density analysis
+- Before/after comparison
 
-### Use cases
+### Competitor Analysis Report
+- Top 10 competitors in category
+- Their metadata strategies
+- Keyword overlap analysis
+- Visual asset assessment
+- Rating and review volume comparison
+- Identified gaps and opportunities
 
-| Audience | Customization |
-|----------|--------------|
-| **Paid search ads** | Screenshots matching the search intent of the ad group keywords |
-| **Social media campaign** | Screenshots and captions tailored to the campaign creative |
-| **Feature-specific landing** | Lead screenshot showing the specific feature being promoted |
-| **Seasonal campaign** | Seasonal screenshots and promotional text |
+### ASO Health Score
+- Overall score (0-100)
+- Category breakdown:
+  - Metadata Quality (0-25)
+  - Ratings & Reviews (0-25)
+  - Keyword Performance (0-25)
+  - Conversion Metrics (0-25)
+- Specific improvement recommendations
+- Priority action items
 
-### Setup
+### A/B Test Plan
+- Hypothesis and test variables
+- Test duration recommendations
+- Success metrics definition
+- Sample size calculations
+- Statistical significance thresholds
 
-- Each Custom Product Page gets a unique App Store URL usable in ad campaigns, deep links, and web pages.
-- Pages can be localized independently.
-- Create pages in App Store Connect under the Custom Product Pages tab.
-- Name pages descriptively for internal tracking (e.g., "Search-FitnessTracking", "Social-HolidayCampaign").
+### Launch Checklist
+- Pre-submission validation (all required assets, metadata)
+- Store compliance verification
+- Testing checklist (devices, OS versions)
+- Marketing preparation items
+- Post-launch monitoring plan
 
-**See:** [references/product-page-variants.md](references/product-page-variants.md) for setup details, URL structure, and campaign mapping strategy.
+## How to Use
 
-## In-App Events
+### Keyword Research
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you research the best keywords for a productivity app targeting professionals? Focus on keywords with good search volume but lower competition.
+```
 
-In-app events surface in App Store search results, on the Today tab, and in personalized recommendations. They increase visibility during the event window and can re-engage lapsed users.
+### Optimize App Store Listing
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you optimize my app's metadata for the Apple App Store? Here's my current listing: [provide current metadata]. I want to rank for "task management" and "productivity tools".
+```
 
-### Event types
+### Analyze Competitor Strategy
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you analyze the ASO strategies of Todoist, Any.do, and Microsoft To Do? I want to understand what they're doing well and where there are opportunities.
+```
 
-| Badge | When to use |
-|-------|-------------|
-| **Challenge** | Time-limited goals users can work toward |
-| **Competition** | Head-to-head or leaderboard contests |
-| **Live Event** | Real-time experiences (concerts, sports, streams) |
-| **Major Update** | Significant new features or redesigns |
-| **New Season** | Seasonal content refreshes |
-| **Premiere** | First-time content availability |
-| **Special Event** | Limited-time promotions or celebrations |
+### Review Sentiment Analysis
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you analyze recent reviews for my app (com.myapp.ios) and identify the most common user complaints and feature requests?
+```
 
-### Metadata limits
+### Calculate ASO Score
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you calculate my app's overall ASO health score and provide specific recommendations for improvement?
+```
 
-| Field | Limit |
-|-------|-------|
-| Event name | 30 characters |
-| Short description | 50 characters |
-| Long description | 120 characters |
-| Event card image | Required (1920x1080 or similar 16:9) |
+### Plan A/B Test
+```
+Hey Claude—I just added the "app-store-optimization" skill. I want to A/B test my app icon and first screenshot. Can you help me design the test and determine how long to run it?
+```
 
-### Strategy
+### Pre-Launch Checklist
+```
+Hey Claude—I just added the "app-store-optimization" skill. Can you generate a comprehensive pre-launch checklist for submitting my app to both Apple App Store and Google Play Store?
+```
 
-- Schedule events around feature releases, seasonal moments, or content drops.
-- Use the event name and short description as additional keyword surfaces -- Apple indexes event metadata for search.
-- Events appear on the product page and in search results, giving the app a visual badge that increases tap-through rate.
-- Overlap events strategically: end the current event as the next one begins to maintain continuous search visibility.
+## Scripts
 
-**See:** [references/product-page-variants.md](references/product-page-variants.md) for event scheduling templates.
+### keyword_analyzer.py
+Analyzes keywords for search volume, competition, and relevance. Provides strategic recommendations for primary and secondary keywords.
 
-## Product Page Optimization
+**Key Functions:**
+- `analyze_keyword()`: Analyze single keyword metrics
+- `compare_keywords()`: Compare multiple keywords
+- `find_long_tail()`: Discover long-tail keyword opportunities
+- `calculate_keyword_difficulty()`: Assess competition level
 
-App Store Connect provides native A/B testing for product page elements.
+### metadata_optimizer.py
+Optimizes titles, descriptions, and keyword fields with platform-specific character limit validation.
 
-### What can be tested
+**Key Functions:**
+- `optimize_title()`: Create compelling, keyword-rich titles
+- `optimize_description()`: Generate conversion-focused descriptions
+- `optimize_keyword_field()`: Maximize Apple's 100-char keyword field
+- `validate_character_limits()`: Ensure compliance with platform limits
+- `calculate_keyword_density()`: Analyze keyword usage in metadata
 
-- App icon (alternate icons)
-- Screenshots (order, content, captions)
-- App preview video
+### competitor_analyzer.py
+Analyzes top competitors' ASO strategies and identifies opportunities.
 
-Only one treatment can be tested at a time. The default product page serves as the control.
+**Key Functions:**
+- `get_top_competitors()`: Identify category leaders
+- `analyze_competitor_metadata()`: Extract and analyze competitor keywords
+- `compare_visual_assets()`: Evaluate icons and screenshots
+- `identify_gaps()`: Find competitive opportunities
 
-### Test design
+### aso_scorer.py
+Calculates comprehensive ASO health score across multiple dimensions.
 
-- Run tests for a minimum of 7 days to account for day-of-week variation.
-- Ensure sufficient traffic for statistical significance -- low-traffic apps may need longer test durations.
-- Test one variable at a time (e.g., screenshot order OR caption copy, not both simultaneously).
-- Changes to the default locale only affect that locale.
+**Key Functions:**
+- `calculate_overall_score()`: Compute 0-100 ASO score
+- `score_metadata_quality()`: Evaluate title, description, keywords
+- `score_ratings_reviews()`: Assess rating quality and volume
+- `score_keyword_performance()`: Analyze ranking positions
+- `score_conversion_metrics()`: Evaluate impression-to-install rates
+- `generate_recommendations()`: Provide prioritized action items
 
-### Interpreting results
+### ab_test_planner.py
+Plans and tracks A/B tests for metadata and visual assets.
 
-- Focus on conversion rate lift (impressions-to-downloads), not absolute download numbers.
-- App Store Connect shows confidence intervals -- do not apply a winning treatment until the test reaches statistical significance.
-- After applying a winner, wait before starting the next test to establish a clean baseline.
+**Key Functions:**
+- `design_test()`: Create test hypothesis and variables
+- `calculate_sample_size()`: Determine required test duration
+- `calculate_significance()`: Assess statistical significance
+- `track_results()`: Monitor test performance
+- `generate_report()`: Summarize test outcomes
 
-## Ratings and Review Management
+### localization_helper.py
+Manages multi-language ASO optimization strategies.
 
-Average rating affects both conversion and search ranking. The threshold effects are significant: apps below 4.0 stars see measurably lower conversion, and apps above 4.5 stars convert noticeably better.
+**Key Functions:**
+- `identify_target_markets()`: Recommend localization priorities
+- `translate_metadata()`: Generate localized metadata
+- `adapt_keywords()`: Research locale-specific keywords
+- `validate_translations()`: Check character limits per language
+- `calculate_localization_roi()`: Estimate impact of localization
 
-### Review response strategy
+### review_analyzer.py
+Analyzes user reviews for sentiment, issues, and feature requests.
 
-- Respond to negative reviews in App Store Connect -- a professional response improves perceived quality even without changing the rating number.
-- Acknowledge the issue, state what is being done (or has been fixed), and keep the tone neutral.
-- Turn negative reviews into keyword signals -- users describe problems using search-relevant language.
+**Key Functions:**
+- `analyze_sentiment()`: Calculate positive/negative/neutral ratios
+- `extract_common_themes()`: Identify frequently mentioned topics
+- `identify_issues()`: Surface bugs and user complaints
+- `find_feature_requests()`: Extract desired features
+- `track_sentiment_trends()`: Monitor sentiment over time
+- `generate_response_templates()`: Create review response drafts
 
-### Rating reset
+### launch_checklist.py
+Generates comprehensive pre-launch and update checklists.
 
-When submitting a new version, you can choose to reset the displayed rating. Use this strategically:
+**Key Functions:**
+- `generate_prelaunch_checklist()`: Complete submission validation
+- `validate_app_store_compliance()`: Check Apple guidelines
+- `validate_play_store_compliance()`: Check Google policies
+- `create_update_plan()`: Plan update cadence and features
+- `optimize_launch_timing()`: Recommend release dates
+- `plan_seasonal_campaigns()`: Identify seasonal opportunities
 
-| Situation | Recommendation |
-|-----------|---------------|
-| Current rating is significantly below the app's quality after major improvements | Reset |
-| Current rating is strong (4.5+) | Do not reset |
-| Bug fix release with no quality improvement | Do not reset |
-| Major redesign with mixed early feedback expected | Wait for stabilization, then reset on a subsequent update |
+## Best Practices
 
-## Localized Metadata Optimization
+### Keyword Research
+1. **Volume vs. Competition**: Balance high-volume keywords with achievable rankings
+2. **Relevance First**: Only target keywords genuinely relevant to your app
+3. **Long-Tail Strategy**: Include 3-4 word phrases with lower competition
+4. **Continuous Research**: Keyword trends change—research quarterly
+5. **Competitor Keywords**: Don't copy blindly; ensure relevance to your features
 
-Localizing ASO is not the same as translating the app UI. Keyword strategy, descriptions, and screenshot captions must be researched and written per market, not machine-translated from the primary locale.
+### Metadata Optimization
+1. **Front-Load Keywords**: Place most important keywords early in title/description
+2. **Natural Language**: Write for humans first, SEO second
+3. **Feature Benefits**: Focus on user benefits, not just features
+4. **A/B Test Everything**: Test titles, descriptions, screenshots systematically
+5. **Update Regularly**: Refresh metadata every major update
+6. **Character Limits**: Use every character—don't waste valuable space
+7. **Apple Keyword Field**: No plurals, duplicates, or spaces between commas
 
-### Key principles
+### Visual Assets
+1. **Icon**: Must be recognizable at small sizes (60x60px)
+2. **Screenshots**: First 2-3 are critical—most users don't scroll
+3. **Captions**: Use screenshot captions to tell your value story
+4. **Consistency**: Match visual style to app design
+5. **A/B Test Icons**: Icon is the single most important visual element
 
-- **Research keywords per market.** The most-searched term for "photo editor" in Japanese is not a direct translation of "photo editor."
-- **Rewrite descriptions per locale.** Adapt the hook-features-proof-CTA structure to local conventions and selling points.
-- **Some markets index English keywords.** Japan, South Korea, and several other markets index both the local language and English keyword fields. Use this to capture additional search terms.
-- **Localize screenshot captions.** Captions in the user's language convert better than untranslated English.
+### Reviews & Ratings
+1. **Respond Quickly**: Reply to reviews within 24-48 hours
+2. **Professional Tone**: Always courteous, even with negative reviews
+3. **Address Issues**: Show you're actively fixing reported problems
+4. **Thank Supporters**: Acknowledge positive reviews
+5. **Prompt Strategically**: Ask for ratings after positive experiences
 
-For in-app string localization (String Catalogs, FormatStyle, right-to-left layout), see the `ios-localization` skill.
+### Launch Strategy
+1. **Soft Launch**: Consider launching in smaller markets first
+2. **PR Timing**: Coordinate press coverage with launch
+3. **Update Frequently**: Initial updates signal active development
+4. **Monitor Closely**: Track metrics daily for first 2 weeks
+5. **Iterate Quickly**: Fix critical issues immediately
 
-## Common Mistakes
+### Localization
+1. **Prioritize Markets**: Start with English, Spanish, Chinese, French, German
+2. **Native Speakers**: Use professional translators, not machine translation
+3. **Cultural Adaptation**: Some features resonate differently by culture
+4. **Test Locally**: Have native speakers review before publishing
+5. **Measure ROI**: Track downloads by locale to assess impact
 
-1. **Duplicating title words in the keyword field.** Apple indexes the title and subtitle automatically -- repeating those words in the keyword field wastes characters.
-2. **Writing feature-descriptive screenshot captions instead of benefit-oriented ones.** "Calendar View" converts worse than "Never miss a deadline" -- lead with the user outcome.
-3. **Translating keywords instead of researching per-market terms.** Direct translation misses local search behavior and high-volume terms specific to each market.
-4. **Prompting for reviews after a negative experience.** Calling `requestReview()` after an error, a failed transaction, or during onboarding generates low ratings.
-5. **Ignoring the first three screenshot slots.** Most users never scroll -- placing an onboarding or splash screen first wastes the highest-impact real estate.
-6. **Never rotating promotional text.** Promotional text is the only field changeable without a new build -- leaving it static misses conversion opportunities.
-7. **Running A/B tests with insufficient duration.** Product page optimization tests need at least 7 days and meaningful traffic to reach statistical significance.
-8. **Adding spaces after commas in the keyword field.** Spaces count against the 100-character limit -- use `keyword1,keyword2` not `keyword1, keyword2`.
-9. **Using identical screenshots for every Custom Product Page.** Custom Product Pages exist to tailor messaging per audience segment -- reusing identical assets defeats the purpose.
-10. **Not responding to negative App Store reviews.** Unanswered negative reviews signal abandonment to prospective users and miss an opportunity to demonstrate responsiveness.
+## Limitations
 
-## Review Checklist
+### Data Dependencies
+- Keyword search volume estimates are approximate (no official data from Apple/Google)
+- Competitor data may be incomplete for private apps
+- Review analysis limited to public reviews (can't access private feedback)
+- Historical data may not be available for new apps
 
-- [ ] Title uses high-value keyword alongside brand name; no words repeated in subtitle
-- [ ] Subtitle communicates primary value proposition within 30 characters
-- [ ] Keyword field uses all 100 characters; no spaces after commas; no duplicates of title/subtitle words; singular forms only
-- [ ] Description follows hook-features-proof-CTA structure; first 3 lines compelling before the fold
-- [ ] Promotional text is current and relevant to the latest release or event
-- [ ] First 3 screenshots show highest-value screens with benefit-oriented captions
-- [ ] App preview video (if present) leads with the core feature in the first 5 seconds
-- [ ] `requestReview()` is placed after a positive user moment, not on first launch or after errors
-- [ ] Custom Product Pages created for distinct acquisition channels with tailored screenshots
-- [ ] In-app events configured for upcoming launches, seasons, or feature releases
-- [ ] Metadata localized with per-market keyword research for all supported locales
-- [ ] Compliance cross-check: all metadata passes the `app-store-review` skill checklist before submission
+### Platform Constraints
+- Apple App Store keyword changes require app submission (except Promotional Text)
+- Google Play Store metadata changes take 1-2 hours to index
+- A/B testing requires significant traffic for statistical significance
+- Store algorithms are proprietary and change without notice
 
-## References
+### Industry Variability
+- ASO benchmarks vary significantly by category (games vs. utilities)
+- Seasonality affects different categories differently
+- Geographic markets have different competitive landscapes
+- Cultural preferences impact what works in different countries
 
-- Keyword research methodology: [references/keyword-research-methodology.md](references/keyword-research-methodology.md)
-- Custom Product Pages, A/B testing, and in-app events: [references/product-page-variants.md](references/product-page-variants.md)
+### Scope Boundaries
+- Does not include paid user acquisition strategies (Apple Search Ads, Google Ads)
+- Does not cover app development or UI/UX optimization
+- Does not include app analytics implementation (use Firebase, Mixpanel, etc.)
+- Does not handle app submission technical issues (provisioning profiles, certificates)
+
+### When NOT to Use This Skill
+- For web apps (different SEO strategies apply)
+- For enterprise apps not in public stores
+- For apps in beta/TestFlight only
+- If you need paid advertising strategies (use marketing skills instead)
+
+## Integration with Other Skills
+
+This skill works well with:
+- **Content Strategy Skills**: For creating app descriptions and marketing copy
+- **Analytics Skills**: For analyzing download and engagement data
+- **Localization Skills**: For managing multi-language content
+- **Design Skills**: For creating optimized visual assets
+- **Marketing Skills**: For coordinating broader launch campaigns
+
+## Version & Updates
+
+This skill is based on current Apple App Store and Google Play Store requirements as of November 2025. Store policies and best practices evolve—verify current requirements before major launches.
+
+**Key Updates to Monitor:**
+- Apple App Store Connect updates (apple.com/app-store/review/guidelines)
+- Google Play Console updates (play.google.com/console/about/guides/releasewithconfidence)
+- iOS/Android version adoption rates (affects device testing)
+- Store algorithm changes (follow ASO blogs and communities)
+
+## When to Use
+This skill is applicable to execute the workflow or actions described in the overview.

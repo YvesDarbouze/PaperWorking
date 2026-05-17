@@ -22,9 +22,9 @@ function Row({ label, value, emphasis, positive, negative }: {
   const valueClass = emphasis
     ? 'text-sm font-black text-text-primary tabular-nums'
     : positive
-    ? 'text-xs font-black text-green-700 tabular-nums'
+    ? 'text-xs font-black text-[#1A1A1A] tabular-nums'
     : negative
-    ? 'text-xs font-black text-red-600 tabular-nums'
+    ? 'text-xs font-black text-[#595959] tabular-nums'
     : 'text-xs font-normal text-text-primary tabular-nums';
 
   return (
@@ -56,9 +56,9 @@ function FlipView({ deal }: { deal: Project }) {
       <Row label="ARV" value={fmt(m.arv)} />
       <div className="flex items-center justify-between">
         <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">MAO</span>
-        <span className={`text-xs tabular-nums font-black flex items-center gap-1 ${m.maoViolated ? 'text-red-600' : 'text-text-primary'}`}>
+        <span className={`text-xs tabular-nums font-black flex items-center gap-1 ${m.maoViolated ? 'text-[#595959]' : 'text-text-primary'}`}>
           {fmt(m.mao)}
-          {m.maoViolated && <AlertTriangle className="w-3 h-3 text-red-500" />}
+          {m.maoViolated && <AlertTriangle className="w-3 h-3 text-[#595959]" />}
         </span>
       </div>
 
@@ -75,7 +75,7 @@ function FlipView({ deal }: { deal: Project }) {
         {/* Progress bar */}
         <div className="h-0.5 w-full bg-bg-primary">
           <div
-            className={`h-full transition-all duration-700 ${m.rehabPct >= 1 ? 'bg-red-500' : 'bg-pw-black'}`}
+            className={`h-full transition-all duration-700 ${m.rehabPct >= 1 ? 'bg-[#595959]' : 'bg-pw-black'}`}
             style={{ width: `${Math.min(m.rehabPct * 100, 100)}%` }}
           />
         </div>

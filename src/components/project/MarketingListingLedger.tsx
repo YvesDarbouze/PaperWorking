@@ -70,7 +70,7 @@ export function MarketingListingLedger({ financials, onChange, onSave, isSaving,
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#595959] transition-colors" />
+                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#1A1A1A] transition-colors" />
               </div>
               <input
                 type="text"
@@ -91,7 +91,7 @@ export function MarketingListingLedger({ financials, onChange, onSave, isSaving,
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#595959] transition-colors" />
+                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#1A1A1A] transition-colors" />
               </div>
               <input
                 type="text"
@@ -112,7 +112,7 @@ export function MarketingListingLedger({ financials, onChange, onSave, isSaving,
             </label>
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#595959] transition-colors" />
+                <DollarSign className="h-3.5 w-3.5 text-[#A5A5A5] group-focus-within:text-[#1A1A1A] transition-colors" />
               </div>
               <input
                 type="text"

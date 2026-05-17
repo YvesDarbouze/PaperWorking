@@ -81,21 +81,21 @@ export default function ROIChart({ projects }: ROIChartProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-bg-primary/50 flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500 shadow-sm border border-border-accent/5">
+          <div className="w-12 h-12 rounded-xl bg-[#F2F2F2]/50 flex items-center justify-center text-[#7F7F7F] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-all duration-500 shadow-sm border border-[#A5A5A5]/5">
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-pw-black">
+            <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-[#1A1A1A]">
               Performance Matrix
             </p>
-            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Equity Growth & ROI</h3>
+            <h3 className="text-2xl font-normal text-[#1A1A1A] tracking-tighter">Equity Growth & ROI</h3>
           </div>
         </div>
         
         {data.length > 0 && (
           <div className="text-right hidden sm:block">
             <p className="ag-label opacity-30 text-[9px] uppercase tracking-[0.2em] font-black">Total Realized</p>
-            <p className="text-2xl font-normal font-mono text-text-primary tracking-tight">
+            <p className="text-2xl font-normal font-mono text-[#1A1A1A] tracking-tight">
               {formatCurrency(data[data.length - 1].cumulativeProfit || 0)}
             </p>
           </div>
@@ -103,7 +103,7 @@ export default function ROIChart({ projects }: ROIChartProps) {
       </div>
 
       {data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-text-secondary opacity-30">
+        <div className="flex flex-col items-center justify-center py-20 text-[#7F7F7F] opacity-30">
           <TrendingUp className="w-12 h-12 mb-4 stroke-[1px]" />
           <p className="text-sm font-bold uppercase tracking-widest text-[10px]">No Realized Exits</p>
           <p className="text-[10px] mt-1 opacity-50">Close a deal to visualize portfolio performance</p>
@@ -200,10 +200,10 @@ export default function ROIChart({ projects }: ROIChartProps) {
                 yAxisId="right"
                 type="monotone"
                 dataKey="roi"
-                stroke="#000000"
+                stroke="#1A1A1A"
                 strokeWidth={4}
-                dot={{ fill: '#000000', r: 4, strokeWidth: 0 }}
-                activeDot={{ fill: '#FFFFFF', stroke: '#000000', strokeWidth: 4, r: 7 }}
+                dot={{ fill: '#1A1A1A', r: 4, strokeWidth: 0 }}
+                activeDot={{ fill: '#FFFFFF', stroke: '#1A1A1A', strokeWidth: 4, r: 7 }}
                 name="roi"
                 filter="url(#lineShadow)"
                 animationDuration={2000}
@@ -227,14 +227,14 @@ export default function ROIChart({ projects }: ROIChartProps) {
       
       {/* Footer Stats */}
       {data.length > 0 && (
-        <div className="grid grid-cols-3 gap-px bg-border-accent/5 border border-border-accent/5 rounded-xl overflow-hidden mt-8 shadow-sm">
+        <div className="grid grid-cols-3 gap-px bg-[#A5A5A5]/5 border border-[#A5A5A5]/5 rounded-xl overflow-hidden mt-8 shadow-sm">
           <div className="p-5 bg-white/50 backdrop-blur-sm group/stat">
             <p className="ag-label opacity-40 text-[8px] font-black uppercase tracking-widest group-hover/stat:opacity-100 transition-opacity">Avg. ROI</p>
             <p className="text-lg font-bold font-mono tracking-tighter">
               {(data.reduce((acc, curr) => acc + curr.roi, 0) / data.length).toFixed(1)}%
             </p>
           </div>
-          <div className="p-5 bg-white/50 backdrop-blur-sm group/stat border-x border-border-accent/5">
+          <div className="p-5 bg-white/50 backdrop-blur-sm group/stat border-x border-[#A5A5A5]/5">
             <p className="ag-label opacity-40 text-[8px] font-black uppercase tracking-widest group-hover/stat:opacity-100 transition-opacity">Peak Month</p>
             <p className="text-lg font-bold font-mono tracking-tighter">
               {formatCurrency(Math.max(...data.map(d => d.profit)))}

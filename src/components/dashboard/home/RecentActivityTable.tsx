@@ -133,12 +133,12 @@ export default function RecentActivityTable() {
       <div className={`transition-all duration-300 ease-in-out h-full overflow-hidden ${selectedDoc ? 'w-full lg:w-2/3' : 'w-full'}`}>
         <Card className="h-full flex flex-col overflow-hidden">
           <div className="p-6 pb-0 mb-4 flex-shrink-0">
-            <h2 className="text-xl font-medium text-[#595959]">Deal Activity</h2>
+            <h2 className="text-xl font-medium text-[#1A1A1A]">Deal Activity</h2>
             <p className="text-sm text-[#7F7F7F] mt-1">Documents, tasks, and expenses across your portfolio.</p>
           </div>
           <div className="flex-1 overflow-auto px-6 pb-6 relative">
             <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:border-b after:border-[#A5A5A5]/20">
+              <TableHeader className="sticky top-0 z-10 bg-[#FFFFFF] after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:border-b after:border-[#A5A5A5]/20">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="font-semibold text-[#7F7F7F]">Activity</TableHead>
                   <TableHead className="font-semibold text-[#7F7F7F]">Project</TableHead>
@@ -151,7 +151,7 @@ export default function RecentActivityTable() {
               <TableBody>
                 {recentActivities.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-text-secondary">
+                    <TableCell colSpan={6} className="text-center py-8 text-[#7F7F7F]">
                       Activity will appear here as you add deals and upload documents.
                     </TableCell>
                   </TableRow>
@@ -159,13 +159,13 @@ export default function RecentActivityTable() {
                   recentActivities.map((activity, index) => (
                     <TableRow 
                       key={activity.id} 
-                      className={`cursor-pointer group hover:bg-[#F2F2F2]/80 transition-colors ${index % 2 === 1 ? 'bg-[#FAFAFA]' : 'bg-[#FFFFFF]'}`}
+                      className={`cursor-pointer group hover:bg-[#F2F2F2]/80 transition-colors ${index % 2 === 1 ? 'bg-[#F2F2F2]/30' : 'bg-[#FFFFFF]'}`}
                       onClick={() => setSelectedDoc(activity)}
                       data-state={selectedDoc?.id === activity.id ? "selected" : undefined}
                     >
-                      <TableCell className="font-medium text-[#595959]">
+                      <TableCell className="font-medium text-[#1A1A1A]">
                         <div className="flex items-center gap-3">
-                          <FileText className="w-4 h-4 text-[#A5A5A5] group-hover:text-[#595959] transition-colors" />
+                          <FileText className="w-4 h-4 text-[#A5A5A5] group-hover:text-[#1A1A1A] transition-colors" />
                           <span className="truncate max-w-[150px] sm:max-w-[200px]" title={activity.name}>{activity.name}</span>
                         </div>
                       </TableCell>
@@ -197,20 +197,20 @@ export default function RecentActivityTable() {
           <Card className="w-full h-full flex flex-col overflow-hidden border-[#A5A5A5]/50 bg-[#F2F2F2]/30">
             <div className="p-4 flex items-center justify-between border-b border-[#A5A5A5]/20 bg-[#FFFFFF]">
               <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#595959]" />
-                <span className="text-sm font-semibold text-[#595959] truncate w-40" title={selectedDoc.name}>{selectedDoc.name}</span>
+                <FileText className="w-4 h-4 text-[#1A1A1A]" />
+                <span className="text-sm font-semibold text-[#1A1A1A] truncate w-40" title={selectedDoc.name}>{selectedDoc.name}</span>
               </div>
               <div className="flex items-center gap-1">
                 {selectedDoc.fileUrl && (
-                  <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-[#7F7F7F] hover:text-[#595959] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Download">
+                  <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Download">
                     <Download className="w-4 h-4" />
                   </a>
                 )}
-                <button className="p-1.5 text-[#7F7F7F] hover:text-[#595959] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Share">
+                <button className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors" title="Share">
                   <Share2 className="w-4 h-4" />
                 </button>
                 <button 
-                  className="p-1.5 text-[#7F7F7F] hover:text-[#595959] hover:bg-[#F2F2F2] rounded-md transition-colors ml-2" 
+                  className="p-1.5 text-[#7F7F7F] hover:text-[#1A1A1A] hover:bg-[#F2F2F2] rounded-md transition-colors ml-2" 
                   onClick={() => setSelectedDoc(null)}
                   title="Close Preview"
                 >
@@ -222,7 +222,7 @@ export default function RecentActivityTable() {
             {/* Document Preview Area */}
             <div className="flex-1 p-6 overflow-y-auto">
               {selectedDoc.fileUrl ? (
-                <div className="w-full h-full min-h-[500px] flex items-center justify-center bg-white border border-border-accent rounded">
+                <div className="w-full h-full min-h-[500px] flex items-center justify-center bg-[#FFFFFF] border border-[#CCCCCC] rounded">
                   {selectedDoc.fileUrl.endsWith('.pdf') ? (
                     <iframe src={selectedDoc.fileUrl} className="w-full h-full" title={selectedDoc.name} />
                   ) : selectedDoc.fileUrl.match(/\.(jpeg|jpg|gif|png)$/i) ? (
@@ -230,9 +230,9 @@ export default function RecentActivityTable() {
                     <img src={selectedDoc.fileUrl} alt={selectedDoc.name} className="max-w-full max-h-full object-contain" />
                   ) : (
                     <div className="text-center p-6">
-                      <FileText className="w-12 h-12 text-text-secondary mx-auto mb-4" />
-                      <p className="text-text-primary font-medium mb-2">File preview not available</p>
-                      <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-pw-accent hover:underline text-sm">Download to view</a>
+                      <FileText className="w-12 h-12 text-[#A5A5A5] mx-auto mb-4" />
+                      <p className="text-[#1A1A1A] font-medium mb-2">File preview not available</p>
+                      <a href={selectedDoc.fileUrl} target="_blank" rel="noopener noreferrer" className="text-[#595959] hover:underline text-sm">Download to view</a>
                     </div>
                   )}
                 </div>
@@ -260,8 +260,8 @@ export default function RecentActivityTable() {
                     </div>
                   </div>
                   
-                  <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
-                    <p className="text-sm font-medium text-text-secondary bg-white px-4 py-2 border border-border-accent rounded shadow-sm">No document uploaded yet</p>
+                  <div className="absolute inset-0 bg-[#FFFFFF]/60 flex items-center justify-center backdrop-blur-[1px]">
+                    <p className="text-sm font-medium text-[#7F7F7F] bg-[#FFFFFF] px-4 py-2 border border-[#CCCCCC] rounded shadow-sm">No document uploaded yet</p>
                   </div>
                 </div>
               )}

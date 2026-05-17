@@ -24,7 +24,7 @@ export default function GlobalError({
               <AlertTriangle className="w-8 h-8 text-[#7F7F7F]" />
             </div>
             
-            <h2 className="text-2xl font-bold mb-3 text-[#595959]">
+            <h2 className="text-2xl font-bold mb-3 text-[#1A1A1A]">
               Critical System Error
             </h2>
             

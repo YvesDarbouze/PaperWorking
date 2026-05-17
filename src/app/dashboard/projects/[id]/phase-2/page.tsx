@@ -166,10 +166,10 @@ export default function Phase2AcquisitionPage() {
         <div className="max-w-6xl mx-auto px-6 lg:px-12 py-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-full bg-[#f2f2f2]">
-              <Lock className="w-5 h-5 text-[#595959]" />
+              <Lock className="w-5 h-5 text-[#1A1A1A]" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#595959]">
+              <h2 className="text-sm font-semibold uppercase tracking-wider text-[#1A1A1A]">
                 Finalized Purchase Terms
               </h2>
               <p className="text-xs mt-1" style={{ color: '#7F7F7F' }}>
@@ -182,7 +182,7 @@ export default function Phase2AcquisitionPage() {
               <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#7F7F7F' }}>
                 Accepted Offer Price
               </p>
-              <p className="text-2xl font-bold font-mono text-[#595959]">
+              <p className="text-2xl font-bold font-mono text-[#1A1A1A]">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(project?.financials?.purchasePrice || 0)}
               </p>
             </div>
@@ -191,7 +191,7 @@ export default function Phase2AcquisitionPage() {
               <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: '#7F7F7F' }}>
                 Earnest Money Deposit
               </p>
-              <p className="text-2xl font-bold font-mono text-[#595959]">
+              <p className="text-2xl font-bold font-mono text-[#1A1A1A]">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(project?.financials?.emdAmount || 0)}
               </p>
             </div>

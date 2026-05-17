@@ -40,15 +40,15 @@ function acqBand(v: number): Band {
 }
 
 const BAND_STYLE: Record<Band, { bg: string; text: string; border: string }> = {
-  green:  { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  yellow: { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200' },
-  red:    { bg: 'bg-red-50',     text: 'text-red-700',     border: 'border-red-200' },
+  green:  { bg: 'bg-[#F2F2F2]', text: 'text-emerald-700', border: 'border-[#CCCCCC]' },
+  yellow: { bg: 'bg-[#F2F2F2]',   text: 'text-amber-700',   border: 'border-[#CCCCCC]' },
+  red:    { bg: 'bg-[#F2F2F2]',     text: 'text-red-700',     border: 'border-[#CCCCCC]' },
 };
 
 const BAND_ICON: Record<Band, React.ReactNode> = {
-  green:  <CheckCircle className="w-3 h-3 text-emerald-500" />,
-  yellow: <AlertTriangle className="w-3 h-3 text-amber-500" />,
-  red:    <AlertTriangle className="w-3 h-3 text-red-500" />,
+  green:  <CheckCircle className="w-3 h-3 text-[#1A1A1A]" />,
+  yellow: <AlertTriangle className="w-3 h-3 text-[#595959]" />,
+  red:    <AlertTriangle className="w-3 h-3 text-[#595959]" />,
 };
 
 /* ─── Per-Deal Computed Raw Values ─── */
@@ -256,7 +256,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
   if (yearlyData.length === 0) {
     return (
       <div className="rounded-2xl border border-border-accent bg-bg-surface p-8 text-center">
-        <BarChart3 className="w-8 h-8 text-gray-300 mx-auto mb-3" />
+        <BarChart3 className="w-8 h-8 text-[#CCCCCC] mx-auto mb-3" />
         <p className="text-sm text-text-secondary font-medium">No Completed Exits</p>
         <p className="text-xs text-text-secondary mt-1">
           Post-mortem metrics will appear here once projects reach the &lsquo;Sold&rsquo; status in the Exit Hub.
@@ -290,7 +290,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                 Yearly Portfolio Performance
               </h3>
               <p className="text-xs text-text-secondary mt-0.5">
-                {allTime.count} completed exit{allTime.count !== 1 ? 's' : ''} · All-time net: <span className={`font-mono font-medium ${allTime.profit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                {allTime.count} completed exit{allTime.count !== 1 ? 's' : ''} · All-time net: <span className={`font-mono font-medium ${allTime.profit >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                   {allTime.profit >= 0 ? '' : '-'}${Math.abs(allTime.profit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
               </p>
@@ -318,7 +318,7 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                   </span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className={`text-sm font-mono ${ym.totalNetProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                  <span className={`text-sm font-mono ${ym.totalNetProfit >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                     {ym.totalNetProfit >= 0 ? '+' : '-'}${Math.abs(ym.totalNetProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                   </span>
                   <ChevronDown className={`w-4 h-4 text-text-secondary transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
@@ -391,11 +391,11 @@ export default function YearlyPortfolioPerformance({ projects }: YearlyPortfolio
                                 <td className="py-2 px-3 text-right text-text-secondary font-mono">
                                   ${d.grossSalePrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </td>
-                                <td className={`py-2 px-3 text-right font-mono ${d.netProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                <td className={`py-2 px-3 text-right font-mono ${d.netProfit >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                                   {d.netProfit >= 0 ? '+' : '-'}${Math.abs(d.netProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                                 </td>
                                 <td className={`py-2 px-3 text-right font-mono ${
-                                  dealGPM >= 20 ? 'text-emerald-600' : dealGPM >= 10 ? 'text-amber-600' : 'text-red-600'
+                                  dealGPM >= 20 ? 'text-[#1A1A1A]' : dealGPM >= 10 ? 'text-[#595959]' : 'text-[#595959]'
                                 }`}>
                                   {dealGPM.toFixed(1)}%
                                 </td>

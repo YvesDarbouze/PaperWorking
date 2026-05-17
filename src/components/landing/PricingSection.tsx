@@ -252,7 +252,7 @@ function BillingToggle({
     <div className="flex items-center justify-center gap-4">
       <span
         className={`text-sm font-medium transition-colors duration-300 ${
-          !isAnnual ? 'text-[#595959]' : 'text-[#a5a5a5]'
+          !isAnnual ? 'text-[#1A1A1A]' : 'text-[#a5a5a5]'
         }`}
       >
         Monthly
@@ -281,7 +281,7 @@ function BillingToggle({
 
       <span
         className={`text-sm font-medium transition-colors duration-300 ${
-          isAnnual ? 'text-[#595959]' : 'text-[#a5a5a5]'
+          isAnnual ? 'text-[#1A1A1A]' : 'text-[#a5a5a5]'
         }`}
       >
         Annually

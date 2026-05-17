@@ -32,6 +32,12 @@ const OpenHouseCalendar = lazy(() => import('@/components/listing/OpenHouseCalen
 import DashboardKPIHeader from './DashboardKPIHeader';
 import GenerativeInsights from './GenerativeInsights';
 import RecentActivityTable from './RecentActivityTable';
+import ProfileWidget from './ProfileWidget';
+import ProjectsWidget from './ProjectsWidget';
+import MessagesWidget from './MessagesWidget';
+import AnalyticsWidget from './AnalyticsWidget';
+import ProjectsProgressWidget from './ProjectsProgressWidget';
+import InvestorInviteModal from '../InvestorInviteModal';
 
 import toast from 'react-hot-toast';
 import { Project } from '@/types/schema';
@@ -70,14 +76,14 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
         <TrendingUp className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
         <div>
           <p className="text-sm font-bold tracking-tight">Stop guessing. Start tracking every dollar.</p>
-          <p className="text-xs text-white/70 mt-0.5 leading-snug">
+          <p className="text-xs text-[#FFFFFF]/70 mt-0.5 leading-snug">
             Every day without data costs you money. Upgrade for real-time deal intelligence.
           </p>
         </div>
       </div>
       <button
         onClick={onUpgrade}
-        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFFFFF] text-[#595959] rounded text-xs font-bold uppercase tracking-widest hover:bg-[#F2F2F2] transition-colors"
+        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFFFFF] text-[#1A1A1A] rounded text-xs font-bold uppercase tracking-widest hover:bg-[#F2F2F2] transition-colors"
       >
         See What You&apos;re Missing
         <ChevronRight className="w-3 h-3" aria-hidden="true" />
@@ -90,11 +96,11 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
 
 function dealStatusStyle(status: string): string {
   switch (status) {
-    case 'Lead':           return 'bg-teal-50 text-teal-700';
-    case 'Under Contract': return 'bg-yellow-50 text-yellow-700';
-    case 'Renovating':     return 'bg-orange-50 text-orange-700';
-    case 'Listed':         return 'bg-blue-50 text-blue-700';
-    case 'Sold':           return 'bg-green-50 text-green-700';
+    case 'Lead':           return 'bg-[#F2F2F2] text-[#7F7F7F]';
+    case 'Under Contract': return 'bg-[#CCCCCC] text-[#595959]';
+    case 'Renovating':     return 'bg-[#A5A5A5] text-[#1A1A1A]';
+    case 'Listed':         return 'bg-[#7F7F7F] text-[#FFFFFF]';
+    case 'Sold':           return 'bg-[#595959] text-[#FFFFFF]';
     default:               return 'bg-[#F2F2F2] text-[#7F7F7F]';
   }
 }
@@ -112,18 +118,18 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
           {project.status}
         </span>
       </div>
-      <h3 className="text-xl font-normal text-[#595959] tracking-tight mb-1 leading-tight">
+      <h3 className="text-xl font-normal text-[#1A1A1A] tracking-tight mb-1 leading-tight">
         {project.propertyName || 'Unnamed Property'}
       </h3>
       <p className="text-sm text-[#7F7F7F] mb-5 leading-snug">{project.address}</p>
       <div className="flex items-end justify-between pt-4 border-t border-[#A5A5A5]/30">
         <div>
           <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold">Your Role</p>
-          <p className="text-sm font-medium text-[#595959] mt-0.5">{role}</p>
+          <p className="text-sm font-medium text-[#1A1A1A] mt-0.5">{role}</p>
         </div>
         <div className="text-right">
           <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold">Phase</p>
-          <p className="text-sm font-medium text-[#595959] mt-0.5 max-w-[140px] truncate">
+          <p className="text-sm font-medium text-[#1A1A1A] mt-0.5 max-w-[140px] truncate">
             {project.phaseStatus ?? '—'}
           </p>
         </div>
@@ -140,7 +146,7 @@ function GuestAccessPanel() {
         <Lock className="w-6 h-6 text-[#7F7F7F]" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-[#595959] tracking-tight">Viewer Access</p>
+        <p className="text-sm font-semibold text-[#1A1A1A] tracking-tight">Viewer Access</p>
         <p className="text-xs text-[#7F7F7F] max-w-[240px] leading-relaxed">
           You&apos;re viewing deals shared with you. Portfolio analytics are available to account holders.
         </p>
@@ -181,6 +187,7 @@ export default function DashboardHome() {
   const { guestProjects, loading: guestLoading } = useGuestProjectsSync();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   // State 2 (free): enforce empty-state teaser — widgets show "—" / no data.
   // State 3 (paid): full live portfolio.
@@ -249,7 +256,7 @@ export default function DashboardHome() {
       {/* ── Page Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
          <div className="flex flex-col">
-           <h1 className="text-2xl font-semibold text-[#595959] tracking-tight">{profile?.firstName || 'Investor'}&apos;s Portfolio</h1>
+           <h1 className="text-2xl font-semibold text-[#1A1A1A] tracking-tight">{profile?.firstName || 'Investor'}&apos;s Portfolio</h1>
            <p className="text-sm text-[#7F7F7F] mt-1">Your deals at a glance · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
          </div>
          <div className="flex items-center gap-4">
@@ -260,7 +267,7 @@ export default function DashboardHome() {
                  placeholder="Search deals, documents, team…" 
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="pl-9 pr-4 py-2 bg-[#FFFFFF] border border-[#A5A5A5] rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-[#595959] text-[#595959] placeholder:text-[#7F7F7F] w-full md:w-64" 
+                 className="pl-9 pr-4 py-2 bg-[#FFFFFF] border border-[#A5A5A5] rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-[#1A1A1A] text-[#1A1A1A] placeholder:text-[#7F7F7F] w-full md:w-64" 
                />
             </div>
             <button className="w-10 h-10 rounded-full bg-[#FFFFFF] border border-[#A5A5A5] flex flex-shrink-0 items-center justify-center hover:bg-[#F2F2F2] transition-colors">
@@ -288,7 +295,7 @@ export default function DashboardHome() {
                 ))
               : (
                   <div className="col-span-3 bg-[#FFFFFF] border border-dashed border-[#A5A5A5] rounded-2xl flex flex-col items-center justify-center py-16 text-center">
-                    <p className="text-sm font-bold text-[#595959] uppercase tracking-widest mb-2">No deals yet</p>
+                    <p className="text-sm font-bold text-[#1A1A1A] uppercase tracking-widest mb-2">No deals yet</p>
                     <p className="text-xs text-[#7F7F7F] max-w-xs leading-relaxed">
                       When a team member shares a deal with you, it will appear here. Check your inbox for an invite link.
                     </p>
@@ -299,32 +306,38 @@ export default function DashboardHome() {
         </section>
       )}
 
-      {/* ── Create Project CTA — Primary Action ── */}
+      {/* ── Dashboard Top Section (Wireframe UI) ── */}
       {!isGuest && (
         <section className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <CreateProjectCTA onClick={handleCreateProject} locked={isFree} />
-            
-            {/* Quick stats beside the CTA */}
-            <div className="md:col-span-2 grid grid-cols-3 gap-4">
-              {[
-                { label: 'In Progress', value: activeDeals.length, icon: Target },
-                { label: 'Exits Completed', value: dealsClosedCount, icon: CheckCircle2 },
-                { label: 'Team', value: teamMembersCount, icon: Users },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex flex-col justify-center items-center gap-2 rounded-xl py-6 transition-all"
-                  style={{
-                    background: 'var(--bg-surface, #FFFFFF)',
-                    border: '1px solid var(--border-ui, #A5A5A5)',
-                  }}
-                >
-                  <stat.icon className="w-5 h-5 text-[#7F7F7F]" aria-hidden="true" />
-                  <span className="text-2xl font-bold text-[#595959] tabular-nums">{stat.value}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#7F7F7F]">{stat.label}</span>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
+            <div className="md:col-span-3">
+              <ProfileWidget 
+                user={user}
+                profile={profile}
+                teamMembersCount={teamMembersCount}
+                completedDeals={dealsClosedCount}
+                winsCount={dealsClosedCount} // using dealsClosedCount as mock wins for now
+                onInviteTeam={() => setIsInviteModalOpen(true)}
+              />
+            </div>
+            <div className="md:col-span-6">
+              <ProjectsWidget 
+                projects={portfolioProjects} 
+                onCreateProject={handleCreateProject}
+                isGuest={isGuest}
+              />
+            </div>
+            <div className="md:col-span-3">
+              <MessagesWidget />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div className="md:col-span-9">
+              <AnalyticsWidget projects={portfolioProjects} />
+            </div>
+            <div className="md:col-span-3">
+              <ProjectsProgressWidget projects={portfolioProjects} />
             </div>
           </div>
         </section>
@@ -409,6 +422,14 @@ export default function DashboardHome() {
         </ErrorBoundary>
 
       </div>
+      
+      {/* ── Modals ── */}
+      {isInviteModalOpen && (
+        <InvestorInviteModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

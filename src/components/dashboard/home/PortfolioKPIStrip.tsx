@@ -21,13 +21,13 @@ interface KPICardProps {
 
 function KPICard({ icon, label, value, subtext, trend }: KPICardProps) {
   return (
-    <div className="ag-card relative overflow-hidden bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[160px] group transition-all duration-500 hover:shadow-xl hover:border-pw-black/20">
+    <div className="ag-card relative overflow-hidden bg-[#FFFFFF] border border-[#CCCCCC]/20 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[160px] group transition-all duration-500 hover:shadow-xl hover:border-[#1A1A1A]/20">
       {/* Decorative background element */}
-      <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-[#F2F2F2] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 blur-3xl pointer-events-none" />
       
       <div className="flex items-start justify-between relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500 shadow-sm">
+          <div className="w-10 h-10 rounded-md bg-[#F2F2F2] flex items-center justify-center text-[#7F7F7F] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-all duration-500 shadow-sm">
             {icon}
           </div>
           <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.2em] text-[10px]">
@@ -35,7 +35,7 @@ function KPICard({ icon, label, value, subtext, trend }: KPICardProps) {
           </p>
         </div>
         {trend && (
-          <div className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-[#595959] bg-[#F2F2F2] px-2 py-1 rounded">
             <ArrowUpRight className="w-3 h-3" />
             {trend}
           </div>
@@ -43,11 +43,11 @@ function KPICard({ icon, label, value, subtext, trend }: KPICardProps) {
       </div>
 
       <div className="mt-8 relative z-10">
-        <h3 className="text-4xl font-normal text-text-primary tracking-tighter leading-none font-mono">
+        <h3 className="text-4xl font-normal text-[#1A1A1A] tracking-tighter leading-none font-mono">
           {value}
         </h3>
-        <p className="text-[11px] text-text-secondary mt-4 font-medium tracking-tight opacity-50 uppercase tracking-widest flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-pw-border group-hover:bg-pw-black transition-colors" />
+        <p className="text-[11px] text-[#7F7F7F] mt-4 font-medium tracking-tight opacity-50 uppercase tracking-widest flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#CCCCCC] group-hover:bg-[#1A1A1A] transition-colors" />
           {subtext}
         </p>
       </div>

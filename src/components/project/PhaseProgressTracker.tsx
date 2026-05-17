@@ -131,17 +131,17 @@ function StepNode({ step, state, isViewing, onClick, isLast }: StepNodeProps) {
     };
     // viewing (browsing a past completed phase)
     return {
-      background: '#595959',
-      border:     '2px solid #595959',
-      color:      '#FFFFFF',
+      background: '#F2F2F2',
+      border:     '2px solid #CCCCCC',
+      color:      '#1A1A1A',
     };
   })();
 
   /* ── Label color ── */
   const labelColor: string = (() => {
     if (isViewing)           return '#1A1A1A';
-    if (state === 'completed') return '#595959';
-    if (state === 'active')    return '#595959';
+    if (state === 'completed') return '#1A1A1A';
+    if (state === 'active')    return '#1A1A1A';
     return '#BFBFBF'; // locked
   })();
 

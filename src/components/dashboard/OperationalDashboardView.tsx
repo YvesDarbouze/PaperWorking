@@ -11,8 +11,8 @@ function OperationalSkeleton() {
   return (
     <div className="w-full pb-20" aria-label="Loading field status" aria-busy="true">
       <div className="mb-12 space-y-3">
-        <div className="h-3 w-20 animate-pulse rounded bg-gray-200" />
-        <div className="h-12 w-64 animate-pulse rounded bg-gray-200" />
+        <div className="h-3 w-20 animate-pulse rounded bg-[#F2F2F2]" />
+        <div className="h-12 w-64 animate-pulse rounded bg-[#F2F2F2]" />
         <div className="h-4 w-80 animate-pulse rounded bg-bg-primary" />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-10">

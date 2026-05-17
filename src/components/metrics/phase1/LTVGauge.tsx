@@ -175,13 +175,13 @@ export default function LTVGauge({
         <div className="grid grid-cols-2 gap-px bg-[#F2F2F2] rounded-lg overflow-hidden border border-[#F2F2F2] mt-5">
           <div className="bg-white p-4">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">Loan Amount</p>
-            <p className="text-base font-bold tracking-tight text-[#595959] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-base font-bold tracking-tight text-[#1A1A1A] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {formatCurrency(loanAmount)}
             </p>
           </div>
           <div className="bg-white p-4">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">Property Value</p>
-            <p className="text-base font-bold tracking-tight text-[#595959] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-base font-bold tracking-tight text-[#1A1A1A] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {formatCurrency(propertyValue)}
             </p>
           </div>

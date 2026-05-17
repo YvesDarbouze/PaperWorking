@@ -352,4 +352,8 @@ html {
   background: transparent;
 }
 
+/* ── Accessibility & Contrast Utilities ── */
+.text-contrast-high {
+  color: #1A1A1A;
+}
 

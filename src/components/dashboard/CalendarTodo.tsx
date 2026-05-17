@@ -185,7 +185,7 @@ export default function CalendarTodo() {
                     <p className="text-xs font-black text-text-primary uppercase tracking-tight">{todo.task}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="text-[10px] font-black uppercase tracking-[0.1em] text-text-secondary opacity-60">{todo.type}</span>
-                      <span className={`text-[10px] font-black uppercase tracking-[0.1em] ${todo.priority === 'High' ? 'text-red-500' : 'text-text-secondary'}`}>{todo.priority}</span>
+                      <span className={`text-[10px] font-black uppercase tracking-[0.1em] ${todo.priority === 'High' ? 'text-[#595959]' : 'text-text-secondary'}`}>{todo.priority}</span>
                       <span className="text-[10px] text-text-secondary font-mono flex items-center">
                         <Clock className="w-2.5 h-2.5 mr-1" />
                         {todo.dueDate}
@@ -234,7 +234,7 @@ export default function CalendarTodo() {
             </div>
 
             {/* ── Calendar grid ── */}
-            <div className="grid grid-cols-7 gap-px bg-gray-200 border border-border-accent flex-1 min-h-[300px]">
+            <div className="grid grid-cols-7 gap-px bg-[#F2F2F2] border border-border-accent flex-1 min-h-[300px]">
               {/* Leading blank cells to align day 1 with correct DOW */}
               {Array.from({ length: firstDOW }).map((_, i) => (
                 <div key={`blank-${i}`} className="bg-bg-surface" />

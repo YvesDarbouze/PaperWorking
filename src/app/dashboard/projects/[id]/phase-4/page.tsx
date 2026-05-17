@@ -228,13 +228,13 @@ export default function Phase4WorkspacePage() {
             <TotalAllInCostCard project={project} />
           </div>
           <div className="rounded-[8px] border p-8 flex flex-col justify-center bg-white shadow-sm border-gray-100" style={{ borderColor: 'var(--border-ui)' }}>
-             <span className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-[#595959]">Archival Readiness</span>
+             <span className="text-[10px] font-bold uppercase tracking-[0.2em] mb-4 text-[#1A1A1A]">Archival Readiness</span>
              <div className="flex items-center gap-4">
                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#F9F9F9] border border-gray-100">
                  <div className={`w-4 h-4 rounded-full ${project.locked ? 'bg-green-500' : 'bg-[#595959] animate-pulse'}`} />
                </div>
                <div>
-                 <p className="text-sm font-black tracking-tight text-[#595959]">
+                 <p className="text-sm font-black tracking-tight text-[#1A1A1A]">
                    {project.locked ? 'Project Locked' : 'Awaiting Final Settlement'}
                  </p>
                  <p className="text-[10px] text-gray-400 font-medium">
@@ -364,11 +364,11 @@ export default function Phase4WorkspacePage() {
                 ].map((row, i) => (
                   <div key={i} className="flex items-start gap-4">
                     <div className="mt-1 w-8 h-8 rounded-md bg-[#F9F9F9] flex items-center justify-center border border-gray-50">
-                      <row.icon className="w-3.5 h-3.5 text-[#595959]" />
+                      <row.icon className="w-3.5 h-3.5 text-[#1A1A1A]" />
                     </div>
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 block mb-1">{row.label}</span>
-                      <span className="text-xs font-black tracking-tight text-[#595959]">{row.value}</span>
+                      <span className="text-xs font-black tracking-tight text-[#1A1A1A]">{row.value}</span>
                     </div>
                   </div>
                 ))}
@@ -378,9 +378,9 @@ export default function Phase4WorkspacePage() {
             <section className="p-8 rounded-[8px] border border-dashed border-gray-200 bg-[#F9F9F9]/50 flex flex-col gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <Calculator className="w-4 h-4 text-[#595959]" />
+                  <Calculator className="w-4 h-4 text-[#1A1A1A]" />
                 </div>
-                <h3 className="text-xs font-black uppercase tracking-widest text-[#595959]">Exit Intelligence</h3>
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#1A1A1A]">Exit Intelligence</h3>
               </div>
               <p className="text-[10px] leading-relaxed text-gray-400 font-medium">
                 Our calculation engine uses capital-weighted aggregation to derive your final net realized profit. Every staging fee, lender payoff, and tax proratio is factored into the terminal ROI.
@@ -394,11 +394,11 @@ export default function Phase4WorkspacePage() {
           <div className="max-w-xl space-y-6">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#595959]/5 border border-[#595959]/10">
               <div className={`w-2 h-2 rounded-full ${project.locked ? 'bg-green-500' : 'bg-[#595959] animate-pulse'}`} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#595959]">
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1A1A1A]">
                 {project.locked ? 'Project Archived' : 'Ready for Archival'}
               </span>
             </div>
-            <h2 className="text-4xl font-black tracking-tighter text-[#595959] uppercase">
+            <h2 className="text-4xl font-black tracking-tighter text-[#1A1A1A] uppercase">
               Terminal Project Reconciliation
             </h2>
             <p className="text-xs leading-relaxed text-gray-400 font-medium max-w-lg mx-auto">

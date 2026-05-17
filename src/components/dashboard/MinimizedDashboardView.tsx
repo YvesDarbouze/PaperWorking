@@ -46,7 +46,7 @@ function getPhaseIcon(status: string) {
     case 'Under Contract': return <FileSignature className="w-3.5 h-3.5" />;
     case 'Renovating':     return <HardHat className="w-3.5 h-3.5" />;
     case 'Listed':         return <LogOut className="w-3.5 h-3.5" />;
-    case 'Sold':           return <LogOut className="w-3.5 h-3.5 text-green-600" />;
+    case 'Sold':           return <LogOut className="w-3.5 h-3.5 text-[#595959]" />;
     default:               return <Building2 className="w-3.5 h-3.5" />;
   }
 }
@@ -100,7 +100,7 @@ export default function MinimizedDashboardView({ projects, onSelectDeal }: Minim
         </div>
         <button
           onClick={handleClose}
-          className="p-2 rounded-lg hover:bg-gray-200 text-text-secondary hover:text-text-primary transition"
+          className="p-2 rounded-lg hover:bg-[#F2F2F2] text-text-secondary hover:text-text-primary transition"
           aria-label="Close board view"
         >
           <X className="w-5 h-5" />

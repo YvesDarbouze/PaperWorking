@@ -21,7 +21,7 @@ const kpis = [
     positive: true,
     data: generateSparklineData(true),
     icon: FileText,
-    color: "#16a34a"
+    color: "#595959"
   },
   {
     title: "Pending Signatures",
@@ -30,7 +30,7 @@ const kpis = [
     positive: true, // Decreasing pending is good
     data: generateSparklineData(false),
     icon: PenTool,
-    color: "#16a34a"
+    color: "#595959"
   },
   {
     title: "Team Efficiency",
@@ -39,7 +39,7 @@ const kpis = [
     positive: true,
     data: generateSparklineData(true),
     icon: Zap,
-    color: "#16a34a"
+    color: "#595959"
   },
   {
     title: "Storage Usage",
@@ -48,7 +48,7 @@ const kpis = [
     positive: false, // Increasing storage might be bad or neutral, we'll mark as neutral/negative for variety
     data: generateSparklineData(true),
     icon: HardDrive,
-    color: "#d97706"
+    color: "#A5A5A5"
   }
 ];
 
@@ -62,15 +62,15 @@ export default function DashboardKPIHeader() {
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-[#595959]" />
+                  <Icon className="w-5 h-5 text-[#1A1A1A]" />
                 </div>
-                <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full ${kpi.positive ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'}`}>
+                <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-[#F2F2F2] ${kpi.positive ? 'text-[#1A1A1A]' : 'text-[#7F7F7F]'}`}>
                   {kpi.positive ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                   {kpi.change.split(' ')[1]}
                 </div>
               </div>
               <div className="flex flex-col mb-4">
-                <h3 className="text-3xl font-normal tracking-tight text-[#595959]">{kpi.value}</h3>
+                <h3 className="text-3xl font-normal tracking-tight text-[#1A1A1A]">{kpi.value}</h3>
                 <p className="text-xs font-medium text-[#7F7F7F] uppercase tracking-wider">{kpi.title}</p>
               </div>
               <div className="h-16 w-full -mx-2 -mb-2 mt-2">

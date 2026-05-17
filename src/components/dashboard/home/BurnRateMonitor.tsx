@@ -33,22 +33,22 @@ export default function BurnRateMonitor({ projects }: BurnRateMonitorProps) {
   ];
 
   return (
-    <div className="ag-card bg-bg-surface border border-border-accent/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col group hover:border-pw-black/20 transition-all duration-500 min-h-[500px]">
+    <div className="ag-card bg-[#FFFFFF] border border-[#CCCCCC]/10 shadow-[0_15px_30px_rgba(0,0,0,0.02)] flex flex-col group hover:border-[#1A1A1A]/20 transition-all duration-500 min-h-[500px]">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 rounded-md bg-bg-primary flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500 shadow-sm">
+        <div className="w-10 h-10 rounded-md bg-[#F2F2F2] flex items-center justify-center text-[#A5A5A5] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-all duration-500 shadow-sm">
           <Flame className="w-5 h-5" />
         </div>
         <div>
           <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.2em] text-[10px]">
             Deal Efficiency
           </p>
-          <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Velocity & Burn</h3>
+          <h3 className="text-2xl font-normal text-[#1A1A1A] tracking-tighter">Velocity & Burn</h3>
         </div>
       </div>
 
       {/* Premium Tab Navigation */}
-      <div className="flex gap-1.5 mb-8 bg-bg-primary p-1 rounded-xl border border-border-accent/5">
+      <div className="flex gap-1.5 mb-8 bg-[#F2F2F2] p-1 rounded-xl border border-[#CCCCCC]/5">
         {tabs.map(tab => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.key;
@@ -58,11 +58,11 @@ export default function BurnRateMonitor({ projects }: BurnRateMonitorProps) {
               onClick={() => setActiveTab(tab.key)}
               className={`flex-1 flex flex-col items-center justify-center gap-2 py-3 px-1 rounded-lg transition-all duration-500 ${
                 isActive
-                  ? 'bg-bg-surface text-text-primary shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-border-accent/10'
-                  : 'text-text-secondary opacity-40 hover:opacity-100 hover:bg-bg-surface/50'
+                  ? 'bg-[#FFFFFF] text-[#1A1A1A] shadow-[0_4px_12px_rgba(0,0,0,0.05)] border border-[#CCCCCC]/10'
+                  : 'text-[#A5A5A5] opacity-40 hover:opacity-100 hover:bg-[#FFFFFF]/50'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-text-primary' : 'text-text-secondary'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#1A1A1A]' : 'text-[#A5A5A5]'}`} />
               <span className={`text-[8px] font-black tracking-widest uppercase text-center leading-tight`}>
                 {tab.label}
               </span>

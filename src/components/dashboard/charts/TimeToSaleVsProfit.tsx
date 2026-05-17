@@ -72,13 +72,13 @@ function ScatterTooltip({ active, payload }: any) {
         </div>
         <div className="flex justify-between gap-8">
           <span className="text-text-secondary font-medium">Net Profit:</span>
-          <span className={`font-mono font-bold ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+          <span className={`font-mono font-bold ${isPositive ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
             {isPositive ? '+' : '-'}${Math.abs(d.profit).toLocaleString()}
           </span>
         </div>
         <div className="flex justify-between gap-8">
           <span className="text-text-secondary font-medium">ROI:</span>
-          <span className={`font-mono font-bold ${isPositive ? 'text-emerald-500' : 'text-red-500'}`}>
+          <span className={`font-mono font-bold ${isPositive ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
             {d.roi.toFixed(1)}%
           </span>
         </div>

@@ -8,12 +8,12 @@
  * Step size: (204 − 89) / 6 ≈ 19 units per phase.
  */
 export const PHASE_BACKGROUNDS: Record<string, string> = {
-  findandfund: '#CCCCCC', // step 0 — lightest
-  pipeline:    '#B9B9B9', // step 1
-  evaluation:  '#A6A6A6', // step 2
-  closing:     '#939393', // step 3
-  rehab:       '#808080', // step 4 — dark threshold
-  engine:      '#6D6D6D', // step 5
+  findandfund: '#F2F2F2', // step 0 — lightest
+  pipeline:    '#E5E5E5', // step 1 (interpolated)
+  evaluation:  '#CCCCCC', // step 2
+  closing:     '#B8B8B8', // step 3 (interpolated)
+  rehab:       '#A5A5A5', // step 4
+  engine:      '#7F7F7F', // step 5
   exit:        '#595959', // step 6 — darkest
 };
 

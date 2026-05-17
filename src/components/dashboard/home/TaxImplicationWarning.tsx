@@ -70,10 +70,10 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
     <div className="space-y-6">
       <div className="flex items-center justify-between px-1 mb-4">
         <div className="flex items-center gap-2">
-          <AlertTriangle className="w-3 h-3 text-amber-500" />
+          <AlertTriangle className="w-3 h-3 text-[#595959]" />
           <p className="ag-label opacity-40 text-[10px] font-bold uppercase tracking-[0.1em]">Liability Alerts</p>
         </div>
-        <span className="text-[10px] font-mono text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full font-bold border border-amber-100">
+        <span className="text-[10px] font-mono text-[#595959] bg-[#F2F2F2] px-2 py-0.5 rounded-full font-bold border border-[#CCCCCC]">
           {warnings.length} Active
         </span>
       </div>
@@ -85,13 +85,13 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
               onClick={() => setExpandedId(expandedId === w.id ? null : w.id)}
               className={`w-full flex items-center justify-between px-4 py-4 rounded-xl transition-all duration-500 border ${
                 expandedId === w.id 
-                  ? 'bg-amber-50 border-amber-200 shadow-sm' 
-                  : 'bg-bg-surface border-border-accent/10 hover:border-amber-200 hover:bg-amber-50/30'
+                  ? 'bg-[#F2F2F2] border-[#CCCCCC] shadow-sm' 
+                  : 'bg-bg-surface border-border-accent/10 hover:border-[#CCCCCC] hover:bg-[#F2F2F2]/30'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className={`p-1.5 rounded-lg ${expandedId === w.id ? 'bg-amber-200/50' : 'bg-amber-50'} transition-colors`}>
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                <div className={`p-1.5 rounded-lg ${expandedId === w.id ? 'bg-[#595959]/50' : 'bg-[#F2F2F2]'} transition-colors`}>
+                  <AlertTriangle className="w-3.5 h-3.5 text-[#595959]" />
                 </div>
                 <div className="text-left">
                   <span className="block text-xs font-bold text-text-primary tracking-tight truncate max-w-[140px]">
@@ -103,10 +103,10 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-amber-600 font-bold">
+                <span className="text-[10px] font-mono text-[#595959] font-bold">
                   {w.daysUntilLongTerm}d
                 </span>
-                <ChevronRight className={`w-3.5 h-3.5 text-amber-400 transition-transform duration-500 ${expandedId === w.id ? 'rotate-90' : ''}`} />
+                <ChevronRight className={`w-3.5 h-3.5 text-[#595959] transition-transform duration-500 ${expandedId === w.id ? 'rotate-90' : ''}`} />
               </div>
             </button>
 
@@ -119,15 +119,15 @@ export default function TaxImplicationWarning({ projects }: TaxImplicationWarnin
                   transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-2 p-4 bg-white/50 rounded-xl border border-amber-200/50 text-xs text-amber-800 shadow-inner">
+                  <div className="mt-2 p-4 bg-white/50 rounded-xl border border-[#CCCCCC]/50 text-xs text-amber-800 shadow-inner">
                     <div className="flex items-start gap-3">
-                      <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+                      <Info className="w-4 h-4 mt-0.5 flex-shrink-0 text-[#595959]" />
                       <div className="space-y-2">
                         <p className="leading-relaxed font-medium">
                           Holding duration is currently <span className="font-bold text-amber-900">{w.daysHeld} days</span>. 
                           Exiting before 1 year triggers <span className="font-bold underline decoration-amber-300">STCG tax rates</span> (up to 37% Federal).
                         </p>
-                        <div className="flex justify-between items-center text-[10px] pt-2 border-t border-amber-200/50 font-bold uppercase tracking-widest text-amber-600">
+                        <div className="flex justify-between items-center text-[10px] pt-2 border-t border-[#CCCCCC]/50 font-bold uppercase tracking-widest text-[#595959]">
                           <span>Held: {w.daysHeld} Days</span>
                           <span className="flex items-center gap-1">
                             Long-term in {w.daysUntilLongTerm}d

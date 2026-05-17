@@ -38,9 +38,9 @@ interface FullscreenLifecycleViewProps {
 import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
 const PHASES = [
-  { id: 1, title: 'Acquisition', bg: PHASE_BACKGROUNDS.findandfund || '#CCCCCC' },
-  { id: 2, title: 'Purchase', bg: PHASE_BACKGROUNDS.evaluation || '#A6A6A6' },
-  { id: 3, title: 'Hold', bg: PHASE_BACKGROUNDS.rehab || '#808080' },
+  { id: 1, title: 'Acquisition', bg: PHASE_BACKGROUNDS.findandfund || '#F2F2F2' },
+  { id: 2, title: 'Purchase', bg: PHASE_BACKGROUNDS.evaluation || '#CCCCCC' },
+  { id: 3, title: 'Hold', bg: PHASE_BACKGROUNDS.rehab || '#A5A5A5' },
   { id: 4, title: 'Exit', bg: PHASE_BACKGROUNDS.exit || '#595959' },
 ];
 
@@ -120,7 +120,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                      }
                   }
                }}
-               className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-gray-800 transition-all flex items-center space-x-2"
+               className="bg-black text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-[#F2F2F2] transition-all flex items-center space-x-2"
              >
                 <RefreshCw className="w-3.5 h-3.5" />
                 <span>Advance Phase</span>
@@ -246,10 +246,10 @@ function StaticPhase1({ deal }: { deal: Project }) {
            const pp = deal.financials.purchasePrice || 0;
            const diff = mao - pp;
            return (
-             <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: diff >= 0 ? '#10B981' : '#EF4444' }}>
+             <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: diff >= 0 ? '#1A1A1A' : '#595959' }}>
                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">MAO (70% Rule)</p>
-               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: diff >= 0 ? '#10B981' : '#EF4444' }}>${mao.toLocaleString()}</p>
-               <p className="text-[9px] font-bold mt-1" style={{ color: diff >= 0 ? '#6EE7B7' : '#FCA5A5' }}>
+               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: diff >= 0 ? '#1A1A1A' : '#595959' }}>${mao.toLocaleString()}</p>
+               <p className="text-[9px] font-bold mt-1" style={{ color: diff >= 0 ? '#1A1A1A' : '#595959' }}>
                  {diff >= 0 ? `$${diff.toLocaleString()} under` : `$${Math.abs(diff).toLocaleString()} over`}
                </p>
              </div>
@@ -268,7 +268,7 @@ function StaticPhase1({ deal }: { deal: Project }) {
            <>
              <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Annual NOI</p>
-               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: noiComponents.noi >= 0 ? '#10B981' : '#EF4444' }}>${Math.round(noiComponents.noi).toLocaleString()}</p>
+               <p className="text-xl font-bold tabular-nums mt-1" style={{ color: noiComponents.noi >= 0 ? '#1A1A1A' : '#595959' }}>${Math.round(noiComponents.noi).toLocaleString()}</p>
              </div>
              <div className="bg-bg-surface/80 rounded-xl p-4 border border-border-accent text-left">
                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Cap Rate</p>
@@ -452,12 +452,12 @@ function StaticPhase2({ deal }: { deal: Project }) {
 
          {/* 15% Contingency */}
          {hasBudgetData ? (
-           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#F59E0B' }}>
+           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#7F7F7F' }}>
              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">15% Contingency Reserve</p>
-             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#F59E0B' }}>
+             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#7F7F7F' }}>
                ${contingency.contingencyAmount.toLocaleString()}
              </p>
-             <p className="text-[9px] mt-1" style={{ color: '#FCD34D' }}>
+             <p className="text-[9px] mt-1" style={{ color: '#7F7F7F' }}>
                For hidden surprises — not upgrades
              </p>
            </div>
@@ -470,12 +470,12 @@ function StaticPhase2({ deal }: { deal: Project }) {
 
          {/* Daily Burn Rate */}
          {burnRate && burnRate.dailyBurnRate > 0 ? (
-           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#EF4444' }}>
+           <div className="bg-bg-surface/80 rounded-xl p-4 border text-left" style={{ borderColor: '#595959' }}>
              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Daily Burn Rate</p>
-             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#EF4444' }}>
+             <p className="text-xl font-bold tabular-nums mt-1" style={{ color: '#595959' }}>
                ${burnRate.dailyBurnRate.toLocaleString()}/day
              </p>
-             <p className="text-[9px] mt-1" style={{ color: '#FCA5A5' }}>
+             <p className="text-[9px] mt-1" style={{ color: '#595959' }}>
                ${burnRate.totalMonthlyBurn.toLocaleString()}/mo holding cost
              </p>
            </div>
@@ -517,11 +517,11 @@ function StaticPhase2({ deal }: { deal: Project }) {
              </div>
              {/* Contingency */}
              <div className="flex justify-between items-center">
-               <span className="text-sm flex items-center" style={{ color: '#F59E0B' }}>
-                 <span className="w-1.5 h-1.5 rounded-full mr-2" style={{ background: '#F59E0B' }} />
+               <span className="text-sm flex items-center" style={{ color: '#7F7F7F' }}>
+                 <span className="w-1.5 h-1.5 rounded-full mr-2" style={{ background: '#7F7F7F' }} />
                  Contingency ({Math.round(contingency.contingencyRate * 100)}%)
                </span>
-               <span className="text-sm font-bold tabular-nums" style={{ color: '#F59E0B' }}>+ ${contingency.contingencyAmount.toLocaleString()}</span>
+               <span className="text-sm font-bold tabular-nums" style={{ color: '#7F7F7F' }}>+ ${contingency.contingencyAmount.toLocaleString()}</span>
              </div>
              {/* Holding & Closing */}
              <div className="flex justify-between items-center">
@@ -545,17 +545,17 @@ function StaticPhase2({ deal }: { deal: Project }) {
              const holdingPrc = (contingency.holdingAndClosingCosts / total) * 100;
              return (
                <div className="mt-4">
-                 <div className="w-full h-4 rounded-full flex overflow-hidden bg-gray-800/30">
-                   <div style={{ width: `${purchasePrc}%` }} className="bg-blue-500 transition-all duration-500" />
-                   <div style={{ width: `${repairPrc}%` }} className="bg-emerald-500 transition-all duration-500" />
-                   <div style={{ width: `${contingencyPrc}%`, background: '#F59E0B' }} className="transition-all duration-500" />
-                   <div style={{ width: `${holdingPrc}%` }} className="bg-gray-400 transition-all duration-500" />
+                 <div className="w-full h-4 rounded-full flex overflow-hidden bg-[#F2F2F2]/30">
+                   <div className="transition-all duration-500" style={{ width: `${purchasePrc}%`, background: '#595959' }} />
+                   <div className="transition-all duration-500" style={{ width: `${repairPrc}%`, background: '#7F7F7F' }} />
+                   <div className="transition-all duration-500" style={{ width: `${contingencyPrc}%`, background: '#A5A5A5' }} />
+                   <div className="transition-all duration-500" style={{ width: `${holdingPrc}%`, background: '#CCCCCC' }} />
                  </div>
                  <div className="flex flex-wrap gap-x-5 gap-y-1 mt-2">
-                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-blue-500 mr-1.5" /> Purchase ({purchasePrc.toFixed(0)}%)</span>
-                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5" /> Repairs ({repairPrc.toFixed(0)}%)</span>
-                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#F59E0B' }} /> Contingency ({contingencyPrc.toFixed(0)}%)</span>
-                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full bg-gray-400 mr-1.5" /> Holding/Closing ({holdingPrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#595959' }} /> Purchase ({purchasePrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#7F7F7F' }} /> Repairs ({repairPrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#A5A5A5' }} /> Contingency ({contingencyPrc.toFixed(0)}%)</span>
+                   <span className="flex items-center text-[10px] text-text-secondary"><span className="w-2 h-2 rounded-full mr-1.5" style={{ background: '#CCCCCC' }} /> Holding/Closing ({holdingPrc.toFixed(0)}%)</span>
                  </div>
                </div>
              );
@@ -607,12 +607,12 @@ function StaticPhase2({ deal }: { deal: Project }) {
              )}
            </div>
            {/* Urgency callout */}
-           <div className="mt-4 p-3 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(239, 68, 68, 0.05)' }}>
+           <div className="mt-4 p-3 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(89, 89, 89, 0.05)' }}>
              <span className="text-lg">⏱️</span>
              <p className="text-sm text-text-primary">
-               Every day past your timeline costs <strong style={{ color: '#EF4444' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
+               Every day past your timeline costs <strong style={{ color: '#595959' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
                {deal.financials?.estimatedTimelineDays ? (
-                 <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#EF4444' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
+                 <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#595959' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
                ) : null}
              </p>
            </div>
@@ -806,13 +806,13 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
 
   // Zone color map
   const ZONE_COLORS: Record<string, string> = {
-    'Kitchen': '#3B82F6',      // Blue
-    'Bathroom': '#14B8A6',     // Teal
-    'Curb Appeal': '#10B981',  // Emerald
-    'Interior': '#9CA3AF',     // Gray
-    'Structural': '#F97316',   // Orange
+    'Kitchen': '#595959',
+    'Bathroom': '#7F7F7F',
+    'Curb Appeal': '#A5A5A5',
+    'Interior': '#CCCCCC',
+    'Structural': '#F2F2F2',
   };
-  const riskColors: Record<string, string> = { low: '#10B981', moderate: '#F59E0B', high: '#EF4444' };
+  const riskColors: Record<string, string> = { low: '#A5A5A5', moderate: '#7F7F7F', high: '#595959' };
 
   return (
     <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
@@ -825,34 +825,34 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
 
          {/* Yesterday Cost Thumbnail */}
-         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+         <div className="bg-bg-surface/80 border border-border-accent rounded-xl p-6 shadow-xl flex flex-col justify-between">
            <div>
              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Yesterday Cost You</p>
-             <p className={`text-4xl font-bold tabular-nums ${yesterdayCost.yesterdayTotalCost > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
+             <p className={`text-4xl font-bold tabular-nums`} style={{ color: yesterdayCost.yesterdayTotalCost > 0 ? '#595959' : '#1A1A1A' }}>
                ${yesterdayCost.yesterdayTotalCost.toLocaleString()}
              </p>
              <div className="flex gap-4 mt-3">
                <div>
                  <p className="text-[9px] text-text-secondary opacity-50">Holding</p>
-                 <p className="text-xs text-gray-300 tabular-nums">${yesterdayCost.yesterdayHoldingCost.toLocaleString()}</p>
+                 <p className="text-xs text-[#CCCCCC] tabular-nums">${yesterdayCost.yesterdayHoldingCost.toLocaleString()}</p>
                </div>
                <div>
                  <p className="text-[9px] text-text-secondary opacity-50">Approved Spend</p>
-                 <p className="text-xs text-gray-300 tabular-nums">${yesterdayCost.yesterdayApprovedSpend.toLocaleString()}</p>
+                 <p className="text-xs text-[#CCCCCC] tabular-nums">${yesterdayCost.yesterdayApprovedSpend.toLocaleString()}</p>
                </div>
              </div>
            </div>
-           <div className="mt-4 pt-3 border-t border-gray-800">
+           <div className="mt-4 pt-3 border-t border-[#595959]">
              <div className="flex justify-between text-[10px] text-text-secondary opacity-50 mb-1">
                <span>Budget Used</span>
                <span className="tabular-nums">{yesterdayCost.budgetUtilization}%</span>
              </div>
-             <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+             <div className="w-full h-1.5 bg-[#F2F2F2] rounded-full overflow-hidden">
                <div
                  className="h-full rounded-full transition-all duration-700"
                  style={{
                    width: `${Math.min(yesterdayCost.budgetUtilization, 100)}%`,
-                   background: yesterdayCost.isOverBudget ? '#EF4444' : yesterdayCost.budgetUtilization > 80 ? '#F59E0B' : '#10B981',
+                   background: yesterdayCost.isOverBudget ? '#595959' : yesterdayCost.budgetUtilization > 80 ? '#7F7F7F' : '#A5A5A5',
                  }}
                />
              </div>
@@ -864,7 +864,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
          </div>
 
          {/* Cumulative Cost Card */}
-         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+         <div className="bg-bg-surface/80 border border-border-accent rounded-xl p-6 shadow-xl flex flex-col justify-between">
            <div>
              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Total Project Cost to Date</p>
              <p className="text-3xl font-bold tabular-nums text-white">
@@ -873,24 +873,24 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
              <div className="grid grid-cols-2 gap-3 mt-3">
                <div>
                  <p className="text-[9px] text-text-secondary opacity-50">Holding Costs</p>
-                 <p className="text-xs text-orange-400 tabular-nums">${yesterdayCost.cumulativeHoldingCost.toLocaleString()}</p>
+                 <p className="text-xs text-text-primary tabular-nums">${yesterdayCost.cumulativeHoldingCost.toLocaleString()}</p>
                </div>
                <div>
                  <p className="text-[9px] text-text-secondary opacity-50">Rehab Spend</p>
-                 <p className="text-xs text-blue-400 tabular-nums">${yesterdayCost.cumulativeRehabSpend.toLocaleString()}</p>
+                 <p className="text-xs text-text-primary tabular-nums">${yesterdayCost.cumulativeRehabSpend.toLocaleString()}</p>
                </div>
              </div>
            </div>
-           <div className="mt-4 pt-3 border-t border-gray-800">
+           <div className="mt-4 pt-3 border-t border-[#595959]">
              <p className="text-[9px] text-text-secondary opacity-50 mb-0.5">Projected Total at Current Burn</p>
-             <p className={`text-lg font-bold tabular-nums ${yesterdayCost.isOverBudget ? 'text-red-400' : 'text-white'}`}>
+             <p className={`text-lg font-bold tabular-nums`} style={{ color: yesterdayCost.isOverBudget ? '#595959' : 'inherit' }}>
                ${yesterdayCost.projectedTotalCost.toLocaleString()}
              </p>
            </div>
          </div>
 
          {/* Critical Path Summary Card */}
-         <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl flex flex-col justify-between">
+         <div className="bg-bg-surface/80 border border-border-accent rounded-xl p-6 shadow-xl flex flex-col justify-between">
            <div>
              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-1">Critical Path</p>
              {rehabTasks.length > 0 ? (
@@ -903,23 +903,23 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                  </p>
                  <div className="mt-3">
                    <p className="text-[9px] text-text-secondary opacity-50 mb-1">Schedule Status</p>
-                   <p className={`text-sm font-bold ${stageProgress.isOnSchedule ? 'text-emerald-400' : 'text-red-400'}`}>
+                   <p className="text-sm font-bold" style={{ color: stageProgress.isOnSchedule ? '#1A1A1A' : '#595959' }}>
                      {stageProgress.isOnSchedule ? '✅ On Schedule' : '🚨 Behind Schedule'}
                    </p>
                  </div>
                </>
              ) : (
                <>
-                 <p className="text-lg text-gray-400 mt-2">No tasks scheduled</p>
+                 <p className="text-lg text-[#CCCCCC] mt-2">No tasks scheduled</p>
                  <p className="text-[10px] text-text-secondary opacity-50 mt-1">Add rehab tasks to activate the Critical Path Method timeline</p>
                </>
              )}
            </div>
-           <div className="mt-4 pt-3 border-t border-gray-800">
+           <div className="mt-4 pt-3 border-t border-[#595959]">
              <p className="text-[9px] text-text-secondary opacity-50">Overall Progress</p>
              <div className="flex items-center gap-2 mt-1">
-               <div className="flex-1 h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                 <div className="h-full rounded-full bg-emerald-500 transition-all duration-700" style={{ width: `${stageProgress.overallPercent}%` }} />
+               <div className="flex-1 h-1.5 bg-[#F2F2F2] rounded-full overflow-hidden">
+                 <div className="h-full rounded-full bg-black transition-all duration-700" style={{ width: `${stageProgress.overallPercent}%` }} />
                </div>
                <span className="text-xs text-white tabular-nums font-bold">{stageProgress.overallPercent}%</span>
              </div>
@@ -928,13 +928,13 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
        </div>
 
        {/* ── 3-Stage Renovation Timeline ── */}
-       <div className="bg-black/90 border border-gray-700 rounded-xl p-6 shadow-xl mb-6">
+       <div className="bg-bg-surface/80 border border-border-accent rounded-xl p-6 shadow-xl mb-6">
          <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-5">Project Timeline — Critical Path Method</p>
          <div className="relative">
            {/* Timeline connector line */}
-           <div className="absolute top-8 left-[12.5%] right-[12.5%] h-0.5 bg-gray-700" />
+           <div className="absolute top-8 left-[12.5%] right-[12.5%] h-0.5 bg-[#7F7F7F]" />
            <div
-             className="absolute top-8 left-[12.5%] h-0.5 bg-emerald-500 transition-all duration-700"
+             className="absolute top-8 left-[12.5%] h-0.5 bg-black transition-all duration-700"
              style={{ width: `${Math.min(stageProgress.overallPercent, 100) * 0.75}%` }}
            />
 
@@ -945,23 +945,23 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                  <div key={s.stage} className="flex flex-col items-center text-center">
                    {/* Node */}
                    <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all duration-500 ${
-                     s.isComplete ? 'bg-emerald-500/20 border-2 border-emerald-500 shadow-lg shadow-emerald-500/20' :
-                     s.isActive ? 'bg-blue-500/20 border-2 border-blue-500 animate-pulse shadow-lg shadow-blue-500/20' :
-                     'bg-gray-800 border border-gray-700'
+                     s.isComplete ? 'bg-black/20 border-2 border-[#CCCCCC] shadow-lg shadow-emerald-500/20' :
+                     s.isActive ? 'bg-[#F2F2F2]0/20 border-2 border-[#CCCCCC] animate-pulse shadow-lg shadow-blue-500/20' :
+                     'bg-[#F2F2F2] border border-border-accent'
                    }`}>
                      {s.isComplete ? '✅' : icons[i]}
                    </div>
                    {/* Label */}
-                   <p className={`text-sm font-bold mt-3 ${s.isActive ? 'text-blue-400' : s.isComplete ? 'text-emerald-400' : 'text-gray-400'}`}>
+                   <p className={`text-sm font-bold mt-3 ${s.isActive ? 'text-text-primary' : s.isComplete ? 'text-[#1A1A1A]' : 'text-[#CCCCCC]'}`}>
                      {s.label}
                    </p>
                    <p className="text-[10px] text-text-secondary opacity-50 mt-0.5">{s.estimatedWeeks}</p>
                    {/* Progress for active/complete stages */}
                    {s.totalTasks > 0 && (
                      <div className="mt-2 w-full max-w-[120px]">
-                       <div className="w-full h-1 bg-gray-800 rounded-full overflow-hidden">
+                       <div className="w-full h-1 bg-[#F2F2F2] rounded-full overflow-hidden">
                          <div
-                           className={`h-full rounded-full transition-all duration-500 ${s.isComplete ? 'bg-emerald-500' : 'bg-blue-500'}`}
+                           className={`h-full rounded-full transition-all duration-500 ${s.isComplete ? 'bg-black' : 'bg-[#F2F2F2]0'}`}
                            style={{ width: `${s.percentComplete}%` }}
                          />
                        </div>
@@ -979,7 +979,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
 
          {/* Timeline buffer recommendation */}
          {stageProgress.timelineBufferDays > 0 && rehabTasks.length > 0 && (
-           <div className="mt-5 pt-3 border-t border-gray-800/50 flex items-center gap-2">
+           <div className="mt-5 pt-3 border-t border-[#595959]/50 flex items-center gap-2">
              <span className="text-[10px]">💡</span>
              <p className="text-[10px] text-text-secondary opacity-50">
                Built-in {stageProgress.timelineBufferDays}-day buffer (17.5%) absorbs failed inspections, weather delays, and material shortages.
@@ -989,14 +989,14 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
          )}
        </div>
        
-       <div className="bg-black/90 text-white rounded-xl p-8 border border-gray-700 shadow-xl flex flex-col items-center">
+       <div className="bg-bg-surface/80 text-white rounded-xl p-8 border border-border-accent shadow-xl flex flex-col items-center">
           
           {/* ── Renovation ROI KPI Strip ── */}
           <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {/* KPI 1: Budget Remaining */}
-            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+            <div className="bg-[#595959]/80 rounded-lg p-4 border border-[#595959]">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Budget Remaining</p>
-              <p className={`text-2xl font-bold tabular-nums mt-1 ${budgetRemaining >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className={`text-2xl font-bold tabular-nums mt-1 ${budgetRemaining >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                 ${Math.abs(budgetRemaining).toLocaleString()}
               </p>
               <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">
@@ -1004,7 +1004,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
               </p>
             </div>
             {/* KPI 2: Highest ROI Zone */}
-            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+            <div className="bg-[#595959]/80 rounded-lg p-4 border border-[#595959]">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Highest ROI Zone</p>
               <p className="text-2xl font-bold mt-1" style={{ color: ZONE_COLORS[renoROI.highestROIZone] || '#fff' }}>
                 {renoROI.highestROIZone}
@@ -1014,15 +1014,15 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
               </p>
             </div>
             {/* KPI 3: Money Rooms % */}
-            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+            <div className="bg-[#595959]/80 rounded-lg p-4 border border-[#595959]">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Money Rooms</p>
-              <p className={`text-2xl font-bold tabular-nums mt-1 ${renoROI.moneyRoomsHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>
+              <p className={`text-2xl font-bold tabular-nums mt-1 ${renoROI.moneyRoomsHealthy ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                 {renoROI.moneyRoomsPercent}%
               </p>
               <p className="text-[9px] text-text-secondary opacity-50 mt-0.5">Kitchen + Bath (target: 50-60%)</p>
             </div>
             {/* KPI 4: Over-Improvement Risk */}
-            <div className="bg-gray-900/80 rounded-lg p-4 border border-gray-800">
+            <div className="bg-[#595959]/80 rounded-lg p-4 border border-[#595959]">
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60">Over-Improvement Risk</p>
               <p className="text-2xl font-bold mt-1 uppercase" style={{ color: riskColors[overImprovementRisk.riskLevel] }}>
                 {overImprovementRisk.riskLevel}
@@ -1037,7 +1037,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           <div className="w-full flex justify-between items-center mb-6">
              <div>
                <p className="text-xs font-bold text-text-secondary uppercase tracking-widest flex items-center">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-black mr-2 animate-pulse"></span>
                   Live Approved Rehab Spend
                </p>
                <p className="text-4xl font-normal mt-2 flex items-baseline">
@@ -1048,7 +1048,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                 <button 
                   onClick={addRealExpense} 
                   disabled={isAdding}
-                  className="bg-bg-surface text-text-primary text-sm font-medium px-5 py-2.5 rounded-md hover:bg-gray-200 transition shadow-sm disabled:opacity-50"
+                  className="bg-bg-surface text-text-primary text-sm font-medium px-5 py-2.5 rounded-md hover:bg-[#F2F2F2] transition shadow-sm disabled:opacity-50"
                 >
                    {isAdding ? 'Syncing...' : 'Add Field Entry ($2.5k)'}
                 </button>
@@ -1060,7 +1060,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
              <div className="flex justify-between text-xs text-text-secondary uppercase tracking-widest mb-2 font-medium">
                <span>Renovation Zone Distribution</span>
              </div>
-             <div className="w-full h-4 bg-gray-800 rounded-full flex overflow-hidden">
+             <div className="w-full h-4 bg-[#F2F2F2] rounded-full flex overflow-hidden">
                 {renoROI.zones.filter(z => z.budgetPercent > 0).map(z => (
                   <div
                     key={z.zone}
@@ -1072,7 +1072,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
              </div>
              <div className="flex flex-wrap gap-x-5 gap-y-1 mt-3">
                 {renoROI.zones.map(z => (
-                  <div key={z.zone} className="flex items-center text-xs text-gray-300">
+                  <div key={z.zone} className="flex items-center text-xs text-[#CCCCCC]">
                     <div className="w-2 h-2 rounded-full mr-1.5" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
                     {z.zone} ({z.budgetPercent}%)
                   </div>
@@ -1094,20 +1094,20 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                 <p className="text-xs font-bold uppercase tracking-[0.12em] mb-1" style={{ color: riskColors[overImprovementRisk.riskLevel] }}>
                   Over-Improvement {overImprovementRisk.riskLevel === 'low' ? 'Clear' : 'Warning'}
                 </p>
-                <p className="text-sm text-gray-300">{overImprovementRisk.explanation}</p>
+                <p className="text-sm text-[#CCCCCC]">{overImprovementRisk.explanation}</p>
               </div>
             </div>
           )}
 
           {/* ── Money Rooms Priority Callout ── */}
           {renoROI.totalRehabCost > 0 && (
-            <div className="w-full mb-6 p-4 rounded-lg border border-gray-700/50 bg-gray-900/40">
+            <div className="w-full mb-6 p-4 rounded-lg border border-border-accent/50 bg-[#595959]/40">
               <p className="text-xs font-bold uppercase tracking-[0.12em] text-text-secondary opacity-60 mb-2">
                 🏠 Money Rooms — Kitchen + Bathroom
               </p>
               <div className="flex items-center gap-4">
                 <div className="flex-1">
-                  <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-[#F2F2F2] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -1117,7 +1117,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                     />
                   </div>
                 </div>
-                <p className={`text-sm font-bold tabular-nums ${renoROI.moneyRoomsHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>
+                <p className={`text-sm font-bold tabular-nums ${renoROI.moneyRoomsHealthy ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
                   {renoROI.moneyRoomsPercent}%
                 </p>
               </div>
@@ -1139,7 +1139,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 {renoROI.zones.map(z => (
-                  <div key={z.zone} className="bg-gray-900/60 rounded-lg p-3 border border-gray-800">
+                  <div key={z.zone} className="bg-[#595959]/60 rounded-lg p-3 border border-[#595959]">
                     <div className="flex items-center gap-2 mb-2">
                       <div className="w-2.5 h-2.5 rounded-full" style={{ background: ZONE_COLORS[z.zone] || '#666' }} />
                       <p className="text-xs font-bold text-white">{z.zone}</p>
@@ -1151,11 +1151,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                       </div>
                       <div className="flex justify-between text-[10px]">
                         <span className="text-text-secondary">Value Add</span>
-                        <span className="text-emerald-400 tabular-nums font-medium">${z.estimatedValueAdd.toLocaleString()}</span>
+                        <span className="text-[#1A1A1A] tabular-nums font-medium">${z.estimatedValueAdd.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-[10px]">
                         <span className="text-text-secondary">ROI</span>
-                        <span className={`tabular-nums font-bold ${z.roi >= 70 ? 'text-emerald-400' : z.roi >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{z.roi}%</span>
+                        <span className={`tabular-nums font-bold ${z.roi >= 70 ? 'text-[#1A1A1A]' : z.roi >= 50 ? 'text-[#595959]' : 'text-[#595959]'}`}>{z.roi}%</span>
                       </div>
                     </div>
                     <p className="text-[9px] text-text-secondary opacity-40 mt-1.5">{z.itemCount} item{z.itemCount !== 1 ? 's' : ''}</p>
@@ -1167,19 +1167,19 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
 
           {/* ── Daily Burn Rate Urgency ── */}
           {burnRate && burnRate.dailyBurnRate > 0 && (
-            <div className="w-full mb-6 p-4 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(239, 68, 68, 0.05)' }}>
+            <div className="w-full mb-6 p-4 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(89, 89, 89, 0.05)' }}>
               <span className="text-lg">⏱️</span>
               <p className="text-sm text-white">
-                Every day past your timeline costs <strong style={{ color: '#EF4444' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
+                Every day past your timeline costs <strong style={{ color: '#595959' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
                 {deal.financials?.estimatedTimelineDays ? (
-                  <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#EF4444' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
+                  <> Over your {deal.financials.estimatedTimelineDays}-day estimate, that&apos;s <strong style={{ color: '#595959' }}>${(burnRate.dailyBurnRate * deal.financials.estimatedTimelineDays).toLocaleString()}</strong> in holding costs alone.</>
                 ) : null}
               </p>
             </div>
           )}
 
           {/* Progressive Disclosure Toggle */}
-          <div className="w-full border-t border-gray-700/50 pt-4">
+          <div className="w-full border-t border-border-accent/50 pt-4">
              <button 
                 onClick={() => setIsLedgerExpanded(!isLedgerExpanded)}
                 className="w-full flex items-center justify-between text-xs text-text-secondary hover:text-white uppercase tracking-widest font-bold transition-colors"
@@ -1191,7 +1191,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
              {/* Granular Table (Disclosed on Demand) */}
              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isLedgerExpanded ? 'max-h-96 mt-4 opacity-100' : 'max-h-0 opacity-0'}`}>
                 {costs.length > 0 ? (
-                  <div className="bg-pw-black rounded-lg border border-gray-800 overflow-y-auto max-h-80">
+                  <div className="bg-pw-black rounded-lg border border-[#595959] overflow-y-auto max-h-80">
                      <table className="w-full text-left text-sm">
                        <thead className="bg-pw-black text-text-secondary text-xs uppercase tracking-widest sticky top-0">
                          <tr>
@@ -1212,14 +1212,14 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                            })() : 'Interior');
                            return (
                              <tr key={i} className="hover:bg-pw-black transition-colors">
-                               <td className="px-4 py-3 text-gray-300">
+                               <td className="px-4 py-3 text-[#CCCCCC]">
                                  {c.description}
-                                 {c.status && <span className={`ml-2 text-xs px-1 py-0.5 rounded ${c.status === 'Approved' ? 'bg-green-900/40 text-green-400' : 'bg-orange-900/40 text-orange-400'}`}>{c.status}</span>}
+                                 {c.status && <span className={`ml-2 text-xs px-1 py-0.5 rounded ${c.status === 'Approved' ? 'bg-[#595959]/40 text-[#1A1A1A]' : 'bg-[#595959]/40 text-text-primary'}`}>{c.status}</span>}
                                </td>
                                <td className="px-4 py-3">
                                  <span className="inline-flex items-center gap-1 text-xs">
                                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: ZONE_COLORS[zone] || '#666' }} />
-                                   <span className="text-gray-400">{zone}</span>
+                                   <span className="text-[#CCCCCC]">{zone}</span>
                                  </span>
                                </td>
                                <td className="px-4 py-3 text-white font-medium">${c.amount.toLocaleString()}</td>
@@ -1238,7 +1238,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           {/* ── Rental Property Calculator ── */}
           <div className="w-full mt-8">
             <RentalPropertyCalculator 
-              phaseColor={PHASE_BACKGROUNDS.rehab || '#808080'} 
+              phaseColor={PHASE_BACKGROUNDS.rehab || '#A5A5A5'} 
               projectId={deal.id} 
               initialFinancials={deal.financials} 
               readOnly={!canAdd}
@@ -1246,11 +1246,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
 
           {/* ── NOI Deep Dive — Per-Property Analytics ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <Suspense
               fallback={
-                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading NOI Analytics…</span>
+                <div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading NOI Analytics…</span>
                 </div>
               }
             >
@@ -1259,11 +1259,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
 
           {/* ── Cash Flow Deep Dive — NOI minus Debt Service ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <Suspense
               fallback={
-                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading Cash Flow Analytics…</span>
+                <div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Cash Flow Analytics…</span>
                 </div>
               }
             >
@@ -1272,11 +1272,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
 
           {/* ── Cap Rate Deep Dive — NOI ÷ Purchase Price ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <Suspense
               fallback={
-                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading Cap Rate Analytics…</span>
+                <div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Cap Rate Analytics…</span>
                 </div>
               }
             >
@@ -1285,11 +1285,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
 
           {/* ── Cash-on-Cash Return — Annual CF ÷ Total Cash Invested ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <Suspense
               fallback={
-                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading CoC Return Analytics…</span>
+                <div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading CoC Return Analytics…</span>
                 </div>
               }
             >
@@ -1298,11 +1298,11 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
 
           {/* ── Gross Rent Multiplier — Quick Screen ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <Suspense
               fallback={
-                <div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Loading GRM Analytics…</span>
+                <div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center">
+                  <span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading GRM Analytics…</span>
                 </div>
               }
             >
@@ -1311,48 +1311,48 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
           </div>
           
           {/* ── DSCR — Can the property cover its mortgage? ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading DSCR Analytics…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading DSCR Analytics…</span></div>}>
               <DSCRDeepDive projects={[deal]} />
             </Suspense>
           </div>
 
           {/* ── IRR — Total Lifecycle Return ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading IRR Analytics…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading IRR Analytics…</span></div>}>
               <IRRDeepDive projects={[deal]} />
             </Suspense>
           </div>
 
           {/* ── Occupancy Rate ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Occupancy Analytics…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Occupancy Analytics…</span></div>}>
               <OccupancyDeepDive projects={[deal]} />
             </Suspense>
           </div>
 
           {/* ── Expense Ratio ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Expense Ratio Analytics…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Expense Ratio Analytics…</span></div>}>
               <ExpenseRatioDeepDive projects={[deal]} />
             </Suspense>
           </div>
 
           {/* ── Long-Term Appreciation ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Appreciation Analytics…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Appreciation Analytics…</span></div>}>
               <AppreciationDeepDive projects={[deal]} />
             </Suspense>
           </div>
 
           {/* ── Flip Profitability Dashboard ── */}
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
-            <Suspense fallback={<div className="animate-pulse bg-gray-800/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-gray-500 uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
+            <Suspense fallback={<div className="animate-pulse bg-[#F2F2F2]/50 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-[#A5A5A5] uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
               <FlipProfitabilityDashboard projects={[deal]} />
             </Suspense>
           </div>
 
-          <div className="w-full mt-8 border-t border-gray-700/50 pt-6">
+          <div className="w-full mt-8 border-t border-border-accent/50 pt-6">
             <ProjectTodoList deal={deal} phase={3} />
           </div>
        </div>

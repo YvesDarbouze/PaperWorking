@@ -41,8 +41,8 @@ export default function TransitionConfirmationModal({
           >
             <div className="p-8">
               <div className="flex justify-between items-start mb-6">
-                <div className="bg-amber-100 p-3 rounded-2xl">
-                  <AlertTriangle className="w-6 h-6 text-amber-600" />
+                <div className="bg-[#CCCCCC] p-3 rounded-2xl">
+                  <AlertTriangle className="w-6 h-6 text-[#595959]" />
                 </div>
                 <button onClick={onClose} className="text-text-secondary hover:text-text-secondary transition-colors">
                   <X className="w-5 h-5" />
@@ -54,7 +54,7 @@ export default function TransitionConfirmationModal({
               </h2>
               <p className="text-sm text-text-secondary mb-8 leading-relaxed">
                 You are about to transition <span className="font-bold text-text-primary">"{dealName}"</span> to the 
-                <span className="inline-flex items-center mx-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 font-bold text-xs uppercase tracking-widest border border-indigo-100">
+                <span className="inline-flex items-center mx-1 px-2 py-0.5 rounded-full bg-[#F2F2F2] text-[#595959] font-bold text-xs uppercase tracking-widest border border-[#CCCCCC]">
                   {targetPhase}
                 </span> 
                 phase. This may trigger automated notifications and update financial projections.
@@ -63,7 +63,7 @@ export default function TransitionConfirmationModal({
               <div className="flex flex-col space-y-3">
                 <button
                   onClick={onConfirm}
-                  className="w-full flex items-center justify-center py-4 bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-gray-800 transition-all shadow-lg shadow-black/10 active:scale-[0.98]"
+                  className="w-full flex items-center justify-center py-4 bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#595959] transition-all shadow-lg shadow-black/10 active:scale-[0.98]"
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
                   Confirm Transition

@@ -6,10 +6,10 @@ import { HardDrive, Cloud, ExternalLink, RefreshCw, CheckCircle2 } from 'lucide-
 export default function GoogleDriveSync() {
   return (
     <div className="bg-bg-surface border border-border-accent p-8 h-full flex flex-col justify-center items-center text-center">
-      <div className="w-20 h-20 bg-blue-50 flex items-center justify-center rounded-2xl mb-6 relative">
-        <Cloud className="w-10 h-10 text-blue-600" />
+      <div className="w-20 h-20 bg-[#F2F2F2] flex items-center justify-center rounded-2xl mb-6 relative">
+        <Cloud className="w-10 h-10 text-[#7F7F7F]" />
         <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-bg-surface rounded-full flex items-center justify-center border-2 border-blue-50">
-          <RefreshCw className="w-4 h-4 text-blue-400" />
+          <RefreshCw className="w-4 h-4 text-[#7F7F7F]" />
         </div>
       </div>
       
@@ -28,7 +28,7 @@ export default function GoogleDriveSync() {
           'Enterprise-grade encryption applied'
         ].map((feature, i) => (
           <div key={i} className="flex items-center gap-3 text-left p-3 border border-border-accent bg-bg-primary/50">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <CheckCircle2 className="w-4 h-4 text-[#1A1A1A]" />
             <span className="text-xs font-black text-text-primary uppercase tracking-widest">{feature}</span>
           </div>
         ))}

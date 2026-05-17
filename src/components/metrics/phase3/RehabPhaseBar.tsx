@@ -146,7 +146,7 @@ export default function RehabPhaseBar() {
                         ? 'bg-pw-black'
                         : isActive
                           ? 'bg-pw-black/70'
-                          : 'bg-gray-300'
+                          : 'bg-[#CCCCCC]'
                     }`}
                   />
                   {/* Label */}

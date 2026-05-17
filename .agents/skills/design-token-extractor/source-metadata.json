@@ -1,0 +1,22 @@
+{
+  "skill_name": "design-token-extractor",
+  "source_url": "https://github.com/eyeszik/Claude-Design-Skills/blob/claude/design-skill-audit-FW4TF/skills/design-tokens/design-token-extractor/SKILL.md",
+  "raw_url": "https://raw.githubusercontent.com/eyeszik/Claude-Design-Skills/claude/design-skill-audit-FW4TF/skills/design-tokens/design-token-extractor/SKILL.md",
+  "source_type": "CUSTOM_BUILT",
+  "source_repo": "eyeszik/Claude-Design-Skills",
+  "source_commit": "",
+  "source_path": "skills/design-tokens/design-token-extractor/SKILL.md",
+  "added_at_utc": "2026-05-11T01:30:00Z",
+  "design_bucket": "design-systems",
+  "secondary_buckets": ["frontend-design", "figma-workflows"],
+  "trust_tier": "CUSTOM",
+  "license_status": "OWNED",
+  "score": 84,
+  "decision": "INSTALL_NOW",
+  "risk_notes": [],
+  "token_notes": ["~80 lines — lightweight; token hierarchy explicit; 3-output format (CSS vars, Tailwind, Style Dictionary)"],
+  "copy_recommendation": "COPY_ALLOWED",
+  "manual_review_required": false,
+  "recommended_install_target": "project-local",
+  "rollback_action": "rm -rf skills/design-tokens/design-token-extractor/"
+}

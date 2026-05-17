@@ -64,15 +64,15 @@ export function CloudStorageMeter() {
   return (
     <section className="bg-white border border-border-accent p-8 flex flex-col mt-8 rounded-[8px]">
       <div className="flex items-center gap-2 mb-6">
-        <HardDrive className="w-5 h-5 text-[#595959]" />
-        <h2 className="text-sm font-bold uppercase tracking-widest text-[#595959]">
+        <HardDrive className="w-5 h-5 text-[#1A1A1A]" />
+        <h2 className="text-sm font-bold uppercase tracking-widest text-[#1A1A1A]">
           Cloud Storage Meter
         </h2>
       </div>
 
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <span className="text-3xl font-normal text-[#595959]">
+          <span className="text-3xl font-normal text-[#1A1A1A]">
             {usageGB.toFixed(2)} GB
           </span>
           <span className="text-base text-[#7F7F7F] ml-2">
@@ -126,7 +126,7 @@ export function CloudStorageMeter() {
           </button>
         )}
         <button 
-          className="inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 border border-[#CCCCCC] text-[#595959] hover:bg-gray-50 transition"
+          className="inline-flex items-center justify-center gap-2 text-sm font-bold px-6 py-3 bg-[#F2F2F2] border border-[#CCCCCC] text-[#1A1A1A] hover:bg-[#E6E6E6] transition"
         >
           VIEW DOCUMENT AUDIT
         </button>

@@ -60,7 +60,7 @@ export default function KanbanColumn({ id, title, projects, onCardSelect, onMove
           <AnimatePresence>
             <button 
               onClick={() => setShouldThrow(true)} 
-              className={`w-full py-2 mb-2 text-xs font-bold rounded ${isDarkPhase ? 'bg-red-500/20 text-red-200' : 'bg-red-500/10 text-red-500'}`}
+              className={`w-full py-2 mb-2 text-xs font-bold rounded ${isDarkPhase ? 'bg-[#1A1A1A]/20 text-white' : 'bg-[#1A1A1A]/10 text-[#1A1A1A]'}`}
             >
               Trigger Error (Test)
             </button>

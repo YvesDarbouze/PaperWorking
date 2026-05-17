@@ -96,7 +96,7 @@ function BurnTooltip({ active, payload, label }: any) {
         })}
         <div className="mt-2 pt-1.5 border-t border-border-accent/30 flex justify-between gap-8">
           <span className="text-text-primary font-bold uppercase tracking-tighter">Net Cash:</span>
-          <span className={`font-mono font-bold ${payload[2]?.value >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+          <span className={`font-mono font-bold ${payload[2]?.value >= 0 ? 'text-[#1A1A1A]' : 'text-[#595959]'}`}>
             ${payload[2]?.value.toLocaleString()}
           </span>
         </div>

@@ -1,82 +1,202 @@
 ---
 name: design-system
-description: Use this skill to generate or audit design systems, check visual consistency, and review PRs that touch styling.
-origin: ECC
+description: "Build or audit a design system including component library, design tokens, naming conventions, contribution model, and documentation. Use this skill whenever the user wants to build a design system, audit an existing system, define design tokens at the system level, structure a component library, or set up design system governance. Triggers on design system, component library, design tokens, atomic design, atoms, molecules, organisms, design system documentation, Storybook, Figma library, system governance, design contribution model. Also triggers when teams are inconsistent across products and a system is the answer."
+category: design
+catalog_summary: "Component library, design tokens, design system documentation"
+display_order: 1
 ---
 
-# Design System — Generate & Audit Visual Systems
+# Design System
 
-## When to Use
+Build, evolve, or audit a design system. Stack-agnostic in principle. Implementation is stack-specific (Figma, Storybook, code library, etc.) but the structure and governance principles transfer.
 
-- Starting a new project that needs a design system
-- Auditing an existing codebase for visual consistency
-- Before a redesign — understand what you have
-- When the UI looks "off" but you can't pinpoint why
-- Reviewing PRs that touch styling
+This skill is for building the system. For applying a system to specific pages or components, use `design-standards`. For brand visual identity, use `brand-identity`.
 
-## How It Works
+---
 
-### Mode 1: Generate Design System
+## When to use
 
-Analyzes your codebase and generates a cohesive design system:
+- Building a design system from scratch
+- Auditing an existing system for gaps or fragmentation
+- Defining design tokens at the system level
+- Structuring a component library
+- Establishing contribution and governance models
+- Migrating from ad-hoc components to a documented system
 
-```
-1. Scan CSS/Tailwind/styled-components for existing patterns
-2. Extract: colors, typography, spacing, border-radius, shadows, breakpoints
-3. Research 3 competitor sites for inspiration (via browser MCP)
-4. Propose a design token set (JSON + CSS custom properties)
-5. Generate DESIGN.md with rationale for each decision
-6. Create an interactive HTML preview page (self-contained, no deps)
-```
+## When NOT to use
 
-Output: `DESIGN.md` + `design-tokens.json` + `design-preview.html`
+- Designing a single page or component (use `design-standards`)
+- Brand identity work (use `brand-identity`)
+- Component-level frontend implementation (use `frontend-component-build`)
+- Pure design documentation for marketing (use `brand-style-guide`)
 
-### Mode 2: Visual Audit
+---
 
-Scores your UI across 10 dimensions (0-10 each):
+## Required inputs
 
-```
-1. Color consistency — are you using your palette or random hex values?
-2. Typography hierarchy — clear h1 > h2 > h3 > body > caption?
-3. Spacing rhythm — consistent scale (4px/8px/16px) or arbitrary?
-4. Component consistency — do similar elements look similar?
-5. Responsive behavior — fluid or broken at breakpoints?
-6. Dark mode — complete or half-done?
-7. Animation — purposeful or gratuitous?
-8. Accessibility — contrast ratios, focus states, touch targets
-9. Information density — cluttered or clean?
-10. Polish — hover states, transitions, loading states, empty states
-```
+- The brand identity (tokens, voice, imagery direction)
+- The product surfaces the system needs to support (web, mobile, marketing, app, internal tools)
+- The team and its working tools (Figma, code framework, doc platform)
+- Existing components, even if undocumented
+- Constraints (accessibility requirements, performance targets, browser support)
 
-Each dimension gets a score, specific examples, and a fix with exact file:line.
+If brand identity is undefined, run `brand-identity` first.
 
-### Mode 3: AI Slop Detection
+---
 
-Identifies generic AI-generated design patterns:
+## The framework: 5 layers
 
-```
-- Gratuitous gradients on everything
-- Purple-to-blue defaults
-- "Glass morphism" cards with no purpose
-- Rounded corners on things that shouldn't be rounded
-- Excessive animations on scroll
-- Generic hero with centered text over stock gradient
-- Sans-serif font stack with no personality
-```
+A complete design system has five layers, stacked. Each layer feeds the layer above.
 
-## Examples
+### 1. Foundations (tokens)
 
-**Generate for a SaaS app:**
-```
-/design-system generate --style minimal --palette earth-tones
-```
+The atomic decisions. Color, type, spacing, radius, shadow, motion, breakpoints.
 
-**Audit existing UI:**
-```
-/design-system audit --url http://localhost:3000 --pages / /pricing /docs
-```
+**Why this layer matters:**
+- Tokens are the source of truth for everything above
+- Token changes propagate everywhere automatically
+- Without tokens, the system has no foundation
 
-**Check for AI slop:**
-```
-/design-system slop-check
-```
+**Output:**
+- A documented token set (see `design-standards/references/design-tokens-template.md`)
+- Token implementation in code (CSS variables, JS objects, Style Dictionary, etc.)
+- Token implementation in Figma (variables and styles)
+- A primer doc explaining what tokens to use when
+
+**Common patterns:**
+- Two-tier tokens: base tokens (raw values) + semantic tokens (named uses). Example: `color-blue-600` (base) + `color-text-link` (semantic). Components reference semantic tokens. Theme changes update semantic tokens, not base.
+
+### 2. Elements (atoms)
+
+The smallest functional building blocks. Buttons, inputs, labels, badges, icons, links, dividers.
+
+**Per element, document:**
+- Visual variants (primary, secondary, ghost, etc.)
+- Size variants (small, medium, large)
+- States (default, hover, focus, active, disabled, error, loading)
+- Anatomy (the parts that make up the element)
+- Spacing and proportions
+- Accessibility (keyboard support, screen reader behavior, ARIA)
+- Code usage (props, examples)
+
+**Output:**
+- Element library in Figma
+- Element components in code
+- Per-element documentation
+
+### 3. Components (molecules + organisms)
+
+Combinations of elements that form recognizable UI patterns. Cards, alerts, modals, navigation, forms, data tables, headers, footers.
+
+**Per component:**
+- Composition (which elements it uses)
+- Variants and configurations
+- Use cases (when to reach for this vs. an alternative)
+- Layout behavior (responsive, contained, full-bleed)
+- Anti-patterns (when NOT to use it)
+
+**Output:**
+- Component library
+- Per-component documentation with usage guidance
+
+### 4. Patterns (templates)
+
+Larger structures that combine components. Sign-in flow, settings page, dashboard layout, marketing page sections.
+
+**Per pattern:**
+- The structure and components used
+- The user journey it supports
+- Layout grid and spacing
+- Responsive behavior
+- Variants (e.g., "with sidebar," "fullscreen," "modal")
+
+**Output:**
+- Pattern library or page templates
+- Documentation showing complete examples
+
+### 5. Documentation and governance
+
+How the system gets used, contributed to, and maintained.
+
+**Documentation includes:**
+- Getting started guide for new team members
+- How to use vs. how to extend
+- Contribution model
+- Versioning policy
+- Migration paths when breaking changes happen
+- Decision log for major system choices
+
+**Governance includes:**
+- Who owns the system (a team or rotation)
+- How new components get proposed and approved
+- How conflicts get resolved
+- How the system evolves vs. stays stable
+- Cadence of review and updates
+
+---
+
+## Workflow
+
+### For a new design system
+
+1. **Inventory the existing UI.** Screenshot every component, button, form, modal across the product. The list of distinct UI patterns is your starting scope.
+2. **Identify the duplicates.** Same component built 5 different ways across the product. These are your high-value consolidation targets.
+3. **Define foundations.** Token set, with both base and semantic layers. Document each.
+4. **Audit elements.** From the inventory, identify the actual elements (buttons, inputs, etc.) and reduce variants to a managed set.
+5. **Build the element library.** Figma + code. Document each element.
+6. **Identify priority components.** The 10 to 15 components that appear most often. Build those first.
+7. **Document patterns.** Page-level templates that show the system in use.
+8. **Establish governance.** Owner, contribution model, review cadence.
+9. **Roll out.** Migrate existing surfaces to the system progressively.
+
+### For an existing design system audit
+
+1. **Inventory what exists.** What's documented, what's in Figma, what's in code, what's actually used in production.
+2. **Map gaps.** Where the system is incomplete. Where teams build outside the system because the system can't serve their need.
+3. **Map fragmentation.** Where the system has divergent implementations (Figma vs. code, web vs. mobile, multiple teams).
+4. **Identify decay.** Components that have drifted from the documented standard.
+5. **Prioritize fixes.** Foundation gaps first. High-use component drift second. Rarely-used component cleanup last.
+6. **Plan rollout.** Major changes need migration paths.
+
+---
+
+## Failure patterns
+
+- **Building the system before the brand is set.** Tokens depend on brand. Set brand first.
+- **Atoms-up extreme.** Spending 6 months on tokens and elements before producing components anyone uses. Ship components people need; refine tokens iteratively.
+- **One-person system.** A system without governance fails as soon as the original designer leaves. Establish ownership early.
+- **Stale documentation.** A system with code that's diverged from the docs is worse than no system. Synchronize or kill the docs.
+- **Versioning everything.** Treating every component as needing a major version. Most components evolve in place. Reserve versioning for breaking changes.
+- **Adopting "atomic design" dogmatically.** Atoms / molecules / organisms is a useful mental model, not a rigid taxonomy. Don't argue about whether something is a molecule or an organism.
+- **Building in a vacuum.** A system designed without input from the teams using it gets ignored. Co-design with consumers.
+- **No deprecation path.** Old components linger in code forever because no one knows it's safe to remove them. Document deprecation explicitly.
+- **Token explosion.** Defining 200 color tokens for a brand with 10 colors. Discipline. Most products need fewer tokens than they have.
+
+---
+
+## Output format
+
+A design system has multiple deliverables. Typically:
+
+- **Documentation site** (Notion, dedicated site, GitHub Pages, Storybook addon, etc.)
+- **Figma library** (or equivalent design tool)
+- **Code library** (npm package, monorepo workspace, copy-paste components)
+- **Decision log** (system-level decisions and the reasoning)
+- **Roadmap and changelog**
+
+For a design system audit, output is a markdown report at `design-system-audit.md`:
+
+1. Inventory of what exists (foundations, elements, components, patterns)
+2. Gap analysis
+3. Fragmentation analysis
+4. Drift analysis
+5. Prioritized remediation plan
+6. Governance recommendations
+
+---
+
+## Reference files
+
+- [`references/system-architecture.md`](references/system-architecture.md) - The four-layer model (tokens, primitives, patterns, templates) and how to decide where new work belongs.
+- [`references/system-audit-template.md`](references/system-audit-template.md) - Template for auditing an existing design system.
+- [`references/governance-playbook.md`](references/governance-playbook.md) - Contribution model, ownership, and decision process for an active system.

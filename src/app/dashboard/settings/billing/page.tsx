@@ -107,7 +107,7 @@ export default function BillingSettingsPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-1">Current Subscription</h2>
-            <p className="text-xl font-bold text-[#595959]">{planInfo.label}</p>
+            <p className="text-xl font-bold text-[#1A1A1A]">{planInfo.label}</p>
           </div>
           <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest border px-3 py-1 rounded-full ${statusBadge.cls}`}>
             <StatusIcon className="w-3.5 h-3.5" />
@@ -119,7 +119,7 @@ export default function BillingSettingsPage() {
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Monthly Commitment</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-normal text-[#595959]">{planInfo.price}</span>
+              <span className="text-3xl font-normal text-[#1A1A1A]">{planInfo.price}</span>
               <span className="text-sm text-[#7F7F7F]">{planInfo.period}</span>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function BillingSettingsPage() {
           {plan !== 'None' && (
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Next Billing Date</p>
-              <p className="text-sm font-bold text-[#595959]">{nextBillingStr}</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{nextBillingStr}</p>
             </div>
           )}
         </div>
@@ -155,14 +155,14 @@ export default function BillingSettingsPage() {
               <CreditCard className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 text-center md:text-left">
-              <p className="text-sm font-bold text-[#595959]">{cardBrand} ending in •••• {lastFour}</p>
+              <p className="text-sm font-bold text-[#1A1A1A]">{cardBrand} ending in •••• {lastFour}</p>
               <p className="text-xs text-[#7F7F7F] flex items-center justify-center md:justify-start gap-1 mt-1">
                 <Lock className="w-3 h-3" /> Secure Payment via Stripe
               </p>
             </div>
             <button
               onClick={openPortal}
-              className="text-xs font-bold text-[#595959] uppercase tracking-widest hover:underline px-4 py-2"
+              className="text-xs font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline px-4 py-2"
             >
               Update Card
             </button>
@@ -189,7 +189,7 @@ export default function BillingSettingsPage() {
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Billing Archive</h2>
           {plan !== 'None' && (
-            <button className="text-[10px] font-bold text-[#595959] uppercase tracking-widest hover:underline">
+            <button className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline">
               Download All
             </button>
           )}
@@ -220,13 +220,13 @@ export default function BillingSettingsPage() {
                 {invoices.map((inv) => (
                   <tr key={inv.id} className="group hover:bg-gray-50/50 transition-colors">
                     <td className="px-8 py-4">
-                      <span className="flex items-center gap-2 text-sm font-bold text-[#595959]">
+                      <span className="flex items-center gap-2 text-sm font-bold text-[#1A1A1A]">
                         <FileText className="w-4 h-4 text-[#A5A5A5]" />
                         {inv.number ?? inv.id}
                       </span>
                     </td>
                     <td className="px-8 py-4 text-sm text-[#7F7F7F]">{inv.date}</td>
-                    <td className="px-8 py-4 text-sm font-bold text-[#595959]">{inv.amount}</td>
+                    <td className="px-8 py-4 text-sm font-bold text-[#1A1A1A]">{inv.amount}</td>
                     <td className="px-8 py-4">
                       <span className={`inline-flex px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border rounded-sm ${
                         inv.status === 'paid'
@@ -244,7 +244,7 @@ export default function BillingSettingsPage() {
                           href={inv.pdfUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 text-[#A5A5A5] hover:text-[#595959] transition-colors inline-block"
+                          className="p-2 text-[#A5A5A5] hover:text-[#1A1A1A] transition-colors inline-block"
                         >
                           <Download className="w-4 h-4" />
                         </a>

@@ -92,10 +92,10 @@ export default function ActivityFeed() {
       <div className="space-y-3">
         {[0, 1, 2].map((i) => (
           <div key={i} className="flex items-start gap-3 animate-pulse" style={{ animationDelay: `${i * 80}ms` }}>
-            <div className="w-7 h-7 rounded-full bg-bg-primary flex-shrink-0" />
+            <div className="w-7 h-7 rounded-full bg-[#F2F2F2] flex-shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 w-3/4 rounded bg-bg-primary" />
-              <div className="h-2 w-1/3 rounded bg-bg-primary" />
+              <div className="h-3 w-3/4 rounded bg-[#F2F2F2]" />
+              <div className="h-2 w-1/3 rounded bg-[#F2F2F2]" />
             </div>
           </div>
         ))}
@@ -106,13 +106,13 @@ export default function ActivityFeed() {
   if (events.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-10 text-center">
-        <div className="w-10 h-10 rounded-full bg-bg-primary flex items-center justify-center mb-3">
-          <Clock className="w-4 h-4 text-text-secondary" />
+        <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center mb-3">
+          <Clock className="w-4 h-4 text-[#A5A5A5]" />
         </div>
-        <p className="text-xs font-bold text-text-primary uppercase tracking-widest mb-1">
+        <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-widest mb-1">
           No Activity Yet
         </p>
-        <p className="text-[10px] text-text-secondary max-w-[200px] leading-relaxed">
+        <p className="text-[10px] text-[#7F7F7F] max-w-[200px] leading-relaxed">
           Team events will appear here as your portfolio grows.
         </p>
       </div>
@@ -124,28 +124,28 @@ export default function ActivityFeed() {
       {events.map((event, idx) => (
         <div
           key={event.id}
-          className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-bg-primary/50 transition-colors group"
+          className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-[#F2F2F2]/50 transition-colors group"
         >
           {/* Avatar / Icon */}
-          <div className="w-7 h-7 rounded-full bg-bg-primary flex items-center justify-center flex-shrink-0 text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-colors">
+          <div className="w-7 h-7 rounded-full bg-[#F2F2F2] flex items-center justify-center flex-shrink-0 text-[#A5A5A5] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-colors">
             {EVENT_ICONS[event.type] || <Activity className="w-3.5 h-3.5" />}
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-text-primary leading-snug">
+            <p className="text-[11px] text-[#1A1A1A] leading-snug">
               <span className="font-bold">{event.actorName}</span>{' '}
-              <span className="text-text-secondary">{event.description}</span>
+              <span className="text-[#7F7F7F]">{event.description}</span>
             </p>
             {event.projectName && (
-              <p className="text-[10px] text-text-secondary/60 mt-0.5 truncate">
+              <p className="text-[10px] text-[#7F7F7F]/60 mt-0.5 truncate">
                 {event.projectName}
               </p>
             )}
           </div>
 
           {/* Timestamp */}
-          <span className="text-[9px] text-text-secondary/40 font-medium flex-shrink-0 mt-0.5">
+          <span className="text-[9px] text-[#A5A5A5] font-medium flex-shrink-0 mt-0.5">
             {formatRelativeTime(event.createdAt)}
           </span>
         </div>

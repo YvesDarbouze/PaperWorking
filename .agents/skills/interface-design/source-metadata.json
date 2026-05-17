@@ -1,0 +1,22 @@
+{
+  "skill_name": "interface-design",
+  "source_url": "https://github.com/Dammyjay93/interface-design/blob/main/.claude/skills/interface-design/SKILL.md",
+  "raw_url": "https://raw.githubusercontent.com/Dammyjay93/interface-design/main/.claude/skills/interface-design/SKILL.md",
+  "source_type": "GITHUB_BLOB",
+  "source_repo": "Dammyjay93/interface-design",
+  "source_commit": "8c407c1c42890010a9eb403a9f419b1eeadcfdad",
+  "source_path": ".claude/skills/interface-design/SKILL.md",
+  "added_at_utc": "2026-05-11T00:53:02Z",
+  "design_bucket": "frontend-design",
+  "secondary_buckets": ["design-system-architecture", "composition-patterns"],
+  "trust_tier": "COMMUNITY_MIT",
+  "license_status": "VERIFIED_COMPATIBLE",
+  "score": 79,
+  "decision": "INSTALL_OPTIONAL",
+  "risk_notes": [],
+  "token_notes": ["391 lines — large; use only for dashboard/app/tool projects; not for marketing sites"],
+  "copy_recommendation": "COPY_ALLOWED",
+  "manual_review_required": false,
+  "recommended_install_target": "project-local",
+  "rollback_action": "rm -rf skills/frontend-design/interface-design/"
+}

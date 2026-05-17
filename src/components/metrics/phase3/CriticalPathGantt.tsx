@@ -44,9 +44,9 @@ const STATUS_META: Record<RehabScheduleTask['status'], {
   label: string;
 }> = {
   'Not Started': { icon: <Clock className="w-3 h-3" />, color: 'text-text-secondary', label: 'Not Started' },
-  'In Progress': { icon: <Loader2 className="w-3 h-3 animate-spin" />, color: 'text-amber-600', label: 'Active' },
+  'In Progress': { icon: <Loader2 className="w-3 h-3 animate-spin" />, color: 'text-[#595959]', label: 'Active' },
   'Complete': { icon: <CheckCircle2 className="w-3 h-3" />, color: 'text-green-700', label: 'Done' },
-  'Blocked': { icon: <Ban className="w-3 h-3" />, color: 'text-red-600', label: 'Blocked' },
+  'Blocked': { icon: <Ban className="w-3 h-3" />, color: 'text-[#595959]', label: 'Blocked' },
 };
 
 // Default task template for new projects
@@ -244,8 +244,8 @@ export default function CriticalPathGantt() {
         </div>
         {criticalPath.size > 0 && (
           <div className="flex items-center gap-1.5" onClick={e => e.stopPropagation()}>
-            <span className="w-2 h-2 bg-red-500 rounded-full" />
-            <span className="text-[9px] font-black text-red-600 uppercase tracking-widest">
+            <span className="w-2 h-2 bg-[#F2F2F2]0 rounded-full" />
+            <span className="text-[9px] font-black text-[#595959] uppercase tracking-widest">
               {criticalPath.size} Critical
             </span>
           </div>
@@ -268,7 +268,7 @@ export default function CriticalPathGantt() {
                   </p>
                   <button
                     onClick={loadDefaults}
-                    className="px-4 py-2 text-xs font-black uppercase tracking-widest bg-pw-black text-white hover:bg-gray-800 transition"
+                    className="px-4 py-2 text-xs font-black uppercase tracking-widest bg-pw-black text-white hover:bg-[#595959] transition"
                   >
                     Load Standard Flip Template
                   </button>
@@ -340,7 +340,7 @@ export default function CriticalPathGantt() {
                                 </button>
                               )}
                               {task.inspectionRequired && (
-                                <AlertTriangle className="w-2.5 h-2.5 text-amber-500 flex-shrink-0" />
+                                <AlertTriangle className="w-2.5 h-2.5 text-[#595959] flex-shrink-0" />
                               )}
                             </div>
 
@@ -353,14 +353,14 @@ export default function CriticalPathGantt() {
                                 transition={{ duration: 0.4, ease: 'easeOut' }}
                                 className={`absolute top-1 bottom-1 rounded-sm ${
                                   task.status === 'Complete'
-                                    ? 'bg-green-700'
+                                    ? 'bg-[#595959]'
                                     : isCritical
-                                      ? 'bg-red-600'
+                                      ? 'bg-[#595959]'
                                       : task.status === 'Blocked'
-                                        ? 'bg-red-300'
+                                        ? 'bg-[#595959]'
                                         : task.status === 'In Progress'
-                                          ? 'bg-amber-500'
-                                          : 'bg-gray-300'
+                                          ? 'bg-[#F2F2F2]0'
+                                          : 'bg-[#CCCCCC]'
                                 }`}
                                 style={{ left: `${leftPct}%` }}
                               >
@@ -372,7 +372,7 @@ export default function CriticalPathGantt() {
                               {/* Today marker */}
                               {todayDay > 0 && todayDay < maxDay && (
                                 <div
-                                  className="absolute top-0 bottom-0 w-px bg-red-500/50"
+                                  className="absolute top-0 bottom-0 w-px bg-[#F2F2F2]0/50"
                                   style={{ left: `${(todayDay / maxDay) * 100}%` }}
                                 />
                               )}
@@ -381,7 +381,7 @@ export default function CriticalPathGantt() {
                             {/* Remove button */}
                             <button
                               onClick={() => removeTask(task.id)}
-                              className="opacity-0 group-hover:opacity-100 transition p-1 text-gray-300 hover:text-red-500 flex-shrink-0"
+                              className="opacity-0 group-hover:opacity-100 transition p-1 text-[#CCCCCC] hover:text-[#595959] flex-shrink-0"
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -467,23 +467,23 @@ export default function CriticalPathGantt() {
                 {/* Legend */}
                 <div className="flex items-center gap-4 flex-wrap pt-2 border-t border-border-accent">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-2 bg-red-600 rounded-sm" />
+                    <div className="w-3 h-2 bg-[#595959] rounded-sm" />
                     <span className="text-[8px] font-black text-text-secondary uppercase tracking-widest">Critical Path</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-2 bg-gray-300 rounded-sm" />
+                    <div className="w-3 h-2 bg-[#CCCCCC] rounded-sm" />
                     <span className="text-[8px] font-black text-text-secondary uppercase tracking-widest">Non-Critical</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-2 bg-green-700 rounded-sm" />
+                    <div className="w-3 h-2 bg-[#595959] rounded-sm" />
                     <span className="text-[8px] font-black text-text-secondary uppercase tracking-widest">Complete</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-2 bg-amber-500 rounded-sm" />
+                    <div className="w-3 h-2 bg-[#F2F2F2]0 rounded-sm" />
                     <span className="text-[8px] font-black text-text-secondary uppercase tracking-widest">Active</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <AlertTriangle className="w-2.5 h-2.5 text-amber-500" />
+                    <AlertTriangle className="w-2.5 h-2.5 text-[#595959]" />
                     <span className="text-[8px] font-black text-text-secondary uppercase tracking-widest">Inspection Req.</span>
                   </div>
                 </div>

@@ -30,7 +30,7 @@ export default function LaneIndicator() {
             flex items-center gap-1 text-xs font-bold uppercase tracking-wider
             px-2.5 py-1 rounded-md transition-all
             ${viewMode === 'minimized'
-              ? 'bg-gray-900 text-white'
+              ? 'bg-[#595959] text-white'
               : 'text-text-secondary hover:text-text-primary'
             }
           `}
@@ -59,18 +59,18 @@ export default function LaneIndicator() {
                     className={`
                       rounded-full transition-all duration-300
                       ${isActive
-                        ? 'w-6 h-2 bg-gray-900'
+                        ? 'w-6 h-2 bg-[#595959]'
                         : isPast && !isLocked
-                          ? 'w-2 h-2 bg-gray-900'
+                          ? 'w-2 h-2 bg-[#595959]'
                           : isLocked
-                            ? 'w-2 h-2 bg-gray-300'
-                            : 'w-2 h-2 bg-gray-300 group-hover:bg-gray-500'
+                            ? 'w-2 h-2 bg-[#CCCCCC]'
+                            : 'w-2 h-2 bg-[#CCCCCC] group-hover:bg-[#A5A5A5]'
                       }
                     `}
                   />
                   {isLocked && (
                     <Lock
-                      className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 text-gray-400"
+                      className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 text-[#CCCCCC]"
                       aria-hidden
                     />
                   )}
@@ -78,7 +78,7 @@ export default function LaneIndicator() {
                 <span
                   className={`
                     text-xs font-semibold uppercase tracking-wider transition-colors mt-1
-                    ${isActive ? 'text-text-primary' : isLocked ? 'text-gray-400' : 'text-text-secondary'}
+                    ${isActive ? 'text-text-primary' : isLocked ? 'text-[#CCCCCC]' : 'text-text-secondary'}
                   `}
                 >
                   {lane.shortLabel}

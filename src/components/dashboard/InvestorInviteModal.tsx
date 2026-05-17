@@ -54,7 +54,7 @@ export default function InvestorInviteModal({ isOpen, onClose, propertyName }: I
             <div className="p-10 space-y-10">
               {isSent ? (
                 <div className="py-12 flex flex-col items-center text-center">
-                  <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                  <div className="w-20 h-20 bg-[#F2F2F2] text-[#1A1A1A] rounded-full flex items-center justify-center mb-6">
                     <Check className="w-10 h-10" />
                   </div>
                   <h3 className="text-xl font-black text-text-primary uppercase tracking-tighter mb-2">INVITATION COMMITTED</h3>
@@ -99,8 +99,8 @@ export default function InvestorInviteModal({ isOpen, onClose, propertyName }: I
                      </div>
                   </div>
 
-                  <div className="bg-amber-50 border border-amber-200 p-6 flex items-start gap-4">
-                    <Shield className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                  <div className="bg-[#F2F2F2] border border-[#CCCCCC] p-6 flex items-start gap-4">
+                    <Shield className="w-5 h-5 text-[#595959] flex-shrink-0" />
                     <p className="text-[10px] text-amber-900 font-bold uppercase leading-relaxed tracking-wider">
                       SECURITY NOTICE: INVITATION GRANTS ACCESS TO SENSITIVE FINANCIAL ARTIFACTS FOR <span className="underline">{propertyName || 'ALL ACTIVE DEALS'}</span>.
                     </p>

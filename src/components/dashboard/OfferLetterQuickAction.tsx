@@ -213,7 +213,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                         }}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                           selectedDealId === deal.id
-                            ? 'border-gray-900 bg-bg-primary'
+                            ? 'border-[#595959] bg-bg-primary'
                             : 'border-border-accent hover:border-border-accent'
                         }`}
                       >
@@ -226,7 +226,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                             {deal.prospects?.length || 0} prospect{(deal.prospects?.length || 0) !== 1 ? 's' : ''}
                           </p>
                         </div>
-                        <ChevronDown className={`w-4 h-4 text-gray-300 transition-transform ${selectedDealId === deal.id ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 text-[#CCCCCC] transition-transform ${selectedDealId === deal.id ? 'rotate-180' : ''}`} />
                       </button>
                     ))}
                   </div>
@@ -246,7 +246,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                         onClick={() => handleSelectProspect(prospect)}
                         className={`w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left ${
                           selectedProspectId === prospect.id
-                            ? 'border-gray-900 bg-bg-primary'
+                            ? 'border-[#595959] bg-bg-primary'
                             : 'border-border-accent hover:border-border-accent'
                         }`}
                       >
@@ -279,7 +279,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   <div>
                     <label className="block text-xs text-text-secondary mb-1">Recipient Name *</label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#CCCCCC]" />
                       <input
                         type="text"
                         value={form.recipientName}
@@ -295,7 +295,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                     <div>
                       <label className="block text-xs text-text-secondary mb-1">Offer Amount *</label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#CCCCCC]" />
                         <input
                           type="number"
                           value={form.offerAmount}
@@ -308,7 +308,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                     <div>
                       <label className="block text-xs text-text-secondary mb-1">Earnest Money</label>
                       <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#CCCCCC]" />
                         <input
                           type="number"
                           value={form.earnestMoney}
@@ -324,7 +324,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   <div>
                     <label className="block text-xs text-text-secondary mb-1">Offer Valid For (days)</label>
                     <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#CCCCCC]" />
                       <input
                         type="number"
                         value={form.expiryDays}
@@ -375,7 +375,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   <button
                     onClick={handleGenerate}
                     disabled={!form.recipientName || !form.offerAmount}
-                    className="w-full py-3 rounded-lg bg-gray-900 text-white font-medium text-sm hover:bg-gray-800 disabled:bg-gray-200 disabled:text-text-secondary disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-lg bg-[#595959] text-white font-medium text-sm hover:bg-[#595959] disabled:bg-[#F2F2F2] disabled:text-text-secondary disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                   >
                     <FileText className="w-4 h-4" />
                     Generate Offer Letter
@@ -387,7 +387,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
               {generated && selectedProspect && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-green-600 uppercase tracking-widest">
+                    <label className="block text-xs font-bold text-[#1A1A1A] uppercase tracking-widest">
                       ✓ Letter Generated
                     </label>
                     <div className="flex gap-2">
@@ -478,7 +478,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   {/* Action row */}
                   <button
                     onClick={handleClose}
-                    className="w-full py-3 rounded-lg bg-bg-primary text-text-primary font-medium text-sm hover:bg-gray-200 transition-all"
+                    className="w-full py-3 rounded-lg bg-bg-primary text-text-primary font-medium text-sm hover:bg-[#F2F2F2] transition-all"
                   >
                     Done
                   </button>

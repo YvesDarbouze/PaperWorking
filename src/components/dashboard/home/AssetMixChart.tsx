@@ -28,7 +28,7 @@ function computeMixData(projects: Project[]): MixDataPoint[] {
     'Under Contract': { value: 0, count: 0, color: '#A5A5A5' },
     'Renovating':     { value: 0, count: 0, color: '#7F7F7F' },
     'Listed':         { value: 0, count: 0, color: '#595959' },
-    'Sold':           { value: 0, count: 0, color: '#000000' },
+    'Sold':           { value: 0, count: 0, color: '#1A1A1A' },
   };
 
   projects.forEach(p => {
@@ -109,20 +109,20 @@ export default function AssetMixChart({ projects }: AssetMixChartProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-10">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-bg-primary/50 flex items-center justify-center text-text-secondary group-hover:bg-pw-black group-hover:text-pw-white transition-all duration-500 shadow-sm border border-border-accent/5">
+          <div className="w-12 h-12 rounded-xl bg-[#F2F2F2]/50 flex items-center justify-center text-[#7F7F7F] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-all duration-500 shadow-sm border border-[#A5A5A5]/5">
             <Layout className="w-6 h-6" />
           </div>
           <div>
-            <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-pw-black">
+            <p className="ag-label opacity-40 group-hover:opacity-100 transition-opacity font-bold uppercase tracking-[0.25em] text-[9px] text-[#1A1A1A]">
               Asset Concentration
             </p>
-            <h3 className="text-2xl font-normal text-text-primary tracking-tighter">Portfolio Mix</h3>
+            <h3 className="text-2xl font-normal text-[#1A1A1A] tracking-tighter">Portfolio Mix</h3>
           </div>
         </div>
       </div>
 
       {data.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-text-secondary opacity-30">
+        <div className="flex flex-col items-center justify-center py-16 text-[#7F7F7F] opacity-30">
           <PieChart className="w-10 h-10 mb-3 stroke-[1px]" />
           <p className="text-sm font-bold uppercase tracking-widest text-[10px]">No Asset Data</p>
           <p className="text-[10px] mt-1 opacity-50">Add project financials to see allocation</p>
@@ -158,16 +158,16 @@ export default function AssetMixChart({ projects }: AssetMixChartProps) {
           </div>
 
           {/* Breakdown List */}
-          <div className="grid grid-cols-2 gap-px bg-border-accent/5 border border-border-accent/5 rounded-xl overflow-hidden shadow-sm">
+          <div className="grid grid-cols-2 gap-px bg-[#A5A5A5]/5 border border-[#A5A5A5]/5 rounded-xl overflow-hidden shadow-sm">
             {data.map((item) => (
-              <div key={item.name} className="bg-white/50 backdrop-blur-sm p-4 flex items-center justify-between group/item hover:bg-white transition-colors">
+              <div key={item.name} className="bg-[#FFFFFF]/50 backdrop-blur-sm p-4 flex items-center justify-between group/item hover:bg-[#FFFFFF] transition-colors">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-sm shadow-sm" style={{ backgroundColor: item.color }} />
-                  <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.15em] group-hover/item:text-text-primary transition-colors">{item.name}</span>
+                  <span className="text-[10px] font-bold text-[#7F7F7F] uppercase tracking-[0.15em] group-hover/item:text-[#1A1A1A] transition-colors">{item.name}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold font-mono text-text-primary tracking-tight">{formatCurrency(item.value)}</p>
-                  <p className="text-[9px] text-text-secondary opacity-40 font-bold uppercase tracking-widest">{item.count} deal{item.count !== 1 ? 's' : ''}</p>
+                  <p className="text-sm font-bold font-mono text-[#1A1A1A] tracking-tight">{formatCurrency(item.value)}</p>
+                  <p className="text-[9px] text-[#7F7F7F] opacity-40 font-bold uppercase tracking-widest">{item.count} deal{item.count !== 1 ? 's' : ''}</p>
                 </div>
               </div>
             ))}

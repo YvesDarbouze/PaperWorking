@@ -81,8 +81,8 @@ export default function PhaseNav() {
           hidden sm:flex items-center gap-1.5 text-sm font-semibold uppercase tracking-wider
           px-3 py-1.5 rounded-md border transition-all
           ${viewMode === 'minimized'
-            ? 'bg-gray-900 text-white border-gray-900'
-            : 'bg-bg-surface text-text-secondary border-border-accent hover:border-gray-400 hover:text-text-primary'
+            ? 'bg-[#595959] text-white border-[#595959]'
+            : 'bg-bg-surface text-text-secondary border-border-accent hover:border-[#CCCCCC] hover:text-text-primary'
           }
         `}
         title={viewMode === 'minimized' ? 'Switch to Expanded View' : 'Switch to Board View'}

@@ -177,7 +177,7 @@ export default function KanbanBoard() {
               className={`transition-all duration-200 rounded-full ${
                 i === mobileColIndex
                   ? 'w-4 h-1.5 bg-pw-black'
-                  : 'w-1.5 h-1.5 bg-gray-300'
+                  : 'w-1.5 h-1.5 bg-[#CCCCCC]'
               }`}
             />
           ))}

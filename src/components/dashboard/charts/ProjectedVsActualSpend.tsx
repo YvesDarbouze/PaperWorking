@@ -67,7 +67,7 @@ function SpendTooltip({ active, payload, label }: any) {
         {payload.length === 2 && (
           <div className="mt-2 pt-1.5 border-t border-border-accent/30 flex justify-between gap-4">
             <span className="text-text-secondary italic">Variance:</span>
-            <span className={`font-mono font-bold ${payload[1].value > payload[0].value ? 'text-red-500' : 'text-emerald-500'}`}>
+            <span className={`font-mono font-bold ${payload[1].value > payload[0].value ? 'text-[#595959]' : 'text-[#1A1A1A]'}`}>
               {payload[1].value > payload[0].value ? '+' : ''}
               {(((payload[1].value - payload[0].value) / payload[0].value) * 100).toFixed(1)}%
             </span>

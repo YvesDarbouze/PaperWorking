@@ -69,3 +69,7 @@ node_modules\ 2/
 .next*
 .gstack/
 .git-backup/
+
+# Embedded skill repos (cloned, not submodules)
+.agents/skills/BMAD-METHOD/
+.agents/skills/antigravity-awesome-skills/

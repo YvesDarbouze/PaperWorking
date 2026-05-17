@@ -93,7 +93,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
         category: 'Rehab',
         urgency: task.status === 'In Progress' ? 'action' : 'upcoming',
         assignee: resolveAssignee(deal, 'rehab'),
-        icon: <ClipboardCheck className="w-3.5 h-3.5 text-amber-600" />,
+        icon: <ClipboardCheck className="w-3.5 h-3.5 text-[#595959]" />,
       });
     });
 
@@ -107,7 +107,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
         category: 'Closing',
         urgency: deal.status === 'Under Contract' ? 'overdue' : 'action',
         assignee: resolveAssignee(deal, 'closing'),
-        icon: <FileText className="w-3.5 h-3.5 text-red-500" />,
+        icon: <FileText className="w-3.5 h-3.5 text-[#595959]" />,
       });
     });
 
@@ -121,7 +121,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
         category: 'Triage',
         urgency: 'action',
         assignee: resolveAssignee(deal, 'receipt'),
-        icon: <Receipt className="w-3.5 h-3.5 text-orange-500" />,
+        icon: <Receipt className="w-3.5 h-3.5 text-[#595959]" />,
       });
     });
 
@@ -135,7 +135,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
         category: 'Documents',
         urgency: 'action',
         assignee: resolveAssignee(deal, 'document'),
-        icon: <FileText className="w-3.5 h-3.5 text-blue-500" />,
+        icon: <FileText className="w-3.5 h-3.5 text-[#7F7F7F]" />,
       });
     });
 
@@ -152,7 +152,7 @@ function aggregateTasks(projects: Project[]): AggregatedTask[] {
           category: 'Offers',
           urgency: isExpired ? 'overdue' : 'upcoming',
           assignee: resolveAssignee(deal, 'offer'),
-          icon: <AlertTriangle className="w-3.5 h-3.5 text-yellow-600" />,
+          icon: <AlertTriangle className="w-3.5 h-3.5 text-[#595959]" />,
         });
       });
     });

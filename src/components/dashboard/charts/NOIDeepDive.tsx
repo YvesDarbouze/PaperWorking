@@ -232,7 +232,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
       {/* ── Section Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+          <div className="p-2 bg-[#F2F2F2] text-[#1A1A1A] rounded-lg">
             <BarChart3 className="w-5 h-5" />
           </div>
           <div>
@@ -405,7 +405,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
         className="bg-bg-surface border border-border-accent rounded-xl p-5 overflow-hidden"
       >
         <div className="flex items-center gap-2 mb-4">
-          <DollarSign className="w-4 h-4 text-emerald-500" />
+          <DollarSign className="w-4 h-4 text-[#1A1A1A]" />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
             NOI Statement — Annualized P&amp;L
           </h4>
@@ -440,8 +440,8 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
           className="my-2 px-3 flex items-center gap-2 py-1"
           style={{ borderTop: '1px dashed var(--border-ui)' }}
         >
-          <ArrowRight className="w-3 h-3 text-amber-500" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-600">
+          <ArrowRight className="w-3 h-3 text-[#595959]" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#595959]">
             Losses &amp; Operating Expenses
           </span>
         </div>

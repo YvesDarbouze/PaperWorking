@@ -185,11 +185,11 @@ export default function YesterdayCostCard() {
 
       {/* 7-day comparison footer */}
       <div className="px-6 pb-4 pt-1 flex items-center justify-end gap-1.5">
-        {isUp && <TrendingUp className="w-3 h-3 text-amber-400" />}
-        {isDown && <TrendingDown className="w-3 h-3 text-green-400" />}
+        {isUp && <TrendingUp className="w-3 h-3 text-[#595959]" />}
+        {isDown && <TrendingDown className="w-3 h-3 text-[#1A1A1A]" />}
         {!isUp && !isDown && <Minus className="w-3 h-3 text-white/30" />}
         <span className={`text-[9px] font-black tracking-wide ${
-          isUp ? 'text-amber-400' : isDown ? 'text-green-400' : 'text-white/30'
+          isUp ? 'text-[#595959]' : isDown ? 'text-[#1A1A1A]' : 'text-white/30'
         }`}>
           vs 7-day avg: {fmt(sevenDayAvg, 0)}
           {deltaAbs > 1 && ` ${isUp ? '↑' : '↓'}${deltaAbs.toFixed(0)}%`}

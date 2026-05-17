@@ -57,9 +57,9 @@ function computeDOMData(projects: Project[]): DealDOM[] {
 }
 
 const PHASE_CONFIG = {
-  low:  { text: 'text-green-600',  fill: 'bg-green-500',  label: 'HEALTHY' },
-  med:  { text: 'text-amber-600', fill: 'bg-amber-500', label: 'EXTENDED' },
-  high: { text: 'text-red-600',   fill: 'bg-red-500',   label: 'STAGNANT' },
+  low:  { text: 'text-[#7F7F7F]',  fill: 'bg-[#CCCCCC]',  label: 'HEALTHY' },
+  med:  { text: 'text-[#595959]', fill: 'bg-[#A5A5A5]', label: 'EXTENDED' },
+  high: { text: 'text-[#1A1A1A]',   fill: 'bg-[#595959]',   label: 'STAGNANT' },
 };
 
 interface DOMCountdownProps {
@@ -76,7 +76,7 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
       {/* Threshold Control */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <Calendar className="w-3 h-3 text-text-secondary/40" />
+          <Calendar className="w-3 h-3 text-[#A5A5A5]" />
           <p className="ag-label opacity-40 text-[10px] font-bold uppercase tracking-[0.1em]">Target Velocity</p>
         </div>
         {editing ? (
@@ -86,23 +86,23 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
             onChange={(e) => setMaxDOM(Math.max(30, parseInt(e.target.value) || 160))}
             onBlur={() => setEditing(false)}
             onKeyDown={(e) => e.key === 'Enter' && setEditing(false)}
-            className="w-16 text-right text-xs font-mono bg-bg-primary px-2 py-1 rounded border border-border-accent/30 text-text-primary focus:outline-none focus:border-pw-black"
+            className="w-16 text-right text-xs font-mono bg-[#F2F2F2] px-2 py-1 rounded border border-[#CCCCCC]/30 text-[#1A1A1A] focus:outline-none focus:border-[#1A1A1A]"
             autoFocus
           />
         ) : (
           <button
             onClick={() => setEditing(true)}
-            className="flex items-center gap-1.5 text-xs font-mono text-text-primary hover:text-pw-black transition-all group/edit"
+            className="flex items-center gap-1.5 text-xs font-mono text-[#1A1A1A] hover:text-[#595959] transition-all group/edit"
           >
             {maxDOM} Days
-            <Edit3 className="w-2.5 h-2.5 text-text-secondary/30 group-hover/edit:text-pw-black transition-colors" />
+            <Edit3 className="w-2.5 h-2.5 text-[#A5A5A5] group-hover/edit:text-[#1A1A1A] transition-colors" />
           </button>
         )}
       </div>
 
       {/* Deal List */}
       {deals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-text-secondary opacity-30">
+        <div className="flex flex-col items-center justify-center py-12 text-[#A5A5A5] opacity-30">
           <Timer className="w-8 h-8 mb-2 stroke-[1px]" />
           <p className="text-[10px] font-bold uppercase tracking-widest">No Active Listings</p>
         </div>
@@ -114,28 +114,28 @@ export default function DOMCountdown({ projects }: DOMCountdownProps) {
             return (
               <div key={deal.id} className="group/item space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-text-primary tracking-tight truncate max-w-[200px]">
+                  <span className="text-xs font-bold text-[#1A1A1A] tracking-tight truncate max-w-[200px]">
                     {deal.address}
                   </span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-normal text-text-primary tracking-tight font-mono">
+                    <span className="text-xs font-normal text-[#1A1A1A] tracking-tight font-mono">
                       {deal.currentDOM}
                       <span className="text-[10px] ml-0.5 opacity-40">d</span>
                     </span>
                   </div>
                 </div>
                 
-                <div className="relative h-1.5 rounded-full bg-bg-primary overflow-hidden shadow-inner">
+                <div className="relative h-1.5 rounded-full bg-[#F2F2F2] overflow-hidden shadow-inner">
                   <div
                     className={`absolute left-0 top-0 h-full rounded-full ${cfg.fill} transition-all duration-1000 ease-out`}
                     style={{ width: `${pct}%` }}
                   />
                   {/* Threshold Tick */}
-                  <div className="absolute right-0 top-0 w-px h-full bg-red-500/20" title="Threshold reached" />
+                  <div className="absolute right-0 top-0 w-px h-full bg-[#CCCCCC]" title="Threshold reached" />
                 </div>
 
                 <div className="flex justify-between items-center text-[9px] font-bold tracking-[0.1em]">
-                  <span className="text-text-secondary opacity-40 uppercase">{deal.status}</span>
+                  <span className="text-[#7F7F7F] opacity-40 uppercase">{deal.status}</span>
                   <span className={`${cfg.text} uppercase opacity-60`}>{cfg.label}</span>
                 </div>
               </div>

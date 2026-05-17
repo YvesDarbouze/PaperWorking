@@ -140,7 +140,7 @@ export default function CapitalStackChart({
               <div key={seg.key} className="bg-white px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-sm shrink-0" style={{ background: seg.color }} />
-                  <span className="text-[10px] font-bold text-[#595959] uppercase tracking-[0.12em]">
+                  <span className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-[0.12em]">
                     {seg.label}
                   </span>
                 </div>
@@ -163,7 +163,7 @@ export default function CapitalStackChart({
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div className="rounded bg-[#F2F2F2] px-3 py-2">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">LTV</p>
-            <p className="text-sm font-bold text-[#595959]" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-sm font-bold text-[#1A1A1A]" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {(financials.purchasePrice ?? 0) > 0
                 ? `${(((financials.loanAmount ?? 0) / (financials.purchasePrice ?? 1)) * 100).toFixed(1)}%`
                 : '—'}
@@ -171,7 +171,7 @@ export default function CapitalStackChart({
           </div>
           <div className="rounded bg-[#F2F2F2] px-3 py-2">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">Equity %</p>
-            <p className="text-sm font-bold text-[#595959]" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-sm font-bold text-[#1A1A1A]" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {total > 0
                 ? `${(((segments.find((s) => s.key === 'equity')?.amount ?? 0) / total) * 100).toFixed(1)}%`
                 : '—'}

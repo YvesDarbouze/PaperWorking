@@ -34,9 +34,9 @@ function ttfBand(days: number | null): TTFBand {
 }
 
 const TTF_STYLE: Record<TTFBand, { bg: string; text: string; border: string; label: string }> = {
-  green:   { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: '< 6 mo' },
-  yellow:  { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200',   label: '6-12 mo' },
-  red:     { bg: 'bg-red-50',     text: 'text-red-700',     border: 'border-red-200',     label: '> 12 mo' },
+  green:   { bg: 'bg-[#F2F2F2]', text: 'text-emerald-700', border: 'border-[#CCCCCC]', label: '< 6 mo' },
+  yellow:  { bg: 'bg-[#F2F2F2]',   text: 'text-amber-700',   border: 'border-[#CCCCCC]',   label: '6-12 mo' },
+  red:     { bg: 'bg-[#F2F2F2]',     text: 'text-red-700',     border: 'border-[#CCCCCC]',     label: '> 12 mo' },
   neutral: { bg: 'bg-bg-primary',    text: 'text-text-secondary',    border: 'border-border-accent',    label: 'N/A' },
 };
 

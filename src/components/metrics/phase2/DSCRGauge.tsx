@@ -69,12 +69,12 @@ export default function DSCRGauge({
 
   return (
     <div
-      className={`rounded-lg border overflow-hidden ${isAlert ? 'border-amber-400' : 'border-[#CCCCCC]'} transition-colors ${className}`}
+      className={`rounded-lg border overflow-hidden ${isAlert ? 'border-[#CCCCCC]' : 'border-[#CCCCCC]'} transition-colors ${className}`}
       style={{ background: '#FFFFFF' }}
     >
       {isAlert && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border-b border-amber-200">
-          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+        <div className="flex items-center gap-2 px-4 py-2 bg-[#F2F2F2] border-b border-[#CCCCCC]">
+          <AlertTriangle className="w-3.5 h-3.5 text-[#595959] shrink-0" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-amber-700">
             DSCR below lender benchmark of 1.25x
           </span>
@@ -150,13 +150,13 @@ export default function DSCRGauge({
         <div className="grid grid-cols-2 gap-px bg-[#F2F2F2] rounded-lg overflow-hidden border border-[#F2F2F2] mt-4">
           <div className="bg-white p-4">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">Annual NOI</p>
-            <p className="text-base font-bold tracking-tight text-[#595959] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-base font-bold tracking-tight text-[#1A1A1A] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {formatCurrency(noi)}
             </p>
           </div>
           <div className="bg-white p-4">
             <p className="text-[9px] font-bold uppercase tracking-widest text-[#A5A5A5]">Annual Debt Service</p>
-            <p className="text-base font-bold tracking-tight text-[#595959] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
+            <p className="text-base font-bold tracking-tight text-[#1A1A1A] mt-1" style={{ fontFamily: 'ui-monospace, monospace' }}>
               {formatCurrency(annualDebtService)}
             </p>
           </div>
@@ -171,7 +171,7 @@ export default function DSCRGauge({
             <div key={b.level} className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-sm shrink-0" style={{ background: b.color }} />
               <div>
-                <p className="text-[9px] font-bold text-[#595959]">{b.level}</p>
+                <p className="text-[9px] font-bold text-[#1A1A1A]">{b.level}</p>
                 <p className="text-[8px] text-[#A5A5A5]">{b.desc}</p>
               </div>
             </div>

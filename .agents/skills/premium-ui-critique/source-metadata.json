@@ -1,0 +1,22 @@
+{
+  "skill_name": "premium-ui-critique",
+  "source_url": "https://github.com/eyeszik/Claude-Design-Skills/blob/claude/design-skill-audit-FW4TF/skills/frontend-design/premium-ui-critique/SKILL.md",
+  "raw_url": "https://raw.githubusercontent.com/eyeszik/Claude-Design-Skills/claude/design-skill-audit-FW4TF/skills/frontend-design/premium-ui-critique/SKILL.md",
+  "source_type": "CUSTOM_BUILT",
+  "source_repo": "eyeszik/Claude-Design-Skills",
+  "source_commit": "",
+  "source_path": "skills/frontend-design/premium-ui-critique/SKILL.md",
+  "added_at_utc": "2026-05-11T01:30:00Z",
+  "design_bucket": "frontend-design",
+  "secondary_buckets": ["taste-and-aesthetic-review", "visual-regression"],
+  "trust_tier": "CUSTOM",
+  "license_status": "OWNED",
+  "score": 90,
+  "decision": "INSTALL_NOW",
+  "risk_notes": [],
+  "token_notes": ["86 lines — lightweight; output-format structured; no example bloat"],
+  "copy_recommendation": "COPY_ALLOWED",
+  "manual_review_required": false,
+  "recommended_install_target": "project-local",
+  "rollback_action": "rm -rf skills/frontend-design/premium-ui-critique/"
+}

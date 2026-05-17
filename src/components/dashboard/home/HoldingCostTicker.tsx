@@ -96,44 +96,44 @@ export default function HoldingCostTicker({ projects, maxDOM = 160 }: HoldingCos
   return (
     <div className="space-y-6">
       {deals.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-text-secondary opacity-30">
+        <div className="flex flex-col items-center justify-center py-12 text-[#A5A5A5] opacity-30">
           <Wallet className="w-8 h-8 mb-2 stroke-[1px]" />
           <p className="text-[10px] font-bold uppercase tracking-widest text-center">No Holding Costs Tracked</p>
         </div>
       ) : (
         deals.map(deal => (
-          <div key={deal.id} className="group/item p-4 rounded-xl bg-bg-surface border border-border-accent/10 shadow-sm hover:border-pw-black/20 transition-all duration-500">
+          <div key={deal.id} className="group/item p-4 rounded-xl bg-[#FFFFFF] border border-[#CCCCCC]/10 shadow-sm hover:border-[#1A1A1A]/20 transition-all duration-500">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-text-primary tracking-tight truncate max-w-[150px]">
+              <span className="text-xs font-bold text-[#1A1A1A] tracking-tight truncate max-w-[150px]">
                 {deal.address}
               </span>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-bold text-text-primary tracking-tight font-mono">
+                <span className="text-sm font-bold text-[#1A1A1A] tracking-tight font-mono">
                   {formatCurrency(deal.monthlyTotal)}
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.1em] text-text-secondary opacity-40 font-black">
+                <span className="text-[9px] uppercase tracking-[0.1em] text-[#7F7F7F] opacity-40 font-black">
                   Monthly Burn
                 </span>
               </div>
             </div>
             
-            <div className="flex items-center gap-4 py-3 border-y border-border-accent/5">
+            <div className="flex items-center gap-4 py-3 border-y border-[#CCCCCC]/5">
               <div className="flex-1">
-                <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-0.5">Daily Rate</p>
-                <p className="text-xs font-mono text-text-primary font-bold">{formatCurrency(deal.dailyRate)}</p>
+                <p className="text-[9px] uppercase tracking-widest text-[#A5A5A5] opacity-40 mb-0.5">Daily Rate</p>
+                <p className="text-xs font-mono text-[#1A1A1A] font-bold">{formatCurrency(deal.dailyRate)}</p>
               </div>
               <div className="flex-1 text-right">
-                <p className="text-[9px] uppercase tracking-widest text-text-secondary opacity-40 mb-0.5">Days Held</p>
-                <p className="text-xs font-mono text-text-primary font-bold">{deal.daysHeld}d</p>
+                <p className="text-[9px] uppercase tracking-widest text-[#A5A5A5] opacity-40 mb-0.5">Days Held</p>
+                <p className="text-xs font-mono text-[#1A1A1A] font-bold">{deal.daysHeld}d</p>
               </div>
             </div>
 
             <div className="mt-4 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <TrendingUp className="w-3 h-3 text-red-500/60" />
-                <span className="text-[10px] text-text-secondary opacity-60">Est. Remaining Exposure</span>
+                <TrendingUp className="w-3 h-3 text-[#595959]/60" />
+                <span className="text-[10px] text-[#7F7F7F] opacity-60">Est. Remaining Exposure</span>
               </div>
-              <span className="text-xs font-bold text-red-600 font-mono">
+              <span className="text-xs font-bold text-[#1A1A1A] font-mono">
                 {formatCurrency(deal.projectedRemainingCost)}
               </span>
             </div>

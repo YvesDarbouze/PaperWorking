@@ -464,7 +464,7 @@ export default function HowItWorks() {
           {/* CTA Button */}
           <motion.div variants={fadeUp}>
             <Link
-              href="/pricing"
+              href="/#pricing"
               className="inline-flex items-center justify-center space-x-3 px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
               style={{
                 backgroundColor: '#f2f2f2',

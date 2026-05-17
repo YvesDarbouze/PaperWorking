@@ -188,7 +188,7 @@ function LoginPageInner() {
 
       {/* ── Heading ── */}
       <div className="mb-8 text-center">
-        <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Sign in or sign up</h1>
+        <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Sign in</h1>
         <p className="mt-2 text-sm text-[#888]">Access your PaperWorking portfolio.</p>
       </div>
 
@@ -393,12 +393,9 @@ function LoginPageInner() {
 
       {/* ── Sign-up footer ── */}
       <p className="mt-8 text-[13px] text-[#555]">
-        Don&apos;t have an account?{' '}
-        <Link
-          href={urlRedirectTo ? `/register?redirectTo=${encodeURIComponent(urlRedirectTo)}` : '/register'}
-          className="text-white font-semibold hover:underline transition-all"
-        >
-          Sign up
+        New to PaperWorking?{' '}
+        <Link href="/#pricing" className="text-white font-semibold hover:underline transition-all">
+          Start your 14-day trial
         </Link>
       </p>
     </div>

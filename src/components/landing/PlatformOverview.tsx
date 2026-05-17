@@ -239,7 +239,7 @@ export default function PlatformOverview() {
 
             {/* ── CTA Button ── */}
             <Link
-              href="/pricing"
+              href="/#pricing"
               className="inline-flex items-center justify-center gap-3 px-10 py-4 text-[15px] font-semibold transition-all duration-300 hover:scale-[1.03] hover:shadow-xl active:scale-[0.98]"
               style={{
                 backgroundColor: '#ffffff',

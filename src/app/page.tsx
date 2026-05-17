@@ -37,26 +37,23 @@ export default function ParallaxLandingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
-    // ── Unauthenticated: save intent and route through auth ──
-    if (!user) {
-      sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
-      const type = plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
-      window.location.href = `/login?type=${type}&redirectTo=/pricing`;
-      return;
-    }
-
     try {
-      const idToken = await user.getIdToken();
+      // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
+      // Trial + auto-charge handled server-side. No login required at this step.
+      const body: Record<string, string> = { plan, billingInterval: interval };
+
+      if (user) {
+        try {
+          body.idToken = await user.getIdToken();
+          body.userId = user.uid;
+          if (user.email) body.userEmail = user.email;
+        } catch { /* non-fatal — proceed as guest */ }
+      }
+
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan,
-          billingInterval: interval,
-          userId: user.uid,
-          userEmail: user.email,
-          idToken,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();

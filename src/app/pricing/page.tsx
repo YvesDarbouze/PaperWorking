@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 import PricingSection from '@/components/landing/PricingSection';
@@ -34,26 +34,23 @@ export default function PricingPage() {
         ? planIdentifier.slice(0, -' Monthly'.length)
         : planIdentifier;
 
-    // Unauthenticated → save intent and route through login
-    if (!user) {
-      sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
-      const type = plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
-      window.location.href = `/login?type=${type}&redirectTo=/pricing`;
-      return;
-    }
-
     try {
-      const idToken = await user.getIdToken();
+      // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
+      // Trial + auto-charge handled server-side. No login required at this step.
+      const body: Record<string, string> = { plan, billingInterval: interval };
+
+      if (user) {
+        try {
+          body.idToken = await user.getIdToken();
+          body.userId = user.uid;
+          if (user.email) body.userEmail = user.email;
+        } catch { /* non-fatal — proceed as guest */ }
+      }
+
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan,
-          billingInterval: interval,
-          userId: user.uid,
-          userEmail: user.email,
-          idToken,
-        }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -68,24 +65,6 @@ export default function PricingPage() {
       setIsProcessing(null);
     }
   }, [user]);
-
-  // ── Auto-resume checkout after login ──────────────────────────
-  // If the user just authenticated with a pending plan intent in
-  // sessionStorage, automatically trigger the Stripe checkout.
-  useEffect(() => {
-    if (!user) return;
-    const raw = sessionStorage.getItem('pw_pending_plan');
-    if (!raw) return;
-
-    try {
-      const { plan, interval, identifier } = JSON.parse(raw);
-      sessionStorage.removeItem('pw_pending_plan');
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      handleSelectPlan(identifier || `${plan} ${interval === 'annual' ? 'Annual' : 'Monthly'}`);
-    } catch {
-      sessionStorage.removeItem('pw_pending_plan');
-    }
-  }, [user, handleSelectPlan]);
 
   return (
     <div className="min-h-screen font-sans text-[var(--pw-fg)] relative" style={{ backgroundColor: '#f2f2f2' }}>

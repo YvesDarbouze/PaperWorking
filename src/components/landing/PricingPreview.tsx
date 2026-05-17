@@ -180,7 +180,7 @@ export default function PricingPreview() {
 
               {/* CTA */}
               <Link
-                href="/pricing"
+                href="/#pricing"
                 className={`w-full py-3 text-xs font-bold uppercase tracking-widest text-center transition-colors flex items-center justify-center space-x-2 ${
                   plan.highlight
                     ? 'bg-bg-surface text-text-primary hover:bg-dashboard'
@@ -197,7 +197,7 @@ export default function PricingPreview() {
         {/* Link to full pricing */}
         <div className="text-center mt-8">
           <Link
-            href="/pricing"
+            href="/#pricing"
             className="text-xs font-bold uppercase tracking-widest text-phase-3 hover:text-text-primary transition-colors"
           >
             View full plan comparison →

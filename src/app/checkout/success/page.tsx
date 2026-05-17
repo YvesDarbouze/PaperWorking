@@ -244,18 +244,15 @@ function CheckoutSuccessInner() {
               /* Guest → create account to claim subscription */
               <>
                 <Link
-                  href={`/register?type=${sessionData.plan === 'Vendor Marketplace' ? 'vendor' : 'investor'}${sessionData.customerEmail ? `&email=${encodeURIComponent(sessionData.customerEmail)}` : ''}`}
+                  href="/login"
                   className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-white text-black text-sm font-semibold rounded-xl hover:bg-gray-100 transition-all active:scale-[0.97]"
                 >
-                  Create Your Account
+                  Sign In / Create Account
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link
-                  href="/login"
-                  className="text-sm text-[#555] hover:text-[#aaa] transition-colors"
-                >
-                  Already have an account? Sign in
-                </Link>
+                <p className="text-xs text-[#555] leading-relaxed">
+                  Use Google, Facebook, or a magic link to access your dashboard.
+                </p>
               </>
             )}
           </div>

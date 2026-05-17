@@ -124,6 +124,19 @@ export async function POST(request: Request) {
         let userId = session.client_reference_id || session.metadata?.userId;
         const plan = session.metadata?.plan;
 
+        // Fetch the real subscription status (may be 'trialing', not 'active')
+        let actualStatus = 'active';
+        let trialEnd: string | null = null;
+        if (session.subscription) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(session.subscription as string);
+            actualStatus = STRIPE_STATUS_MAP[sub.status] || 'active';
+            trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
+          } catch (e) {
+            console.warn('[Stripe Webhook] Could not retrieve subscription for trial status check:', e);
+          }
+        }
+
         // ── Guest Checkout Linking ──
         // If userId is missing or 'guest', attempt to find the user by email.
         // This handles the flow where a user checks out before registering.
@@ -138,13 +151,14 @@ export async function POST(request: Request) {
             userId = emailLookup.docs[0].id;
             console.log(`[Stripe Webhook] Linked guest checkout to existing user: ${userId}`);
           } else {
-            // No user found — store the session for later linking
-            // This will be reconciled when the user registers
-            console.log(`[Stripe Webhook] Guest checkout for ${session.customer_details.email} — will link on registration`);
+            // No user found — store the session for later linking when user signs in
+            console.log(`[Stripe Webhook] Guest checkout for ${session.customer_details.email} — will link on sign-in`);
             await adminDb.collection('pending_subscriptions').doc(session.customer_details.email).set({
               plan,
               stripeCustomerId: session.customer as string,
               stripeSubscriptionId: session.subscription as string,
+              subscriptionStatus: actualStatus,
+              trialEnd,
               sessionId: session.id,
               customerEmail: session.customer_details.email,
               createdAt: FieldValue.serverTimestamp(),
@@ -156,10 +170,34 @@ export async function POST(request: Request) {
         if (userId && userId !== 'guest' && plan) {
           await updateUserAndOrg(userId, {
             subscriptionPlan: plan,
-            subscriptionStatus: 'active',
+            subscriptionStatus: actualStatus,
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: session.subscription as string,
+            ...(trialEnd ? { trialEnd } : {}),
           });
+        }
+        break;
+      }
+
+      // =========================================================
+      // TRIAL ENDING SOON — 3 days before trial converts to paid
+      // Stripe fires this automatically; log it for email triggers.
+      // =========================================================
+      case 'customer.subscription.trial_will_end': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const stripeCustomerId = subscription.customer as string;
+
+        const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
+        if (uid) {
+          const trialEndDate = subscription.trial_end
+            ? new Date(subscription.trial_end * 1000).toISOString()
+            : null;
+          await updateUserAndOrg(uid, {
+            trialEndingSoon: true,
+            trialEnd: trialEndDate,
+          });
+          console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndDate}`);
+          // TODO: trigger transactional email via your email provider here
         }
         break;
       }

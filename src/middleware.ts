@@ -8,60 +8,50 @@ import type { NextRequest } from 'next/server';
    Runs on the Node.js runtime before routes are rendered.
 
    1. Protects /dashboard/* routes — redirects to /login
-      if the __session cookie is missing or invalid.
+      if the __session cookie is missing or expired.
    2. Redirects already-authenticated users away from
       auth pages (/login, /register, /forgot-password).
    3. Passes /invest/* (Guest Portal) through untouched.
-   4. Verifies JWT signature via Firebase Admin SDK for
-      defense-in-depth (not just cookie existence).
+   4. Decodes JWT claims (exp check) without signature
+      verification — real auth lives in API routes and
+      Firestore rules. Cookie is HttpOnly and only written
+      by /api/auth/session after Admin SDK verification.
    ═══════════════════════════════════════════════════════ */
 
 const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
 const AUTH_PATHS = new Set(['/login', '/register', '/forgot-password']);
 
-// Initialize Firebase Auth for Edge runtime
-import { getFirebaseAuth } from 'next-firebase-auth-edge/lib/auth';
-
-const auth = getFirebaseAuth({
-  serviceAccount: {
-    projectId: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL || '',
-    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : '',
-  },
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-});
-
 /**
- * Lightweight JWT verification using next-firebase-auth-edge.
- * Returns the decoded token if valid, null if expired/invalid.
- * Failures are treated as "no session" — the user is redirected.
+ * Decodes JWT claims without signature verification.
+ * The __session cookie is HttpOnly and set exclusively by /api/auth/session,
+ * which performs full Firebase Admin SDK verification before writing the cookie.
+ * Middleware's job is gating (UX guard); real authorization lives in API routes
+ * and Firestore security rules.
+ *
+ * We still reject tokens that are structurally invalid or expired so stale
+ * cookies don't silently grant access after the 14-day max-age.
  */
-async function verifySessionToken(token: string): Promise<{ uid: string } | null> {
-  // Bypass verification in local development if Firebase Admin SDK isn't configured
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    (!process.env.FIREBASE_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY === '')
-  ) {
-    console.warn('[Proxy] Skipping JWT verification in dev mode (missing FIREBASE_PRIVATE_KEY)');
-    return { uid: 'dev-bypass' };
-  }
-
+function verifySessionToken(token: string): { uid: string } | null {
   try {
-    const decoded = await auth.verifyIdToken(token);
-    return decoded?.uid ? { uid: decoded.uid } : null;
-  } catch (err: any) {
-    // Expected failures: expired token, revoked token, malformed JWT
-    if (err?.code !== 'auth/id-token-expired') {
-      console.warn('[Proxy] Token verification failed:', err?.code || err?.message, err);
-    } else {
-      console.warn('[Proxy] Token expired');
-    }
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    // Base64url → base64 → JSON
+    const padded = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(padded));
+
+    if (!payload?.user_id && !payload?.sub && !payload?.uid) return null;
+    if (payload.exp && Date.now() >= payload.exp * 1000) return null;
+
+    const uid = payload.user_id || payload.sub || payload.uid;
+    return { uid };
+  } catch {
     return null;
   }
 }
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionToken = request.cookies.get(SESSION_COOKIE)?.value;
   const acct         = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
@@ -80,7 +70,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verify the JWT is actually valid (not just present)
-    const verified = await verifySessionToken(sessionToken);
+    const verified = verifySessionToken(sessionToken);
     if (!verified) {
       const loginUrl = new URL('/login', request.url);
       loginUrl.searchParams.set('redirectTo', pathname);
@@ -108,7 +98,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verify the JWT is actually valid (not just present)
-    const verified = await verifySessionToken(sessionToken);
+    const verified = verifySessionToken(sessionToken);
     if (!verified) {
       console.warn(`[Proxy] Invalid session token for ${pathname}, redirecting to login`);
       const loginUrl = new URL('/login', request.url);

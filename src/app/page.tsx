@@ -41,7 +41,7 @@ export default function ParallaxLandingPage() {
     if (!user) {
       sessionStorage.setItem('pw_pending_plan', JSON.stringify({ plan, interval, identifier: planIdentifier }));
       const type = plan === 'Vendor Marketplace' ? 'vendor' : 'investor';
-      window.location.href = `/register?type=${type}&redirectTo=/pricing`;
+      window.location.href = `/login?type=${type}&redirectTo=/pricing`;
       return;
     }
 

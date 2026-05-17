@@ -40,7 +40,7 @@ const tiers: PlanTier[] = [
     monthlyPrice: 59,
     annualPrice: 499,
     ctaLabel: 'Start Free Trial',
-    ctaMicrocopy: 'No credit card required',
+    ctaMicrocopy: 'Cancel anytime during trial',
     isAnchored: false,
     features: [
       { label: 'Unlimited Property Tracking', included: true },
@@ -67,7 +67,7 @@ const tiers: PlanTier[] = [
     monthlyPrice: 99,
     annualPrice: 999,
     ctaLabel: 'Start Team Trial',
-    ctaMicrocopy: 'Cancel anytime',
+    ctaMicrocopy: 'Cancel anytime during trial',
     isAnchored: true,
     anchorBadge: 'Most teams choose Team',
     socialProof: {

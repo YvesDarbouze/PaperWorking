@@ -74,7 +74,7 @@ export default function PricingPreview() {
             One price. Everything included.
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm text-phase-3 leading-relaxed">
-            14-day free trial on every plan. No credit card required.
+            14-day free trial on every plan. Cancel anytime.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export default function PricingPreview() {
 
               {/* CTA */}
               <Link
-                href="/pricing"
+                href="/#pricing"
                 className={`w-full py-3 text-xs font-bold uppercase tracking-widest text-center transition-colors flex items-center justify-center space-x-2 ${
                   plan.highlight
                     ? 'bg-bg-surface text-text-primary hover:bg-dashboard'

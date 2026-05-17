@@ -182,7 +182,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'Is there a free trial?',
-    answer: 'Yes. Every plan includes a 14-day free trial with full access to all features. No credit card is required to start your trial.',
+    answer: 'Yes. Every plan includes a 14-day free trial with full access to all features. A credit card is collected at checkout, but you won\'t be charged until your trial ends.',
     category: 'billing',
   },
   {

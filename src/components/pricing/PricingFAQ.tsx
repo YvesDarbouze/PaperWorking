@@ -37,7 +37,7 @@ const faqItems: FAQItem[] = [
   {
     question: 'Is there a free trial?',
     answer:
-      'Yes. Every new account starts with a 14-day free trial of the Team plan with access to all features. No credit card required. At the end of the trial, choose the plan that fits — or walk away with no obligation.',
+      'Yes. Every new account starts with a 14-day free trial of the Team plan with access to all features. A credit card is collected at signup, but you won\u2019t be charged until your trial ends. At the end of the trial, choose the plan that fits \u2014 or cancel before you\u2019re billed.',
   },
   {
     question: 'Can I switch between Individual, Team, and Lawyer plans?',

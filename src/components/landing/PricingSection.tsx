@@ -191,7 +191,7 @@ const PRICING_FAQ = [
   {
     question: 'How does the free trial work?',
     answer:
-      "Every new account starts with a full-access 14-day free trial — no credit card required. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.",
+      "Every new account starts with a full-access 14-day free trial. A credit card is collected at checkout, but you won't be charged until your trial ends. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.",
   },
   {
     question: 'What happens if I cancel?',
@@ -466,7 +466,7 @@ function PricingCard({
         className="text-center text-xs mt-3 font-medium"
         style={{ color: s.textMuted }}
       >
-        No credit card required
+        14-day free trial · Cancel anytime
       </p>
 
       {/* Feature List */}
@@ -875,7 +875,7 @@ export default function PricingSection({
           className="text-sm leading-relaxed mx-auto max-w-xl mb-8"
           style={{ color: '#7f7f7f' }}
         >
-          14-day free trial on every plan. No credit card. Cancel anytime.
+          14-day free trial on every plan. Cancel anytime.
         </motion.p>
 
         <motion.div variants={fadeUp}>

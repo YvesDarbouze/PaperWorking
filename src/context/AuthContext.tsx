@@ -19,6 +19,8 @@ import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, onSnapshot } from 'fir
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
+import { getTokenExpiryMinutes } from '@/lib/auth/sessionService';
+import SessionExpiredModal from '@/components/auth/SessionExpiredModal';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 3.0)
@@ -49,6 +51,10 @@ interface AuthContextType {
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
+  /** H-5: Force-refresh the ID token and re-sync the session cookie if the
+   *  token has less than 5 minutes of lifetime remaining. Call this on every
+   *  hard layout mount to catch near-expiry tokens during SPA navigation. */
+  refreshSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -180,6 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpiredVisible, setSessionExpiredVisible] = useState(false);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Ref mirror of isAuthenticating so onAuthStateChanged (a stale closure)
   // can read the current value without being recreated on every render.
@@ -202,6 +209,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
+        // H-5: Proactive token refresh on auth-state fire (covers hard page loads).
+        // getIdTokenResult(false) reads the cached token without a network call.
+        // If <5 min remain, force-refresh NOW before syncSessionCookie runs.
+        try {
+          const minsLeft = await getTokenExpiryMinutes(firebaseUser);
+          if (minsLeft !== null && minsLeft < 5) {
+            await firebaseUser.getIdToken(true);
+          }
+        } catch { /* non-fatal — syncSessionCookie below will still force-refresh */ }
+
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
           if (snap.exists()) setProfile(snap.data() as UserProfile);
@@ -215,20 +232,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } catch (err: any) {
             console.error('Token refresh failed:', err);
 
-            // Surface the failure to the user so they can re-authenticate
             if (err?.code === 'auth/network-request-failed') {
+              // Transient network issue — surface a toast; session may still be valid
               toast.error('Network error — your session may expire soon. Check your connection.', {
-                id: 'token-refresh-network', // Prevent duplicate toasts
+                id: 'token-refresh-network',
                 duration: 8000,
               });
             } else {
-              // Token revoked, user disabled, or other fatal error
-              toast.error('Your session has expired. Please sign in again.', {
-                id: 'token-refresh-expired',
-                duration: 10000,
-              });
-              // Force logout to clear stale state
-              try { await signOut(auth); } catch { /* best effort */ }
+              // H-3: Fatal auth failure (token revoked, user disabled, etc.) —
+              // show the session-expired modal. safeLogout() runs inside the modal.
+              setSessionExpiredVisible(true);
             }
           }
         }, TOKEN_REFRESH_MS);
@@ -417,6 +430,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  /**
+   * H-5: Call on every hard layout mount (SPA navigation).
+   * onAuthStateChanged only fires on browser reload — not on Next.js client-side
+   * route transitions. This method closes that window: if the cached ID token
+   * has less than 5 minutes left, it force-refreshes and re-syncs the session
+   * cookie before the layout renders any authenticated content.
+   */
+  const refreshSession = async (): Promise<void> => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+    try {
+      const minsLeft = await getTokenExpiryMinutes(currentUser);
+      if (minsLeft !== null && minsLeft < 5) {
+        await syncSessionCookie(currentUser);
+      }
+    } catch {
+      // Non-fatal — the 50-min interval will retry
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -434,9 +467,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         resetPassword,
         clearError,
+        refreshSession,
       }}
     >
       {children}
+      {/* H-3: Session-expired modal — shown when the token refresh interval
+          encounters a fatal auth error (revoked token, disabled account, etc.) */}
+      {sessionExpiredVisible && (
+        <SessionExpiredModal onDismiss={() => setSessionExpiredVisible(false)} />
+      )}
     </AuthContext.Provider>
   );
 }

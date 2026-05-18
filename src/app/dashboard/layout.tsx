@@ -97,7 +97,7 @@ function DashboardSkeleton() {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshSession } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -105,6 +105,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       router.replace('/login');
     }
   }, [loading, user, router]);
+
+  // H-5: On every SPA navigation into the dashboard, check whether the ID token
+  // is about to expire. onAuthStateChanged only fires on hard browser reloads, so
+  // SPA transitions can arrive with a token that the 50-min interval hasn't
+  // refreshed yet. refreshSession() is a no-op when >5 min remain.
+  useEffect(() => {
+    if (user) refreshSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   if (loading || !user) return <DashboardSkeleton />;
 

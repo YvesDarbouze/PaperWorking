@@ -40,7 +40,9 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
-  isAuthenticating: boolean; // true while a social popup is in flight
+  isAuthenticating: boolean; // true while a social popup / email login is in flight
+  /** true once /api/auth/session POST has succeeded and __session cookie is confirmed set */
+  sessionReady: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string, accountType?: AccountType) => Promise<void>;
@@ -185,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionExpiredVisible, setSessionExpiredVisible] = useState(false);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -249,17 +252,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfile(null);
       }
 
-      try {
-        // Skip if a social-login popup flow already owns the sync.
-        // loginWithGoogle / loginWithFacebook call syncSessionCookie directly
-        // after provisionSocialUser completes. Running it again here would
-        // fire two concurrent POST /api/auth/session requests.
-        if (!syncLockRef.current) {
-          await syncSessionCookie(firebaseUser);
+      if (firebaseUser) {
+        // If a login handler (social / email) already owns the sync, skip it
+        // here. The handler sets sessionReady after its own sync succeeds.
+        // When NOT locked we own the sync — only set the user if it succeeds,
+        // so the login-page user-watcher never navigates without a cookie.
+        if (syncLockRef.current) {
+          setUser(firebaseUser);
+          setLoading(false);
+        } else {
+          try {
+            await syncSessionCookie(firebaseUser);
+            setSessionReady(true);
+            setUser(firebaseUser);
+          } catch (cookieErr) {
+            console.error('[AuthContext] syncSessionCookie failed — signing out to prevent redirect loop:', cookieErr);
+            setSessionReady(false);
+            setUser(null);
+            signOut(auth).catch(() => {});
+          } finally {
+            setLoading(false);
+          }
         }
-      } finally {
-        setUser(firebaseUser);
-        setLoading(false);
+      } else {
+        // User signed out — clear cookie best-effort, then clear state.
+        setSessionReady(false);
+        try {
+          if (!syncLockRef.current) {
+            await syncSessionCookie(null);
+          }
+        } catch { /* best effort */ } finally {
+          setUser(null);
+          setLoading(false);
+        }
       }
     });
 
@@ -316,18 +341,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     setError(null);
+    // Lock out onAuthStateChanged's own sync so this function is the single
+    // authoritative sync — same pattern as loginWithGoogle / loginWithFacebook.
+    syncLockRef.current = true;
+    setIsAuthenticating(true);
     try {
       const { user: loggedInUser } = await signInWithEmailAndPassword(auth, email, password);
       await syncSessionCookie(loggedInUser);
+      setSessionReady(true);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      setSessionReady(false);
       await deauthOnCookieFailure();
       throw err;
+    } finally {
+      syncLockRef.current = false;
+      setIsAuthenticating(false);
     }
   };
 
   const register = async (email: string, password: string, displayName: string, accountType: AccountType = 'investor') => {
     setError(null);
+    syncLockRef.current = true;
+    setIsAuthenticating(true);
     try {
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
       await setDoc(doc(db, 'users', newUser.uid), {
@@ -343,16 +379,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: serverTimestamp(),
       });
 
-      // Reconcile any pending guest-checkout subscription
       if (newUser.email) {
         await reconcilePendingSubscription(newUser.uid, newUser.email);
       }
 
       await syncSessionCookie(newUser);
+      setSessionReady(true);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      setSessionReady(false);
       await deauthOnCookieFailure();
       throw err;
+    } finally {
+      syncLockRef.current = false;
+      setIsAuthenticating(false);
     }
   };
 
@@ -366,10 +406,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       provider.addScope('profile');
       const result = await signInWithPopup(auth, provider);
       await provisionSocialUser(result.user);
-      // Single authoritative sync — onAuthStateChanged is locked out above.
       await syncSessionCookie(result.user);
+      setSessionReady(true);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      setSessionReady(false);
       await deauthOnCookieFailure();
       throw err;
     } finally {
@@ -389,8 +430,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await signInWithPopup(auth, provider);
       await provisionSocialUser(result.user);
       await syncSessionCookie(result.user);
+      setSessionReady(true);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      setSessionReady(false);
       await deauthOnCookieFailure();
       throw err;
     } finally {
@@ -416,18 +459,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyMagicLink = async (email: string, url: string) => {
     setError(null);
+    syncLockRef.current = true;
+    setIsAuthenticating(true);
     try {
       if (isSignInWithEmailLink(auth, url)) {
         const { user: magicUser } = await signInWithEmailLink(auth, email, url);
         await provisionSocialUser(magicUser);
         await syncSessionCookie(magicUser);
+        setSessionReady(true);
         window.localStorage.removeItem('emailForSignIn');
       } else {
         throw new Error('Invalid magic link.');
       }
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code || ''));
+      setSessionReady(false);
+      await deauthOnCookieFailure();
       throw err;
+    } finally {
+      syncLockRef.current = false;
+      setIsAuthenticating(false);
     }
   };
 
@@ -478,6 +529,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         isAuthenticating,
+        sessionReady,
         error,
         login,
         register,

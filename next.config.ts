@@ -21,9 +21,9 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // Maximum cross-origin isolation — popup auth no longer used.
-          // signInWithRedirect does not require allow-popups.
-          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          // signInWithPopup requires allow-popups so the OAuth popup can
+          // postMessage back to the opener after a cross-origin redirect.
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
           // Prevent MIME-type sniffing
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           // Clickjacking protection (belt-and-suspenders with CSP frame-ancestors)

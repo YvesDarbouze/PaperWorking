@@ -36,6 +36,7 @@ function LoginPageInner() {
     user,
     loading,
     isAuthenticating,
+    sessionReady,
   } = useAuth();
 
   // Prevents double router.replace: set to true by whichever code path
@@ -115,20 +116,18 @@ function LoginPageInner() {
   }, []);
 
   useEffect(() => {
-    // isAuthenticating: a social popup is in flight — handleSocialLogin owns
-    //   the redirect and will call router.replace once syncSessionCookie resolves.
-    // navigatingRef: this effect or handleSocialLogin already called router.replace
-    //   this render cycle — skip to prevent a duplicate navigation.
-    if (!loading && user && !sessionReason && !isAuthenticating && !navigatingRef.current) {
+    // sessionReady: /api/auth/session POST confirmed — __session cookie is set.
+    // Without this gate, a Firebase user with a failed cookie sync would loop:
+    //   navigate to /dashboard → middleware rejects (no cookie) → back to /login.
+    // isAuthenticating: a login flow is in flight — it will navigate on completion.
+    // navigatingRef: already navigating this cycle — skip duplicate.
+    if (!loading && user && sessionReady && !sessionReason && !isAuthenticating && !navigatingRef.current) {
       navigatingRef.current = true;
       const dest = getRedirectDestination();
-      // Full navigation so the middleware sees the freshly-set __session cookie.
-      // router.replace (client-side) can race the browser cookie jar flush;
-      // window.location.replace is a hard request that always carries current cookies.
       window.location.replace(dest);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, router, sessionReason, isAuthenticating]);
+  }, [user, loading, sessionReady, sessionReason, isAuthenticating]);
 
   const [showPassword, setShowPassword]       = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
@@ -148,8 +147,11 @@ function LoginPageInner() {
     clearError();
     try {
       await login(data.email, data.password);
+      // login() sets sessionReady=true and isAuthenticating=false before returning.
+      // Claim the navigation lock so the user-watcher doesn't double-navigate.
+      navigatingRef.current = true;
       const dest = getRedirectDestination();
-      router.push(dest);
+      window.location.replace(dest);
     } catch { /* error set via AuthContext */ }
     finally { setIsSubmitting(false); }
   };
@@ -172,12 +174,9 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // Cookie is set. Claim the navigating lock so the user-watcher
-      // useEffect (which may fire as isAuthenticating flips to false)
-      // does not issue a second router.replace.
       navigatingRef.current = true;
       const dest = getRedirectDestination();
-      router.replace(dest);
+      window.location.replace(dest);
     } catch (err) {
       const msg = (err instanceof Error ? err.message : null) || authError || 'Sign-in failed. Please try again.';
       toast.error(msg, { id: 'social-login-error', duration: 6000 });

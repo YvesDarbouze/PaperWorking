@@ -37,7 +37,22 @@ function MagicLinkFinishInner() {
     try {
       await verifyMagicLink(email, window.location.href);
       setStatus('success');
-      router.push('/dashboard');
+      // Honour any checkout intent stored before the magic link was sent.
+      // Mirrors the getRedirectDestination logic in the login page.
+      let dest = '/dashboard';
+      if (typeof window !== 'undefined') {
+        if (sessionStorage.getItem('pw_pending_plan')) {
+          sessionStorage.removeItem('pw_auth_redirect');
+          dest = '/pricing';
+        } else {
+          const saved = sessionStorage.getItem('pw_auth_redirect');
+          if (saved && saved.startsWith('/')) {
+            sessionStorage.removeItem('pw_auth_redirect');
+            dest = saved;
+          }
+        }
+      }
+      router.push(dest);
     } catch { setStatus('error'); }
   };
 

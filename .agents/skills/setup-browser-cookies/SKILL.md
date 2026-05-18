@@ -1,1 +1,0 @@
-/Users/yvesdarbouze/Documents/PaperWorking/.agents/skills/gstack/setup-browser-cookies/SKILL.md

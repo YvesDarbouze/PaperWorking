@@ -297,6 +297,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  /**
+   * If Firebase auth succeeded but the session cookie could not be created
+   * (network failure, Admin SDK error, CSRF reject, etc.), the Firebase user
+   * is signed in but the middleware has no __session cookie to check.
+   * The login-page user-watcher would see user=truthy and navigate to
+   * /dashboard, which the middleware rejects → redirect to /login → remount
+   * → fresh navigatingRef → same navigation → infinite loop.
+   *
+   * Fix: sign out from Firebase so onAuthStateChanged(null) fires, clears the
+   * React user state, and the user-watcher does NOT navigate.
+   */
+  async function deauthOnCookieFailure() {
+    if (auth.currentUser) {
+      try { await signOut(auth); } catch { /* best effort — user state will clear via onAuthStateChanged */ }
+    }
+  }
+
   const login = async (email: string, password: string) => {
     setError(null);
     try {
@@ -304,6 +321,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(loggedInUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      await deauthOnCookieFailure();
       throw err;
     }
   };
@@ -333,6 +351,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(newUser);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      await deauthOnCookieFailure();
       throw err;
     }
   };
@@ -351,6 +370,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      await deauthOnCookieFailure();
       throw err;
     } finally {
       syncLockRef.current = false;
@@ -371,6 +391,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
+      await deauthOnCookieFailure();
       throw err;
     } finally {
       syncLockRef.current = false;

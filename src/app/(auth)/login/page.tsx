@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -35,7 +35,12 @@ function LoginPageInner() {
     clearError,
     user,
     loading,
+    isAuthenticating,
   } = useAuth();
+
+  // Prevents double router.replace: set to true by whichever code path
+  // (handleSocialLogin or the user-watcher useEffect) fires first.
+  const navigatingRef = useRef(false);
 
   const [handledExpired, setHandledExpired] = useState(false);
 
@@ -110,12 +115,17 @@ function LoginPageInner() {
   }, []);
 
   useEffect(() => {
-    if (!loading && user && !sessionReason) {
+    // isAuthenticating: a social popup is in flight — handleSocialLogin owns
+    //   the redirect and will call router.replace once syncSessionCookie resolves.
+    // navigatingRef: this effect or handleSocialLogin already called router.replace
+    //   this render cycle — skip to prevent a duplicate navigation.
+    if (!loading && user && !sessionReason && !isAuthenticating && !navigatingRef.current) {
+      navigatingRef.current = true;
       const dest = getRedirectDestination();
       router.replace(dest);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loading, router, sessionReason]);
+  }, [user, loading, router, sessionReason, isAuthenticating]);
 
   const [showPassword, setShowPassword]       = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
@@ -159,8 +169,10 @@ function LoginPageInner() {
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
-      // Cookie is guaranteed set by loginWithGoogle/Facebook before they resolve.
-      // Redirect now — no race condition.
+      // Cookie is set. Claim the navigating lock so the user-watcher
+      // useEffect (which may fire as isAuthenticating flips to false)
+      // does not issue a second router.replace.
+      navigatingRef.current = true;
       const dest = getRedirectDestination();
       router.replace(dest);
     } catch (err) {

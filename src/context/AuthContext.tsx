@@ -38,6 +38,7 @@ interface AuthContextType {
   user: User | null;
   profile: UserProfile | null;
   loading: boolean;
+  isAuthenticating: boolean; // true while a social popup is in flight
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName: string, accountType?: AccountType) => Promise<void>;
@@ -177,9 +178,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
+  // Ref mirror of isAuthenticating so onAuthStateChanged (a stale closure)
+  // can read the current value without being recreated on every render.
+  const syncLockRef = useRef(false);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -233,7 +237,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        await syncSessionCookie(firebaseUser);
+        // Skip if a social-login popup flow already owns the sync.
+        // loginWithGoogle / loginWithFacebook call syncSessionCookie directly
+        // after provisionSocialUser completes. Running it again here would
+        // fire two concurrent POST /api/auth/session requests.
+        if (!syncLockRef.current) {
+          await syncSessionCookie(firebaseUser);
+        }
       } finally {
         setUser(firebaseUser);
         setLoading(false);
@@ -316,21 +326,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async () => {
     setError(null);
+    syncLockRef.current = true;
+    setIsAuthenticating(true);
     try {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
       const result = await signInWithPopup(auth, provider);
       await provisionSocialUser(result.user);
+      // Single authoritative sync — onAuthStateChanged is locked out above.
       await syncSessionCookie(result.user);
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
+    } finally {
+      syncLockRef.current = false;
+      setIsAuthenticating(false);
     }
   };
 
   const loginWithFacebook = async () => {
     setError(null);
+    syncLockRef.current = true;
+    setIsAuthenticating(true);
     try {
       const provider = new FacebookAuthProvider();
       provider.addScope('email');
@@ -341,6 +359,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (err: any) {
       setError(getAuthErrorMessage(err.code));
       throw err;
+    } finally {
+      syncLockRef.current = false;
+      setIsAuthenticating(false);
     }
   };
 
@@ -402,6 +423,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         profile,
         loading,
+        isAuthenticating,
         error,
         login,
         register,

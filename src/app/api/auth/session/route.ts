@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { validateCsrf } from '@/lib/auth/csrf';
 
 /* ═══════════════════════════════════════════════════════
    POST /api/auth/session
@@ -12,6 +13,7 @@ import { NextResponse } from 'next/server';
      __acct     — account type ('investor' | 'vendor')
 
    Security model:
+   - CSRF validated via src/lib/auth/csrf.ts (explicit allowlist, no wildcards)
    - Admin SDK verifyIdToken rejects forged / expired / revoked ID tokens
    - createSessionCookie produces a Firebase-signed cookie whose exp
      matches the cookie maxAge (no 60-min vs 14-day mismatch)
@@ -35,65 +37,11 @@ function encodeSubCookie(plan: string, status: string): string {
   return btoa(JSON.stringify({ plan, status }));
 }
 
-/**
- * CSRF Protection — validates that the request originates from our own domain.
- * Prevents cross-site cookie injection via forged POST/DELETE to /api/auth/session.
- */
-function validateOrigin(request: Request): boolean {
-  const origin  = request.headers.get('origin');
-  const referer = request.headers.get('referer');
-
-  // Allow localhost and RFC-1918 ranges in development
-  if (process.env.NODE_ENV !== 'production') {
-    if (!origin && !referer) return true;
-    const isLocal = (str: string) => {
-      try {
-        const { hostname } = new URL(str);
-        return (
-          hostname === 'localhost' ||
-          hostname === '127.0.0.1' ||
-          hostname.startsWith('192.168.') ||
-          hostname.startsWith('10.') ||
-          (hostname.startsWith('172.') &&
-            parseInt(hostname.split('.')[1]) >= 16 &&
-            parseInt(hostname.split('.')[1]) <= 31)
-        );
-      } catch {
-        return str.includes('localhost:') || str.includes('127.0.0.1:');
-      }
-    };
-    if (origin && isLocal(origin)) return true;
-    if (referer && isLocal(referer)) return true;
-  }
-
-  // Explicit allowlist — no wildcards
-  const allowedOrigins = new Set([
-    process.env.NEXT_PUBLIC_APP_URL,          // https://paperworking.co (from apphosting.yaml)
-    'https://paperworking.co',
-    'https://www.paperworking.co',
-    'https://paperworking-97055.web.app',     // Firebase Hosting (specific project only)
-    'https://paperworking-97055.firebaseapp.com',
-  ].filter(Boolean) as string[]);
-
-  const isAllowedHost = (urlStr: string) => {
-    try {
-      return allowedOrigins.has(new URL(urlStr).origin);
-    } catch {
-      return false;
-    }
-  };
-
-  if (origin && isAllowedHost(origin)) return true;
-  if (referer && isAllowedHost(referer)) return true;
-
-  console.warn('[Session CSRF] Rejected request — origin:', origin, 'referer:', referer);
-  return false;
-}
-
 export async function POST(request: Request) {
-  // ── CSRF guard ────────────────────────────────────────
-  if (!validateOrigin(request)) {
-    return NextResponse.json({ error: 'Forbidden: invalid origin' }, { status: 403 });
+  // ── CSRF guard — abort immediately on untrusted origin ────────────────────
+  const csrf = validateCsrf(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: csrf.reason }, { status: csrf.status });
   }
 
   let idToken: string;
@@ -107,10 +55,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  // ── Fail closed if Admin SDK is unavailable in production ─
+  // ── Fail closed if Admin SDK is unavailable in production ─────────────────
   if (!hasAdminCredentials()) {
     if (process.env.NODE_ENV === 'production') {
-      console.error('[Session] Admin SDK credentials missing in production — rejecting session creation');
+      console.error('[Session] Admin SDK credentials missing in production — rejecting');
       return NextResponse.json({ error: 'Auth service unavailable' }, { status: 503 });
     }
     // Dev-only fallback: no Admin SDK configured locally
@@ -129,7 +77,7 @@ export async function POST(request: Request) {
     return res;
   }
 
-  // ── Full production path ───────────────────────────────
+  // ── Full production path ───────────────────────────────────────────────────
   try {
     const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
 
@@ -137,11 +85,11 @@ export async function POST(request: Request) {
     const decoded = await adminAuth.verifyIdToken(idToken, /* checkRevoked */ true);
 
     // Step 2: Exchange for a Firebase session cookie (14-day exp).
-    // Unlike ID tokens (which expire in 60 min), session cookies are
-    // Firebase-managed JWTs whose exp claim matches the cookie maxAge —
-    // eliminating the 60-min vs 14-day mismatch that caused hourly loops.
-    const expiresInMs = SESSION_MAX_AGE * 1000;
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn: expiresInMs });
+    // Unlike raw ID tokens (60-min exp), session cookies are Firebase-signed
+    // JWTs whose exp matches the cookie maxAge — no hourly-loop mismatch.
+    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
+      expiresIn: SESSION_MAX_AGE * 1000,
+    });
 
     // Step 3: Fetch subscription + account type for the __sub / __acct cookies
     let subPlan   = 'None';
@@ -168,23 +116,21 @@ export async function POST(request: Request) {
     };
 
     const response = NextResponse.json({ status: 'success', uid: decoded.uid });
-    response.cookies.set(SESSION_COOKIE, sessionCookie,                          cookieOpts);
-    response.cookies.set(SUB_COOKIE,     encodeSubCookie(subPlan, subStatus),    { ...cookieOpts, httpOnly: false });
-    response.cookies.set(ACCT_COOKIE,    acctType,                               cookieOpts);
+    response.cookies.set(SESSION_COOKIE, sessionCookie,                       cookieOpts);
+    response.cookies.set(SUB_COOKIE,     encodeSubCookie(subPlan, subStatus), { ...cookieOpts, httpOnly: false });
+    response.cookies.set(ACCT_COOKIE,    acctType,                            cookieOpts);
     return response;
 
   } catch (err: any) {
-    // verifyIdToken throws on expired, revoked, or malformed tokens.
-    // createSessionCookie throws if the ID token is too old (>5 min) for
-    // session cookie creation — in that case the client should force-refresh.
     console.error('[Session] Authentication failed:', err.code ?? err.message);
     return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
   }
 }
 
 export async function DELETE(request: Request) {
-  if (!validateOrigin(request)) {
-    return NextResponse.json({ error: 'Forbidden: invalid origin' }, { status: 403 });
+  const csrf = validateCsrf(request);
+  if (!csrf.ok) {
+    return NextResponse.json({ error: csrf.reason }, { status: csrf.status });
   }
 
   const response = NextResponse.json({ status: 'success' });

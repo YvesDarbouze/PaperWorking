@@ -215,3 +215,44 @@ All visualized per-project across Phases 1–3. Zero redundant data collection.
 **Auth flow fix**: Login page "Sign up" link now passes `redirectTo` param to `/register` so the plan → login → register → `/pricing` (checkout resume) chain is preserved even if sessionStorage is cleared between steps.
 
 **Intended funnel**: CTA → `/pricing` → pick plan → (unauthenticated: save `pw_pending_plan` → `/login?redirectTo=/pricing`) → login or register → auto-resume checkout at `/pricing` → Stripe checkout with CC required.
+
+---
+
+## Agent Session Notes — 2026-05-18 (Claude Code) — Auth Security Overhaul
+
+### ⚠️ DO NOT re-implement or simplify the files listed below. C-1, C-2, C-3, H-1–H-5 are all resolved and deployed on `main`. Overwriting any of these will re-introduce the login loop or security regressions.
+
+### Commits shipped this session
+- `f0a6f2ad` — enforce CC-at-checkout trial model, remove 'no credit card' copy
+- `2059ffb5` — fix: magic link finish respects sessionStorage checkout intent (H-4)
+- `8e790dae` — fix: H-3 session-expired modal, H-5 proactive token refresh on layout mount
+
+### `src/app/api/auth/session/route.ts` — COMPLETE (149 lines, not 3)
+This file is **not** a stub. It is the full production implementation. Do not replace it.
+
+Key facts:
+- **POST**: calls `adminAuth.verifyIdToken(idToken, true)` (checks revocation), then `adminAuth.createSessionCookie(idToken, { expiresIn: SESSION_MAX_AGE * 1000 })` to issue a **14-day Firebase-signed session cookie** — this is what fixed C-2 (60-min ID token in 14-day cookie).
+- **Cookies set**: `__session` (Firebase session cookie, HttpOnly), `__sub` (subscription gating, readable JS), `__acct` (account type, HttpOnly).
+- **Production fail-closed**: returns 503 if `FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY` are absent.
+- **Dev fallback**: issues an unverified cookie only when `NODE_ENV !== 'production'` — this is what fixed C-1 (Admin SDK bypass in prod).
+- **CSRF**: validated via `src/lib/auth/csrf.ts` (no wildcards, explicit allowlist + `Sec-Fetch-Site` check) — this is what fixed C-3.
+
+### `src/middleware.ts` — cookie-existence gate only
+Does NOT parse or verify JWTs. Just checks `!!request.cookies.get('__session')?.value`. Token validation happens in the session API route via Admin SDK, not at the edge.
+
+### `src/context/AuthContext.tsx` — current shape
+- Uses `signInWithPopup` (not `signInWithRedirect`) for Google and Facebook.
+- `syncLockRef` (useRef) prevents `onAuthStateChanged` from firing a duplicate `syncSessionCookie` during a popup flow.
+- `isAuthenticating` state exposed in context — login page uses it to suppress double redirect.
+- `syncSessionCookie` always calls `getIdToken(true)` (force-refresh).
+- 50-min `setInterval` for token refresh. Fatal errors (non-network) set `sessionExpiredVisible` → triggers `SessionExpiredModal`.
+- `refreshSession()` method in context: checks token expiry, force-refreshes if <5 min remain.
+
+### New files added this session
+- `src/lib/auth/csrf.ts` — CSRF validation utility, explicit allowlist.
+- `src/lib/auth/sessionService.ts` — `getTokenExpiryMinutes(user)`, `safeLogout()`.
+- `src/components/auth/SessionExpiredModal.tsx` — amber modal rendered inside `AuthProvider` on fatal token refresh failure.
+
+### sessionStorage keys (auth redirect chain)
+- `pw_pending_plan` — JSON of pending plan intent; presence routes post-auth to `/pricing`
+- `pw_auth_redirect` — saved destination path before OAuth round-trip

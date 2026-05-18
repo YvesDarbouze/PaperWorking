@@ -145,7 +145,9 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
 async function syncSessionCookie(user: User | null) {
   if (user) {
     try {
-      const idToken = await user.getIdToken();
+      // Force-refresh ensures the token sent to createSessionCookie is
+      // always fresh. Firebase requires the ID token to be recently issued.
+      const idToken = await user.getIdToken(true);
       const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

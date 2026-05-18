@@ -3,36 +3,37 @@ import * as admin from 'firebase-admin';
 /**
  * Firebase Admin SDK — Singleton Initialization
  *
- * Reads credentials from individual environment variables:
- *   FIREBASE_PROJECT_ID
- *   FIREBASE_CLIENT_EMAIL
- *   FIREBASE_PRIVATE_KEY  (with \\n literals replaced at runtime)
+ * Credential resolution order:
+ *   1. Explicit service account (FIREBASE_CLIENT_EMAIL + FIREBASE_PRIVATE_KEY env vars)
+ *   2. Application Default Credentials (ADC) — used automatically in Firebase App
+ *      Hosting / Cloud Run, where the App Hosting service agent is pre-provisioned
+ *      with the necessary Firebase Auth Admin permissions.
  *
- * Next.js Server Components and Route Handlers auto-load .env.local,
- * but standalone scripts (e.g. seed.ts) must load dotenv manually.
+ * Why ADC matters: when the explicit private key is missing or has an encoding
+ * issue, the Admin SDK throws during initialization and every /api/auth/session
+ * POST returns 401 — meaning no user can ever get a __session cookie.
+ * ADC avoids that failure mode entirely in GCP environments.
  */
 
 function ensureInitialized() {
   if (admin.apps.length) return;
 
-  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const projectId   = process.env.FIREBASE_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT;
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
+  // Secret Manager may store the key with literal \n sequences — normalize them.
+  const privateKey  = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error(
-      'Firebase Admin initialization failed.\n' +
-      'Missing one or more required environment variables:\n' +
-      `  FIREBASE_PROJECT_ID:    ${projectId ? '✅' : '❌ MISSING'}\n` +
-      `  FIREBASE_CLIENT_EMAIL:  ${clientEmail ? '✅' : '❌ MISSING'}\n` +
-      `  FIREBASE_PRIVATE_KEY:   ${privateKey ? '✅' : '❌ MISSING'}\n` +
-      'Ensure these are set in .env.local (for Next.js) or .env (for scripts).'
-    );
+  if (clientEmail && privateKey) {
+    admin.initializeApp({
+      credential: admin.credential.cert({ projectId: projectId!, clientEmail, privateKey }),
+    });
+  } else {
+    // No explicit key — rely on ADC (works out-of-the-box in Firebase App Hosting).
+    admin.initializeApp({
+      credential: admin.credential.applicationDefault(),
+      projectId,
+    });
   }
-
-  admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey }),
-  });
 }
 
 export const adminDb = new Proxy({} as admin.firestore.Firestore, {

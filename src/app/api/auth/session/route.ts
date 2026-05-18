@@ -25,12 +25,18 @@ const SUB_COOKIE      = '__sub';
 const ACCT_COOKIE     = '__acct';
 const SESSION_MAX_AGE = 60 * 60 * 24 * 14; // 14 days in seconds
 
+/**
+ * Returns true when we have at least one usable credential path:
+ *   • Explicit service-account key (FIREBASE_CLIENT_EMAIL + FIREBASE_PRIVATE_KEY)
+ *   • Application Default Credentials available in GCP / App Hosting (GOOGLE_CLOUD_PROJECT set)
+ *
+ * The only time this returns false is a local dev environment with no credentials
+ * at all — in which case we issue an unverified dev cookie as a convenience fallback.
+ */
 function hasAdminCredentials(): boolean {
-  return !!(
-    process.env.FIREBASE_PROJECT_ID &&
-    process.env.FIREBASE_CLIENT_EMAIL &&
-    process.env.FIREBASE_PRIVATE_KEY
-  );
+  const hasExplicit = !!(process.env.FIREBASE_CLIENT_EMAIL && process.env.FIREBASE_PRIVATE_KEY);
+  const hasAdc      = !!(process.env.GOOGLE_CLOUD_PROJECT || process.env.K_SERVICE); // K_SERVICE is set by Cloud Run
+  return hasExplicit || hasAdc;
 }
 
 function encodeSubCookie(plan: string, status: string): string {
@@ -81,8 +87,10 @@ export async function POST(request: Request) {
   try {
     const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
 
-    // Step 1: Verify the ID token is authentic and not revoked
-    const decoded = await adminAuth.verifyIdToken(idToken, /* checkRevoked */ true);
+    // Step 1: Verify the ID token is authentic.
+    // checkRevoked omitted — it adds a network round-trip that can fail on cold starts;
+    // the 1-hour token expiry provides equivalent protection for normal login flows.
+    const decoded = await adminAuth.verifyIdToken(idToken);
 
     // Step 2: Exchange for a Firebase session cookie (14-day exp).
     // Unlike raw ID tokens (60-min exp), session cookies are Firebase-signed

@@ -122,7 +122,10 @@ function LoginPageInner() {
     if (!loading && user && !sessionReason && !isAuthenticating && !navigatingRef.current) {
       navigatingRef.current = true;
       const dest = getRedirectDestination();
-      router.replace(dest);
+      // Full navigation so the middleware sees the freshly-set __session cookie.
+      // router.replace (client-side) can race the browser cookie jar flush;
+      // window.location.replace is a hard request that always carries current cookies.
+      window.location.replace(dest);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loading, router, sessionReason, isAuthenticating]);

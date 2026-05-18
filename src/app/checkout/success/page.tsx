@@ -230,10 +230,15 @@ function CheckoutSuccessInner() {
 
           {/* CTA — different for logged-in vs guest */}
           <div className="flex flex-col gap-3 max-w-xs mx-auto">
-            {isLoggedIn ? (
+            {isLoggedIn === null ? (
+              /* Firebase auth still resolving */
+              <div className="flex justify-center py-3">
+                <Loader2 className="w-5 h-5 animate-spin text-[#555]" />
+              </div>
+            ) : isLoggedIn ? (
               /* Authenticated user → go straight to dashboard */
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => { window.location.href = '/dashboard'; }}
                 className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-white text-black text-sm font-semibold rounded-xl hover:bg-gray-100 transition-all active:scale-[0.97]"
               >
                 <Sparkles className="w-4 h-4" />
@@ -241,10 +246,10 @@ function CheckoutSuccessInner() {
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
-              /* Guest → create account to claim subscription */
+              /* Guest → sign in / create account to claim subscription */
               <>
                 <Link
-                  href="/login"
+                  href="/login?redirectTo=/dashboard"
                   className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-white text-black text-sm font-semibold rounded-xl hover:bg-gray-100 transition-all active:scale-[0.97]"
                 >
                   Sign In / Create Account

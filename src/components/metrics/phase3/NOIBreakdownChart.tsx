@@ -100,7 +100,7 @@ function buildWaterfallData(financials: ProjectFinancials): WaterfallEntry[] {
 }
 
 interface NOITooltipProps { active?: boolean; payload?: Array<{ payload: WaterfallEntry }>; label?: string }
-function NOITooltip({ active, payload }: NOITooltipProps) {
+function NOITooltip({ active, payload, label }: NOITooltipProps) {
   if (!active || !payload?.length) return null;
   const entry: WaterfallEntry = payload[0]?.payload;
   return (

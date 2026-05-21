@@ -106,6 +106,8 @@ export type Role =
   | 'Accountant'         // Viewer/Export (Read all, no edits unless authorized)
   | 'Lender'              // Read-Only (Read specific financial data)
   | 'Vendor'              // External Professional (Marketplace access)
+  | 'Analyst'             // Read-Only viewer
+  | 'Observer'            // Read-Only viewer
   | 'Standard'            // General user
   | 'Guest';              // Very limited view
 
@@ -184,7 +186,8 @@ export interface ApplicationUser {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   lastFour?: string;
-  cardBrand?: string;
+  // Integration Metadata
+  googleCalendarRefreshToken?: string;
 
   createdAt: Date;
   updatedAt: Date;
@@ -1258,3 +1261,20 @@ export interface CRMContact {
 
 // Legacy alias — keeps older tests and scripts compatible with the renamed Project type
 export type PropertyDeal = Project;
+
+// ── KPI & Analytics Types ──────────────────────────────
+
+// Sub-Collection Model: organizations/{organizationId}/metricSnapshots/{dateKey}
+export interface MetricSnapshot {
+  id: string; // The dateKey (e.g., "2026-05-20")
+  organizationId: string;
+  date: Date;
+  
+  // The daily metrics
+  totalDocuments: number;
+  pendingSignatures: number;
+  teamEfficiencyScore: number; // e.g., 94 for 94%
+  storageUsageBytes: number; 
+  
+  createdAt: Date;
+}

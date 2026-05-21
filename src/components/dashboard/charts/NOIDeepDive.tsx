@@ -5,6 +5,7 @@ import { Project } from '@/types/schema';
 import { computeNOIComponents, type NOIComponents } from '@/lib/metrics/reiMetrics';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
+  AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   ReferenceLine
 } from 'recharts';
@@ -60,17 +61,66 @@ export function deriveNOIBreakdowns(projects: Project[]) {
 /* ── Build the waterfall data for a single property or portfolio aggregate ── */
 function buildWaterfallData(c: NOIComponents) {
   return [
-    { name: 'Gross Rent', value: c.grossRentalIncome, fill: '#3B82F6', type: 'income' },
-    { name: 'Other Income', value: c.otherIncome, fill: '#6366F1', type: 'income' },
-    { name: 'Vacancy', value: -c.vacancyLoss, fill: '#F59E0B', type: 'loss' },
+    { name: 'Gross Rent', value: c.grossRentalIncome, fill: '#7F7F7F', type: 'income' },
+    { name: 'Other Income', value: c.otherIncome, fill: '#595959', type: 'income' },
+    { name: 'Vacancy', value: -c.vacancyLoss, fill: '#A5A5A5', type: 'loss' },
     { name: 'Taxes', value: -c.propertyTaxes, fill: '#EF4444', type: 'expense' },
     { name: 'Insurance', value: -c.insurance, fill: '#F97316', type: 'expense' },
     { name: 'Utilities', value: -c.utilities, fill: '#8B5CF6', type: 'expense' },
     { name: 'Mgmt', value: -c.propertyManagement, fill: '#EC4899', type: 'expense' },
     { name: 'Maint/CapEx', value: -c.maintenance, fill: '#14B8A6', type: 'expense' },
     { name: 'HOA', value: -c.hoa, fill: '#A855F7', type: 'expense' },
-    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#10B981' : '#EF4444', type: 'result' },
+    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#595959' : '#EF4444', type: 'result' },
   ];
+}
+
+/* ── Generate 12-month seasonal NOI estimates from annual components ── */
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// Vacancy multipliers (fraction of base monthly vacancy per month — summer has less vacancy)
+const VAC_MULT  = [2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0];
+// Utilities multipliers (heating in winter, cooling in summer)
+const UTIL_MULT = [1.4, 1.4, 1.2, 1.0, 0.8, 0.8, 0.8, 0.8, 1.0, 1.2, 1.4, 1.6];
+// Extra maintenance dollars per month (spring/winter spikes)
+const MAINT_ADD = [155, 0, 55, 0, 105, 0, 0, 0, 5, 55, 0, 0];
+
+function generateMonthlyNOI(c: NOIComponents): { month: string; noi: number; benchmark: number }[] {
+  const baseVac   = c.vacancyLoss / 12;
+  const baseMaint = c.maintenance / 12;
+  const baseUtils = c.utilities / 12;
+  const baseMgmt  = c.propertyManagement / 12;
+  const baseTax   = c.propertyTaxes / 12;
+  const baseIns   = c.insurance / 12;
+  const baseHoa   = c.hoa / 12;
+  const monthlyGPI = (c.grossRentalIncome + c.otherIncome) / 12;
+  const benchmark  = Math.round(c.grossRentalIncome / 12 * 0.5);
+
+  return MONTHS.map((month, i) => {
+    const vac      = baseVac * VAC_MULT[i];
+    const maint    = baseMaint + MAINT_ADD[i];
+    const utils    = baseUtils * UTIL_MULT[i];
+    const expenses = baseTax + baseIns + utils + baseMgmt + maint + baseHoa;
+    const noi      = Math.round(monthlyGPI - vac - expenses);
+    return { month, noi, benchmark };
+  });
+}
+
+/* ── Custom monthly trend tooltip ── */
+function MonthlyNOITooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  const noi  = payload.find((p: any) => p.dataKey === 'noi')?.value ?? 0;
+  const bench = payload.find((p: any) => p.dataKey === 'benchmark')?.value ?? 0;
+  const diff  = noi - bench;
+  return (
+    <div className="rounded-lg px-3 py-2 shadow-lg text-xs space-y-1"
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
+      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{label}</p>
+      <p style={{ color: noi >= 0 ? '#595959' : '#EF4444' }}>NOI: {fmtUSD(noi)}</p>
+      <p style={{ color: '#A5A5A5' }}>50% Rule: {fmtUSD(bench)}</p>
+      <p style={{ color: diff >= 0 ? '#595959' : '#F87171', fontSize: '10px' }}>
+        {diff >= 0 ? '+' : ''}{fmtUSD(diff)} vs benchmark
+      </p>
+    </div>
+  );
 }
 
 /* ── Build expense composition for donut ── */
@@ -82,7 +132,7 @@ function buildExpenseDonut(c: NOIComponents) {
     { name: 'Mgmt', value: c.propertyManagement, fill: '#EC4899' },
     { name: 'Maint/CapEx', value: c.maintenance, fill: '#14B8A6' },
     { name: 'HOA', value: c.hoa, fill: '#A855F7' },
-    { name: 'Vacancy', value: c.vacancyLoss, fill: '#F59E0B' },
+    { name: 'Vacancy', value: c.vacancyLoss, fill: '#A5A5A5' },
   ].filter(i => i.value > 0);
 
   return items;
@@ -98,7 +148,7 @@ function WaterfallTooltip({ active, payload }: any) {
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
     >
       <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: d.value >= 0 ? '#10B981' : '#EF4444' }}>
+      <p className="tabular-nums" style={{ color: d.value >= 0 ? '#595959' : '#EF4444' }}>
         {fmtUSD(d.value)}
       </p>
     </div>
@@ -112,9 +162,9 @@ function BenchmarkBadge({ noi, estimate }: { noi: number; estimate: number }) {
     <div
       className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold"
       style={{
-        background: beating ? 'rgba(16,185,129,0.08)' : 'rgba(245,158,11,0.08)',
-        border: `1px solid ${beating ? 'rgba(16,185,129,0.2)' : 'rgba(245,158,11,0.2)'}`,
-        color: beating ? '#10B981' : '#F59E0B',
+        background: beating ? 'rgba(89,89,89,0.08)' : 'rgba(165,165,165,0.08)',
+        border: `1px solid ${beating ? 'rgba(89,89,89,0.2)' : 'rgba(165,165,165,0.2)'}`,
+        color: beating ? '#595959' : '#A5A5A5',
       }}
     >
       {beating ? (
@@ -151,7 +201,7 @@ function LineItemRow({
         background: isTotal ? 'var(--bg-inset)' : 'transparent',
         borderRadius: isTotal ? '6px' : '0',
         color: isTotal
-          ? annual >= 0 ? '#10B981' : '#EF4444'
+          ? annual >= 0 ? '#595959' : '#EF4444'
           : isIncome
             ? 'var(--text-primary)'
             : 'var(--text-secondary)',
@@ -215,6 +265,10 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
   const fiftyPctEstimate = totalGPI * 0.5;
   const waterfallData = aggregate ? buildWaterfallData(aggregate) : [];
   const expenseDonut = aggregate ? buildExpenseDonut(aggregate) : [];
+  const monthlyNOIData = useMemo(
+    () => aggregate ? generateMonthlyNOI(aggregate) : [],
+    [aggregate]
+  );
 
   if (!aggregate) {
     return (
@@ -255,7 +309,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             label: 'Gross Potential Income',
             value: fmtUSD(totalGPI),
             sublabel: `${fmtUSD(totalGPI / 12)} / mo`,
-            color: '#3B82F6',
+            color: '#7F7F7F',
           },
           {
             icon: TrendingDown,
@@ -269,14 +323,14 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             label: 'Net Operating Income',
             value: fmtUSD(aggregate.noi),
             sublabel: `${fmtUSD(aggregate.noi / 12)} / mo`,
-            color: '#10B981',
+            color: '#595959',
           },
           {
             icon: BarChart3,
             label: '50% Rule Estimate',
             value: fmtUSD(fiftyPctEstimate),
             sublabel: `Quick: ${fmtUSD(totalGPI)} ÷ 2`,
-            color: '#F59E0B',
+            color: '#A5A5A5',
           },
         ].map((kpi, i) => (
           <div
@@ -316,7 +370,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={waterfallData} margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
                 <XAxis
                   dataKey="name"
                   fontSize={9}
@@ -370,7 +424,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => fmtUSD(value)}
+                  formatter={(value: any) => fmtUSD(Number(value))}
                   contentStyle={{
                     borderRadius: '8px',
                     border: 'none',
@@ -513,9 +567,9 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
           <div
             className="grid grid-cols-3 gap-4 py-2 px-3 text-xs font-medium rounded-md"
             style={{
-              background: 'rgba(245,158,11,0.05)',
-              border: '1px dashed rgba(245,158,11,0.3)',
-              color: '#F59E0B',
+              background: 'rgba(165,165,165,0.05)',
+              border: '1px dashed rgba(165,165,165,0.3)',
+              color: '#A5A5A5',
             }}
           >
             <span className="flex items-center gap-1">
@@ -552,6 +606,76 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
         </div>
       </div>
 
+      {/* ── Month-to-Month NOI Trend ── */}
+      {monthlyNOIData.length > 0 && (
+        <div
+          className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col"
+          style={{ minHeight: '320px' }}
+        >
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
+              Monthly NOI Trend vs. 50% Rule Benchmark
+            </h4>
+            <span
+              className="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-[0.1em]"
+              style={{ background: 'rgba(165,165,165,0.1)', color: '#A5A5A5', border: '1px solid rgba(165,165,165,0.2)' }}
+            >
+              Seasonal estimate
+            </span>
+          </div>
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthlyNOIData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="noiGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%"  stopColor="#595959" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#595959" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229,231,235,0.3)" />
+                <XAxis
+                  dataKey="month"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  fontSize={9}
+                  tickFormatter={fmtK}
+                  tickLine={false}
+                  axisLine={false}
+                  width={52}
+                />
+                <Tooltip content={<MonthlyNOITooltip />} />
+                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" strokeWidth={1} />
+                {/* 50% Rule reference line */}
+                <ReferenceLine
+                  y={monthlyNOIData[0]?.benchmark ?? 0}
+                  stroke="#A5A5A5"
+                  strokeDasharray="6 4"
+                  strokeWidth={1.5}
+                  label={{ value: '50% Rule', position: 'insideTopRight', fontSize: 9, fill: '#A5A5A5' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="noi"
+                  stroke="#595959"
+                  strokeWidth={2}
+                  fill="url(#noiGrad)"
+                  dot={{ r: 3, fill: '#595959', strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: '#595959' }}
+                  name="NOI"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-[10px] mt-2" style={{ color: 'var(--text-secondary)', opacity: 0.55 }}>
+            Seasonal variance applied: summer vacancy zero, winter utilities +40%, spring/winter maintenance spikes.
+            Actual monthly records will replace estimates when available.
+          </p>
+        </div>
+      )}
+
       {/* ── Per-Property Comparison Bar ── */}
       {breakdowns.length > 1 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '300px' }}>
@@ -568,7 +692,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
                 }))}
                 margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
                 <XAxis
                   dataKey="name"
                   fontSize={10}
@@ -586,7 +710,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
                   width={50}
                 />
                 <Tooltip
-                  formatter={(value: number) => fmtUSD(value)}
+                  formatter={(value: any) => fmtUSD(Number(value))}
                   contentStyle={{
                     borderRadius: '8px',
                     border: 'none',
@@ -600,8 +724,8 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
                   iconType="circle"
                   wrapperStyle={{ fontSize: '10px' }}
                 />
-                <Bar dataKey="Actual NOI" fill="#10B981" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="50% Estimate" fill="#F59E0B" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="Actual NOI" fill="#595959" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                <Bar dataKey="50% Estimate" fill="#A5A5A5" radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>

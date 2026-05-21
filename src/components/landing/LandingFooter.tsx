@@ -150,10 +150,18 @@ export default function LandingFooter() {
               </li>
               <li>
                 <Link
+                  href="/faq"
+                  className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
+                >
+                  Industry FAQ
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/support#faq"
                   className="text-sm text-pw-white/60 hover:text-pw-white transition-colors duration-200"
                 >
-                  FAQ
+                  Support FAQ
                 </Link>
               </li>
               <li>

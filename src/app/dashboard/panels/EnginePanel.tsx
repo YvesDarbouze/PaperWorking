@@ -487,15 +487,15 @@ export default function EnginePanel() {
               <>
                 {/* Rehab Progress Chart — budget vs actuals */}
                 <RehabProgressChart
-                  projectedRehabCost={rehabFinancials?.projectedRehabCost ?? 0}
+                  projectedRehabCost={currentProject?.financials?.projectedRehabCost ?? 0}
                   costs={rehabCosts}
                   isLoading={false}
                 />
 
                 {/* Holding Cost Accumulator — cumulative timeline */}
-                {rehabFinancials && (
+                {currentProject?.financials && (
                   <HoldingCostAccumulator
-                    financials={rehabFinancials}
+                    financials={currentProject.financials}
                     monthsElapsed={monthsElapsed}
                     isLoading={false}
                   />

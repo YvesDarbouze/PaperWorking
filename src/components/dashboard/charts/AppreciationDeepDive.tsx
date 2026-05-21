@@ -3,10 +3,7 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Legend,
-} from 'recharts';
+import AppreciationChart from '@/components/Charts/AppreciationChart';
 import { TrendingUp, AlertTriangle, DollarSign, Calendar, Target, Building } from 'lucide-react';
 
 interface Props { projects?: Project[]; }
@@ -20,27 +17,13 @@ function classifyAppreciation(rate: number): {
   grade: AppreciationGrade; label: string; description: string;
   color: string; bgColor: string; borderColor: string;
 } {
-  if (rate >= 7) return { grade: 'exceptional', label: 'Above-Average Growth', description: 'Exceeds recent national averages (6-7%/yr) — verify with local comps', color: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)' };
-  if (rate >= 5) return { grade: 'strong', label: 'Strong Appreciation', description: 'Above the historical 4% baseline — markets with job growth', color: '#3B82F6', bgColor: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)' };
-  if (rate >= 3) return { grade: 'moderate', label: 'Steady Growth', description: 'In line with the 3-5% baseline expectation since 1967', color: '#F59E0B', bgColor: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.2)' };
+  if (rate >= 7) return { grade: 'exceptional', label: 'Above-Average Growth', description: 'Exceeds recent national averages (6-7%/yr) — verify with local comps', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
+  if (rate >= 5) return { grade: 'strong', label: 'Strong Appreciation', description: 'Above the historical 4% baseline — markets with job growth', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
+  if (rate >= 3) return { grade: 'moderate', label: 'Steady Growth', description: 'In line with the 3-5% baseline expectation since 1967', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
   if (rate >= 1) return { grade: 'below', label: 'Below Average', description: 'Underperforming inflation — consider market fundamentals', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'flat', label: 'Stagnant / Declining', description: 'No growth or depreciation — high risk for long-term holds', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
-function AppTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0]?.payload;
-  if (!d) return null;
-  return (
-    <div className="rounded-lg px-3 py-2 shadow-lg text-xs" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>Year {d.year}</p>
-      {d.conservative != null && <p className="tabular-nums" style={{ color: '#F59E0B' }}>Conservative (3%): {fmtUSD(d.conservative)}</p>}
-      {d.projected != null && <p className="tabular-nums" style={{ color: '#3B82F6' }}>Projected ({d.projRate}%): {fmtUSD(d.projected)}</p>}
-      {d.optimistic != null && <p className="tabular-nums" style={{ color: '#10B981' }}>Optimistic (7%): {fmtUSD(d.optimistic)}</p>}
-      <p className="tabular-nums mt-1" style={{ color: '#6366F1' }}>Equity Built: {fmtUSD(d.equityGained)}</p>
-    </div>
-  );
-}
 
 export default function AppreciationDeepDive({ projects: propProjects }: Props) {
   const analysis = useMemo(() => {
@@ -165,8 +148,8 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
         {[
           { icon: Building, label: 'Current Value', value: fmtUSD(analysis.purchasePrice), sublabel: 'Purchase / basis price', color: '#6B7280' },
           { icon: TrendingUp, label: `Value at Year ${analysis.holdYears}`, value: fmtUSD(atHoldEnd.projected), sublabel: `+${fmtUSD(atHoldEnd.equityGained)} appreciation`, color: classification.color },
-          { icon: DollarSign, label: 'Total Equity Built', value: fmtUSD(analysis.totalEquityAtHold), sublabel: `Appreciation + ${fmtUSD(analysis.mortgagePaidDown)} paydown`, color: '#10B981' },
-          { icon: Calendar, label: 'Growth Rate', value: `${analysis.appreciation}%/yr`, sublabel: classification.description, color: '#3B82F6' },
+          { icon: DollarSign, label: 'Total Equity Built', value: fmtUSD(analysis.totalEquityAtHold), sublabel: `Appreciation + ${fmtUSD(analysis.mortgagePaidDown)} paydown`, color: '#595959' },
+          { icon: Calendar, label: 'Growth Rate', value: `${analysis.appreciation}%/yr`, sublabel: classification.description, color: '#7F7F7F' },
         ].map((kpi, i) => (
           <div key={i} className="rounded-lg p-4 flex flex-col gap-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
             <div className="flex items-center gap-2">
@@ -182,37 +165,11 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
       {/* Appreciation Projection Chart */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '320px' }}>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-4 h-4" style={{ color: '#3B82F6' }} />
+          <TrendingUp className="w-4 h-4" style={{ color: '#7F7F7F' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Property Value Projection — 3 Scenarios</h4>
         </div>
         <div className="flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={projectionData} margin={{ top: 10, right: 20, left: 10, bottom: 5 }}>
-              <defs>
-                <linearGradient id="gradConservative" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="gradProjected" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="gradOptimistic" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10B981" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-ui)" />
-              <XAxis dataKey="year" fontSize={10} tickLine={false} axisLine={false} label={{ value: 'Years Held', position: 'bottom', offset: -2, fontSize: 9, fill: 'var(--text-secondary)' }} />
-              <YAxis fontSize={10} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`} tickLine={false} axisLine={false} width={50} />
-              <Tooltip content={<AppTooltip />} />
-              <Legend verticalAlign="top" height={24} wrapperStyle={{ fontSize: '10px' }} />
-              <ReferenceLine x={analysis.holdYears} stroke="#6366F1" strokeDasharray="4 4" label={{ value: `Exit Yr ${analysis.holdYears}`, position: 'top', fontSize: 9, fill: '#6366F1' }} />
-              <Area type="monotone" dataKey="optimistic" name="Optimistic (7%)" stroke="#10B981" fill="url(#gradOptimistic)" strokeWidth={1.5} dot={false} />
-              <Area type="monotone" dataKey="projected" name={`Projected (${analysis.appreciation}%)`} stroke="#3B82F6" fill="url(#gradProjected)" strokeWidth={2.5} dot={false} />
-              <Area type="monotone" dataKey="conservative" name="Conservative (3%)" stroke="#F59E0B" fill="url(#gradConservative)" strokeWidth={1.5} dot={false} />
-            </AreaChart>
-          </ResponsiveContainer>
+          <AppreciationChart data={projectionData} holdYears={analysis.holdYears} appreciationRate={analysis.appreciation} />
         </div>
       </div>
 
@@ -221,7 +178,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
         {/* Value Milestones */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4" style={{ color: '#6366F1' }} />
+            <Target className="w-4 h-4" style={{ color: '#595959' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Value Milestones at {analysis.appreciation}%/yr</h4>
           </div>
           <div className="space-y-3">
@@ -234,7 +191,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
               <div key={i} className="flex justify-between items-center py-2" style={{ borderBottom: '1px solid var(--border-ui)' }}>
                 <div>
                   <p className="text-[10px] font-bold" style={{ color: 'var(--text-primary)' }}>{m.label}</p>
-                  {m.year > 0 && <p className="text-[9px]" style={{ color: '#10B981' }}>+{fmtUSD(m.gain)} equity</p>}
+                  {m.year > 0 && <p className="text-[9px]" style={{ color: '#595959' }}>+{fmtUSD(m.gain)} equity</p>}
                 </div>
                 <p className="text-sm font-bold tabular-nums" style={{ color: m.year === 0 ? 'var(--text-secondary)' : classification.color }}>{fmtUSD(m.value)}</p>
               </div>
@@ -245,30 +202,30 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
         {/* Equity Composition at Hold End */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <DollarSign className="w-4 h-4" style={{ color: '#10B981' }} />
+            <DollarSign className="w-4 h-4" style={{ color: '#595959' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Total Equity Built — Year {analysis.holdYears}</h4>
           </div>
           <div className="text-center mb-4">
-            <p className="text-4xl font-black tabular-nums" style={{ color: '#10B981' }}>{fmtUSD(analysis.totalEquityAtHold)}</p>
+            <p className="text-4xl font-black tabular-nums" style={{ color: '#595959' }}>{fmtUSD(analysis.totalEquityAtHold)}</p>
             <p className="text-[10px] font-bold mt-1" style={{ color: 'var(--text-secondary)' }}>Combined appreciation + mortgage paydown</p>
           </div>
           <div className="space-y-3">
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-[10px] font-bold" style={{ color: 'var(--text-primary)' }}>Appreciation Gain</span>
-                <span className="text-[10px] font-bold tabular-nums" style={{ color: '#3B82F6' }}>{fmtUSD(atHoldEnd.equityGained)}</span>
+                <span className="text-[10px] font-bold tabular-nums" style={{ color: '#7F7F7F' }}>{fmtUSD(atHoldEnd.equityGained)}</span>
               </div>
               <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-inset)' }}>
-                <div className="h-full rounded-full" style={{ width: `${Math.min(100, analysis.totalEquityAtHold > 0 ? (atHoldEnd.equityGained / analysis.totalEquityAtHold) * 100 : 50)}%`, background: '#3B82F6' }} />
+                <div className="h-full rounded-full" style={{ width: `${Math.min(100, analysis.totalEquityAtHold > 0 ? (atHoldEnd.equityGained / analysis.totalEquityAtHold) * 100 : 50)}%`, background: '#7F7F7F' }} />
               </div>
             </div>
             <div>
               <div className="flex justify-between mb-1">
                 <span className="text-[10px] font-bold" style={{ color: 'var(--text-primary)' }}>Mortgage Paydown</span>
-                <span className="text-[10px] font-bold tabular-nums" style={{ color: '#6366F1' }}>{fmtUSD(analysis.mortgagePaidDown)}</span>
+                <span className="text-[10px] font-bold tabular-nums" style={{ color: '#595959' }}>{fmtUSD(analysis.mortgagePaidDown)}</span>
               </div>
               <div className="w-full h-3 rounded-full" style={{ background: 'var(--bg-inset)' }}>
-                <div className="h-full rounded-full" style={{ width: `${Math.min(100, analysis.totalEquityAtHold > 0 ? (analysis.mortgagePaidDown / analysis.totalEquityAtHold) * 100 : 50)}%`, background: '#6366F1' }} />
+                <div className="h-full rounded-full" style={{ width: `${Math.min(100, analysis.totalEquityAtHold > 0 ? (analysis.mortgagePaidDown / analysis.totalEquityAtHold) * 100 : 50)}%`, background: '#595959' }} />
               </div>
             </div>
           </div>
@@ -278,7 +235,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
       {/* Rate Comparison Table */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Target className="w-4 h-4" style={{ color: '#3B82F6' }} />
+          <Target className="w-4 h-4" style={{ color: '#7F7F7F' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;What If Appreciation Differs?&rdquo; — {analysis.holdYears}-Year Projection</h4>
         </div>
         <div className="overflow-x-auto">
@@ -301,7 +258,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
                     <td className="px-3 py-2 tabular-nums font-bold" style={{ color: cls.color, background: row.isCurrent ? cls.bgColor : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtUSD(row.futureValue)}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: row.gain > 0 ? '#10B981' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: row.gain > 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
                       {row.gain > 0 ? `+${fmtUSD(row.gain)}` : fmtUSD(row.gain)}
                     </td>
                     <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: cls.color, borderBottom: '1px solid var(--border-ui)' }}>
@@ -316,15 +273,15 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
       </div>
 
       {/* Educational Callout */}
-      <div className="px-4 py-3 rounded-lg text-[11px] leading-relaxed" style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)', color: 'var(--text-secondary)' }}>
+      <div className="px-4 py-3 rounded-lg text-[11px] leading-relaxed" style={{ background: 'rgba(127,127,127,0.05)', border: '1px solid rgba(127,127,127,0.15)', color: 'var(--text-secondary)' }}>
         <strong style={{ color: 'var(--text-primary)' }}>Historical context:</strong>{' '}
         U.S. home values have appreciated ~4%/yr since 1967. Recent years have seen 6-7%/yr (Redfin). The baseline expectation is 3-5%/yr.
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>What drives appreciation?</strong>{' '}
         Job creation → population growth → sustained housing demand. Also evaluate infrastructure investments (transit lines, schools, commercial development) and 5-10 year sales trends.
         <br />
-        <AlertTriangle className="w-3 h-3 inline mr-1" style={{ color: '#F59E0B' }} />
-        <strong style={{ color: '#F59E0B' }}>Short-term spikes can be deceiving.</strong>{' '}
+        <AlertTriangle className="w-3 h-3 inline mr-1" style={{ color: '#A5A5A5' }} />
+        <strong style={{ color: '#A5A5A5' }}>Short-term spikes can be deceiving.</strong>{' '}
         Review 5-10 year trends for steady patterns. Cash flow keeps you solvent month to month, but appreciation builds generational wealth.
       </div>
     </div>

@@ -138,7 +138,7 @@ export default function ARVSpreadChart({
                 contentStyle={tooltipStyle}
                 itemStyle={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}
                 labelStyle={{ fontSize: '9px', fontWeight: 900, color: '#7F7F7F', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.15em' }}
-                formatter={(value: number, name: string) => {
+                formatter={(value: any, name: any) => {
                   const labels: Record<string, string> = {
                     purchasePrice: 'Purchase Price',
                     rehabBudget: 'Rehab Budget',

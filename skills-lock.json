@@ -61,6 +61,18 @@
       "skillPath": ".agents/skills/agentdb-vector-search/SKILL.md",
       "computedHash": "827cb9ffd3f57dba6256988bdee86f3f21424c744f2a6879aaf19c6ae9e3e6af"
     },
+    "Create New Component": {
+      "source": "ethpandaops/lab",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/create-new-component/SKILL.md",
+      "computedHash": "c9cb38f60644e2884a56958f4be49d2da97b58a05871b0ca27197bddcdf62144"
+    },
+    "Create New Routes": {
+      "source": "ethpandaops/lab",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/create-new-route/SKILL.md",
+      "computedHash": "41c0fec55e05f3b9ec3737084fc942a5350cd6b4b307c047e3e437ca14bff59b"
+    },
     "Hooks Automation": {
       "source": "ruvnet/ruflo",
       "sourceType": "github",
@@ -156,6 +168,18 @@
       "sourceType": "github",
       "skillPath": ".agents/skills/verification-quality/SKILL.md",
       "computedHash": "84e94a582e467149ae32159bce00e3a8f268ac224c80d7eb20e4b333ec52b47f"
+    },
+    "Visualize any data": {
+      "source": "ethpandaops/lab",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/visualize-data/SKILL.md",
+      "computedHash": "7f57bbe1148d5d371c6c3bd91a04347d0ce2af24da983c258f536f9f22d9189f"
+    },
+    "ab-test-analysis": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/analytics/skills/ab-test-analysis/SKILL.md",
+      "computedHash": "06231ed8dbc4c3ffa781c6c8b6bdb4f6be4314d9d0173ad19776ecb7135834d3"
     },
     "ab-test-setup": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -1057,6 +1081,12 @@
       "skillPath": "skills/analytics-tracking/SKILL.md",
       "computedHash": "e5578c4950e06fdd03b602b81f162cc04408b3a15a421884c091eb888a36ad62"
     },
+    "analyze-data": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/analyze-data/SKILL.md",
+      "computedHash": "c5f3b31b54787139013fe1c5f5f43b02b9ac7d98cb6b39c89c09cb8eb35cd703"
+    },
     "analyze-project": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -1134,6 +1164,12 @@
       "sourceType": "github",
       "skillPath": "skills/aomi-transact/SKILL.md",
       "computedHash": "7111ce9fd52a920ba43c3c7c765f76e4a28f978b979a042fe799eeb6cd4c62b1"
+    },
+    "apache-age": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/apache-age/SKILL.md",
+      "computedHash": "3a0609229fafce1fa8a5c5e4b060d6a8d0aa2c7dfea71783713fde2c8a44cf94"
     },
     "api-design-principles": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -2263,6 +2299,12 @@
       "skillPath": "skills/bash-pro/SKILL.md",
       "computedHash": "a16136d229d501a974f81abc10449053e882c303190ccedb667e791d0b5ddec5"
     },
+    "bash-scaffold": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/bash-scaffold/SKILL.md",
+      "computedHash": "2e55b042c999f6a794534359f8d9e75142949c8ba798af3220b7c6f233182dad"
+    },
     "bash-scripting": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3013,6 +3055,12 @@
       "skillPath": "skills/citation-management/SKILL.md",
       "computedHash": "77bd318c80947cab90c19e029bbb0fcb1999273b0e741293b26bcb8a858ea8f8"
     },
+    "cite": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cite/SKILL.md",
+      "computedHash": "ebbfde25970c8cd46ada53c8719cff47554cd01a98817e58cda2ad3701734a39"
+    },
     "claimable-postgres": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3114,6 +3162,12 @@
       "sourceType": "github",
       "skillPath": "skills/clerk-auth/SKILL.md",
       "computedHash": "95a768b8d2fca5ecfa0652d6721f5862bd7b3a8709bfa95faa6b63061803c02c"
+    },
+    "cli-development": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/cli-development/SKILL.md",
+      "computedHash": "ca89c9f1b1e18076a35d8c987b7c3d63cc79ddb7f41b1aac18beac821308f4f6"
     },
     "clickup-automation": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3294,6 +3348,12 @@
       "sourceType": "github",
       "skillPath": "skills/commit/SKILL.md",
       "computedHash": "3bcf0ec3de92c660eaa10d6882ab0a2bcd25f565492556dcbf92946c09f20f5a"
+    },
+    "communicate": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/communicate/SKILL.md",
+      "computedHash": "d278af776bc072ef7890addd5259c949a38b8d770a12182b84f673ae1b6d3da1"
     },
     "competitive-landscape": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -3631,6 +3691,12 @@
       "skillPath": "skills/create-branch/SKILL.md",
       "computedHash": "bdfc831a74a747e05ec784df541ae60ae99b71e3b014a607d7b7c5954571376a"
     },
+    "create-holistics-skill": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-development/skills/create-holistics-skill/SKILL.md",
+      "computedHash": "9476734bc5e1bdb0e0d05dcce6816b12f157a0b5f163ebc05afb7775b2ecc4e5"
+    },
     "create-issue-gate": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -3648,6 +3714,12 @@
       "sourceType": "github",
       "skillPath": "skills/create-pr/SKILL.md",
       "computedHash": "97158fc03d4c8859703ed3fa9827b0692af3790f35cbfef6a0832b027c2baa57"
+    },
+    "create-skill": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/create-skill/SKILL.md",
+      "computedHash": "28a20a66f206e9f5c147be399ce088573dda10bd00ed8ff370be5567a41dee58"
     },
     "creative-direction": {
       "source": "eyeszik/Claude-Design-Skills",
@@ -3895,6 +3967,12 @@
       "skillPath": "plugins/ruflo-ddd/skills/ddd-validate/SKILL.md",
       "computedHash": "f7c33da74187eceeb434df562698b0fd3a32c58fdc4e1cef7a20b09feec02fb8"
     },
+    "de-residency-advisor": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/de-residency-advisor/SKILL.md",
+      "computedHash": "f327cef94c7eb9dccd394275032081b42f68f7dbb246c8d5be76a410e61e46a6"
+    },
     "debug-buttercup": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -4050,6 +4128,12 @@
       "sourceType": "github",
       "skillPath": "skills/devcontainer-setup/SKILL.md",
       "computedHash": "8b4369f00214887e4a6098351bdb8bbcbd73723eb929424139e5c95cb381f549"
+    },
+    "develop-amql": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-development/skills/develop-amql/SKILL.md",
+      "computedHash": "c36f04a9e0a40fbe7e62072e0e3152bd5547e95bf6f6210b4b846cb0ad147a94"
     },
     "development": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -4716,6 +4800,12 @@
       "sourceType": "github",
       "skillPath": "skills/fixing-motion-performance/SKILL.md",
       "computedHash": "9e46bdd3a4ad4844d2144c1c748dcd22c5e9d476a974b95e373db8b4e30c8ad2"
+    },
+    "flix": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/flix/SKILL.md",
+      "computedHash": "a31168706bdfba9f08d8675ec8437cc66d0c6b999816d262624c8cac8fab1ef0"
     },
     "flow-nexus-neural": {
       "source": "ruvnet/ruflo",
@@ -6295,6 +6385,12 @@
       "skillPath": "skills/loss-aversion-designer/SKILL.md",
       "computedHash": "562c6e18145b761f7b89a90cc534ae4fabdf2964bfb6c30f6ff77a8d51befb20"
     },
+    "ltv-analysis": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/analytics-finance/skills/ltv-analysis/SKILL.md",
+      "computedHash": "78db196c826cdb5ae84c97896401b32195ca77509745cc14199a3566ffcaabfb"
+    },
     "m365-agents-dotnet": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7519,6 +7615,12 @@
       "skillPath": "skills/polars/SKILL.md",
       "computedHash": "ef7116a012acdff1d22f575fae5e1b39357c51e85f7ace04de6e0c516fc2cf11"
     },
+    "ponder": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ponder/SKILL.md",
+      "computedHash": "3e2bdd2af5d79bf29252015b9719f5a307dfcffccc44e0523da1380f2267dc7a"
+    },
     "popup-cro": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7723,6 +7825,12 @@
       "skillPath": "skills/prometheus-configuration/SKILL.md",
       "computedHash": "094eca40b8686a2397d5f374eeb366c523f0254b050d55eedd5339b99773e42e"
     },
+    "prompt": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/prompt/SKILL.md",
+      "computedHash": "6745ceccc235fdee1ed677a7278994746f3ab62385a4eb82f0c317be234694d8"
+    },
     "prompt-caching": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7860,6 +7968,12 @@
       "sourceType": "github",
       "skillPath": "skills/quant-analyst/SKILL.md",
       "computedHash": "d6badb6bc2a6eb1fdc88a6a35f11d60b22216367e1e94246c3b0ef3f96252dfe"
+    },
+    "rabbit-hole": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/rabbit-hole/SKILL.md",
+      "computedHash": "95889adc59e8332f1323e915bd004189c40d80278a2f10f3df5cf5248dda72b5"
     },
     "radix-ui-design-system": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8155,6 +8269,12 @@
       "skillPath": "plugins/ruflo-core/skills/ruflo-doctor/SKILL.md",
       "computedHash": "2e66b8e3e30c3900fbc787ff7eec8f0f1bde447195804d9fa19ace3bd600ce15"
     },
+    "runbook": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/runbook/SKILL.md",
+      "computedHash": "eb8972369e86254c16a6e69834d5b92118fbf2b0a0867ab22b335276da840dc2"
+    },
     "rust-async-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8269,6 +8389,12 @@
       "skillPath": "skills/scala-pro/SKILL.md",
       "computedHash": "f320d9a5ef15cff5aa284a73bd53273e056e54f7ad357b495a82f6fe3b5236e0"
     },
+    "scamper": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/scamper/SKILL.md",
+      "computedHash": "258240671a207da14a731e23a8209e20cda43353e6e62991d198287492276128"
+    },
     "scanning-tools": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8328,6 +8454,12 @@
       "sourceType": "github",
       "skillPath": "skills/seaborn/SKILL.md",
       "computedHash": "c778e8319c6bc26594fc3454f6ddca0e6395cb89c80e2ca89baaec59a7d66175"
+    },
+    "search-docs": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/search-docs/SKILL.md",
+      "computedHash": "0483e81f1e61e6bb1ed5f4824e47e3723be0170077417fb6773eda7ddce08771"
     },
     "search-specialist": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8412,6 +8544,12 @@
       "sourceType": "github",
       "skillPath": "skills/segment-cdp/SKILL.md",
       "computedHash": "c3f0158d53da8e83e04bd6cdfc61e114804b83c11846e01f75ac9597421e57b9"
+    },
+    "segmentation": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/analytics/skills/segmentation/SKILL.md",
+      "computedHash": "af20818949565f1268414a4a184aa887b922417843ea496d0af55a567ecca038"
     },
     "semgrep-rule-creator": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8677,6 +8815,12 @@
       "skillPath": "skills/sequence-psychologist/SKILL.md",
       "computedHash": "fc7233525b82a42501ee4a88f50801c3516fdc8fcfa685d8d0a735129b24d1a6"
     },
+    "sequencer": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/sequencer/SKILL.md",
+      "computedHash": "3669041279f8811fb0c9e04e3454faa7b91dfe74f99460fada2be225da30f846"
+    },
     "server-management": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8701,6 +8845,18 @@
       "skillPath": "plugins/ruflo-rvf/skills/session-persist/SKILL.md",
       "computedHash": "e962c1afa62df7c365aab7e87476ffb8cfeae848e63e8c46c699580ad75de0b1"
     },
+    "setup-holistics-cli": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-development/skills/setup-holistics-cli/SKILL.md",
+      "computedHash": "c83b95f85b166226bdbd6db7941f530e66f63136e3a1ed65bf40d7f547693305"
+    },
+    "setup-holistics-mcp": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/setup-holistics-mcp/SKILL.md",
+      "computedHash": "34b4c59eb9cdf7eae5024d6636f65f04dea06054e549316150bd7d886462bcc3"
+    },
     "sexual-health-analyzer": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -8719,11 +8875,23 @@
       "skillPath": "skills/shader-programming-glsl/SKILL.md",
       "computedHash": "bbc8c0dc848f09994e49c055b41791c23ed3b4404ddde799b754ea00748e07ae"
     },
+    "shape-up": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shape-up/SKILL.md",
+      "computedHash": "5c03fc5695b6d85c473304f65822a378127d6977be7729dbeff115194d7939c3"
+    },
     "sharp-edges": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/sharp-edges/SKILL.md",
       "computedHash": "31f0d1c782c13255dc9796340369accea6b7433ff7eae1ec61ad97fd64f249a7"
+    },
+    "shell-testing": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/shell-testing/SKILL.md",
+      "computedHash": "61a4b7db0df54a2a5f7127f3dd22962e7f5360f84e45314bab104b9fc1a8e97e"
     },
     "shellcheck-configuration": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -8832,6 +9000,12 @@
       "sourceType": "github",
       "skillPath": "skills/skill-rails-upgrade/SKILL.md",
       "computedHash": "82c9c2532f91cb247057dcec1ec239c1e08a4254896d61e7b864dcefd488c6ec"
+    },
+    "skill-review": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/skill-review/SKILL.md",
+      "computedHash": "e69fbd191bc4b09fcaa556c0e0c80b7f78de7256b35c06663d51bbd76ca76ea2"
     },
     "skill-router": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9109,6 +9283,12 @@
       "skillPath": "skills/statsmodels/SKILL.md",
       "computedHash": "3141e20f6385e6a27d9cf6ec678a77baf8e88eb6912a40b86e9819aecf03b33d"
     },
+    "stax": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/stax/SKILL.md",
+      "computedHash": "f62bab282abbaaffade575b2eeafc0bb683a24524a143176be2f7272fb5556a0"
+    },
     "steve-jobs": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -9336,6 +9516,12 @@
       "sourceType": "github",
       "skillPath": "skills/tdd-workflows-tdd-refactor/SKILL.md",
       "computedHash": "fc0ea20c8fe8cdb31d1df2d173225cd906828918a801c0040ef855dc14d8d39e"
+    },
+    "team": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/team/SKILL.md",
+      "computedHash": "65cc88d192891252806e6c5356267a300946462c7a40df024377d2e90d168eae"
     },
     "team-collaboration-issue": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -9661,6 +9847,12 @@
       "skillPath": "skills/travel-health-analyzer/SKILL.md",
       "computedHash": "2b342f684a7f424491cc39b9d798df0630319080c765ff31832c97246601605a"
     },
+    "tree-of-thought": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tree-of-thought/SKILL.md",
+      "computedHash": "cd4bd77f13d0e5d7fb7f3b22f408c77a44566e279043be25226a3c7d9f462fd5"
+    },
     "trello-automation": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -9805,6 +9997,12 @@
       "skillPath": "skills/uniprot-database/SKILL.md",
       "computedHash": "c7b0e1fa89ba9d079238bb1bcc1285e8d7bbfdfecc9b799c39b73e8fcd4084f9"
     },
+    "unit-economics": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/analytics-finance/skills/unit-economics/SKILL.md",
+      "computedHash": "e8827215e020e59630314fbffae610cb33aa4091fde9a4a210fbaf797c38c670"
+    },
     "unit-testing-test-generate": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -9852,6 +10050,12 @@
       "sourceType": "github",
       "skillPath": "skills/upstash-qstash/SKILL.md",
       "computedHash": "a392497876826e0d23e6ecc536db9b67bbb4158838d4e6a6a0af4bd43ee59dbe"
+    },
+    "use-existing-viz": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/use-existing-viz/SKILL.md",
+      "computedHash": "fa081695697c72f4f861d773ce352b4d9a4c0cee73e4e831ba34b4721577550b"
     },
     "using-git-worktrees": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10063,6 +10267,18 @@
       "skillPath": "skills/visual-emotion-engineer/SKILL.md",
       "computedHash": "cc9a7c3d240bd5fe08b4b648101a8e8e6e924d403c47c872ddb02c590ae0469f"
     },
+    "visualize": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/visualize/SKILL.md",
+      "computedHash": "07ffe554a79dded3c23f8be2309f10a47fbb05949782767feae192ad0f26abf1"
+    },
+    "visualize-data": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/visualize-data/SKILL.md",
+      "computedHash": "9095bf5bac14d0abd09fc1054d33c55d33288d13b85a9112f8da8863e965ca05"
+    },
     "voice-agents": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -10116,6 +10332,12 @@
       "sourceType": "github",
       "skillPath": "skills/watch-video/SKILL.md",
       "computedHash": "932ee0418873e43e4418e2048220b4a41280047d3ddfafc2e953fd121a5175b4"
+    },
+    "waypoint": {
+      "source": "synapseradio/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/waypoint/SKILL.md",
+      "computedHash": "25b8542b59ec6b22e8266b2ac3c271334f77c782550901e338faf88a84d4818c"
     },
     "wcag-audit-patterns": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -10345,11 +10567,29 @@
       "skillPath": "plugins/ruflo-workflows/skills/workflow-run/SKILL.md",
       "computedHash": "d01d8a3b6496b961cce69c352497573fe4adcbc57762e76652c7d1de2b5cced3"
     },
+    "working-in-development": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-development/skills/working-in-development/SKILL.md",
+      "computedHash": "a7d17c89025146e9b0497c2c422793fd718b545e2b72ec6fbb31d77dc8d376e6"
+    },
+    "working-in-reporting": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/working-in-reporting/SKILL.md",
+      "computedHash": "cba8e80d344a3e7e57deef20ca96b38f0288cbabcf34313c06aa4630c0889509"
+    },
     "wrike-automation": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/wrike-automation/SKILL.md",
       "computedHash": "72cd95e54933c24dd9e43523596f0bd905150ea1368bdb29e52e546eb4fcf6e7"
+    },
+    "write-aql": {
+      "source": "holistics/skills",
+      "sourceType": "github",
+      "skillPath": "plugins/holistics-reporting/skills/write-aql/SKILL.md",
+      "computedHash": "afacd030d4cc34527e8178d01d89013fc3de327191d661b79c9de743b2125cf6"
     },
     "writing-plans": {
       "source": "sickn33/antigravity-awesome-skills",

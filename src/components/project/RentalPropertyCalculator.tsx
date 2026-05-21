@@ -14,7 +14,8 @@ import {
   Loader2,
   Home,
   Settings,
-  Building
+  Building,
+  Landmark
 } from 'lucide-react';
 import CurrencyInputModule from './CurrencyInputModule';
 import { ProjectFinancials } from '../../types/schema';
@@ -168,6 +169,8 @@ export default function RentalPropertyCalculator({ phaseColor, projectId, initia
     try {
       const updatedFinancials: ProjectFinancials = {
         ...initialFinancials,
+        estimatedARV: initialFinancials?.estimatedARV ?? 0,
+        costs: initialFinancials?.costs || [],
         purchasePrice,
         financingCashInvested: downPayment,
         projectedRehabCost: rehabCents,

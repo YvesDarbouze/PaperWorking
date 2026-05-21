@@ -56,17 +56,17 @@ function classifyCoC(rate: number): {
   if (rate >= 12) return {
     grade: 'excellent', label: 'Excellent Return',
     description: 'Exceptional yield — outperforms most alternative investments',
-    color: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (rate >= 8) return {
     grade: 'strong', label: 'Strong Return',
     description: 'Meets the 8-12% target range most investors aim for',
-    color: '#3B82F6', bgColor: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)',
+    color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)',
   };
   if (rate >= 4) return {
     grade: 'moderate', label: 'Moderate Return',
     description: 'Positive but may underperform alternative investments',
-    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.2)',
+    color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)',
   };
   if (rate >= 0) return {
     grade: 'below-target', label: 'Below Target',
@@ -128,10 +128,10 @@ function CoCTooltip({ active, payload }: any) {
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
     >
       <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#3B82F6' }}>
+      <p className="tabular-nums" style={{ color: '#7F7F7F' }}>
         CoC Return: {fmtPct(d['CoC Return'] ?? d.cocReturn ?? 0)}
       </p>
-      <p className="tabular-nums" style={{ color: '#10B981' }}>
+      <p className="tabular-nums" style={{ color: '#595959' }}>
         Cash Flow: {fmtUSD(d.annualCashFlow ?? 0)}/yr
       </p>
       <p className="tabular-nums" style={{ color: 'var(--text-secondary)' }}>
@@ -198,16 +198,16 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
 
   /* ── Capital breakdown donut ── */
   const capitalPieces = [
-    { name: 'Down Payment', value: aggregate.totalDown, color: '#3B82F6' },
+    { name: 'Down Payment', value: aggregate.totalDown, color: '#7F7F7F' },
     { name: 'Closing Costs', value: aggregate.totalClosing, color: '#8B5CF6' },
-    { name: 'Rehab Budget', value: aggregate.totalRehab, color: '#F59E0B' },
+    { name: 'Rehab Budget', value: aggregate.totalRehab, color: '#A5A5A5' },
   ].filter(p => p.value > 0);
 
   /* ── Alternative investment comparison ── */
   const alternatives = [
     { name: 'This Property', rate: aggregate.cocReturn, color: classification.color },
-    { name: 'Target (8-12%)', rate: 10, color: '#10B981' },
-    { name: 'S&P 500 Avg', rate: 10.5, color: '#6366F1' },
+    { name: 'Target (8-12%)', rate: 10, color: '#595959' },
+    { name: 'S&P 500 Avg', rate: 10.5, color: '#595959' },
     { name: 'REIT Index', rate: 7.5, color: '#8B5CF6' },
     { name: '10-Year Treasury', rate: 4.25, color: '#94A3B8' },
     { name: 'HYSA', rate: 4.5, color: '#64748B' },
@@ -265,7 +265,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
               label: 'Annual Cash Flow',
               value: fmtUSD(aggregate.totalCashFlow),
               sublabel: `${fmtUSD(Math.round(aggregate.totalCashFlow / 12))}/mo after debt service`,
-              color: aggregate.totalCashFlow >= 0 ? '#10B981' : '#EF4444',
+              color: aggregate.totalCashFlow >= 0 ? '#595959' : '#EF4444',
             },
             {
               icon: PiggyBank,
@@ -338,7 +338,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => fmtUSD(value)}
+                  formatter={(value: any) => fmtUSD(value)}
                   contentStyle={{
                     background: 'var(--bg-surface)',
                     border: '1px solid var(--border-ui)',
@@ -367,7 +367,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
       {/* ── Alternative Investment Comparison ── */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '260px' }}>
         <div className="flex items-center gap-2 mb-4">
-          <BarChart3 className="w-4 h-4" style={{ color: '#6366F1' }} />
+          <BarChart3 className="w-4 h-4" style={{ color: '#595959' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
             How Does This Compare? — Return Benchmark
           </h4>
@@ -379,7 +379,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
               layout="vertical"
               margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F2F2F2" />
               <XAxis
                 type="number"
                 fontSize={10}
@@ -397,7 +397,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                 width={100}
               />
               <Tooltip
-                formatter={(value: number) => `${value.toFixed(2)}%`}
+                formatter={(value: any) => `${value.toFixed(2)}%`}
                 contentStyle={{
                   background: 'var(--bg-surface)',
                   border: '1px solid var(--border-ui)',
@@ -418,7 +418,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
       {/* ── Sensitivity Table ── */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-4 h-4" style={{ color: '#3B82F6' }} />
+          <TrendingUp className="w-4 h-4" style={{ color: '#7F7F7F' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
             CoC Sensitivity — "What If Cash Flow Changes?"
           </h4>
@@ -459,7 +459,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                     <td
                       className="px-3 py-2 text-center tabular-nums"
                       style={{
-                        color: row.cashFlow >= 0 ? '#10B981' : '#EF4444',
+                        color: row.cashFlow >= 0 ? '#595959' : '#EF4444',
                         fontWeight: isCurrent ? 700 : 500,
                         borderBottom: '1px solid var(--border-ui)',
                       }}
@@ -509,7 +509,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                 }))}
                 margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
                 <XAxis
                   dataKey="name"
                   fontSize={10}
@@ -529,8 +529,8 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                 />
                 <Tooltip content={<CoCTooltip />} />
                 {/* Target zone */}
-                <ReferenceLine y={8} stroke="#10B981" strokeDasharray="4 4" label={{ value: '8% target', position: 'right', fontSize: 9, fill: '#10B981' }} />
-                <ReferenceLine y={12} stroke="#3B82F6" strokeDasharray="4 4" label={{ value: '12% excellent', position: 'right', fontSize: 9, fill: '#3B82F6' }} />
+                <ReferenceLine y={8} stroke="#595959" strokeDasharray="4 4" label={{ value: '8% target', position: 'right', fontSize: 9, fill: '#595959' }} />
+                <ReferenceLine y={12} stroke="#7F7F7F" strokeDasharray="4 4" label={{ value: '12% excellent', position: 'right', fontSize: 9, fill: '#7F7F7F' }} />
                 <Bar dataKey="CoC Return" radius={[4, 4, 0, 0]} maxBarSize={36}>
                   {breakdowns.map((b, i) => (
                     <Cell key={i} fill={b.classification.color} />
@@ -546,8 +546,8 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
       <div
         className="px-4 py-3 rounded-lg text-[11px] leading-relaxed"
         style={{
-          background: 'rgba(59,130,246,0.05)',
-          border: '1px solid rgba(59,130,246,0.15)',
+          background: 'rgba(127,127,127,0.05)',
+          border: '1px solid rgba(127,127,127,0.15)',
           color: 'var(--text-secondary)',
         }}
       >
@@ -560,9 +560,9 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
         Down payment + closing costs + rehab budget. It does NOT include the mortgage — only the cash YOU put in.
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Benchmarks:</strong>{' '}
-        <span style={{ color: '#10B981' }}>■ ≥12% Excellent</span> •{' '}
-        <span style={{ color: '#3B82F6' }}>■ 8–12% Strong</span> •{' '}
-        <span style={{ color: '#F59E0B' }}>■ 4–8% Moderate</span> •{' '}
+        <span style={{ color: '#595959' }}>■ ≥12% Excellent</span> •{' '}
+        <span style={{ color: '#7F7F7F' }}>■ 8–12% Strong</span> •{' '}
+        <span style={{ color: '#A5A5A5' }}>■ 4–8% Moderate</span> •{' '}
         <span style={{ color: '#EF4444' }}>■ &lt;4% Below Target</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Why it matters:</strong>{' '}

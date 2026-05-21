@@ -47,11 +47,16 @@ export default function BillingSettingsPage() {
   const [portalError, setPortalError]     = useState<string | null>(null);
   const [invoices, setInvoices]           = useState<BillingInvoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
+  const [currentPeriodEnd, setCurrentPeriodEnd] = useState<number | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
+    
     setInvoicesLoading(true);
-    user.getIdToken().then((idToken) =>
+    setSubscriptionLoading(true);
+    
+    user.getIdToken().then((idToken) => {
       fetch('/api/stripe/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -60,8 +65,18 @@ export default function BillingSettingsPage() {
         .then((r) => r.json())
         .then((data) => { if (data.invoices) setInvoices(data.invoices); })
         .catch(() => {})
-        .finally(() => setInvoicesLoading(false))
-    );
+        .finally(() => setInvoicesLoading(false));
+
+      fetch('/api/stripe/subscription', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+        .then((r) => r.json())
+        .then((data) => { if (data.currentPeriodEnd) setCurrentPeriodEnd(data.currentPeriodEnd); })
+        .catch(() => {})
+        .finally(() => setSubscriptionLoading(false));
+    });
   }, [user]);
 
   const plan    = profile?.subscriptionPlan   ?? 'None';
@@ -73,10 +88,12 @@ export default function BillingSettingsPage() {
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
   const StatusIcon  = statusBadge.Icon;
 
-  // Calculate next billing date (mock: 1st of next month)
-  const now = new Date();
-  const nextBilling = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const nextBillingStr = nextBilling.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  // Format next billing date from actual stripe subscription data
+  const nextBillingStr = currentPeriodEnd
+    ? new Date(currentPeriodEnd * 1000).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : subscriptionLoading
+      ? 'Loading...'
+      : 'N/A';
 
   const openPortal = async () => {
     if (!user) return;

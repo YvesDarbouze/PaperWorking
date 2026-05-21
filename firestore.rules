@@ -55,6 +55,14 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == userId;
       allow update: if request.auth != null && request.auth.uid == userId;
       allow delete: if false; // User docs are never client-deleted
+
+      // ─── Sessions (Sub-Collection) ───────────────────────────────────
+      match /sessions/{sessionId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && request.auth.uid == userId;
+        allow update: if request.auth != null && request.auth.uid == userId && request.resource.data.isValid == false;
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
 
     // ─── Projects ──────────────────────────────────────────────────────

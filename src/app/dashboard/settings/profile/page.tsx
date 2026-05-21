@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Loader2, Eye, EyeOff, Shield, ShieldCheck, Monitor, Smartphone, MapPin, X, Camera } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp, collection, query, where, onSnapshot } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
 
@@ -95,10 +95,11 @@ export default function ProfileSettingsPage() {
       setNewPwd('');
       setConfirmPwd('');
       setTimeout(() => setPwdSuccess(false), 3000);
-    } catch (err: any) {
-      if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+    } catch (err: unknown) {
+      const error = err as { code?: string };
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         setPwdError('Current password is incorrect.');
-      } else if (err.code === 'auth/weak-password') {
+      } else if (error.code === 'auth/weak-password') {
         setPwdError('New password is too weak. Use at least 8 characters.');
       } else {
         setPwdError('Failed to update password. Please try again.');
@@ -108,12 +109,58 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  // ─── Mock Sessions ────────────────────────────────────
-  const sessions = [
-    { id: '1', device: 'MacBook Pro',   location: 'New York, NY',     icon: Monitor,    current: true  },
-    { id: '2', device: 'iPhone 15 Pro', location: 'New York, NY',     icon: Smartphone, current: false },
-    { id: '3', device: 'Windows PC',    location: 'Los Angeles, CA',  icon: Monitor,    current: false },
-  ];
+  // ─── Active Sessions State ────────────────────────────
+  interface SessionDoc {
+    id: string;
+    device: string;
+    userAgent: string;
+    location: string;
+    isValid: boolean;
+    createdAt: { toMillis?: () => number } | null;
+    lastSeenAt: { toMillis?: () => number } | null;
+  }
+
+  const [sessions, setSessions] = useState<SessionDoc[]>([]);
+  const [currentSessionId] = useState<string | null>(() => {
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|; )__session_id=([^;]*)/);
+      if (match) return match[1];
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    const q = query(collection(db, 'users', user.uid, 'sessions'), where('isValid', '==', true));
+    const unsubscribe = onSnapshot(q, (snap) => {
+      const fetched = snap.docs.map(d => d.data() as SessionDoc);
+      setSessions(fetched.sort((a, b) => {
+        const tA = a.createdAt?.toMillis?.() || 0;
+        const tB = b.createdAt?.toMillis?.() || 0;
+        return tB - tA;
+      }));
+    });
+    return () => unsubscribe();
+  }, [user?.uid]);
+
+  const handleEndSession = async (sessionId: string) => {
+    if (!user?.uid) return;
+    try {
+      await updateDoc(doc(db, 'users', user.uid, 'sessions', sessionId), {
+        isValid: false
+      });
+    } catch (err) {
+      console.error('Failed to end session:', err);
+    }
+  };
+
+  const getDeviceIcon = (device: string) => {
+    const lower = device.toLowerCase();
+    if (lower.includes('iphone') || lower.includes('ipad') || lower.includes('android')) {
+      return Smartphone;
+    }
+    return Monitor;
+  };
 
   return (
     <div className="space-y-6">
@@ -325,29 +372,39 @@ export default function ProfileSettingsPage() {
         </h2>
 
         <div className="space-y-0 divide-y divide-pw-border">
-          {sessions.map((session) => (
-            <div key={session.id} className="flex items-center gap-4 py-3.5">
-              <session.icon className="w-5 h-5 text-text-secondary flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text-primary">
-                  {session.device}
-                  {session.current && (
-                    <span className="ml-2 text-xs text-green-700 bg-green-50 border border-green-200 px-1.5 py-0.5">
-                      This device
-                    </span>
-                  )}
-                </p>
-                <p className="text-xs text-text-secondary flex items-center gap-1">
-                  <MapPin className="w-3 h-3" /> {session.location}
-                </p>
+          {sessions.length === 0 ? (
+            <p className="text-sm text-text-secondary">No active sessions found.</p>
+          ) : sessions.map((session) => {
+            const Icon = getDeviceIcon(session.device || '');
+            const isCurrent = session.id === currentSessionId;
+            return (
+              <div key={session.id} className="flex items-center gap-4 py-3.5">
+                <Icon className="w-5 h-5 text-text-secondary flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-text-primary">
+                    {session.device || 'Unknown Device'}
+                    {isCurrent && (
+                      <span className="ml-2 text-xs text-green-700 bg-green-50 border border-green-200 px-1.5 py-0.5">
+                        This device
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-text-secondary flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3" /> {session.location || 'Unknown Location'}
+                    {session.createdAt && ` • Started: ${new Date(session.createdAt.toMillis?.() || session.createdAt).toLocaleDateString()}`}
+                  </p>
+                </div>
+                {!isCurrent && (
+                  <button
+                    onClick={() => handleEndSession(session.id)}
+                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" /> End Session
+                  </button>
+                )}
               </div>
-              {!session.current && (
-                <button className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium transition-colors">
-                  <X className="w-3.5 h-3.5" /> End Session
-                </button>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

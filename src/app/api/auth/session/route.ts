@@ -123,10 +123,42 @@ export async function POST(request: Request) {
       maxAge: SESSION_MAX_AGE,
     };
 
+    // --- Create Custom Session Tracking Document ---
+    const sessionId = crypto.randomUUID();
+    const userAgent = request.headers.get('user-agent') || 'Unknown';
+    const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'Unknown';
+    
+    // Basic device parsing from user-agent
+    let device = 'Unknown Device';
+    if (userAgent.includes('Mac OS')) device = 'Mac';
+    else if (userAgent.includes('Windows')) device = 'Windows PC';
+    else if (userAgent.includes('iPhone')) device = 'iPhone';
+    else if (userAgent.includes('iPad')) device = 'iPad';
+    else if (userAgent.includes('Android')) device = 'Android Device';
+    else if (userAgent.includes('Linux')) device = 'Linux PC';
+
+    try {
+      const FieldValue = (await import('firebase-admin/firestore')).FieldValue;
+      await adminDb.collection('users').doc(decoded.uid).collection('sessions').doc(sessionId).set({
+        id: sessionId,
+        device,
+        userAgent,
+        ipAddress,
+        location: 'Unknown', // IP Geolocation can be added later
+        createdAt: FieldValue.serverTimestamp(),
+        lastSeenAt: FieldValue.serverTimestamp(),
+        isValid: true,
+      });
+    } catch (e) {
+      console.error('[Session] Failed to write session document:', e);
+    }
+    // -----------------------------------------------
+
     const response = NextResponse.json({ status: 'success', uid: decoded.uid });
     response.cookies.set(SESSION_COOKIE, sessionCookie,                       cookieOpts);
     response.cookies.set(SUB_COOKIE,     encodeSubCookie(subPlan, subStatus), { ...cookieOpts, httpOnly: false });
     response.cookies.set(ACCT_COOKIE,    acctType,                            cookieOpts);
+    response.cookies.set('__session_id', sessionId,                           { ...cookieOpts, httpOnly: false }); // Allow client to know its own sessionId
     return response;
 
   } catch (err: any) {
@@ -141,6 +173,26 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: csrf.reason }, { status: csrf.status });
   }
 
+  // --- Invalidate Session Document ---
+  const cookies = request.headers.get('cookie') || '';
+  const sessionIdMatch = cookies.match(/(?:^|; )__session_id=([^;]*)/);
+  const sessionId = sessionIdMatch ? sessionIdMatch[1] : null;
+  const sessionCookieMatch = cookies.match(/(?:^|; )__session=([^;]*)/);
+  const sessionCookie = sessionCookieMatch ? sessionCookieMatch[1] : null;
+
+  if (sessionId && sessionCookie && hasAdminCredentials()) {
+    try {
+      const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
+      const decoded = await adminAuth.verifySessionCookie(sessionCookie);
+      await adminDb.collection('users').doc(decoded.uid).collection('sessions').doc(sessionId).update({
+        isValid: false
+      });
+    } catch (e) {
+      console.error('[Session] Failed to invalidate session doc:', e);
+    }
+  }
+  // -----------------------------------
+
   const response = NextResponse.json({ status: 'success' });
   const clear = {
     httpOnly: true,
@@ -152,5 +204,6 @@ export async function DELETE(request: Request) {
   response.cookies.set(SESSION_COOKIE, '', clear);
   response.cookies.set(SUB_COOKIE,     '', { ...clear, httpOnly: false });
   response.cookies.set(ACCT_COOKIE,    '', clear);
+  response.cookies.set('__session_id', '', { ...clear, httpOnly: false });
   return response;
 }

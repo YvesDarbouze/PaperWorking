@@ -91,9 +91,16 @@ export default function TriageQueue() {
                                    <div key={receipt.id} className={`flex flex-col md:flex-row p-6 gap-6 ${isBreach ? 'bg-red-50/30' : ''}`}>
                                        {/* Image Viewer */}
                                        <div className="md:w-1/3 bg-bg-primary rounded-lg aspect-auto flex items-center justify-center relative overflow-hidden border border-border-accent min-h-[200px]">
-                                            <img src="https://images.unsplash.com/photo-1621217032731-bf55c7075253?auto=format&fit=crop&q=80&w=400" alt="Receipt Mock" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-multiply" />
+                                            {receipt.receiptUrl ? (
+                                                <img src={receipt.receiptUrl} alt="Receipt Evidence" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-90 mix-blend-multiply" />
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center text-text-tertiary">
+                                                    <Paperclip className="w-8 h-8 mb-2 opacity-20" />
+                                                    <span className="text-xs uppercase tracking-widest font-semibold opacity-50">No Receipt Uploaded</span>
+                                                </div>
+                                            )}
                                             <div className="z-10 absolute bottom-3 right-3 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded flex items-center">
-                                               <Paperclip className="w-3 h-3 mr-1"/> Attached Evidence
+                                               <Paperclip className="w-3 h-3 mr-1"/> {receipt.receiptUrl ? 'Attached Evidence' : 'No Evidence'}
                                             </div>
                                        </div>
 

@@ -18,15 +18,12 @@ export default function ProjectsWidget({ projects, onCreateProject, isGuest }: P
     <div className="flex flex-col gap-4 h-full">
       <div className="flex-1 grid grid-cols-2 gap-4">
         {activeProjects.map((project, index) => {
-          // Calculate a mock completion percentage based on status
+          // Calculate completion percentage based on actual action items
           let completion = 0;
-          switch (project.status?.toLowerCase()) {
-            case 'lead': completion = 25; break;
-            case 'under contract': completion = 50; break;
-            case 'renovating': completion = 75; break;
-            case 'listed': completion = 90; break;
-            case 'sold': completion = 100; break;
-            default: completion = 30; break;
+          const actionItems = project.actionItems || [];
+          if (actionItems.length > 0) {
+            const completedTasks = actionItems.filter((item: any) => item.completed).length;
+            completion = Math.round((completedTasks / actionItems.length) * 100);
           }
 
           // Alternating grayscale styling for visual interest

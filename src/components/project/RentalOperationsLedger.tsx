@@ -9,6 +9,7 @@ import {
   rentalSetupSchema,
   computeRentalMetrics,
   type RentalSetupInput,
+  type FinancialContext,
 } from '@/lib/validation/rentalSetupSchema';
 
 interface RentalOperationsLedgerProps {
@@ -104,10 +105,21 @@ export function RentalOperationsLedger({
     longTermMortgagePayment:      watched.longTermMortgagePayment      ?? 0,
     financingCashInvested:        watched.financingCashInvested        ?? 0,
   };
-  const m = computeRentalMetrics(safeInput, totalAllInCost);
+
+  // Build full expense context from saved financials so NOI matches
+  // the canonical reiMetrics.ts engine (includes taxes, insurance, etc.)
+  const expenseCtx: FinancialContext = {
+    monthlyTaxes: financials.holdingCostTaxes ?? financials.operatingExpenseTaxes ?? 0,
+    monthlyInsurance: financials.holdingCostInsurance ?? financials.operatingExpenseInsurance ?? 0,
+    monthlyUtilities: financials.holdingCostUtilities ?? 0,
+    monthlyHOA: financials.monthlyHOA ?? 0,
+    purchasePrice: (financials.purchasePrice ?? 0) / 100, // stored in cents
+  };
+
+  const m = computeRentalMetrics(safeInput, totalAllInCost, expenseCtx);
 
   const onSubmit = (data: RentalSetupInput) => {
-    const metrics = computeRentalMetrics(data, totalAllInCost);
+    const metrics = computeRentalMetrics(data, totalAllInCost, expenseCtx);
     onSave({
       projectedMonthlyRent:         data.projectedMonthlyRent,
       vacancyRate:                  data.vacancyRate,

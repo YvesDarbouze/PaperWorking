@@ -48,6 +48,8 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   'Vendor': [],
   'Guest': [],
   'Standard': ['VIEW_FOLDER'],
+  'Analyst': ['VIEW_FOLDER'],
+  'Observer': ['VIEW_FOLDER'],
 };
 
 export function usePermissions() {
@@ -55,8 +57,7 @@ export function usePermissions() {
   
   // Default to a safe fallback role if user profile is missing role
   // In production, this should come from user documentation in Firestore.
-  // Changed to 'Lead Investor' to ensure new signups hit the Command Center and can test project creation.
-  const role: Role = profile?.role || 'Lead Investor';
+  const role: Role = profile?.role || 'Guest';
 
   const can = (permission: Permission) => {
     return ROLE_PERMISSIONS[role]?.includes(permission) || false;

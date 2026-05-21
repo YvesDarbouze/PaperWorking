@@ -80,7 +80,7 @@ describe('useProjectStore', () => {
     });
 
     expect(result.current.currentProject?.id).toBe('deal1');
-    expect(result.current.getSelectedDeal()?.address).toBe('123 Alpha St');
+    expect(result.current.currentProject?.address).toBe('123 Alpha St');
   });
 
   it('aggregates ledger items for a deal', () => {
@@ -90,7 +90,7 @@ describe('useProjectStore', () => {
       result.current.setLedgerItems('deal1', mockLedgerItems);
     });
 
-    const items = result.current.getLedgerItemsForDeal('deal1');
+    const items = result.current.ledgerItems['deal1'] || [];
     expect(items).toHaveLength(2);
     expect(items[0].id).toBe('item1');
   });
@@ -102,7 +102,7 @@ describe('useProjectStore', () => {
       result.current.setLedgerItems('deal1', mockLedgerItems);
     });
 
-    const items = result.current.getLedgerItemsForDeal('deal1');
+    const items = result.current.ledgerItems['deal1'] || [];
     const totalApproved = items
       .filter((i: LedgerItem) => i.status === 'Approved')
       .reduce((sum: number, i: LedgerItem) => sum + (Number(i.amount) || 0), 0);

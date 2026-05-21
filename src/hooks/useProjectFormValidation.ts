@@ -31,6 +31,7 @@ export interface ProjectFormData {
   partnerEmails: string;
   // NOI Input fields — mandatory data points for operational performance
   monthlyGrossRent: string;
+  otherMonthlyIncome: string;
   vacancyRatePercent: string;
   monthlyTaxes: string;
   monthlyInsurance: string;
@@ -50,6 +51,9 @@ export interface ProjectFormData {
   sellerMotivation: string;
   emdAmount: string;
   leadSource: string;
+  // IRR Forecasting — hold period and appreciation for lifecycle projections
+  annualAppreciationPercent: string;
+  projectedHoldYears: string;
   // MLS fields — populated when user selects a listing from Bridge search
   mlsListingKey?: string;
   mlsListingId?: string;

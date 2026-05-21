@@ -70,12 +70,12 @@ export default function RecentActivityTable() {
        project.loiDocuments?.forEach(doc => {
          activities.push({
            id: `loi-${doc.id}`,
-           name: doc.fileName || 'LOI Document',
+           name: 'LOI Document',
            type: 'LOI',
            date: new Date(doc.createdAt || new Date()).toLocaleDateString(),
-           amount: doc.amount || 0,
-           status: doc.status === 'Accepted' || doc.status === 'Signed' ? 'Complete' : 'Pending',
-           fileUrl: doc.documentUrl,
+           amount: doc.investmentAmount || 0,
+           status: doc.status === 'Signed' ? 'Complete' : 'Pending',
+           fileUrl: doc.signatureDataUrl,
            projectId: project.id,
            projectName: project.propertyName,
          });
@@ -106,7 +106,7 @@ export default function RecentActivityTable() {
            type: 'Expense',
            date: new Date(item.createdAt || new Date()).toLocaleDateString(),
            amount: item.amount || 0,
-           status: item.status === 'Approved' || item.status === 'Settled' ? 'Complete' : item.status === 'Rejected' ? 'Overdue' : 'Pending',
+           status: item.status === 'Approved' ? 'Complete' : item.status === 'Rejected' ? 'Overdue' : 'Pending',
            fileUrl: item.receiptUrl,
            projectId: project.id,
            projectName: project.propertyName,

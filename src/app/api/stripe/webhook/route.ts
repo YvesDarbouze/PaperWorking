@@ -2,15 +2,37 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { Resend } from 'resend';
 
 // Webhook must never be cached and may need extra time for Firestore batch writes
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@paperworking.co';
+
+async function sendStripeEmail(to: string, subject: string, html: string) {
+  if (!resend) {
+    console.log(`[Stripe Webhook] Email mocked (no RESEND_API_KEY). To: ${to}, Subject: ${subject}`);
+    return;
+  }
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject,
+      html,
+    });
+    console.log(`[Stripe Webhook] Email sent successfully to ${to}`);
+  } catch (error) {
+    console.error('[Stripe Webhook] Non-fatal error sending email:', error);
+  }
+}
+
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
-  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+  return new Stripe(key, { apiVersion: '2026-04-22.dahlia' });
 }
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -154,11 +176,11 @@ export async function POST(request: Request) {
             // No user found — store the session for later linking when user signs in
             console.log(`[Stripe Webhook] Guest checkout for ${session.customer_details.email} — will link on sign-in`);
             await adminDb.collection('pending_subscriptions').doc(session.customer_details.email).set({
-              plan,
-              stripeCustomerId: session.customer as string,
-              stripeSubscriptionId: session.subscription as string,
+              plan: plan || null,
+              stripeCustomerId: session.customer ? (session.customer as string) : null,
+              stripeSubscriptionId: session.subscription ? (session.subscription as string) : null,
               subscriptionStatus: actualStatus,
-              trialEnd,
+              trialEnd: trialEnd || null,
               sessionId: session.id,
               customerEmail: session.customer_details.email,
               createdAt: FieldValue.serverTimestamp(),
@@ -175,6 +197,16 @@ export async function POST(request: Request) {
             stripeSubscriptionId: session.subscription as string,
             ...(trialEnd ? { trialEnd } : {}),
           });
+
+          // Send welcome/subscription created email
+          const userDoc = await adminDb.collection('users').doc(userId).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Welcome to PaperWorking Pro!';
+            const html = '<p>Your subscription is now active. Thank you for upgrading!</p>';
+            // Non-blocking fire and forget
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -187,6 +219,8 @@ export async function POST(request: Request) {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
+        console.log(`[Stripe Webhook] Received trial_will_end for customer: ${stripeCustomerId}`);
+
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
           const trialEndDate = subscription.trial_end
@@ -197,7 +231,14 @@ export async function POST(request: Request) {
             trialEnd: trialEndDate,
           });
           console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndDate}`);
-          // TODO: trigger transactional email via your email provider here
+          
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Your PaperWorking Trial is Ending Soon';
+            const html = '<p>Your trial will convert to a paid plan soon. You can manage your billing in settings.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -217,6 +258,14 @@ export async function POST(request: Request) {
           await updateUserAndOrg(uid, {
             subscriptionStatus: 'active',
           });
+          
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Your PaperWorking Subscription Renewed';
+            const html = '<p>Your subscription has been successfully renewed. You can view your invoice in billing settings.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -280,8 +329,8 @@ export async function POST(request: Request) {
           // Track cancellation scheduling
           if (subscription.cancel_at_period_end) {
             updateData.cancelAtPeriodEnd = true;
-            updateData.currentPeriodEnd = subscription.current_period_end
-              ? new Date(subscription.current_period_end * 1000).toISOString()
+            updateData.currentPeriodEnd = (subscription as any).current_period_end
+              ? new Date((subscription as any).current_period_end * 1000).toISOString()
               : null;
           } else {
             updateData.cancelAtPeriodEnd = false;

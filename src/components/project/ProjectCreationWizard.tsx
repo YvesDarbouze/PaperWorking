@@ -11,6 +11,18 @@ import {
   AlertCircle, ShieldAlert, Wrench, Home, Tag, Key, FileSignature, HardHat,
   TrendingUp,
 } from 'lucide-react';
+import {
+  computeNOIComponents,
+  computeAnnualDebtService,
+  computeCashFlow,
+  computeCoCReturn,
+  computeTotalCashInvested,
+  computeGRM,
+  computeCapRate,
+  computeDSCR,
+  computeIRR,
+  buildIRRCashFlows,
+} from '@/lib/metrics/reiMetrics';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
 import type { BridgeSearchResult } from '@/types/bridge';
@@ -53,6 +65,8 @@ const REI_STATUSES: { value: string; label: string; icon: React.ReactNode }[] = 
 
 const INITIAL_FORM: ProjectFormData = {
   propertyName: '',
+  purchasePrice: '',
+  estimatedARV: '',
   reiStatus: '',
   address: '',
   street: '',
@@ -72,6 +86,7 @@ const INITIAL_FORM: ProjectFormData = {
   partnerEmails: '',
   // NOI defaults — vacancy 7% and mgmt 8% per NARPM convention
   monthlyGrossRent: '',
+  otherMonthlyIncome: '',
   vacancyRatePercent: '7',
   monthlyTaxes: '',
   monthlyInsurance: '',
@@ -90,6 +105,9 @@ const INITIAL_FORM: ProjectFormData = {
   sellerMotivation: '',
   emdAmount: '',
   leadSource: '',
+  // IRR Forecasting — hold period and appreciation defaults
+  annualAppreciationPercent: '3',
+  projectedHoldYears: '5',
   mlsListingKey: undefined,
   mlsListingId: undefined,
   mlsListPrice: null,
@@ -210,6 +228,7 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
           ...(formData.dateOfSale && { soldDate: new Date(formData.dateOfSale + 'T00:00:00') }),
           // NOI inputs — written at project creation so NOI is computable from Phase 1
           ...(formData.monthlyGrossRent && { monthlyGrossRent: parseFloat(formData.monthlyGrossRent) }),
+          ...(formData.otherMonthlyIncome && { otherMonthlyIncome: parseFloat(formData.otherMonthlyIncome) }),
           ...(formData.vacancyRatePercent && { vacancyRatePercent: parseFloat(formData.vacancyRatePercent) }),
           ...(formData.monthlyTaxes && { holdingCostTaxes: parseFloat(formData.monthlyTaxes) }),
           ...(formData.monthlyInsurance && { holdingCostInsurance: parseFloat(formData.monthlyInsurance) }),
@@ -228,7 +247,10 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
           ...(formData.estimatedTimelineDays && { estimatedTimelineDays: parseInt(formData.estimatedTimelineDays) }),
           ...(formData.sellerMotivation && { sellerMotivation: formData.sellerMotivation }),
           ...(formData.emdAmount && { emdAmount: parseFloat(formData.emdAmount) }),
-          ...(formData.leadSource && { leadSource: formData.leadSource }),
+          ...(formData.leadSource && { leadSource: formData.leadSource as any }),
+          // IRR Forecasting — hold period and appreciation for lifecycle projections
+          ...(formData.annualAppreciationPercent && { annualAppreciationPercent: parseFloat(formData.annualAppreciationPercent) }),
+          ...(formData.projectedHoldYears && { projectedHoldTimeMonths: Math.round(parseFloat(formData.projectedHoldYears) * 12) }),
         },
       }, organizationId);
 
@@ -567,6 +589,18 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
             </div>
 
             <div className="space-y-2">
+              <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Other monthly income ($) <span style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>optional</span></label>
+              <input
+                type="number"
+                value={formData.otherMonthlyIncome}
+                onChange={(e) => updateForm({ otherMonthlyIncome: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
+                style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="Parking, laundry, storage — e.g. 75"
+              />
+            </div>
+
+            <div className="space-y-2">
               <label className="block text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Vacancy rate (%)</label>
               <input
                 type="number"
@@ -661,20 +695,163 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
               </div>
               <p className="text-xl font-bold tabular-nums" style={{ color: '#ECFDF5' }}>
                 ${(() => {
-                  const rent = parseFloat(formData.monthlyGrossRent) || 0;
-                  const gri = rent * 12;
-                  const vac = gri * ((parseFloat(formData.vacancyRatePercent) || 7) / 100);
-                  const taxes = (parseFloat(formData.monthlyTaxes) || 0) * 12;
-                  const ins = (parseFloat(formData.monthlyInsurance) || 0) * 12;
-                  const maint = (parseFloat(formData.monthlyMaintenance) || 0) * 12;
-                  const mgmt = gri * ((parseFloat(formData.managementFeePercent) || 8) / 100);
-                  const utils = (parseFloat(formData.monthlyUtilities) || 0) * 12;
-                  const hoa = (parseFloat(formData.monthlyHOA) || 0) * 12;
-                  return Math.round(gri - vac - taxes - ins - maint - mgmt - utils - hoa).toLocaleString();
+                  const fin = {
+                    monthlyGrossRent: parseFloat(formData.monthlyGrossRent) || 0,
+                    otherMonthlyIncome: parseFloat(formData.otherMonthlyIncome) || 0,
+                    vacancyRatePercent: parseFloat(formData.vacancyRatePercent) || 7,
+                    holdingCostTaxes: parseFloat(formData.monthlyTaxes) || 0,
+                    holdingCostInsurance: parseFloat(formData.monthlyInsurance) || 0,
+                    monthlyMaintenanceReserve: parseFloat(formData.monthlyMaintenance) || 0,
+                    propertyManagementFeePercent: parseFloat(formData.managementFeePercent) || 8,
+                    holdingCostUtilities: parseFloat(formData.monthlyUtilities) || 0,
+                    monthlyHOA: parseFloat(formData.monthlyHOA) || 0,
+                  };
+                  return Math.round(computeNOIComponents(fin as any).noi).toLocaleString();
                 })()}
               </p>
             </div>
           )}
+
+          {/* ── GRM + Cap Rate Quick Screen ── */}
+          {formData.purchasePrice && formData.monthlyGrossRent && (() => {
+            const purchasePrice = parseFloat(formData.purchasePrice) || 0;
+            const monthlyRent = parseFloat(formData.monthlyGrossRent) || 0;
+            const annualRent = monthlyRent * 12;
+            const grm = computeGRM(purchasePrice, annualRent);
+
+            // Cap Rate uses NOI if we have expense data
+            const fin = {
+              monthlyGrossRent: monthlyRent,
+              otherMonthlyIncome: parseFloat(formData.otherMonthlyIncome) || 0,
+              vacancyRatePercent: parseFloat(formData.vacancyRatePercent) || 7,
+              holdingCostTaxes: parseFloat(formData.monthlyTaxes) || 0,
+              holdingCostInsurance: parseFloat(formData.monthlyInsurance) || 0,
+              monthlyMaintenanceReserve: parseFloat(formData.monthlyMaintenance) || 0,
+              propertyManagementFeePercent: parseFloat(formData.managementFeePercent) || 8,
+              holdingCostUtilities: parseFloat(formData.monthlyUtilities) || 0,
+              monthlyHOA: parseFloat(formData.monthlyHOA) || 0,
+            };
+            const noiComponents = computeNOIComponents(fin as any);
+            const noi = noiComponents.noi;
+            const totalExpenses = noiComponents.totalOperatingExpenses;
+            const capRate = computeCapRate(noi, purchasePrice);
+
+            // GRM classification
+            const grmColor = grm <= 8 ? '#595959' : grm <= 12 ? '#7F7F7F' : grm <= 15 ? '#A5A5A5' : '#EF4444';
+            const grmLabel = grm <= 8 ? 'Excellent' : grm <= 12 ? 'Typical' : grm <= 15 ? 'Review' : 'Caution';
+            const grmVerdict = grm <= 12 ? 'Pass' : grm <= 15 ? 'Review' : 'Caution';
+
+            // Cap Rate classification
+            const capColor = capRate >= 8 ? '#595959' : capRate >= 5 ? '#7F7F7F' : capRate >= 3 ? '#A5A5A5' : '#EF4444';
+            const capLabel = capRate >= 8 ? 'Strong' : capRate >= 5 ? 'Good' : capRate >= 3 ? 'Fair' : 'Low';
+
+            // Occupancy Rate
+            const occupancyRate = 100 - (parseFloat(formData.vacancyRatePercent) || 7);
+            const occColor = occupancyRate >= 93 ? '#595959' : occupancyRate >= 88 ? '#7F7F7F' : occupancyRate >= 80 ? '#A5A5A5' : '#EF4444';
+            const occLabel = occupancyRate >= 93 ? 'Healthy' : occupancyRate >= 88 ? 'Below Avg' : occupancyRate >= 80 ? 'High Risk' : 'Critical';
+
+            // Expense Ratio
+            const expRatio = annualRent > 0 ? (totalExpenses / annualRent) * 100 : 0;
+            const expColor = expRatio <= 35 ? '#595959' : expRatio <= 45 ? '#7F7F7F' : expRatio <= 60 ? '#A5A5A5' : '#EF4444';
+            const expLabel = expRatio <= 35 ? 'Lean' : expRatio <= 45 ? 'Typical' : expRatio <= 60 ? 'High' : 'Critical';
+
+            // Appreciation
+            const appreciationRate = parseFloat(formData.annualAppreciationPercent) || 3;
+            let appColor = '#DC2626';
+            let appLabel = 'Declining';
+            if (appreciationRate >= 7) { appColor = '#595959'; appLabel = 'Exceptional'; }
+            else if (appreciationRate >= 5) { appColor = '#7F7F7F'; appLabel = 'Strong'; }
+            else if (appreciationRate >= 3) { appColor = '#A5A5A5'; appLabel = 'Moderate'; }
+            else if (appreciationRate >= 1) { appColor = '#EF4444'; appLabel = 'Below Avg'; }
+
+            return (
+              <div className="mt-4 rounded-lg p-4" style={{ background: 'rgba(89,89,89,0.06)', border: '1px solid rgba(89,89,89,0.15)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-3" style={{ color: 'var(--text-secondary)' }}>
+                  Quick Screen — Screening Metrics
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {/* GRM */}
+                  <div className="flex flex-col">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94A3B8' }}>Gross Rent Multiplier</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#64748B' }}>
+                        ${purchasePrice.toLocaleString()} ÷ ${annualRent.toLocaleString()}/yr
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-bold tabular-nums" style={{ color: grmColor }}>
+                        {grm.toFixed(1)}×
+                      </p>
+                      <p className="text-[9px] font-bold" style={{ color: grmColor }}>{grmLabel} — {grmVerdict}</p>
+                    </div>
+                  </div>
+                  {/* Cap Rate */}
+                  <div className="flex flex-col">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94A3B8' }}>Cap Rate</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#64748B' }}>
+                        NOI ${Math.round(noi).toLocaleString()} ÷ ${purchasePrice.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-bold tabular-nums" style={{ color: capColor }}>
+                        {capRate.toFixed(1)}%
+                      </p>
+                      <p className="text-[9px] font-bold" style={{ color: capColor }}>{capLabel}</p>
+                    </div>
+                  </div>
+                  {/* Occupancy Rate */}
+                  <div className="flex flex-col">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94A3B8' }}>Occupancy Rate</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#64748B' }}>
+                        Based on {formData.vacancyRatePercent || 7}% Vacancy
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-bold tabular-nums" style={{ color: occColor }}>
+                        {occupancyRate.toFixed(1)}%
+                      </p>
+                      <p className="text-[9px] font-bold" style={{ color: occColor }}>{occLabel}</p>
+                    </div>
+                  </div>
+                  {/* Expense Ratio */}
+                  <div className="flex flex-col">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94A3B8' }}>Expense Ratio</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#64748B' }}>
+                        Ops ${Math.round(totalExpenses).toLocaleString()} ÷ Rent ${annualRent.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-bold tabular-nums" style={{ color: expColor }}>
+                        {expRatio.toFixed(1)}%
+                      </p>
+                      <p className="text-[9px] font-bold" style={{ color: expColor }}>{expLabel}</p>
+                    </div>
+                  </div>
+                  {/* Appreciation */}
+                  <div className="flex flex-col">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-[0.12em]" style={{ color: '#94A3B8' }}>Appreciation</p>
+                      <p className="text-[9px] mt-0.5" style={{ color: '#64748B' }}>
+                        Growth Potential
+                      </p>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-lg font-bold tabular-nums" style={{ color: appColor }}>
+                        {appreciationRate.toFixed(1)}%
+                      </p>
+                      <p className="text-[9px] font-bold" style={{ color: appColor }}>{appLabel}</p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[8px] mt-2 italic" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
+                  GRM is a surface-level screen. Cap Rate strips financing. Expense Ratio measures operational efficiency. Appreciation builds long-term wealth.
+                </p>
+              </div>
+            );
+          })()}
 
           {/* ══════════════════════════════════════════════════════════
              FINANCING & DEBT SERVICE
@@ -767,37 +944,37 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
             {formData.monthlyGrossRent && formData.loanAmount && formData.loanInterestRate && (
               <div className="mt-6 rounded-lg p-4" style={{ background: '#1E293B', border: '1px solid #334155' }}>
                 {(() => {
-                  const rent = parseFloat(formData.monthlyGrossRent) || 0;
-                  const gri = rent * 12;
-                  const vac = gri * ((parseFloat(formData.vacancyRatePercent) || 7) / 100);
-                  const taxes = (parseFloat(formData.monthlyTaxes) || 0) * 12;
-                  const ins = (parseFloat(formData.monthlyInsurance) || 0) * 12;
-                  const maint = (parseFloat(formData.monthlyMaintenance) || 0) * 12;
-                  const mgmt = gri * ((parseFloat(formData.managementFeePercent) || 8) / 100);
-                  const utils = (parseFloat(formData.monthlyUtilities) || 0) * 12;
-                  const hoa = (parseFloat(formData.monthlyHOA) || 0) * 12;
-                  const noi = gri - vac - taxes - ins - maint - mgmt - utils - hoa;
+                  // Build a minimal financials object for the canonical engine
+                  const fin = {
+                    monthlyGrossRent: parseFloat(formData.monthlyGrossRent) || 0,
+                    otherMonthlyIncome: parseFloat(formData.otherMonthlyIncome) || 0,
+                    vacancyRatePercent: parseFloat(formData.vacancyRatePercent) || 7,
+                    holdingCostTaxes: parseFloat(formData.monthlyTaxes) || 0,
+                    holdingCostInsurance: parseFloat(formData.monthlyInsurance) || 0,
+                    monthlyMaintenanceReserve: parseFloat(formData.monthlyMaintenance) || 0,
+                    propertyManagementFeePercent: parseFloat(formData.managementFeePercent) || 8,
+                    holdingCostUtilities: parseFloat(formData.monthlyUtilities) || 0,
+                    monthlyHOA: parseFloat(formData.monthlyHOA) || 0,
+                    purchasePrice: (parseFloat(formData.purchasePrice) || 0) * 100, // cents
+                    loanAmount: parseFloat(formData.loanAmount) || 0,
+                    loanInterestRate: parseFloat(formData.loanInterestRate) || 0,
+                    loanTermYears: parseFloat(formData.loanTermYears) || 30,
+                    fixedAcquisitionCosts: parseFloat(formData.closingCosts) || 0,
+                    projectedRehabCost: parseFloat(formData.projectedRehabCost) || 0,
+                  };
 
-                  const loanAmt = parseFloat(formData.loanAmount) || 0;
-                  const rate = parseFloat(formData.loanInterestRate) || 0;
-                  const termMonths = (parseFloat(formData.loanTermYears) || 30) * 12;
-                  let annualDebtService = 0;
-                  if (loanAmt > 0 && rate > 0 && termMonths > 0) {
-                    const r = rate / 100 / 12;
-                    const pow = Math.pow(1 + r, termMonths);
-                    const monthlyPayment = loanAmt * (r * pow) / (pow - 1);
-                    annualDebtService = monthlyPayment * 12;
-                  }
-                  const annualCashFlow = noi - annualDebtService;
-                  const monthlyCashFlow = annualCashFlow / 12;
+                  const noi = computeNOIComponents(fin as any).noi;
+                  const loanTermMonths = fin.loanTermYears * 12;
+                  const annualDebtService = computeAnnualDebtService(
+                    fin.loanAmount, fin.loanInterestRate, loanTermMonths
+                  );
+                  const { annual: annualCashFlow, monthly: monthlyCashFlow } =
+                    computeCashFlow(noi, annualDebtService);
                   const isPositive = annualCashFlow >= 0;
 
-                  // CoC Return preview
-                  const purchPrice = parseFloat(formData.purchasePrice) || 0;
-                  const downPayment = Math.max(0, purchPrice - loanAmt);
-                  const closCosts = parseFloat(formData.closingCosts) || 0;
-                  const totalCashInvested = downPayment + closCosts;
-                  const cocReturn = totalCashInvested > 0 ? (annualCashFlow / totalCashInvested) * 100 : 0;
+                  const downPayment = Math.max(0, (fin.purchasePrice / 100) - fin.loanAmount);
+                  const totalCashInvested = downPayment + fin.fixedAcquisitionCosts;
+                  const cocReturn = computeCoCReturn(annualCashFlow, totalCashInvested);
 
                   return (
                     <div className="space-y-3">
@@ -809,10 +986,10 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-xl font-bold tabular-nums" style={{ color: isPositive ? '#34D399' : '#F87171' }}>
+                          <p className="text-xl font-bold tabular-nums" style={{ color: isPositive ? '#595959' : '#F87171' }}>
                             {isPositive ? '+' : ''}${Math.round(monthlyCashFlow).toLocaleString()}/mo
                           </p>
-                          <p className="text-[10px] font-bold tabular-nums" style={{ color: isPositive ? '#6EE7B7' : '#FCA5A5' }}>
+                          <p className="text-[10px] font-bold tabular-nums" style={{ color: isPositive ? '#7F7F7F' : '#FCA5A5' }}>
                             {isPositive ? '+' : ''}${Math.round(annualCashFlow).toLocaleString()}/yr
                           </p>
                         </div>
@@ -827,21 +1004,210 @@ export default function ProjectCreationWizard({ organizationId, onClose, onSucce
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xl font-bold tabular-nums" style={{ color: cocReturn >= 8 ? '#34D399' : cocReturn >= 4 ? '#FBBF24' : '#F87171' }}>
+                            <p className="text-xl font-bold tabular-nums" style={{ color: cocReturn >= 8 ? '#595959' : cocReturn >= 4 ? '#A5A5A5' : '#F87171' }}>
                               {cocReturn.toFixed(1)}%
                             </p>
-                            <p className="text-[10px] font-bold" style={{ color: cocReturn >= 8 ? '#6EE7B7' : cocReturn >= 4 ? '#FCD34D' : '#FCA5A5' }}>
+                            <p className="text-[10px] font-bold" style={{ color: cocReturn >= 8 ? '#7F7F7F' : cocReturn >= 4 ? '#CCCCCC' : '#FCA5A5' }}>
                               {cocReturn >= 12 ? 'Excellent' : cocReturn >= 8 ? 'Strong' : cocReturn >= 4 ? 'Moderate' : 'Below Target'}
                             </p>
                           </div>
                         </div>
                       )}
+                      {/* DSCR row */}
+                      {annualDebtService > 0 && (() => {
+                        const dscr = computeDSCR(noi, annualDebtService);
+                        const dscrColor = dscr >= 1.5 ? '#595959' : dscr >= 1.25 ? '#7F7F7F' : dscr >= 1.0 ? '#A5A5A5' : '#F87171';
+                        const dscrLabelColor = dscr >= 1.5 ? '#7F7F7F' : dscr >= 1.25 ? '#A5A5A5' : dscr >= 1.0 ? '#CCCCCC' : '#FCA5A5';
+                        const dscrLabel = dscr >= 1.5 ? 'Preferred' : dscr >= 1.25 ? 'Qualifies' : dscr >= 1.0 ? 'Marginal' : 'Rejected';
+                        return (
+                          <div className="flex items-center justify-between pt-2" style={{ borderTop: '1px solid #334155' }}>
+                            <div>
+                              <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#94A3B8' }}>Debt Service Coverage (DSCR)</p>
+                              <p className="text-xs mt-1" style={{ color: '#64748B' }}>
+                                NOI ${Math.round(noi).toLocaleString()} ÷ Debt ${Math.round(annualDebtService).toLocaleString()}/yr
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xl font-bold tabular-nums" style={{ color: dscrColor }}>
+                                {dscr === Infinity ? '∞' : dscr.toFixed(2)}×
+                              </p>
+                              <p className="text-[10px] font-bold" style={{ color: dscrLabelColor }}>
+                                {dscrLabel} {dscr < 1.25 && dscr >= 1.0 ? '— Lenders want ≥1.25' : dscr < 1.0 ? '— Property bleeds money' : ''}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   );
                 })()}
               </div>
             )}
           </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════
+           IRR PROJECTION — Lifecycle Return
+           IRR = Discount rate where NPV of all cash flows = 0
+           ══════════════════════════════════════════════════════════ */}
+        <div className="mt-8 pt-8" style={{ borderTop: '2px dashed var(--border-ui)' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#6366F1' }}>
+              <TrendingUp className="w-4 h-4" style={{ color: 'var(--pw-white)' }} aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-primary)' }}>IRR Projection</p>
+              <p className="text-[10px]" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>Total annualized return over the entire hold period — accounts for the time value of money.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Projected Hold Period */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-1" style={{ color: 'var(--text-secondary)' }}>
+                Projected Hold Period (Years)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="30"
+                step="1"
+                value={formData.projectedHoldYears}
+                onChange={(e) => updateForm({ projectedHoldYears: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums"
+                style={{ background: 'var(--bg-inset)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="5"
+              />
+              <p className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>How long do you plan to hold before selling?</p>
+            </div>
+
+            {/* Annual Appreciation Rate */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-[0.15em] mb-1" style={{ color: 'var(--text-secondary)' }}>
+                Annual Appreciation Rate (%)
+              </label>
+              <input
+                type="number"
+                min="0"
+                max="15"
+                step="0.5"
+                value={formData.annualAppreciationPercent}
+                onChange={(e) => updateForm({ annualAppreciationPercent: e.target.value })}
+                className="w-full rounded-lg px-4 py-3 text-sm font-medium tabular-nums"
+                style={{ background: 'var(--bg-inset)', border: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}
+                placeholder="3"
+              />
+              <p className="text-[9px] mt-1" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>National avg: 3–4%/yr. Hot markets may be higher.</p>
+            </div>
+          </div>
+
+          {/* ── Live IRR Preview ── */}
+          {formData.purchasePrice && formData.monthlyGrossRent && formData.loanAmount && formData.loanInterestRate && (() => {
+            const purchasePrice = parseFloat(formData.purchasePrice) || 0;
+            const monthlyRent = parseFloat(formData.monthlyGrossRent) || 0;
+            const holdYears = Math.max(1, parseInt(formData.projectedHoldYears) || 5);
+            const appreciationRate = parseFloat(formData.annualAppreciationPercent) || 3;
+            const loanAmount = parseFloat(formData.loanAmount) || 0;
+            const loanRate = parseFloat(formData.loanInterestRate) || 0;
+            const loanTerm = parseFloat(formData.loanTermYears) || 30;
+
+            // Build financials for NOI
+            const fin = {
+              monthlyGrossRent: monthlyRent,
+              otherMonthlyIncome: parseFloat(formData.otherMonthlyIncome) || 0,
+              vacancyRatePercent: parseFloat(formData.vacancyRatePercent) || 7,
+              holdingCostTaxes: parseFloat(formData.monthlyTaxes) || 0,
+              holdingCostInsurance: parseFloat(formData.monthlyInsurance) || 0,
+              monthlyMaintenanceReserve: parseFloat(formData.monthlyMaintenance) || 0,
+              propertyManagementFeePercent: parseFloat(formData.managementFeePercent) || 8,
+              holdingCostUtilities: parseFloat(formData.monthlyUtilities) || 0,
+              monthlyHOA: parseFloat(formData.monthlyHOA) || 0,
+            };
+            const noi = computeNOIComponents(fin as any).noi;
+            const annualDebtService = computeAnnualDebtService(loanAmount, loanRate, loanTerm * 12);
+            const annualCashFlow = noi - annualDebtService;
+
+            const downPayment = Math.max(0, purchasePrice - loanAmount);
+            const closingCosts = parseFloat(formData.closingCosts) || 0;
+            const rehabCost = parseFloat(formData.projectedRehabCost) || 0;
+            const totalCashInvested = downPayment + closingCosts + rehabCost;
+
+            if (totalCashInvested <= 0 || purchasePrice <= 0) return null;
+
+            const cashFlows = buildIRRCashFlows(
+              totalCashInvested, annualCashFlow, holdYears,
+              purchasePrice, appreciationRate, loanAmount, loanRate, loanTerm
+            );
+            const irr = computeIRR(cashFlows);
+            const irrPct = irr !== null ? irr * 100 : null;
+
+            // Future property value
+            const futureValue = purchasePrice * Math.pow(1 + appreciationRate / 100, holdYears);
+
+            // Classification
+            const irrColor = irrPct === null ? '#A5A5A5' : irrPct >= 20 ? '#595959' : irrPct >= 12 ? '#7F7F7F' : irrPct >= 6 ? '#A5A5A5' : irrPct >= 0 ? '#F87171' : '#DC2626';
+            const irrLabelColor = irrPct === null ? '#CCCCCC' : irrPct >= 20 ? '#7F7F7F' : irrPct >= 12 ? '#A5A5A5' : irrPct >= 6 ? '#CCCCCC' : '#FCA5A5';
+            const irrLabel = irrPct === null ? 'Insufficient Data' : irrPct >= 20 ? 'Exceptional' : irrPct >= 12 ? 'Strong' : irrPct >= 6 ? 'Moderate' : irrPct >= 0 ? 'Low' : 'Negative Return';
+            const beatsSP = irrPct !== null && irrPct > 10;
+
+            return (
+              <div className="mt-4 rounded-lg p-4" style={{ background: '#1E293B', border: '1px solid #334155' }}>
+                <div className="space-y-3">
+                  {/* IRR headline */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#94A3B8' }}>Projected IRR</p>
+                      <p className="text-xs mt-1" style={{ color: '#64748B' }}>
+                        {holdYears}-year hold · {appreciationRate}% appreciation
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold tabular-nums" style={{ color: irrColor }}>
+                        {irrPct !== null ? `${irrPct.toFixed(1)}%` : 'N/A'}
+                      </p>
+                      <p className="text-[10px] font-bold" style={{ color: irrLabelColor }}>
+                        {irrLabel}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Lifecycle breakdown */}
+                  <div className="grid grid-cols-3 gap-3 pt-2" style={{ borderTop: '1px solid #334155' }}>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase" style={{ color: '#64748B' }}>Cash Invested</p>
+                      <p className="text-sm font-bold tabular-nums" style={{ color: '#F87171' }}>-${Math.round(totalCashInvested).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase" style={{ color: '#64748B' }}>Annual Cash Flow</p>
+                      <p className="text-sm font-bold tabular-nums" style={{ color: annualCashFlow >= 0 ? '#595959' : '#F87171' }}>
+                        {annualCashFlow >= 0 ? '+' : ''}${Math.round(annualCashFlow).toLocaleString()}/yr
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase" style={{ color: '#64748B' }}>Exit Value (Yr {holdYears})</p>
+                      <p className="text-sm font-bold tabular-nums" style={{ color: '#7F7F7F' }}>${Math.round(futureValue).toLocaleString()}</p>
+                    </div>
+                  </div>
+
+                  {/* vs S&P 500 */}
+                  <div className="flex items-center gap-2 pt-2" style={{ borderTop: '1px solid #334155' }}>
+                    <span className="text-[9px] font-bold" style={{ color: beatsSP ? '#595959' : '#F87171' }}>
+                      {beatsSP ? '✓ Beats' : '✗ Below'} S&P 500 avg (~10%/yr)
+                    </span>
+                    {irrPct !== null && (
+                      <span className="text-[9px] font-bold tabular-nums" style={{ color: beatsSP ? '#7F7F7F' : '#FCA5A5' }}>
+                        ({beatsSP ? '+' : ''}{(irrPct - 10).toFixed(1)}%)
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[8px] italic" style={{ color: '#475569' }}>
+                    IRR captures initial outlay, {holdYears} years of cash flow, appreciation ({appreciationRate}%/yr), mortgage paydown, and exit proceeds after 8% selling costs.
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* ══════════════════════════════════════════════════════════

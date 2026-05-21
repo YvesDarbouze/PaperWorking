@@ -59,22 +59,22 @@ function classifyCapRate(rate: number): {
   if (rate < 4) return {
     zone: 'premium', label: 'Premium / Appreciating Market',
     description: 'Low yield but strong appreciation potential — gateway cities, Class A assets',
-    color: '#6366F1', bgColor: 'rgba(99,102,241,0.08)', borderColor: 'rgba(99,102,241,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (rate < 6) return {
     zone: 'stable', label: 'Stable / Low-Risk Market',
     description: 'Sweet spot for SFR investors — steady returns, predictable appreciation',
-    color: '#10B981', bgColor: 'rgba(16,185,129,0.08)', borderColor: 'rgba(16,185,129,0.2)',
+    color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)',
   };
   if (rate < 8) return {
     zone: 'balanced', label: 'Balanced Market',
     description: 'Good cash flow with moderate appreciation — suburban and secondary markets',
-    color: '#3B82F6', bgColor: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.2)',
+    color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)',
   };
   if (rate < 10) return {
     zone: 'yield', label: 'Higher-Yield Market',
     description: 'Strong cash flow but may carry higher vacancy or deferred maintenance risk',
-    color: '#F59E0B', bgColor: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.2)',
+    color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)',
   };
   return {
     zone: 'high-yield', label: 'Aggressive / High-Risk',
@@ -127,7 +127,7 @@ function CapRateTooltip({ active, payload }: any) {
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
     >
       <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#3B82F6' }}>
+      <p className="tabular-nums" style={{ color: '#7F7F7F' }}>
         Cap Rate: {fmtPct(d['Cap Rate'] ?? d.capRate ?? d.value)}
       </p>
       {d['ARV Cap Rate'] != null && (
@@ -147,10 +147,10 @@ function CapRateGauge({ capRate }: { capRate: number }) {
 
   // Zone colors for the gauge background
   const zones = [
-    { start: 0, end: 4, color: '#6366F1', label: '<4%' },
-    { start: 4, end: 6, color: '#10B981', label: '4-6%' },
-    { start: 6, end: 8, color: '#3B82F6', label: '6-8%' },
-    { start: 8, end: 10, color: '#F59E0B', label: '8-10%' },
+    { start: 0, end: 4, color: '#595959', label: '<4%' },
+    { start: 4, end: 6, color: '#595959', label: '4-6%' },
+    { start: 6, end: 8, color: '#7F7F7F', label: '6-8%' },
+    { start: 8, end: 10, color: '#A5A5A5', label: '8-10%' },
     { start: 10, end: 15, color: '#EF4444', label: '10%+' },
   ];
 
@@ -391,7 +391,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
               label: 'Annual NOI',
               value: fmtUSD(aggregate.totalNOI),
               sublabel: `${fmtUSD(Math.round(aggregate.totalNOI / 12))}/mo operational income`,
-              color: '#10B981',
+              color: '#595959',
             },
             {
               icon: Building2,
@@ -429,7 +429,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
       {/* ── Sensitivity Matrix ── */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Gauge className="w-4 h-4" style={{ color: '#3B82F6' }} />
+          <Gauge className="w-4 h-4" style={{ color: '#7F7F7F' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
             Cap Rate Sensitivity — "What If" Analysis
           </h4>
@@ -456,7 +456,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
                 }))}
                 margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
                 <XAxis
                   dataKey="name"
                   fontSize={10}
@@ -482,10 +482,10 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
                   wrapperStyle={{ fontSize: '10px' }}
                 />
                 {/* Reference zones */}
-                <ReferenceLine y={4} stroke="#10B981" strokeDasharray="4 4" label={{ value: '4%', position: 'right', fontSize: 9, fill: '#10B981' }} />
-                <ReferenceLine y={6} stroke="#3B82F6" strokeDasharray="4 4" label={{ value: '6%', position: 'right', fontSize: 9, fill: '#3B82F6' }} />
+                <ReferenceLine y={4} stroke="#595959" strokeDasharray="4 4" label={{ value: '4%', position: 'right', fontSize: 9, fill: '#595959' }} />
+                <ReferenceLine y={6} stroke="#7F7F7F" strokeDasharray="4 4" label={{ value: '6%', position: 'right', fontSize: 9, fill: '#7F7F7F' }} />
                 <ReferenceLine y={10} stroke="#EF4444" strokeDasharray="4 4" label={{ value: '10%', position: 'right', fontSize: 9, fill: '#EF4444' }} />
-                <Bar dataKey="Cap Rate" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={36}>
+                <Bar dataKey="Cap Rate" fill="#7F7F7F" radius={[4, 4, 0, 0]} maxBarSize={36}>
                   {breakdowns.map((b, i) => (
                     <Cell key={i} fill={b.classification.color} />
                   ))}
@@ -501,8 +501,8 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
       <div
         className="px-4 py-3 rounded-lg text-[11px] leading-relaxed"
         style={{
-          background: 'rgba(99,102,241,0.05)',
-          border: '1px solid rgba(99,102,241,0.15)',
+          background: 'rgba(89,89,89,0.05)',
+          border: '1px solid rgba(89,89,89,0.15)',
           color: 'var(--text-secondary)',
         }}
       >
@@ -512,10 +512,10 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
         </code>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Reading the zones:</strong>{' '}
-        <span style={{ color: '#6366F1' }}>■ &lt;4% Premium/Appreciating</span> •{' '}
-        <span style={{ color: '#10B981' }}>■ 4–6% Stable/Low-Risk</span> •{' '}
-        <span style={{ color: '#3B82F6' }}>■ 6–8% Balanced</span> •{' '}
-        <span style={{ color: '#F59E0B' }}>■ 8–10% Higher-Yield</span> •{' '}
+        <span style={{ color: '#595959' }}>■ &lt;4% Premium/Appreciating</span> •{' '}
+        <span style={{ color: '#595959' }}>■ 4–6% Stable/Low-Risk</span> •{' '}
+        <span style={{ color: '#7F7F7F' }}>■ 6–8% Balanced</span> •{' '}
+        <span style={{ color: '#A5A5A5' }}>■ 8–10% Higher-Yield</span> •{' '}
         <span style={{ color: '#EF4444' }}>■ 10%+ Aggressive</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>When to use:</strong>{' '}

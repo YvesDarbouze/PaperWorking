@@ -73,3 +73,13 @@ node_modules\ 2/
 # Embedded skill repos (cloned, not submodules)
 .agents/skills/BMAD-METHOD/
 .agents/skills/antigravity-awesome-skills/
+
+.codebuddy/
+.continue/
+.agents/skills/
+diagnostics_cache/
+
+.codebuddy/
+.continue/
+.agents/skills/
+diagnostics_cache/

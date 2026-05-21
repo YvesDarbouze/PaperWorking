@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { useProjectStore } from '@/store/projectStore';
 import { HardDrive, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useMetricSnapshots } from '@/hooks/useMetricSnapshots';
 import Link from 'next/link';
 
 const PLAN_LIMITS_GB: Record<string, number> = {
@@ -13,45 +13,15 @@ const PLAN_LIMITS_GB: Record<string, number> = {
   'None': 1.0,
 };
 
-// Mocking 2.5MB per document across the system
-const AVG_DOC_SIZE_MB = 2.5;
-
 export function CloudStorageMeter() {
   const { profile } = useAuth();
-  const projects = useProjectStore(state => state.projects);
-  const settlementDocuments = useProjectStore(state => state.ledgerItems); // This isn't exactly where settlement docs are, let's check store
+  const { snapshots } = useMetricSnapshots(1);
 
   const plan = profile?.subscriptionPlan ?? 'None';
   const limitGB = PLAN_LIMITS_GB[plan] || 1.0;
   
-  // Aggregate real file sizes across all potential document locations
-  let totalSizeBytes = 0;
-  
-  projects.forEach(p => {
-    // 1. Role Linked Documents (Project Vault)
-    p.roleLinkedDocuments?.forEach(doc => {
-      totalSizeBytes += doc.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-    });
-
-    // 2. Purchase Readiness Documents
-    p.purchaseReadinessChecklist?.forEach(item => {
-      if (item.documentUrl) {
-        totalSizeBytes += item.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-      }
-    });
-
-    // 3. Closing Checklist Documents
-    p.closingChecklist?.forEach(item => {
-      if (item.documentUrl) {
-        totalSizeBytes += item.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-      }
-    });
-
-    // 4. Financial Documents (Settlement Statements)
-    p.settlementDocuments?.forEach(doc => {
-      totalSizeBytes += doc.fileSize || (AVG_DOC_SIZE_MB * 1024 * 1024);
-    });
-  });
+  const latestSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
+  const totalSizeBytes = latestSnapshot ? latestSnapshot.storageUsageBytes : 0;
 
   const usageGB = totalSizeBytes / (1024 * 1024 * 1024);
   const usagePercent = Math.min((usageGB / limitGB) * 100, 100);

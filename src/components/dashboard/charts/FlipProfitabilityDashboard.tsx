@@ -24,9 +24,9 @@ const fmtPct = (v: number) => `${v.toFixed(1)}%`;
 
 type ProfitGrade = 'exceptional' | 'strong' | 'marginal' | 'loss';
 function classifyROI(roi: number): { grade: ProfitGrade; label: string; color: string; bg: string; border: string } {
-  if (roi >= 40) return { grade: 'exceptional', label: 'Exceptional Deal', color: '#10B981', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.2)' };
-  if (roi >= 25) return { grade: 'strong', label: 'Strong Return', color: '#3B82F6', bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.2)' };
-  if (roi > 0) return { grade: 'marginal', label: 'Thin Margins', color: '#F59E0B', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)' };
+  if (roi >= 40) return { grade: 'exceptional', label: 'Exceptional Deal', color: '#595959', bg: 'rgba(89,89,89,0.08)', border: 'rgba(89,89,89,0.2)' };
+  if (roi >= 25) return { grade: 'strong', label: 'Strong Return', color: '#7F7F7F', bg: 'rgba(127,127,127,0.08)', border: 'rgba(127,127,127,0.2)' };
+  if (roi > 0) return { grade: 'marginal', label: 'Thin Margins', color: '#A5A5A5', bg: 'rgba(165,165,165,0.08)', border: 'rgba(165,165,165,0.2)' };
   return { grade: 'loss', label: 'Loss Territory', color: '#EF4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)' };
 }
 
@@ -85,7 +85,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
     // Rehab variance
     const projectedDays = f.estimatedTimelineDays ?? 0;
     const tasks = f.rehabTasks ?? [];
-    const completedTasks = tasks.filter(t => t.status === 'completed');
+    const completedTasks = tasks.filter(t => t.status === 'Complete');
     const actualRehabDays = completedTasks.length > 0 && projectedDays > 0 ? projectedDays : null;
     const rehabVar = actualRehabDays != null ? computeRehabVariance(projectedDays, actualRehabDays) : null;
 
@@ -93,9 +93,9 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
 
     // Cost waterfall
     const costBreakdown = [
-      { name: 'Purchase', value: purchasePrice, color: '#3B82F6' },
-      { name: 'Closing', value: closingCosts, color: '#6366F1' },
-      { name: 'Rehab', value: rehabCost, color: '#F59E0B' },
+      { name: 'Purchase', value: purchasePrice, color: '#7F7F7F' },
+      { name: 'Closing', value: closingCosts, color: '#595959' },
+      { name: 'Rehab', value: rehabCost, color: '#A5A5A5' },
       { name: 'Holding', value: totalHolding, color: '#EF4444' },
       { name: 'Financing', value: financingCosts + loanPoints, color: '#EC4899' },
       { name: 'Selling', value: sellingCosts, color: '#8B5CF6' },
@@ -162,12 +162,12 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       {/* ── KPI Strip: 6 cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { icon: Building, label: 'After Repair Value', value: fmtUSD(analysis.arv), sub: `Purchase: ${fmtUSD(analysis.purchasePrice)}`, color: '#3B82F6' },
-          { icon: Target, label: 'Max Allowable Offer', value: fmtUSD(analysis.mao), sub: `70% rule → ${analysis.purchasePrice <= analysis.mao ? '✅ Under MAO' : '⚠️ Over MAO'}`, color: analysis.purchasePrice <= analysis.mao ? '#10B981' : '#EF4444' },
-          { icon: DollarSign, label: 'Net Profit', value: fmtUSD(analysis.netProfit), sub: `Sale: ${fmtUSD(analysis.salePrice)} − Costs: ${fmtUSD(analysis.totalAllInCost)}`, color: analysis.netProfit >= 0 ? '#10B981' : '#EF4444' },
-          { icon: Percent, label: 'ROI', value: fmtPct(analysis.roi), sub: `2026 target: ≥25% — ${analysis.roi >= 25 ? 'Passing' : 'Below target'}`, color: analysis.roi >= 25 ? '#10B981' : '#F59E0B' },
-          { icon: TrendingUp, label: 'Gross Margin', value: fmtPct(analysis.grossMargin), sub: `(Sale − Cost) ÷ Sale × 100`, color: analysis.grossMargin >= 20 ? '#10B981' : '#F59E0B' },
-          { icon: Clock, label: 'Days on Market', value: analysis.dom != null ? `${analysis.dom} days` : 'Pending', sub: analysis.dom != null ? (analysis.dom <= 90 ? '✅ Under 90-day target' : '⚠️ Over 90-day target') : 'List & sell dates needed', color: analysis.dom != null && analysis.dom <= 90 ? '#10B981' : '#F59E0B' },
+          { icon: Building, label: 'After Repair Value', value: fmtUSD(analysis.arv), sub: `Purchase: ${fmtUSD(analysis.purchasePrice)}`, color: '#7F7F7F' },
+          { icon: Target, label: 'Max Allowable Offer', value: fmtUSD(analysis.mao), sub: `70% rule → ${analysis.purchasePrice <= analysis.mao ? '✅ Under MAO' : '⚠️ Over MAO'}`, color: analysis.purchasePrice <= analysis.mao ? '#595959' : '#EF4444' },
+          { icon: DollarSign, label: 'Net Profit', value: fmtUSD(analysis.netProfit), sub: `Sale: ${fmtUSD(analysis.salePrice)} − Costs: ${fmtUSD(analysis.totalAllInCost)}`, color: analysis.netProfit >= 0 ? '#595959' : '#EF4444' },
+          { icon: Percent, label: 'ROI', value: fmtPct(analysis.roi), sub: `2026 target: ≥25% — ${analysis.roi >= 25 ? 'Passing' : 'Below target'}`, color: analysis.roi >= 25 ? '#595959' : '#A5A5A5' },
+          { icon: TrendingUp, label: 'Gross Margin', value: fmtPct(analysis.grossMargin), sub: `(Sale − Cost) ÷ Sale × 100`, color: analysis.grossMargin >= 20 ? '#595959' : '#A5A5A5' },
+          { icon: Clock, label: 'Days on Market', value: analysis.dom != null ? `${analysis.dom} days` : 'Pending', sub: analysis.dom != null ? (analysis.dom <= 90 ? '✅ Under 90-day target' : '⚠️ Over 90-day target') : 'List & sell dates needed', color: analysis.dom != null && analysis.dom <= 90 ? '#595959' : '#A5A5A5' },
         ].map((kpi, i) => (
           <div key={i} className="rounded-lg p-4 flex flex-col gap-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
             <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
         {/* Bar: Cost Breakdown */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5" style={{ minHeight: 280 }}>
           <div className="flex items-center gap-2 mb-4">
-            <DollarSign className="w-4 h-4" style={{ color: '#3B82F6' }} />
+            <DollarSign className="w-4 h-4" style={{ color: '#7F7F7F' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">All-In Cost Breakdown</h4>
           </div>
           <ResponsiveContainer width="100%" height={220}>
@@ -206,7 +206,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
         {/* Pie: Cost Composition */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5" style={{ minHeight: 280 }}>
           <div className="flex items-center gap-2 mb-4">
-            <Hammer className="w-4 h-4" style={{ color: '#F59E0B' }} />
+            <Hammer className="w-4 h-4" style={{ color: '#A5A5A5' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Cost Composition</h4>
           </div>
           <ResponsiveContainer width="100%" height={220}>
@@ -228,7 +228,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
         {/* MAO at different % of ARV */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4" style={{ color: '#6366F1' }} />
+            <Target className="w-4 h-4" style={{ color: '#595959' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;What If I Adjust the MAO Rule?&rdquo;</h4>
           </div>
           <table className="w-full text-[10px] border-collapse">
@@ -247,13 +247,13 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                     <td className="px-3 py-2 font-bold" style={{ color: s.isCurrent ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>
                       {s.pct}% {s.isCurrent ? '← standard' : ''}
                     </td>
-                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#10B981' : '#EF4444', background: s.isCurrent ? 'rgba(99,102,241,0.06)' : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#EF4444', background: s.isCurrent ? 'rgba(89,89,89,0.06)' : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtUSD(s.mao)}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: diff >= 0 ? '#10B981' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
                       {diff >= 0 ? `+${fmtUSD(diff)} cushion` : `${fmtUSD(diff)} over`}
                     </td>
-                    <td className="px-3 py-2 text-[9px] font-bold uppercase" style={{ color: diff >= 0 ? '#10B981' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 text-[9px] font-bold uppercase" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
                       {diff >= 0 ? '✅ Pass' : '❌ Fail'}
                     </td>
                   </tr>
@@ -266,7 +266,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
         {/* ROI at different sale prices */}
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
+            <TrendingUp className="w-4 h-4" style={{ color: '#595959' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;What If the Sale Price Changes?&rdquo;</h4>
           </div>
           <table className="w-full text-[10px] border-collapse">
@@ -286,7 +286,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                       {s.label} {s.isCurrent ? '← yours' : ''}
                     </td>
                     <td className="px-3 py-2 tabular-nums" style={{ borderBottom: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}>{fmtUSD(s.salePrice)}</td>
-                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: s.netProfit >= 0 ? '#10B981' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(s.netProfit)}</td>
+                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: s.netProfit >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(s.netProfit)}</td>
                     <td className="px-3 py-2 tabular-nums font-bold" style={{ color: cls.color, background: s.isCurrent ? cls.bg : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>{fmtPct(s.roi)}</td>
                   </tr>
                 );
@@ -320,10 +320,10 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                     <tr key={i}>
                       <td className="px-3 py-2 font-bold" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-ui)' }}>{c.address || `Comp ${i + 1}`}</td>
                       <td className="px-3 py-2 tabular-nums" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(c.salePrice ?? 0)}</td>
-                      <td className="px-3 py-2 tabular-nums" style={{ color: '#6366F1', borderBottom: '1px solid var(--border-ui)' }}>{priceSqft > 0 ? `$${priceSqft.toFixed(0)}` : '—'}</td>
+                      <td className="px-3 py-2 tabular-nums" style={{ color: '#595959', borderBottom: '1px solid var(--border-ui)' }}>{priceSqft > 0 ? `$${priceSqft.toFixed(0)}` : '—'}</td>
                       <td className="px-3 py-2" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>{c.beds ?? '—'}/{c.baths ?? '—'}</td>
                       <td className="px-3 py-2" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>{c.saleDate ? new Date(c.saleDate).toLocaleDateString() : '—'}</td>
-                      <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#10B981' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(1)}%</td>
+                      <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(1)}%</td>
                     </tr>
                   );
                 })}
@@ -361,15 +361,15 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       </div>
 
       {/* ── Educational Callout ── */}
-      <div className="px-4 py-3 rounded-lg text-[11px] leading-relaxed" style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)', color: 'var(--text-secondary)' }}>
+      <div className="px-4 py-3 rounded-lg text-[11px] leading-relaxed" style={{ background: 'rgba(127,127,127,0.05)', border: '1px solid rgba(127,127,127,0.15)', color: 'var(--text-secondary)' }}>
         <strong style={{ color: 'var(--text-primary)' }}>2026 Flip Margins:</strong>{' '}
         With narrower profit margins, an ROI ≥ 25% is the baseline for a worthwhile flip. The 70% rule (MAO = ARV × 0.70 − Rehab − Closing) remains the gold standard for offer discipline.
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>DOM Target:</strong>{' '}
         Under 90 days on market controls holding costs. Every extra month burns taxes, insurance, utilities, and loan interest.
         <br />
-        <AlertTriangle className="w-3 h-3 inline mr-1" style={{ color: '#F59E0B' }} />
-        <strong style={{ color: '#F59E0B' }}>Watch your comps.</strong>{' '}
+        <AlertTriangle className="w-3 h-3 inline mr-1" style={{ color: '#A5A5A5' }} />
+        <strong style={{ color: '#A5A5A5' }}>Watch your comps.</strong>{' '}
         Comparable sales of similar renovated homes in the immediate area validate your ARV assumption. Bad ARV = bad everything downstream.
       </div>
     </div>

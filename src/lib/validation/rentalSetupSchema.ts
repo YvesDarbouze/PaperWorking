@@ -42,7 +42,7 @@ export const rentalSetupSchema = z.object({
   ),
 
   // ── Vacancy & OpEx ──
-  vacancyRate: percentageField.default(5),
+  vacancyRate: percentageField.default(7),
   maintenanceReserves: currencyField.default(0),
   propertyManagementFeePercent: percentageField.default(0),
 
@@ -92,28 +92,65 @@ export interface RentalDerivedMetrics {
 }
 
 /**
+ * Additional expense context from saved financials.
+ * When provided, these are included in total OpEx so the NOI
+ * calculation matches the canonical `computeNOIComponents()`
+ * in `reiMetrics.ts`. All values are **monthly** amounts.
+ */
+export interface FinancialContext {
+  monthlyTaxes?: number;
+  monthlyInsurance?: number;
+  monthlyUtilities?: number;
+  monthlyHOA?: number;
+  /** If provided, cap rate uses purchasePrice instead of totalAllInCost */
+  purchasePrice?: number;
+}
+
+/**
  * Computes all derived rental metrics from validated input.
  * This is the **canonical** calculation — UI components must
  * delegate to this function rather than duplicating the math.
  *
  * @param input   - Validated rental setup fields
  * @param totalAllInCost - Sum of purchase + rehab + acquisition costs
+ * @param ctx     - Optional additional expenses from saved financials
  */
 export function computeRentalMetrics(
   input: RentalSetupInput,
-  totalAllInCost: number
+  totalAllInCost: number,
+  ctx?: FinancialContext
 ): RentalDerivedMetrics {
   const vacancyLoss = input.projectedMonthlyRent * (input.vacancyRate / 100);
   const effectiveGrossIncome = input.projectedMonthlyRent - vacancyLoss;
   const propertyManagementFeeValue =
     effectiveGrossIncome * (input.propertyManagementFeePercent / 100);
+
+  // Include all 6 OpEx categories when context is available
+  const monthlyTaxes = ctx?.monthlyTaxes ?? 0;
+  const monthlyInsurance = ctx?.monthlyInsurance ?? 0;
+  const monthlyUtilities = ctx?.monthlyUtilities ?? 0;
+  const monthlyHOA = ctx?.monthlyHOA ?? 0;
+
   const totalOperatingExpenses =
-    input.maintenanceReserves + propertyManagementFeeValue;
+    input.maintenanceReserves +
+    propertyManagementFeeValue +
+    monthlyTaxes +
+    monthlyInsurance +
+    monthlyUtilities +
+    monthlyHOA;
+
   const netOperatingIncome = effectiveGrossIncome - totalOperatingExpenses;
   const netCashFlow = netOperatingIncome - input.longTermMortgagePayment;
 
   const annualNOI = netOperatingIncome * 12;
-  const capRate = totalAllInCost > 0 ? (annualNOI / totalAllInCost) * 100 : 0;
+
+  // Cap rate uses purchasePrice when available (industry standard),
+  // falls back to totalAllInCost for backward compatibility
+  const capRateDenominator =
+    (ctx?.purchasePrice && ctx.purchasePrice > 0)
+      ? ctx.purchasePrice
+      : totalAllInCost;
+  const capRate = capRateDenominator > 0 ? (annualNOI / capRateDenominator) * 100 : 0;
 
   const totalCashInvested =
     input.financingCashInvested > 0

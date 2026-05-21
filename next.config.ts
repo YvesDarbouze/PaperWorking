@@ -65,6 +65,17 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        // Proxy Firebase Auth handler so the OAuth flow stays same-origin
+        // with paperworking.co. This prevents browser storage partitioning
+        // from breaking signInWithPopup/signInWithRedirect flows.
+        source: '/__/auth/:path*',
+        destination: 'https://paperworking-97055.firebaseapp.com/__/auth/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

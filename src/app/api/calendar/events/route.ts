@@ -6,7 +6,7 @@ import { adminAuth, adminDb } from '@/lib/firebase/admin';
 export async function GET() {
   try {
     // 1. Verify user is authenticated
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('__session')?.value;
     
     if (!sessionCookie) {
@@ -39,7 +39,7 @@ export async function GET() {
       
       return new NextResponse(JSON.stringify({ 
         connected: true, 
-        events: events.map((event: Record<string, unknown>) => ({
+        events: events.map((event: any) => ({
           id: event.id,
           summary: event.summary,
           start: (event.start as Record<string, string>)?.dateTime || (event.start as Record<string, string>)?.date,

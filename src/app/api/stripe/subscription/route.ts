@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ currentPeriodEnd: null }, { status: 200 });
     }
 
-    return NextResponse.json({ currentPeriodEnd: subscriptions.data[0].current_period_end }, { status: 200 });
+    return NextResponse.json({ currentPeriodEnd: (subscriptions.data[0] as any).current_period_end }, { status: 200 });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
     console.error('[Stripe/Subscription] Error:', msg);

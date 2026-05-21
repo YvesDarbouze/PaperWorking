@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
+import { adminDb, adminStorage } from '@/lib/firebase/admin';
 import { Project, Organization, MetricSnapshot } from '@/types/schema';
 import { FieldValue } from 'firebase-admin/firestore';
 
@@ -51,26 +51,32 @@ export async function GET(req: NextRequest) {
         let totalActionItems = 0;
         let completedActionItems = 0;
 
+        const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
+
         for (const projectDoc of projectsSnapshot.docs) {
           const project = projectDoc.data() as Project;
 
-          // 1. Documents & Storage
-          if (project.roleLinkedDocuments && Array.isArray(project.roleLinkedDocuments)) {
-            totalDocuments += project.roleLinkedDocuments.length;
-            storageUsageBytes += project.roleLinkedDocuments.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
+          // 1. Storage Usage (Real bytes from Cloud Storage)
+          try {
+            const [files] = await bucket.getFiles({ prefix: `projects/${projectDoc.id}/` });
+            const projectStorageBytes = files.reduce((sum, file) => sum + parseInt(file.metadata.size?.toString() || '0', 10), 0);
+            storageUsageBytes += projectStorageBytes;
+          } catch (storageErr) {
+            console.error(`Failed to fetch storage for project ${projectDoc.id}:`, storageErr);
           }
 
-          // closingRoom documents removed as it doesn't match schema
+          // 2. Total Documents
+          if (project.roleLinkedDocuments && Array.isArray(project.roleLinkedDocuments)) {
+            totalDocuments += project.roleLinkedDocuments.length;
+          }
 
           if (project.purchaseReadinessChecklist && Array.isArray(project.purchaseReadinessChecklist)) {
             const docs = project.purchaseReadinessChecklist.filter(item => item.documentUrl);
             totalDocuments += docs.length;
-            storageUsageBytes += docs.reduce((sum, doc) => sum + (doc.fileSize || 0), 0);
           }
 
           if (project.settlementDocuments && Array.isArray(project.settlementDocuments)) {
             totalDocuments += project.settlementDocuments.length;
-            storageUsageBytes += project.settlementDocuments.reduce((sum: number, doc: any) => sum + (doc.fileSize || 0), 0);
           }
 
           // 2. Pending Signatures (LOIs that are Drafted, Sent, or Viewed)

@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     }
 
     // 1. Verify user is authenticated
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('__session')?.value;
     
     if (!sessionCookie) {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Save, Loader2, Eye, EyeOff, Shield, ShieldCheck, Monitor, Smartphone, MapPin, X, Camera } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { doc, updateDoc, serverTimestamp, collection, query, where, onSnapshot } from 'firebase/firestore';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
 
@@ -110,56 +110,27 @@ export default function ProfileSettingsPage() {
   };
 
   // ─── Active Sessions State ────────────────────────────
-  interface SessionDoc {
-    id: string;
-    device: string;
-    userAgent: string;
-    location: string;
-    isValid: boolean;
-    createdAt: { toMillis?: () => number } | null;
-    lastSeenAt: { toMillis?: () => number } | null;
-  }
+  const [revoking, setRevoking] = useState(false);
+  const [revokeSuccess, setRevokeSuccess] = useState(false);
 
-  const [sessions, setSessions] = useState<SessionDoc[]>([]);
-  const [currentSessionId] = useState<string | null>(() => {
-    if (typeof document !== 'undefined') {
-      const match = document.cookie.match(/(?:^|; )__session_id=([^;]*)/);
-      if (match) return match[1];
-    }
-    return null;
-  });
-
-  useEffect(() => {
-    if (!user?.uid) return;
-    const q = query(collection(db, 'users', user.uid, 'sessions'), where('isValid', '==', true));
-    const unsubscribe = onSnapshot(q, (snap) => {
-      const fetched = snap.docs.map(d => d.data() as SessionDoc);
-      setSessions(fetched.sort((a, b) => {
-        const tA = a.createdAt?.toMillis?.() || 0;
-        const tB = b.createdAt?.toMillis?.() || 0;
-        return tB - tA;
-      }));
-    });
-    return () => unsubscribe();
-  }, [user?.uid]);
-
-  const handleEndSession = async (sessionId: string) => {
-    if (!user?.uid) return;
+  const handleRevokeSessions = async () => {
+    if (!user) return;
+    setRevoking(true);
     try {
-      await updateDoc(doc(db, 'users', user.uid, 'sessions', sessionId), {
-        isValid: false
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/auth/revoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken })
       });
+      if (!res.ok) throw new Error('Failed to revoke sessions');
+      setRevokeSuccess(true);
+      setTimeout(() => setRevokeSuccess(false), 3000);
     } catch (err) {
-      console.error('Failed to end session:', err);
+      console.error(err);
+    } finally {
+      setRevoking(false);
     }
-  };
-
-  const getDeviceIcon = (device: string) => {
-    const lower = device.toLowerCase();
-    if (lower.includes('iphone') || lower.includes('ipad') || lower.includes('android')) {
-      return Smartphone;
-    }
-    return Monitor;
   };
 
   return (
@@ -368,43 +339,29 @@ export default function ProfileSettingsPage() {
       {/* ═══ Card 3: Active Sessions ═══ */}
       <section className="bg-bg-surface border border-border-accent p-6">
         <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
-          Active Sessions
+          Device Sessions
         </h2>
 
-        <div className="space-y-0 divide-y divide-pw-border">
-          {sessions.length === 0 ? (
-            <p className="text-sm text-text-secondary">No active sessions found.</p>
-          ) : sessions.map((session) => {
-            const Icon = getDeviceIcon(session.device || '');
-            const isCurrent = session.id === currentSessionId;
-            return (
-              <div key={session.id} className="flex items-center gap-4 py-3.5">
-                <Icon className="w-5 h-5 text-text-secondary flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-text-primary">
-                    {session.device || 'Unknown Device'}
-                    {isCurrent && (
-                      <span className="ml-2 text-xs text-green-700 bg-green-50 border border-green-200 px-1.5 py-0.5">
-                        This device
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-xs text-text-secondary flex items-center gap-1 mt-0.5">
-                    <MapPin className="w-3 h-3" /> {session.location || 'Unknown Location'}
-                    {session.createdAt && ` • Started: ${new Date(session.createdAt.toMillis?.() || session.createdAt).toLocaleDateString()}`}
-                  </p>
-                </div>
-                {!isCurrent && (
-                  <button
-                    onClick={() => handleEndSession(session.id)}
-                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium transition-colors"
-                  >
-                    <X className="w-3.5 h-3.5" /> End Session
-                  </button>
-                )}
-              </div>
-            );
-          })}
+        <div className="space-y-4">
+          <p className="text-sm text-text-secondary">
+            Sign out of all other active sessions across your devices. This will invalidate all your refresh tokens immediately, but currently active tokens may persist for up to an hour. You will stay signed in on this device.
+          </p>
+          
+          <button
+            onClick={handleRevokeSessions}
+            disabled={revoking}
+            className="inline-flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 text-sm font-medium px-5 py-2.5 hover:bg-red-100 transition disabled:opacity-50"
+          >
+            {revoking ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Revoking…</>
+            ) : (
+              'Revoke All Other Sessions'
+            )}
+          </button>
+          
+          {revokeSuccess && (
+            <p className="text-sm text-green-700 mt-2">All other sessions have been revoked.</p>
+          )}
         </div>
       </section>
     </div>

@@ -156,22 +156,31 @@ async function syncSessionCookie(user: User | null) {
     try {
       // Force-refresh ensures the token sent to createSessionCookie is
       // always fresh. Firebase requires the ID token to be recently issued.
+      console.log('[syncSessionCookie] Starting — force-refreshing token...');
       const idToken = await user.getIdToken(true);
+      console.log('[syncSessionCookie] Token refreshed, posting to /api/auth/session...');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
+      console.log('[syncSessionCookie] Response status:', res.status);
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(`Session API failed: ${res.status} ${errData.error || ''}`);
+        console.error('[syncSessionCookie] API error:', res.status, data);
+        throw new Error(`Session API failed: ${res.status} ${data.error || ''} ${data.detail || ''}`);
       }
+      console.log('[syncSessionCookie] ✅ Success:', data);
+      // Verify the cookie was actually set by checking document.cookie
+      const hasCookie = document.cookie.includes('__sub=') || document.cookie.includes('__session_id=');
+      console.log('[syncSessionCookie] Cookie verification — visible cookies present:', hasCookie);
     } catch (err) {
-      console.error('Failed to sync session cookie:', err);
+      console.error('[syncSessionCookie] Failed:', err);
       throw err; // Propagate the error so auth flows (login/register) can catch it
     }
   } else {
     try {
+      console.log('[syncSessionCookie] Clearing session...');
       await fetch('/api/auth/session', { method: 'DELETE' });
     } catch (err) {
       console.error('Failed to clear session cookie:', err);

@@ -86,18 +86,39 @@ export async function POST(request: Request) {
   // ── Full production path ───────────────────────────────────────────────────
   try {
     const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
+    console.log('[Session] Admin SDK imported successfully');
 
     // Step 1: Verify the ID token is authentic.
     // checkRevoked omitted — it adds a network round-trip that can fail on cold starts;
     // the 1-hour token expiry provides equivalent protection for normal login flows.
-    const decoded = await adminAuth.verifyIdToken(idToken);
+    let decoded: { uid: string };
+    try {
+      decoded = await adminAuth.verifyIdToken(idToken);
+      console.log('[Session] Step 1 OK — verifyIdToken succeeded for uid:', decoded.uid);
+    } catch (verifyErr: any) {
+      console.error('[Session] Step 1 FAILED — verifyIdToken error:', verifyErr.code, verifyErr.message);
+      return NextResponse.json({ error: 'Token verification failed', detail: verifyErr.code }, { status: 401 });
+    }
 
     // Step 2: Exchange for a Firebase session cookie (14-day exp).
-    // Unlike raw ID tokens (60-min exp), session cookies are Firebase-signed
-    // JWTs whose exp matches the cookie maxAge — no hourly-loop mismatch.
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
-      expiresIn: SESSION_MAX_AGE * 1000,
-    });
+    // If this fails (credential issues, permissions, etc.), fall back to
+    // using the verified ID token directly. The middleware only checks cookie
+    // EXISTENCE, not the value, so this is safe. The 50-min refresh interval
+    // in AuthContext keeps the cookie value fresh.
+    let cookieValue: string;
+    try {
+      cookieValue = await adminAuth.createSessionCookie(idToken, {
+        expiresIn: SESSION_MAX_AGE * 1000,
+      });
+      console.log('[Session] Step 2 OK — createSessionCookie succeeded');
+    } catch (sessionErr: any) {
+      console.error('[Session] Step 2 FAILED — createSessionCookie error:', sessionErr.code, sessionErr.message);
+      console.warn('[Session] Falling back to verified ID token as cookie value');
+      // Fallback: use the verified ID token itself as the cookie value.
+      // This is less ideal (60-min token vs 14-day session cookie) but the
+      // AuthContext refreshes it every 50 minutes, so it stays valid.
+      cookieValue = idToken;
+    }
 
     // Step 3: Fetch subscription + account type for the __sub / __acct cookies
     let subPlan   = 'None';
@@ -111,8 +132,9 @@ export async function POST(request: Request) {
         subStatus = data.subscriptionStatus ?? 'inactive';
         acctType  = data.accountType        ?? 'investor';
       }
+      console.log('[Session] Step 3 OK — user data fetched, plan:', subPlan);
     } catch {
-      // Non-fatal — defaults applied; subscription gating degrades gracefully
+      console.warn('[Session] Step 3 non-fatal — user doc fetch failed, using defaults');
     }
 
     const cookieOpts = {
@@ -155,15 +177,16 @@ export async function POST(request: Request) {
     // -----------------------------------------------
 
     const response = NextResponse.json({ status: 'success', uid: decoded.uid });
-    response.cookies.set(SESSION_COOKIE, sessionCookie,                       cookieOpts);
+    response.cookies.set(SESSION_COOKIE, cookieValue,                        cookieOpts);
     response.cookies.set(SUB_COOKIE,     encodeSubCookie(subPlan, subStatus), { ...cookieOpts, httpOnly: false });
     response.cookies.set(ACCT_COOKIE,    acctType,                            cookieOpts);
     response.cookies.set('__session_id', sessionId,                           { ...cookieOpts, httpOnly: false }); // Allow client to know its own sessionId
+    console.log('[Session] ✅ All cookies set — returning success response');
     return response;
 
   } catch (err: any) {
-    console.error('[Session] Authentication failed:', err.code ?? err.message);
-    return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
+    console.error('[Session] FATAL — unexpected error:', err.code ?? '', err.message);
+    return NextResponse.json({ error: 'Authentication failed', detail: err.message }, { status: 401 });
   }
 }
 

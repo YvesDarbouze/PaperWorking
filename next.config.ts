@@ -21,9 +21,11 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // signInWithPopup requires allow-popups so the OAuth popup can
-          // postMessage back to the opener after a cross-origin redirect.
-          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+          // COOP removed — 'same-origin-allow-popups' caused Firebase v12 to
+          // silently fall back from signInWithPopup to signInWithRedirect,
+          // which then fails due to cross-origin storage partitioning.
+          // signInWithPopup uses postMessage (not window.opener), so no
+          // COOP header is needed for secure cross-origin popup auth.
           // Prevent MIME-type sniffing
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           // Clickjacking protection (belt-and-suspenders with CSP frame-ancestors)

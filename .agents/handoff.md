@@ -256,3 +256,25 @@ Does NOT parse or verify JWTs. Just checks `!!request.cookies.get('__session')?.
 ### sessionStorage keys (auth redirect chain)
 - `pw_pending_plan` — JSON of pending plan intent; presence routes post-auth to `/pricing`
 - `pw_auth_redirect` — saved destination path before OAuth round-trip
+
+---
+
+## Agent Session Notes — 2026-05-21 (Antigravity) — Auth Redirect Loop Fix
+
+### ⚠️ DO NOT re-add a client-side redirect to `/login` in `src/app/dashboard/layout.tsx`. That was the PRIMARY cause of the infinite redirect loop. The middleware handles auth gating.
+
+### Commit shipped: `a46911cb`
+
+Three bugs were combining to create an infinite redirect loop after login:
+
+1. **Dashboard layout redundant redirect** (PRIMARY): `layout.tsx` had a `useEffect` → `router.replace('/login')` that raced with Firebase's async `onAuthStateChanged`. Removed entirely — middleware handles it.
+
+2. **Middleware cache poisoning**: Added `x-middleware-cache: no-cache` to all middleware response paths via `withNoCache()` helper. Prevents Next.js from serving stale redirect responses.
+
+3. **authDomain mismatch**: Changed `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` from `paperworking-97055.firebaseapp.com` → `paperworking.co` in `apphosting.yaml` and `.env.local`. Prevents cross-origin issues during OAuth popup flows.
+
+### Key architecture decisions
+- `src/app/dashboard/layout.tsx` shows `<DashboardSkeleton />` while `loading || !user` — it does NOT redirect. The middleware is the single source of truth for auth gating.
+- `src/middleware.ts` stamps `x-middleware-cache: no-cache` on EVERY response to prevent cached redirects.
+- `paperworking.co` is verified as an authorized domain in Firebase Console → Authentication → Settings.
+

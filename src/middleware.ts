@@ -28,6 +28,16 @@ const SESSION_COOKIE = '__session';
 const ACCT_COOKIE    = '__acct';
 const AUTH_PATHS     = new Set(['/login', '/register', '/forgot-password']);
 
+/**
+ * Prevent Next.js from caching middleware responses.
+ * Without this, a stale "redirect to /login" can be served from cache
+ * even after the __session cookie has been set — causing a redirect loop.
+ */
+function withNoCache(response: NextResponse): NextResponse {
+  response.headers.set('x-middleware-cache', 'no-cache');
+  return response;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
@@ -35,7 +45,7 @@ export function middleware(request: NextRequest) {
 
   // ── Guest Portal — always public ──────────────────────
   if (pathname.startsWith('/invest')) {
-    return NextResponse.next();
+    return withNoCache(NextResponse.next());
   }
 
   // ── Vendor Portal ──────────────────────────────────────
@@ -43,12 +53,12 @@ export function middleware(request: NextRequest) {
     if (!hasSession) {
       const url = new URL('/login', request.url);
       url.searchParams.set('redirectTo', pathname);
-      return NextResponse.redirect(url);
+      return withNoCache(NextResponse.redirect(url));
     }
     if (acct === 'investor') {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return withNoCache(NextResponse.redirect(new URL('/dashboard', request.url)));
     }
-    return NextResponse.next();
+    return withNoCache(NextResponse.next());
   }
 
   // ── Dashboard ──────────────────────────────────────────
@@ -56,12 +66,12 @@ export function middleware(request: NextRequest) {
     if (!hasSession) {
       const url = new URL('/login', request.url);
       url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
-      return NextResponse.redirect(url);
+      return withNoCache(NextResponse.redirect(url));
     }
     if (acct === 'vendor') {
-      return NextResponse.redirect(new URL('/vendor-portal', request.url));
+      return withNoCache(NextResponse.redirect(new URL('/vendor-portal', request.url)));
     }
-    return NextResponse.next();
+    return withNoCache(NextResponse.next());
   }
 
   // ── Auth pages — server-redirect only when redirectTo is explicit ──
@@ -71,11 +81,11 @@ export function middleware(request: NextRequest) {
   if (AUTH_PATHS.has(pathname) && hasSession) {
     const redirectTo = request.nextUrl.searchParams.get('redirectTo');
     if (redirectTo && redirectTo.startsWith('/') && !AUTH_PATHS.has(redirectTo)) {
-      return NextResponse.redirect(new URL(redirectTo, request.url));
+      return withNoCache(NextResponse.redirect(new URL(redirectTo, request.url)));
     }
   }
 
-  return NextResponse.next();
+  return withNoCache(NextResponse.next());
 }
 
 export const config = {

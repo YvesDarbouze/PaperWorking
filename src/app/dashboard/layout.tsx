@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
@@ -98,13 +98,12 @@ function DashboardSkeleton() {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, refreshSession } = useAuth();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login');
-    }
-  }, [loading, user, router]);
+  // REMOVED: The client-side redirect to /login was causing an infinite loop.
+  // Firebase's onAuthStateChanged is async — there's a brief window where
+  // loading=false && user=null even though the __session cookie is set.
+  // The middleware already handles redirecting unauthenticated users to /login,
+  // so this layout only needs to show a skeleton while auth hydrates.
 
   // H-5: On every SPA navigation into the dashboard, check whether the ID token
   // is about to expire. onAuthStateChanged only fires on hard browser reloads, so

@@ -74,7 +74,9 @@ service cloud.firestore {
                   && isInProjectOrg(resource.data);
 
       allow create: if request.auth != null
-                    && request.resource.data.ownerUid == request.auth.uid;
+                    && request.resource.data.ownerUid == request.auth.uid
+                    && (getUserDoc().subscriptionPlan in ['Individual', 'Team'])
+                    && (getUserDoc().subscriptionStatus in ['active', 'trialing', 'past_due']);
 
       allow update: if request.auth != null
                     && hasRole(projectId, ['Lead Investor', 'General Contractor'])
@@ -137,11 +139,64 @@ service cloud.firestore {
       }
     }
 
+    // ─── Property Metric Snapshots ─────────────────────────────────────
+    match /propertyMetricSnapshots/{snapshotId} {
+      allow read: if request.auth != null
+                  && resource.data.organizationId == getUserDoc().organizationId;
+      allow create: if request.auth != null
+                    && request.resource.data.organizationId == getUserDoc().organizationId;
+      allow update: if request.auth != null
+                    && resource.data.organizationId == getUserDoc().organizationId
+                    && request.resource.data.organizationId == getUserDoc().organizationId;
+      allow delete: if request.auth != null
+                    && resource.data.organizationId == getUserDoc().organizationId;
+    }
+
     // ─── Waitlist (Landing Page Lead Capture) ──────────────────────────
     // Anyone can add their email; nobody can read/update/delete.
     match /waitlist/{entryId} {
       allow create: if true;
       allow read, update, delete: if false;
+    }
+
+    // ─── Inbox Items ───────────────────────────────────────────────────
+    // Top-level collection. Server (Admin SDK) creates and deletes items.
+    // Recipients can read their own items and update state fields only.
+    match /inboxItems/{itemId} {
+      allow read: if request.auth != null
+                  && resource.data.recipientUid == request.auth.uid;
+
+      // Recipients can update read/archived/actionTaken/readAt only
+      allow update: if request.auth != null
+                    && resource.data.recipientUid == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['read', 'archived', 'actionTaken', 'readAt']);
+
+      // Creates and deletes are server-side only (Admin SDK bypasses rules)
+      allow create, delete: if false;
+    }
+
+    // ─── Notifications ─────────────────────────────────────────────────
+    // Top-level collection. Server (Admin SDK) creates and deletes items.
+    // Recipients can read their own notifications and update state fields only.
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null
+                  && resource.data.recipientId == request.auth.uid;
+
+      // Recipients can update read/archived/readAt only
+      allow update: if request.auth != null
+                    && resource.data.recipientId == request.auth.uid
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                       .hasOnly(['read', 'archived', 'readAt']);
+
+      // Creates and deletes are server-side only (Admin SDK bypasses rules)
+      allow create, delete: if false;
+    }
+
+    // ─── Invitations ──────────────────────────────────────────────────
+    // Server-managed. No client reads/writes (Admin SDK bypasses rules).
+    match /invitations/{invitationId} {
+      allow read, write: if false;
     }
 
     // ─── Audit Log ─────────────────────────────────────────────────────

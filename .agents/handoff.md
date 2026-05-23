@@ -278,3 +278,58 @@ Three bugs were combining to create an infinite redirect loop after login:
 - `src/middleware.ts` stamps `x-middleware-cache: no-cache` on EVERY response to prevent cached redirects.
 - `paperworking.co` is verified as an authorized domain in Firebase Console → Authentication → Settings.
 
+---
+
+## Agent Session Notes — 2026-05-22 (Antigravity) — F3 Time-Series Snapshot Store
+
+### ⚠️ Snapshot Engine & DB Access Rules
+- **Collection name**: `/propertyMetricSnapshots` (root collection in Firestore)
+- **Document ID pattern**: `${projectId}_${period}`
+- **Security Gating**: Enforced in `firestore.rules` via `resource.data.organizationId == getUserDoc().organizationId`.
+- **Admin/Client Separation**:
+  - `snapshotService.ts`: Client-safe functions including pure metric calculations, sanitization (NaN/Infinity to `null`, decimal IRR to percentage), period generation, and Firestore client SDK batch-write logic.
+  - `snapshotService.admin.ts`: Server-only helper `saveActiveSnapshotsForProjectAdmin(project)` using `adminDb` for the daily cron route context.
+- **Workflow hooks**:
+  - Automatically reconstructs history in `deals.ts` (`createProject`, `updateProject`) from the project's acquisition date or creation date (capped at `2020-01-01` or 120 periods max) up to the current date.
+  - Cron route `src/app/api/cron/process-daily-kpis/route.ts` is extended to compute and save active snapshots for the current month, quarter, and year.
+- **Dynamic Portfolio Weighting**:
+  - To avoid data duplication and synchronization lags, portfolio snapshots are computed *on-the-fly* via `usePortfolioMetricSnapshots.ts` by fetching all project-level snapshots and aggregating them using weighted-average formulas (CCIM).
+
+---
+
+## Agent Session Notes — 2026-05-22 (Antigravity) — Hold/Exit Rent & Phase Parameters Propagation (F3.5)
+
+### ⚠️ Propagating strategyType and currentPhase to Metrics Engine
+- **Objective**: Override monthly gross rent with `actualRentalIncome` during the Hold (phase 3) and Exit (phase 4) phases when the strategy is `'Rent'` or `'Buy & Hold'`.
+- **Implementation**:
+  - `computeNOIComponents`, `computeNOI`, and `deriveAllMetrics` in `reiMetrics.ts` now accept optional `strategyType?: string` and `currentPhase?: number`.
+  - All metrics deep dives, dashboards, full screen lifecycle views, and the project creation wizard (`ProjectCreationWizard.tsx`) have been updated to pass these parameters.
+  - Wizard defaults to `formData.strategy` and phase `1`.
+  - All tests and type checks pass.
+
+---
+
+## Agent Session Notes — 2026-05-22 (Antigravity) — Cash Flow Refactoring & Chart Enhancement
+
+### ⚠️ Cash Flow Trend Chart Update
+- **Formula**: Cash Flow = NOI - Annual Debt Service (Calculated using the existing formula engine/schema properties via `computeCashFlow` and `deriveAllMetrics`, reusing D1/Prisma schema inputs for financial values).
+- **Visuals**: Replaced monthly trend `AreaChart` with a `BarChart` containing exactly 13 bars: 12 months + "Annual Total".
+- **Color Shading**: Negative cash flows are colored red (`#EF4444`). Positive cash flows are neutral (`#7F7F7F` for monthly, `#595959` for annual).
+- **Y-Axis & Guardrails**: Y-Axis domain is set to `['auto', 'auto']` to prevent negative values from flooring/clamping to zero.
+- **Verification**: Verified using TypeScript compilation (`npx tsc --noEmit`) and unit tests (`npm test` passes).
+## Agent Session Notes — 2026-05-23 (Antigravity) — CPA Tax Export / Tax Ledger (R2)
+
+### ⚠️ Tax Ledger & Export Implementation
+- **Calculations Engine**: Created [taxService.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/lib/utils/taxService.ts) to calculate period P&L statements.
+  - Correctly separates deductible operating expenses (Schedule E aligned) from capitalized basis items (mortgage principal paydown, rehab costs).
+  - Integrates straight-line depreciation estimates (27.5-year standard on 80% improvement value for rental/buy-and-hold projects).
+  - Handles timezone-safe date boundaries, DST shifts in amortization monthly schedules, and fractional active hold period calculations.
+  - Automatically reconciles realized capital gains/losses on property sale (Form 4797) when the sold date falls within the selected period.
+- **Reports UI Integration**: Refactored [page.tsx](file:///Users/yvesdarbouze/Documents/PaperWorking/src/app/dashboard/reports/page.tsx) with a sub-tab structure.
+  - Surfaces a "Tax Ledger (CPA Export)" sub-tab.
+  - Features scope selector (whole portfolio vs single project) and period selector (Year + Q1-Q4/Annual/Overall).
+  - Highlights a checklist of missing fields labeled "Needed for Tax Export" to prevent erroneous calculations.
+  - Renders a double-column statement ledger grid mapping directly to tax categories, alongside a mandatory CPA audit disclaimer.
+  - Implements formatted CSV exports and custom PDF printing dialogs.
+- **Verification**: Created [taxService.test.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/taxService.test.ts) containing 13 test cases. All tests compile and pass successfully. Full codebase type check verified via `npx tsc --noEmit`.
+

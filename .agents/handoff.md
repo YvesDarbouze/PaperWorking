@@ -333,3 +333,19 @@ Three bugs were combining to create an infinite redirect loop after login:
   - Implements formatted CSV exports and custom PDF printing dialogs.
 - **Verification**: Created [taxService.test.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/taxService.test.ts) containing 13 test cases. All tests compile and pass successfully. Full codebase type check verified via `npx tsc --noEmit`.
 
+---
+
+## Agent Session Notes — 2026-05-23 (Antigravity) — Guided-Interview Wizard & Branching Router (F1)
+
+### ⚠️ Wizard & Branching Implementation
+- **Declarative Questions Schema**: Created [projectWizardSchema.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/lib/utils/projectWizardSchema.ts) housing the questions configuration with custom input types (`address`, `currency`, `single-select`, `file-upload`, etc.) and conditional condition callbacks.
+- **Top-Level Router Forks**:
+  - Gated financing details questions to only show for financed projects (`financingIntent === 'financed'`).
+  - Gated closeDate to only show for forward projections, and acquisitionDate for backdated/existing projects (`isBackdated === 'yes'`).
+  - Gated Phase 4 disposition questions (`soldDate`, `actualSalePrice`) to only show when initializing directly at Phase 4.
+  - Stored currency amounts as cents (`* 100`) on Firestore write for purchase prices and sale prices.
+- **Verification Hook**: Refactored [useProjectFormValidation.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/hooks/useProjectFormValidation.ts) to evaluate active questions dynamically.
+- **Conversational UX UI**: Refactored [ProjectCreationWizard.tsx](file:///Users/yvesdarbouze/Documents/PaperWorking/src/components/project/ProjectCreationWizard.tsx) to render one question at a time with custom components, styled for PaperWorking aesthetics, and displaying a final review screen.
+- **Testing**: Added [projectWizard.test.ts](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/projectWizard.test.ts) covering branching, validation, and nesting helpers. All tests compiled and passed successfully, verified with full type checks (`npx tsc --noEmit`).
+
+

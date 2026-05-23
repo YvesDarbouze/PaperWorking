@@ -1,69 +1,7 @@
-/**
- * src/hooks/useProjectFormValidation.ts
- *
- * Extracted from ProjectCreationWizard to keep the component lean.
- * Returns per-step validity + per-field error messages for the
- * address manual-entry fallback.
- */
+'use client';
 
 import { useMemo } from 'react';
-
-export interface ProjectFormData {
-  propertyName: string;
-  reiStatus: string;
-  address: string;
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-  lat: number | null;
-  lng: number | null;
-  assetClass: string;
-  purchasePrice: string;
-  estimatedARV: string;
-  acquisitionDate: string;
-  closeDate: string;
-  dateOfSale?: string;
-  leverage: string;
-  strategy: string;
-  vision: string;
-  leadEmail: string;
-  partnerEmails: string;
-  // NOI Input fields — mandatory data points for operational performance
-  monthlyGrossRent: string;
-  otherMonthlyIncome: string;
-  vacancyRatePercent: string;
-  monthlyTaxes: string;
-  monthlyInsurance: string;
-  monthlyMaintenance: string;
-  managementFeePercent: string;
-  monthlyUtilities: string;
-  monthlyHOA: string;
-  // Debt service fields — required for Cash Flow = NOI - Debt Service
-  loanAmount: string;
-  loanInterestRate: string;
-  loanTermYears: string;
-  // CoC Return — Total Cash Invested = Down Payment + Closing Costs + Rehab
-  closingCosts: string;
-  // Due Diligence — Acquisition forensics (schema fields that already exist)
-  projectedRehabCost: string;
-  estimatedTimelineDays: string;
-  sellerMotivation: string;
-  emdAmount: string;
-  leadSource: string;
-  // IRR Forecasting — hold period and appreciation for lifecycle projections
-  annualAppreciationPercent: string;
-  projectedHoldYears: string;
-  // MLS fields — populated when user selects a listing from Bridge search
-  mlsListingKey?: string;
-  mlsListingId?: string;
-  mlsListPrice?: number | null;
-  mlsBeds?: number | null;
-  mlsBaths?: number | null;
-  mlsSqft?: number | null;
-  mlsThumbnailUrl?: string | null;
-  mlsStandardStatus?: string | null;
-}
+import { WizardQuestion, getNestedField } from '@/lib/utils/projectWizardSchema';
 
 export interface AddressFieldErrors {
   street?: string;
@@ -72,25 +10,30 @@ export interface AddressFieldErrors {
   zip?: string;
 }
 
-export function useProjectFormValidation(formData: ProjectFormData, stepIndex: number) {
+export function useProjectFormValidation(formData: any, activeQuestion: WizardQuestion) {
+  // Address field validation
   const addressErrors: AddressFieldErrors = useMemo(() => {
     const errors: AddressFieldErrors = {};
-    if (!formData.street.trim()) errors.street = 'Street is required';
-    if (!formData.city.trim())   errors.city   = 'City is required';
-    if (!formData.state.trim())  errors.state  = 'State is required';
-    if (!formData.zip.trim())    errors.zip    = 'ZIP is required';
+    const street = formData.street || '';
+    const city = formData.city || '';
+    const state = formData.state || '';
+    const zip = formData.zip || '';
+
+    if (!street.trim()) errors.street = 'Street is required';
+    if (!city.trim())   errors.city   = 'City is required';
+    if (!state.trim())  errors.state  = 'State is required';
+    if (!zip.trim())    errors.zip    = 'ZIP is required';
     return errors;
   }, [formData.street, formData.city, formData.state, formData.zip]);
 
   const isAddressComplete = Object.keys(addressErrors).length === 0;
 
-  /* ── Acquisition Date validation ─────────────────────
-     Rule 1: Cannot be in the future.
-     Rule 2: Cannot be older than exactly 1 calendar year. */
+  // Acquisition Date validation
   const acquisitionDateError: string | null = useMemo(() => {
-    if (!formData.acquisitionDate) return null; // empty = not yet filled, no error
+    const dateVal = formData.financials?.acquisitionDate || formData.acquisitionDate;
+    if (!dateVal) return null;
 
-    const selected = new Date(formData.acquisitionDate + 'T00:00:00');
+    const selected = new Date(dateVal + 'T00:00:00');
     if (isNaN(selected.getTime())) return 'Invalid date format.';
 
     const today = new Date();
@@ -108,26 +51,55 @@ export function useProjectFormValidation(formData: ProjectFormData, stepIndex: n
     }
 
     return null;
-  }, [formData.acquisitionDate]);
+  }, [formData.financials?.acquisitionDate, formData.acquisitionDate]);
 
-  const isAcquisitionDateValid = !!formData.acquisitionDate && acquisitionDateError === null;
+  // General field validation for the active question
+  const validationError: string | null = useMemo(() => {
+    if (!activeQuestion) return null;
 
-  const isStepValid = useMemo((): boolean => {
-    switch (stepIndex) {
-      case 0: {
-        // Address is satisfied either by an MLS listing selection or manual entry
+    const val = getNestedField(formData, activeQuestion.field);
+
+    // Required check
+    if (activeQuestion.required) {
+      if (activeQuestion.id === 'address') {
         const addressValid = !!formData.mlsListingKey || isAddressComplete;
-        return !!(formData.propertyName.trim() && formData.reiStatus && addressValid);
+        if (!addressValid) return 'Please specify a valid property address.';
+      } else if (val === undefined || val === null || val === '') {
+        return `${activeQuestion.prompt} is required.`;
       }
-      case 1:
-        // Monthly Gross Rent is required so NOI can be computed from day one
-        return !!(formData.purchasePrice && formData.estimatedARV && formData.monthlyGrossRent && isAcquisitionDateValid);
-      case 3:
-        return !!formData.leadEmail.trim();
-      default:
-        return true;
     }
-  }, [stepIndex, formData.propertyName, formData.reiStatus, formData.mlsListingKey, formData.purchasePrice, formData.estimatedARV, formData.monthlyGrossRent, formData.leadEmail, isAddressComplete, isAcquisitionDateValid]);
 
-  return { isStepValid, addressErrors, isAddressComplete, acquisitionDateError, isAcquisitionDateValid };
+    // Type specific checks
+    if (activeQuestion.type === 'currency' || activeQuestion.type === 'number') {
+      if (val !== undefined && val !== null && val !== '') {
+        const num = parseFloat(val);
+        if (isNaN(num)) return 'Value must be a valid number.';
+        if (num < 0) return 'Value cannot be negative.';
+        if (activeQuestion.required && num <= 0) return 'Value must be greater than zero.';
+      }
+    }
+
+    if (activeQuestion.id === 'acquisitionDate' && acquisitionDateError) {
+      return acquisitionDateError;
+    }
+
+    if (activeQuestion.id === 'leadEmail' && val) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(String(val))) {
+        return 'Please enter a valid email address.';
+      }
+    }
+
+    return null;
+  }, [activeQuestion, formData, isAddressComplete, acquisitionDateError]);
+
+  const isValid = validationError === null;
+
+  return {
+    isValid,
+    validationError,
+    addressErrors,
+    isAddressComplete,
+    acquisitionDateError,
+  };
 }

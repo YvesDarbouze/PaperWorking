@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import KPICard from '@/components/dashboard/KPICard';
 import { DollarSign, TrendingUp, FolderOpen } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { db } from '@/lib/firebase/config';
 import { doc, onSnapshot } from 'firebase/firestore';
 
@@ -16,7 +17,8 @@ import { doc, onSnapshot } from 'firebase/firestore';
    ═══════════════════════════════════════════════════════════════ */
 
 export default function KPIGrid() {
-  const { profile } = useAuth();
+  const { profile  } = useAuth();
+  const { activeTenantId } = useTenant();
   const [metrics, setMetrics] = useState({
     totalNetProfit: '—',
     averagePortfolioROI: '—',
@@ -24,11 +26,11 @@ export default function KPIGrid() {
   });
 
   useEffect(() => {
-    if (!profile?.organizationId || profile.organizationId === 'org_placeholder') {
+    if (!activeTenantId || activeTenantId === 'org_placeholder') {
       return;
     }
 
-    const orgRef = doc(db, 'organizations', profile.organizationId);
+    const orgRef = doc(db, 'organizations', activeTenantId);
     
     const unsubscribe = onSnapshot(orgRef, (snap) => {
       if (snap.exists()) {
@@ -47,7 +49,7 @@ export default function KPIGrid() {
     });
 
     return () => unsubscribe();
-  }, [profile?.organizationId]);
+  }, [activeTenantId]);
 
   return (
     <section

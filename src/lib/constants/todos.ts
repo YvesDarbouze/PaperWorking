@@ -7,6 +7,7 @@ export interface Todo {
   actionText: string;
   assignee?: string | null;
   allowedRoles?: string[];
+  needsReassignment?: boolean;
 }
 
 export const DEFAULT_TODOS: Record<number, Todo[]> = {

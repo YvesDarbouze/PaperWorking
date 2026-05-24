@@ -4,14 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
-import { Activity, Clock, FileText, DollarSign, Users, ArrowRight } from 'lucide-react';
-
-/* ═══════════════════════════════════════════════════════
-   ActivityFeed — Recent Team Events (Option A)
-
-   Real-time listener on organizations/{orgId}/activity.
-   Displays the 10 most recent events as a timeline.
-   ═══════════════════════════════════════════════════════ */
+import { useTenant } from '@/context/TenantContext';
 
 export interface ActivityEvent {
   id: string;
@@ -24,33 +17,17 @@ export interface ActivityEvent {
   createdAt: Date;
 }
 
-const EVENT_ICONS: Record<ActivityEvent['type'], React.ReactNode> = {
-  deal_created: <FileText className="w-3.5 h-3.5" />,
-  phase_change: <ArrowRight className="w-3.5 h-3.5" />,
-  ledger_item: <DollarSign className="w-3.5 h-3.5" />,
-  member_joined: <Users className="w-3.5 h-3.5" />,
-  deal_sold: <Activity className="w-3.5 h-3.5" />,
-};
-
-function formatRelativeTime(date: Date): string {
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMin = Math.floor(diffMs / 60000);
-  if (diffMin < 1) return 'Just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
-  const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
-  const diffDays = Math.floor(diffHr / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+function formatTimeOnly(date: Date): string {
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
 export default function ActivityFeed() {
   const { profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const [events, setEvents] = useState<ActivityEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const orgId = profile?.organizationId;
+  const orgId = activeTenantId;
 
   useEffect(() => {
     if (!orgId || orgId === 'org_placeholder') {
@@ -89,67 +66,65 @@ export default function ActivityFeed() {
 
   if (loading) {
     return (
-      <div className="space-y-3">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="flex items-start gap-3 animate-pulse" style={{ animationDelay: `${i * 80}ms` }}>
-            <div className="w-7 h-7 rounded-full bg-[#F2F2F2] flex-shrink-0" />
-            <div className="flex-1 space-y-2">
-              <div className="h-3 w-3/4 rounded bg-[#F2F2F2]" />
-              <div className="h-2 w-1/3 rounded bg-[#F2F2F2]" />
+      <section className="space-y-3">
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
+        <div className="space-y-3 px-1 animate-pulse">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex items-start gap-4">
+              <div className="w-1 h-1 rounded-full bg-white/20 mt-2"></div>
+              <div className="min-w-0 border-l border-white/5 pl-4 pb-2 w-full">
+                <div className="h-3 w-3/4 rounded bg-white/10 mb-2"></div>
+                <div className="h-2 w-1/4 rounded bg-white/5"></div>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
     );
   }
 
   if (events.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center mb-3">
-          <Clock className="w-4 h-4 text-[#A5A5A5]" />
+      <section className="space-y-3">
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
+        <div className="glass-card p-6 rounded-2xl text-center border border-dashed border-white/10">
+          <p className="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-widest">No Activity Yet</p>
         </div>
-        <p className="text-xs font-bold text-[#1A1A1A] uppercase tracking-widest mb-1">
-          No Activity Yet
-        </p>
-        <p className="text-[10px] text-[#7F7F7F] max-w-[200px] leading-relaxed">
-          Team events will appear here as your portfolio grows.
-        </p>
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="space-y-1">
-      {events.map((event, idx) => (
-        <div
-          key={event.id}
-          className="flex items-start gap-3 px-3 py-2.5 rounded-lg hover:bg-[#F2F2F2]/50 transition-colors group"
-        >
-          {/* Avatar / Icon */}
-          <div className="w-7 h-7 rounded-full bg-[#F2F2F2] flex items-center justify-center flex-shrink-0 text-[#A5A5A5] group-hover:bg-[#1A1A1A] group-hover:text-[#FFFFFF] transition-colors">
-            {EVENT_ICONS[event.type] || <Activity className="w-3.5 h-3.5" />}
-          </div>
+    <section className="space-y-3">
+      <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
+      <div className="space-y-3 px-1">
+        {events.map((event, idx) => {
+          // Cycle colors based on index to mimic the design if event type mapping isn't strict
+          const isPrimary = idx % 2 === 0;
+          const dotColor = isPrimary ? 'bg-primary' : 'bg-secondary';
+          const textColor = isPrimary ? 'text-primary' : 'text-secondary';
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-[#1A1A1A] leading-snug">
-              <span className="font-bold">{event.actorName}</span>{' '}
-              <span className="text-[#7F7F7F]">{event.description}</span>
-            </p>
-            {event.projectName && (
-              <p className="text-[10px] text-[#7F7F7F]/60 mt-0.5 truncate">
-                {event.projectName}
-              </p>
-            )}
-          </div>
-
-          {/* Timestamp */}
-          <span className="text-[9px] text-[#A5A5A5] font-medium flex-shrink-0 mt-0.5">
-            {formatRelativeTime(event.createdAt)}
-          </span>
-        </div>
-      ))}
-    </div>
+          return (
+            <div key={event.id} className="flex items-start gap-4 group">
+              <div className={`w-1 h-1 rounded-full ${dotColor} mt-2 group-hover:scale-150 transition-transform`}></div>
+              <div className="min-w-0 border-l border-white/5 pl-4 pb-2 group-last:border-transparent">
+                <p className="font-body-sm text-[13px] text-on-surface leading-snug">
+                  <span className={`${textColor} font-bold`}>{event.actorName}</span>{' '}
+                  <span className="opacity-90">{event.description}</span>{' '}
+                  {event.projectName && (
+                    <>
+                      for <span className="underline underline-offset-2 decoration-white/10 font-medium">{event.projectName}</span>
+                    </>
+                  )}
+                </p>
+                <p className="font-label-sm text-[10px] text-on-surface-variant font-mono uppercase mt-0.5 opacity-60">
+                  {formatTimeOnly(event.createdAt)}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

@@ -103,40 +103,28 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
       const currentUserEmail = profile?.email || user?.email || '';
       if (email !== '' && email !== currentUserEmail) return;
     }
+
+    setIsSaving(true);
+    
+    // Handle specific assignment business logic via server action
+    if (email !== '') {
+      const taskLabel = todos.find(t => t.id === id)?.label || 'A task';
+      try {
+        const { assignTask } = await import('@/actions/team');
+        await assignTask(deal.id, id, email, taskLabel);
+      } catch (err) {
+        console.error('Failed to assign task via server action:', err);
+      }
+    }
     
     let updatedTodos: Todo[] = [];
     setTodos(prev => {
-      updatedTodos = prev.map(t => t.id === id ? { ...t, assignee: email } : t);
+      updatedTodos = prev.map(t => t.id === id ? { ...t, assignee: email, needsReassignment: false } : t);
       return updatedTodos;
     });
     setAssigningId(null);
 
     await saveTodosToBackend(updatedTodos);
-
-    if (user) {
-       try {
-          const idToken = await user.getIdToken();
-          const taskLabel = updatedTodos.find(t => t.id === id)?.label || 'A task';
-          
-          await fetch('/api/emails/send', {
-             method: 'POST',
-             headers: { 'Content-Type': 'application/json' },
-             body: JSON.stringify({
-                idToken,
-                projectId: deal.id,
-                to: [email],
-                subject: `Task Assigned: ${taskLabel}`,
-                html: `<div style="font-family:sans-serif;color:#333;">
-                        <h2 style="margin-top:0;">You've been assigned a task</h2>
-                        <p>You have been assigned to the task <strong>${taskLabel}</strong> for the project <strong>${deal.propertyName || 'Untitled Project'}</strong>.</p>
-                        <p>Please log in to the PaperWorking portal to complete this action.</p>
-                       </div>`
-             })
-          });
-       } catch (err) {
-          console.error('Failed to send assignment notification:', err);
-       }
-    }
   };
 
   return (
@@ -184,7 +172,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
         {todos.map(todo => (
           <div 
             key={todo.id} 
-            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-none border transition-all ${todo.completed ? 'bg-bg-surface/40 border-pw-border' : 'bg-bg-surface border-pw-black'}`}
+            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-none border transition-all ${todo.completed ? 'bg-bg-surface/40 border-pw-border' : (todo.needsReassignment ? 'bg-red-500/10 border-red-500' : 'bg-bg-surface border-pw-black')}`}
           >
             <div className="flex items-start gap-4 mb-3 sm:mb-0">
               <button 
@@ -253,22 +241,40 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
                     ) : plan === 'Team' ? (
                       assigningId === todo.id ? (
                         <div className="flex items-center gap-2">
-                          <select 
-                            value={todo.assignee || ''}
-                            onChange={(e) => handleAssign(todo.id, e.target.value)}
-                            className="pw-input text-xs"
+                          <input 
+                            type="email"
+                            placeholder="Enter email..."
+                            defaultValue={todo.assignee || ''}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                handleAssign(todo.id, e.currentTarget.value);
+                              }
+                            }}
+                            className="pw-input text-xs w-48"
                             disabled={isSaving}
-                          >
-                            <option value="">Unassigned</option>
+                            list={`team-members-${todo.id}`}
+                            id={`assign-input-${todo.id}`}
+                          />
+                          <datalist id={`team-members-${todo.id}`}>
                             {isMeAllowed && (
                               <option value={profile?.email || user?.email || ''}>Me ({profile?.email || user?.email})</option>
                             )}
                             {allowedTeamMembers.map((m) => (
                               <option key={m.email} value={m.email}>
-                                {m.displayName} ({m.email}) - {m.projectRole}
+                                {m.displayName} - {m.projectRole}
                               </option>
                             ))}
-                          </select>
+                          </datalist>
+                          <button 
+                            onClick={() => {
+                              const input = document.getElementById(`assign-input-${todo.id}`) as HTMLInputElement;
+                              if (input) handleAssign(todo.id, input.value);
+                            }}
+                            disabled={isSaving}
+                            className="pw-btn pw-btn--sm pw-btn--primary text-xs font-bold"
+                          >
+                            Save
+                          </button>
                           <button 
                             onClick={() => setAssigningId(null)}
                             className="text-xs text-text-secondary hover:text-text-primary"
@@ -293,8 +299,8 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
               
               {(!canAssign || todo.completed || todo.type !== 'delegate') && todo.assignee && (
                  <div className="mt-2 sm:mt-0 sm:ml-4">
-                    <span className="text-xs bg-bg-surface/50 px-2 py-1 rounded-none border border-pw-border text-text-secondary">
-                      Assigned to: {todo.assignee}
+                    <span className={`text-xs bg-bg-surface/50 px-2 py-1 rounded-none border ${todo.needsReassignment ? 'border-red-500 text-red-500' : 'border-pw-border text-text-secondary'}`}>
+                      Assigned to: {todo.assignee} {todo.needsReassignment ? '(Needs Reassignment)' : ''}
                     </span>
                  </div>
               )}

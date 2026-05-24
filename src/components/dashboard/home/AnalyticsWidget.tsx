@@ -42,29 +42,29 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
     : `$${latestValue.toFixed(2)}`;
 
   return (
-    <div className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-2xl p-6 shadow-sm h-full flex flex-col relative">
+    <div className="glass-card rounded-3xl p-6 h-full flex flex-col relative overflow-visible">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-[#1A1A1A] tracking-tight">Analytics</h2>
-          <p className="text-sm text-[#7F7F7F]">Productivity analytics</p>
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">Analytics</h2>
+          <p className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Productivity analytics</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-[#1A1A1A]">Select Chart</span>
+          <span className="font-label-sm text-label-sm text-on-surface-variant">Select Chart</span>
           <div className="relative">
             <button 
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="flex items-center gap-2 px-4 py-2 border border-[#A5A5A5] rounded-full text-sm font-medium text-[#1A1A1A] hover:bg-[#F2F2F2] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-white/10 bg-white/5 rounded-full font-label-sm text-label-sm text-on-surface hover:bg-white/10 transition-colors"
             >
               {selectedMetric}
-              <ChevronDown className="w-4 h-4 text-[#7F7F7F]" />
+              <ChevronDown className="w-4 h-4 text-on-surface-variant" />
             </button>
             
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#FFFFFF] border border-[#A5A5A5] rounded-xl shadow-lg overflow-hidden z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-surface border border-white/10 rounded-xl shadow-lg overflow-hidden z-20">
                 {metrics.map((m) => (
                   <button
                     key={m}
-                    className="w-full text-left px-4 py-3 text-sm text-[#1A1A1A] hover:bg-[#F2F2F2] transition-colors"
+                    className="w-full text-left px-4 py-3 font-label-sm text-label-sm text-on-surface hover:bg-white/5 transition-colors"
                     onClick={() => {
                       setSelectedMetric(m);
                       setDropdownOpen(false);
@@ -81,29 +81,29 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
 
       <div className="flex-1 min-h-[250px] w-full mt-4">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-            <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} stroke="#7F7F7F" />
-            <YAxis fontSize={10} tickFormatter={(v) => `$${v}`} tickLine={false} axisLine={false} width={60} stroke="#7F7F7F" />
+          <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+            <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} stroke="#A1A1AA" />
+            <YAxis fontSize={10} tickFormatter={(v) => `$${v}`} tickLine={false} axisLine={false} width={60} stroke="#A1A1AA" />
             <Tooltip 
-              contentStyle={{ borderRadius: '8px', border: '1px solid #A5A5A5', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-              itemStyle={{ color: '#1A1A1A' }}
+              contentStyle={{ backgroundColor: '#1E1E1E', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+              itemStyle={{ color: '#FFFFFF' }}
             />
             <Line 
               type="monotone" 
               dataKey="value" 
-              stroke="#595959" 
+              stroke="#00E5FF" 
               strokeWidth={3} 
-              dot={{ r: 4, fill: '#1A1A1A' }} 
-              activeDot={{ r: 6, fill: '#1A1A1A' }}
+              dot={{ r: 4, fill: '#00E5FF', stroke: '#00E5FF' }} 
+              activeDot={{ r: 6, fill: '#00E5FF', stroke: '#FFFFFF', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="absolute bottom-6 right-6 text-right">
-        <p className="text-3xl font-bold text-[#1A1A1A]">{formattedValue}</p>
-        <p className="text-xs text-[#7F7F7F] uppercase tracking-wider font-semibold">Avg. {selectedMetric}</p>
+      <div className="absolute bottom-6 right-6 text-right z-10 pointer-events-none">
+        <p className="font-display-sm text-display-sm text-primary tracking-tight glow-text-cyan">{formattedValue}</p>
+        <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mt-1">Avg. {selectedMetric}</p>
       </div>
     </div>
   );

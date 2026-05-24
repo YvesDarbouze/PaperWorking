@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { MetricSnapshot } from '@/types/schema';
 
 export function useMetricSnapshots(daysLimit: number = 15) {
   const { profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const [snapshots, setSnapshots] = useState<MetricSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const orgId = profile?.organizationId;
+    const orgId = activeTenantId;
 
     if (!orgId || orgId === 'org_placeholder') {
       setLoading(false);
@@ -52,7 +54,7 @@ export function useMetricSnapshots(daysLimit: number = 15) {
     );
 
     return () => unsubscribe();
-  }, [profile?.organizationId, daysLimit]);
+  }, [activeTenantId, daysLimit]);
 
   return { snapshots, loading, error };
 }

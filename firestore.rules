@@ -21,9 +21,19 @@ service cloud.firestore {
       return request.auth.uid in project.members;
     }
 
+    // Check if user has access to a specific tenant/organization
+    function hasTenantAccess(orgId) {
+      let userDoc = getUserDoc();
+      return request.auth != null && (
+        (userDoc.memberships != null && orgId in userDoc.memberships) ||
+        orgId == userDoc.personalOrganizationId ||
+        orgId == userDoc.organizationId
+      );
+    }
+
     // Check if user belongs to the same organization as the project
     function isInProjectOrg(data) {
-      return request.auth != null && data.organizationId == getUserDoc().organizationId;
+      return hasTenantAccess(data.organizationId);
     }
 
     // Role hierarchy checks — returns true if user's project role is in the allowed set
@@ -40,7 +50,7 @@ service cloud.firestore {
     // Only the organization owner can write; members can read their own org.
     match /organizations/{orgId} {
       allow read: if request.auth != null
-                  && getUserDoc().organizationId == orgId;
+                  && hasTenantAccess(orgId);
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid;
       allow update: if request.auth != null
@@ -96,7 +106,7 @@ service cloud.firestore {
         // Lead Investor, General Contractor, and Accountant can create items
         allow create: if request.auth != null
                       && hasRole(projectId, ['Lead Investor', 'General Contractor', 'Accountant'])
-                      && request.resource.data.organizationId == getUserDoc().organizationId
+                      && hasTenantAccess(request.resource.data.organizationId)
                       && !isProjectClosed(projectId);
 
         // Only Lead Investor and Accountant can approve/reject (update)
@@ -142,14 +152,14 @@ service cloud.firestore {
     // ─── Property Metric Snapshots ─────────────────────────────────────
     match /propertyMetricSnapshots/{snapshotId} {
       allow read: if request.auth != null
-                  && resource.data.organizationId == getUserDoc().organizationId;
+                  && hasTenantAccess(resource.data.organizationId);
       allow create: if request.auth != null
-                    && request.resource.data.organizationId == getUserDoc().organizationId;
+                    && hasTenantAccess(request.resource.data.organizationId);
       allow update: if request.auth != null
-                    && resource.data.organizationId == getUserDoc().organizationId
-                    && request.resource.data.organizationId == getUserDoc().organizationId;
+                    && hasTenantAccess(resource.data.organizationId)
+                    && hasTenantAccess(request.resource.data.organizationId);
       allow delete: if request.auth != null
-                    && resource.data.organizationId == getUserDoc().organizationId;
+                    && hasTenantAccess(resource.data.organizationId);
     }
 
     // ─── Waitlist (Landing Page Lead Capture) ──────────────────────────

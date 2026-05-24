@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { UserPlus, Trash2, Shield, Loader2, Mail, CheckCircle2, AlertTriangle, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { UserPlus, Trash2, Shield, Loader2, Mail, CheckCircle2, AlertTriangle, Users, Ban, PlayCircle, Activity } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useUserStore } from '@/store/userStore';
 import { usePermissions } from '@/hooks/usePermissions';
-import type { OrgTeamMember, InternalRole } from '@/types/schema';
+import type { OrgTeamMember, InternalRole, AuditLog, Permission } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
    Team & Role Management Settings
@@ -26,15 +26,37 @@ const ROLE_DESCRIPTION: Record<InternalRole, string> = {
   'Deal Lead': 'Manage assigned deals only; no billing or team admin access.',
 };
 
+const ALL_PERMISSIONS: Permission[] = [
+  'projects.view', 'projects.create', 'projects.edit', 'projects.delete',
+  'tasks.view', 'tasks.create', 'tasks.edit', 'tasks.assign',
+  'reports.view', 'reports.export',
+  'billing.manage', 'team.invite', 'team.manage_members', 'team.manage_roles',
+  'vendors.manage', 'deal_marketplace.post', 'crowdfunding.manage', 'settings.manage'
+];
+
 function MemberRow({
   member,
   onRemove,
   onRoleChange,
+  onSuspend,
+  onScopeChange,
+  onPermissionsChange,
 }: {
   member: OrgTeamMember;
-  onRemove: (id: string) => void;
-  onRoleChange: (id: string, role: InternalRole) => void;
+  onRemove: (id: string) => Promise<void>;
+  onRoleChange: (id: string, role: InternalRole) => Promise<void>;
+  onSuspend: (id: string, suspend: boolean) => Promise<void>;
+  onScopeChange: (id: string, scope: 'tenant' | 'project') => Promise<void>;
+  onPermissionsChange: (id: string, permissions: Permission[]) => Promise<void>;
 }) {
+  const [loading, setLoading] = useState(false);
+  const [showPermissions, setShowPermissions] = useState(false);
+
+  const handleAction = async (action: () => Promise<void>) => {
+    setLoading(true);
+    try { await action(); } catch (e) { alert((e as Error).message); } finally { setLoading(false); }
+  };
+
   const initials = member.displayName
     ? member.displayName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : member.email[0].toUpperCase();
@@ -42,45 +64,107 @@ function MemberRow({
   const statusCls =
     member.status === 'active'  ? 'bg-green-50  text-green-700  border-green-200' :
     member.status === 'invited' ? 'bg-amber-50  text-amber-700  border-amber-200' :
+    member.status === 'suspended' ? 'bg-red-50 text-red-700 border-red-200' :
                                   'bg-bg-primary  text-text-secondary   border-border-accent';
 
   return (
-    <div className="flex items-center gap-4 py-4 border-b border-border-accent last:border-0">
-      {/* Avatar */}
-      <div className="w-9 h-9 rounded-full bg-pw-fg text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-        {initials}
+    <div className="flex flex-col border-b border-border-accent last:border-0">
+      <div className="flex items-center gap-4 py-4">
+        {/* Avatar */}
+        <div className="w-9 h-9 rounded-full bg-pw-fg text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+          {initials}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-text-primary truncate">{member.displayName || member.email}</p>
+          <p className="text-xs text-text-secondary truncate">{member.email}</p>
+        </div>
+
+        {/* Role selector */}
+        <select
+          value={member.internalRole}
+          onChange={(e) => handleAction(() => onRoleChange(member.id, e.target.value as InternalRole))}
+          disabled={loading}
+          className="text-xs bg-bg-primary border border-border-accent px-2 py-1.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-pw-black disabled:opacity-50"
+        >
+          {ROLE_OPTIONS.map((r) => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
+
+        {/* Scope selector */}
+        <select
+          value={member.scope || 'project'}
+          onChange={(e) => handleAction(() => onScopeChange(member.id, e.target.value as 'tenant' | 'project'))}
+          disabled={loading}
+          className="text-xs bg-bg-primary border border-border-accent px-2 py-1.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-pw-black disabled:opacity-50"
+        >
+          <option value="tenant">Tenant Wide</option>
+          <option value="project">Project Scoped</option>
+        </select>
+
+        {/* Permissions toggle */}
+        <button
+          onClick={() => setShowPermissions(!showPermissions)}
+          className="text-xs px-2 py-1.5 border border-border-accent bg-bg-surface hover:bg-bg-primary transition-colors disabled:opacity-50"
+          disabled={loading}
+        >
+          Permissions
+        </button>
+
+        {/* Status badge */}
+        <span className={`hidden sm:inline-flex text-xs font-medium border px-2 py-0.5 ${statusCls}`}>
+          {member.status}
+        </span>
+
+        {/* Suspend */}
+        <button
+          onClick={() => handleAction(() => onSuspend(member.id, member.status !== 'suspended'))}
+          disabled={loading}
+          className="p-1.5 text-text-secondary hover:text-amber-600 transition-colors disabled:opacity-50"
+          aria-label={member.status === 'suspended' ? 'Unsuspend member' : 'Suspend member'}
+        >
+          {member.status === 'suspended' ? <PlayCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+        </button>
+
+        {/* Remove */}
+        <button
+          onClick={() => handleAction(() => onRemove(member.id))}
+          disabled={loading}
+          className="p-1.5 text-text-secondary hover:text-red-600 transition-colors disabled:opacity-50"
+          aria-label="Remove member"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-text-primary truncate">{member.displayName || member.email}</p>
-        <p className="text-xs text-text-secondary truncate">{member.email}</p>
-      </div>
-
-      {/* Role selector */}
-      <select
-        value={member.internalRole}
-        onChange={(e) => onRoleChange(member.id, e.target.value as InternalRole)}
-        className="text-xs bg-bg-primary border border-border-accent px-2 py-1.5 text-text-primary focus:outline-none focus:ring-1 focus:ring-pw-black"
-      >
-        {ROLE_OPTIONS.map((r) => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
-
-      {/* Status badge */}
-      <span className={`hidden sm:inline-flex text-xs font-medium border px-2 py-0.5 ${statusCls}`}>
-        {member.status}
-      </span>
-
-      {/* Remove */}
-      <button
-        onClick={() => onRemove(member.id)}
-        className="p-1.5 text-text-secondary hover:text-red-600 transition-colors"
-        aria-label="Remove member"
-      >
-        <Trash2 className="w-4 h-4" />
-      </button>
+      {showPermissions && (
+        <div className="p-4 bg-bg-primary border-t border-border-accent text-xs">
+          <p className="font-semibold text-text-secondary mb-3 uppercase tracking-widest">Custom Permissions</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {ALL_PERMISSIONS.map((p) => {
+              const isChecked = member.customPermissions?.includes(p) || false;
+              return (
+                <label key={p} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    disabled={loading}
+                    onChange={(e) => {
+                      const current = member.customPermissions || [];
+                      const next = e.target.checked ? [...current, p] : current.filter((c) => c !== p);
+                      handleAction(() => onPermissionsChange(member.id, next));
+                    }}
+                    className="cursor-pointer text-pw-black focus:ring-pw-black"
+                  />
+                  <span className="text-text-primary truncate" title={p}>{p.split('.').join(' > ')}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -88,7 +172,7 @@ function MemberRow({
 export default function TeamManagementPage() {
   const { profile } = useAuth();
   const { isLead } = usePermissions();
-  const { teamMembers, maxSeats, addTeamMember, removeTeamMember, updateMemberRole } = useUserStore();
+  const { teamMembers, maxSeats, addTeamMember, removeTeamMember, updateMemberRole, suspendTeamMember, updateMemberScope, updateMemberPermissions } = useUserStore();
 
   const [email,       setEmail]       = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -96,10 +180,54 @@ export default function TeamManagementPage() {
   const [inviting,    setInviting]    = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [invited,     setInvited]     = useState(false);
+  const [auditLogs,   setAuditLogs]   = useState<AuditLog[]>([]);
+
+  useEffect(() => {
+    if (isLead) {
+      import('@/actions/team').then(({ getAuditLogs }) => {
+        getAuditLogs().then(setAuditLogs).catch(console.error);
+      });
+    }
+  }, [isLead]);
+
+  const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
+
+  const handleRemove = async (id: string) => {
+    const { removeTeamMember: serverRemove } = await import('@/actions/team');
+    await serverRemove(id);
+    removeTeamMember(id);
+  };
+
+  const handleRoleChange = async (id: string, newRole: InternalRole) => {
+    const { updateMemberRoleAndPermissions } = await import('@/actions/team');
+    await updateMemberRoleAndPermissions(id, newRole);
+    updateMemberRole(id, newRole);
+  };
+
+  const handleSuspend = async (id: string, suspend: boolean) => {
+    const { suspendTeamMember: serverSuspend } = await import('@/actions/team');
+    await serverSuspend(id, suspend);
+    suspendTeamMember(id, suspend);
+  };
+
+  const handleScopeChange = async (id: string, scope: 'tenant' | 'project') => {
+    const member = activeMembers.find(m => m.id === id);
+    if (!member) return;
+    const { updateMemberScope: serverUpdateScope } = await import('@/actions/team');
+    await serverUpdateScope(id, scope, member.assignedProjectIds);
+    updateMemberScope(id, scope);
+  };
+
+  const handlePermissionsChange = async (id: string, permissions: Permission[]) => {
+    const member = activeMembers.find(m => m.id === id);
+    if (!member) return;
+    const { updateMemberRoleAndPermissions } = await import('@/actions/team');
+    await updateMemberRoleAndPermissions(id, member.internalRole, permissions);
+    updateMemberPermissions(id, permissions);
+  };
 
   const plan          = profile?.subscriptionPlan ?? 'None';
   const isTeamPlan    = plan === 'Team';
-  const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
   const usedSeats     = activeMembers.length;
   const seatsLeft     = maxSeats - usedSeats;
   const seatPercent   = maxSeats > 0 ? Math.round((usedSeats / maxSeats) * 100) : 0;
@@ -235,8 +363,11 @@ export default function TeamManagementPage() {
               <MemberRow
                 key={m.id}
                 member={m}
-                onRemove={removeTeamMember}
-                onRoleChange={updateMemberRole}
+                onRemove={handleRemove}
+                onRoleChange={handleRoleChange}
+                onSuspend={handleSuspend}
+                onScopeChange={handleScopeChange}
+                onPermissionsChange={handlePermissionsChange}
               />
             ))}
           </div>
@@ -319,6 +450,33 @@ export default function TeamManagementPage() {
             </p>
           )}
         </form>
+      </section>
+
+      {/* ═══ Audit Log ═══ */}
+      <section className="bg-bg-surface border border-border-accent p-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-5 flex items-center gap-2">
+          <Activity className="w-4 h-4" /> Audit Log
+        </h2>
+
+        {auditLogs.length === 0 ? (
+          <p className="text-sm text-text-secondary">No audit logs available.</p>
+        ) : (
+          <div className="space-y-3">
+            {auditLogs.map((log) => (
+              <div key={log.id} className="text-sm flex flex-col sm:flex-row sm:items-start justify-between border-b border-border-accent pb-3 last:border-0 last:pb-0 gap-2">
+                <div>
+                  <p className="font-medium text-text-primary">{log.actorName} <span className="font-normal text-text-secondary">performed</span> {log.action}</p>
+                  <p className="text-xs text-text-secondary mt-0.5">
+                    Target: {log.targetEmail || log.targetUid || 'N/A'} {log.metadata ? `• ${JSON.stringify(log.metadata)}` : ''}
+                  </p>
+                </div>
+                <div className="text-xs text-text-secondary whitespace-nowrap">
+                  {new Date(log.createdAt).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -5,22 +5,24 @@ import { useProjectStore } from '@/store/projectStore';
 import { Project, LedgerItem } from '@/types/schema';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 
 export function useAllDealsSync() {
   const setDeals = useProjectStore((state) => state.setDeals);
   const setLedgerItems = useProjectStore((state) => state.setLedgerItems);
   const currentProject = useProjectStore((state) => state.currentProject);
   const { profile } = useAuth();
+  const { activeTenantId } = useTenant();
 
   // Track counts to trigger notifications
   const prevLedgerCounts = useRef<Record<string, number>>({});
 
   // 1. Sync Deals — guest-scoped to a single invited project; owners get full org portfolio
   useEffect(() => {
-    if (!profile?.organizationId || profile.organizationId === 'org_placeholder') return;
+    if (!activeTenantId || activeTenantId === 'org_placeholder') return;
 
     // Guest tier: user arrived via invite link — scope to their one invited project only
-    if (profile.inviteToken && profile.invitedToProjectId) {
+    if (profile?.inviteToken && profile?.invitedToProjectId) {
       const projectRef = doc(db, 'projects', profile.invitedToProjectId);
       const unsubscribe = onSnapshot(
         projectRef,
@@ -36,7 +38,7 @@ export function useAllDealsSync() {
 
     // Owner / org-team tier: full portfolio scoped to the organization
     const projectsRef = collection(db, 'projects');
-    const q = query(projectsRef, where('organizationId', '==', profile.organizationId));
+    const q = query(projectsRef, where('organizationId', '==', activeTenantId));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const liveDeals: Project[] = [];
@@ -49,7 +51,7 @@ export function useAllDealsSync() {
     });
 
     return () => unsubscribe();
-  }, [setDeals, profile?.organizationId, profile?.inviteToken, profile?.invitedToProjectId]);
+  }, [setDeals, activeTenantId, profile?.inviteToken, profile?.invitedToProjectId]);
 
   // 2. Sync Active Deal's Ledger (Sub-collection)
   useEffect(() => {

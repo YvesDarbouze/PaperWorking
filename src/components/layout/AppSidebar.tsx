@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
+import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher';
 
 /* ═══════════════════════════════════════════════════════
    AppSidebar — Primary Authenticated Navigation Shell
@@ -216,6 +217,8 @@ export default function AppSidebar() {
       >
         <Logo href="/dashboard" size="sm" />
       </div>
+
+      <WorkspaceSwitcher />
 
       {/* ── Primary Nav ── */}
       <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Main menu">

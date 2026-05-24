@@ -23,7 +23,15 @@ export async function GET(
 
   // Ensure the authenticated user belongs to the requested organization
   const userSnap = await adminDb.collection('users').doc(auth.uid).get();
-  if (!userSnap.exists || userSnap.data()?.organizationId !== orgId) {
+  const profile = userSnap.exists ? userSnap.data() : null;
+  let hasAccess = false;
+  if (orgId && profile) {
+    if (profile.personalOrganizationId === orgId) hasAccess = true;
+    else if (profile.organizationId === orgId) hasAccess = true;
+    else if (profile.memberships && profile.memberships[orgId]) hasAccess = true;
+  }
+
+  if (!hasAccess) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 

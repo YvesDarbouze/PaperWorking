@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { usePropertyStore } from '@/store/propertyStore';
 import { PropertyAsset, FinancialTransaction } from '@/types/schema';
 
@@ -19,13 +20,14 @@ import { PropertyAsset, FinancialTransaction } from '@/types/schema';
 
 export function usePortfolioSync() {
   const { profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const setProperties = usePropertyStore((s) => s.setProperties);
   const setTransactions = usePropertyStore((s) => s.setTransactions);
   const setIsLoading = usePropertyStore((s) => s.setIsLoading);
   const setError = usePropertyStore((s) => s.setError);
 
   useEffect(() => {
-    const orgId = profile?.organizationId;
+    const orgId = activeTenantId;
 
     // Guard: hold in loading state until the auth profile resolves with
     // a real org ID. 'org_placeholder' is the transient value written
@@ -120,7 +122,7 @@ export function usePortfolioSync() {
       unsubTransactions();
     };
   }, [
-    profile?.organizationId,
+    activeTenantId,
     setProperties,
     setTransactions,
     setIsLoading,

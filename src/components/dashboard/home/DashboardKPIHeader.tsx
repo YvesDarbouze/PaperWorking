@@ -52,7 +52,7 @@ export default function DashboardKPIHeader() {
       positive: calculateChange('totalDocuments').positive,
       data: snapshots.map(s => ({ value: s.totalDocuments })),
       icon: FileText,
-      color: "#595959"
+      color: "#00E5FF"
     },
     {
       title: "Pending Signatures",
@@ -62,7 +62,7 @@ export default function DashboardKPIHeader() {
       positive: calculateChange('pendingSignatures').pct <= 0, 
       data: snapshots.map(s => ({ value: s.pendingSignatures })),
       icon: PenTool,
-      color: "#595959"
+      color: "#00E5FF"
     },
     {
       title: "Team Efficiency",
@@ -71,7 +71,7 @@ export default function DashboardKPIHeader() {
       positive: calculateChange('teamEfficiencyScore').positive,
       data: snapshots.map(s => ({ value: s.teamEfficiencyScore })),
       icon: Zap,
-      color: "#595959"
+      color: "#00E5FF"
     },
     {
       title: "Storage Usage",
@@ -80,7 +80,7 @@ export default function DashboardKPIHeader() {
       positive: calculateChange('storageUsageBytes').pct <= 0, // Lower storage growth is better
       data: snapshots.map(s => ({ value: s.storageUsageBytes / (1024 * 1024 * 1024) })), // plot in GB
       icon: HardDrive,
-      color: "#A5A5A5"
+      color: "#A1A1AA"
     }
   ];
 
@@ -103,45 +103,53 @@ export default function DashboardKPIHeader() {
           const chartData = kpi.data.length > 0 ? kpi.data : Array.from({ length: 15 }).map(() => ({ value: 0 }));
           
           return (
-            <Card key={i} className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="w-10 h-10 rounded-full bg-[#F2F2F2] flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-[#1A1A1A]" />
+            <div key={i} className="glass-card rounded-3xl overflow-hidden relative border border-white/5">
+              <div className="p-6 relative z-10 flex flex-col h-full">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="w-10 h-10 rounded-full bg-surface-container-high border border-white/10 flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-primary luminous-glow" />
                   </div>
-                  <div className={`flex items-center gap-1 text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full bg-[#F2F2F2] ${kpi.positive ? 'text-[#1A1A1A]' : 'text-[#7F7F7F]'}`}>
-                    {kpi.change.includes('↑') && <ArrowUpRight className="w-3 h-3" />}
-                    {kpi.change.includes('↓') && <ArrowDownRight className="w-3 h-3" />}
+                  <div className={`flex items-center gap-1 font-label-sm text-label-sm px-3 py-1 rounded-full border ${kpi.positive ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-white/5 border-white/10 text-on-surface-variant'}`}>
+                    {kpi.change.includes('↑') && <ArrowUpRight className="w-3.5 h-3.5" />}
+                    {kpi.change.includes('↓') && <ArrowDownRight className="w-3.5 h-3.5" />}
                     {kpi.change.replace(/[↑↓]\s*/, '')}
                   </div>
                 </div>
-                <div className="flex flex-col mb-4">
-                  <h3 className="text-3xl font-normal tracking-tight text-[#1A1A1A]">{kpi.value}</h3>
-                  <p className="text-xs font-medium text-[#7F7F7F] uppercase tracking-wider">{kpi.title}</p>
+                <div className="flex flex-col flex-1">
+                  <h3 className="font-headline-lg text-headline-lg tracking-tight text-on-surface">{kpi.value}</h3>
+                  <p className="font-label-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-1 font-bold">{kpi.title}</p>
                 </div>
-                <div className="h-16 w-full -mx-2 -mb-2 mt-2">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id={`color-${i}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={kpi.color} stopOpacity={0.3} />
-                          <stop offset="95%" stopColor={kpi.color} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Area 
-                        type="monotone" 
-                        dataKey="value" 
-                        stroke={kpi.color} 
-                        fillOpacity={1} 
-                        fill={`url(#color-${i})`} 
-                        strokeWidth={2} 
-                        isAnimationActive={false}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none opacity-50 mix-blend-screen">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id={`color-${i}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={kpi.color} stopOpacity={0.6} />
+                        <stop offset="95%" stopColor={kpi.color} stopOpacity={0} />
+                      </linearGradient>
+                      <filter id={`glow-${i}`}>
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                    </defs>
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke={kpi.color} 
+                      fillOpacity={1} 
+                      fill={`url(#color-${i})`} 
+                      strokeWidth={2} 
+                      isAnimationActive={false}
+                      filter={`url(#glow-${i})`}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           );
         })}
       </div>

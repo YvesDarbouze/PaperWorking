@@ -53,7 +53,8 @@ const NOTIFICATION_TYPE_META: Record<
   TEAM_INVITE: { label: 'Team Invite', Icon: PlusCircle, color: '#1a73e8', bgColor: '#e8f0fe' },
   OVER_IMPROVEMENT_ALERT: { label: 'Over-Improvement', Icon: AlertTriangle, color: '#dc2626', bgColor: '#fef2f2' },
   BURN_RATE_WARNING: { label: 'Burn Rate Alert', Icon: Flame, color: '#dc2626', bgColor: '#fef2f2' },
-  VENDOR_LEAD: { label: 'New Lead', Icon: Bell, color: '#1a73e8', bgColor: '#e8f0fe' }
+  VENDOR_LEAD: { label: 'New Lead', Icon: Bell, color: '#1a73e8', bgColor: '#e8f0fe' },
+  TEAM_INVITE_REMINDER: { label: 'Invite Reminder', Icon: Bell, color: '#1a73e8', bgColor: '#e8f0fe' }
 };
 
 function formatRelativeTime(date: Date): string {

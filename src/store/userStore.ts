@@ -27,9 +27,12 @@ interface UserState {
   setAccountTier: (tier: 'Individual' | 'Team') => void;
   addTeamMember: (member: OrgTeamMember) => void;
   removeTeamMember: (memberId: string) => void;
+  suspendTeamMember: (memberId: string, suspend: boolean) => void;
   updateMemberRole: (memberId: string, role: InternalRole) => void;
   assignMemberToDeal: (memberId: string, projectId: string) => void;
   unassignMemberFromDeal: (memberId: string, projectId: string) => void;
+  updateMemberScope: (memberId: string, scope: 'tenant' | 'project') => void;
+  updateMemberPermissions: (memberId: string, permissions: import('@/types/schema').Permission[]) => void;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
@@ -67,6 +70,15 @@ export const useUserStore = create<UserState>((set, get) => ({
     });
   },
 
+  suspendTeamMember: (memberId, suspend) => {
+    const { teamMembers } = get();
+    set({
+      teamMembers: teamMembers.map(m =>
+        m.id === memberId ? { ...m, status: suspend ? 'suspended' : 'active' } : m
+      ),
+    });
+  },
+
   updateMemberRole: (memberId, role) => {
     const { teamMembers } = get();
     set({
@@ -94,6 +106,24 @@ export const useUserStore = create<UserState>((set, get) => ({
         m.id === memberId
           ? { ...m, assignedProjectIds: m.assignedProjectIds.filter(id => id !== projectId) }
           : m
+      ),
+    });
+  },
+
+  updateMemberScope: (memberId, scope) => {
+    const { teamMembers } = get();
+    set({
+      teamMembers: teamMembers.map(m =>
+        m.id === memberId ? { ...m, scope } : m
+      ),
+    });
+  },
+
+  updateMemberPermissions: (memberId, permissions) => {
+    const { teamMembers } = get();
+    set({
+      teamMembers: teamMembers.map(m =>
+        m.id === memberId ? { ...m, customPermissions: permissions } : m
       ),
     });
   },

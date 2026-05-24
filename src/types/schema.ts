@@ -98,7 +98,38 @@ export interface TransactionLedger {
   updatedAt?: Date;
 }
 
-// 1. Roles Definition
+// 1. Roles & Permissions Definition
+// 1.0 Atomic Permissions Catalog
+export type Permission = 
+  | 'projects.view'
+  | 'projects.create'
+  | 'projects.edit'
+  | 'projects.delete'
+  | 'tasks.view'
+  | 'tasks.create'
+  | 'tasks.edit'
+  | 'tasks.assign'
+  | 'reports.view'
+  | 'reports.export'
+  | 'billing.manage'
+  | 'team.invite'
+  | 'team.manage_members'
+  | 'team.manage_roles'
+  | 'vendors.manage'
+  | 'deal_marketplace.post'
+  | 'crowdfunding.manage'
+  | 'settings.manage';
+
+// 1.0.1 Custom Role Schema (Stored in /organizations/{orgId}/roles/{roleId})
+export interface CustomRole {
+  id: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export type Role =
   | 'Lead Investor'      // Admin (Read/Write all)
   | 'Platform Admin'     // PaperWorking Site-wide Admin
@@ -145,9 +176,11 @@ export interface OrgTeamMember {
   email: string;
   displayName: string;
   internalRole: InternalRole;
+  customPermissions?: Permission[];
+  scope?: 'tenant' | 'project';
   assignedProjectIds: string[]; // Projects this member leads (Project Lead only)
   invitedAt: Date;
-  status: 'active' | 'invited' | 'removed';
+  status: 'active' | 'invited' | 'removed' | 'suspended';
 }
 
 // 1.5. Organization Schema
@@ -176,8 +209,11 @@ export interface ApplicationUser {
   uid: string;
   email: string;
   displayName: string;
-  organizationId: string; // REQUIRED: Enforces strict data containment to the Organization
-  orgRole: OrgRole; // Account-holder self-designation
+  personalOrganizationId: string; // The user's default "Me" workspace
+  organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
+  memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
+  orgRole: OrgRole | string; // Account-holder self-designation or Custom Role ID
+  orgPermissions?: Permission[]; // RBAC: Denormalized org-level permissions for rule enforcement
   subscriptionPlan: 'None' | 'Individual' | 'Team' | 'Vendor Network';
   subscriptionStatus: 'inactive' | 'active' | 'past_due' | 'canceled' | 'trialing' | 'incomplete' | 'paused';
   accountType?: 'investor' | 'vendor';
@@ -248,6 +284,38 @@ export interface CrowdfundInvitation {
   status: 'pending' | 'accepted' | 'expired' | 'declined';
   createdAt: Date;
   expiresAt: Date;
+}
+
+// 2.6.4 Audit Log
+export interface AuditLog {
+  id: string;
+  organizationId: string;
+  actorUid: string;
+  actorName: string;
+  action: 'MEMBER_INVITED' | 'MEMBER_ROLE_CHANGED' | 'MEMBER_SUSPENDED' | 'MEMBER_REMOVED' | 'MEMBER_PERMISSIONS_CHANGED' | 'PROJECT_SCOPE_CHANGED';
+  targetUid?: string;
+  targetEmail?: string;
+  metadata: Record<string, any>;
+  createdAt: Date;
+}
+
+// 2.6.5 Team Invitation
+export interface TeamInvitation {
+  id: string;
+  token: string; // Unique token for the invite link
+  organizationId: string;
+  organizationName: string;
+  email: string;
+  role: InternalRole;
+  status: 'pending' | 'accepted' | 'expired' | 'revoked';
+  invitedByUid: string;
+  invitedByName: string;
+  createdAt: Date;
+  expiresAt: Date;
+  day3ReminderSent?: boolean;
+  day6ReminderSent?: boolean;
+  invitedToTaskId?: string;
+  invitedToProjectId?: string;
 }
 
 // ── Find & Fund Module Types ──────────────────────────
@@ -526,7 +594,8 @@ export interface Project {
 
 export interface ProjectMember {
   uid: string;
-  role: Role;
+  role: Role | string;
+  projectPermissions?: Permission[]; // RBAC: Denormalized project-level permissions
   joinedAt: Date;
 }
 

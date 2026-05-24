@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import type { MessageType } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
@@ -57,13 +58,14 @@ interface UseInboxThreadsReturn {
 }
 
 export function useInboxThreads(): UseInboxThreadsReturn {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
+  const { activeTenantId } = useTenant();
   const [threads, setThreads] = useState<InboxThread[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const uid = user?.uid;
-  const organizationId = profile?.organizationId;
+  const organizationId = activeTenantId;
 
   useEffect(() => {
     if (!uid || !organizationId) {

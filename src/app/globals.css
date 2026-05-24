@@ -8,82 +8,67 @@
    ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── Antigravity Grayscale Palette ─── */
-  --pw-bg:        #f2f2f2; /* Sourcing - Lightest */
-  --pw-surface:   #ffffff;
-  --pw-border:    #CCCCCC; /* Subtle border — palette step 0 */
-  --pw-muted:     #a5a5a5; /* Rehab */
-  --pw-subtle:    #7f7f7f; /* Listed */
-  --pw-fg:        #595959; /* Closed - Darkest foreground */
-  --pw-black:     #0d0d0d; /* Near-black — Antigravity primary button & headings */
-  --pw-white:     #ffffff;
-  --pw-accent:    #1a73e8; /* Google blue — status labels, links */
-
-  --phase-sourcing: #f2f2f2;
-  --phase-contract: #cccccc;
-  --phase-rehab:    #a5a5a5;
-  --phase-listed:   #7f7f7f;
-  --phase-closed:   #595959;
-  --phase-findandfund: #CCCCCC;         /* Grayscale palette step 0 */
-  --phase-findandfund-accent: #595959;  /* Grayscale palette step 6 */
-
-  --spacing-unit: 8px; /* Increased for 'Air' aesthetic */
+  /* ─── PaperWorking Luminous Glass Palette ─── */
+  --pw-bg: #f9f9f9;
+  --pw-primary: #1B405B;
+  --pw-ocean: #002A43;
+  --pw-info: #163144;
+  --pw-minty: #D3E7DF;
+  --pw-forest: #0D2A26;
+  --pw-surface: #f9f9f9;
+  --pw-border: rgba(255, 255, 255, 0.6);
+  --pw-glass-bg: rgba(255, 255, 255, 0.4);
+  --pw-white: #ffffff;
+  --pw-black: #1a1c1c;
+  --pw-muted: #72777e;
+  
+  --spacing-unit: 4px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --pw-bg:        #121212;
-    --pw-surface:   #1e1e1e;
-    --pw-border:    #333333;
-    --pw-muted:     #71717a;
-    --pw-subtle:    #a1a1aa;
-    --pw-fg:        #f4f4f5;
-    --pw-black:     #ffffff;
-    --pw-white:     #121212;
-    --pw-accent:    #ffffff;
+    --pw-bg: #121212;
+    --pw-primary: #a7caeb;
+    --pw-ocean: #cce5ff;
+    --pw-info: #89accb;
+    --pw-minty: #b7cbc3;
+    --pw-forest: #d3e7df;
+    --pw-surface: #1a1c1c;
+    --pw-border: rgba(255, 255, 255, 0.15);
+    --pw-glass-bg: rgba(0, 0, 0, 0.4);
+    --pw-white: #121212;
+    --pw-black: #ffffff;
+    --pw-muted: #c2c7ce;
   }
 }
 
 /* ─── Tailwind v4 @theme ─── */
 @theme {
-  --color-pw-black:   var(--pw-black);
-  --color-pw-white:   var(--pw-white);
-  --color-pw-bg:      var(--pw-bg);
+  --color-pw-primary: var(--pw-primary);
+  --color-pw-ocean: var(--pw-ocean);
+  --color-pw-info: var(--pw-info);
+  --color-pw-minty: var(--pw-minty);
+  --color-pw-forest: var(--pw-forest);
+  --color-pw-black: var(--pw-black);
+  --color-pw-white: var(--pw-white);
+  --color-pw-bg: var(--pw-bg);
   --color-pw-surface: var(--pw-surface);
-  --color-pw-border:  var(--pw-border);
-  --color-pw-muted:   var(--pw-muted);
-  --color-pw-subtle:  var(--pw-subtle);
-  --color-pw-fg:      var(--pw-fg);
-  --color-pw-accent:  var(--pw-accent);
+  --color-pw-border: var(--pw-border);
+  --color-pw-glass-bg: var(--pw-glass-bg);
+  --color-pw-muted: var(--pw-muted);
 
-  /* ─── Semantic Brand Palette ─── */
   --color-bg-primary: var(--pw-bg);
-  --color-bg-transactional: var(--phase-contract);
-  --color-bg-surface: var(--pw-surface);
-  --color-text-primary: var(--pw-fg);
-  --color-text-secondary: var(--pw-subtle);
-  --color-border-accent: var(--pw-muted);
-
-  /* ─── Deal Lifecycle Phases ─── */
-  --color-phase-sourcing: #f2f2f2;
-  --color-phase-contract: #cccccc;
-  --color-phase-rehab:    #a5a5a5;
-  --color-phase-listed:   #7f7f7f;
-  --color-phase-closed:   #595959;
-  --color-phase-findandfund: #CCCCCC;
-  --color-phase-findandfund-accent: #595959;
+  --color-text-primary: var(--pw-black);
+  --color-text-secondary: var(--pw-muted);
 
   /* ─── Font System — Hanken Grotesk ─── */
   --font-sans: "Hanken Grotesk", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
-
-  /* ─── Antigravity Radius — Soft & Large ─── */
-  --radius-sm:   12px;
-  --radius-md:   24px;
-  --radius-lg:   40px;
-  --radius-xl:   60px;
-  --radius-2xl:  80px;
-  --radius-3xl:  100px;
+  
+  /* ─── Luminous Glass Radius ─── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 }
 
@@ -101,6 +86,16 @@
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.5;
     font-weight: 400;
+  }
+
+  .mesh-bg {
+    background-color: var(--pw-bg);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(211, 231, 223, 0.4) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(27, 64, 91, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(0, 42, 67, 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, rgba(211, 231, 223, 0.4) 0px, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
@@ -148,14 +143,13 @@ html {
    Antigravity Utility Classes
    ═══════════════════════════════════════════════════════ */
 
-/* ── Antigravity Primary Pill Button ── */
-/* Black pill, white text — matches "Download for Apple Silicon", "Download" on antigravity.google */
+/* ── Luminous Primary Pill Button ── */
 .ag-button {
-  background: #0d0d0d;
-  color: #ffffff;
+  background: var(--pw-info);
+  color: var(--pw-white);
   padding: 0.75rem 1.75rem;
   border-radius: var(--radius-full);
-  font-size: 0.9375rem;   /* 15px */
+  font-size: 0.9375rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.4;
@@ -165,45 +159,52 @@ html {
   gap: 0.5rem;
   justify-content: center;
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 4px 10px rgba(22,49,68,0.2);
+  transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .ag-button:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
+  background: #1c3c54;
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.25), 0 6px 14px rgba(22,49,68,0.25);
 }
 
 .ag-button:active {
   transform: scale(0.97);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.1), 0 2px 5px rgba(22,49,68,0.2);
 }
 
-/* ── Antigravity Secondary Pill Button ── */
-/* Light gray pill, dark text — matches "Download for Intel", "Get plan", "Explore use cases" */
+/* ── Luminous Secondary Pill Button ── */
 .ag-button-secondary {
-  background: #CCCCCC;
+  background: var(--pw-glass-bg);
   color: var(--pw-black);
-  border: 1px solid transparent;
+  border: 1px solid var(--pw-border);
+  backdrop-filter: blur(10px);
 }
 
 .ag-button-secondary:hover {
-  background: #B9B9B9;
+  background: rgba(255, 255, 255, 0.6);
+  border-color: #fff;
 }
 
-/* Soft Card */
+/* Glass Card */
 .ag-card {
-  background: var(--pw-surface);
+  background: var(--pw-glass-bg);
+  border: 1px solid var(--pw-border);
   border-radius: var(--radius-lg);
-  padding: 2.5rem;
+  padding: 2rem;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.05);
   transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 /* Technical Label (Refined) */
 .ag-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--pw-muted);
+  letter-spacing: 0.05em;
+  color: var(--pw-primary);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -237,33 +238,16 @@ html {
    ═══════════════════════════════════════════════════════ */
 
 .dashboard-context {
-  /* ─── Canonical Dashboard Palette ─── */
-  --bg-canvas:      #F2F2F2;
-  --bg-surface:     #FFFFFF;
-  --text-primary:   #595959;
-  --text-secondary: #7F7F7F;
-  --border-ui:      #A5A5A5;
-
-  /* ─── Dashboard Radius (FinTech-Sharp) ─── */
-  --radius-sm:   0px;
-  --radius-md:   0px;
-  --radius-lg:   0px;
-  --radius-xl:   0px;
-  --radius-2xl:  0px;
-  --radius-3xl:  0px;
+  /* Inherit colors from Luminous Glass root */
 }
 
 .dashboard-context .ag-card {
   border-radius: var(--radius-lg);
-  padding: 3rem;
+  padding: 2rem;
 }
 
 /* ═══════════════════════════════════════════════════════
-   Dashboard Surface Enforcement
-   
-   All elevated UI elements (cards, modals, dialogs, 
-   dropdowns, form inputs, popovers) default to 
-   --bg-surface (#FFFFFF) within the dashboard context.
+   Dashboard Glass Surface Enforcement
    ═══════════════════════════════════════════════════════ */
 
 .dashboard-context [data-slot="card"],
@@ -272,22 +256,35 @@ html {
 .dashboard-context [data-slot="popover"],
 .dashboard-context .ag-card,
 .dashboard-context section {
-  background-color: var(--bg-surface);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+  background: var(--pw-glass-bg);
+  border: 1px solid var(--pw-border);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
   border-radius: var(--radius-lg);
 }
 
 .dashboard-context input,
 .dashboard-context textarea,
 .dashboard-context select {
-  background-color: var(--bg-surface);
-  color: var(--text-primary);
-  border-color: var(--border-ui);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--pw-black);
+  border: 1px solid transparent;
+  border-bottom: 1px solid var(--pw-border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.dashboard-context input:focus,
+.dashboard-context textarea:focus,
+.dashboard-context select:focus {
+  border-bottom-color: var(--pw-primary);
+  background: rgba(255, 255, 255, 0.8);
+  outline: none;
 }
 
 .dashboard-context input::placeholder,
 .dashboard-context textarea::placeholder {
-  color: var(--text-secondary);
+  color: var(--pw-muted);
 }
 
 /* Hide scrollbar while keeping scroll functionality */

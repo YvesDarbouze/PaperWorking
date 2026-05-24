@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { PropertyMetricSnapshot } from '@/types/schema';
 
 export interface PortfolioMetricSnapshot {
@@ -46,12 +47,13 @@ export function usePortfolioMetricSnapshots(
   periodType?: 'monthly' | 'quarterly' | 'annual'
 ) {
   const { profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const [snapshots, setSnapshots] = useState<PortfolioMetricSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const orgId = profile?.organizationId;
+    const orgId = activeTenantId;
     if (!orgId || orgId === 'org_placeholder') {
       setSnapshots([]);
       setLoading(false);
@@ -321,7 +323,7 @@ export function usePortfolioMetricSnapshots(
     );
 
     return () => unsubscribe();
-  }, [profile?.organizationId, periodType]);
+  }, [activeTenantId, periodType]);
 
   return { snapshots, loading, error };
 }

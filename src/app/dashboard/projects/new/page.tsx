@@ -3,6 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { usePaywall } from '@/hooks/usePaywall';
 import ProjectCreationWizard from '@/components/project/ProjectCreationWizard';
 
@@ -20,7 +21,8 @@ import ProjectCreationWizard from '@/components/project/ProjectCreationWizard';
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const { profile } = useAuth();
+  const { profile  } = useAuth();
+  const { activeTenantId } = useTenant();
   const { isPaid } = usePaywall();
 
   /* ── Vendor guard: vendor accounts cannot create investor projects ── */
@@ -38,7 +40,7 @@ export default function NewProjectPage() {
   }, [isPaid, router]);
 
   /* ── Org-readiness guard: wait for org hydration ── */
-  const orgId = profile?.organizationId;
+  const orgId = activeTenantId;
   const orgReady = orgId && orgId !== 'org_placeholder';
 
   if (!isPaid) return null;

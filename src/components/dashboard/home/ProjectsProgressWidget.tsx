@@ -26,43 +26,43 @@ export default function ProjectsProgressWidget({ projects }: ProjectsProgressWid
   });
 
   return (
-    <div className="bg-[#F2F2F2] border-l border-t border-[#A5A5A5] p-6 h-full flex flex-col">
-      <div className="flex items-end justify-between mb-6">
+    <div className="glass-card rounded-3xl p-6 h-full flex flex-col">
+      <div className="flex items-end justify-between mb-8">
         <div>
-          <h2 className="text-xl font-semibold text-[#1A1A1A] tracking-tight mb-1">Projects</h2>
-          <p className="text-xs text-[#7F7F7F] font-bold uppercase tracking-wider">Assigned / To Me</p>
+          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1">Projects</h2>
+          <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest opacity-80">Assigned / To Me</p>
         </div>
-        <p className="text-xs text-[#1A1A1A] font-bold uppercase tracking-wider">completion %</p>
+        <p className="font-label-sm text-label-sm text-on-surface uppercase tracking-widest">Completion</p>
       </div>
 
-      <div className="flex-1 flex flex-col justify-start gap-4">
+      <div className="flex-1 flex flex-col justify-start gap-6">
         {displayProjects.length > 0 ? (
           displayProjects.map((project) => (
             <div key={project.id} className="flex items-center justify-between group">
-              <p className="text-sm font-bold text-[#1A1A1A] w-32 line-clamp-1">{project.name}</p>
+              <p className="font-label-md text-label-md text-on-surface w-32 line-clamp-1">{project.name}</p>
               
               <div className="flex-1 px-4">
-                <div className="h-2 w-full bg-[#CCCCCC] rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-[#1A1A1A] rounded-full" 
+                    className="h-full bg-primary rounded-full luminous-teal transition-all duration-500 ease-out" 
                     style={{ width: `${project.completion}%` }}
                   />
                 </div>
               </div>
 
               <div className="flex items-center gap-3 w-16 justify-end">
-                <span className="text-sm font-medium text-[#595959]">{project.completion}%</span>
+                <span className="font-label-md text-label-md text-on-surface-variant">{project.completion}%</span>
                 {project.isUp ? (
-                  <ArrowUpCircle className="w-4 h-4 text-[#1A1A1A]" />
+                  <ArrowUpCircle className="w-4 h-4 text-primary" />
                 ) : (
-                  <ArrowDownCircle className="w-4 h-4 text-[#7F7F7F]" />
+                  <ArrowDownCircle className="w-4 h-4 text-on-surface-variant" />
                 )}
               </div>
             </div>
           ))
         ) : (
-          <div className="h-full flex items-center justify-center border border-dashed border-[#A5A5A5] rounded-xl p-6 text-center">
-            <p className="text-[#595959] font-medium">No active projects yet</p>
+          <div className="h-full flex items-center justify-center border border-dashed border-white/10 rounded-2xl p-6 text-center">
+            <p className="font-body-sm text-body-sm text-on-surface-variant">No active projects yet</p>
           </div>
         )}
       </div>

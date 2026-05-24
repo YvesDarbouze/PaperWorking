@@ -17,7 +17,7 @@ interface UnifiedMember {
   displayName: string;
   role: string;
   type: UnifiedMemberType;
-  status: 'active' | 'invited' | 'removed';
+  status: 'active' | 'invited' | 'removed' | 'suspended';
   assignedProjects: string[]; // Project IDs for external vendors, or managed projects for Deal Leads
 }
 

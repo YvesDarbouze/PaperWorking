@@ -43,7 +43,15 @@ export async function POST(request: NextRequest) {
     }
     const dealData = dealSnap.data();
 
-    if (dealData?.organizationId !== profile?.organizationId) {
+    const targetOrgId = dealData?.organizationId;
+    let hasAccess = false;
+    if (targetOrgId) {
+      if (profile?.personalOrganizationId === targetOrgId) hasAccess = true;
+      else if (profile?.organizationId === targetOrgId) hasAccess = true;
+      else if (profile?.memberships && profile.memberships[targetOrgId]) hasAccess = true;
+    }
+
+    if (!hasAccess) {
       return NextResponse.json({ error: 'Access denied for this project.' }, { status: 403 });
     }
 

@@ -31,8 +31,16 @@ export async function POST(request: NextRequest) {
     }
     const profile = userSnap.data() as UserProfile;
 
+    const targetOrgId = dealData?.organizationId;
+    let hasAccess = false;
+    if (targetOrgId) {
+      if (profile?.personalOrganizationId === targetOrgId) hasAccess = true;
+      else if (profile?.organizationId === targetOrgId) hasAccess = true;
+      else if (profile?.memberships && profile.memberships[targetOrgId]) hasAccess = true;
+    }
+
     // Tenant check
-    if (dealData?.organizationId !== profile?.organizationId) {
+    if (!hasAccess) {
       return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
     }
 

@@ -23,9 +23,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Deal not found.' }, { status: 404 });
     }
 
-    // Tenant check
     const userSnap = await adminDb.collection('users').doc(uid).get();
-    if (userSnap.exists && dealSnap.data()?.organizationId !== userSnap.data()?.organizationId) {
+    const profile = userSnap.exists ? userSnap.data() : null;
+    const targetOrgId = dealSnap.data()?.organizationId;
+    let hasAccess = false;
+    if (targetOrgId && profile) {
+      if (profile.personalOrganizationId === targetOrgId) hasAccess = true;
+      else if (profile.organizationId === targetOrgId) hasAccess = true;
+      else if (profile.memberships && profile.memberships[targetOrgId]) hasAccess = true;
+    }
+
+    // Tenant check
+    if (!hasAccess) {
         return NextResponse.json({ error: 'Cross-tenant access denied.' }, { status: 403 });
     }
 

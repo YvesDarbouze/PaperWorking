@@ -14,6 +14,7 @@ export type NotificationType =
   | 'DOCUMENT_SIGNED'
   | 'RECEIPT_APPROVAL'
   | 'TEAM_INVITE'
+  | 'TEAM_INVITE_REMINDER'
   | 'OVER_IMPROVEMENT_ALERT'
   | 'BURN_RATE_WARNING'
   | 'VENDOR_LEAD';
@@ -41,6 +42,7 @@ export interface NotificationObjectReference {
   vendor?: string;
   teammate?: string;
   documentName?: string;
+  organizationId?: string;
   organizationName?: string;
   dailyBurnRate?: string;
   metadata?: Record<string, unknown>;
@@ -176,6 +178,16 @@ export const NOTIFICATION_METADATA: Record<
       return `${inviter} invited you to join team ${params.organizationName}`;
     }
   },
+  TEAM_INVITE_REMINDER: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      const inviter = params.actorName;
+      if (!inviter) throw new Error('TEAM_INVITE_REMINDER requires an inviter identity in the title.');
+      if (!params.organizationName) throw new Error('TEAM_INVITE_REMINDER requires organizationName in the title.');
+      return `Reminder: ${inviter} invited you to join team ${params.organizationName}`;
+    }
+  },
   OVER_IMPROVEMENT_ALERT: {
     urgency: 'critical',
     channels: ['in-app', 'email', 'push'],
@@ -206,6 +218,7 @@ export function getNotificationCategory(type: NotificationType): NotificationCat
     case 'DOCUMENT_SIGNED':
     case 'RECEIPT_APPROVAL':
     case 'TEAM_INVITE':
+    case 'TEAM_INVITE_REMINDER':
       return 'tasks';
     case 'DEADLINE_ALERT':
       return 'deadlines';

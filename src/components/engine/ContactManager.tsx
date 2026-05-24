@@ -12,6 +12,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { useProjectStore } from '@/store/projectStore';
 import toast from 'react-hot-toast';
 import type { CRMContact, ContactRole } from '@/types/schema';
@@ -45,6 +46,7 @@ const BLANK_FORM = {
 
 export default function ContactManager() {
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const projects = useProjectStore(s => s.projects);
 
   const [contacts, setContacts] = useState<CRMContact[]>([]);
@@ -56,7 +58,7 @@ export default function ContactManager() {
   const [saving, setSaving] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
-  const orgId: string = profile?.organizationId || `org_${user?.uid?.slice(0, 8)}` || '';
+  const orgId: string = activeTenantId || `org_${user?.uid?.slice(0, 8)}` || '';
 
   // Real-time Firestore subscription
   useEffect(() => {

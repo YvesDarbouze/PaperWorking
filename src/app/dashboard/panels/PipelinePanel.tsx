@@ -7,6 +7,7 @@ import { Plus, Settings, UserCircle, Activity } from 'lucide-react';
 import { useUserStore } from '@/store/userStore';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { usePaywall } from '@/hooks/usePaywall';
 import { projectsService } from '@/lib/firebase/projects';
@@ -45,6 +46,7 @@ const SettingsDrawer = lazy(() => import('./SettingsDrawer'));
 export default function PipelinePanel() {
   useAllDealsSync();
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const { isLead, role } = usePermissions();
   const { requireSubscription } = usePaywall();
 
@@ -60,7 +62,7 @@ export default function PipelinePanel() {
   const handleAddDeal = () => {
     if (!user) return;
     requireSubscription(() => {
-      if (!profile?.organizationId || profile.organizationId === 'org_placeholder') {
+      if (!activeTenantId || activeTenantId === 'org_placeholder') {
         toast.error('Organization sync in progress. Please wait a moment...');
         return;
       }
@@ -81,9 +83,9 @@ export default function PipelinePanel() {
     <div className="flex flex-col bg-bg-primary font-sans px-8 sm:px-12 lg:px-16 pt-12 pb-20">
       
       {/* Deal Creation Protocol (Wizard) */}
-      {isWizardOpen && profile?.organizationId && (
+      {isWizardOpen && activeTenantId && (
         <ProjectCreationWizard
-          organizationId={profile.organizationId}
+          organizationId={activeTenantId}
           onClose={() => setIsWizardOpen(false)}
           onSuccess={handleWizardSuccess}
         />

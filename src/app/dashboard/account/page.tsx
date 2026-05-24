@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { 
   Building2, 
   Mail, 
@@ -39,6 +40,7 @@ const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof Ch
 
 export default function AccountPage() {
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const [portalLoading, setPortalLoading] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
 
@@ -169,7 +171,7 @@ export default function AccountPage() {
             <div className="md:col-span-2 pt-4 border-t border-border-ui/30">
               <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Organization ID</p>
               <p className="text-xs font-mono bg-bg-primary px-3 py-1.5 inline-block border border-border-ui rounded-sm">
-                {profile?.organizationId || '—'}
+                {activeTenantId || '—'}
               </p>
             </div>
           </div>

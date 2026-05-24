@@ -290,3 +290,146 @@ model SourcingLead {
   @@index([status])
   @@index([sourceVendor])
 }
+
+// ── Phase 3: Rehab Models ────────────────────────────────────
+
+model RehabProject {
+  id                String   @id @default(uuid())
+  linkedProjectId   String   @unique // Link to the central Deal/Project
+  organizationId    String
+  
+  status            String   @default("Planning") // Planning, Bidding, In Progress, Completed, On Hold
+  
+  // Budget tracking
+  estimatedBudget   BigInt   @default(0) // cents
+  actualCost        BigInt   @default(0) // cents
+  
+  // Timeline
+  startDate         DateTime?
+  endDate           DateTime?
+  
+  // R0 constraints
+  ownershipShares   String?  // JSON mapping userId -> percentage
+  criteriaVersion   String   @default("v1")
+  
+  // Relations
+  milestones        RehabMilestone[]
+  changeOrders      ChangeOrder[]
+  documents         RehabDocument[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+model RehabMilestone {
+  id                String   @id @default(uuid())
+  rehabProjectId    String
+  title             String
+  description       String?
+  status            String   @default("Pending") // Pending, In Progress, Completed
+  
+  estimatedCost     BigInt   @default(0) // cents
+  actualCost        BigInt   @default(0) // cents
+  
+  startDate         DateTime?
+  endDate           DateTime?
+  
+  rehabProject      RehabProject @relation(fields: [rehabProjectId], references: [id], onDelete: Cascade)
+  bids              VendorBid[]
+  invoices          RehabInvoice[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([rehabProjectId])
+}
+
+model Vendor {
+  id                String   @id @default(uuid())
+  organizationId    String
+  name              String
+  type              String   // GC, Plumber, Electrician, etc.
+  contactEmail      String?
+  contactPhone      String?
+  
+  bids              VendorBid[]
+  invoices          RehabInvoice[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+model VendorBid {
+  id                String   @id @default(uuid())
+  vendorId          String
+  milestoneId       String
+  
+  bidAmount         BigInt   // cents
+  status            String   @default("Pending") // Pending, Accepted, Rejected
+  notes             String?
+  
+  vendor            Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  milestone         RehabMilestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([vendorId])
+  @@index([milestoneId])
+}
+
+model RehabInvoice {
+  id                String   @id @default(uuid())
+  vendorId          String
+  milestoneId       String
+  
+  amount            BigInt   // cents
+  status            String   @default("Pending") // Pending, Approved, Paid
+  documentUrl       String?
+  
+  vendor            Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  milestone         RehabMilestone @relation(fields: [milestoneId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([vendorId])
+  @@index([milestoneId])
+}
+
+model ChangeOrder {
+  id                String   @id @default(uuid())
+  rehabProjectId    String
+  
+  description       String
+  requestedCost     BigInt   // cents
+  approvedCost      BigInt?  // cents
+  status            String   @default("Pending") // Pending, Approved, Rejected
+  
+  rehabProject      RehabProject @relation(fields: [rehabProjectId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([rehabProjectId])
+}
+
+model RehabDocument {
+  id                String   @id @default(uuid())
+  rehabProjectId    String
+  
+  title             String
+  type              String   // Permit, Inspection, Plan, Invoice
+  fileUrl           String
+  
+  rehabProject      RehabProject @relation(fields: [rehabProjectId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  
+  @@index([rehabProjectId])
+}

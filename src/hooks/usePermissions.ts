@@ -28,7 +28,7 @@ export function usePermissions(projectMember?: ProjectMember) {
   const isLender = role === 'Lender';
   
   // Convenience: can the current user edit project content (todos, financials)?
-  const canEdit = can('financials.edit') || can('receipts.submit') || can('projects.edit');
+  const canEdit = can('projects.edit');
 
   return { 
     can, 

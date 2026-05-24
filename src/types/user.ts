@@ -22,7 +22,9 @@ export interface UserProfile {
   role: UserRole;
   orgRole?: OrgRole;
   accountType?: AccountType;
-  organizationId: string;
+  personalOrganizationId: string; // The user's default "Me" workspace
+  organizationId?: string; // DEPRECATED: Transitioning to personalOrganizationId
+  memberships?: Record<string, OrgRole | string>; // Map of tenant ID to role
 
   /* ── Subscription ── */
   subscriptionPlan: SubscriptionPlan;

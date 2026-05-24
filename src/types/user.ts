@@ -8,7 +8,7 @@
 
 import { Timestamp } from 'firebase/firestore';
 
-import { Role } from './schema';
+import { Role, OrgRole } from './schema';
 
 export type AccountType = 'investor' | 'vendor';
 export type UserRole = Role;
@@ -20,6 +20,7 @@ export interface UserProfile {
   email: string | null;
   displayName: string;
   role: UserRole;
+  orgRole?: OrgRole;
   accountType?: AccountType;
   organizationId: string;
 
@@ -37,12 +38,37 @@ export interface UserProfile {
   /* ── Contact Info ── */
   phone?: string;
   companyName?: string;
+  onboardingCompleted?: boolean;
 
   /* ── Guest / Invite fields ── */
   inviteToken?: string;
   invitedToProjectId?: string;
 
+  /* ── Push Notifications ── */
+  fcmTokens?: string[];
+  lastActiveAt?: Timestamp;
+  preferences?: {
+    pushEnabled?: boolean;
+    emailEnabled?: boolean;
+    autoArchiveDays?: number;
+    quietHours?: {
+      enabled: boolean;
+      start: string;
+      end: string;
+      timezone: string;
+    };
+    categories?: Record<NotificationCategory, CategoryPreference>;
+  };
+
   /* ── Timestamps ── */
   createdAt: Timestamp;
   updatedAt: Timestamp;
+}
+
+export type NotificationCategory = 'syndication' | 'bids' | 'tasks' | 'deadlines' | 'billing' | 'alerts';
+
+export interface CategoryPreference {
+  inbox: boolean;
+  email: boolean;
+  push: boolean;
 }

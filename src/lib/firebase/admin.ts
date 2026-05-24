@@ -76,3 +76,11 @@ export const adminStorage = new Proxy({} as admin.storage.Storage, {
   }
 });
 
+export const adminMessaging = new Proxy({} as admin.messaging.Messaging, {
+  get(_target, prop) {
+    ensureInitialized();
+    const val = (admin.messaging() as any)[prop];
+    return typeof val === 'function' ? val.bind(admin.messaging()) : val;
+  }
+});
+

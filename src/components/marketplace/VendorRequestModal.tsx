@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2 } from 'lucide-react';
 import { VendorProfile } from '@/types/schema';
-import { projectsService } from '@/lib/firebase/deals';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 interface VendorRequestModalProps {
   isOpen: boolean;
@@ -18,6 +18,8 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customProjectId, setCustomProjectId] = useState(projectId || '');
+  const [agreeToS, setAgreeToS] = useState(false);
+  const { user } = useAuth();
 
   if (!isOpen || !vendor) return null;
 
@@ -27,16 +29,43 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
       toast.error('Project ID is required to request a quote.');
       return;
     }
+    
+    if (!agreeToS) {
+      toast.error('You must agree to the Terms of Service.');
+      return;
+    }
+
+    if (!user) {
+      toast.error('You must be logged in to request a quote.');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await projectsService.createVendorRequest(customProjectId.trim(), vendor.uid, message.trim());
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/vendors/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idToken,
+          projectId: customProjectId.trim(),
+          vendorUid: vendor.uid,
+          message: message.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to request quote.');
+      }
+
       toast.success(`Quote requested from ${vendor.companyName}`);
       setMessage('');
+      setAgreeToS(false);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to submit quote request:', error);
-      toast.error('Failed to send request. Please try again.');
+      toast.error(error.message || 'Failed to send request. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -109,6 +138,19 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
               />
             </div>
 
+            <div className="flex items-start gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="tos-checkbox"
+                checked={agreeToS}
+                onChange={(e) => setAgreeToS(e.target.checked)}
+                className="mt-1 border-border-accent text-pw-black focus:ring-pw-black rounded-sm"
+              />
+              <label htmlFor="tos-checkbox" className="text-xs font-medium text-text-secondary leading-snug">
+                I agree to the <a href="/tos" target="_blank" className="underline hover:text-text-primary">Terms of Service</a> and understand that quotes and final fees may be subject to change based on actual requirements discovered during execution.
+              </label>
+            </div>
+
             <div className="pt-4 flex justify-end gap-3">
               <button
                 type="button"
@@ -120,7 +162,7 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting || !customProjectId.trim()}
+                disabled={isSubmitting || !customProjectId.trim() || !agreeToS}
                 className="px-6 py-3 bg-pw-black text-white text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? (

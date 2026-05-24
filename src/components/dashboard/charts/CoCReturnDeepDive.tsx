@@ -3,14 +3,14 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
-  deriveAllMetrics,
+  deriveDualScopeMetrics,
   computeTotalCashInvested,
   computeCoCReturn,
 } from '@/lib/metrics/reiMetrics';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Cell, Legend,
-  PieChart, Pie,
+  PieChart, Pie, ReferenceArea,
 } from 'recharts';
 import {
   DollarSign, TrendingUp, AlertTriangle, ArrowRight,
@@ -97,7 +97,7 @@ function deriveCoCBreakdowns(projects: Project[]): PropertyCoCData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       const loanAmount = f.loanAmount ?? 0;
       const downPayment = Math.max(0, purchasePrice - loanAmount);
@@ -234,7 +234,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
               Cash-on-Cash Return Analysis
             </h3>
             <p className="text-xs text-text-secondary">
-              Annual Cash Flow ÷ Total Cash Invested = Your true return on capital
+              COC = Annual Pre-Tax Cash Flow ÷ Total Cash Invested (down payment + closing costs) (%)
             </p>
           </div>
         </div>
@@ -405,6 +405,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                   fontSize: '11px',
                 }}
               />
+              <ReferenceArea x1={8} x2={12} fill="rgba(127,127,127,0.05)" strokeWidth={0} />
               <Bar dataKey="rate" radius={[0, 4, 4, 0]} maxBarSize={24}>
                 {alternatives.map((a, i) => (
                   <Cell key={i} fill={a.color} />
@@ -531,6 +532,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                 {/* Target zone */}
                 <ReferenceLine y={8} stroke="#595959" strokeDasharray="4 4" label={{ value: '8% target', position: 'right', fontSize: 9, fill: '#595959' }} />
                 <ReferenceLine y={12} stroke="#7F7F7F" strokeDasharray="4 4" label={{ value: '12% excellent', position: 'right', fontSize: 9, fill: '#7F7F7F' }} />
+                <ReferenceArea y1={8} y2={12} fill="rgba(127,127,127,0.05)" strokeWidth={0} />
                 <Bar dataKey="CoC Return" radius={[4, 4, 0, 0]} maxBarSize={36}>
                   {breakdowns.map((b, i) => (
                     <Cell key={i} fill={b.classification.color} />
@@ -553,21 +555,24 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
       >
         <strong style={{ color: 'var(--text-primary)' }}>CoC Return Formula:</strong>{' '}
         <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
-          Annual Pre-Tax Cash Flow ÷ Total Cash Invested = Cash-on-Cash Return
+          COC = Annual Pre-Tax Cash Flow ÷ Total Cash Invested (down payment + closing costs) (%)
         </code>
         <br />
-        <strong style={{ color: 'var(--text-primary)' }}>Total Cash Invested includes:</strong>{' '}
-        Down payment + closing costs + rehab budget. It does NOT include the mortgage — only the cash YOU put in.
+        <strong style={{ color: 'var(--text-primary)' }}>Total Cash Invested:</strong>{' '}
+        Down payment + closing costs + rehab budget + holding costs. It only includes the cash YOU put in, excluding the mortgage.
+        <br />
+        <strong style={{ color: 'var(--text-primary)' }}>All-Cash Guardrail:</strong>{' '}
+        For properties with no financing (loan amount is $0), the down payment defaults to the full purchase price. The total cash invested reflects the actual total out-of-pocket costs (purchase price + closing costs + rehab + holding costs), ensuring the return percentage is fully accurate.
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Benchmarks:</strong>{' '}
         <span style={{ color: '#595959' }}>■ ≥12% Excellent</span> •{' '}
-        <span style={{ color: '#7F7F7F' }}>■ 8–12% Strong</span> •{' '}
+        <span style={{ color: '#7F7F7F' }}>■ 8–12% Strong (Target Zone)</span> •{' '}
         <span style={{ color: '#A5A5A5' }}>■ 4–8% Moderate</span> •{' '}
         <span style={{ color: '#EF4444' }}>■ &lt;4% Below Target</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Why it matters:</strong>{' '}
-        Unlike cap rate, CoC return factors in financing — making it the most relevant metric for leveraged buy-and-hold investors.
-        It answers: "For every dollar I invested, how much am I getting back each year?"
+        Unlike Cap Rate, CoC Return factors in financing — making it the most relevant metric for leveraged buy-and-hold investors.
+        It answers: "For every dollar I invested out of pocket, how much am I getting back in cash flow each year?"
       </div>
     </div>
   );

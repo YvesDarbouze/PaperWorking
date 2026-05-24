@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useUserStore } from '@/store/userStore';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/brand/Logo';
-import { useInboxThreads } from '@/hooks/useInboxThreads';
+import { useNotification } from '@/context/NotificationContext';
 
 /* ═══════════════════════════════════════════════════════
    TopHeader — Sticky Dashboard Banner
@@ -27,7 +27,7 @@ export default function TopHeader() {
   const { user, logout } = useAuth();
   const { accountTier } = useUserStore();
   const router = useRouter();
-  const { unreadTotal } = useInboxThreads();
+  const { unreadTotal } = useNotification();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -151,7 +151,7 @@ export default function TopHeader() {
                 style={{ background: '#0d0d0d', color: '#ffffff', border: '2px solid var(--bg-surface)', padding: '0 3px' }}
                 aria-label={`${unreadTotal} unread messages`}
               >
-                {unreadTotal > 99 ? '99+' : unreadTotal}
+                {unreadTotal > 9 ? '9+' : unreadTotal}
               </span>
             )}
           </Link>

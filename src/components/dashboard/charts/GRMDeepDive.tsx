@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveAllMetrics, computeGRM } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics, computeGRM } from '@/lib/metrics/reiMetrics';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer
 } from 'recharts';
@@ -100,9 +100,15 @@ function deriveGRMBreakdowns(projects: Project[]): PropertyGRMData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
-      const monthlyRent = f.monthlyGrossRent ?? 0;
+      let monthlyRent = f.monthlyGrossRent ?? 0;
+      if (
+        (p.strategyType === 'Rent' || p.strategyType === 'Buy & Hold') &&
+        (p.currentPhase === 3 || p.currentPhase === 4)
+      ) {
+        monthlyRent = f.actualRentalIncome ?? monthlyRent;
+      }
       const grossAnnualRent = monthlyRent * 12;
 
       return {
@@ -151,6 +157,12 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
       totalNOI,
       totalCashFlow,
     };
+  }, [breakdowns]);
+
+  const rankedBreakdowns = useMemo(() => {
+    return [...breakdowns]
+      .filter(b => b.grm > 0)
+      .sort((a, b) => a.grm - b.grm);
   }, [breakdowns]);
 
   if (!aggregate || aggregate.totalRent === 0) {
@@ -215,11 +227,14 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             <Filter className="w-5 h-5" style={{ color: classification.color }} />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-text-primary">
+            <h3 className="text-sm font-bold text-text-primary flex items-center gap-2 flex-wrap">
               Gross Rent Multiplier (GRM) — Quick Screen
+              <span className="text-[10px] font-normal px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                Surface Screen Only
+              </span>
             </h3>
             <p className="text-xs text-text-secondary">
-              Property Price ÷ Annual Rent = how many years of rent to pay off the price
+              GRM = Property Price ÷ Gross Annual Rent (× multiplier). Lower is better.
             </p>
           </div>
         </div>
@@ -240,7 +255,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             icon: Filter,
             label: 'Gross Rent Multiplier',
             value: `${aggregate.portfolioGRM.toFixed(1)}×`,
-            sublabel: `${fmtUSD(aggregate.totalPrice)} ÷ ${fmtUSD(aggregate.totalRent)}/yr`,
+            sublabel: `${fmtUSD(aggregate.totalPrice)} ÷ ${fmtUSD(aggregate.totalRent)} Gross Annual Rent`,
             color: classification.color,
           },
           {
@@ -291,6 +306,14 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
             </p>
           </div>
         ))}
+      </div>
+
+      {/* ── Guardrail Warning ── */}
+      <div className="flex items-start gap-2.5 p-3 rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-600 text-xs">
+        <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+        <div>
+          <strong className="font-bold">Important Guardrail:</strong> GRM is a surface-level screening tool only. It completely ignores operating expenses, vacancy rates, maintenance, and financing costs. It is NOT a measure of net profitability.
+        </div>
       </div>
 
       {/* ── GRM Gauge ── */}
@@ -450,13 +473,13 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
       </div>
 
       {/* ── Per-Property Comparison ── */}
-      {breakdowns.length > 1 && (
+      {rankedBreakdowns.length > 1 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col" style={{ minHeight: '300px' }}>
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary mb-4">
-            GRM by Property — Lower = Better Rent-to-Price
+            GRM by Property — Portfolio Ranking View (Lower is Better)
           </h4>
           <div className="flex-1 min-h-0 pt-4">
-            <GRMChart data={breakdowns} height="100%" />
+            <GRMChart data={rankedBreakdowns} height="100%" />
           </div>
         </div>
       )}
@@ -473,25 +496,28 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
           <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#A5A5A5' }} />
           <div className="space-y-2 text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             <p>
-              <strong style={{ color: 'var(--text-primary)' }}>GRM is a screening tool, not a decision tool.</strong>{' '}
-              It answers "Is this property worth analyzing further?" — not "Is this a good investment?"
+              <strong style={{ color: 'var(--text-primary)' }}>GRM is a surface screen, not a profitability metric.</strong>{' '}
+              It serves as a high-level filter to compare properties before deep analysis. Because it completely ignores operating expenses (taxes, insurance, repairs), vacancy losses, and financing (mortgage terms), it cannot determine net profitability.
             </p>
             <p>
               <strong style={{ color: '#EF4444' }}>What GRM ignores:</strong>{' '}
-              Operating expenses (taxes, insurance, maintenance, management), vacancy losses, financing costs (mortgage),
-              and closing costs. A property with a low GRM but sky-high maintenance could still lose money.
-            </p>
-            <p>
-              <strong style={{ color: '#595959' }}>When to use:</strong>{' '}
-              Screen dozens of properties quickly. If GRM ≤ 12, run the full analysis (NOI → Cash Flow → Cap Rate → CoC Return).
-              If GRM &gt; 15, the property needs strong appreciation to make sense.
+              All property-level costs. A low-GRM property in an area with high property taxes or structural issues could easily cash-flow worse than a higher-GRM property with low expenses.
             </p>
             <p>
               <strong style={{ color: 'var(--text-primary)' }}>Formula:</strong>{' '}
               <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
-                GRM = Purchase Price ÷ Gross Annual Rent
-              </code>{' '}
-              — Lower is better. Think of it as "years of rent to pay off the price."
+                GRM = Property Price ÷ Gross Annual Rent
+              </code>
+            </p>
+            <p>
+              <strong style={{ color: 'var(--text-primary)' }}>Example:</strong>{' '}
+              <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
+                $279,000 ÷ $23,400 gross annual rent = 11.9 GRM
+              </code>
+            </p>
+            <p>
+              <strong style={{ color: '#595959' }}>How to use:</strong>{' '}
+              Lower is better. Use GRM to filter out overpriced properties. If GRM is attractive (e.g. ≤ 12×), perform a complete cash flow and cap rate calculation.
             </p>
           </div>
         </div>

@@ -16,6 +16,8 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import CheckoutSuccessHandler from '@/components/billing/CheckoutSuccessHandler';
 import { PhaseGateProvider } from '@/context/PhaseGateContext';
 import PhaseGateSyncer from '@/components/dashboard/PhaseGateSyncer';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { OnboardingPromptBanner } from '@/components/dashboard/OnboardingPromptBanner';
 /* ═══════════════════════════════════════════════════════
    Dashboard Layout — Persistent Kanban Navigation Shell
 
@@ -119,9 +121,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <ErrorBoundary name="Dashboard Layout">
       <PhaseGateProvider>
-        <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardLayoutInner>{children}</DashboardLayoutInner>
-        </Suspense>
+        <NotificationProvider>
+          <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardLayoutInner>{children}</DashboardLayoutInner>
+          </Suspense>
+        </NotificationProvider>
       </PhaseGateProvider>
     </ErrorBoundary>
   );
@@ -175,6 +179,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         <CheckoutSuccessHandler />
 
         <Toaster position="bottom-left" />
+        <OnboardingPromptBanner />
       </div>
     </PanelProvider>
   );

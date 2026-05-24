@@ -359,6 +359,70 @@ async function createEmailLogs(
 
 export const CommunicationEngine = {
   /**
+   * isQuietHoursActive — Helper to check if quiet hours are currently active for a user profile
+   */
+  isQuietHoursActive(quietHours?: { enabled: boolean; start: string; end: string; timezone: string }): boolean {
+    if (!quietHours?.enabled || !quietHours.start || !quietHours.end) return false;
+
+    try {
+      const timezone = quietHours.timezone || 'America/New_York';
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false
+      });
+      
+      const parts = formatter.formatToParts(now);
+      const hourPart = parts.find(p => p.type === 'hour')?.value;
+      const minutePart = parts.find(p => p.type === 'minute')?.value;
+      
+      if (!hourPart || !minutePart) return false;
+      
+      const currentHour = parseInt(hourPart, 10);
+      const currentMinute = parseInt(minutePart, 10);
+      const currentMinutes = currentHour * 60 + currentMinute;
+      
+      const [startHour, startMinute] = quietHours.start.split(':').map(Number);
+      const [endHour, endMinute] = quietHours.end.split(':').map(Number);
+      
+      const startMinutes = startHour * 60 + startMinute;
+      const endMinutes = endHour * 60 + endMinute;
+      
+      if (startMinutes > endMinutes) {
+        // Crosses midnight, e.g. 22:00 to 08:00
+        return currentMinutes >= startMinutes || currentMinutes <= endMinutes;
+      } else {
+        // Same day, e.g. 09:00 to 17:00
+        return currentMinutes >= startMinutes && currentMinutes <= endMinutes;
+      }
+    } catch (err) {
+      console.error('[CommunicationEngine] Error checking quiet hours:', err);
+      return false; // Safely fall back to not silencing
+    }
+  },
+
+  /**
+   * sendRawEmail — Unified Resend API dispatch
+   */
+  async sendRawEmail(
+    to: string[],
+    subject: string,
+    html: string,
+    options?: { replyTo?: string; tags?: { name: string; value: string }[] }
+  ): Promise<{ id: string; mock: boolean }> {
+    return dispatchViaResend({
+      to,
+      subject,
+      html,
+      replyTo: options?.replyTo,
+      tags: options?.tags,
+    });
+  },
+
+  /**
    * sendCannedEmail — Core function
    *
    * Merges user data with a registered template and dispatches the message.
@@ -410,9 +474,56 @@ export const CommunicationEngine = {
     const trackingSubject = `${subject} [ref:deal_${projectId}]`;
     const replyTo = INBOUND_DOMAIN ? `reply+${projectId}@${INBOUND_DOMAIN}` : undefined;
 
-    // 6. Dispatch via Resend
+    // 6. Process preferences & quiet hours per recipient
+    const activeRecipients: typeof recipients = [];
+
+    for (const rec of recipients) {
+      try {
+        const userDoc = await adminDb.collection('users').doc(rec.uid).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data()!;
+          
+          // Check opt-out
+          const emailEnabled = userData.preferences?.emailEnabled !== false;
+          if (!emailEnabled) {
+            console.log(`[CommunicationEngine] Recipient ${rec.uid} opted out of emails. Skipping.`);
+            continue;
+          }
+
+          // Check quiet hours
+          const quietHours = userData.preferences?.quietHours;
+          if (quietHours && this.isQuietHoursActive(quietHours)) {
+            console.log(`[CommunicationEngine] Quiet hours active for ${rec.uid}. Queueing email.`);
+            await adminDb.collection('queued_emails').add({
+              recipientId: rec.uid,
+              recipientEmail: rec.email,
+              subject: trackingSubject,
+              html,
+              deepLinkUrl: `/dashboard/projects/${projectId}`,
+              status: 'pending',
+              createdAt: FieldValue.serverTimestamp(),
+            });
+            continue;
+          }
+        }
+      } catch (err) {
+        console.error(`[CommunicationEngine] Failed checking preferences for ${rec.uid}:`, err);
+      }
+      activeRecipients.push(rec);
+    }
+
+    if (!activeRecipients.length) {
+      return {
+        success: true,
+        messageId: 'queued_or_skipped',
+        mock: false,
+        recipientCount: 0,
+      };
+    }
+
+    // 7. Dispatch via Resend
     const { id: messageId, mock } = await dispatchViaResend({
-      to: recipients.map((r) => r.email),
+      to: activeRecipients.map((r) => r.email),
       subject: trackingSubject,
       html,
       replyTo,
@@ -422,24 +533,24 @@ export const CommunicationEngine = {
       ],
     });
 
-    // 7. Persist audit trail (Firestore + Prisma CommunicationLog)
+    // 8. Persist audit trail (Firestore + Prisma CommunicationLog)
     await persistAuditTrail(projectId, project.organizationId, {
       senderEmail: FROM_EMAIL,
       senderName: 'PaperWorking',
       subject: trackingSubject,
       body: html,
       type: 'EMAIL_OUTBOUND',
-      recipients: recipients.map((r) => r.email),
+      recipients: activeRecipients.map((r) => r.email),
       providerMessageId: messageId,
       mock,
       templateSlug: templateId,
     });
 
-    // 8. Create per-recipient EmailLog rows for delivery tracking
+    // 9. Create per-recipient EmailLog rows for delivery tracking
     await createEmailLogs(
       project.organizationId,
       projectId,
-      recipients,
+      activeRecipients,
       messageId,
       templateId,
       trackingSubject,
@@ -450,7 +561,7 @@ export const CommunicationEngine = {
       success: true,
       messageId,
       mock,
-      recipientCount: recipients.length,
+      recipientCount: activeRecipients.length,
     };
   },
 

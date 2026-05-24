@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb, adminStorage } from '@/lib/firebase/admin';
 import { Project, Organization, MetricSnapshot } from '@/types/schema';
 import { FieldValue } from 'firebase-admin/firestore';
+import { saveActiveSnapshotsForProjectAdmin } from '@/lib/metrics/snapshotService.admin';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,7 +55,14 @@ export async function GET(req: NextRequest) {
         const bucket = adminStorage.bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
 
         for (const projectDoc of projectsSnapshot.docs) {
-          const project = projectDoc.data() as Project;
+          const project = { ...projectDoc.data(), id: projectDoc.id } as Project;
+
+          // Compute and save active financial snapshots for the project
+          try {
+            await saveActiveSnapshotsForProjectAdmin(project);
+          } catch (snapshotErr: any) {
+            console.error(`Failed to save active snapshots for project ${projectDoc.id}:`, snapshotErr);
+          }
 
           // 1. Storage Usage (Real bytes from Cloud Storage)
           try {

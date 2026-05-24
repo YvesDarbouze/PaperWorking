@@ -2,6 +2,8 @@
 
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { isSubscriptionActive } from '@/lib/stripe/subscription';
+import type { UserProfile } from '@/types/user';
 
 /**
  * Validates the caller via the supplied ID Token and returns user data
@@ -108,6 +110,12 @@ export async function approveLedgerItem(idToken: string, projectId: string, item
 export async function createNewDeal(idToken: string, rawDealData: any) {
   const user = await verifyActionAuth(idToken);
   
+  // Gate check: only Individual (Standard) or Team plans can create projects
+  const userProfile = user as unknown as UserProfile;
+  if (!['Individual', 'Team'].includes(userProfile.subscriptionPlan || '') || !isSubscriptionActive(userProfile)) {
+    throw new Error('Upgrade required: only Standard (Individual) or Team plan holders with active subscriptions can create projects.');
+  }
+
   // Base configuration guarantees the timeline clock initiates safely server-side
   const serverTime = FieldValue.serverTimestamp();
   

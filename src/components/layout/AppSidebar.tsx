@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useNotification } from '@/context/NotificationContext';
 import {
   LayoutDashboard,
   FolderOpen,
@@ -12,6 +13,7 @@ import {
   UserCircle,
   CreditCard,
   Settings,
+  BarChart3,
 } from 'lucide-react';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
@@ -67,6 +69,12 @@ const WORKSPACE_ITEMS: NavItem[] = [
     icon: <Database className="w-4 h-4" />,
   },
   {
+    id: 'reports',
+    label: 'Reports',
+    href: '/dashboard/reports',
+    icon: <BarChart3 className="w-4 h-4" />,
+  },
+  {
     id: 'inbox',
     label: 'Inbox',
     href: '/dashboard/inbox',
@@ -106,6 +114,7 @@ const ACCOUNT_ITEMS: NavItem[] = [
 /* ── Single nav link ── */
 function SidebarLink({ item }: { item: NavItem }) {
   const pathname = usePathname();
+  const { unreadTotal } = useNotification();
   const isActive = item.exact
     ? pathname === item.href
     : pathname.startsWith(item.href);
@@ -145,6 +154,22 @@ function SidebarLink({ item }: { item: NavItem }) {
       >
         {item.label}
       </span>
+
+      {/* Unread badge for Inbox */}
+      {item.id === 'inbox' && unreadTotal > 0 && (
+        <span
+          className={`flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors duration-150 ${
+            isActive ? 'ml-2' : 'ml-auto'
+          }`}
+          style={{
+            background: isActive ? '#ffffff' : '#0d0d0d',
+            color: isActive ? '#0d0d0d' : '#ffffff',
+          }}
+          aria-label={`${unreadTotal} unread messages`}
+        >
+          {unreadTotal > 9 ? '9+' : unreadTotal}
+        </span>
+      )}
 
       {/* Active dot indicator (redundant visual cue for color-blind users) */}
       {isActive && (

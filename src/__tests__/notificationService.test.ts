@@ -2,24 +2,41 @@
 //  NotificationService Unit Tests
 // ═══════════════════════════════════════════════════════
 
-const mockSet = jest.fn();
-const mockUpdate = jest.fn();
-const mockGet = jest.fn();
+var mockSet = jest.fn();
+var mockUpdate = jest.fn();
+var mockGet = jest.fn();
+var mockAdd = jest.fn();
 
-// Mock firebase admin DB
+var mockSendEachForMulticast = jest.fn();
+var mockSendRawEmail = jest.fn().mockResolvedValue({ id: 'resend_123' });
+var mockIsQuietHoursActive = jest.fn().mockReturnValue(false);
+
+// Mock CommunicationEngine
+jest.mock('@/lib/engine/CommunicationEngine', () => ({
+  CommunicationEngine: {
+    sendRawEmail: (...args: any[]) => mockSendRawEmail(...args),
+    isQuietHoursActive: (...args: any[]) => mockIsQuietHoursActive(...args),
+  }
+}));
+
+// Mock firebase admin DB and Messaging
 jest.mock('@/lib/firebase/admin', () => ({
   adminDb: {
     collection: jest.fn().mockImplementation(() => ({
       doc: jest.fn().mockImplementation(() => ({
-        set: mockSet,
-        update: mockUpdate,
-        get: mockGet
+        set: (...args: any[]) => mockSet(...args),
+        update: (...args: any[]) => mockUpdate(...args),
+        get: (...args: any[]) => mockGet(...args)
       })),
       where: jest.fn().mockReturnThis(),
       orderBy: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnThis(),
-      get: mockGet
+      get: (...args: any[]) => mockGet(...args),
+      add: (...args: any[]) => mockAdd(...args)
     }))
+  },
+  adminMessaging: {
+    sendEachForMulticast: (...args: any[]) => mockSendEachForMulticast(...args)
   }
 }));
 
@@ -276,6 +293,8 @@ describe('NotificationService & Dynamic Catalog', () => {
   describe('Firestore Persistence Operations', () => {
     it('creates and saves notifications to firestore successfully', async () => {
       mockSet.mockResolvedValueOnce(undefined);
+      // mock mockGet returning exists: false so push is skipped in this test
+      mockGet.mockResolvedValueOnce({ exists: false });
 
       const notificationId = await NotificationService.createNotification({
         recipientId: 'user_123',
@@ -299,6 +318,39 @@ describe('NotificationService & Dynamic Catalog', () => {
       expect(setArg.archived).toBe(false);
     });
 
+    it('sends FCM push notification if user has registered tokens', async () => {
+      mockSet.mockResolvedValueOnce(undefined);
+      // Mock user document returning fcmTokens and pushEnabled = true
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          fcmTokens: ['token_abc'],
+          lastActiveAt: new Date(),
+          preferences: { pushEnabled: true }
+        })
+      });
+      mockSendEachForMulticast.mockResolvedValueOnce({
+        successCount: 1,
+        responses: [{ success: true }]
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'INVEST_INVITE',
+        actor: { uid: 'actor_456', name: 'James Builder' },
+        objectReference: { dealAddress: '100 Sunset Blvd' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockGet).toHaveBeenCalledTimes(1);
+      expect(mockSendEachForMulticast).toHaveBeenCalledTimes(1);
+      
+      const pushPayload = mockSendEachForMulticast.mock.calls[0][0];
+      expect(pushPayload.tokens).toEqual(['token_abc']);
+      expect(pushPayload.notification.title).toBe("Investment Invitation — 100 Sunset Blvd");
+    });
+
     it('marks notifications as read in firestore', async () => {
       mockUpdate.mockResolvedValueOnce(undefined);
 
@@ -318,6 +370,381 @@ describe('NotificationService & Dynamic Catalog', () => {
       expect(mockUpdate).toHaveBeenCalledTimes(1);
       const updateArg = mockUpdate.mock.calls[0][0];
       expect(updateArg.archived).toBe(true);
+    });
+  });
+
+  describe('Email Opt-out & Quiet Hours Dispatching', () => {
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
+    beforeEach(() => {
+      mockSendRawEmail.mockClear();
+      mockAdd.mockClear();
+      mockGet.mockClear();
+    });
+
+    it('dispatches email immediately when user has enabled email and is outside quiet hours', async () => {
+      jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // 12:00 PM EDT (outside quiet hours)
+      mockSet.mockResolvedValueOnce(undefined);
+      // Mock user document returning emailEnabled = true
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            quietHours: { enabled: true, start: '22:00', end: '08:00', timezone: 'America/New_York' }
+          }
+        })
+      });
+      mockIsQuietHoursActive.mockReturnValueOnce(false); // Outside quiet hours
+
+      await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'INVEST_INVITE',
+        actor: { uid: 'actor_456', name: 'James Builder' },
+        objectReference: { dealAddress: '100 Sunset Blvd' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(mockSendRawEmail).toHaveBeenCalledTimes(1);
+      expect(mockSendRawEmail).toHaveBeenCalledWith(
+        ['recipient@example.com'],
+        "Investment Invitation — 100 Sunset Blvd",
+        expect.stringContaining("100 Sunset Blvd")
+      );
+      expect(mockAdd).not.toHaveBeenCalled(); // No queued_emails added
+    });
+
+    it('queues email when user is inside quiet hours', async () => {
+      jest.setSystemTime(new Date('2026-05-23T03:00:00Z')); // 11:00 PM EDT (inside quiet hours)
+      mockSet.mockResolvedValueOnce(undefined);
+      mockAdd.mockResolvedValueOnce({ id: 'queued_123' });
+      // Mock user document returning emailEnabled = true
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            quietHours: { enabled: true, start: '22:00', end: '08:00', timezone: 'America/New_York' }
+          }
+        })
+      });
+      mockIsQuietHoursActive.mockReturnValueOnce(true); // Inside quiet hours
+
+      await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'INVEST_INVITE',
+        actor: { uid: 'actor_456', name: 'James Builder' },
+        objectReference: { dealAddress: '100 Sunset Blvd' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(mockSendRawEmail).not.toHaveBeenCalled();
+      expect(mockAdd).toHaveBeenCalledTimes(1);
+      const addArg = mockAdd.mock.calls[0][0];
+      expect(addArg.recipientId).toBe('user_123');
+      expect(addArg.recipientEmail).toBe('recipient@example.com');
+      expect(addArg.status).toBe('pending');
+    });
+
+    it('does not send or queue email when user has opted out of email', async () => {
+      jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // Outside quiet hours
+      mockSet.mockResolvedValueOnce(undefined);
+      // Mock user document returning emailEnabled = false
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: false
+          }
+        })
+      });
+
+      await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'INVEST_INVITE',
+        actor: { uid: 'actor_456', name: 'James Builder' },
+        objectReference: { dealAddress: '100 Sunset Blvd' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(mockSendRawEmail).not.toHaveBeenCalled();
+      expect(mockAdd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Granular Category Preferences Enforcement', () => {
+    beforeEach(() => {
+      mockSendRawEmail.mockClear();
+      mockAdd.mockClear();
+      mockGet.mockClear();
+      mockSet.mockClear();
+      mockSendEachForMulticast.mockClear();
+    });
+
+    it('filters out in-app and email channels if user opted out of them for tasks category', async () => {
+      mockSet.mockResolvedValueOnce(undefined);
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            categories: {
+              tasks: { inbox: true, email: false, push: false }
+            }
+          }
+        })
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'TASK_COMPLETE',
+        actor: { uid: 'actor_456', name: 'Mark' },
+        objectReference: { teammate: 'Mark', task: 'Roofing', dealAddress: '123 Main' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockSet).toHaveBeenCalledTimes(1); // inbox is true, so it saves doc to firestore
+      expect(mockSendRawEmail).not.toHaveBeenCalled(); // email is false
+      expect(mockSendEachForMulticast).not.toHaveBeenCalled(); // push is false
+    });
+
+    it('filters out in-app document write if user opted out of inbox for syndication category', async () => {
+      mockSet.mockResolvedValueOnce(undefined);
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            categories: {
+              syndication: { inbox: false, email: true, push: false }
+            }
+          }
+        })
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'INVEST_INVITE',
+        actor: { uid: 'actor_456', name: 'Realty LLC' },
+        objectReference: { dealAddress: '123 Main' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockSet).not.toHaveBeenCalled(); // inbox is false, so no firestore write
+      expect(mockSendRawEmail).toHaveBeenCalledTimes(1); // email is true
+      expect(mockSendEachForMulticast).not.toHaveBeenCalled(); // push is false
+    });
+
+    it('enforces billing and deadlines as mandatory channels (inbox and email cannot be disabled)', async () => {
+      mockSet.mockResolvedValueOnce(undefined);
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            categories: {
+              billing: { inbox: false, email: false, push: false } // Attempting to disable all
+            }
+          }
+        })
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'BILLING_CHARGED',
+        actor: { uid: 'stripe_123', name: 'Stripe' },
+        objectReference: { card: 'Visa', amount: '$50', plan: 'Gold' },
+        deepLinkUrl: '/dashboard/settings/billing'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockSet).toHaveBeenCalledTimes(1); // inbox is forced true
+      expect(mockSendRawEmail).toHaveBeenCalledTimes(1); // email is forced true
+    });
+  });
+
+  describe('Notification Fatigue & DND Verification', () => {
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
+    beforeEach(() => {
+      mockSendRawEmail.mockClear();
+      mockAdd.mockClear();
+      mockGet.mockClear();
+      mockSet.mockClear();
+      mockSendEachForMulticast.mockClear();
+    });
+
+    it('queues non-critical notifications immediately as isBatchable: true', async () => {
+      jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // 12:00 PM EDT (outside DND)
+
+      mockSet.mockResolvedValueOnce(undefined);
+      mockAdd.mockResolvedValueOnce({ id: 'queued_batchable' });
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            pushEnabled: true,
+            timezone: 'America/New_York'
+          }
+        })
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'VENDOR_BID',
+        actor: { uid: 'actor_456', name: 'Supreme Painters' },
+        objectReference: {
+          vendor: 'Supreme Painters',
+          amount: '$14,500.00',
+          dealAddress: '456 Oak Avenue',
+          task: 'Interior Paint',
+          projectId: 'p_999'
+        },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockSendRawEmail).not.toHaveBeenCalled();
+      expect(mockSendEachForMulticast).not.toHaveBeenCalled();
+      
+      expect(mockAdd).toHaveBeenCalledTimes(1);
+      const addArg = mockAdd.mock.calls[0][0];
+      expect(addArg.isBatchable).toBe(true);
+      expect(addArg.recipientId).toBe('user_123');
+    });
+
+    it('queues critical notifications triggered at 3:00 AM local time as isBatchable: false', async () => {
+      jest.setSystemTime(new Date('2026-05-23T07:00:00Z')); // 3:00 AM EDT (in DND)
+
+      mockSet.mockResolvedValueOnce(undefined);
+      mockAdd.mockResolvedValueOnce({ id: 'queued_critical' });
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          fcmTokens: ['token_abc'],
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            pushEnabled: true,
+            timezone: 'America/New_York'
+          }
+        })
+      });
+
+      const notificationId = await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'DEADLINE_ALERT',
+        actor: { uid: 'actor_456', name: 'System' },
+        objectReference: { dealAddress: '100 Sunset Blvd', time: '48 hours' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(notificationId).toBeDefined();
+      expect(mockSendRawEmail).not.toHaveBeenCalled();
+      expect(mockSendEachForMulticast).not.toHaveBeenCalled();
+
+      expect(mockAdd).toHaveBeenCalledTimes(1);
+      const addArg = mockAdd.mock.calls[0][0];
+      expect(addArg.isBatchable).toBe(false);
+      expect(addArg.recipientId).toBe('user_123');
+    });
+
+    it('silences push notifications during DND and dispatches them outside DND for critical events', async () => {
+      // 1. Inside DND (3:00 AM local time)
+      jest.setSystemTime(new Date('2026-05-23T07:00:00Z')); // 3:00 AM EDT
+
+      mockSet.mockResolvedValueOnce(undefined);
+      mockAdd.mockResolvedValueOnce({ id: 'queued_critical_dnd' });
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          fcmTokens: ['token_abc'],
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            pushEnabled: true,
+            timezone: 'America/New_York'
+          }
+        })
+      });
+
+      await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'DEADLINE_ALERT',
+        actor: { uid: 'actor_456', name: 'System' },
+        objectReference: { dealAddress: '100 Sunset Blvd', time: '48 hours' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(mockSendEachForMulticast).not.toHaveBeenCalled();
+      expect(mockAdd).toHaveBeenCalledTimes(1);
+
+      // Reset mocks for outside DND test
+      mockSet.mockClear();
+      mockAdd.mockClear();
+      mockGet.mockClear();
+      mockSendEachForMulticast.mockClear();
+
+      // 2. Outside DND (12:00 PM local time)
+      jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // 12:00 PM EDT
+
+      mockSet.mockResolvedValueOnce(undefined);
+      mockGet.mockResolvedValueOnce({
+        exists: true,
+        data: () => ({
+          email: 'recipient@example.com',
+          fcmTokens: ['token_abc'],
+          lastActiveAt: new Date(),
+          preferences: {
+            emailEnabled: true,
+            pushEnabled: true,
+            timezone: 'America/New_York'
+          }
+        })
+      });
+      mockSendEachForMulticast.mockResolvedValueOnce({
+        successCount: 1,
+        responses: [{ success: true }]
+      });
+
+      await NotificationService.createNotification({
+        recipientId: 'user_123',
+        type: 'DEADLINE_ALERT',
+        actor: { uid: 'actor_456', name: 'System' },
+        objectReference: { dealAddress: '100 Sunset Blvd', time: '48 hours' },
+        deepLinkUrl: '/dashboard/projects/p_999'
+      });
+
+      expect(mockSendEachForMulticast).toHaveBeenCalledTimes(1);
+      expect(mockAdd).not.toHaveBeenCalled();
     });
   });
 });

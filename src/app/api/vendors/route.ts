@@ -6,6 +6,8 @@ export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const stateCode = searchParams.get('state');
+  const type = searchParams.get('type');
+  const zip = searchParams.get('zip');
 
   try {
     let query = adminDb
@@ -16,16 +18,24 @@ export async function GET(request: Request) {
     if (stateCode && stateCode !== 'All') {
       query = query.where('licensingStates', 'array-contains', stateCode);
     }
+    
+    if (type && type !== 'All') {
+      query = query.where('type', '==', type);
+    }
 
     const snapshot = await query.get();
 
-    const vendors = snapshot.docs.map(doc => {
+    let vendors = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
         id: doc.id,
         ...data
       };
     });
+
+    if (zip) {
+      vendors = vendors.filter((v: any) => v.serviceAreas && v.serviceAreas.includes(zip));
+    }
 
     return NextResponse.json({ success: true, vendors });
   } catch (error) {

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 interface OERIndicatorProps {
   operatingExpenses: number;
-  grossOperatingIncome: number;
+  grossRentalIncome: number;
   className?: string;
   isLoading?: boolean;
 }
@@ -71,11 +71,11 @@ function ArcGauge({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-export default function OERIndicator({ operatingExpenses, grossOperatingIncome, className = '', isLoading = false }: OERIndicatorProps) {
+export default function OERIndicator({ operatingExpenses, grossRentalIncome, className = '', isLoading = false }: OERIndicatorProps) {
   const oer = useMemo(() => {
-    if (!grossOperatingIncome || grossOperatingIncome === 0) return 0;
-    return (operatingExpenses / grossOperatingIncome) * 100;
-  }, [operatingExpenses, grossOperatingIncome]);
+    if (!grossRentalIncome || grossRentalIncome === 0) return 0;
+    return (operatingExpenses / grossRentalIncome) * 100;
+  }, [operatingExpenses, grossRentalIncome]);
 
   const zone = useMemo(() => getZone(oer), [oer]);
 
@@ -96,7 +96,7 @@ export default function OERIndicator({ operatingExpenses, grossOperatingIncome, 
     >
       <p className="ag-label mb-1" style={{ color: 'var(--pw-muted)' }}>Operating Expense Ratio</p>
       <p className="text-xs mb-4" style={{ color: 'var(--pw-subtle)' }}>
-        OER = Operating Expenses ÷ Gross Operating Income
+        OER = Operating Expenses ÷ Gross Rental Income
       </p>
 
       <div className="flex flex-col items-center">
@@ -134,9 +134,9 @@ export default function OERIndicator({ operatingExpenses, grossOperatingIncome, 
         </div>
         <div>
           <p className="font-mono text-sm font-semibold" style={{ color: 'var(--pw-fg)' }}>
-            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grossOperatingIncome)}
+            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(grossRentalIncome)}
           </p>
-          <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Gross Operating Income</p>
+          <p className="text-xs" style={{ color: 'var(--pw-muted)' }}>Gross Rental Income</p>
         </div>
       </div>
 

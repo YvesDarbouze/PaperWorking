@@ -42,7 +42,7 @@ export function deriveNOIBreakdowns(projects: Project[]) {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const components = computeNOIComponents(f);
+      const components = computeNOIComponents(f, p.strategyType, p.currentPhase);
       const grossPotentialIncome = components.grossRentalIncome + components.otherIncome;
       const fiftyPercentEstimate = grossPotentialIncome * 0.5;
 

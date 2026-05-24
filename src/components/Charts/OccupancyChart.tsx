@@ -69,11 +69,12 @@ export default function OccupancyChart({ data, height = 300 }: OccupancyChartPro
       {
         type: 'bar',
         data: data.map(d => {
-          let color = '#DC2626'; // critical < 80
-          if (d.occupancyRate >= 97) color = '#595959';
+          let color = '#595959';
+          if (d.occupancyRate < 80) color = '#DC2626';
+          else if (d.occupancyRate < 90) color = '#EF4444';
+          else if (d.occupancyRate >= 97) color = '#595959';
           else if (d.occupancyRate >= 93) color = '#7F7F7F';
-          else if (d.occupancyRate >= 88) color = '#A5A5A5';
-          else if (d.occupancyRate >= 80) color = '#EF4444';
+          else color = '#A5A5A5';
           
           return {
             value: d.occupancyRate,
@@ -84,6 +85,29 @@ export default function OccupancyChart({ data, height = 300 }: OccupancyChartPro
           };
         }),
         barMaxWidth: 40,
+        markArea: {
+          silent: true,
+          data: [
+            [
+              {
+                yAxis: 88,
+                itemStyle: {
+                  color: 'rgba(89,89,89,0.06)'
+                },
+                label: {
+                  show: true,
+                  formatter: 'U.S. Norm (88%-92%)',
+                  position: 'insideLeft',
+                  color: '#A5A5A5',
+                  fontSize: 8
+                }
+              },
+              {
+                yAxis: 92
+              }
+            ]
+          ]
+        },
         markLine: {
           symbol: 'none',
           data: [

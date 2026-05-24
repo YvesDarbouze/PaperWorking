@@ -3,7 +3,7 @@
 import React, { useMemo, lazy, Suspense } from 'react';
 import { Project } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
-import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { computeNOIComponents, computeCapRate, computeDSCR, computeAnnualDebtService, deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
@@ -41,18 +41,10 @@ export function derivePropertyFinancials(projects: Project[]) {
     }
 
     // Use the real metrics engine
-    const noiComponents = computeNOIComponents(financials);
-    const noi = noiComponents.noi;
-    
-    const purchasePrice = financials.purchasePrice ?? financials.estimatedARV ?? 0;
-    const capRate = computeCapRate(noi, purchasePrice);
-    
-    // Compute DSCR from real debt service
-    const loanAmount = financials.loanAmount ?? 0;
-    const loanInterestRate = financials.loanInterestRate ?? 0;
-    const loanTermMonths = 360; // 30-year conventional
-    const annualDebtService = computeAnnualDebtService(loanAmount, loanInterestRate, loanTermMonths);
-    const dscr = annualDebtService > 0 ? Math.round((noi / annualDebtService) * 100) / 100 : 0;
+    const { asset: metrics } = deriveDualScopeMetrics(financials, undefined, p.strategyType, p.currentPhase);
+    const noi = metrics.noi;
+    const capRate = metrics.capRate;
+    const dscr = metrics.dscr === Infinity ? 0 : Math.round(metrics.dscr * 100) / 100;
 
     return {
       name: (p.propertyName || 'Unknown').substring(0, 10),
@@ -107,22 +99,22 @@ const PropertyFinancialsAgent = ({ projects }: { projects: Project[] }) => {
 export function deriveOperationalData(projects: Project[]) {
   // When projects have real data, use real OER from NOI components
   if (projects.length > 0 && projects.some(p => p.financials)) {
-    let totalGPI = 0;
+    let totalGrossRentalIncome = 0;
     let totalOpEx = 0;
     let totalVacancyLoss = 0;
     let totalMaintenance = 0;
 
     projects.forEach(p => {
       if (!p.financials) return;
-      const c = computeNOIComponents(p.financials);
-      totalGPI += c.grossRentalIncome + c.otherIncome;
+      const c = computeNOIComponents(p.financials, p.strategyType, p.currentPhase);
+      totalGrossRentalIncome += c.grossRentalIncome;
       totalOpEx += c.totalOperatingExpenses;
       totalVacancyLoss += c.vacancyLoss;
       totalMaintenance += c.maintenance;
     });
 
-    const oer = totalGPI > 0 ? Math.round((totalOpEx / totalGPI) * 100) : 0;
-    const occupancy = totalGPI > 0 ? Math.round((1 - totalVacancyLoss / totalGPI) * 100) : 100;
+    const oer = totalGrossRentalIncome > 0 ? Math.round((totalOpEx / totalGrossRentalIncome) * 100) : 0;
+    const occupancy = totalGrossRentalIncome > 0 ? Math.round((1 - totalVacancyLoss / totalGrossRentalIncome) * 100) : 100;
 
     // Project quarterly trends using real baseline
     return [

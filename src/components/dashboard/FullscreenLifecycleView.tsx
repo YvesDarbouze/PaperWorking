@@ -14,6 +14,10 @@ import { projectsService } from '@/lib/firebase/projects';
 import { transitionProjectPhase } from '@/lib/services/projectStateMachine';
 import { computeNOIComponents, computeCapRate, computeContingencyBudget, computeDailyBurnRate, computeRenovationROI, computeOverImprovementRisk, computeRehabStageProgress, computeYesterdayCost, computeCriticalPath } from '@/lib/metrics/reiMetrics';
 import ProjectTodoList from '../project/ProjectTodoList';
+import AcquisitionInterview from '@/components/acquisition/AcquisitionInterview';
+import PurchaseInterview from '@/components/purchase/PurchaseInterview';
+import HoldInterview from '@/components/hold/HoldInterview';
+import { computePhaseProgress } from '@/lib/utils/projectProgress';
 
 /* ── Lazy-loaded analytics panel ── */
 import { lazy, Suspense } from 'react';
@@ -38,10 +42,10 @@ interface FullscreenLifecycleViewProps {
 import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
 const PHASES = [
-  { id: 1, title: 'Acquisition', bg: PHASE_BACKGROUNDS.findandfund || '#F2F2F2' },
-  { id: 2, title: 'Purchase', bg: PHASE_BACKGROUNDS.evaluation || '#CCCCCC' },
-  { id: 3, title: 'Hold', bg: PHASE_BACKGROUNDS.rehab || '#A5A5A5' },
-  { id: 4, title: 'Exit', bg: PHASE_BACKGROUNDS.exit || '#595959' },
+  { id: 1, title: 'Acquisition', bg: '#F2F2F2' },
+  { id: 2, title: 'Purchase', bg: '#CCCCCC' },
+  { id: 3, title: 'Hold', bg: '#A5A5A5' },
+  { id: 4, title: 'Exit', bg: '#595959' },
 ];
 
 export default function FullscreenLifecycleView({ projectId, onExit }: FullscreenLifecycleViewProps) {
@@ -68,6 +72,7 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
 
   // Determine physics-based framing
   const activePhaseMap = PHASES[currentPhase - 1] || PHASES[0];
+  const completionPercentage = computePhaseProgress(deal, currentPhase);
 
   return (
     <motion.div 
@@ -76,7 +81,10 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
       style={{ backgroundColor: activePhaseMap.bg }}
     >
        
-       <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-40 bg-black/10 backdrop-blur-sm border-b border-black/5">
+       <header 
+         className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-40 backdrop-blur-sm border-b border-black/5 transition-colors duration-1000 ease-in-out" 
+         style={{ backgroundColor: activePhaseMap.bg }}
+       >
           <div className="flex items-center space-x-6">
             <button onClick={onExit} className="flex items-center text-text-primary/70 hover:text-text-primary font-medium transition-colors bg-bg-surface/20 px-4 py-2 rounded-lg">
                <ArrowLeft className="w-4 h-4 mr-2" /> Close Project
@@ -85,9 +93,9 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                <p className="text-[10px] font-bold uppercase tracking-[0.15em] opacity-60 text-text-primary mix-blend-color-burn">Phase Completion</p>
                <div className="flex items-center space-x-2 mt-1">
                  <div className="w-32 h-1.5 bg-black/10 rounded-full overflow-hidden">
-                    <div className="h-full bg-black/60 rounded-full" style={{ width: `${currentPhase * 25}%` }}></div>
+                    <div className="h-full bg-black/60 rounded-full" style={{ width: `${completionPercentage}%` }}></div>
                  </div>
-                 <span className="text-xs font-bold mix-blend-color-burn">{currentPhase * 25}%</span>
+                 <span className="text-xs font-bold mix-blend-color-burn">{completionPercentage}%</span>
                </div>
             </div>
           </div>
@@ -105,13 +113,103 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                onClick={async () => {
                   const nextMap: Record<string, string> = {
                      'Sourcing': 'Under Contract',
+                     'Lead': 'Under Contract',
+                     'Active': 'Under Contract',
                      'Under Contract': 'Rehab',
                      'Rehab': 'Listed',
+                     'Renovating': 'Listed',
                      'Listed': 'Sold',
                      'Sold': 'Rented'
                   };
                   const nextPhase = nextMap[deal.status];
                   if (nextPhase) {
+                     // Phase 1 Sourcing Gating
+                     if (deal.currentPhase === 1 || deal.status === 'Lead' || deal.status === 'Active') {
+                        const missing: string[] = [];
+                        if (!deal.address) missing.push("Property Address");
+                        if (!deal.strategyType) missing.push("Strategy Type");
+                        if ((deal.financials?.ownershipPercentage ?? 0) <= 0) missing.push("Ownership Percentage");
+                        const targetPrice = deal.financials?.targetPrice ?? deal.financials?.targetPurchasePrice ?? deal.financials?.purchasePrice;
+                        if (!targetPrice || targetPrice <= 0) missing.push("Projected Target Purchase Price");
+                        const offerStatus = deal.financials?.offerStatus;
+                        if (offerStatus !== 'Accepted' && deal.status !== 'Under Contract') {
+                           missing.push("Accepted Offer (Offer Status must be 'Accepted')");
+                        }
+
+                        if (missing.length > 0) {
+                           toast.error(`Cannot advance to Purchase. Missing: ${missing.join(', ')}`);
+                           return;
+                        }
+                     }
+
+                     // Phase 2 Purchase Gating
+                     if (deal.currentPhase === 2 || deal.status === 'Under Contract') {
+                        const missingP2: string[] = [];
+                        if (!deal.financials?.purchasePrice || deal.financials.purchasePrice <= 0)
+                           missingP2.push("Actual Purchase Price");
+                        if (deal.financials?.totalCashInvested == null && deal.financials?.financingCashInvested == null)
+                           missingP2.push("Total Cash Invested");
+                        if (deal.financials?.financingType === 'Financed') {
+                           if (!deal.financials?.loanAmount || deal.financials.loanAmount <= 0)
+                              missingP2.push("Loan Amount");
+                           if (!deal.financials?.loanInterestRate || deal.financials.loanInterestRate <= 0)
+                              missingP2.push("Interest Rate");
+                           if (!deal.financials?.loanTermYears || deal.financials.loanTermYears <= 0)
+                              missingP2.push("Loan Term");
+                        }
+                        if (!deal.financials?.acquisitionDate)
+                           missingP2.push("Acquisition / Closing Date");
+                        if (!deal.isClearToClose)
+                           missingP2.push("Clear to Close (complete Closing Disclosure section)");
+
+                        if (missingP2.length > 0) {
+                           toast.error(`Cannot advance to Hold. Missing: ${missingP2.join(', ')}`);
+                           return;
+                        }
+                     }
+
+                     // Phase 3 Hold Gating
+                     if (deal.currentPhase === 3 || (deal.status as string) === 'Rehab' || deal.status === 'Renovating') {
+                        const strategy = deal.strategyType;
+                        const isSell = strategy === 'Sell';
+                        const isFlip = strategy === 'Fix & Flip';
+                        const isRental = strategy === 'Buy & Hold' || strategy === 'Rent';
+                        const isBRRRR = strategy === 'Rent';
+
+                        const missingHold: string[] = [];
+
+                        const hasRehabDone = deal.financials?.rehabDoneDate != null;
+                        const hasCurrentValue = (deal.financials?.estimatedCurrentValue || 0) > 0;
+                        const hasTenantPlaced = (deal.financials?.daysOccupied || 0) > 0 || (deal.financials?.occupiedUnits || 0) > 0;
+                        const hasOpex = (deal.financials?.holdingCostTaxes || 0) > 0 ||
+                                         (deal.financials?.holdingCostInsurance || 0) > 0 ||
+                                         (deal.financials?.holdingCostUtilities || 0) > 0 ||
+                                         (deal.financials?.propertyManagementFee || 0) > 0 ||
+                                         (deal.financials?.monthlyMaintenanceReserve || 0) > 0 ||
+                                         (deal.financials?.monthlyHOA || 0) > 0;
+
+                        if (isBRRRR) {
+                           if (!hasRehabDone) missingHold.push("Rehab Completion Date");
+                           if (!hasCurrentValue) missingHold.push("Current Estimated Value (> $0)");
+                           if (!hasTenantPlaced) missingHold.push("Tenant Placement (Days Occupied or Occupied Units > 0)");
+                           if (!hasOpex) missingHold.push("Captured Monthly Operating Expenses (at least one category > $0)");
+                        } else if (isFlip) {
+                           if (!hasRehabDone) missingHold.push("Rehab Completion Date");
+                           if (!hasCurrentValue) missingHold.push("Current Estimated Value (> $0)");
+                        } else if (isSell) {
+                           // Wholesale / Direct Sell — no rehab, just needs a value estimate
+                           if (!hasCurrentValue) missingHold.push("Current Estimated Value (> $0)");
+                        } else if (isRental) {
+                           if (!hasTenantPlaced) missingHold.push("Tenant Placement (Days Occupied or Occupied Units > 0)");
+                           if (!hasOpex) missingHold.push("Captured Monthly Operating Expenses (at least one category > $0)");
+                        }
+
+                        if (missingHold.length > 0) {
+                           toast.error(`Cannot advance to Exit. Missing: ${missingHold.join(', ')}`);
+                           return;
+                        }
+                     }
+
                      try {
                         await transitionProjectPhase(deal.id, deal.status as any, nextPhase as any, 'system');
                         toast.success(`Deal advanced to ${nextPhase}`);
@@ -197,7 +295,7 @@ function ExplainerVideoPlaceholder({ phaseName }: { phaseName: string }) {
 }
 
 function StaticPhase1({ deal }: { deal: Project }) {
-  const noiComponents = deal.financials ? computeNOIComponents(deal.financials) : null;
+  const noiComponents = deal.financials ? computeNOIComponents(deal.financials, deal.strategyType, deal.currentPhase) : null;
   const capRate = noiComponents && deal.financials?.purchasePrice
     ? computeCapRate(noiComponents.noi, deal.financials.purchasePrice)
     : 0;
@@ -206,7 +304,9 @@ function StaticPhase1({ deal }: { deal: Project }) {
   return (
     <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl text-center border border-white/20 mt-12 mb-12">
        <h1 className="text-4xl font-normal text-text-primary mb-4">Phase 1: Acquisition</h1>
-       <p className="text-text-secondary mb-8">Review your deal numbers and financing breakdown for {deal.address}.</p>
+       <p className="text-text-secondary mb-8">Review your deal numbers and financing breakdown for {deal.address || 'your property'}.</p>
+       
+       <AcquisitionInterview deal={deal} />
        
        <ExplainerVideoPlaceholder phaseName="Acquisition" />
 
@@ -417,7 +517,7 @@ function StaticPhase1({ deal }: { deal: Project }) {
 }
 
 function StaticPhase2({ deal }: { deal: Project }) {
-  const noiComponents = deal.financials ? computeNOIComponents(deal.financials) : null;
+  const noiComponents = deal.financials ? computeNOIComponents(deal.financials, deal.strategyType, deal.currentPhase) : null;
   const hasNOIData = noiComponents && noiComponents.grossRentalIncome > 0;
 
   // ── Phase 2 Budget Planning Metrics ──
@@ -436,6 +536,8 @@ function StaticPhase2({ deal }: { deal: Project }) {
        <p className="text-text-secondary mb-8 text-center max-w-2xl mx-auto">
          Secure capital, assign a dollar amount to every task, and create the financial roadmap for the entire project. A miscalculated budget erodes profit just as fast as overpaying for the property.
        </p>
+       
+       <PurchaseInterview deal={deal} />
        
        <ExplainerVideoPlaceholder phaseName="Financing" />
 
@@ -818,6 +920,8 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
     <div className="w-full max-w-6xl bg-bg-surface/60 backdrop-blur rounded-2xl p-10 shadow-2xl border border-white/20 mt-12 mb-12">
        <h1 className="text-4xl font-normal text-text-primary mb-2">Phase 3: Hold</h1>
        <p className="text-text-secondary mb-8">Every day you hold a property, it costs you money. Track rehab spending, manage renovations by ROI zone, and monitor your daily burn rate.</p>
+       
+       <HoldInterview deal={deal} />
        
        <ExplainerVideoPlaceholder phaseName="Hold" />
 

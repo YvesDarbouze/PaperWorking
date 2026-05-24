@@ -6,10 +6,16 @@ import { VendorProfile, VendorType } from '@/types/schema';
 import { motion } from 'framer-motion';
 import { VendorRequestModal } from './VendorRequestModal';
 
+import { useAuth } from '@/context/AuthContext';
+import { isSubscriptionActive } from '@/lib/stripe/subscription';
+
 export default function VendorDirectory() {
+  const { profile } = useAuth();
+  const hasActiveSub = isSubscriptionActive(profile);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<VendorType | 'All'>('All');
   const [stateFilter, setStateFilter] = useState('All');
+  const [zipFilter, setZipFilter] = useState('');
   const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -23,6 +29,12 @@ export default function VendorDirectory() {
         const params = new URLSearchParams();
         if (stateFilter !== 'All') {
           params.append('state', stateFilter);
+        }
+        if (typeFilter !== 'All') {
+          params.append('type', typeFilter);
+        }
+        if (zipFilter.trim() !== '') {
+          params.append('zip', zipFilter.trim());
         }
         const res = await fetch(`/api/vendors?${params.toString()}`);
         if (res.ok) {
@@ -38,7 +50,7 @@ export default function VendorDirectory() {
       }
     };
     fetchVendors();
-  }, [stateFilter]);
+  }, [stateFilter, typeFilter, zipFilter]);
 
   const handleRequestQuote = (vendor: VendorProfile) => {
     setSelectedVendor(vendor);
@@ -48,10 +60,7 @@ export default function VendorDirectory() {
   const filteredVendors = vendors.filter(v => {
     const matchesSearch = v.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          v.specialties?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesType = typeFilter === 'All' || v.type === typeFilter;
-    // state is already filtered on the server if changed, but we can keep it here for safety
-    const matchesState = stateFilter === 'All' || v.licensingStates?.includes(stateFilter);
-    return matchesSearch && matchesType && matchesState;
+    return matchesSearch;
   });
 
   return (
@@ -97,8 +106,15 @@ export default function VendorDirectory() {
             onChange={(e) => setTypeFilter(e.target.value as any)}
           >
             <option value="All">All Roles</option>
-            <option value="Lawyer">Lawyers</option>
-            <option value="Appraiser">Appraisers</option>
+            <option value="Lawyer">Lawyer</option>
+            <option value="Appraiser">Appraiser</option>
+            <option value="Lender">Lender</option>
+            <option value="Inspector">Inspector</option>
+            <option value="Title">Title</option>
+            <option value="Insurance">Insurance</option>
+            <option value="Contractor">Contractor</option>
+            <option value="Property Manager">Property Manager</option>
+            <option value="Listing Agent">Listing Agent</option>
           </select>
           <select 
             className="px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
@@ -110,6 +126,13 @@ export default function VendorDirectory() {
             <option value="FL">FL</option>
             <option value="GA">GA</option>
           </select>
+          <input 
+            type="text"
+            placeholder="Zip Code"
+            className="w-32 px-4 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-black transition-all"
+            value={zipFilter}
+            onChange={(e) => setZipFilter(e.target.value)}
+          />
         </div>
       </header>
 
@@ -117,7 +140,7 @@ export default function VendorDirectory() {
       <main className="flex-1 overflow-y-auto p-12 bg-pw-dashboard">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-pw-border border border-border-accent">
           {filteredVendors.map((vendor) => (
-            <VendorCard key={vendor.id} vendor={vendor} onRequestQuote={() => handleRequestQuote(vendor)} />
+            <VendorCard key={vendor.id} vendor={vendor} onRequestQuote={() => handleRequestQuote(vendor)} hasActiveSub={hasActiveSub} />
           ))}
         </div>
       </main>
@@ -134,7 +157,7 @@ export default function VendorDirectory() {
   );
 }
 
-function VendorCard({ vendor, onRequestQuote }: { vendor: VendorProfile; onRequestQuote: () => void }) {
+function VendorCard({ vendor, onRequestQuote, hasActiveSub }: { vendor: VendorProfile; onRequestQuote: () => void; hasActiveSub: boolean }) {
   return (
     <div className="bg-bg-surface p-8 flex flex-col group relative">
       <div className="flex justify-between items-start mb-8">
@@ -177,9 +200,14 @@ function VendorCard({ vendor, onRequestQuote }: { vendor: VendorProfile; onReque
       <div className="mt-10">
         <button 
           onClick={onRequestQuote}
-          className="w-full py-4 border border-pw-black text-text-primary text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-black hover:text-white transition-all"
+          disabled={!hasActiveSub}
+          className={`w-full py-4 border text-xs font-black uppercase tracking-[0.2em] transition-all ${
+            hasActiveSub 
+              ? 'border-pw-black text-text-primary hover:bg-pw-black hover:text-white' 
+              : 'border-border-accent text-text-secondary bg-pw-dashboard opacity-50 cursor-not-allowed'
+          }`}
         >
-          Request Quote
+          {hasActiveSub ? 'Request Quote' : 'Plan Required'}
         </button>
       </div>
     </div>

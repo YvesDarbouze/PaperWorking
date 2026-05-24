@@ -5,20 +5,16 @@ import ReactECharts from 'echarts-for-react';
 
 interface AppreciationDataPoint {
   year: number;
-  conservative: number;
-  projected: number;
-  optimistic: number;
-  equityGained: number;
-  projRate: number;
+  rate: number;
+  isRealized: boolean;
 }
 
 interface AppreciationChartProps {
   data: AppreciationDataPoint[];
   holdYears: number;
-  appreciationRate: number;
 }
 
-export default function AppreciationChart({ data, holdYears, appreciationRate }: AppreciationChartProps) {
+export default function AppreciationChart({ data, holdYears }: AppreciationChartProps) {
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -31,50 +27,39 @@ export default function AppreciationChart({ data, holdYears, appreciationRate }:
       formatter: (params: any[]) => {
         const d = params[0].data;
         if (!d) return '';
-        const fmtUSD = (v: number) => `$${v.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
         return `
           <div style="font-weight: bold; margin-bottom: 4px;">Year ${d.year}</div>
-          <div style="color: #A5A5A5">Conservative (3%): ${fmtUSD(d.conservative)}</div>
-          <div style="color: #7F7F7F">Projected (${d.projRate}%): ${fmtUSD(d.projected)}</div>
-          <div style="color: #595959">Optimistic (7%): ${fmtUSD(d.optimistic)}</div>
-          <div style="margin-top: 4px; color: #595959;">Equity Built: ${fmtUSD(d.equityGained)}</div>
+          <div style="color: #0d0d0d; font-weight: bold;">Annualized Appreciation: ${d.value.toFixed(2)}%</div>
+          <div style="font-size: 10px; margin-top: 4px; color: ${d.isRealized ? '#595959' : '#7F7F7F'};">
+            Status: ${d.isRealized ? 'Realized (Sale Closed)' : 'Estimated (Unrealized)'}
+          </div>
         `;
       }
     },
     legend: {
-      data: ['Optimistic (7%)', `Projected (${appreciationRate}%)`, 'Conservative (3%)'],
-      top: 0,
-      textStyle: {
-        fontSize: 10,
-        color: 'var(--text-secondary, #6B7280)'
-      }
+      show: false
     },
     grid: {
       top: 40,
-      right: 20,
-      bottom: 20,
+      right: 40,
+      bottom: 40,
       left: 50,
       containLabel: true
     },
     xAxis: {
       type: 'category',
-      data: data.map(d => d.year.toString()),
+      data: data.map(d => `Yr ${d.year}`),
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: 'var(--text-secondary, #6B7280)',
-        fontSize: 10
-      },
-      name: 'Years Held',
-      nameLocation: 'middle',
-      nameGap: 25,
-      nameTextStyle: {
         color: 'var(--text-secondary, #6B7280)',
         fontSize: 10
       }
     },
     yAxis: {
       type: 'value',
+      min: 0,
+      max: (value: any) => Math.max(8, Math.ceil(value.max + 2)),
       splitLine: {
         lineStyle: {
           type: 'dashed',
@@ -86,91 +71,73 @@ export default function AppreciationChart({ data, holdYears, appreciationRate }:
       axisLabel: {
         color: 'var(--text-secondary, #6B7280)',
         fontSize: 10,
-        formatter: (value: number) => `$${(value / 1000).toFixed(0)}k`
+        formatter: '{value}%'
       }
     },
     series: [
       {
-        name: 'Optimistic (7%)',
+        name: 'Annualized Appreciation',
         type: 'line',
-        data: data.map(d => ({ value: d.optimistic, ...d })),
-        symbol: 'none',
+        data: data.map(d => ({
+          value: d.rate,
+          year: d.year,
+          isRealized: d.isRealized,
+          itemStyle: {
+            color: d.isRealized ? '#0d0d0d' : '#7F7F7F'
+          }
+        })),
+        symbol: 'circle',
+        symbolSize: 6,
+        showSymbol: true,
         lineStyle: {
           color: '#595959',
-          width: 1.5
+          width: 2.5,
+          type: 'solid'
         },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(89,89,89,0.15)' },
-              { offset: 1, color: 'rgba(89,89,89,0)' }
+        markArea: {
+          silent: true,
+          itemStyle: {
+            color: 'rgba(89,89,89,0.06)'
+          },
+          data: [
+            [
+              {
+                yAxis: 3,
+                name: 'Baseline Band (3-5%)',
+                label: {
+                  position: 'insideLeft',
+                  color: '#A5A5A5',
+                  fontSize: 9,
+                  offset: [10, 0]
+                }
+              },
+              {
+                yAxis: 5
+              }
             ]
-          }
+          ]
         },
         markLine: {
+          silent: true,
+          symbol: ['none', 'none'],
+          lineStyle: {
+            color: '#A5A5A5',
+            type: 'dashed',
+            width: 1
+          },
+          label: {
+            formatter: '4% Long-Run Avg',
+            position: 'end',
+            fontSize: 9,
+            color: '#A5A5A5'
+          },
           data: [
-            {
-              xAxis: holdYears.toString(),
-              label: {
-                formatter: `Exit Yr ${holdYears}`,
-                position: 'insideEndTop',
-                color: '#595959',
-                fontSize: 10
-              },
-              lineStyle: {
-                color: '#595959',
-                type: 'dashed',
-                width: 1
-              }
-            }
-          ],
-          symbol: ['none', 'none']
-        }
-      },
-      {
-        name: `Projected (${appreciationRate}%)`,
-        type: 'line',
-        data: data.map(d => ({ value: d.projected, ...d })),
-        symbol: 'none',
-        lineStyle: {
-          color: '#7F7F7F',
-          width: 2.5
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(127,127,127,0.2)' },
-              { offset: 1, color: 'rgba(127,127,127,0)' }
-            ]
-          }
-        }
-      },
-      {
-        name: 'Conservative (3%)',
-        type: 'line',
-        data: data.map(d => ({ value: d.conservative, ...d })),
-        symbol: 'none',
-        lineStyle: {
-          color: '#A5A5A5',
-          width: 1.5
-        },
-        areaStyle: {
-          color: {
-            type: 'linear',
-            x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(165,165,165,0.15)' },
-              { offset: 1, color: 'rgba(165,165,165,0)' }
-            ]
-          }
+            { yAxis: 4 }
+          ]
         }
       }
     ]
   };
 
-  return <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />;
+  return <ReactECharts option={option} style={{ height: '100%', width: '100%' }} opts={{ renderer: 'svg' }} />;
 }

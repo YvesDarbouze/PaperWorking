@@ -3,6 +3,7 @@
 import React, { Suspense, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { HardHat } from 'lucide-react';
+import { deriveDualScopeMetrics } from '@/lib/metrics/reiMetrics';
 
 /* Phase 3 Unified Rehab Tracker modules */
 import RehabTracker from '@/components/rehab/RehabTracker';
@@ -30,53 +31,21 @@ export default function HoldPanel() {
   // Derive NOI computation inputs from current project financials
   const financials = currentProject?.financials;
 
-  // Annual NOI: (grossRent - vacancyLoss + otherIncome) - opEx
-  const computedNOI = useMemo(() => {
-    if (!financials) return 0;
-    const grossAnnualRent = (financials.monthlyGrossRent ?? 0) * 12;
-    const otherIncome = (financials.otherMonthlyIncome ?? 0) * 12;
-    const vacancyLoss = grossAnnualRent * ((financials.vacancyRatePercent ?? 7) / 100);
-    const effectiveRent = grossAnnualRent - vacancyLoss;
-    const annualTaxes = (financials.holdingCostTaxes ?? 0) * 12;
-    const annualInsurance = (financials.holdingCostInsurance ?? 0) * 12;
-    const annualUtilities = (financials.holdingCostUtilities ?? 0) * 12;
-    const mgmtBase = financials.propertyManagementFee
-      ? financials.propertyManagementFee * 12
-      : effectiveRent * ((financials.propertyManagementFeePercent ?? 10) / 100);
-    const maintenance = (financials.monthlyMaintenanceReserve ?? 0) * 12;
-    const hoa = (financials.monthlyHOA ?? 0) * 12;
-    const opEx = annualTaxes + annualInsurance + annualUtilities + mgmtBase + maintenance + hoa;
-    return effectiveRent + otherIncome - opEx;
-  }, [financials]);
-
-  // Annual debt service for CashFlowMeter
-  const annualDebtService = useMemo(() => {
-    return (financials?.longTermMortgagePayment ?? 0) * 12;
-  }, [financials]);
-
-  // OER inputs
-  const oerOperatingExpenses = useMemo(() => {
-    if (!financials) return 0;
-    const effectiveRent = (financials.monthlyGrossRent ?? 0) * 12 * (1 - (financials.vacancyRatePercent ?? 7) / 100);
-    const mgmtBase = financials.propertyManagementFee
-      ? financials.propertyManagementFee * 12
-      : effectiveRent * ((financials.propertyManagementFeePercent ?? 10) / 100);
-    return (
-      (financials.holdingCostTaxes ?? 0) * 12 +
-      (financials.holdingCostInsurance ?? 0) * 12 +
-      (financials.holdingCostUtilities ?? 0) * 12 +
-      mgmtBase +
-      (financials.monthlyMaintenanceReserve ?? 0) * 12 +
-      (financials.monthlyHOA ?? 0) * 12
+  const metrics = useMemo(() => {
+    if (!financials) return null;
+    const { asset } = deriveDualScopeMetrics(
+      financials,
+      undefined,
+      currentProject?.strategyType,
+      currentProject?.currentPhase
     );
-  }, [financials]);
+    return asset;
+  }, [financials, currentProject?.strategyType, currentProject?.currentPhase]);
 
-  const oerGrossOperatingIncome = useMemo(() => {
-    if (!financials) return 0;
-    const grossAnnualRent = (financials.monthlyGrossRent ?? 0) * 12;
-    const vacancyLoss = grossAnnualRent * ((financials.vacancyRatePercent ?? 7) / 100);
-    return grossAnnualRent - vacancyLoss + (financials.otherMonthlyIncome ?? 0) * 12;
-  }, [financials]);
+  const computedNOI = metrics?.noi ?? 0;
+  const annualDebtService = metrics?.annualDebtService ?? 0;
+  const oerOperatingExpenses = metrics?.noiComponents.totalOperatingExpenses ?? 0;
+  const oerGrossRentalIncome = metrics?.noiComponents.grossRentalIncome ?? 0;
 
   // OccupancyCard — only shown for multi-unit properties
   const hasUnits = (financials?.numberOfUnits ?? 0) > 0;
@@ -198,7 +167,7 @@ export default function HoldPanel() {
                 />
                 <OERIndicator
                   operatingExpenses={oerOperatingExpenses}
-                  grossOperatingIncome={oerGrossOperatingIncome}
+                  grossRentalIncome={oerGrossRentalIncome}
                 />
               </div>
 

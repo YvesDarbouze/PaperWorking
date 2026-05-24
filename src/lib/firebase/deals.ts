@@ -16,6 +16,7 @@ import {
 import { Project, LedgerItem, PhaseSnapshotKey, PhaseSnapshotMap, Phase1Snapshot, Phase2Snapshot, Phase3Snapshot } from '@/types/schema';
 import { financialsSyncService } from '../services/financialsSyncService';
 import { computeAutopsyMetrics } from '../math/calculatorUtils';
+import { reconstructHistoryForProject } from '../metrics/snapshotService';
 
 /* ═══════════════════════════════════════════════════════
    Deals Service — High-Performance Firestore mutations
@@ -99,6 +100,13 @@ export const projectsService = {
         updatedAt: serverTimestamp(),
       });
 
+      // Reconstruct history so charts populate immediately
+      try {
+        await reconstructHistoryForProject(deal);
+      } catch (err) {
+        console.error('Failed to reconstruct history for project:', err);
+      }
+
       // SYNC: Trigger Postgres replication for the new deal
       // We don't await to keep the UI response immediate
       financialsSyncService.syncProjectFinancials(deal);
@@ -129,7 +137,13 @@ export const projectsService = {
 
       // SYNC: Fetch full project and update Postgres
       this.getProject(projectId).then(fullDeal => {
-        if (fullDeal) financialsSyncService.syncProjectFinancials(fullDeal);
+        if (fullDeal) {
+          financialsSyncService.syncProjectFinancials(fullDeal);
+          // Also reconstruct history since financial values might have changed!
+          reconstructHistoryForProject(fullDeal).catch(err => {
+            console.error('Failed to reconstruct history on update:', err);
+          });
+        }
       });
     } catch (error) {
        console.error(`Status Shift Error: Failed to synchronize update for deal ${projectId}`, error);

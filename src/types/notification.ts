@@ -2,6 +2,8 @@
 //  PaperWorking Notifications — Type Definitions
 // ═══════════════════════════════════════════════════════
 
+import type { NotificationCategory } from './user';
+
 export type NotificationType =
   | 'VENDOR_BID'
   | 'INVEST_INVITE'
@@ -13,7 +15,8 @@ export type NotificationType =
   | 'RECEIPT_APPROVAL'
   | 'TEAM_INVITE'
   | 'OVER_IMPROVEMENT_ALERT'
-  | 'BURN_RATE_WARNING';
+  | 'BURN_RATE_WARNING'
+  | 'VENDOR_LEAD';
 
 export type NotificationUrgency = 'informational' | 'actionable' | 'critical';
 
@@ -73,6 +76,16 @@ export const NOTIFICATION_METADATA: Record<
     templateTitle: (params: NotificationObjectReference & { actorName: string }) => string;
   }
 > = {
+  VENDOR_LEAD: {
+    urgency: 'actionable',
+    channels: ['in-app', 'email'],
+    templateTitle: (params) => {
+      const investor = params.actorName;
+      if (!investor) throw new Error('VENDOR_LEAD requires an investor identity in the title.');
+      const service = params.metadata?.serviceType || 'service';
+      return `New lead: ${investor} requested a ${service} quote`;
+    }
+  },
   VENDOR_BID: {
     urgency: 'actionable',
     channels: ['in-app', 'email'],
@@ -181,3 +194,28 @@ export const NOTIFICATION_METADATA: Record<
     }
   }
 };
+
+export function getNotificationCategory(type: NotificationType): NotificationCategory {
+  switch (type) {
+    case 'INVEST_INVITE':
+      return 'syndication';
+    case 'VENDOR_LEAD':
+    case 'VENDOR_BID':
+      return 'bids';
+    case 'TASK_COMPLETE':
+    case 'DOCUMENT_SIGNED':
+    case 'RECEIPT_APPROVAL':
+    case 'TEAM_INVITE':
+      return 'tasks';
+    case 'DEADLINE_ALERT':
+      return 'deadlines';
+    case 'BILLING_CHARGED':
+      return 'billing';
+    case 'OVER_IMPROVEMENT_ALERT':
+    case 'BURN_RATE_WARNING':
+    case 'PHASE_TRANSITION':
+      return 'alerts';
+    default:
+      return 'tasks';
+  }
+}

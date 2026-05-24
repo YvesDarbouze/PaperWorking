@@ -7,12 +7,11 @@ import {
   computeAnnualDebtService,
   computeCashFlow,
   computeDSCR,
-  deriveAllMetrics,
+  deriveDualScopeMetrics,
   type NOIComponents,
 } from '@/lib/metrics/reiMetrics';
 import {
   BarChart, Bar, PieChart, Pie, Cell,
-  AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   ReferenceLine,
 } from 'recharts';
@@ -69,7 +68,7 @@ export function deriveCashFlowBreakdowns(projects: Project[]): PropertyCashFlowD
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const noiComponents = metrics.noiComponents;
 
       return {
@@ -98,7 +97,7 @@ function buildCashFlowWaterfall(noi: number, annualDebtService: number, annualCa
   return [
     { name: 'NOI', value: noi, fill: '#595959', type: 'income' },
     { name: 'Debt Service', value: -annualDebtService, fill: '#EF4444', type: 'expense' },
-    { name: 'Cash Flow', value: annualCashFlow, fill: annualCashFlow >= 0 ? '#7F7F7F' : '#F97316', type: 'result' },
+    { name: 'Cash Flow', value: annualCashFlow, fill: annualCashFlow >= 0 ? '#7F7F7F' : '#EF4444', type: 'result' },
   ];
 }
 
@@ -160,16 +159,19 @@ function generateMonthlyCashFlow(
 /* ── Monthly cash flow tooltip ── */
 function MonthlyCFTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
-  const cf  = payload.find((p: any) => p.dataKey === 'cashFlow')?.value ?? 0;
-  const noi = payload.find((p: any) => p.dataKey === 'noi')?.value ?? 0;
-  const ds  = payload.find((p: any) => p.dataKey === 'debtService')?.value ?? 0;
+  const rawData = payload[0].payload;
+  const cf  = rawData.cashFlow;
+  const noi = rawData.noi;
+  const ds  = rawData.debtService;
+  const isAnnual = rawData.isAnnual;
+  const cfColor = cf < 0 ? '#EF4444' : isAnnual ? '#595959' : '#7F7F7F';
   return (
     <div className="rounded-lg px-3 py-2 shadow-lg text-xs space-y-1"
       style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
       <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{label}</p>
       <p style={{ color: '#595959' }}>NOI: {fmtUSD(noi)}</p>
       <p style={{ color: '#EF4444' }}>Debt Service: ({fmtUSD(ds)})</p>
-      <p style={{ color: cf >= 0 ? '#7F7F7F' : '#F97316', fontWeight: 700 }}>
+      <p style={{ color: cfColor, fontWeight: 700 }}>
         Cash Flow: {cf >= 0 ? '+' : ''}{fmtUSD(cf)}
       </p>
     </div>
@@ -307,6 +309,20 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
     };
     return generateMonthlyCashFlow(combinedNOIComponents, aggregate.annualDebtService);
   }, [aggregate, breakdowns]);
+
+  const trendChartData = useMemo(() => {
+    if (monthlyCFData.length === 0 || !aggregate) return [];
+    return [
+      ...monthlyCFData.map(item => ({ ...item, isAnnual: false })),
+      {
+        month: 'Annual Total',
+        noi: aggregate.noi,
+        cashFlow: aggregate.annualCashFlow,
+        debtService: aggregate.annualDebtService,
+        isAnnual: true,
+      }
+    ];
+  }, [monthlyCFData, aggregate]);
 
   if (!aggregate || aggregate.grossRentalIncome === 0) {
     return (
@@ -611,14 +627,14 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
       </div>
 
       {/* ── Month-to-Month Cash Flow Trend ── */}
-      {monthlyCFData.length > 0 && (
+      {trendChartData.length > 0 && (
         <div
           className="bg-bg-surface border border-border-accent rounded-xl p-5 flex flex-col"
           style={{ minHeight: '320px' }}
         >
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">
-              Monthly Cash Flow Trend — NOI vs. Debt Service
+              Monthly Cash Flow Trend & Annual Total
             </h4>
             <span
               className="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-[0.1em]"
@@ -629,54 +645,39 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
           </div>
           <div className="flex-1 min-h-0">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyCFData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="cfPosGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#7F7F7F" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#7F7F7F" stopOpacity={0.02} />
-                  </linearGradient>
-                  <linearGradient id="noiLineGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#595959" stopOpacity={0.12} />
-                    <stop offset="95%" stopColor="#595959" stopOpacity={0.01} />
-                  </linearGradient>
-                </defs>
+              <BarChart data={trendChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229,231,235,0.3)" />
                 <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis fontSize={9} tickFormatter={fmtK} tickLine={false} axisLine={false} width={52} />
+                <YAxis fontSize={9} tickFormatter={fmtK} tickLine={false} axisLine={false} width={52} domain={['auto', 'auto']} />
                 <Tooltip content={<MonthlyCFTooltip />} />
                 <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="4 3" strokeWidth={1.5}
                   label={{ value: 'Break-even', position: 'insideTopRight', fontSize: 9, fill: '#9CA3AF' }} />
-                <Area
-                  type="monotone"
-                  dataKey="noi"
-                  stroke="#595959"
-                  strokeWidth={1.5}
-                  strokeDasharray="4 3"
-                  fill="url(#noiLineGrad)"
-                  dot={false}
-                  name="NOI"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="cashFlow"
-                  stroke="#7F7F7F"
-                  strokeWidth={2}
-                  fill="url(#cfPosGrad)"
-                  dot={{ r: 3, fill: '#7F7F7F', strokeWidth: 0 }}
-                  activeDot={{ r: 5 }}
-                  name="Cash Flow"
-                />
-              </AreaChart>
+                <Bar dataKey="cashFlow" radius={[4, 4, 0, 0]}>
+                  {trendChartData.map((entry, index) => {
+                    const isNeg = entry.cashFlow < 0;
+                    const fill = isNeg
+                      ? '#EF4444'
+                      : entry.isAnnual
+                        ? '#595959'
+                        : '#7F7F7F';
+                    return <Cell key={`cell-${index}`} fill={fill} />;
+                  })}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
           <div className="flex gap-6 mt-3">
             <div className="flex items-center gap-1.5">
-              <div className="w-6 h-0.5 bg-emerald-500" style={{ borderTop: '1.5px dashed #10B981' }} />
-              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>NOI</span>
+              <div className="w-3 h-3" style={{ background: '#7F7F7F', borderRadius: '2px' }} />
+              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Monthly Cash Flow (Positive)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-6 h-0.5" style={{ background: '#7F7F7F' }} />
-              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Cash Flow (after debt service)</span>
+              <div className="w-3 h-3" style={{ background: '#595959', borderRadius: '2px' }} />
+              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Annual Total (Positive)</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3" style={{ background: '#EF4444', borderRadius: '2px' }} />
+              <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Negative Cash Flow</span>
             </div>
           </div>
           <p className="text-[10px] mt-2" style={{ color: 'var(--text-secondary)', opacity: 0.55 }}>

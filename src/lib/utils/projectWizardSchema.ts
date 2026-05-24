@@ -23,8 +23,9 @@ export interface WizardQuestion {
   options?: WizardQuestionOption[];
   placeholder?: string;
   required?: boolean;
-  defaultValue?: string | number;
+  defaultValue?: any;
   condition?: (answers: Record<string, any>) => boolean;
+  weight?: number | ((answers: Record<string, any>) => number);
 }
 
 export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
@@ -35,6 +36,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'address',
     field: 'address',
     required: true,
+    weight: 10,
   },
   {
     id: 'propertyName',
@@ -44,6 +46,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'propertyName',
     placeholder: 'e.g. The Miami Flip',
     required: true,
+    weight: 20,
   },
   {
     id: 'assetClass',
@@ -58,6 +61,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     ],
     defaultValue: 'Residential',
     required: true,
+    weight: 30,
   },
   {
     id: 'strategyType',
@@ -65,12 +69,13 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'single-select',
     field: 'strategyType',
     options: [
-      { value: 'Fix & Flip', label: 'Fix & Flip', description: 'Acquire, renovate, and sell for short-term profit.' },
+      { value: 'Fix & Flip', label: 'Flip', description: 'Acquire, renovate, and sell for short-term profit.' },
       { value: 'Rent', label: 'Buy-and-hold Rental', description: 'Acquire, lease, and hold for long-term cash flow.' },
       { value: 'BRRRR', label: 'BRRRR', description: 'Buy, Rehab, Rent, Refinance, Repeat strategy.' },
     ],
     defaultValue: 'Fix & Flip',
     required: true,
+    weight: 40,
   },
   {
     id: 'financingIntent',
@@ -79,10 +84,11 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financingIntent',
     options: [
       { value: 'all-cash', label: 'All-Cash', description: 'Purchase the property entirely with liquid capital.' },
-      { value: 'financed', label: 'Financed / Leveraged', description: 'Use debt financing (mortgage, hard money, etc.).' },
+      { value: 'financing', label: 'Financed / Leveraged', description: 'Use debt financing (mortgage, hard money, etc.).' },
     ],
-    defaultValue: 'financed',
+    defaultValue: 'financing',
     required: true,
+    weight: 50,
   },
   {
     id: 'raisingOutsideCapital',
@@ -95,19 +101,32 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     ],
     defaultValue: 'no',
     required: true,
+    weight: 60,
+  },
+  // R0 — Ownership Percentage
+  {
+    id: 'ownershipPercentage',
+    prompt: 'What percentage of this deal do you own?',
+    subtext: 'If you have co-investors, enter your personal share. Default is 100%.',
+    type: 'number',
+    field: 'financials.ownershipPercentage',
+    placeholder: '100',
+    defaultValue: 100,
+    weight: 65,
   },
   {
     id: 'isBackdated',
-    prompt: 'Is this a past or backdated Project?',
-    subtext: 'Select Yes if the property has already been acquired or closed.',
+    prompt: 'Do you already own this property?',
+    subtext: 'Select Yes if the property has been acquired, is mid-rehab, or has been sold.',
     type: 'single-select',
     field: 'isBackdated',
     options: [
-      { value: 'no', label: 'No (Projections)', description: 'Project is active or a pipeline target.' },
-      { value: 'yes', label: 'Yes (Backdated/Actuals)', description: 'Project was completed or acquired in the past.' },
+      { value: 'no', label: 'Not Yet', description: 'Currently prospecting or under contract.' },
+      { value: 'yes', label: 'Yes, I Own It', description: 'Already acquired — entering actuals.' },
     ],
     defaultValue: 'no',
     required: true,
+    weight: 70,
   },
   {
     id: 'startingPhase',
@@ -122,6 +141,26 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     ],
     defaultValue: 1,
     required: true,
+    weight: 80,
+  },
+  {
+    id: 'acquisitionDate',
+    prompt: 'When did you acquire this property?',
+    type: 'date',
+    field: 'financials.acquisitionDate',
+    required: true,
+    condition: (answers) => answers.isBackdated === 'yes' || answers.startingPhase >= 2,
+    weight: (answers) => (answers.isBackdated === 'yes' ? 85 : 140),
+  },
+  {
+    id: 'rehabActual',
+    prompt: 'What was the actual rehab cost? ($)',
+    type: 'currency',
+    field: 'financials.rehabActual',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) => answers.isBackdated === 'yes' && answers.startingPhase >= 3,
+    weight: 87,
   },
   {
     id: 'dateOfSale',
@@ -130,6 +169,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.soldDate',
     required: true,
     condition: (answers) => answers.isBackdated === 'yes' && answers.startingPhase === 4,
+    weight: 90,
   },
   {
     id: 'actualSalePrice',
@@ -139,14 +179,65 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0.00',
     required: true,
     condition: (answers) => answers.isBackdated === 'yes' && answers.startingPhase === 4,
+    weight: 100,
   },
   {
     id: 'purchasePrice',
-    prompt: 'What is the purchase price? ($)',
+    prompt: 'What was the actual purchase price? ($)',
+    subtext: 'The real closing price for this backdated project.',
     type: 'currency',
     field: 'financials.purchasePrice',
     placeholder: '0.00',
     required: true,
+    condition: (answers) => answers.isBackdated === 'yes',
+    weight: 95,
+  },
+  // ── P1 Acquisition Projected Underwriting Questions ──────────────────
+  {
+    id: 'targetPrice',
+    prompt: 'What is your target purchase price? ($)',
+    subtext: 'Projected — the price you plan to offer or negotiate toward.',
+    type: 'currency',
+    field: 'financials.targetPrice',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) => answers.isBackdated === 'no',
+    weight: 100,
+  },
+  {
+    id: 'projectedRent',
+    prompt: 'What monthly rent do you expect? ($)',
+    subtext: 'Projected — used to calculate NOI, GRM, and Cap Rate.',
+    type: 'currency',
+    field: 'financials.projectedRent',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 105,
+  },
+  {
+    id: 'projectedSalePrice',
+    prompt: 'What is the estimated after-repair value (ARV) / projected sale price? ($)',
+    subtext: 'Projected — the price you expect to sell for after rehab.',
+    type: 'currency',
+    field: 'financials.projectedSalePrice',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) =>
+      answers.isBackdated === 'no' && answers.strategyType === 'Fix & Flip',
+    weight: 105,
+  },
+  {
+    id: 'projectedOpex',
+    prompt: 'What are the estimated monthly operating expenses? ($)',
+    subtext: 'Projected — insurance, taxes, utilities, maintenance, etc.',
+    type: 'currency',
+    field: 'financials.projectedOpex',
+    placeholder: '0.00',
+    condition: (answers) => answers.isBackdated === 'no',
+    weight: 108,
   },
   {
     id: 'estimatedARV',
@@ -155,7 +246,9 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.estimatedARV',
     placeholder: '0.00',
     required: true,
-    condition: (answers) => answers.isBackdated === 'no' || answers.startingPhase < 4,
+    condition: (answers) =>
+      answers.isBackdated === 'yes' && answers.strategyType === 'Fix & Flip' && answers.startingPhase < 4,
+    weight: 120,
   },
   {
     id: 'closeDate',
@@ -164,14 +257,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.estimatedCloseDate',
     required: true,
     condition: (answers) => answers.isBackdated === 'no',
-  },
-  {
-    id: 'acquisitionDate',
-    prompt: 'When did you acquire this property?',
-    type: 'date',
-    field: 'financials.acquisitionDate',
-    required: true,
-    condition: (answers) => answers.isBackdated === 'yes' || answers.startingPhase >= 2,
+    weight: 130,
   },
   {
     id: 'loanAmount',
@@ -180,7 +266,8 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.loanAmount',
     placeholder: '0.00',
     required: true,
-    condition: (answers) => answers.financingIntent === 'financed',
+    condition: (answers) => answers.financingIntent === 'financing',
+    weight: 150,
   },
   {
     id: 'loanInterestRate',
@@ -189,7 +276,8 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.loanInterestRate',
     placeholder: 'e.g. 6.5',
     required: true,
-    condition: (answers) => answers.financingIntent === 'financed',
+    condition: (answers) => answers.financingIntent === 'financing',
+    weight: 160,
   },
   {
     id: 'loanTermYears',
@@ -198,7 +286,114 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.loanTermYears',
     placeholder: 'e.g. 30',
     required: true,
-    condition: (answers) => answers.financingIntent === 'financed',
+    condition: (answers) => answers.financingIntent === 'financing',
+    weight: 170,
+  },
+  {
+    id: 'requiredContingencies',
+    prompt: 'Which contingencies are required for this acquisition?',
+    subtext: 'Select all that apply.',
+    type: 'multi-select',
+    field: 'financials.requiredContingencies',
+    options: [
+      { value: 'inspection', label: 'Inspection Contingency', description: 'Subject to property inspection report.' },
+      { value: 'financing', label: 'Financing Contingency', description: 'Subject to securing debt financing.' },
+      { value: 'appraisal', label: 'Appraisal Contingency', description: 'Subject to appraisal matching sale price.' },
+    ],
+    defaultValue: [],
+    weight: 175,
+    condition: (answers) => answers.isBackdated === 'no' && answers.startingPhase <= 2,
+  },
+  {
+    id: 'capitalRaiseTarget',
+    prompt: 'What is your capital raise target? ($)',
+    type: 'currency',
+    field: 'financials.capitalRaiseTarget',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) => answers.raisingOutsideCapital === 'yes',
+    weight: 180,
+  },
+  {
+    id: 'equitySplit',
+    prompt: 'What is the projected equity split for outside investors? (%)',
+    type: 'number',
+    field: 'financials.equitySplit',
+    placeholder: 'e.g. 30',
+    required: true,
+    condition: (answers) => answers.raisingOutsideCapital === 'yes',
+    weight: 190,
+  },
+  {
+    id: 'investorInvites',
+    prompt: 'Who should we invite to invest? (email addresses)',
+    subtext: 'Comma-separated list — these contacts will be added to the investor CRM.',
+    type: 'text',
+    field: 'financials.investorInvites',
+    placeholder: 'investor1@example.com, investor2@example.com',
+    condition: (answers) =>
+      answers.raisingOutsideCapital === 'yes' && answers.isBackdated === 'no',
+    weight: 195,
+  },
+  {
+    id: 'marketplaceListing',
+    prompt: 'Would you like to post this deal to the Deal Marketplace?',
+    subtext: 'Projected — the Deal Marketplace lets other investors discover your project.',
+    type: 'single-select',
+    field: 'financials.marketplaceListing',
+    options: [
+      { value: 'yes', label: 'Yes', description: 'List on the Deal Marketplace for discovery.' },
+      { value: 'no', label: 'No', description: 'Keep this deal private.' },
+    ],
+    defaultValue: 'no',
+    condition: (answers) =>
+      answers.raisingOutsideCapital === 'yes' && answers.isBackdated === 'no',
+    weight: 198,
+  },
+  // ── Offer Tracking ────────────────────────────────────────────────────
+  {
+    id: 'offerStatus',
+    prompt: 'Have you made an offer on this property?',
+    subtext: 'Projected — tracks the current status of your purchase offer.',
+    type: 'single-select',
+    field: 'financials.offerStatus',
+    options: [
+      { value: 'No', label: 'No Offer Yet', description: 'Still evaluating the deal.' },
+      { value: 'Drafting', label: 'Drafting', description: 'Preparing the offer letter.' },
+      { value: 'Offer Sent', label: 'Offer Sent', description: 'Offer submitted, awaiting response.' },
+      { value: 'Accepted', label: 'Accepted / Under Contract', description: 'Offer accepted — ready to advance.' },
+      { value: 'Rejected', label: 'Rejected / Expired', description: 'Offer was declined or expired.' },
+    ],
+    defaultValue: 'No',
+    condition: (answers) => answers.isBackdated === 'no',
+    weight: 215,
+  },
+  {
+    id: 'offerAmount',
+    prompt: 'What was the offer amount? ($)',
+    subtext: 'Projected — the exact dollar amount submitted in the offer.',
+    type: 'currency',
+    field: 'financials.offerAmount',
+    placeholder: '0.00',
+    required: true,
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (getNestedField(answers, 'financials.offerStatus') === 'Offer Sent' ||
+       getNestedField(answers, 'financials.offerStatus') === 'Accepted'),
+    weight: 216,
+  },
+  {
+    id: 'offerDate',
+    prompt: 'When was the offer submitted?',
+    subtext: 'Projected — the date the offer was sent to the seller or listing agent.',
+    type: 'date',
+    field: 'financials.offerDate',
+    required: true,
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (getNestedField(answers, 'financials.offerStatus') === 'Offer Sent' ||
+       getNestedField(answers, 'financials.offerStatus') === 'Accepted'),
+    weight: 217,
   },
   {
     id: 'purchaseContractDoc',
@@ -206,6 +401,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'file-upload',
     field: 'financials.purchaseContractDoc',
     condition: (answers) => answers.startingPhase >= 2,
+    weight: 200,
   },
   {
     id: 'leadEmail',
@@ -214,6 +410,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'leadEmail',
     placeholder: 'operator@example.com',
     required: true,
+    weight: 210,
   },
   {
     id: 'partnerEmails',
@@ -222,6 +419,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'text',
     field: 'partnerEmails',
     placeholder: 'partner1@example.com, partner2@example.com',
+    weight: 220,
   },
   {
     id: 'vision',
@@ -229,6 +427,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'text',
     field: 'vision',
     placeholder: 'Describe your rehab plan, hold period, or exit strategy objectives...',
+    weight: 230,
   },
 ];
 
@@ -241,6 +440,10 @@ export function getActiveQuestions(answers: Record<string, any>): WizardQuestion
       return q.condition(answers);
     }
     return true;
+  }).sort((a, b) => {
+    const weightA = typeof a.weight === 'function' ? a.weight(answers) : (a.weight ?? 100);
+    const weightB = typeof b.weight === 'function' ? b.weight(answers) : (b.weight ?? 100);
+    return weightA - weightB;
   });
 }
 

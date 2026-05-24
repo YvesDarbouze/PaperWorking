@@ -193,7 +193,7 @@ export default function Phase1WorkspacePage() {
 
   async function handlePipelineStatusChange(status: string) {
     if (!project) return;
-    const merged = { ...(project.financials ?? {}), offerStatus: status };
+    const merged = { ...(project.financials ?? {}), offerStatus: status as any };
     await projectsService.updateProject(project.id, { financials: merged });
     refresh();
   }

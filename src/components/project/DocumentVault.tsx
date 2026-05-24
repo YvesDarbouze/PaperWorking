@@ -139,6 +139,13 @@ export function DocumentVault({
     if (newDocs.length > 0 && onChange) {
       onChange([...documents, ...newDocs]);
       toast.success('Documents uploaded successfully');
+      try {
+        import('@/store/uiStore').then(({ useUIStore }) => {
+          useUIStore.getState().triggerSuccessfulAction('document_uploaded');
+        });
+      } catch (err) {
+        console.error('Failed to trigger document_uploaded successful action:', err);
+      }
     }
   };
 

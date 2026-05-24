@@ -26,6 +26,16 @@ model DealFinancials {
   // Payee Waterfall summary
   totalPayouts      BigInt   @default(0)
 
+  // Project lifecycle spine fields
+  strategyType         String?
+  targetPurchasePrice  BigInt?
+  capitalRaiseTarget    BigInt?
+  committedCapital     BigInt?
+  actualRehabCost      BigInt?
+  actualRentalIncome   BigInt?
+  daysOccupied         Int?
+  totalHoldDays         Int?
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -236,4 +246,47 @@ model JobRecord {
 
   @@index([type, status])
   @@index([enqueuedAt])
+}
+
+// ── Phase 1: Sourcing Models ──────────────────────────────────
+
+model SourcingLead {
+  id                String   @id @default(uuid())
+  organizationId    String
+  
+  // Webhook / Integration origin
+  sourceVendor      String   // e.g. "PropStream", "Manual"
+  sourceReferenceId String?  // ID from vendor system
+  
+  // Property Metadata
+  address           String
+  city              String?
+  state             String?
+  zipCode           String?
+  propertyType      String?
+  estimatedValue    BigInt?
+  
+  // Owner Details
+  ownerName         String?
+  ownerContact      String?  // JSON or string
+  
+  // R0: Versioning
+  criteriaVersion   String   @default("v1")
+  
+  // R0: Dual-Scope Metrics
+  costPerLead       BigInt?  // Operational metric (cents)
+  estimatedMargin   BigInt?  // Financial metric (cents)
+  
+  // R0: Ownership %
+  ownershipShares   String?  // JSON mapping userId -> percentage
+  
+  status            String   @default("New") // New, Qualified, Rejected, Converted
+  convertedProjectId String? // Link to actual deal/project if converted
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([organizationId])
+  @@index([status])
+  @@index([sourceVendor])
 }

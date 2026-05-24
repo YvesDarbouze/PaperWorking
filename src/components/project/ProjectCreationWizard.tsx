@@ -60,6 +60,16 @@ const INITIAL_FORM = {
     capitalRaiseTarget: '',
     equitySplit: '',
     costs: [],
+    // P1 Acquisition Projected Fields
+    targetPrice: '',
+    projectedRent: '',
+    projectedSalePrice: '',
+    projectedOpex: '',
+    investorInvites: '',
+    marketplaceListing: 'no',
+    offerStatus: 'No',
+    offerAmount: '',
+    offerDate: '',
   },
 };
 
@@ -266,6 +276,18 @@ export default function ProjectCreationWizard({
           costs: [],
           raisingOutsideCapital: formData.raisingOutsideCapital === 'yes',
           isBackdated: formData.isBackdated === 'yes',
+          // R0 — Ownership & Entry Path
+          ownershipPercentage: (() => {
+            const rawPct = parseFloat(formData.financials.ownershipPercentage);
+            // If raising outside capital with equitySplit, auto-compute ownership
+            if (formData.raisingOutsideCapital === 'yes' && formData.financials.equitySplit) {
+              return Math.max(0, Math.min(100, 100 - parseFloat(formData.financials.equitySplit)));
+            }
+            return isNaN(rawPct) ? 100 : Math.max(0, Math.min(100, rawPct));
+          })(),
+          entryPath: formData.isBackdated === 'yes'
+            ? (phase >= 3 ? 'already_owned' : 'backdated')
+            : 'new_acquisition',
           ...(formData.financials.acquisitionDate && {
             acquisitionDate: new Date(formData.financials.acquisitionDate + 'T00:00:00'),
           }),
@@ -298,6 +320,35 @@ export default function ProjectCreationWizard({
           }),
           requiredContingencies: formData.financials.requiredContingencies || [],
           purchaseContractDoc: formData.financials.purchaseContractDoc || '',
+          // P1 Acquisition Projected Fields
+          ...(formData.financials.targetPrice && {
+            targetPrice: parseFloat(formData.financials.targetPrice) * 100,
+          }),
+          ...(formData.financials.projectedRent && {
+            projectedRent: parseFloat(formData.financials.projectedRent) * 100,
+          }),
+          ...(formData.financials.projectedSalePrice && {
+            projectedSalePrice: parseFloat(formData.financials.projectedSalePrice) * 100,
+          }),
+          ...(formData.financials.projectedOpex && {
+            projectedOpex: parseFloat(formData.financials.projectedOpex) * 100,
+          }),
+          ...(formData.financials.investorInvites && {
+            investorInvites: formData.financials.investorInvites
+              .split(',')
+              .map((e: string) => e.trim())
+              .filter(Boolean),
+          }),
+          marketplaceListing: formData.financials.marketplaceListing === 'yes',
+          ...(formData.financials.offerStatus && formData.financials.offerStatus !== 'No' && {
+            offerStatus: formData.financials.offerStatus,
+          }),
+          ...(formData.financials.offerAmount && {
+            offerAmount: parseFloat(formData.financials.offerAmount) * 100,
+          }),
+          ...(formData.financials.offerDate && {
+            offerDate: new Date(formData.financials.offerDate + 'T00:00:00'),
+          }),
         },
       };
 
@@ -401,6 +452,36 @@ export default function ProjectCreationWizard({
                     <span className="font-bold text-pw-black">
                       ${Number(formData.financials.estimatedARV).toLocaleString()}
                     </span>
+                  </div>
+                )}
+                {formData.financials.targetPrice && (
+                  <div className="py-2 flex justify-between">
+                    <span className="text-text-secondary uppercase">Target Price (Projected)</span>
+                    <span className="font-bold text-pw-black">
+                      ${Number(formData.financials.targetPrice).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+                {formData.financials.projectedRent && (
+                  <div className="py-2 flex justify-between">
+                    <span className="text-text-secondary uppercase">Monthly Rent (Projected)</span>
+                    <span className="font-bold text-pw-black">
+                      ${Number(formData.financials.projectedRent).toLocaleString()}/mo
+                    </span>
+                  </div>
+                )}
+                {formData.financials.projectedSalePrice && (
+                  <div className="py-2 flex justify-between">
+                    <span className="text-text-secondary uppercase">Sale Price / ARV (Projected)</span>
+                    <span className="font-bold text-pw-black">
+                      ${Number(formData.financials.projectedSalePrice).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+                {formData.financials.offerStatus && formData.financials.offerStatus !== 'No' && (
+                  <div className="py-2 flex justify-between">
+                    <span className="text-text-secondary uppercase">Offer Status</span>
+                    <span className="font-bold text-pw-black">{formData.financials.offerStatus}</span>
                   </div>
                 )}
                 {formData.financials.loanAmount && (

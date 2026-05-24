@@ -66,6 +66,49 @@ export async function POST(request: Request) {
 
     console.log(`[Invitations] Created invitation: ${invitationId} for deal ${projectId}`);
 
+    // ── 3b. Create Inbox Item for existing users ────────────
+    try {
+      const inviteeSnap = await adminDb
+        .collection('users')
+        .where('email', '==', email.trim())
+        .limit(1)
+        .get();
+
+      if (!inviteeSnap.empty) {
+        const inviteeDoc = inviteeSnap.docs[0];
+        const inviteeUid = inviteeDoc.id;
+        const inboxItemId = `inb_${Date.now()}_${crypto.randomUUID().replace(/-/g, '').slice(0, 9)}`;
+        const resolvedSenderName = invitedByName || 'PaperWorking System';
+        const resolvedDealName = invitation.dealName;
+
+        await adminDb.collection('inboxItems').doc(inboxItemId).set({
+          id: inboxItemId,
+          recipientUid: inviteeUid,
+          organizationId,
+          type: 'invitation',
+          category: 'crowdfund_invite',
+          title: `${resolvedSenderName} invited you to invest in ${resolvedDealName}`,
+          body: `You've been offered ${proposedEquityPercent}% equity in this deal. Review and respond to this invitation.`,
+          senderUid: invitedByUid || 'system',
+          senderName: resolvedSenderName,
+          senderAvatarInitial: resolvedSenderName[0]?.toUpperCase() || 'P',
+          projectId,
+          projectName: resolvedDealName,
+          invitationId: token,
+          actionUrl: '/dashboard/inbox',
+          read: false,
+          archived: false,
+          createdAt: new Date(),
+          expiresAt: invitation.expiresAt,
+        });
+
+        console.log(`[Invitations] Created inbox item ${inboxItemId} for existing user ${inviteeUid}`);
+      }
+    } catch (inboxError) {
+      // Non-blocking — inbox item is supplementary to the invitation
+      console.warn('[Invitations] Failed to create inbox item for invitee:', inboxError);
+    }
+
     // 4. Generate URL for email/distro
     const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/register?invite=${token}`;
     

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Plus, CheckCircle2, Clock, MoreHorizontal } from 'lucide-react';
 import { Project } from '@/types/schema';
+import { computePhaseProgress } from '@/lib/utils/projectProgress';
 
 interface ProjectsWidgetProps {
   projects: Project[];
@@ -18,13 +19,8 @@ export default function ProjectsWidget({ projects, onCreateProject, isGuest }: P
     <div className="flex flex-col gap-4 h-full">
       <div className="flex-1 grid grid-cols-2 gap-4">
         {activeProjects.map((project, index) => {
-          // Calculate completion percentage based on actual action items
-          let completion = 0;
-          const actionItems = project.actionItems || [];
-          if (actionItems.length > 0) {
-            const completedTasks = actionItems.filter((item: any) => item.completed).length;
-            completion = Math.round((completedTasks / actionItems.length) * 100);
-          }
+          // Calculate completion percentage based on actual action items for the current phase
+          const completion = computePhaseProgress(project, project.currentPhase || 1);
 
           // Alternating grayscale styling for visual interest
           const bgClass = index === 0 

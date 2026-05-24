@@ -18,6 +18,7 @@ import {
   Lock,
 } from 'lucide-react';
 import type { ClosingChecklistItem, ClosingChecklistItemType } from '@/types/schema';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Closing Checklist — Final Settlement Validation
@@ -80,17 +81,21 @@ export default function ClosingChecklist() {
   );
 
   const toggleComplete = (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const completed = !item.completed;
     persist(
       items.map(item =>
         item.id === id
           ? {
               ...item,
-              completed: !item.completed,
-              completedAt: !item.completed ? new Date() : undefined,
+              completed,
+              completedAt: completed ? new Date() : undefined,
             }
           : item
       )
     );
+    toast.success(completed ? `${item.type} completed` : `${item.type} marked incomplete`);
   };
 
   const updateNotes = (id: string, notes: string) => {
@@ -98,13 +103,16 @@ export default function ClosingChecklist() {
   };
 
   const simulateUpload = (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
     persist(
       items.map(item =>
         item.id === id
-          ? { ...item, documentUrl: undefined }
+          ? { ...item, documentUrl: `/docs/closing-${id}.pdf` }
           : item
       )
     );
+    toast.success(`${item.type} document uploaded`);
   };
 
   const completedCount = items.filter(i => i.completed).length;

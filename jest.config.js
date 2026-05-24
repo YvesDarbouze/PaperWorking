@@ -18,6 +18,18 @@ const config = {
     ],
   },
   transformIgnorePatterns: ['/node_modules/'],
+  modulePathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/.next-app/',
+    '<rootDir>/.next.old_1777068220/',
+    '<rootDir>/out/'
+  ],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/',
+    '<rootDir>/.next-app/',
+    '<rootDir>/.next.old_1777068220/',
+    '<rootDir>/out/'
+  ],
   testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
 };
 

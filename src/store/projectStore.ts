@@ -408,14 +408,31 @@ export const useProjectStore = create<ProjectState>()(
 
       updateInvestors: (projectId, investors) => {
         const { projects, currentProject } = get();
+
+        // R0 — Auto-recalculate owner's ownership % from confirmed investors
+        const confirmedEquity = investors
+          .filter(inv => inv.status === 'confirmed')
+          .reduce((sum, inv) => sum + (inv.equityPercentage || 0), 0);
+        const ownershipPercentage = Math.max(0, 100 - confirmedEquity);
+
         const updatedDeals = projects.map(d =>
-          d.id === projectId ? { ...d, fractionalInvestors: investors } : d
+          d.id === projectId
+            ? {
+                ...d,
+                fractionalInvestors: investors,
+                financials: {
+                  ...d.financials,
+                  ownershipPercentage,
+                },
+              }
+            : d
         );
         set({ projects: updatedDeals });
         if (currentProject?.id === projectId) {
           const u = updatedDeals.find(d => d.id === projectId);
           if (u) set({ currentProject: u });
         }
+        get().recalculateMetrics();
       },
 
       // ─── Find & Fund Actions ───────────────────────────────

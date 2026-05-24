@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
-  deriveAllMetrics, computeMAO, computeFlipNetProfit, computeFlipROI,
+  deriveDualScopeMetrics, computeMAO, computeFlipNetProfit, computeFlipROI,
   computeGrossMargin, computeDOM, computeRehabVariance, computeTotalCashInvested,
 } from '@/lib/metrics/reiMetrics';
 import {
@@ -48,13 +48,13 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
 
     const p = projects[0];
     const f = p.financials!;
-    const metrics = deriveAllMetrics(f);
+    const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
 
-    const purchasePrice = f.purchasePrice ?? 0;
+    const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
     const arv = f.estimatedARV ?? 0;
     const rehabCost = f.projectedRehabCost ?? 0;
     const closingCosts = f.fixedAcquisitionCosts ?? 0;
-    const actualSalePrice = f.actualSalePrice ?? 0;
+    const actualSalePrice = f.actualSalePrice ?? f.projectedSalePrice ?? 0;
 
     // Costs breakdown
     const holdingMonthly = (f.holdingCostTaxes ?? 0) + (f.holdingCostInsurance ?? 0) + (f.holdingCostUtilities ?? 0);

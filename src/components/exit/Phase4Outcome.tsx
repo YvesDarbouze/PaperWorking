@@ -4,6 +4,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { RefreshCw, DollarSign, Percent, TrendingUp, Sparkles, Layout, Lock } from 'lucide-react';
 import ProfessionalListingDashboard from '@/components/listing/ProfessionalListingDashboard';
 import { projectsService } from '@/lib/firebase/projects';
+import ExitInterview from '@/components/exit/ExitInterview';
 
 const DealAutopsy = lazy(() => import('@/components/exit/DealAutopsy'));
 const NOIDeepDive = lazy(() => import('@/components/dashboard/charts/NOIDeepDive'));
@@ -140,6 +141,8 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
             </button>
          </div>
       </div>
+
+      {!isClosed && <ExitInterview deal={deal} />}
 
       <div className="w-full max-w-4xl mx-auto aspect-video bg-black/40 border border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-black/50 transition-colors group mb-8 shadow-inner">
         <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg backdrop-blur-md">

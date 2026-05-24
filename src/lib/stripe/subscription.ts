@@ -18,9 +18,9 @@ import type { UserProfile } from '@/types/user';
    ═══════════════════════════════════════════════════════ */
 const PLAN_RANK: Record<string, number> = {
   None: 0,
-  Individual: 1,
-  Team: 2,
-  Vendor: 3,
+  'Vendor Network': 1,
+  Individual: 2,
+  Team: 3,
 };
 
 /* ═══════════════════════════════════════════════════════

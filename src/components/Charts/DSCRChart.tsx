@@ -75,11 +75,11 @@ export default function DSCRChart({ data, height = 300 }: DSCRChartProps) {
       {
         type: 'bar',
         data: data.map(d => {
-          let color = '#DC2626'; // < 0.8
+          let color = '#EF4444'; // below 1.0 red
           if (d.dscr >= 1.5) color = '#595959';
           else if (d.dscr >= 1.25) color = '#7F7F7F';
           else if (d.dscr >= 1.0) color = '#A5A5A5';
-          else if (d.dscr >= 0.8) color = '#EF4444';
+          else if (d.dscr < 0.8) color = '#DC2626'; // deeper red for critical
           
           return {
             value: d.dscr,
@@ -95,12 +95,12 @@ export default function DSCRChart({ data, height = 300 }: DSCRChartProps) {
           data: [
             {
               yAxis: 1.0,
-              label: { formatter: '1.0× breakeven', position: 'insideEndTop', color: '#EF4444', fontSize: 9 },
+              label: { formatter: '1.0 break-even', position: 'insideEndTop', color: '#EF4444', fontSize: 9 },
               lineStyle: { color: '#EF4444', type: 'dashed' }
             },
             {
               yAxis: 1.25,
-              label: { formatter: '1.25× lender min', position: 'insideEndTop', color: '#A5A5A5', fontSize: 9 },
+              label: { formatter: '1.25 typical lender min', position: 'insideEndTop', color: '#A5A5A5', fontSize: 9 },
               lineStyle: { color: '#A5A5A5', type: 'dashed' }
             }
           ]

@@ -367,13 +367,17 @@ export function calculateProjectTaxReport(
   }
 
   if (isSoldInPeriod) {
-    const finalClosingCosts = f.finalClosingCosts ?? 0;
-    const commissionsPct = (f.buyersAgentCommission ?? 0) + (f.sellersAgentCommission ?? 0);
-    const commissionsVal = saleProceeds * (commissionsPct / 100);
-    
-    const extraSelling = (f.stagingCosts ?? 0) + (f.photographyAndMedia ?? 0) + (f.mlsListingFees ?? 0);
-    
-    sellingCosts = finalClosingCosts + commissionsVal + extraSelling;
+    if (f.sellingCosts != null) {
+      sellingCosts = f.sellingCosts;
+    } else {
+      const finalClosingCosts = f.finalClosingCosts ?? 0;
+      const commissionsPct = (f.buyersAgentCommission ?? 0) + (f.sellersAgentCommission ?? 0);
+      const commissionsVal = saleProceeds * (commissionsPct / 100);
+      
+      const extraSelling = (f.stagingCosts ?? 0) + (f.photographyAndMedia ?? 0) + (f.mlsListingFees ?? 0);
+      
+      sellingCosts = finalClosingCosts + commissionsVal + extraSelling;
+    }
 
     // Capital Gains Basis: acquisitionBasis + lifetimeCapitalizedRehab
     const totalBasis = acquisitionBasis + lifetimeCapitalizedRehab;

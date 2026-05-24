@@ -359,4 +359,149 @@ describe('Project Creation Wizard Schema & Branching', () => {
       expect(r3.current.isValid).toBe(true);
     });
   });
+
+  // ── P1 Acquisition Phase Gating Tests ──────────────────────────────────
+  describe('P1 Acquisition Phase - Projected Underwriting Gating', () => {
+    it('includes targetPrice for prospective projects, excludes for backdated', () => {
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(prospective).toContain('targetPrice');
+
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(backdated).not.toContain('targetPrice');
+    });
+
+    it('includes projectedRent only for prospective Rent/BRRRR strategies', () => {
+      const rental = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(rental).toContain('projectedRent');
+
+      const brrrr = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'BRRRR', startingPhase: 1,
+      }).map(q => q.id);
+      expect(brrrr).toContain('projectedRent');
+
+      const flip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(flip).not.toContain('projectedRent');
+
+      const backdatedRental = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedRental).not.toContain('projectedRent');
+    });
+
+    it('includes projectedSalePrice only for prospective Flip strategies', () => {
+      const flip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(flip).toContain('projectedSalePrice');
+
+      const rental = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Rent', startingPhase: 1,
+      }).map(q => q.id);
+      expect(rental).not.toContain('projectedSalePrice');
+
+      const backdatedFlip = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedFlip).not.toContain('projectedSalePrice');
+    });
+
+    it('includes projectedOpex only for prospective projects', () => {
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(prospective).toContain('projectedOpex');
+
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdated).not.toContain('projectedOpex');
+    });
+
+    it('includes investorInvites and marketplaceListing only when raising capital + prospective', () => {
+      const raising = getActiveQuestions({
+        raisingOutsideCapital: 'yes', isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(raising).toContain('investorInvites');
+      expect(raising).toContain('marketplaceListing');
+
+      const notRaising = getActiveQuestions({
+        raisingOutsideCapital: 'no', isBackdated: 'no', startingPhase: 1,
+      }).map(q => q.id);
+      expect(notRaising).not.toContain('investorInvites');
+      expect(notRaising).not.toContain('marketplaceListing');
+
+      const backdatedRaising = getActiveQuestions({
+        raisingOutsideCapital: 'yes', isBackdated: 'yes', startingPhase: 1,
+      }).map(q => q.id);
+      expect(backdatedRaising).not.toContain('investorInvites');
+      expect(backdatedRaising).not.toContain('marketplaceListing');
+    });
+
+    it('includes offerAmount and offerDate only when offer has been sent or accepted', () => {
+      const offerSent = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Offer Sent' },
+      }).map(q => q.id);
+      expect(offerSent).toContain('offerAmount');
+      expect(offerSent).toContain('offerDate');
+
+      const accepted = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Accepted' },
+      }).map(q => q.id);
+      expect(accepted).toContain('offerAmount');
+      expect(accepted).toContain('offerDate');
+
+      const noOffer = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'No' },
+      }).map(q => q.id);
+      expect(noOffer).not.toContain('offerAmount');
+      expect(noOffer).not.toContain('offerDate');
+
+      const drafting = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1,
+        financials: { offerStatus: 'Drafting' },
+      }).map(q => q.id);
+      expect(drafting).not.toContain('offerAmount');
+      expect(drafting).not.toContain('offerDate');
+    });
+
+    it('restricts purchasePrice to backdated projects only', () => {
+      const backdated = getActiveQuestions({
+        isBackdated: 'yes', startingPhase: 2, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(backdated).toContain('purchasePrice');
+
+      const prospective = getActiveQuestions({
+        isBackdated: 'no', startingPhase: 1, financingIntent: 'all-cash',
+      }).map(q => q.id);
+      expect(prospective).not.toContain('purchasePrice');
+    });
+
+    it('restricts estimatedARV to backdated Flip strategies only', () => {
+      const backdatedFlip = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Fix & Flip', startingPhase: 2,
+      }).map(q => q.id);
+      expect(backdatedFlip).toContain('estimatedARV');
+
+      const backdatedRental = getActiveQuestions({
+        isBackdated: 'yes', strategyType: 'Rent', startingPhase: 2,
+      }).map(q => q.id);
+      expect(backdatedRental).not.toContain('estimatedARV');
+
+      const prospectiveFlip = getActiveQuestions({
+        isBackdated: 'no', strategyType: 'Fix & Flip', startingPhase: 1,
+      }).map(q => q.id);
+      expect(prospectiveFlip).not.toContain('estimatedARV');
+    });
+  });
 });

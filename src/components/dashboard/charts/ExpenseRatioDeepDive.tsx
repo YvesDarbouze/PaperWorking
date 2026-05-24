@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import { deriveAllMetrics, computeNOIComponents } from '@/lib/metrics/reiMetrics';
+import { deriveDualScopeMetrics, computeNOIComponents } from '@/lib/metrics/reiMetrics';
 import ExpenseRatioPieChart from '@/components/Charts/ExpenseRatioPieChart';
 import ExpenseRatioBarChart from '@/components/Charts/ExpenseRatioBarChart';
 import { PieChart as PieIcon, AlertTriangle, TrendingDown, DollarSign, Target, Layers } from 'lucide-react';
@@ -42,8 +42,8 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
     if (projects.length === 0) return null;
 
     const breakdowns = projects.map(p => {
-      const m = deriveAllMetrics(p.financials!);
-      const noi = computeNOIComponents(p.financials!);
+      const { asset: m } = deriveDualScopeMetrics(p.financials!, undefined, p.strategyType, p.currentPhase);
+      const noi = computeNOIComponents(p.financials!, p.strategyType, p.currentPhase);
       return {
         name: (p.propertyName || p.address || 'Unknown').substring(0, 16),
         oer: m.oer,

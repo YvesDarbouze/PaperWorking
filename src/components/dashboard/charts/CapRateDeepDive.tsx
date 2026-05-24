@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import {
-  deriveAllMetrics,
+  deriveDualScopeMetrics,
   computeCapRate,
   computeNOIComponents,
 } from '@/lib/metrics/reiMetrics';
@@ -99,10 +99,10 @@ function deriveCapRateBreakdowns(projects: Project[]): PropertyCapRateData[] {
     .filter(p => p.financials)
     .map((p) => {
       const f = p.financials!;
-      const metrics = deriveAllMetrics(f);
+      const { asset: metrics } = deriveDualScopeMetrics(f, undefined, p.strategyType, p.currentPhase);
       const purchasePrice = f.purchasePrice ?? 0;
       const estimatedARV = f.estimatedARV ?? purchasePrice;
-      const arvCapRate = estimatedARV > 0 ? computeCapRate(metrics.noi, estimatedARV) : 0;
+      const arvCapRate = metrics.arvCapRate;
 
       return {
         name: (p.propertyName || p.address || 'Unknown').substring(0, 16),

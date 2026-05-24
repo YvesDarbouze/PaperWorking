@@ -3,6 +3,7 @@
 import React from 'react';
 import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { Project } from '@/types/schema';
+import { computePhaseProgress } from '@/lib/utils/projectProgress';
 
 interface ProjectsProgressWidgetProps {
   projects: Project[];
@@ -13,12 +14,7 @@ export default function ProjectsProgressWidget({ projects }: ProjectsProgressWid
   const activeProjects = projects.filter(p => p.status !== 'Sold').slice(0, 5);
   
   const displayProjects = activeProjects.map((p) => {
-    let completion = 0;
-    const actionItems = p.actionItems || [];
-    if (actionItems.length > 0) {
-      const completedTasks = actionItems.filter((item: any) => item.completed).length;
-      completion = Math.round((completedTasks / actionItems.length) * 100);
-    }
+    const completion = computePhaseProgress(p, p.currentPhase || 1);
     const isUp = completion > 0;
     
     return {

@@ -245,13 +245,13 @@ function DealCard({ deal, onClick }: { deal: Project; onClick: () => void }) {
   const { can } = usePermissions();
 
   return (
-    <div className={`${!can('VIEW_FOLDER') && 'opacity-60 cursor-not-allowed'}`}>
+    <div className={`${!can('projects.view') && 'opacity-60 cursor-not-allowed'}`}>
       <DealFolder
         deal={deal}
         size="sm"
         showPrice
         onClick={() => {
-          if (can('VIEW_FOLDER')) {
+          if (can('projects.view')) {
             onClick();
           } else {
             toast.error('You do not have permission to view this project folder.');

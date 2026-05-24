@@ -41,7 +41,7 @@ describe('Project Creation Wizard Schema & Branching', () => {
       const answers = {
         isBackdated: 'no',
         startingPhase: 1,
-        financingIntent: 'financed',
+        financingIntent: 'financing',
       };
       const active = getActiveQuestions(answers);
       const activeIds = active.map(q => q.id);
@@ -70,7 +70,7 @@ describe('Project Creation Wizard Schema & Branching', () => {
       const answers = {
         isBackdated: 'no',
         startingPhase: 1,
-        financingIntent: 'financed',
+        financingIntent: 'financing',
       };
       const active = getActiveQuestions(answers);
       const activeIds = active.map(q => q.id);
@@ -130,6 +130,51 @@ describe('Project Creation Wizard Schema & Branching', () => {
       const activeIds = active.map(q => q.id);
 
       expect(activeIds).toContain('closeDate');
+    });
+
+    it('includes capital raising questions only when raisingOutsideCapital is yes', () => {
+      const activeNo = getActiveQuestions({ raisingOutsideCapital: 'no' }).map(q => q.id);
+      expect(activeNo).not.toContain('capitalRaiseTarget');
+      expect(activeNo).not.toContain('equitySplit');
+
+      const activeYes = getActiveQuestions({ raisingOutsideCapital: 'yes' }).map(q => q.id);
+      expect(activeYes).toContain('capitalRaiseTarget');
+      expect(activeYes).toContain('equitySplit');
+    });
+
+    it('includes rehabActual only for backdated projects entering at Phase 3 or later', () => {
+      const activeNoPhase = getActiveQuestions({ isBackdated: 'yes', startingPhase: 2 }).map(q => q.id);
+      expect(activeNoPhase).not.toContain('rehabActual');
+
+      const activeNoBackdated = getActiveQuestions({ isBackdated: 'no', startingPhase: 3 }).map(q => q.id);
+      expect(activeNoBackdated).not.toContain('rehabActual');
+
+      const activeYes = getActiveQuestions({ isBackdated: 'yes', startingPhase: 3 }).map(q => q.id);
+      expect(activeYes).toContain('rehabActual');
+    });
+
+    it('includes requiredContingencies only for prospective projects starting at Phase 1 or 2', () => {
+      const activeBackdated = getActiveQuestions({ isBackdated: 'yes', startingPhase: 1 }).map(q => q.id);
+      expect(activeBackdated).not.toContain('requiredContingencies');
+
+      const activePhase3 = getActiveQuestions({ isBackdated: 'no', startingPhase: 3 }).map(q => q.id);
+      expect(activePhase3).not.toContain('requiredContingencies');
+
+      const activeYes = getActiveQuestions({ isBackdated: 'no', startingPhase: 2 }).map(q => q.id);
+      expect(activeYes).toContain('requiredContingencies');
+    });
+
+    it('sorts questions dynamically by weight', () => {
+      const active = getActiveQuestions({
+        isBackdated: 'no',
+        startingPhase: 1,
+        financingIntent: 'financing',
+        raisingOutsideCapital: 'yes',
+      });
+      const weights = active.map(q => typeof q.weight === 'function' ? (q.weight as any)({}) : (q.weight ?? 100));
+      for (let i = 0; i < weights.length - 1; i++) {
+        expect(weights[i]).toBeLessThanOrEqual(weights[i + 1]);
+      }
     });
   });
 
@@ -281,6 +326,35 @@ describe('Project Creation Wizard Schema & Branching', () => {
       // MLS listing provided
       const { result: r3 } = renderHook(() =>
         useProjectFormValidation({ address: '123 Main St, Miami, FL 33101', mlsListingKey: 'mls-123' }, question)
+      );
+      expect(r3.current.isValid).toBe(true);
+    });
+
+    it('validates multi-select fields when required', () => {
+      const question: WizardQuestion = {
+        id: 'requiredContingencies',
+        prompt: 'Contingencies',
+        type: 'multi-select',
+        field: 'financials.requiredContingencies',
+        required: true,
+      };
+
+      // Empty array
+      const { result: r1 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: [] } }, question)
+      );
+      expect(r1.current.isValid).toBe(false);
+      expect(r1.current.validationError).toContain('required');
+
+      // Non-array
+      const { result: r2 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: null } }, question)
+      );
+      expect(r2.current.isValid).toBe(false);
+
+      // Selected option
+      const { result: r3 } = renderHook(() =>
+        useProjectFormValidation({ financials: { requiredContingencies: ['inspection'] } }, question)
       );
       expect(r3.current.isValid).toBe(true);
     });

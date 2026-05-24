@@ -37,7 +37,7 @@ const INITIAL_FORM = {
   lng: null,
   assetClass: 'Residential',
   strategyType: 'Fix & Flip',
-  financingIntent: 'financed',
+  financingIntent: 'financing',
   raisingOutsideCapital: 'no',
   isBackdated: 'no',
   startingPhase: 1,
@@ -55,6 +55,10 @@ const INITIAL_FORM = {
     loanInterestRate: '',
     loanTermYears: '',
     purchaseContractDoc: '',
+    rehabActual: '',
+    requiredContingencies: [],
+    capitalRaiseTarget: '',
+    equitySplit: '',
     costs: [],
   },
 };
@@ -243,6 +247,10 @@ export default function ProjectCreationWizard({
         status,
         strategyType: formData.strategyType,
         ownerUid: user.uid,
+        assetClass: formData.assetClass,
+        leadEmail: formData.leadEmail,
+        partnerEmails: formData.partnerEmails,
+        vision: formData.vision,
         mlsListingKey: formData.mlsListingKey || null,
         mlsListingId: formData.mlsListingId || null,
         mlsListPrice: formData.mlsListPrice || null,
@@ -251,6 +259,7 @@ export default function ProjectCreationWizard({
         mlsSqft: formData.mlsSqft || null,
         mlsThumbnailUrl: formData.mlsThumbnailUrl || null,
         mlsStandardStatus: formData.mlsStandardStatus || null,
+        financingIntent: formData.financingIntent,
         financials: {
           purchasePrice: parseFloat(formData.financials.purchasePrice) * 100,
           estimatedARV: formData.financials.estimatedARV ? parseFloat(formData.financials.estimatedARV) * 100 : 0,
@@ -278,12 +287,30 @@ export default function ProjectCreationWizard({
           ...(formData.financials.loanTermYears && {
             loanTermYears: parseFloat(formData.financials.loanTermYears),
           }),
+          ...(formData.financials.rehabActual && {
+            rehabActual: parseFloat(formData.financials.rehabActual) * 100,
+          }),
+          ...(formData.financials.capitalRaiseTarget && {
+            capitalRaiseTarget: parseFloat(formData.financials.capitalRaiseTarget) * 100,
+          }),
+          ...(formData.financials.equitySplit && {
+            equitySplit: parseFloat(formData.financials.equitySplit),
+          }),
+          requiredContingencies: formData.financials.requiredContingencies || [],
           purchaseContractDoc: formData.financials.purchaseContractDoc || '',
         },
       };
 
       const projectId = await projectsService.createProject(dealData, organizationId);
       toast.success('Project created and initialized successfully.');
+      
+      try {
+        const { useUIStore } = await import('@/store/uiStore');
+        useUIStore.getState().triggerSuccessfulAction('project_created');
+      } catch (err) {
+        console.error('Failed to trigger project_created successful action:', err);
+      }
+
       onSuccess?.(projectId);
     } catch (err) {
       console.error(err);
@@ -575,6 +602,47 @@ export default function ProjectCreationWizard({
                           </button>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {activeQuestion.type === 'multi-select' && (
+                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+                      {activeQuestion.options?.map((opt) => {
+                        const currentValues = getNestedField(formData, activeQuestion.field) || [];
+                        const isSelected = currentValues.includes(opt.value);
+                        return (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              const nextValues = isSelected
+                                ? currentValues.filter((v: any) => v !== opt.value)
+                                : [...currentValues, opt.value];
+                              updateFormNested(activeQuestion.field, nextValues);
+                            }}
+                            className="p-4 border text-left flex flex-col justify-between transition-all"
+                            style={{
+                              borderColor: isSelected ? 'var(--pw-black)' : 'var(--border-ui)',
+                              background: isSelected ? 'var(--pw-black)' : 'var(--bg-surface)',
+                              color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                            }}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span className="text-xs font-bold uppercase tracking-wider">{opt.label}</span>
+                              {isSelected && <Check className="w-3.5 h-3.5" />}
+                            </div>
+                            {opt.description && (
+                              <span
+                                className={`text-[10px] mt-1.5 leading-normal ${
+                                  isSelected ? 'opacity-85' : 'text-text-secondary'
+                                }`}
+                              >
+                                {opt.description}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
 

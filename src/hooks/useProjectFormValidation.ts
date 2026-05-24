@@ -64,6 +64,10 @@ export function useProjectFormValidation(formData: any, activeQuestion: WizardQu
       if (activeQuestion.id === 'address') {
         const addressValid = !!formData.mlsListingKey || isAddressComplete;
         if (!addressValid) return 'Please specify a valid property address.';
+      } else if (activeQuestion.type === 'multi-select') {
+        if (!Array.isArray(val) || val.length === 0) {
+          return `${activeQuestion.prompt} is required.`;
+        }
       } else if (val === undefined || val === null || val === '') {
         return `${activeQuestion.prompt} is required.`;
       }

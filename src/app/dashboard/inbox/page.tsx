@@ -1,57 +1,88 @@
 'use client';
 
-import React, { Suspense, useState, useEffect, useCallback } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Plus, Loader2, CheckCheck, ArrowLeft } from 'lucide-react';
+import { useInboxFeed } from '@/hooks/useInboxFeed';
 import { useInboxThreads } from '@/hooks/useInboxThreads';
 import { useAuth } from '@/context/AuthContext';
 import { useProjectStore } from '@/store/projectStore';
-import ThreadList from '@/components/inbox/ThreadList';
+import InboxTabs from '@/components/inbox/InboxTabs';
+import InboxFeed from '@/components/inbox/InboxFeed';
 import ThreadDetail from '@/components/inbox/ThreadDetail';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
-   Command Center — Live Inbox
+   Inbox — Unified Notification Center
    
-   Firestore-backed split-pane inbox replacing mock data.
-   Left pane: Thread list with real-time unread badges
-   Right pane: Message thread with inline reply
+   Combines notifications, team invitations, system alerts,
+   and email threads into a single tabbed feed.
+   
+   Layout:
+   ┌──────────────────────────────────────────────┐
+   │  Header:  "Inbox" + badge + actions          │
+   ├──────────────────────────────────────────────┤
+   │  Tabs:  All │ Messages │ Invitations │ ...   │
+   ├──────────────────────────────────────────────┤
+   │  Feed:  Scrollable InboxItemCard list        │
+   │  — OR —                                      │
+   │  ThreadDetail:  Email thread view (slide-in) │
+   └──────────────────────────────────────────────┘
    ═══════════════════════════════════════════════════════ */
 
-function InboxSplitPane() {
+function InboxNotificationCenter() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
   const deals = useProjectStore((state) => state.projects);
-  const { threads, loading, error, unreadTotal, markAsRead } = useInboxThreads();
+
+  // ── Unified inbox feed (notifications, invitations, system) ──
+  const {
+    items,
+    loading,
+    loadingMore,
+    error,
+    unreadCounts,
+    unreadTotal,
+    activeTab,
+    setActiveTab,
+    markAsRead,
+    markAllRead,
+    archiveItem,
+    deleteItem,
+    bulkArchive,
+    bulkMarkRead,
+    fetchMore,
+    hasMore,
+  } = useInboxFeed();
+
+  // ── Legacy email threads (for the ThreadDetail slide-in) ──
+  const {
+    threads,
+    markAsRead: markThreadAsRead,
+  } = useInboxThreads();
 
   const threadId = searchParams.get('threadId') || searchParams.get('thread') || null;
   const [searchQuery, setSearchQuery] = useState('');
   const [composeOpen, setComposeOpen] = useState(false);
 
-  const activeThread = threads.find((t) => t.projectId === threadId) || null;
+  const activeThread = threadId
+    ? threads.find((t) => t.projectId === threadId) || null
+    : null;
 
-  // Get project name for the active thread
   const activeProjectName = activeThread
     ? deals.find((d) => d.id === activeThread.projectId)?.propertyName || 'Project'
     : '';
 
-  // Mark thread as read when selected
-  useEffect(() => {
+  // Mark thread as read when entering detail view
+  React.useEffect(() => {
     if (threadId && activeThread && activeThread.unreadCount > 0) {
-      markAsRead(threadId);
+      markThreadAsRead(threadId);
     }
-  }, [threadId, activeThread?.unreadCount, markAsRead]);
+  }, [threadId, activeThread?.unreadCount, markThreadAsRead]);
 
-  const handleSelectThread = useCallback(
-    (projectId: string) => {
-      router.push(`/dashboard/inbox?threadId=${projectId}`);
-    },
-    [router],
-  );
-
-  /* ── Send Reply ── */
+  /* ── Send reply in thread view ── */
   const handleSendReply = useCallback(
     async (body: string) => {
       if (!user || !threadId) return;
@@ -96,136 +127,148 @@ function InboxSplitPane() {
     [user, threadId, activeThread],
   );
 
-  // Filter threads by search
-  const filteredThreads = searchQuery.trim()
-    ? threads.filter((t) => {
-        const q = searchQuery.toLowerCase();
-        return (
-          t.lastMessage.senderName.toLowerCase().includes(q) ||
-          t.lastMessage.body.toLowerCase().includes(q) ||
-          (t.lastMessage.subject || '').toLowerCase().includes(q)
-        );
-      })
-    : threads;
+  /* ── Handle "Mark All Read" ── */
+  const handleMarkAllRead = async () => {
+    await markAllRead();
+    toast.success('All marked as read.', {
+      icon: '✓',
+      style: { background: '#0d0d0d', color: '#fff' },
+    });
+  };
+
+  // If a thread is active, show the detail view
+  if (threadId && activeThread) {
+    return (
+      <>
+        <div className="flex flex-col w-full h-[calc(100vh-64px)]" style={{ backgroundColor: 'var(--bg-surface)' }}>
+          {/* Back button */}
+          <div
+            className="flex items-center gap-2 px-6 py-3 border-b"
+            style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}
+          >
+            <button
+              onClick={() => router.push('/dashboard/inbox')}
+              className="flex items-center gap-2 text-xs font-medium transition-colors"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-primary)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to Inbox
+            </button>
+          </div>
+          <ThreadDetail
+            thread={activeThread}
+            projectName={activeProjectName}
+            onSendReply={handleSendReply}
+          />
+        </div>
+        <ComposeEmailModal
+          isOpen={composeOpen}
+          onClose={() => setComposeOpen(false)}
+          defaultProjectId={threadId || undefined}
+        />
+      </>
+    );
+  }
 
   return (
     <>
-      <div className="flex w-full h-[calc(100vh-64px)] overflow-hidden">
-        {/* ═══ Left Pane: Thread List (30%) ═══ */}
+      <div
+        className="flex flex-col w-full h-[calc(100vh-64px)]"
+        style={{ backgroundColor: 'var(--bg-surface)' }}
+      >
+        {/* ═══ Header ═══ */}
         <div
-          className="w-[30%] flex flex-col border-r overflow-hidden"
-          style={{ borderColor: '#A5A5A5', backgroundColor: 'var(--bg-canvas)' }}
+          className="flex items-center justify-between px-6 py-4"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            borderBottom: '1px solid var(--bg-canvas)',
+          }}
         >
-          {/* Header */}
-          <div
-            className="p-6 border-b"
-            style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1
-                  className="text-xl font-bold tracking-tight"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  Inbox
-                </h1>
-                {unreadTotal > 0 && (
-                  <p className="text-[10px] font-bold uppercase tracking-wider mt-1" style={{ color: 'var(--text-secondary)' }}>
-                    {unreadTotal} unread
-                  </p>
-                )}
-              </div>
-              <button
-                id="inbox-compose-btn"
-                onClick={() => setComposeOpen(true)}
-                className="ag-button !py-2 !px-4 !text-xs"
+          <div className="flex items-center gap-3">
+            <h1
+              className="text-xl font-bold tracking-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Inbox
+            </h1>
+            {unreadTotal > 0 && (
+              <span
+                className="flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full"
+                style={{ backgroundColor: '#0d0d0d', color: '#ffffff', minWidth: 20 }}
               >
-                <Plus className="w-3.5 h-3.5" />
-                Compose
-              </button>
-            </div>
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40"
-                style={{ color: 'var(--text-primary)' }}
-              />
-              <input
-                id="inbox-search"
-                type="text"
-                placeholder="Search threads..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs border-none outline-none transition-colors rounded-md"
-                style={{
-                  backgroundColor: 'rgba(0,0,0,0.03)',
-                  color: 'var(--text-primary)',
-                }}
-              />
-            </div>
+                {unreadTotal > 9 ? '9+' : unreadTotal}
+              </span>
+            )}
           </div>
 
-          {/* Thread List */}
-          {loading ? (
-            <div className="flex-1 flex items-center justify-center">
-              <Loader2
-                className="w-5 h-5 animate-spin opacity-20"
-                style={{ color: 'var(--text-primary)' }}
-              />
-            </div>
-          ) : error ? (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <p className="text-xs text-center font-medium" style={{ color: 'var(--text-secondary)' }}>
-                {error}
-              </p>
-            </div>
-          ) : (
-            <ThreadList
-              threads={filteredThreads}
-              activeThreadId={threadId}
-              onSelect={handleSelectThread}
-            />
-          )}
-        </div>
-
-        {/* ═══ Right Pane: Active Thread (70%) ═══ */}
-        <div
-          className="w-[70%] flex flex-col overflow-hidden relative"
-          style={{ backgroundColor: 'var(--bg-surface)' }}
-        >
-          {activeThread ? (
-            <ThreadDetail
-              thread={activeThread}
-              projectName={activeProjectName}
-              onSendReply={handleSendReply}
-            />
-          ) : (
-            <div
-              className="flex-1 flex flex-col items-center justify-center"
-              style={{ backgroundColor: 'var(--bg-surface)' }}
-            >
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+          <div className="flex items-center gap-2">
+            {/* Mark All Read */}
+            {unreadTotal > 0 && (
+              <button
+                id="inbox-mark-all-read"
+                onClick={handleMarkAllRead}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md border transition-colors"
                 style={{
-                  backgroundColor: 'var(--bg-canvas)',
-                  border: '1px solid var(--border-ui)',
+                  borderColor: 'var(--border-ui)',
+                  color: 'var(--text-secondary)',
+                  backgroundColor: 'transparent',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--bg-canvas)';
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-secondary)';
                 }}
               >
-                <Search className="w-6 h-6 opacity-10" style={{ color: 'var(--text-primary)' }} />
-              </div>
-              <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                No conversation selected
-              </p>
-              <p className="text-xs mt-1" style={{ color: '#CCCCCC' }}>
-                Select a thread from the list to view the history
-              </p>
-            </div>
-          )}
+                <CheckCheck className="w-3 h-3" />
+                Mark All Read
+              </button>
+            )}
+
+            {/* Compose Button */}
+            <button
+              id="inbox-compose-btn"
+              onClick={() => setComposeOpen(true)}
+              className="ag-button !py-2 !px-4 !text-xs"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Compose
+            </button>
+          </div>
         </div>
+
+        {/* ═══ Tabs ═══ */}
+        <InboxTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          unreadCounts={unreadCounts}
+        />
+
+        {/* ═══ Feed ═══ */}
+        <InboxFeed
+          items={items}
+          loading={loading}
+          loadingMore={loadingMore}
+          error={error}
+          activeTab={activeTab}
+          onMarkRead={markAsRead}
+          onArchive={archiveItem}
+          onDelete={deleteItem}
+          onBulkArchive={bulkArchive}
+          onBulkMarkRead={bulkMarkRead}
+          fetchMore={fetchMore}
+          hasMore={hasMore}
+        />
       </div>
+
+      {/* Compose Modal */}
       <ComposeEmailModal
         isOpen={composeOpen}
         onClose={() => setComposeOpen(false)}
-        defaultProjectId={threadId || undefined}
       />
     </>
   );
@@ -245,13 +288,13 @@ export default function InboxPage() {
               style={{ color: 'var(--text-secondary)' }}
             />
             <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-              Loading Command Center...
+              Loading Inbox...
             </p>
           </div>
         </div>
       }
     >
-      <InboxSplitPane />
+      <InboxNotificationCenter />
     </Suspense>
   );
 }

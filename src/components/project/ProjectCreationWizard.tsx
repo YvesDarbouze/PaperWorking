@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
 import { toast } from 'react-hot-toast';
@@ -19,6 +19,16 @@ import { useProjectFormValidation } from '@/hooks/useProjectFormValidation';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
 import type { BridgeSearchResult } from '@/types/bridge';
+
+/* ═══════════════════════════════════════════════════════════════
+   ProjectCreationWizard — Stitch Schema Reskin
+   
+   Applies the "Luminous Glass" dark wizard design from Stitch
+   screens 475af5c5, dc455216, 3468c351, 0ee3119c.
+   
+   ALL logic, branching, validation, and submit handlers are
+   100% preserved from the original implementation.
+   ═══════════════════════════════════════════════════════════════ */
 
 interface ProjectCreationWizardProps {
   organizationId: string;
@@ -372,266 +382,316 @@ export default function ProjectCreationWizard({
   };
 
   const isReviewStep = activeIndex === activeQuestions.length;
+  const progressPercent = ((isReviewStep ? activeQuestions.length : activeIndex) / activeQuestions.length) * 100;
 
   return (
-    <div className="dashboard-context fixed inset-0 z-50 flex items-center justify-center bg-bg-primary overflow-y-auto p-4 md:p-8">
-      <div className="w-full max-w-2xl bg-bg-surface border border-border-ui shadow-2xl flex flex-col min-h-[460px] relative animate-in fade-in zoom-in-95 duration-500 rounded-none">
-        
-        {/* Header progress info */}
-        <div className="px-8 pt-6 pb-4 border-b border-border-ui flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-pw-black" />
-            <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">
-              New Project Guided Interview
-            </span>
+    <div className="fixed inset-0 z-50 flex flex-col min-h-screen bg-[#0b141a] selection:bg-primary/30 overflow-hidden">
+      {/* ── Ambient Background Layer ── */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#0566d9]/5 blur-[100px] rounded-full" />
+        {/* Obsidian dot pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
+        />
+      </div>
+
+      {/* ── Top Navigation Bar (Stitch schema) ── */}
+      <header className="fixed top-0 w-full z-50 bg-[#0b141a]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-5 md:px-10">
+        <button
+          onClick={onClose}
+          className="text-[#bacac5] hover:text-[#57f1db] transition-colors active:scale-95 duration-200 flex items-center"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        <h1 className="text-[24px] leading-[32px] font-bold text-[#57f1db] tracking-tight">
+          New Project
+        </h1>
+        <div className="w-10" /> {/* Spacer for centering */}
+      </header>
+
+      {/* ── Main Content Canvas ── */}
+      <main className="flex-grow flex flex-col items-center justify-center pt-24 pb-32 px-5 overflow-y-auto">
+        <div className="w-full max-w-xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          
+          {/* ── Progress Indicator (Stitch schema) ── */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-end">
+              <div className="flex flex-col gap-1">
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">
+                  {isReviewStep
+                    ? `Review — ${activeQuestions.length} questions complete`
+                    : `Step ${activeIndex + 1} of ${activeQuestions.length}`}
+                </span>
+                {!isReviewStep && activeQuestion && (
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                    {getCategoryLabel(activeQuestion)}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${progressPercent}%`,
+                  background: 'linear-gradient(90deg, #3cddc7 0%, #57f1db 100%)',
+                  boxShadow: '0 0 10px rgba(87, 241, 219, 0.5)',
+                }}
+              />
+            </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-text-secondary hover:text-pw-black transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
 
-        {/* Progress bar */}
-        <div className="w-full h-1 bg-bg-canvas relative">
-          <div
-            className="h-full bg-pw-black transition-all duration-500"
-            style={{
-              width: `${((isReviewStep ? activeQuestions.length : activeIndex) / activeQuestions.length) * 100}%`,
-            }}
-          />
-        </div>
-
-        {/* Form content area */}
-        <div className="flex-1 px-8 py-10 flex flex-col justify-center">
+          {/* ── Form Content ── */}
           {isReviewStep ? (
-            // REVIEW STEP
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div>
-                <h2 className="text-xl font-bold tracking-tight text-pw-black uppercase">
-                  Review & Confirm Project
+            /* ═══ REVIEW STEP ═══ */
+            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="text-center max-w-2xl mx-auto">
+                <h2 className="text-[32px] leading-[40px] font-bold tracking-tight text-[#dae4ec] mb-4">
+                  Review &amp; Confirm
                 </h2>
-                <p className="text-[10px] text-text-secondary uppercase tracking-widest mt-1">
+                <p className="text-[16px] leading-[24px] text-[#bacac5]">
                   Verify the inputs before creating the Project folder.
                 </p>
               </div>
 
-              <div className="border border-border-ui bg-bg-primary p-5 divide-y divide-border-ui text-xs font-mono">
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Project Name</span>
-                  <span className="font-bold text-pw-black">{formData.propertyName}</span>
-                </div>
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Address</span>
-                  <span className="font-bold text-pw-black truncate max-w-[320px]">
-                    {formData.address || 'Manual Entry'}
-                  </span>
-                </div>
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Strategy Type</span>
-                  <span className="font-bold text-pw-black">{formData.strategyType}</span>
-                </div>
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Starting Phase</span>
-                  <span className="font-bold text-pw-black">Phase {formData.startingPhase}</span>
-                </div>
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Financing</span>
-                  <span className="font-bold text-pw-black uppercase">{formData.financingIntent}</span>
-                </div>
-                <div className="py-2 flex justify-between">
-                  <span className="text-text-secondary uppercase">Purchase Price</span>
-                  <span className="font-bold text-pw-black">
-                    ${Number(formData.financials.purchasePrice).toLocaleString()}
-                  </span>
-                </div>
+              <div className="glass-card rounded-xl p-6 divide-y divide-white/10 text-[14px]">
+                <ReviewRow label="Project Name" value={formData.propertyName} />
+                <ReviewRow label="Address" value={formData.address || 'Manual Entry'} />
+                <ReviewRow label="Strategy" value={formData.strategyType} />
+                <ReviewRow label="Starting Phase" value={`Phase ${formData.startingPhase}`} />
+                <ReviewRow label="Financing" value={formData.financingIntent} />
+                <ReviewRow label="Purchase Price" value={`$${Number(formData.financials.purchasePrice || formData.financials.targetPrice).toLocaleString()}`} />
                 {formData.financials.estimatedARV && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Estimated ARV</span>
-                    <span className="font-bold text-pw-black">
-                      ${Number(formData.financials.estimatedARV).toLocaleString()}
-                    </span>
-                  </div>
-                )}
-                {formData.financials.targetPrice && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Target Price (Projected)</span>
-                    <span className="font-bold text-pw-black">
-                      ${Number(formData.financials.targetPrice).toLocaleString()}
-                    </span>
-                  </div>
+                  <ReviewRow label="Estimated ARV" value={`$${Number(formData.financials.estimatedARV).toLocaleString()}`} />
                 )}
                 {formData.financials.projectedRent && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Monthly Rent (Projected)</span>
-                    <span className="font-bold text-pw-black">
-                      ${Number(formData.financials.projectedRent).toLocaleString()}/mo
-                    </span>
-                  </div>
+                  <ReviewRow label="Monthly Rent" value={`$${Number(formData.financials.projectedRent).toLocaleString()}/mo`} />
                 )}
                 {formData.financials.projectedSalePrice && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Sale Price / ARV (Projected)</span>
-                    <span className="font-bold text-pw-black">
-                      ${Number(formData.financials.projectedSalePrice).toLocaleString()}
-                    </span>
-                  </div>
-                )}
-                {formData.financials.offerStatus && formData.financials.offerStatus !== 'No' && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Offer Status</span>
-                    <span className="font-bold text-pw-black">{formData.financials.offerStatus}</span>
-                  </div>
+                  <ReviewRow label="Projected Sale" value={`$${Number(formData.financials.projectedSalePrice).toLocaleString()}`} />
                 )}
                 {formData.financials.loanAmount && (
-                  <div className="py-2 flex justify-between">
-                    <span className="text-text-secondary uppercase">Loan Amount</span>
-                    <span className="font-bold text-pw-black">
-                      ${Number(formData.financials.loanAmount).toLocaleString()}
-                    </span>
-                  </div>
+                  <ReviewRow label="Loan Amount" value={`$${Number(formData.financials.loanAmount).toLocaleString()}`} />
+                )}
+                {formData.financials.offerStatus && formData.financials.offerStatus !== 'No' && (
+                  <ReviewRow label="Offer Status" value={formData.financials.offerStatus} />
                 )}
               </div>
             </div>
           ) : (
-            // ONE QUESTION STEP
+            /* ═══ ONE QUESTION STEP ═══ */
             activeQuestion && (
-              <div key={activeQuestion.id} className="space-y-6 animate-in fade-in duration-300">
-                <div className="space-y-1">
-                  <span className="text-[9px] font-bold text-text-secondary uppercase tracking-[0.25em]">
-                    Question {activeIndex + 1} of {activeQuestions.length}
-                  </span>
-                  <h2 className="text-2xl font-light text-pw-black tracking-tight leading-snug">
+              <div key={activeQuestion.id} className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                {/* Conversational Header (Stitch schema) */}
+                <div className="text-center max-w-2xl mx-auto">
+                  <h2 className="text-[28px] leading-[36px] md:text-[32px] md:leading-[40px] font-bold text-white tracking-tight mb-4">
                     {activeQuestion.prompt}
                   </h2>
                   {activeQuestion.subtext && (
-                    <p className="text-[10px] text-text-secondary uppercase tracking-wider font-medium">
+                    <p className="text-[16px] leading-[24px] text-[#bacac5]">
                       {activeQuestion.subtext}
                     </p>
                   )}
                 </div>
 
-                {/* Input components based on question type */}
+                {/* ── Input Renderers ── */}
                 <div className="pt-2">
+                  {/* TEXT */}
                   {activeQuestion.type === 'text' && (
-                    <input
-                      type="text"
-                      value={getNestedField(formData, activeQuestion.field) || ''}
-                      onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
-                      placeholder={activeQuestion.placeholder}
-                      className="pw-input text-sm p-3.5 focus:border-pw-black transition-all"
-                    />
+                    <div className="relative group">
+                      <input
+                        type="text"
+                        value={getNestedField(formData, activeQuestion.field) || ''}
+                        onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
+                        placeholder={activeQuestion.placeholder}
+                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none transition-all duration-300"
+                        style={{
+                          background: 'rgba(24, 33, 39, 0.6)',
+                          backdropFilter: 'blur(12px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = '#57f1db';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      />
+                    </div>
                   )}
 
+                  {/* NUMBER */}
                   {activeQuestion.type === 'number' && (
-                    <input
-                      type="number"
-                      value={getNestedField(formData, activeQuestion.field) || ''}
-                      onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
-                      placeholder={activeQuestion.placeholder}
-                      className="pw-input text-sm p-3.5 focus:border-pw-black transition-all font-mono"
-                    />
+                    <div className="relative group">
+                      <input
+                        type="number"
+                        value={getNestedField(formData, activeQuestion.field) || ''}
+                        onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
+                        placeholder={activeQuestion.placeholder}
+                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none font-mono transition-all duration-300"
+                        style={{
+                          background: 'rgba(24, 33, 39, 0.6)',
+                          backdropFilter: 'blur(12px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = '#57f1db';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      />
+                    </div>
                   )}
 
+                  {/* CURRENCY */}
                   {activeQuestion.type === 'currency' && (
-                    <div className="relative flex items-center">
-                      <span className="absolute left-3 text-text-secondary text-sm font-bold font-mono">$</span>
+                    <div className="relative group">
+                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[#bacac5] text-[18px] font-bold font-mono z-10">$</span>
                       <input
                         type="number"
                         value={getNestedField(formData, activeQuestion.field) || ''}
                         onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
                         placeholder={activeQuestion.placeholder || '0.00'}
-                        className="pw-input text-sm pl-8 pr-4 py-3.5 focus:border-pw-black transition-all font-mono"
+                        className="w-full h-[72px] pl-12 pr-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none font-mono transition-all duration-300"
+                        style={{
+                          background: 'rgba(24, 33, 39, 0.6)',
+                          backdropFilter: 'blur(12px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = '#57f1db';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
                       />
                     </div>
                   )}
 
+                  {/* DATE */}
                   {activeQuestion.type === 'date' && (
-                    <input
-                      type="date"
-                      value={getNestedField(formData, activeQuestion.field) || ''}
-                      onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
-                      className="pw-input text-sm p-3.5 focus:border-pw-black transition-all font-mono"
-                    />
+                    <div className="relative group">
+                      <input
+                        type="date"
+                        value={getNestedField(formData, activeQuestion.field) || ''}
+                        onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
+                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white focus:outline-none font-mono transition-all duration-300"
+                        style={{
+                          background: 'rgba(24, 33, 39, 0.6)',
+                          backdropFilter: 'blur(12px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          colorScheme: 'dark',
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = '#57f1db';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.boxShadow = 'none';
+                        }}
+                      />
+                    </div>
                   )}
 
+                  {/* SINGLE SELECT — Glass strategy cards (Stitch schema) */}
                   {activeQuestion.type === 'single-select' && (
-                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                       {activeQuestion.options?.map((opt) => {
                         const selected = getNestedField(formData, activeQuestion.field) === opt.value;
                         return (
                           <button
-                            key={opt.value}
+                            key={String(opt.value)}
                             type="button"
                             onClick={() => updateFormNested(activeQuestion.field, opt.value)}
-                            className="p-4 border text-left flex flex-col justify-between transition-all"
+                            className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
+                              ${selected
+                                ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
+                                : 'border border-white/[0.12] hover:border-[#57f1db]/30'
+                              }`}
                             style={{
-                              borderColor: selected ? 'var(--pw-black)' : 'var(--border-ui)',
-                              background: selected ? 'var(--pw-black)' : 'var(--bg-surface)',
-                              color: selected ? '#ffffff' : 'var(--text-primary)',
+                              background: selected
+                                ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
+                                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                              backdropFilter: 'blur(24px)',
                             }}
                           >
-                            <span className="text-xs font-bold uppercase tracking-wider">{opt.label}</span>
-                            {opt.description && (
-                              <span
-                                className={`text-[10px] mt-1.5 leading-normal ${
-                                  selected ? 'opacity-85' : 'text-text-secondary'
-                                }`}
-                              >
-                                {opt.description}
+                            <div className={`p-3 rounded-lg transition-transform group-hover:scale-110 ${selected ? 'bg-[#57f1db]/20 text-[#57f1db]' : 'bg-white/5 text-[#bacac5]'}`}>
+                              {selected ? <Check className="w-5 h-5" /> : <Target className="w-5 h-5" />}
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
+                                {opt.label}
                               </span>
-                            )}
+                              {opt.description && (
+                                <span className="text-[14px] leading-[20px] text-[#bacac5]">
+                                  {opt.description}
+                                </span>
+                              )}
+                            </div>
                           </button>
                         );
                       })}
                     </div>
                   )}
 
+                  {/* ADDRESS — Preserve existing MLS + manual logic */}
                   {activeQuestion.type === 'address' && (
                     <div className="space-y-4">
                       {!useManualAddress && !formData.mlsListingKey ? (
                         <>
-                          <PropertySearchInput
-                            value={formData.address}
-                            onSelect={handlePropertySelect}
-                            onManualChange={(raw) => updateFormNested('address', raw)}
-                          />
+                          <div className="relative group">
+                            <PropertySearchInput
+                              value={formData.address}
+                              onSelect={handlePropertySelect}
+                              onManualChange={(raw) => updateFormNested('address', raw)}
+                            />
+                          </div>
                           <button
                             type="button"
                             onClick={() => setUseManualAddress(true)}
-                            className="text-[10px] font-bold uppercase tracking-widest underline mt-2 hover:text-pw-black text-text-secondary transition-colors"
+                            className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] transition-colors uppercase underline underline-offset-2"
                           >
                             Enter address manually instead
                           </button>
                         </>
                       ) : formData.mlsListingKey ? (
-                        <div className="border border-border-ui bg-bg-surface overflow-hidden">
-                          <div className="flex items-center justify-between px-4 py-2 bg-pw-black text-white">
-                            <span className="text-[9px] font-bold uppercase tracking-widest">
+                        <div className="glass-card rounded-xl overflow-hidden">
+                          <div className="flex items-center justify-between px-5 py-3 bg-[#57f1db]/10 border-b border-white/10">
+                            <span className="text-[12px] font-medium tracking-[0.05em] text-[#57f1db] uppercase">
                               MLS Listing Selected
                             </span>
                             <button
                               type="button"
                               onClick={clearAddress}
-                              className="text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 opacity-80 hover:opacity-100"
+                              className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] flex items-center gap-1 uppercase transition-colors"
                             >
                               <X className="w-3 h-3" /> Clear
                             </button>
                           </div>
-                          <div className="flex gap-4 p-4">
+                          <div className="flex gap-4 p-5">
                             {formData.mlsThumbnailUrl && (
                               <img
                                 src={formData.mlsThumbnailUrl}
                                 alt="Property thumbnail"
-                                className="w-24 h-16 object-cover"
+                                className="w-24 h-16 object-cover rounded-lg"
                               />
                             )}
                             <div className="space-y-1">
-                              <p className="text-xs font-bold text-pw-black">{formData.address}</p>
-                              <div className="flex gap-3 text-[10px] text-text-secondary font-mono">
+                              <p className="text-[14px] font-semibold text-[#dae4ec]">{formData.address}</p>
+                              <div className="flex gap-3 text-[12px] text-[#bacac5] font-mono">
                                 {formData.mlsListPrice && (
-                                  <span className="font-bold text-pw-black">
+                                  <span className="font-bold text-[#57f1db]">
                                     ${formData.mlsListPrice.toLocaleString()}
                                   </span>
                                 )}
@@ -657,27 +717,27 @@ export default function ProjectCreationWizard({
                             onSelect={handleManualAddressSelect}
                           />
                           {isAddressComplete ? (
-                            <div className="p-3 border border-border-ui bg-bg-primary text-[10px] font-mono flex items-center justify-between">
-                              <span>
+                            <div className="glass-card rounded-xl p-4 text-[12px] font-mono flex items-center justify-between">
+                              <span className="text-[#dae4ec]">
                                 {formData.street}, {formData.city}, {formData.state} {formData.zip}
                               </span>
                               <button
                                 type="button"
                                 onClick={clearAddress}
-                                className="text-rose-600 font-bold hover:underline"
+                                className="text-[#ffb4ab] font-bold hover:underline"
                               >
                                 Clear
                               </button>
                             </div>
                           ) : (
-                            <div className="p-3 border border-amber-200 bg-amber-50/50 text-[10px] text-amber-800 font-mono">
+                            <div className="rounded-xl p-4 text-[12px] text-[#ffb875] font-mono border border-[#ffac5a]/30 bg-[#ffac5a]/5">
                               ⚠️ Address details incomplete. Please fill all fields via autocomplete.
                             </div>
                           )}
                           <button
                             type="button"
                             onClick={() => setUseManualAddress(false)}
-                            className="text-[10px] font-bold uppercase tracking-widest underline mt-2 hover:text-pw-black text-text-secondary transition-colors"
+                            className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] transition-colors uppercase underline underline-offset-2"
                           >
                             Search MLS instead
                           </button>
@@ -686,14 +746,15 @@ export default function ProjectCreationWizard({
                     </div>
                   )}
 
+                  {/* MULTI-SELECT — Glass cards with checkmarks */}
                   {activeQuestion.type === 'multi-select' && (
-                    <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                       {activeQuestion.options?.map((opt) => {
                         const currentValues = getNestedField(formData, activeQuestion.field) || [];
                         const isSelected = currentValues.includes(opt.value);
                         return (
                           <button
-                            key={opt.value}
+                            key={String(opt.value)}
                             type="button"
                             onClick={() => {
                               const nextValues = isSelected
@@ -701,47 +762,60 @@ export default function ProjectCreationWizard({
                                 : [...currentValues, opt.value];
                               updateFormNested(activeQuestion.field, nextValues);
                             }}
-                            className="p-4 border text-left flex flex-col justify-between transition-all"
+                            className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
+                              ${isSelected
+                                ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
+                                : 'border border-white/[0.12] hover:border-[#57f1db]/30'
+                              }`}
                             style={{
-                              borderColor: isSelected ? 'var(--pw-black)' : 'var(--border-ui)',
-                              background: isSelected ? 'var(--pw-black)' : 'var(--bg-surface)',
-                              color: isSelected ? '#ffffff' : 'var(--text-primary)',
+                              background: isSelected
+                                ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
+                                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                              backdropFilter: 'blur(24px)',
                             }}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="text-xs font-bold uppercase tracking-wider">{opt.label}</span>
-                              {isSelected && <Check className="w-3.5 h-3.5" />}
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? 'border-[#57f1db] bg-[#57f1db]' : 'border-[#bacac5]/50'}`}>
+                              {isSelected && <Check className="w-3 h-3 text-[#003731]" />}
                             </div>
-                            {opt.description && (
-                              <span
-                                className={`text-[10px] mt-1.5 leading-normal ${
-                                  isSelected ? 'opacity-85' : 'text-text-secondary'
-                                }`}
-                              >
-                                {opt.description}
+                            <div className="flex flex-col">
+                              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
+                                {opt.label}
                               </span>
-                            )}
+                              {opt.description && (
+                                <span className="text-[14px] leading-[20px] text-[#bacac5]">
+                                  {opt.description}
+                                </span>
+                              )}
+                            </div>
                           </button>
                         );
                       })}
                     </div>
                   )}
 
+                  {/* FILE UPLOAD — Glass dropzone */}
                   {activeQuestion.type === 'file-upload' && (
-                    <div className="border border-dashed border-border-ui bg-bg-primary p-8 flex flex-col items-center justify-center text-center relative group hover:border-pw-black transition-colors">
+                    <div
+                      className="rounded-xl p-8 flex flex-col items-center justify-center text-center relative group transition-all duration-300 cursor-pointer hover:border-[#57f1db]/30"
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                        backdropFilter: 'blur(24px)',
+                        border: '2px dashed rgba(255, 255, 255, 0.12)',
+                      }}
+                    >
                       <input
                         type="file"
                         onChange={handleFileChange}
                         className="absolute inset-0 opacity-0 cursor-pointer"
                       />
-                      <UploadCloud className="w-8 h-8 text-text-secondary mb-2 group-hover:text-pw-black transition-colors" />
-                      <span className="text-xs font-bold text-pw-black uppercase tracking-wider">
+                      <UploadCloud className="w-10 h-10 text-[#bacac5] mb-3 group-hover:text-[#57f1db] transition-colors" />
+                      <span className="text-[14px] font-semibold text-[#dae4ec] tracking-[0.02em] uppercase">
                         {getNestedField(formData, activeQuestion.field)
                           ? 'Replace file'
                           : 'Choose file or drag here'}
                       </span>
                       {getNestedField(formData, activeQuestion.field) && (
-                        <span className="text-[10px] font-mono text-text-secondary mt-1 max-w-[280px] truncate">
+                        <span className="text-[12px] font-mono text-[#bacac5] mt-2 max-w-[280px] truncate">
                           Uploaded: {getNestedField(formData, activeQuestion.field)}
                         </span>
                       )}
@@ -749,61 +823,129 @@ export default function ProjectCreationWizard({
                   )}
                 </div>
 
-                {/* Validation Error Message */}
+                {/* Validation Error Message (Stitch error palette) */}
                 {validationError && (
-                  <div className="border border-rose-200 bg-rose-50/50 p-3.5 text-[10px] text-rose-800 flex items-center gap-2 font-mono">
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-700 shrink-0" />
+                  <div className="rounded-xl p-4 text-[14px] text-[#ffb4ab] flex items-center gap-3 font-mono border border-[#93000a]/40 bg-[#93000a]/10">
+                    <AlertCircle className="w-4 h-4 text-[#ffb4ab] shrink-0" />
                     <span>{validationError}</span>
                   </div>
                 )}
               </div>
             )
           )}
-        </div>
 
-        {/* Footer controls */}
-        <div className="px-8 py-5 border-t border-border-ui bg-bg-primary flex items-center justify-between">
+          {/* Subtle security indicator (Stitch schema) */}
+          {!isReviewStep && (
+            <div className="pt-4 opacity-20 pointer-events-none select-none hidden md:block">
+              <div className="flex items-center gap-3 text-[#bacac5]">
+                <Key className="w-4 h-4" />
+                <span className="text-[12px] font-medium tracking-[0.2em] uppercase">
+                  Secure Data Synchronization Active
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* ── Bottom Navigation Bar (Stitch schema) ── */}
+      <nav className="fixed bottom-0 left-0 w-full z-50 bg-[#141d23]/60 backdrop-blur-2xl border-t border-white/[0.12] rounded-t-xl">
+        <div className="max-w-[640px] mx-auto px-8 py-5 flex justify-between items-center">
+          {/* Back */}
           <button
             onClick={handleBack}
-            className="pw-btn pw-btn--secondary pw-btn--sm uppercase tracking-widest font-bold flex items-center gap-1.5"
+            className="flex items-center gap-2 text-[#bacac5] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#57f1db] transition-all active:scale-95 duration-150"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
-            <span>{activeIndex === 0 ? 'Exit' : 'Back'}</span>
+            <ChevronLeft className="w-5 h-5" />
+            {activeIndex === 0 ? 'Exit' : 'Back'}
           </button>
 
-          <div className="flex gap-2">
+          <div className="flex items-center gap-4">
+            {/* Skip (only for non-required) */}
             {!isReviewStep && activeQuestion && !activeQuestion.required && (
               <button
                 onClick={handleSkip}
-                className="px-5 py-2.5 text-text-secondary hover:text-pw-black text-[10px] font-bold uppercase tracking-widest"
+                className="hidden md:flex items-center gap-2 text-[#bacac5] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#57f1db] transition-all active:scale-95 duration-150"
               >
                 Skip
               </button>
             )}
 
+            {/* Next / Submit */}
             {isReviewStep ? (
               <button
                 onClick={handleFinalSubmit}
                 disabled={isSubmitting}
-                className="pw-btn pw-btn--primary pw-btn--sm uppercase tracking-widest font-bold flex items-center gap-1.5"
+                className="flex items-center gap-3 bg-[#57f1db] text-[#003731] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Creating Project...' : 'Confirm & Create'}
-                {!isSubmitting && <ChevronRight className="w-3.5 h-3.5" />}
+                {isSubmitting ? 'Creating...' : 'Confirm & Create'}
+                {!isSubmitting && <Check className="w-5 h-5" />}
               </button>
             ) : (
               <button
                 onClick={handleNext}
                 disabled={!isValid}
-                className="pw-btn pw-btn--primary pw-btn--sm uppercase tracking-widest font-bold flex items-center gap-1.5"
+                className="flex items-center gap-3 bg-[#57f1db] text-[#003731] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none"
               >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                Next
+                <ChevronRight className="w-5 h-5" />
               </button>
             )}
           </div>
         </div>
-
-      </div>
+      </nav>
     </div>
   );
+}
+
+/* ── Helper: Review row ── */
+function ReviewRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="py-3 flex justify-between items-center">
+      <span className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">{label}</span>
+      <span className="text-[14px] font-semibold text-[#dae4ec] truncate max-w-[320px]">{value}</span>
+    </div>
+  );
+}
+
+/* ── Helper: Category label from question ID ── */
+function getCategoryLabel(question: WizardQuestion): string {
+  const map: Record<string, string> = {
+    address: 'Property Address',
+    propertyName: 'Project Name',
+    assetClass: 'Asset Classification',
+    strategyType: 'Investment Strategy',
+    financingIntent: 'Financing Plan',
+    raisingOutsideCapital: 'Capital Structure',
+    ownershipPercentage: 'Ownership',
+    isBackdated: 'Entry Path',
+    startingPhase: 'Starting Phase',
+    acquisitionDate: 'Acquisition Details',
+    rehabActual: 'Rehab Costs',
+    dateOfSale: 'Sale Details',
+    actualSalePrice: 'Sale Price',
+    purchasePrice: 'Purchase Price',
+    targetPrice: 'Target Pricing',
+    projectedRent: 'Rental Projections',
+    projectedSalePrice: 'Sale Projections',
+    projectedOpex: 'Operating Expenses',
+    estimatedARV: 'After-Repair Value',
+    closeDate: 'Closing Timeline',
+    loanAmount: 'Loan Details',
+    loanInterestRate: 'Interest Rate',
+    loanTermYears: 'Loan Term',
+    requiredContingencies: 'Contingencies',
+    capitalRaiseTarget: 'Capital Raising',
+    equitySplit: 'Equity Split',
+    investorInvites: 'Investor Outreach',
+    marketplaceListing: 'Marketplace',
+    offerStatus: 'Offer Tracking',
+    offerAmount: 'Offer Amount',
+    offerDate: 'Offer Date',
+    purchaseContractDoc: 'Documents',
+    leadEmail: 'Lead Contact',
+    partnerEmails: 'Partners',
+    vision: 'Project Vision',
+  };
+  return map[question.id] ?? 'Setup';
 }

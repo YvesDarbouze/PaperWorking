@@ -182,6 +182,6 @@ All variants adapt automatically inside `.pw-surface-dark`, `.pw-phase-listed`, 
 
 ### Authorized Brand Assets
 - **Only Brand Name**: `PaperWorking` (CamelCase, single word, no spaces).
-- **Banned Names**: Do NOT use `Equinox OS`, `Capital Alpha`, or any other developer placeholder names.
+- **Banned Names**: Do NOT use any developer placeholder names.
 - **Logo Description**: A stylized, minimalist desktop tray icon (inbox tray) with clean, stacked horizontal sheets of paper rising vertically above it, representing structure, organization, and a document-driven real estate workflow.
 - **Brand Text Styling**: Always render the text `PaperWorking` using structural headings (e.g., `font-headline-md tracking-tighter`) instead of generic serif fonts or standard body text.

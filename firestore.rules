@@ -134,6 +134,21 @@ service cloud.firestore {
         allow update, delete: if false;
       }
 
+      // ─── Vendor Requests (Sub-Collection) ──────────────────────────
+      match /vendorRequests/{requestId} {
+        allow read: if request.auth != null
+                    && (isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        || request.auth.uid == resource.data.vendorUid);
+
+        allow create: if request.auth != null
+                      && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+
+        allow update: if request.auth != null
+                      && (isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                          || request.auth.uid == resource.data.vendorUid
+                          || request.auth.uid == request.resource.data.vendorUid);
+      }
+
       // ─── Private Financials (Sub-Collection) ───────────────────────
       // This is the True Field-Level Security workaround.
       // Only Lead Investor, Accountant, and Lender can read.

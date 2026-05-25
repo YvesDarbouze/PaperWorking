@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
   /* ── Success state ── */
   if (isSuccess) {
     return (
-      <div className="flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center max-w-[420px] mx-auto w-full">
         <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-950/60 border border-green-800/30">
           <CheckCircle2 className="h-7 w-7 text-green-400" />
         </div>
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
 
   /* ── Form state ── */
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center max-w-[420px] mx-auto w-full">
       <div className="mb-8 text-center">
         <h1 className="text-[28px] font-semibold tracking-tight" style={{ color: '#ffffff' }}>Reset your password</h1>
         <p className="mt-2 text-[14px] text-[#888]">

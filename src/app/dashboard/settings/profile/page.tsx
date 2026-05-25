@@ -1,19 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Save, Loader2, Eye, EyeOff, Shield, ShieldCheck, Monitor, Smartphone, MapPin, X, Camera } from 'lucide-react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
 
 /* ═══════════════════════════════════════════════════════
-   Profile & Security Settings
-
-   Three cards:
-   1. User Details — name, phone, company, avatar
-   2. Authentication & Security — password, 2FA toggle
-   3. Active Sessions — placeholder device list
+   Profile & Security Settings (Luminous Glass Terminal)
    ═══════════════════════════════════════════════════════ */
 
 export default function ProfileSettingsPage() {
@@ -134,236 +128,257 @@ export default function ProfileSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-3xl">
 
       {/* ═══ Card 1: User Details ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] mb-6 flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">manage_accounts</span>
           Personal Information
         </h2>
 
-        <form onSubmit={handleSaveProfile} className="space-y-5">
-          {/* Avatar */}
-          <div className="flex items-center gap-5 mb-2">
+        <form onSubmit={handleSaveProfile} className="space-y-6">
+          {/* Avatar & Email */}
+          <div className="flex items-center gap-5 pb-4 border-b border-white/5">
             <div className="relative group">
-              <div className="w-16 h-16 rounded-full bg-pw-fg text-white flex items-center justify-center text-lg font-bold">
+              <div className="w-16 h-16 rounded-full bg-white/10 border border-white/20 text-[#57f1db] flex items-center justify-center text-xl font-bold transition-all shadow-[0_0_15px_rgba(87,241,219,0.1)]">
                 {initials}
               </div>
               <button
                 type="button"
-                className="absolute inset-0 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                className="absolute inset-0 rounded-full bg-black/60 text-[#57f1db] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-[#57f1db]/30"
                 title="Upload photo"
               >
-                <Camera className="w-5 h-5" />
+                <span className="material-symbols-outlined text-lg">photo_camera</span>
               </button>
             </div>
             <div>
-              <p className="text-sm font-medium text-text-primary">{firstName} {lastName}</p>
-              <p className="text-xs text-text-secondary">{user?.email}</p>
+              <p className="text-sm font-semibold text-white">{firstName} {lastName}</p>
+              <p className="text-xs text-[#8a9b9b] mt-0.5">{user?.email}</p>
             </div>
           </div>
 
           {/* Name fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">First Name</label>
+              <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">First Name</label>
               <input
                 type="text"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 focus:ring-1 focus:ring-[#57f1db]/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Last Name</label>
+              <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Last Name</label>
               <input
                 type="text"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 focus:ring-1 focus:ring-[#57f1db]/20 transition-all"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Contact fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Phone Number</label>
+              <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Phone Number</label>
               <input
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="(555) 123-4567"
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 focus:ring-1 focus:ring-[#57f1db]/20 transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1">Company Name</label>
+              <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Company Name</label>
               <input
                 type="text"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Realty Corp LLC"
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 focus:ring-1 focus:ring-[#57f1db]/20 transition-all"
               />
             </div>
           </div>
 
-          {/* Save */}
-          <div className="flex items-center gap-3">
+          {/* Submit */}
+          <div className="flex items-center gap-4 pt-2">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
+              className="luminous-button inline-flex items-center justify-center gap-2 bg-[#57f1db]/20 border border-[#57f1db]/30 text-[#57f1db] text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg hover:bg-[#57f1db]/30 transition-all disabled:opacity-50"
             >
               {saving ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+                <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
               ) : (
-                <><Save className="w-4 h-4" /> Save Changes</>
+                <span className="material-symbols-outlined text-sm select-none">save</span>
               )}
+              {saving ? 'Saving…' : 'Save Changes'}
             </button>
             {saved && (
-              <span className="text-sm text-green-700">Profile updated.</span>
+              <span className="text-xs text-[#57f1db] flex items-center gap-1.5 animate-pulse">
+                <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+                Profile updated successfully.
+              </span>
             )}
           </div>
         </form>
       </section>
 
       {/* ═══ Card 2: Authentication & Security ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] mb-6 flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">security</span>
           Authentication & Security
         </h2>
 
         {/* 2FA Toggle */}
-        <div className="flex items-center justify-between py-4 border-b border-border-accent mb-6">
+        <div className="flex items-center justify-between py-4 border-b border-white/5 mb-6">
           <div className="flex items-center gap-3">
-            {twoFAEnabled ? (
-              <ShieldCheck className="w-5 h-5 text-green-600" />
-            ) : (
-              <Shield className="w-5 h-5 text-text-secondary" />
-            )}
+            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#8a9b9b]">
+              <span className="material-symbols-outlined text-lg select-none">
+                {twoFAEnabled ? 'verified_user' : 'shield'}
+              </span>
+            </div>
             <div>
-              <p className="text-sm font-medium text-text-primary">Two-Factor Authentication</p>
-              <p className="text-xs text-text-secondary">
-                {twoFAEnabled ? 'Enabled — your account is protected' : 'Add an extra layer of security to your account'}
+              <p className="text-sm font-semibold text-white">Two-Factor Authentication</p>
+              <p className="text-xs text-[#8a9b9b] mt-0.5">
+                {twoFAEnabled ? 'Protected — active on your account' : 'Add an extra layer of security to authorization attempts'}
               </p>
             </div>
           </div>
           <button
             onClick={() => setTwoFAEnabled(!twoFAEnabled)}
             className={`
-              relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer
-              ${twoFAEnabled ? 'bg-green-600' : 'bg-pw-border'}
+              relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border
+              ${twoFAEnabled ? 'bg-[#57f1db]/20 border-[#57f1db]/40' : 'bg-white/5 border-white/10'}
             `}
             role="switch"
             aria-checked={twoFAEnabled}
           >
             <span
               className={`
-                inline-block h-4 w-4 transform rounded-full bg-bg-surface transition-transform shadow-sm
-                ${twoFAEnabled ? 'translate-x-6' : 'translate-x-1'}
+                inline-block h-4 w-4 transform rounded-full transition-all duration-300 shadow-sm
+                ${twoFAEnabled ? 'translate-x-6 bg-[#57f1db]' : 'translate-x-1 bg-[#8a9b9b]'}
               `}
             />
           </button>
         </div>
 
         {/* Password Change Form */}
-        <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-4">
+        <h3 className="text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-4 flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-sm select-none">lock_reset</span>
           Change Password
         </h3>
 
-        <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+        <form onSubmit={handlePasswordChange} className="space-y-5 max-w-md">
           <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Current Password</label>
+            <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Current Password</label>
             <div className="relative">
               <input
                 type={showPwd ? 'text' : 'password'}
                 value={currentPwd}
                 onChange={(e) => setCurrentPwd(e.target.value)}
                 required
-                className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-pw-black"
+                className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 pr-10 text-white focus:outline-none focus:border-[#57f1db]/50 transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPwd(!showPwd)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a9b9b] hover:text-white transition-colors"
               >
-                {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <span className="material-symbols-outlined text-lg select-none">
+                  {showPwd ? 'visibility_off' : 'visibility'}
+                </span>
               </button>
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">New Password</label>
+            <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">New Password</label>
             <input
               type="password"
               value={newPwd}
               onChange={(e) => setNewPwd(e.target.value)}
               required
               minLength={8}
-              className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+              className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 transition-all"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1">Confirm New Password</label>
+            <label className="block text-xs font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">Confirm New Password</label>
             <input
               type="password"
               value={confirmPwd}
               onChange={(e) => setConfirmPwd(e.target.value)}
               required
               minLength={8}
-              className="w-full text-sm bg-bg-primary border border-border-accent px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-pw-black"
+              className="glass-input w-full text-sm bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#57f1db]/50 transition-all"
             />
           </div>
 
           {pwdError && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 px-3 py-2">{pwdError}</p>
+            <p className="text-xs text-red-400 bg-red-950/20 border border-red-500/30 rounded-lg px-4 py-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm select-none">error</span>
+              {pwdError}
+            </p>
           )}
           {pwdSuccess && (
-            <p className="text-sm text-green-700 bg-green-50 border border-green-200 px-3 py-2">Password updated successfully.</p>
+            <p className="text-xs text-[#57f1db] bg-[#57f1db]/10 border border-[#57f1db]/20 rounded-lg px-4 py-3 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm select-none">check_circle</span>
+              Password updated successfully.
+            </p>
           )}
 
           <button
             type="submit"
             disabled={pwdLoading}
-            className="inline-flex items-center gap-2 bg-pw-black text-white text-sm font-medium px-5 py-2.5 hover:opacity-90 transition disabled:opacity-50"
+            className="luminous-button w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#57f1db]/20 border border-[#57f1db]/30 text-[#57f1db] text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg hover:bg-[#57f1db]/30 transition-all disabled:opacity-50"
           >
-            {pwdLoading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Updating…</>
-            ) : (
-              'Update Password'
+            {pwdLoading && (
+              <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
             )}
+            {pwdLoading ? 'Updating…' : 'Update Password'}
           </button>
         </form>
       </section>
 
       {/* ═══ Card 3: Active Sessions ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] mb-6 flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">devices</span>
           Device Sessions
         </h2>
 
         <div className="space-y-4">
-          <p className="text-sm text-text-secondary">
+          <p className="text-xs text-[#8a9b9b] leading-relaxed">
             Sign out of all other active sessions across your devices. This will invalidate all your refresh tokens immediately, but currently active tokens may persist for up to an hour. You will stay signed in on this device.
           </p>
           
           <button
             onClick={handleRevokeSessions}
             disabled={revoking}
-            className="inline-flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 text-sm font-medium px-5 py-2.5 hover:bg-red-100 transition disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 bg-red-950/20 border border-red-500/30 text-red-400 hover:bg-red-900/30 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg transition-all disabled:opacity-50 cursor-pointer"
           >
             {revoking ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> Revoking…</>
+              <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
             ) : (
-              'Revoke All Other Sessions'
+              <span className="material-symbols-outlined text-sm select-none">logout</span>
             )}
+            {revoking ? 'Revoking…' : 'Revoke All Other Sessions'}
           </button>
           
           {revokeSuccess && (
-            <p className="text-sm text-green-700 mt-2">All other sessions have been revoked.</p>
+            <p className="text-xs text-[#57f1db] flex items-center gap-1.5 animate-pulse mt-2">
+              <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+              All other active sessions have been revoked.
+            </p>
           )}
         </div>
       </section>
     </div>
   );
 }
+

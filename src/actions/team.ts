@@ -558,7 +558,7 @@ export async function assignTask(projectId: string, taskId: string, assigneeEmai
         recipientId: targetUserId,
         type: 'TASK_ASSIGNED',
         actor: { uid: callerUid, name: userData.displayName || userData.email },
-        objectReference: { projectId, taskId },
+        objectReference: { projectId, task: taskLabel },
         deepLinkUrl: `/dashboard/projects/${projectId}`,
       });
     }

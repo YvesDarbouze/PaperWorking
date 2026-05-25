@@ -182,6 +182,9 @@ export const NotificationService = {
       case 'TASK_COMPLETE':
         body = `The task '${task}' has been marked complete by ${actorName}. Checklist progress updated.`;
         break;
+      case 'TASK_ASSIGNED':
+        body = `You have been assigned the task '${task}' by ${actorName}.`;
+        break;
       case 'PHASE_TRANSITION':
         body = `Project advanced from the previous phase to '${phase}'.`;
         break;

@@ -30,25 +30,24 @@ interface InboxFeedProps {
 
 function FeedSkeleton() {
   return (
-    <div className="space-y-0">
-      {Array.from({ length: 6 }).map((_, i) => (
+    <div className="p-6 space-y-4 bg-[#0b141a] h-full overflow-y-auto">
+      {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
-          className="flex gap-3.5 px-6 py-4"
-          style={{ borderBottom: '1px solid var(--bg-canvas)' }}
+          className="flex gap-4 p-5 rounded-2xl glass-card border border-white/5 animate-pulse"
         >
           {/* Icon skeleton */}
-          <div className="w-9 h-9 rounded-full bg-neutral-200 animate-pulse flex-shrink-0" />
+          <div className="w-10 h-10 rounded-xl bg-white/5 flex-shrink-0" />
 
           {/* Content skeleton */}
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-2.5">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-neutral-200 animate-pulse" />
-              <div className="h-3 w-24 rounded bg-neutral-200 animate-pulse" />
-              <div className="ml-auto h-3 w-12 rounded bg-neutral-200 animate-pulse" />
+              <div className="w-16 h-3 rounded bg-white/10" />
+              <div className="w-24 h-3 rounded bg-white/5" />
+              <div className="ml-auto w-12 h-3 rounded bg-white/5" />
             </div>
-            <div className="h-3.5 w-3/4 rounded bg-neutral-200 animate-pulse" />
-            <div className="h-3 w-1/2 rounded bg-neutral-200 animate-pulse" />
+            <div className="h-4 w-3/4 rounded bg-white/10" />
+            <div className="h-3.5 w-1/2 rounded bg-white/5" />
           </div>
         </div>
       ))}
@@ -148,12 +147,12 @@ export default function InboxFeed({
   // Handle explicit error states
   if (error && items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px]">
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px] bg-[#0b141a]">
         <AlertCircle className="w-8 h-8 mb-3 text-red-500" />
-        <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>
+        <h3 className="text-sm font-semibold mb-1 text-[#dae4ec]">
           Connection Error
         </h3>
-        <p className="text-xs max-w-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-xs max-w-xs mb-3 text-[#bacac5]">
           {error}
         </p>
       </div>
@@ -166,26 +165,26 @@ export default function InboxFeed({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative">
+    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative bg-[#0b141a]">
       {/* Select All Action Bar */}
       {items.length > 0 && (
         <div 
-          className="flex items-center px-6 py-2.5 border-b"
-          style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}
+          className="flex items-center px-6 py-3 border-b border-white/10 bg-[#0b141a]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
         >
-          <label className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider cursor-pointer" style={{ color: 'var(--text-secondary)' }}>
+          <label className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer text-[#bacac5] hover:text-[#57f1db] transition-colors">
             <input
               type="checkbox"
               checked={allSelected}
               onChange={toggleSelectAll}
-              className="w-3.5 h-3.5 accent-[#0d0d0d] cursor-pointer"
+              className="w-4 h-4 rounded border-white/20 bg-white/5 checked:bg-primary checked:border-primary text-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
             />
-            {allSelected ? 'Deselect All' : 'Select All'}
+            {allSelected ? 'Deselect All' : 'Select All Notifications'}
           </label>
         </div>
       )}
 
-      <div className="flex-1">
+      {/* Bento grid style stack list */}
+      <div className="flex-1 p-6 space-y-4">
         <AnimatePresence initial={false}>
           {items.map((item) => (
             <InboxItemCard
@@ -209,35 +208,32 @@ export default function InboxFeed({
             initial={{ opacity: 0, y: 20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 20, x: '-50%' }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3 shadow-2xl border"
+            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3.5 glass-card rounded-2xl border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(45,212,191,0.15)] text-[#dae4ec]"
             style={{
-              backgroundColor: '#0d0d0d',
-              borderColor: '#333333',
-              color: '#ffffff',
               width: 'calc(100% - 48px)',
-              maxWidth: '500px',
+              maxWidth: '520px',
             }}
           >
-            <span className="text-xs font-semibold">
-              {selectedIds.length} item{selectedIds.length > 1 ? 's' : ''} selected
+            <span className="text-xs font-semibold text-primary">
+              {selectedIds.length} notification{selectedIds.length > 1 ? 's' : ''} selected
             </span>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={handleBulkMarkRead}
-                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider border border-neutral-700 hover:bg-neutral-800 hover:border-neutral-600 transition-colors"
+                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 transition-all active:scale-95 text-[#dae4ec]"
               >
                 Mark Read
               </button>
               <button
                 onClick={handleBulkArchive}
-                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-white text-black hover:bg-neutral-200 transition-colors"
+                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all luminous-glow"
               >
                 Archive
               </button>
               <button
                 onClick={() => setSelectedIds([])}
-                className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition-colors"
+                className="text-[10px] font-bold uppercase tracking-wider text-[#bacac5] hover:text-[#dae4ec] transition-colors px-2 py-1"
               >
                 Cancel
               </button>
@@ -250,12 +246,11 @@ export default function InboxFeed({
       {hasMore && (
         <div
           ref={sentinelRef}
-          className="flex items-center justify-center p-4 min-h-[48px]"
-          style={{ borderTop: '1px solid var(--bg-canvas)' }}
+          className="flex items-center justify-center p-6 min-h-[48px]"
         >
           {loadingMore && (
-            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            <div className="flex items-center gap-2 text-xs text-[#bacac5]">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
               Loading more...
             </div>
           )}
@@ -264,3 +259,4 @@ export default function InboxFeed({
     </div>
   );
 }
+

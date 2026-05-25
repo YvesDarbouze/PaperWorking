@@ -1,23 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Archive, Trash2, ExternalLink, Check, Eye } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Archive, Trash2, ExternalLink, Check, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Notification, NotificationType } from '@/types/notification';
-import {
-  Bell,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  FileText,
-  CreditCard,
-  PlusCircle,
-  AlertTriangle,
-  Flame,
-  Wrench,
-  LucideIcon
-} from 'lucide-react';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    InboxItemCard — Individual notification card renderer
@@ -33,29 +21,115 @@ interface InboxItemCardProps {
   showCheckbox?: boolean;
 }
 
-const NOTIFICATION_TYPE_META: Record<
-  NotificationType,
-  {
-    label: string;
-    Icon: LucideIcon;
-    color: string;
-    bgColor: string;
+function getCategoryInfo(type: NotificationType) {
+  switch (type) {
+    case 'PHASE_TRANSITION':
+      return {
+        label: 'Phase Change',
+        icon: 'swap_horiz',
+        theme: 'deals',
+        iconClass: 'bg-primary/10 border-primary/20 text-primary',
+      };
+    case 'DEADLINE_ALERT':
+      return {
+        label: 'Deadline',
+        icon: 'alarm',
+        theme: 'deals',
+        iconClass: 'bg-primary/10 border-primary/20 text-primary',
+      };
+    case 'OVER_IMPROVEMENT_ALERT':
+      return {
+        label: 'Over-Improvement',
+        icon: 'warning',
+        theme: 'deals',
+        iconClass: 'bg-primary/10 border-primary/20 text-primary',
+      };
+    case 'BURN_RATE_WARNING':
+      return {
+        label: 'Burn Rate Alert',
+        icon: 'local_fire_department',
+        theme: 'deals',
+        iconClass: 'bg-primary/10 border-primary/20 text-primary',
+      };
+    case 'BILLING_CHARGED':
+      return {
+        label: 'Billing Charged',
+        icon: 'credit_card',
+        theme: 'finance',
+        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+      };
+    case 'RECEIPT_APPROVAL':
+      return {
+        label: 'Receipt Approval',
+        icon: 'receipt_long',
+        theme: 'finance',
+        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+      };
+    case 'INVEST_INVITE':
+      return {
+        label: 'Investment Invite',
+        icon: 'account_balance',
+        theme: 'finance',
+        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+      };
+    case 'VENDOR_BID':
+      return {
+        label: 'Vendor Bid',
+        icon: 'engineering',
+        theme: 'vendors',
+        iconClass: 'bg-[#ebbf85]/10 border-[#ebbf85]/20 text-[#ebbf85]',
+      };
+    case 'VENDOR_LEAD':
+      return {
+        label: 'Vendor Lead',
+        icon: 'storefront',
+        theme: 'vendors',
+        iconClass: 'bg-[#ebbf85]/10 border-[#ebbf85]/20 text-[#ebbf85]',
+      };
+    case 'TEAM_INVITE':
+      return {
+        label: 'Team Invite',
+        icon: 'group_add',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
+    case 'TEAM_INVITE_REMINDER':
+      return {
+        label: 'Invite Reminder',
+        icon: 'notifications_active',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
+    case 'TASK_COMPLETE':
+      return {
+        label: 'Task Complete',
+        icon: 'check_circle',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
+    case 'TASK_ASSIGNED':
+      return {
+        label: 'Task Assigned',
+        icon: 'assignment_ind',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
+    case 'DOCUMENT_SIGNED':
+      return {
+        label: 'Document Signed',
+        icon: 'description',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
+    default:
+      return {
+        label: 'System Notification',
+        icon: 'notifications',
+        theme: 'team',
+        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+      };
   }
-> = {
-  VENDOR_BID: { label: 'Vendor Bid', Icon: Wrench, color: '#595959', bgColor: '#F2F2F2' },
-  INVEST_INVITE: { label: 'Co-Invest Invite', Icon: TrendingUp, color: '#0d0d0d', bgColor: '#F2F2F2' },
-  TASK_COMPLETE: { label: 'Task Complete', Icon: CheckCircle, color: '#16a34a', bgColor: '#f0fdf4' },
-  PHASE_TRANSITION: { label: 'Phase Change', Icon: Bell, color: '#7F7F7F', bgColor: '#F2F2F2' },
-  DEADLINE_ALERT: { label: 'Deadline', Icon: Clock, color: '#dc2626', bgColor: '#fef2f2' },
-  BILLING_CHARGED: { label: 'Billing Renewed', Icon: CreditCard, color: '#595959', bgColor: '#F2F2F2' },
-  DOCUMENT_SIGNED: { label: 'Doc Signed', Icon: FileText, color: '#16a34a', bgColor: '#f0fdf4' },
-  RECEIPT_APPROVAL: { label: 'Receipt Uploaded', Icon: FileText, color: '#1a73e8', bgColor: '#e8f0fe' },
-  TEAM_INVITE: { label: 'Team Invite', Icon: PlusCircle, color: '#1a73e8', bgColor: '#e8f0fe' },
-  OVER_IMPROVEMENT_ALERT: { label: 'Over-Improvement', Icon: AlertTriangle, color: '#dc2626', bgColor: '#fef2f2' },
-  BURN_RATE_WARNING: { label: 'Burn Rate Alert', Icon: Flame, color: '#dc2626', bgColor: '#fef2f2' },
-  VENDOR_LEAD: { label: 'New Lead', Icon: Bell, color: '#1a73e8', bgColor: '#e8f0fe' },
-  TEAM_INVITE_REMINDER: { label: 'Invite Reminder', Icon: Bell, color: '#1a73e8', bgColor: '#e8f0fe' }
-};
+}
 
 function formatRelativeTime(date: Date): string {
   const now = new Date();
@@ -83,24 +157,37 @@ export default function InboxItemCard({
 }: InboxItemCardProps) {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const meta = NOTIFICATION_TYPE_META[item.type] || {
-    label: 'Notification',
-    Icon: Bell,
-    color: '#7F7F7F',
-    bgColor: '#F2F2F2'
-  };
+  const cat = getCategoryInfo(item.type);
 
-  const IconComponent = meta.Icon;
+  const isActionable = [
+    'VENDOR_BID',
+    'RECEIPT_APPROVAL',
+    'INVEST_INVITE',
+    'TEAM_INVITE',
+    'TEAM_INVITE_REMINDER',
+    'VENDOR_LEAD'
+  ].includes(item.type);
 
   const handleClick = (e: React.MouseEvent) => {
     // Prevent double routing if clicked on action buttons
-    if ((e.target as HTMLElement).closest('button')) return;
+    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('input')) return;
 
     if (!item.read) {
       onMarkRead(item.id);
     }
-    router.push(item.deepLinkUrl);
+
+    if (isActionable) {
+      setIsExpanded(!isExpanded);
+    } else {
+      router.push(item.deepLinkUrl);
+    }
+  };
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
   };
 
   return (
@@ -111,201 +198,260 @@ export default function InboxItemCard({
       transition={{ duration: 0.2, ease: 'easeOut' }}
       id={`inbox-item-${item.id}`}
       onClick={handleClick}
-      className="group relative flex gap-3.5 px-6 py-4 transition-colors border-b"
-      style={{
-        cursor: 'pointer',
-        backgroundColor: item.read ? 'transparent' : 'rgba(26, 115, 232, 0.03)',
-        borderColor: 'var(--border-ui)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--bg-canvas)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = item.read
-          ? 'transparent'
-          : 'rgba(26, 115, 232, 0.03)';
-      }}
+      className={`group relative flex flex-col gap-3 p-5 rounded-2xl border transition-all duration-300 ${
+        item.read
+          ? 'glass-card border-white/5 bg-[#0b141a]/20 hover:bg-white/5'
+          : 'glass-card border-[#2dd4bf]/20 bg-[#0b141a]/40 ring-1 ring-[#2dd4bf]/10 shadow-[0_0_15px_-5px_rgba(45,212,191,0.15)] hover:border-[#2dd4bf]/30'
+      }`}
+      style={{ cursor: 'pointer' }}
     >
-      {/* Checkbox for selection */}
-      <div 
-        className={`flex-shrink-0 flex items-center justify-center transition-all ${
-          showCheckbox ? 'w-5 opacity-100 mr-2' : 'w-0 opacity-0 overflow-hidden'
-        }`}
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleSelect?.(item.id);
-        }}
-      >
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => {}} // click event is intercepted by parent div click handler
-          className="w-3.5 h-3.5 accent-[#0d0d0d] cursor-pointer"
-        />
-      </div>
+      {/* Top Main Block */}
+      <div className="flex items-start gap-3.5">
+        {/* Checkbox for selection */}
+        <div 
+          className={`flex-shrink-0 flex items-center justify-center transition-all mt-1 ${
+            showCheckbox ? 'w-5 opacity-100 mr-1.5' : 'w-0 opacity-0 overflow-hidden'
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect?.(item.id);
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => {}} // click event is intercepted by parent div click handler
+            className="w-4 h-4 rounded border-white/20 bg-white/5 checked:bg-primary checked:border-primary text-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+          />
+        </div>
 
-      {/* Unread indicator dot */}
-      {!item.read && (
-        <div
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full"
-          style={{ backgroundColor: '#1a73e8' }}
-        />
-      )}
-
-      {/* Category icon badge */}
-      <div
-        className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5 border"
-        style={{
-          backgroundColor: meta.bgColor,
-          borderColor: 'var(--border-ui)',
-        }}
-      >
-        <IconComponent
-          className="w-4 h-4"
-          style={{ color: meta.color }}
-        />
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Header row: actor + time */}
-        <div className="flex items-center justify-between gap-3 mb-0.5">
-          <div className="flex items-center gap-2 min-w-0">
-            {/* Actor avatar lazy loaded */}
-            {item.actor.avatarUrl && !imageError ? (
-              <img
-                src={item.actor.avatarUrl}
-                alt={item.actor.name}
-                loading="lazy"
-                onError={() => setImageError(true)}
-                className="w-5 h-5 rounded-full object-cover flex-shrink-0"
-              />
-            ) : (
-              <span
-                className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
-                style={{
-                  backgroundColor: '#0d0d0d',
-                  color: '#ffffff',
-                }}
-              >
-                {item.actor.name[0]?.toUpperCase() || 'P'}
-              </span>
-            )}
-            <span
-              className="text-xs font-semibold truncate"
-              style={{ color: item.read ? 'var(--text-secondary)' : 'var(--text-primary)' }}
-            >
-              {item.actor.name}
-            </span>
-            {item.objectReference.dealAddress && (
-              <span
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded truncate max-w-[150px]"
-                style={{
-                  backgroundColor: 'var(--bg-canvas)',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                {item.objectReference.dealAddress}
-              </span>
-            )}
-          </div>
+        {/* Unread indicator dot */}
+        {!item.read && (
           <span
-            className="flex-shrink-0 text-[10px] tabular-nums"
-            style={{ color: 'var(--text-secondary)' }}
+            className="absolute left-2 top-7 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(45,212,191,0.8)]"
+          />
+        )}
+
+        {/* Category icon badge */}
+        <div
+          className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300 ${cat.iconClass}`}
+        >
+          <span className="material-symbols-outlined text-xl">{cat.icon}</span>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          {/* Header row: actor + time */}
+          <div className="flex items-center justify-between gap-3 mb-1">
+            <div className="flex items-center gap-2 min-w-0">
+              {/* Actor avatar lazy loaded */}
+              {item.actor.avatarUrl && !imageError ? (
+                <img
+                  src={item.actor.avatarUrl}
+                  alt={item.actor.name}
+                  loading="lazy"
+                  onError={() => setImageError(true)}
+                  className="w-5 h-5 rounded-full object-cover border border-white/10"
+                />
+              ) : (
+                <span
+                  className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold bg-primary/20 text-primary border border-primary/30"
+                >
+                  {item.actor.name[0]?.toUpperCase() || 'P'}
+                </span>
+              )}
+              <span
+                className={`text-xs font-semibold truncate ${item.read ? 'text-[#bacac5]' : 'text-white'}`}
+              >
+                {item.actor.name}
+              </span>
+              {item.objectReference.dealAddress && (
+                <span
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-lg truncate max-w-[160px] bg-white/5 text-[#bacac5] border border-white/5"
+                >
+                  {item.objectReference.dealAddress}
+                </span>
+              )}
+            </div>
+            <span
+              className="flex-shrink-0 text-[10px] text-[#bacac5] tabular-nums"
+            >
+              {formatRelativeTime(item.createdAt)}
+            </span>
+          </div>
+
+          {/* Title */}
+          <p
+            className={`text-sm leading-snug mb-1 truncate ${
+              item.read ? 'text-[#dae4ec] font-medium' : 'text-white font-bold'
+            }`}
           >
-            {formatRelativeTime(item.createdAt)}
+            {item.title}
+          </p>
+
+          {/* Body preview */}
+          <p
+            className="text-xs leading-relaxed text-[#bacac5] line-clamp-2"
+          >
+            {item.body}
+          </p>
+
+          {/* Dynamic Category Tag */}
+          <span
+            className={`inline-block mt-2 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border ${cat.iconClass}`}
+          >
+            {cat.label}
           </span>
         </div>
 
-        {/* Title */}
-        <p
-          className="text-[13px] leading-snug mb-0.5 truncate"
-          style={{
-            fontWeight: item.read ? 400 : 600,
-            color: 'var(--text-primary)',
-          }}
-        >
-          {item.title}
-        </p>
+        {/* Action buttons (visible on hover) */}
+        <div className="flex-shrink-0 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all duration-200 ml-2">
+          {/* Chevron expand for actionable items */}
+          {isActionable && (
+            <button
+              onClick={toggleExpand}
+              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+              title={isExpanded ? 'Collapse' : 'Expand'}
+            >
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+            </button>
+          )}
 
-        {/* Body preview */}
-        <p
-          className="text-xs leading-relaxed line-clamp-2"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          {item.body}
-        </p>
-
-        {/* Dynamic Category Tag */}
-        <span
-          className="inline-block mt-1.5 text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded"
-          style={{
-            backgroundColor: meta.bgColor,
-            color: meta.color,
-            border: `1px solid var(--border-ui)`
-          }}
-        >
-          {meta.label}
-        </span>
-      </div>
-
-      {/* Action buttons (visible on hover) */}
-      <div className="flex-shrink-0 flex items-start gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-        {/* Deep link button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!item.read) onMarkRead(item.id);
-            router.push(item.deepLinkUrl);
-          }}
-          className="p-1.5 rounded-md transition-colors hover:bg-neutral-200"
-          style={{ color: 'var(--text-secondary)' }}
-          title="Open Project"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </button>
-
-        {/* Mark Read/Unread toggler */}
-        {!item.read && (
+          {/* Deep link button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onMarkRead(item.id);
+              if (!item.read) onMarkRead(item.id);
+              router.push(item.deepLinkUrl);
             }}
-            className="p-1.5 rounded-md transition-colors hover:bg-neutral-200"
-            style={{ color: 'var(--text-secondary)' }}
-            title="Mark as Read"
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+            title="Open Details"
           >
-            <Check className="w-3.5 h-3.5" />
+            <ExternalLink className="w-3.5 h-3.5" />
           </button>
-        )}
 
-        {/* Archive Action */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onArchive(item.id);
-          }}
-          className="p-1.5 rounded-md transition-colors hover:bg-neutral-200"
-          style={{ color: 'var(--text-secondary)' }}
-          title="Archive"
-        >
-          <Archive className="w-3.5 h-3.5" />
-        </button>
+          {/* Mark Read/Unread toggler */}
+          {!item.read && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkRead(item.id);
+              }}
+              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+              title="Mark as Read"
+            >
+              <Check className="w-3.5 h-3.5" />
+            </button>
+          )}
 
-        {/* Delete Action */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(item.id);
-          }}
-          className="p-1.5 rounded-md transition-colors hover:bg-neutral-200 hover:text-red-500"
-          style={{ color: 'var(--text-secondary)' }}
-          title="Delete"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-        </button>
+          {/* Archive Action */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onArchive(item.id);
+            }}
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+            title="Archive"
+          >
+            <Archive className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Delete Action */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(item.id);
+            }}
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 hover:text-red-400 text-[#bacac5] active:scale-95"
+            title="Delete"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
+
+      {/* Inline detail expansion drawer */}
+      <AnimatePresence>
+        {isActionable && isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden border-t border-white/5 pt-4 flex flex-col gap-3.5"
+            onClick={(e) => e.stopPropagation()} // Prevent collapse when clicking details
+          >
+            <div className="text-xs text-[#bacac5] bg-white/5 rounded-xl p-3.5 space-y-2 border border-white/5">
+              {item.type === 'VENDOR_BID' && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Bid Details</span>
+                  <p>Vendor: <strong className="text-white">{item.objectReference.vendor || item.actor.name}</strong></p>
+                  <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
+                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                </div>
+              )}
+              {item.type === 'RECEIPT_APPROVAL' && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Receipt Verification</span>
+                  <p>Uploader: <strong className="text-white">{item.actor.name}</strong></p>
+                  <p>Amount: <strong className="text-white">{item.objectReference.amount || 'N/A'}</strong></p>
+                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                </div>
+              )}
+              {item.type === 'INVEST_INVITE' && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Syndication Opportunity</span>
+                  <p>Deal: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                  <p>Sponsor: <strong className="text-white">{item.actor.name}</strong></p>
+                </div>
+              )}
+              {['TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(item.type) && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Team Membership</span>
+                  <p>Organization: <strong className="text-white">{item.objectReference.organizationName || 'N/A'}</strong></p>
+                  <p>Inviter: <strong className="text-white">{item.actor.name}</strong></p>
+                </div>
+              )}
+              {item.type === 'VENDOR_LEAD' && (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Lead Inquiry</span>
+                  <p>Investor: <strong className="text-white">{item.actor.name}</strong></p>
+                  <p>Project: <strong className="text-white">{item.objectReference.dealAddress || 'N/A'}</strong></p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (!item.read) await onMarkRead(item.id);
+                  // Trigger action success
+                  toast.success('Approved successfully.', {
+                    icon: '✓',
+                    style: { background: '#0b141a', color: '#dae4ec', border: '1px solid rgba(45,212,191,0.2)' }
+                  });
+                  setIsExpanded(false);
+                }}
+                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-97 transition-all luminous-glow"
+              >
+                {item.type === 'VENDOR_BID' ? 'Approve Bid' : item.type === 'RECEIPT_APPROVAL' ? 'Approve Receipt' : 'Accept'}
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(item.deepLinkUrl);
+                }}
+                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-[#dae4ec] transition-all active:scale-97"
+              >
+                View Details
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
+

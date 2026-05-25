@@ -8,6 +8,7 @@ export type NotificationType =
   | 'VENDOR_BID'
   | 'INVEST_INVITE'
   | 'TASK_COMPLETE'
+  | 'TASK_ASSIGNED'
   | 'PHASE_TRANSITION'
   | 'DEADLINE_ALERT'
   | 'BILLING_CHARGED'
@@ -116,6 +117,16 @@ export const NOTIFICATION_METADATA: Record<
       if (!params.task) throw new Error('TASK_COMPLETE requires a task in the title.');
       if (!params.dealAddress) throw new Error('TASK_COMPLETE requires a dealAddress in the title.');
       return `${teammate} completed ${params.task} on ${params.dealAddress}`;
+    }
+  },
+  TASK_ASSIGNED: {
+    urgency: 'informational',
+    channels: ['in-app'],
+    templateTitle: (params) => {
+      const teammate = params.teammate || params.actorName;
+      if (!teammate) throw new Error('TASK_ASSIGNED requires an actorName or teammate identity in the title.');
+      if (!params.task) throw new Error('TASK_ASSIGNED requires a task in the title.');
+      return `${teammate} assigned task "${params.task}" to you`;
     }
   },
   PHASE_TRANSITION: {

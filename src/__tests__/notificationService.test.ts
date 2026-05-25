@@ -44,8 +44,18 @@ import { NotificationService } from '@/lib/services/notificationService';
 import { NOTIFICATION_METADATA } from '@/types/notification';
 
 describe('NotificationService & Dynamic Catalog', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // 12:00 PM EDT (outside quiet/DND hours)
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.setSystemTime(new Date('2026-05-23T16:00:00Z')); // Reset to 12:00 PM EDT (outside quiet/DND hours) before each test
   });
 
   describe('Template Formatting and Urgency Level Mapping', () => {
@@ -374,14 +384,6 @@ describe('NotificationService & Dynamic Catalog', () => {
   });
 
   describe('Email Opt-out & Quiet Hours Dispatching', () => {
-    beforeAll(() => {
-      jest.useFakeTimers();
-    });
-
-    afterAll(() => {
-      jest.useRealTimers();
-    });
-
     beforeEach(() => {
       mockSendRawEmail.mockClear();
       mockAdd.mockClear();
@@ -581,14 +583,6 @@ describe('NotificationService & Dynamic Catalog', () => {
   });
 
   describe('Notification Fatigue & DND Verification', () => {
-    beforeAll(() => {
-      jest.useFakeTimers();
-    });
-
-    afterAll(() => {
-      jest.useRealTimers();
-    });
-
     beforeEach(() => {
       mockSendRawEmail.mockClear();
       mockAdd.mockClear();

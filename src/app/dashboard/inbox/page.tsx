@@ -2,7 +2,7 @@
 
 import React, { Suspense, useState, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Search, Plus, Loader2, CheckCheck, ArrowLeft } from 'lucide-react';
+import { Search, Plus, Loader2, CheckCheck, ArrowLeft, Settings } from 'lucide-react';
 import { useInboxFeed } from '@/hooks/useInboxFeed';
 import { useInboxThreads } from '@/hooks/useInboxThreads';
 import { useAuth } from '@/context/AuthContext';
@@ -174,58 +174,32 @@ function InboxNotificationCenter() {
 
   return (
     <>
-      <div
-        className="flex flex-col w-full h-[calc(100vh-64px)]"
-        style={{ backgroundColor: 'var(--bg-surface)' }}
-      >
+      <div className="flex flex-col w-full h-[calc(100vh-64px)] bg-[#0b141a] text-[#dae4ec] overflow-hidden">
         {/* ═══ Header ═══ */}
-        <div
-          className="flex items-center justify-between px-6 py-4"
-          style={{
-            backgroundColor: 'var(--bg-surface)',
-            borderBottom: '1px solid var(--bg-canvas)',
-          }}
-        >
+        <div className="flex items-center justify-between px-6 py-4 bg-[#0b141a] border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] h-16 shrink-0">
           <div className="flex items-center gap-3">
-            <h1
-              className="text-xl font-bold tracking-tight"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Inbox
+            <span className="material-symbols-outlined text-[#57f1db] text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+              notifications
+            </span>
+            <h1 className="text-xl font-bold tracking-tight text-[#57f1db]">
+              Notifications
             </h1>
             {unreadTotal > 0 && (
-              <span
-                className="flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full"
-                style={{ backgroundColor: '#0d0d0d', color: '#ffffff', minWidth: 20 }}
-              >
-                {unreadTotal > 9 ? '9+' : unreadTotal}
+              <span className="flex items-center justify-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#57f1db] text-[#003731] min-w-5 luminous-glow">
+                {unreadTotal}
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             {/* Mark All Read */}
             {unreadTotal > 0 && (
               <button
                 id="inbox-mark-all-read"
                 onClick={handleMarkAllRead}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md border transition-colors"
-                style={{
-                  borderColor: 'var(--border-ui)',
-                  color: 'var(--text-secondary)',
-                  backgroundColor: 'transparent',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--bg-canvas)';
-                  e.currentTarget.style.color = 'var(--text-primary)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-secondary)';
-                }}
+                className="text-[#bacac5] hover:text-[#57f1db] font-medium text-sm transition-colors active:scale-95 duration-200"
               >
-                <CheckCheck className="w-3 h-3" />
-                Mark All Read
+                Mark all as read
               </button>
             )}
 
@@ -233,10 +207,23 @@ function InboxNotificationCenter() {
             <button
               id="inbox-compose-btn"
               onClick={() => setComposeOpen(true)}
-              className="ag-button !py-2 !px-4 !text-xs"
+              className="px-4 py-2 text-xs font-bold uppercase tracking-wider rounded-xl bg-[#57f1db] text-[#003731] hover:brightness-110 active:scale-95 transition-all luminous-glow shadow-sm flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               Compose
+            </button>
+
+            {/* Settings button */}
+            <button
+              id="inbox-settings-btn"
+              onClick={() => toast.success('Settings clicked.', {
+                icon: '⚙️',
+                style: { background: '#0b141a', color: '#dae4ec', border: '1px solid rgba(45,212,191,0.2)' }
+              })}
+              className="p-2 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+              title="Notification Settings"
+            >
+              <Settings className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -278,17 +265,11 @@ export default function InboxPage() {
   return (
     <Suspense
       fallback={
-        <div
-          className="flex w-full h-[calc(100vh-64px)] items-center justify-center"
-          style={{ backgroundColor: 'var(--bg-canvas)' }}
-        >
+        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#0b141a]">
           <div className="flex flex-col items-center gap-3">
-            <Loader2
-              className="w-6 h-6 animate-spin"
-              style={{ color: 'var(--text-secondary)' }}
-            />
-            <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-              Loading Inbox...
+            <Loader2 className="w-6 h-6 animate-spin text-[#57f1db]" />
+            <p className="text-sm font-medium text-[#bacac5]">
+              Loading Notifications...
             </p>
           </div>
         </div>

@@ -2,7 +2,6 @@
 
 import { useSettingsStore } from '@/store/settingsStore';
 import { useNotificationPreferencesStore, DEFAULT_CATEGORY_PREFERENCES } from '@/store/notificationPreferencesStore';
-import { Bell, Mail, MessageSquare, Shield, Clock, Lock, Check, Sun, Moon, Monitor, Smartphone, AlertCircle, Info, Download, Trash2, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
@@ -10,56 +9,57 @@ import type { NotificationCategory, CategoryPreference } from '@/types/user';
 
 /* ═══════════════════════════════════════════════════════
    Granular Notification & Appearance Settings UI
+   (Luminous Glass Terminal)
    ═══════════════════════════════════════════════════════ */
 
 const CATEGORY_ROWS: {
   key: NotificationCategory;
   label: string;
   description: string;
-  icon: React.ComponentType<any>;
+  iconName: string;
 }[] = [
   {
     key: 'syndication',
     label: 'Syndication & Investing',
     description: 'Syndication invites, pledge status updates, and LOI commitments.',
-    icon: Bell
+    iconName: 'notifications'
   },
   {
     key: 'bids',
     label: 'Contractor & Vendor Bids',
     description: 'New bids submitted, quote changes, and project job inquiries.',
-    icon: MessageSquare
+    iconName: 'rate_review'
   },
   {
     key: 'tasks',
     label: 'Tasks & Collaboration',
     description: 'Task assignments, document sign-offs, and team invitations.',
-    icon: Check
+    iconName: 'task_alt'
   },
   {
     key: 'deadlines',
     label: 'Contingency Deadlines',
     description: 'Critical alerts for expiring contract contingencies (Mandatory).',
-    icon: Clock
+    iconName: 'schedule'
   },
   {
     key: 'billing',
     label: 'Account & Billing',
     description: 'Subscription renewals, charges, invoices, and billing notices (Mandatory).',
-    icon: Shield
+    iconName: 'shield'
   },
   {
     key: 'alerts',
     label: 'Project Risk Alerts',
     description: 'Rehab budget overruns, daily burn rates, and phase transitions.',
-    icon: AlertCircle
+    iconName: 'warning'
   }
 ];
 
 const THEME_OPTIONS = [
-  { value: 'light' as const, label: 'Light Mode', Icon: Sun, description: 'Default bright interface' },
-  { value: 'dark' as const, label: 'Dark Mode', Icon: Moon, description: 'Easier on the eyes at night' },
-  { value: 'system' as const, label: 'Sync with System', Icon: Monitor, description: 'Matches your OS preference' },
+  { value: 'light' as const, label: 'Light Mode', iconName: 'light_mode', description: 'Default bright interface' },
+  { value: 'dark' as const, label: 'Dark Mode', iconName: 'dark_mode', description: 'Easier on the eyes at night' },
+  { value: 'system' as const, label: 'Sync with System', iconName: 'desktop_windows', description: 'Matches your OS preference' },
 ];
 
 const TIMEZONES = [
@@ -76,10 +76,10 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
   if (disabled) {
     return (
       <div 
-        className="flex items-center justify-center w-9 h-5 rounded-full bg-bg-primary text-text-muted border border-border-accent opacity-60 cursor-not-allowed"
+        className="flex items-center justify-center w-10 h-5.5 rounded-full bg-white/5 border border-white/10 cursor-not-allowed"
         title="Mandatory channel for this category."
       >
-        <Lock className="w-3 h-3 text-text-secondary" />
+        <span className="material-symbols-outlined text-[10px] text-[#8a9b9b] select-none">lock</span>
       </div>
     );
   }
@@ -88,16 +88,16 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
     <button
       onClick={onToggle}
       className={`
-        relative inline-flex h-5 w-9 items-center rounded-full transition-all cursor-pointer flex-shrink-0 focus:outline-none
-        ${enabled ? 'bg-pw-fg' : 'bg-pw-border'}
+        relative inline-flex h-5.5 w-10 items-center rounded-full transition-all cursor-pointer flex-shrink-0 focus:outline-none border
+        ${enabled ? 'bg-[#57f1db]/20 border-[#57f1db]/40' : 'bg-white/5 border-white/10'}
       `}
       role="switch"
       aria-checked={enabled}
     >
       <span
         className={`
-          inline-block h-3.5 w-3.5 transform rounded-full bg-bg-surface transition-transform shadow-sm
-          ${enabled ? 'translate-x-[18px]' : 'translate-x-[3px]'}
+          inline-block h-3.5 w-3.5 transform rounded-full transition-transform duration-300 shadow-sm
+          ${enabled ? 'translate-x-5 bg-[#57f1db]' : 'translate-x-1 bg-[#8a9b9b]'}
         `}
       />
     </button>
@@ -252,19 +252,19 @@ export default function NotificationsSettingsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pw-fg"></div>
-        <p className="text-xs text-text-secondary">Loading your preferences...</p>
+        <span className="material-symbols-outlined animate-spin text-2xl text-[#8a9b9b] select-none">progress_activity</span>
+        <p className="text-xs text-[#8a9b9b]">Loading preferences...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-8 max-w-4xl">
       {/* ═══ Header Notice ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-4 flex gap-3 items-start">
-        <Info className="w-4 h-4 text-text-secondary mt-0.5 flex-shrink-0" />
-        <div className="text-xs text-text-secondary space-y-1">
-          <p className="font-semibold text-text-primary">Notification Guarantee</p>
+      <section className="glass-card p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex gap-3 items-start">
+        <span className="material-symbols-outlined text-base text-[#8a9b9b] mt-0.5 select-none">info</span>
+        <div className="text-xs text-[#8a9b9b] space-y-1">
+          <p className="font-semibold text-white">Notification Guarantee</p>
           <p>
             You can customize, mute, or redirect any alert category below. Critical Billing and Expiring Contract Deadlines are locked to ensure you do not miss payment status updates or trigger default clauses on active real estate contracts.
           </p>
@@ -272,53 +272,54 @@ export default function NotificationsSettingsPage() {
       </section>
 
       {/* ═══ Card 1: Preferences Matrix ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
         <div className="mb-6">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">grid_on</span>
             Notifications Matrix
           </h2>
-          <p className="text-xs text-text-secondary mt-1">Configure granular channel selection per alert type.</p>
+          <p className="text-xs text-[#8a9b9b] mt-1">Configure granular channel selection per alert type.</p>
         </div>
 
         {/* Column Headers */}
-        <div className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center mb-4 pb-2 border-b border-pw-border px-1">
-          <span className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Alert Category</span>
-          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider text-center">
-            <Bell className="w-3.5 h-3.5 mx-auto mb-1 text-text-secondary" />
+        <div className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center mb-4 pb-2 border-b border-white/5 px-1">
+          <span className="text-xs font-semibold text-[#8a9b9b] uppercase tracking-wider">Alert Category</span>
+          <span className="text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider text-center flex flex-col items-center">
+            <span className="material-symbols-outlined text-lg mb-1 select-none">inbox</span>
             Inbox
           </span>
-          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider text-center">
-            <Mail className="w-3.5 h-3.5 mx-auto mb-1 text-text-secondary" />
+          <span className="text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider text-center flex flex-col items-center">
+            <span className="material-symbols-outlined text-lg mb-1 select-none">mail</span>
             Email
           </span>
-          <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider text-center">
-            <Smartphone className="w-3.5 h-3.5 mx-auto mb-1 text-text-secondary" />
+          <span className="text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider text-center flex flex-col items-center">
+            <span className="material-symbols-outlined text-lg mb-1 select-none">phone_iphone</span>
             Push
           </span>
         </div>
 
         {/* Rows */}
-        <div className="divide-y divide-pw-border">
-          {CATEGORY_ROWS.map(({ key, label, description, icon: Icon }) => {
+        <div className="divide-y divide-white/5">
+          {CATEGORY_ROWS.map(({ key, label, description, iconName }) => {
             const rowPrefs = categories[key] || DEFAULT_CATEGORY_PREFERENCES[key];
             const isMandatory = key === 'billing' || key === 'deadlines';
 
             return (
-              <div key={key} className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center py-4 px-1 hover:bg-bg-primary/50 transition-colors">
+              <div key={key} className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center py-4 px-1 hover:bg-white/5 transition-colors">
                 <div className="flex gap-3 items-start pr-2">
-                  <div className="w-7 h-7 bg-bg-primary border border-border-accent flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Icon className="w-3.5 h-3.5 text-text-secondary" />
+                  <div className="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 mt-0.5 text-[#8a9b9b]">
+                    <span className="material-symbols-outlined text-base select-none">{iconName}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-text-primary flex items-center gap-1.5">
+                    <p className="text-sm font-semibold text-white flex items-center gap-2">
                       {label}
                       {isMandatory && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-pw-fg/10 text-text-primary uppercase tracking-wider">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-[#57f1db]/10 border border-[#57f1db]/20 text-[#57f1db] uppercase tracking-wider">
                           Required
                         </span>
                       )}
                     </p>
-                    <p className="text-xs text-text-secondary mt-0.5 leading-relaxed">{description}</p>
+                    <p className="text-xs text-[#8a9b9b] mt-0.5 leading-relaxed">{description}</p>
                   </div>
                 </div>
                 
@@ -344,7 +345,7 @@ export default function NotificationsSettingsPage() {
                 <div className="flex justify-center">
                   <ToggleSwitch
                     enabled={rowPrefs.push}
-                    disabled={false} // Push is never mandatory
+                    disabled={false}
                     onToggle={() => handleToggleCategoryChannel(key, 'push')}
                   />
                 </div>
@@ -355,37 +356,38 @@ export default function NotificationsSettingsPage() {
       </section>
 
       {/* ═══ Card 2: Global Opt-Out & Quiet Hours ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6 space-y-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md space-y-6">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">settings_input_component</span>
             Global Dispatch Preferences
           </h2>
-          <p className="text-xs text-text-secondary mt-1">Control outbound notification channels globally.</p>
+          <p className="text-xs text-[#8a9b9b] mt-1">Control outbound notification channels globally.</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 divide-y md:divide-y-0 md:divide-x divide-pw-border">
+        <div className="grid md:grid-cols-2 gap-6 divide-y md:divide-y-0 md:divide-x divide-white/5">
           {/* Global Toggles */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary mb-2">Global Channels</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#8a9b9b] mb-2">Global Channels</h3>
             
-            <div className="flex items-center justify-between p-3 border border-border-accent bg-bg-primary/30">
+            <div className="flex items-center justify-between p-4 border border-white/10 rounded-xl bg-black/20">
               <div>
-                <p className="text-xs font-semibold text-text-primary">Email Notifications</p>
-                <p className="text-[10px] text-text-secondary mt-0.5">Receive system & transactional mail alerts</p>
+                <p className="text-xs font-bold text-white">Email Notifications</p>
+                <p className="text-[10px] text-[#8a9b9b] mt-0.5">Receive system & transactional mail alerts</p>
               </div>
               <ToggleSwitch enabled={emailEnabled} onToggle={handleToggleGlobalEmail} />
             </div>
 
-            <div className="flex items-center justify-between p-3 border border-border-accent bg-bg-primary/30">
+            <div className="flex items-center justify-between p-4 border border-white/10 rounded-xl bg-black/20">
               <div>
-                <p className="text-xs font-semibold text-text-primary">Web Push Notifications</p>
-                <p className="text-[10px] text-text-secondary mt-0.5">Show notifications directly in browser</p>
+                <p className="text-xs font-bold text-white">Web Push Notifications</p>
+                <p className="text-[10px] text-[#8a9b9b] mt-0.5">Show notifications directly in browser</p>
               </div>
               <ToggleSwitch enabled={pushEnabled} onToggle={handleToggleGlobalPush} />
             </div>
 
             {(!emailEnabled || !pushEnabled) && (
-              <p className="text-[10px] text-text-muted italic">
+              <p className="text-[10px] text-[#8a9b9b]/60 italic">
                 Note: Disabling channels globally overrides per-category active checkboxes.
               </p>
             )}
@@ -395,50 +397,51 @@ export default function NotificationsSettingsPage() {
           <div className="space-y-4 md:pl-6 pt-6 md:pt-0">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-text-secondary">Quiet Hours DND</h3>
-                <p className="text-[10px] text-text-secondary mt-0.5">Silence & queue email alerts during specified hours</p>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#8a9b9b]">Quiet Hours DND</h3>
+                <p className="text-[10px] text-[#8a9b9b] mt-0.5">Silence & queue email alerts during specified hours</p>
               </div>
               <ToggleSwitch enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
             </div>
 
             {quietHours.enabled && (
-              <div className="space-y-3 p-4 bg-bg-primary border border-border-accent">
+              <div className="space-y-3 p-4 bg-black/30 border border-white/10 rounded-xl">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">
+                    <label className="block text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">
                       Start Time
                     </label>
                     <input
                       type="time"
                       value={quietHours.start}
                       onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
-                      className="w-full px-2 py-1 text-xs bg-bg-surface border border-border-ui text-text-primary outline-none focus:border-pw-black"
+                      className="glass-input w-full px-3 py-1.5 text-xs bg-black/20 border border-white/10 text-white rounded outline-none focus:border-[#57f1db]/50"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">
+                    <label className="block text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">
                       End Time
                     </label>
                     <input
                       type="time"
                       value={quietHours.end}
                       onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
-                      className="w-full px-2 py-1 text-xs bg-bg-surface border border-border-ui text-text-primary outline-none focus:border-pw-black"
+                      className="glass-input w-full px-3 py-1.5 text-xs bg-black/20 border border-white/10 text-white rounded outline-none focus:border-[#57f1db]/50"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">
+                  <label className="block text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-1">
                     Notification Timezone
                   </label>
                   <select
                     value={quietHours.timezone}
                     onChange={(e) => handleUpdateTimezone(e.target.value)}
-                    className="w-full px-2 py-1.5 text-xs bg-bg-surface border border-border-ui text-text-primary outline-none focus:border-pw-black"
+                    className="glass-input w-full px-3 py-2 text-xs bg-black/20 border border-white/10 text-white rounded outline-none focus:border-[#57f1db]/50"
+                    style={{ colorScheme: 'dark' }}
                   >
                     {allTimezones.map((tz) => (
-                      <option key={tz.value} value={tz.value}>
+                      <option key={tz.value} value={tz.value} className="bg-[#0b141a]">
                         {tz.label}
                       </option>
                     ))}
@@ -451,18 +454,19 @@ export default function NotificationsSettingsPage() {
       </section>
 
       {/* ═══ Card 3: Inbox Retention & Cleanup ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6 space-y-4">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md space-y-4">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">auto_delete</span>
             Inbox Cleanup & Retention
           </h2>
-          <p className="text-xs text-text-secondary mt-1">
+          <p className="text-xs text-[#8a9b9b] mt-1">
             Automatically archive notifications after they are read to keep your workspace clear.
           </p>
         </div>
 
         <div className="max-w-xs">
-          <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-2">
+          <label className="block text-[10px] font-bold text-[#8a9b9b] uppercase tracking-wider mb-2">
             Auto-Archive Retention Window
           </label>
           <select
@@ -476,56 +480,57 @@ export default function NotificationsSettingsPage() {
                   .catch(() => toast.error('Failed to update retention window'));
               }
             }}
-            className="w-full px-2 py-1.5 text-xs bg-bg-surface border border-border-ui text-text-primary outline-none focus:border-pw-black"
+            className="glass-input w-full px-3 py-2 text-xs bg-black/20 border border-white/10 text-white rounded outline-none focus:border-[#57f1db]/50"
+            style={{ colorScheme: 'dark' }}
           >
-            <option value="30">30 Days (Default)</option>
-            <option value="60">60 Days</option>
-            <option value="90">90 Days</option>
+            <option value="30" className="bg-[#0b141a]">30 Days (Default)</option>
+            <option value="60" className="bg-[#0b141a]">60 Days</option>
+            <option value="90" className="bg-[#0b141a]">90 Days</option>
           </select>
         </div>
       </section>
 
       {/* ═══ Card 3.5: Data Rights & Privacy (GDPR/CCPA) ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6 space-y-6">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md space-y-6">
         <div>
-          <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary flex items-center gap-1.5">
-            <ShieldAlert className="w-4 h-4 text-text-secondary" />
+          <h2 className="text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">policy</span>
             Data Rights & Privacy (GDPR/CCPA)
           </h2>
-          <p className="text-xs text-text-secondary mt-1">
+          <p className="text-xs text-[#8a9b9b] mt-1">
             Manage your personal data, download your records, or request complete account notification erasure.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="border border-border-accent p-4 bg-bg-primary/20 space-y-3 flex flex-col justify-between">
+        <div className="grid md:grid-cols-2 gap-5">
+          <div className="border border-white/5 rounded-xl p-5 bg-black/20 flex flex-col justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-xs font-bold text-text-primary">Export My Notification Data</p>
-              <p className="text-[10px] text-text-secondary leading-relaxed">
+              <p className="text-xs font-bold text-white">Export My Notification Data</p>
+              <p className="text-[10px] text-[#8a9b9b] leading-relaxed">
                 Download a complete copy of all your in-app notifications, queued emails, and system preferences in structured JSON format.
               </p>
             </div>
             <button
               onClick={handleExportData}
-              className="w-fit flex items-center gap-2 px-4 py-2 border border-border-ui hover:bg-bg-primary hover:border-pw-black text-xs font-semibold transition-colors"
+              className="luminous-button w-fit flex items-center gap-2 px-4 py-2.5 bg-[#57f1db]/10 border border-[#57f1db]/20 text-[#57f1db] text-xs font-semibold rounded-lg hover:bg-[#57f1db]/20 transition-colors cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
+              <span className="material-symbols-outlined text-base select-none">download</span>
               Download JSON Export
             </button>
           </div>
 
-          <div className="border border-border-accent p-4 bg-bg-primary/20 space-y-3 flex flex-col justify-between">
+          <div className="border border-white/5 rounded-xl p-5 bg-black/20 flex flex-col justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-xs font-bold text-red-500">Delete My Notification History</p>
-              <p className="text-[10px] text-text-secondary leading-relaxed">
+              <p className="text-xs font-bold text-red-400">Delete My Notification History</p>
+              <p className="text-[10px] text-[#8a9b9b] leading-relaxed">
                 Permanently erase all in-app notifications, pending emails, and push tokens. Your preferences will be reset to default. This action is irreversible.
               </p>
             </div>
             <button
               onClick={handleDeleteData}
-              className="w-fit flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-600 hover:bg-red-500 hover:text-white text-xs font-semibold transition-all"
+              className="w-fit flex items-center gap-2 px-4 py-2.5 bg-red-950/20 border border-red-500/20 text-red-400 hover:bg-red-900/30 text-xs font-semibold rounded-lg transition-all cursor-pointer"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <span className="material-symbols-outlined text-base select-none">delete</span>
               Permanently Delete Data
             </button>
           </div>
@@ -533,44 +538,45 @@ export default function NotificationsSettingsPage() {
       </section>
 
       {/* ═══ Card 4: Theme Customizer ═══ */}
-      <section className="bg-bg-surface border border-border-accent p-6">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-text-secondary mb-4">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] mb-5 flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">palette</span>
           Appearance
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {THEME_OPTIONS.map(({ value, label, Icon, description }) => {
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {THEME_OPTIONS.map(({ value, label, iconName, description }) => {
             const isSelected = theme === value;
             return (
               <button
                 key={value}
                 onClick={() => setTheme(value)}
                 className={`
-                  flex items-center gap-3 p-3 text-left transition-all border cursor-pointer
+                  flex items-center gap-3 p-4 text-left transition-all border rounded-xl cursor-pointer
                   ${isSelected
-                    ? 'bg-bg-primary border-pw-black'
-                    : 'border-border-accent hover:border-pw-muted'
+                    ? 'bg-[#57f1db]/10 border-[#57f1db]/40 text-[#57f1db] shadow-[0_0_15px_rgba(87,241,219,0.15)]'
+                    : 'border-white/10 bg-black/20 text-[#8a9b9b] hover:border-white/20'
                   }
                 `}
               >
                 <div className={`
-                  w-8 h-8 flex items-center justify-center flex-shrink-0 rounded
-                  ${isSelected ? 'bg-pw-fg text-white' : 'bg-bg-primary text-text-secondary'}
+                  w-8 h-8 flex items-center justify-center flex-shrink-0 rounded-lg border
+                  ${isSelected ? 'bg-[#57f1db]/20 border-[#57f1db]/30 text-[#57f1db]' : 'bg-white/5 border-white/10 text-[#8a9b9b]'}
                 `}>
-                  <Icon className="w-4 h-4" />
+                  <span className="material-symbols-outlined text-base select-none">{iconName}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-text-primary truncate">
+                  <p className="text-xs font-bold text-white truncate">
                     {label}
                   </p>
-                  <p className="text-[10px] text-text-secondary truncate mt-0.5">{description}</p>
+                  <p className="text-[10px] text-[#8a9b9b] truncate mt-0.5">{description}</p>
                 </div>
                 <div className={`
                   w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0
-                  ${isSelected ? 'border-pw-black' : 'border-border-accent'}
+                  ${isSelected ? 'border-[#57f1db]' : 'border-white/10'}
                 `}>
                   {isSelected && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-pw-black" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#57f1db]" />
                   )}
                 </div>
               </button>
@@ -581,3 +587,4 @@ export default function NotificationsSettingsPage() {
     </div>
   );
 }
+

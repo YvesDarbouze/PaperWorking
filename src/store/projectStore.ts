@@ -76,6 +76,7 @@ interface ProjectState {
   setLedgerItems: (projectId: string, items: LedgerItem[]) => void;
   setDeal: (deal: Project) => void;
   clearDeal: () => void;
+  addProject: (project: Project) => void;
   setWhatIfOffset: (months: number) => void;
 
   // Cross-Panel Financial Dispatch
@@ -306,6 +307,12 @@ export const useProjectStore = create<ProjectState>()(
 
       clearDeal: () => {
         set({ currentProject: null, activeProjectMetrics: initialActiveProjectMetrics });
+      },
+
+      addProject: (project) => {
+        const { projects } = get();
+        set({ projects: [...projects, project] });
+        get().recalculateMetrics();
       },
 
       // ─── Cross-Panel Financial Dispatch ──────────────────

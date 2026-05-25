@@ -1,46 +1,44 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
   Inbox,
-  MessageSquare,
-  UserPlus,
-  Bell,
-  CheckCircle,
+  TrendingUp,
+  DollarSign,
+  Briefcase,
+  Users,
 } from 'lucide-react';
-import type { InboxItemType, InboxTabCounts } from '@/types/inbox';
+import type { InboxTabType } from '@/context/NotificationContext';
 
 /* ═══════════════════════════════════════════════════════
    InboxTabs — Filtered tab bar for the notification center
    
-   Tabs: All · Messages · Invitations · System · Action Items
+   Tabs: All · Deals · Finance · Vendors · Team
    Each tab displays an unread count badge when > 0.
    ═══════════════════════════════════════════════════════ */
 
 interface InboxTabsProps {
-  activeTab: InboxItemType | 'all';
-  onTabChange: (tab: InboxItemType | 'all') => void;
-  unreadCounts: InboxTabCounts;
+  activeTab: InboxTabType;
+  onTabChange: (tab: InboxTabType) => void;
+  unreadCounts: Record<InboxTabType, number>;
 }
 
 const TAB_CONFIG: {
-  id: InboxItemType | 'all';
+  id: InboxTabType;
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { id: 'all',        label: 'All',          Icon: Inbox },
-  { id: 'message',    label: 'Messages',     Icon: MessageSquare },
-  { id: 'invitation', label: 'Invitations',  Icon: UserPlus },
-  { id: 'system',     label: 'System',       Icon: Bell },
-  { id: 'action',     label: 'Actions',      Icon: CheckCircle },
+  { id: 'all',     label: 'All',      Icon: Inbox },
+  { id: 'deals',   label: 'Deals',    Icon: TrendingUp },
+  { id: 'finance', label: 'Finance',  Icon: DollarSign },
+  { id: 'vendors', label: 'Vendors',  Icon: Briefcase },
+  { id: 'team',    label: 'Team',     Icon: Users },
 ];
 
 export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: InboxTabsProps) {
   return (
     <div
-      className="flex items-center gap-1 px-6 border-b overflow-x-auto no-scrollbar"
-      style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}
+      className="flex items-center gap-2.5 px-6 py-3 border-b border-white/10 overflow-x-auto no-scrollbar bg-[#0b141a]/50 backdrop-blur-md shrink-0"
     >
       {TAB_CONFIG.map((tab) => {
         const isActive = activeTab === tab.id;
@@ -51,44 +49,30 @@ export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: Inbo
             key={tab.id}
             id={`inbox-tab-${tab.id}`}
             onClick={() => onTabChange(tab.id)}
-            className="relative flex items-center gap-2 px-4 py-3 text-xs font-semibold tracking-wide transition-colors whitespace-nowrap"
-            style={{
-              color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-            }}
-            onMouseEnter={(e) => {
-              if (!isActive)
-                e.currentTarget.style.color = 'var(--text-primary)';
-            }}
-            onMouseLeave={(e) => {
-              if (!isActive)
-                e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
+            className={`relative flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 rounded-xl whitespace-nowrap border ${
+              isActive
+                ? 'bg-primary/20 border-primary/30 text-primary luminous-glow shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                : 'glass-card hover:bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
+            }`}
           >
-            <tab.Icon className="w-3.5 h-3.5" />
-            <span>{tab.label}</span>
+            <tab.Icon className={`w-3.5 h-3.5 ${isActive ? 'text-primary' : 'text-[#bacac5]'}`} />
+            <span className={isActive ? 'text-primary' : 'text-[#dae4ec]'}>{tab.label}</span>
 
             {/* Unread badge */}
             {count > 0 && (
               <span
-                className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full"
+                className={`inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold rounded-full transition-colors ${
+                  isActive
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-white/10 text-[#dae4ec]'
+                }`}
                 style={{
-                  backgroundColor: isActive ? '#0d0d0d' : 'var(--border-ui)',
-                  color: isActive ? '#ffffff' : 'var(--text-primary)',
-                  minWidth: 18,
+                  minWidth: 16,
+                  height: 16,
                 }}
               >
                 {count > 99 ? '99+' : count}
               </span>
-            )}
-
-            {/* Active tab indicator bar */}
-            {isActive && (
-              <motion.div
-                layoutId="inbox-tab-indicator"
-                className="absolute bottom-0 left-2 right-2 h-[2px]"
-                style={{ backgroundColor: '#0d0d0d' }}
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
-              />
             )}
           </button>
         );
@@ -96,3 +80,4 @@ export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: Inbo
     </div>
   );
 }
+

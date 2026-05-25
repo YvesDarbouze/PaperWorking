@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Auth content */}
-      <div className="relative z-10 w-full max-w-[420px] px-6 animate-in fade-in zoom-in-95 duration-500">
+      <div className="relative z-10 w-full max-w-[840px] px-6 animate-in fade-in zoom-in-95 duration-500">
         {children}
       </div>
 

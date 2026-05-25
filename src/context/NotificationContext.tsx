@@ -20,7 +20,7 @@ import { NotificationType } from '@/types/notification';
 import toast from 'react-hot-toast';
 import { requestPushPermissionAndGetToken, onForegroundMessage } from '@/lib/firebase/messaging';
 
-export type InboxTabType = 'all' | 'message' | 'invitation' | 'system' | 'action';
+export type InboxTabType = 'all' | 'deals' | 'finance' | 'vendors' | 'team';
 
 const SENSITIVE_NOTIFICATION_TYPES: NotificationType[] = [
   'BILLING_CHARGED',
@@ -33,22 +33,26 @@ const SENSITIVE_NOTIFICATION_TYPES: NotificationType[] = [
 
 export function mapNotificationTypeToTab(type: NotificationType): InboxTabType {
   switch (type) {
-    case 'INVEST_INVITE':
-    case 'TEAM_INVITE':
-      return 'invitation';
-    case 'VENDOR_BID':
-    case 'DEADLINE_ALERT':
-      return 'action';
-    case 'TASK_COMPLETE':
     case 'PHASE_TRANSITION':
-    case 'DOCUMENT_SIGNED':
-    case 'RECEIPT_APPROVAL':
+    case 'DEADLINE_ALERT':
     case 'OVER_IMPROVEMENT_ALERT':
     case 'BURN_RATE_WARNING':
+      return 'deals';
     case 'BILLING_CHARGED':
-      return 'system';
+    case 'RECEIPT_APPROVAL':
+    case 'INVEST_INVITE':
+      return 'finance';
+    case 'VENDOR_BID':
+    case 'VENDOR_LEAD':
+      return 'vendors';
+    case 'TEAM_INVITE':
+    case 'TEAM_INVITE_REMINDER':
+    case 'TASK_COMPLETE':
+    case 'TASK_ASSIGNED':
+    case 'DOCUMENT_SIGNED':
+      return 'team';
     default:
-      return 'system';
+      return 'team';
   }
 }
 
@@ -71,10 +75,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const [unreadCounts, setUnreadCounts] = useState<Record<InboxTabType, number>>({
     all: 0,
-    message: 0,
-    invitation: 0,
-    system: 0,
-    action: 0,
+    deals: 0,
+    finance: 0,
+    vendors: 0,
+    team: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -166,10 +170,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     if (!uid) {
       setUnreadCounts({
         all: 0,
-        message: 0,
-        invitation: 0,
-        system: 0,
-        action: 0,
+        deals: 0,
+        finance: 0,
+        vendors: 0,
+        team: 0,
       });
       setLoading(false);
       return;
@@ -189,10 +193,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       (snapshot) => {
         const counts: Record<InboxTabType, number> = {
           all: 0,
-          message: 0,
-          invitation: 0,
-          system: 0,
-          action: 0,
+          deals: 0,
+          finance: 0,
+          vendors: 0,
+          team: 0,
         };
 
         snapshot.docs.forEach((doc) => {

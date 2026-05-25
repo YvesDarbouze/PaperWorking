@@ -51,7 +51,7 @@ export default function ProjectsWidget({ projects, onCreateProject, isGuest }: P
                   {project.propertyName || project.address || 'Unnamed Project'}
                 </h4>
                 <span className={`px-2 py-0.5 rounded-sm text-[9px] font-black uppercase ${badgeClass}`}>
-                  {project.strategy || 'Deal'}
+                  {project.strategyType || 'Deal'}
                 </span>
               </div>
               <div className="flex items-center gap-3 font-label-sm text-[10px] text-on-surface-variant mb-2">

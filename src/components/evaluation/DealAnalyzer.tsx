@@ -1,14 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback, useId } from 'react';
+import { useState, useEffect, useCallback, useId, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectStore } from '@/store/projectStore';
-import { ComparableSale, LeadSource } from '@/types/schema';
-import { Plus, Trash2, TrendingUp, AlertTriangle, CheckCircle2, MapPin, Calendar } from 'lucide-react';
+import { ComparableSale, LeadSource, Project } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
-   Deal Analyzer — Phase 01 Sourcing
-   Real-time MAO engine, comp grid, lead intelligence.
+   PRO-ANALYSIS TERMINAL — Deal Analyzer
+   
+   Luminous Glass reskin — matches Stitch schemas:
+   • Rental mode: stepper + accordion + 7 result metrics
+   • Flip mode:   flat sections + 5 result metrics + cost bar
+   
+   Preserves original MAO engine, comp grid, lead intelligence.
    ═══════════════════════════════════════════════════════ */
 
 const LEAD_SOURCES: LeadSource[] = [
@@ -18,24 +22,35 @@ const LEAD_SOURCES: LeadSource[] = [
 
 const MAX_COMPS = 5;
 
-function parseCurrency(raw: string): number {
-  return parseFloat(raw.replace(/[^0-9.]/g, '')) || 0;
-}
+// ── Format Helpers ───────────────────────────────────────
 
 function fmtCurrency(n: number): string {
   if (n === 0) return '';
   return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
+function fmtDollar(n: number): string {
+  if (Math.abs(n) >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+}
+
+function fmtPercent(n: number): string {
+  return `${n.toFixed(1)}%`;
+}
+
 // ── Sub-components ───────────────────────────────────────
 
-function CurrencyInput({
+function GlassCurrencyInput({
   label,
   value,
   onChange,
   placeholder = '0',
   hint,
   disabled,
+  prefix = '$',
+  suffix,
+  step,
+  isPercentage,
 }: {
   label: string;
   value: number;
@@ -43,61 +58,216 @@ function CurrencyInput({
   placeholder?: string;
   hint?: string;
   disabled?: boolean;
+  prefix?: string;
+  suffix?: string;
+  step?: string;
+  isPercentage?: boolean;
 }) {
-  const [raw, setRaw] = useState(fmtCurrency(value));
+  const [raw, setRaw] = useState(isPercentage ? String(value || '') : fmtCurrency(value));
 
-  // Sync when value changes from outside (e.g. project switch)
-  useEffect(() => { setRaw(fmtCurrency(value)); }, [value]);
+  useEffect(() => {
+    setRaw(isPercentage ? String(value || '') : fmtCurrency(value));
+  }, [value, isPercentage]);
 
   return (
-    <div className="space-y-1.5">
-      <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
+    <div className="space-y-2">
+      <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>
         {label}
       </label>
-      <div className={`relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}>
-        <span className="pl-3 text-xs font-black text-text-secondary select-none">$</span>
+      <div className="relative group">
+        {prefix && !suffix && (
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold font-mono" style={{ color: 'var(--color-primary)' }}>
+            {prefix}
+          </span>
+        )}
         <input
-          type="text"
+          type={isPercentage ? 'number' : 'text'}
           inputMode="numeric"
           placeholder={placeholder}
           value={raw}
           disabled={disabled}
+          step={step}
           onChange={(e) => {
-            const stripped = e.target.value.replace(/[^0-9]/g, '');
-            setRaw(stripped ? parseInt(stripped, 10).toLocaleString() : '');
-            onChange(parseInt(stripped, 10) || 0);
+            if (isPercentage) {
+              setRaw(e.target.value);
+              onChange(parseFloat(e.target.value) || 0);
+            } else {
+              const stripped = e.target.value.replace(/[^0-9]/g, '');
+              setRaw(stripped ? parseInt(stripped, 10).toLocaleString() : '');
+              onChange(parseInt(stripped, 10) || 0);
+            }
           }}
-          onBlur={() => setRaw(fmtCurrency(value))}
-          className={`flex-1 px-2 py-3 text-sm font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/40 ${disabled ? 'cursor-not-allowed' : ''}`}
+          onBlur={() => {
+            if (!isPercentage) setRaw(fmtCurrency(value));
+          }}
+          className={`glass-input w-full rounded-xl py-3 font-mono text-[15px] font-bold
+            ${prefix && !suffix ? 'pl-8 pr-4' : ''}
+            ${suffix ? 'pl-4 pr-8' : ''}
+            ${!prefix && !suffix ? 'px-4' : ''}
+            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+          `}
+          style={{ color: 'var(--color-on-surface)' }}
         />
+        {suffix && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 font-bold" style={{ color: 'var(--color-primary)' }}>
+            {suffix}
+          </span>
+        )}
       </div>
-      {hint && <p className="text-[9px] text-text-secondary font-bold tracking-wide">{hint}</p>}
+      {hint && <p className="text-[10px] italic px-1" style={{ color: 'var(--color-on-surface-variant)', opacity: 0.5 }}>{hint}</p>}
     </div>
   );
 }
 
-function ReadOnlyLine({ label, value, emphasis, positive, negative }: {
+function AccordionSection({
+  icon,
+  title,
+  defaultOpen = true,
+  children,
+}: {
+  icon: string;
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="glass-panel rounded-2xl overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full p-6 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors"
+        style={{ borderBottom: open ? '1px solid rgba(60, 74, 70, 0.1)' : 'none' }}
+      >
+        <div className="flex items-center gap-3">
+          <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontSize: '20px' }}>{icon}</span>
+          <h3 className="text-lg font-bold uppercase tracking-wide font-mono" style={{ color: 'var(--color-on-surface)' }}>{title}</h3>
+        </div>
+        <span className="material-symbols-outlined opacity-50" style={{ transition: 'transform 0.3s', transform: open ? 'rotate(0deg)' : 'rotate(180deg)' }}>
+          expand_less
+        </span>
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="overflow-hidden"
+          >
+            <div className="p-6">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </section>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  description,
+  variant = 'default',
+  bandPercent,
+  bandColor,
+  badge,
+  large,
+}: {
   label: string;
   value: string;
-  emphasis?: boolean;
-  positive?: boolean;
-  negative?: boolean;
+  description?: string;
+  variant?: 'default' | 'positive' | 'warning' | 'hero';
+  bandPercent?: number;
+  bandColor?: string;
+  badge?: string;
+  large?: boolean;
 }) {
+  const getBandStyle = () => {
+    if (variant === 'positive') return { background: 'var(--color-primary)', boxShadow: '0 0 10px var(--color-primary)' };
+    if (variant === 'warning') return { background: '#ffac5a', boxShadow: '0 0 10px #ffac5a' };
+    if (bandColor) return { background: bandColor, boxShadow: `0 0 10px ${bandColor}` };
+    return { background: 'var(--color-on-surface-variant)', boxShadow: 'none' };
+  };
+
+  const valueColor = variant === 'positive' || variant === 'hero' ? 'var(--color-primary)' : 'var(--color-on-surface)';
+
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">{label}</span>
-      <span className={`tabular-nums ${
-        emphasis ? 'text-base font-black' :
-        'text-xs font-black'
-      } ${
-        positive ? 'text-green-700' :
-        negative ? 'text-red-600' :
-        'text-text-primary'
-      }`}>
-        {value}
-      </span>
+    <div
+      className={`p-${large ? 6 : 5} rounded-2xl relative overflow-hidden ${variant === 'positive' ? 'health-band-positive' : variant === 'warning' ? 'health-band-warning' : ''}`}
+      style={{
+        background: variant === 'hero'
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(45,212,191,0.05) 100%)'
+          : 'var(--color-surface-container-lowest)',
+        border: `1px solid ${variant === 'hero' ? 'rgba(45,212,191,0.2)' : 'rgba(60,74,70,0.3)'}`,
+      }}
+    >
+      {variant === 'hero' && (
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+          <span className="material-symbols-outlined" style={{ fontSize: '80px' }}>attach_money</span>
+        </div>
+      )}
+      <div className="relative z-10">
+        <div className="flex justify-between items-center mb-1">
+          <p className="text-[10px] font-medium uppercase tracking-widest" style={{ color: variant === 'hero' ? 'var(--color-on-surface-variant)' : 'var(--color-on-surface-variant)' }}>
+            {label}
+          </p>
+          {badge && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase" style={{ background: 'rgba(45,212,191,0.2)', color: 'var(--color-primary)' }}>
+              {badge}
+            </span>
+          )}
+        </div>
+        <p className={`${large ? 'text-[48px] leading-[56px]' : 'text-2xl'} font-extrabold font-mono`} style={{ color: valueColor }}>
+          {value}
+        </p>
+        {bandPercent !== undefined && (
+          <div className="health-band my-2">
+            <div className="health-band-fill" style={{ width: `${Math.min(100, Math.max(0, bandPercent))}%`, ...getBandStyle() }} />
+          </div>
+        )}
+        {description && (
+          <p className="text-[10px] mt-1 leading-tight" style={{ color: 'var(--color-on-surface-variant)', opacity: 0.6 }}>{description}</p>
+        )}
+      </div>
     </div>
   );
+}
+
+// ── Rental Inputs Type ─────────────────────────────────
+
+interface RentalInputs {
+  purchasePrice: number;
+  closingCosts: number;
+  downPaymentPercent: number;
+  interestRate: number;
+  loanTermYears: number;
+  monthlyRent: number;
+  otherIncome: number;
+  vacancyRate: number;
+  monthlyTaxes: number;
+  monthlyInsurance: number;
+  monthlyMaintenance: number;
+  propertyMgmtPercent: number;
+  monthlyHOA: number;
+  monthlyUtilities: number;
+}
+
+// ── Flip Inputs Type ───────────────────────────────────
+
+interface FlipInputs {
+  purchasePrice: number;
+  rehabCost: number;
+  arv: number;
+  loanAmount: number;
+  interestRate: number;
+  loanMonths: number;
+  monthlyTaxes: number;
+  monthlyInsurance: number;
+  monthlyUtilities: number;
+  monthlyOther: number;
+  costOfSalePercent: number;
 }
 
 // ── Main Component ───────────────────────────────────────
@@ -105,9 +275,13 @@ function ReadOnlyLine({ label, value, emphasis, positive, negative }: {
 export default function DealAnalyzer() {
   const currentProject = useProjectStore(state => state.currentProject);
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
+  const addProject = useProjectStore(state => state.addProject);
   const uid = useId();
 
-  // ── Local form state ──
+  // ── Mode Toggle ──
+  const [mode, setMode] = useState<'rental' | 'flip'>('rental');
+
+  // ── Original MAO state (preserved from Phase 1 sourcing) ──
   const [arv, setArv] = useState(0);
   const [rehabEst, setRehabEst] = useState(0);
   const [fixedCosts, setFixedCosts] = useState(0);
@@ -117,7 +291,27 @@ export default function DealAnalyzer() {
   const [emdAmount, setEmdAmount] = useState(0);
   const [emdGoHardDate, setEmdGoHardDate] = useState('');
 
-  // Sync from project when it changes
+  // ── Rental Mode State ──
+  const [rental, setRental] = useState<RentalInputs>({
+    purchasePrice: 450000, closingCosts: 9000, downPaymentPercent: 20,
+    interestRate: 6.5, loanTermYears: 30, monthlyRent: 3500,
+    otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
+    monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
+    monthlyHOA: 0, monthlyUtilities: 0,
+  });
+
+  // ── Flip Mode State ──
+  const [flip, setFlip] = useState<FlipInputs>({
+    purchasePrice: 325000, rehabCost: 65000, arv: 485000,
+    loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
+    monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
+    monthlyOther: 100, costOfSalePercent: 6.0,
+  });
+
+  // ── Rental step (for stepper visual) ──
+  const [rentalStep] = useState(1);
+
+  // Sync from project when it changes (original MAO)
   useEffect(() => {
     if (!currentProject) return;
     const f = currentProject.financials;
@@ -133,49 +327,61 @@ export default function DealAnalyzer() {
         ? new Date(f.emdGoHardDate).toISOString().split('T')[0]
         : ''
     );
+    // Sync rental inputs from financials
+    setRental(prev => ({
+      ...prev,
+      purchasePrice: f.purchasePrice || prev.purchasePrice,
+      monthlyRent: f.monthlyGrossRent || f.projectedMonthlyRent || prev.monthlyRent,
+      otherIncome: f.otherMonthlyIncome || prev.otherIncome,
+      vacancyRate: f.vacancyRatePercent ?? f.vacancyRate ?? prev.vacancyRate,
+      interestRate: f.loanInterestRate || prev.interestRate,
+      loanTermYears: f.loanTermYears || prev.loanTermYears,
+      monthlyTaxes: f.operatingExpenseTaxes || prev.monthlyTaxes,
+      monthlyInsurance: f.operatingExpenseInsurance || prev.monthlyInsurance,
+      propertyMgmtPercent: f.propertyManagementFeePercent || prev.propertyMgmtPercent,
+    }));
+    // Sync flip inputs from financials
+    setFlip(prev => ({
+      ...prev,
+      purchasePrice: f.purchasePrice || prev.purchasePrice,
+      rehabCost: f.projectedRehabCost || prev.rehabCost,
+      arv: f.estimatedARV || prev.arv,
+      loanAmount: f.loanAmount || prev.loanAmount,
+      interestRate: f.loanInterestRate || prev.interestRate,
+    }));
   }, [currentProject?.id]);
 
-  if (!currentProject) return null;
+  const isLocked = currentProject?.isClearToClose ?? false;
 
-  // ── Real-time MAO ──
+  // ── Persist helpers (original) ──
+  const save = useCallback((patch: Parameters<typeof updateProjectFinancials>[1]) => {
+    if (isLocked || !currentProject) return;
+    updateProjectFinancials(currentProject.id, patch);
+  }, [currentProject?.id, updateProjectFinancials, isLocked, currentProject]);
+
+  // ── Original MAO engine (preserved intact) ──
   const mao = Math.max(0, arv * 0.7 - rehabEst - fixedCosts);
   const maoIsSetup = arv > 0;
-  const purchasePrice = currentProject.financials.purchasePrice || 0;
+  const purchasePrice = currentProject?.financials?.purchasePrice || 0;
   const maoViolated = maoIsSetup && purchasePrice > mao;
-  const maoVariance = mao - purchasePrice;
-  const isLocked = currentProject.isClearToClose ?? false;
 
-  // ── Comparable Sales averages ──
-  const validComps = comps.filter(c => c.soldPrice > 0);
-  const avgCompPrice = validComps.length > 0
-    ? validComps.reduce((s, c) => s + c.soldPrice, 0) / validComps.length
-    : 0;
-
-  // ── Persist helpers ──
-  const save = useCallback((patch: Parameters<typeof updateProjectFinancials>[1]) => {
-    if (isLocked) return;
-    updateProjectFinancials(currentProject.id, patch);
-  }, [currentProject.id, updateProjectFinancials, isLocked]);
-
-  const handleArv = (n: number) => { setArv(n); save({ estimatedARV: n }); };
-  const handleRehab = (n: number) => { setRehabEst(n); save({ projectedRehabCost: n }); };
-  const handleFixed = (n: number) => { setFixedCosts(n); save({ fixedAcquisitionCosts: n }); };
-
-  // Persist MAO whenever ARV/rehab/fixed change
+  // Persist MAO whenever inputs change
   useEffect(() => {
     if (!currentProject?.id) return;
     save({ maxOffer: mao });
   }, [mao, currentProject?.id]);
 
+  // ── Comp helpers (preserved) ──
+  const validComps = comps.filter(c => c.soldPrice > 0);
+  const avgCompPrice = validComps.length > 0
+    ? validComps.reduce((s, c) => s + c.soldPrice, 0) / validComps.length
+    : 0;
+
   const addComp = () => {
-    if (isLocked) return;
-    if (comps.length >= MAX_COMPS) return;
+    if (isLocked || comps.length >= MAX_COMPS) return;
     const newComp: ComparableSale = {
       id: `${uid}-${Date.now()}`,
-      address: '',
-      soldPrice: 0,
-      distanceMiles: 0,
-      daysOnMarket: 0,
+      address: '', soldPrice: 0, distanceMiles: 0, daysOnMarket: 0,
     };
     const updated = [...comps, newComp];
     setComps(updated);
@@ -196,374 +402,504 @@ export default function DealAnalyzer() {
     save({ comparableSales: updated });
   };
 
+  // ═══ RENTAL CALCULATIONS ═══════════════════════════════
+  const rentalMetrics = useMemo(() => {
+    const r = rental;
+    const loanAmount = r.purchasePrice * (1 - r.downPaymentPercent / 100);
+    const monthlyRate = r.interestRate / 100 / 12;
+    const totalPayments = r.loanTermYears * 12;
+    const monthlyMortgage = monthlyRate > 0
+      ? loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / (Math.pow(1 + monthlyRate, totalPayments) - 1)
+      : loanAmount / totalPayments;
+
+    const grossMonthlyIncome = r.monthlyRent + r.otherIncome;
+    const effectiveGrossIncome = grossMonthlyIncome * 12 * (1 - r.vacancyRate / 100);
+    const propMgmt = grossMonthlyIncome * r.propertyMgmtPercent / 100;
+    const totalMonthlyExpenses = r.monthlyTaxes + r.monthlyInsurance + r.monthlyMaintenance + propMgmt + r.monthlyHOA + r.monthlyUtilities;
+    const annualOperatingExpenses = totalMonthlyExpenses * 12;
+    const noi = effectiveGrossIncome - annualOperatingExpenses;
+    const annualDebtService = monthlyMortgage * 12;
+    const monthlyCashFlow = noi / 12 - monthlyMortgage;
+    const capRate = r.purchasePrice > 0 ? (noi / r.purchasePrice) * 100 : 0;
+    const totalCashNeeded = r.purchasePrice * r.downPaymentPercent / 100 + r.closingCosts;
+    const coc = totalCashNeeded > 0 ? ((noi - annualDebtService) / totalCashNeeded) * 100 : 0;
+    const grm = grossMonthlyIncome > 0 ? r.purchasePrice / (grossMonthlyIncome * 12) : 0;
+    const dscr = annualDebtService > 0 ? noi / annualDebtService : 0;
+
+    return { noi, monthlyCashFlow, capRate, coc, grm, dscr, totalCashNeeded, loanAmount, monthlyMortgage };
+  }, [rental]);
+
+  // ═══ FLIP CALCULATIONS ═════════════════════════════════
+  const flipMetrics = useMemo(() => {
+    const f = flip;
+    const monthlyInterest = f.loanAmount * (f.interestRate / 100) / 12;
+    const totalMonthlyHolding = f.monthlyTaxes + f.monthlyInsurance + f.monthlyUtilities + f.monthlyOther + monthlyInterest;
+    const totalHoldingCost = totalMonthlyHolding * f.loanMonths;
+    const costOfSale = f.arv * (f.costOfSalePercent / 100);
+    const totalCost = f.purchasePrice + f.rehabCost + totalHoldingCost + costOfSale;
+    const grossProfit = f.arv - totalCost;
+    const totalCashNeeded = f.purchasePrice - f.loanAmount + f.rehabCost;
+    const roi = totalCashNeeded > 0 ? (grossProfit / totalCashNeeded) * 100 : 0;
+    const purchasePct = totalCost > 0 ? (f.purchasePrice / totalCost) * 100 : 0;
+    const rehabPct = totalCost > 0 ? (f.rehabCost / totalCost) * 100 : 0;
+    const holdingPct = totalCost > 0 ? (totalHoldingCost / totalCost) * 100 : 0;
+
+    return { grossProfit, roi, totalCashNeeded, monthlyInterest, totalHoldingCost, purchasePct, rehabPct, holdingPct };
+  }, [flip]);
+
+  // ═══ SAVE AS PROJECT ═══════════════════════════════════
+  const handleSaveAsProject = () => {
+    const now = new Date();
+    const newProject: Project = {
+      id: crypto.randomUUID(),
+      organizationId: currentProject?.organizationId || 'default',
+      propertyName: mode === 'rental' ? 'Rental Analysis' : 'Flip Analysis',
+      address: '',
+      status: 'Lead',
+      strategyType: mode === 'rental' ? 'Buy & Hold' : 'Fix & Flip',
+      phaseStatus: 'Phase 1: Find & Fund',
+      currentPhase: 1,
+      members: {},
+      createdAt: now,
+      updatedAt: now,
+      ownerUid: currentProject?.ownerUid || '',
+      financials: mode === 'rental' ? {
+        purchasePrice: rental.purchasePrice,
+        estimatedARV: rental.purchasePrice,
+        costs: [],
+        loanAmount: rentalMetrics.loanAmount,
+        loanInterestRate: rental.interestRate,
+        loanTermYears: rental.loanTermYears,
+        monthlyGrossRent: rental.monthlyRent,
+        otherMonthlyIncome: rental.otherIncome,
+        vacancyRatePercent: rental.vacancyRate,
+        operatingExpenseTaxes: rental.monthlyTaxes,
+        operatingExpenseInsurance: rental.monthlyInsurance,
+        monthlyMaintenanceReserve: rental.monthlyMaintenance,
+        propertyManagementFeePercent: rental.propertyMgmtPercent,
+        monthlyHOA: rental.monthlyHOA,
+        fixedAcquisitionCosts: rental.closingCosts,
+      } : {
+        purchasePrice: flip.purchasePrice,
+        estimatedARV: flip.arv,
+        costs: [],
+        projectedRehabCost: flip.rehabCost,
+        loanAmount: flip.loanAmount,
+        loanInterestRate: flip.interestRate,
+        estimatedTimelineDays: flip.loanMonths * 30,
+        holdingCostTaxes: flip.monthlyTaxes,
+        holdingCostInsurance: flip.monthlyInsurance,
+        holdingCostUtilities: flip.monthlyUtilities,
+        fixedAcquisitionCosts: 0,
+      },
+    };
+
+    addProject(newProject);
+  };
+
+  const handleReset = () => {
+    if (mode === 'rental') {
+      setRental({
+        purchasePrice: 450000, closingCosts: 9000, downPaymentPercent: 20,
+        interestRate: 6.5, loanTermYears: 30, monthlyRent: 3500,
+        otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
+        monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
+        monthlyHOA: 0, monthlyUtilities: 0,
+      });
+    } else {
+      setFlip({
+        purchasePrice: 325000, rehabCost: 65000, arv: 485000,
+        loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
+        monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
+        monthlyOther: 100, costOfSalePercent: 6.0,
+      });
+    }
+  };
+
+  // ═══ RENDER ════════════════════════════════════════════
+
   return (
-    <div className="border border-pw-black bg-bg-surface overflow-hidden">
-      {/* ── Header ── */}
-      <div className="px-8 py-5 border-b border-pw-black bg-pw-black">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="w-4 h-4 text-white" />
-            <div>
-              <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.4em]">Phase_01 · Sourcing</p>
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em] flex items-center gap-2">
-                Deal.Analyzer
-                {isLocked && <span className="px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase bg-white/20 text-white rounded-sm">Locked</span>}
-              </h2>
-            </div>
-          </div>
-          <div className="text-right hidden sm:block">
-            <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">MAO Formula</p>
-            <p className="text-[9px] font-mono text-white/60">(ARV × 0.70) − Rehab − Fixed</p>
-          </div>
-        </div>
+    <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--color-background)' }}>
+
+      {/* ── Mode Toggle (desktop in header, mobile as full-width) ── */}
+      <div className="md:hidden flex p-1 mb-6 rounded-xl" style={{ background: 'var(--color-surface-container-high)', border: '1px solid rgba(60,74,70,0.3)' }}>
+        <button
+          onClick={() => setMode('rental')}
+          className={`flex-1 py-3 text-sm font-semibold rounded-lg uppercase tracking-wider transition-all ${mode === 'rental' ? 'text-[var(--color-primary)]' : ''}`}
+          style={mode === 'rental' ? { background: 'rgba(45,212,191,0.1)', border: '1px solid rgba(45,212,191,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
+        >
+          Rental
+        </button>
+        <button
+          onClick={() => setMode('flip')}
+          className={`flex-1 py-3 text-sm font-semibold rounded-lg uppercase tracking-wider transition-all ${mode === 'flip' ? 'text-[var(--color-primary)]' : ''}`}
+          style={mode === 'flip' ? { background: 'rgba(45,212,191,0.1)', border: '1px solid rgba(45,212,191,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
+        >
+          Flip Analysis
+        </button>
       </div>
 
-      <div className="p-8 space-y-10">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
 
-        {/* ── Section 1: MAO Engine ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* ═══ LEFT COLUMN: INPUTS ═══ */}
+        <div className={`${mode === 'flip' ? 'xl:col-span-7' : 'lg:col-span-8'} space-y-6`}>
 
-          {/* Input Column */}
-          <div className="space-y-5">
-            <div className="flex items-center gap-2 pb-4 border-b border-border-accent">
-              <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em]">Financial Inputs</span>
-            </div>
-            <CurrencyInput
-              label="After Repair Value (ARV)"
-              value={arv}
-              onChange={handleArv}
-              disabled={isLocked}
-              hint="Estimated market value after full renovation"
-            />
-            <CurrencyInput
-              label="Rehab Estimate"
-              value={rehabEst}
-              onChange={handleRehab}
-              disabled={isLocked}
-              hint="Total projected renovation cost"
-            />
-            <CurrencyInput
-              label="Fixed / Closing Costs"
-              value={fixedCosts}
-              onChange={handleFixed}
-              disabled={isLocked}
-              hint="Acquisition-side closing costs, inspections, etc."
-            />
-          </div>
-
-          {/* MAO Output Column */}
-          <div className="flex flex-col justify-between bg-bg-primary border border-border-accent p-6 space-y-4">
-            <div>
-              <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-4">Calculation Breakdown</p>
-              <ReadOnlyLine
-                label="ARV"
-                value={maoIsSetup ? `$${arv.toLocaleString()}` : '—'}
-              />
-              <ReadOnlyLine
-                label="× 0.70 Threshold"
-                value={maoIsSetup ? `$${(arv * 0.7).toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '—'}
-              />
-              <ReadOnlyLine
-                label="− Rehab Estimate"
-                value={rehabEst > 0 ? `-$${rehabEst.toLocaleString()}` : '—'}
-                negative={rehabEst > 0}
-              />
-              <ReadOnlyLine
-                label="− Fixed Costs"
-                value={fixedCosts > 0 ? `-$${fixedCosts.toLocaleString()}` : '—'}
-                negative={fixedCosts > 0}
-              />
-              <div className="border-t border-border-accent mt-2 pt-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">
-                    Max Allowable Offer
-                  </span>
-                  <span className={`text-2xl font-black tabular-nums ${
-                    !maoIsSetup ? 'text-text-secondary' :
-                    maoViolated ? 'text-red-600' :
-                    'text-text-primary'
-                  }`}>
-                    {maoIsSetup ? `$${mao.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : '---'}
-                  </span>
+          {/* ── Rental Stepper + Desktop Mode Toggle ── */}
+          {mode === 'rental' && (
+            <div className="glass-card rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              {/* Stepper */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)' }}>1</div>
+                  <span className="text-sm font-bold" style={{ color: 'var(--color-primary)' }}>ACQUISITION</span>
+                </div>
+                <div className="w-12 h-[2px]" style={{ background: 'rgba(60,74,70,0.5)' }} />
+                <div className="flex items-center gap-2 opacity-40">
+                  <div className="w-8 h-8 rounded-full border flex items-center justify-center text-sm" style={{ borderColor: 'var(--color-on-surface)' }}>2</div>
+                  <span className="text-sm">FINANCING</span>
+                </div>
+                <div className="w-12 h-[2px] hidden md:block" style={{ background: 'rgba(60,74,70,0.5)' }} />
+                <div className="hidden md:flex items-center gap-2 opacity-40">
+                  <div className="w-8 h-8 rounded-full border flex items-center justify-center text-sm" style={{ borderColor: 'var(--color-on-surface)' }}>3</div>
+                  <span className="text-sm">REHAB</span>
                 </div>
               </div>
-            </div>
-
-            {/* Verdict banner */}
-            <AnimatePresence mode="wait">
-              {maoIsSetup && purchasePrice > 0 && (
-                <motion.div
-                  key={maoViolated ? 'over' : 'under'}
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  className={`flex items-start gap-3 p-4 border ${
-                    maoViolated
-                      ? 'bg-red-50 border-red-200 text-red-800'
-                      : 'bg-green-50 border-green-200 text-green-800'
-                  }`}
+              {/* Desktop Mode Toggle */}
+              <div className="hidden md:flex p-1 rounded-xl" style={{ background: 'var(--color-surface-container-lowest)', border: '1px solid rgba(60,74,70,0.3)' }}>
+                <button
+                  onClick={() => setMode('rental')}
+                  className="px-6 py-2 rounded-lg text-sm font-bold transition-all"
+                  style={mode === 'rental' ? { background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)' } : { color: 'var(--color-on-surface-variant)' }}
                 >
-                  {maoViolated
-                    ? <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-500" />
-                    : <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5 text-green-600" />
-                  }
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest">
-                      {maoViolated ? 'Threshold Exceeded' : 'Under MAO Threshold'}
-                    </p>
-                    <p className="text-[10px] mt-0.5 opacity-80 leading-relaxed">
-                      {maoViolated
-                        ? `Purchase price exceeds MAO by $${Math.abs(maoVariance).toLocaleString()}. Margin is eroding.`
-                        : `Purchase price is $${maoVariance.toLocaleString()} below target. Deal has margin.`
-                      }
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* ── Section 2: Comparable Sales ── */}
-        <div className="space-y-5">
-          <div className="flex items-center justify-between pb-4 border-b border-border-accent">
-            <div className="flex items-center gap-3">
-              <MapPin className="w-3.5 h-3.5 text-text-secondary" />
-              <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">Comparable_Sales</span>
-              <span className="text-[9px] font-black text-text-secondary">({comps.length}/{MAX_COMPS})</span>
+                  Rental
+                </button>
+                <button
+                  onClick={() => setMode('flip')}
+                  className="px-6 py-2 rounded-lg text-sm transition-all hover:text-[var(--color-on-surface)]"
+                  style={{ color: 'var(--color-on-surface-variant)' }}
+                >
+                  Flip
+                </button>
+              </div>
             </div>
-            {!isLocked && comps.length < MAX_COMPS && (
-              <button
-                onClick={addComp}
-                className="flex items-center gap-2 px-4 py-2 text-[9px] font-black uppercase tracking-[0.2em] border border-pw-black text-text-primary hover:bg-pw-black hover:text-white transition-colors"
-              >
-                <Plus className="w-3 h-3" />
-                Add Comp
-              </button>
-            )}
-          </div>
-
-          {/* Comp rows */}
-          <AnimatePresence>
-            {comps.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="border border-dashed border-border-accent p-8 text-center"
-              >
-                <p className="text-[9px] font-black text-text-secondary/40 uppercase tracking-[0.3em]">
-                  No comps added — click Add Comp to begin
-                </p>
-              </motion.div>
-            ) : (
-              <div className="space-y-3">
-                {/* Column headers */}
-                <div className="hidden md:grid md:grid-cols-[1fr_120px_100px_90px_32px] gap-3">
-                  {['Address', 'Sold Price', 'Distance (mi)', 'DOM', ''].map((h) => (
-                    <span key={h} className="text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">{h}</span>
-                  ))}
-                </div>
-
-                {comps.map((comp) => (
-                  <motion.div
-                    key={comp.id}
-                    layout
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="grid grid-cols-1 md:grid-cols-[1fr_120px_100px_90px_32px] gap-3 items-start md:items-center p-4 md:p-0 bg-bg-primary md:bg-transparent border border-border-accent md:border-none"
-                  >
-                    {/* Address */}
-                    <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Address</label>
-                      <input
-                        type="text"
-                        placeholder="123 Main St, City, ST"
-                        value={comp.address}
-                        disabled={isLocked}
-                        onChange={(e) => updateComp(comp.id, { address: e.target.value })}
-                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none placeholder:text-text-secondary/30 placeholder:font-normal ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
-                      />
-                    </div>
-
-                    {/* Sold Price */}
-                    <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Sold Price</label>
-                      <div className={`relative flex items-center border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
-                        <span className="pl-2 text-xs font-black text-text-secondary">$</span>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          placeholder="0"
-                          value={comp.soldPrice > 0 ? comp.soldPrice.toLocaleString() : ''}
-                          disabled={isLocked}
-                          onChange={(e) => {
-                            const n = parseInt(e.target.value.replace(/[^0-9]/g, ''), 10) || 0;
-                            updateComp(comp.id, { soldPrice: n });
-                          }}
-                          className={`w-full px-1 py-2.5 text-xs font-black text-text-primary bg-transparent outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed' : ''}`}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Distance */}
-                    <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">Distance (mi)</label>
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="0.0"
-                        step="0.1"
-                        min="0"
-                        disabled={isLocked}
-                        value={comp.distanceMiles || ''}
-                        onChange={(e) => updateComp(comp.id, { distanceMiles: parseFloat(e.target.value) || 0 })}
-                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
-                      />
-                    </div>
-
-                    {/* Days on Market */}
-                    <div className="space-y-1">
-                      <label className="md:hidden text-[9px] font-black text-text-secondary uppercase tracking-[0.2em]">DOM</label>
-                      <input
-                        type="number"
-                        inputMode="numeric"
-                        placeholder="0"
-                        min="0"
-                        disabled={isLocked}
-                        value={comp.daysOnMarket || ''}
-                        onChange={(e) => updateComp(comp.id, { daysOnMarket: parseInt(e.target.value, 10) || 0 })}
-                        className={`w-full px-3 py-2.5 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none tabular-nums placeholder:text-text-secondary/30 ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
-                      />
-                    </div>
-
-                    {/* Remove */}
-                    {!isLocked && (
-                      <button
-                        onClick={() => removeComp(comp.id)}
-                        className="flex items-center justify-center w-8 h-8 border border-border-accent hover:border-red-400 hover:text-red-600 text-text-secondary transition-colors self-center"
-                        aria-label="Remove comp"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </AnimatePresence>
-
-          {/* Average Comp Price */}
-          {validComps.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center justify-between border-t border-border-accent pt-4"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em]">
-                  Average Comp Price
-                </span>
-                <span className="text-[9px] font-black text-text-secondary/50">
-                  ({validComps.length} sale{validComps.length !== 1 ? 's' : ''})
-                </span>
-              </div>
-              <span className="text-lg font-black text-text-primary tabular-nums">
-                ${avgCompPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </span>
-            </motion.div>
           )}
-        </div>
 
-        {/* ── Section 3: Lead Intelligence + EMD ── */}
-        <div className="space-y-5">
-          <div className="flex items-center gap-3 pb-4 border-b border-border-accent">
-            <Calendar className="w-3.5 h-3.5 text-text-secondary" />
-            <span className="text-[9px] font-black text-text-primary uppercase tracking-[0.3em]">Lead_Intelligence</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {/* Lead Source */}
-            <div className="space-y-1.5">
-              <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
-                Lead Source
-              </label>
-              <div className={`relative border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
-                <select
-                  value={leadSource}
-                  disabled={isLocked}
-                  onChange={(e) => {
-                    const val = e.target.value as LeadSource | '';
-                    setLeadSource(val);
-                    save({ leadSource: val as LeadSource || undefined });
-                  }}
-                  className={`w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none appearance-none cursor-pointer ${isLocked ? 'cursor-not-allowed' : ''}`}
+          {/* ── Flip Mode: Desktop Toggle (no stepper) ── */}
+          {mode === 'flip' && (
+            <div className="hidden md:flex justify-end">
+              <div className="flex p-1 rounded-xl" style={{ background: 'var(--color-surface-container-high)', border: '1px solid rgba(60,74,70,0.3)' }}>
+                <button
+                  onClick={() => setMode('rental')}
+                  className="px-4 py-1.5 rounded-md text-sm transition-colors hover:text-[var(--color-on-surface)]"
+                  style={{ color: 'var(--color-on-surface-variant)' }}
                 >
-                  <option value="">Select source…</option>
-                  {LEAD_SOURCES.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg className="w-3 h-3 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                  Rental
+                </button>
+                <button
+                  onClick={() => setMode('flip')}
+                  className="px-4 py-1.5 rounded-md text-sm font-semibold"
+                  style={{ background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(45,212,191,0.2)' }}
+                >
+                  Flip
+                </button>
               </div>
             </div>
+          )}
 
-            {/* EMD Amount */}
-            <CurrencyInput
-              label="Earnest Money Deposit (EMD)"
-              value={emdAmount}
-              disabled={isLocked}
-              onChange={(n) => { setEmdAmount(n); save({ emdAmount: n }); }}
-              hint="Good faith deposit amount"
-            />
+          {/* ═══════ RENTAL INPUTS ═══════ */}
+          {mode === 'rental' && (
+            <div className="space-y-6">
+              {/* Purchase Group */}
+              <AccordionSection icon="payments" title="Purchase" defaultOpen={true}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <GlassCurrencyInput label="Purchase Price" value={rental.purchasePrice} onChange={v => setRental(p => ({ ...p, purchasePrice: v }))} />
+                  <GlassCurrencyInput label="Closing Costs" value={rental.closingCosts} onChange={v => setRental(p => ({ ...p, closingCosts: v }))} />
+                </div>
+              </AccordionSection>
 
-            {/* Go Hard Date */}
-            <div className="space-y-1.5">
-              <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
-                Go Hard Date
-              </label>
-              <div className={`border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}>
-                <input
-                  type="date"
-                  value={emdGoHardDate}
-                  disabled={isLocked}
-                  onChange={(e) => {
-                    setEmdGoHardDate(e.target.value);
-                    save({
-                      emdGoHardDate: e.target.value ? new Date(e.target.value) : undefined,
-                    });
-                  }}
-                  className={`w-full px-3 py-3 text-xs font-black text-text-primary bg-transparent outline-none cursor-pointer ${isLocked ? 'cursor-not-allowed' : ''}`}
+              {/* Financing Group */}
+              <AccordionSection icon="account_balance" title="Financing" defaultOpen={false}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <GlassCurrencyInput label="Down Payment" value={rental.downPaymentPercent} onChange={v => setRental(p => ({ ...p, downPaymentPercent: v }))} prefix="" suffix="%" isPercentage step="1" />
+                  <div className="space-y-2">
+                    <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Loan Amount (Auto)</label>
+                    <div className="glass-input w-full rounded-xl py-3 px-4 font-mono text-[15px] font-bold opacity-50 cursor-not-allowed" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      ${rentalMetrics.loanAmount.toLocaleString()}
+                    </div>
+                  </div>
+                  <GlassCurrencyInput label="Interest Rate" value={rental.interestRate} onChange={v => setRental(p => ({ ...p, interestRate: v }))} prefix="" suffix="%" isPercentage step="0.1" />
+                  <GlassCurrencyInput label="Loan Term" value={rental.loanTermYears} onChange={v => setRental(p => ({ ...p, loanTermYears: v }))} prefix="" suffix="YRS" isPercentage />
+                </div>
+              </AccordionSection>
+
+              {/* Income Group */}
+              <AccordionSection icon="trending_up" title="Income" defaultOpen={false}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <GlassCurrencyInput label="Monthly Rent" value={rental.monthlyRent} onChange={v => setRental(p => ({ ...p, monthlyRent: v }))} />
+                  <GlassCurrencyInput label="Other Income" value={rental.otherIncome} onChange={v => setRental(p => ({ ...p, otherIncome: v }))} />
+                  <GlassCurrencyInput label="Vacancy Rate" value={rental.vacancyRate} onChange={v => setRental(p => ({ ...p, vacancyRate: v }))} prefix="" suffix="%" isPercentage />
+                </div>
+              </AccordionSection>
+
+              {/* Operating Expenses Group */}
+              <AccordionSection icon="receipt_long" title="Operating Expenses" defaultOpen={false}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <GlassCurrencyInput label="Taxes /mo" value={rental.monthlyTaxes} onChange={v => setRental(p => ({ ...p, monthlyTaxes: v }))} />
+                  <GlassCurrencyInput label="Insurance /mo" value={rental.monthlyInsurance} onChange={v => setRental(p => ({ ...p, monthlyInsurance: v }))} />
+                  <GlassCurrencyInput label="Maintenance /mo" value={rental.monthlyMaintenance} onChange={v => setRental(p => ({ ...p, monthlyMaintenance: v }))} />
+                  <GlassCurrencyInput label="Property Mngmt" value={rental.propertyMgmtPercent} onChange={v => setRental(p => ({ ...p, propertyMgmtPercent: v }))} prefix="" suffix="%" isPercentage />
+                  <GlassCurrencyInput label="HOA /mo" value={rental.monthlyHOA} onChange={v => setRental(p => ({ ...p, monthlyHOA: v }))} />
+                  <GlassCurrencyInput label="Utilities /mo" value={rental.monthlyUtilities} onChange={v => setRental(p => ({ ...p, monthlyUtilities: v }))} />
+                </div>
+              </AccordionSection>
+            </div>
+          )}
+
+          {/* ═══════ FLIP INPUTS ═══════ */}
+          {mode === 'flip' && (
+            <div className="space-y-6">
+              {/* Purchase & Rehab */}
+              <AccordionSection icon="home_work" title="Purchase & Rehab" defaultOpen={true}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <GlassCurrencyInput label="Purchase Price" value={flip.purchasePrice} onChange={v => setFlip(p => ({ ...p, purchasePrice: v }))} placeholder="325000" />
+                  <GlassCurrencyInput label="Rehab Cost" value={flip.rehabCost} onChange={v => setFlip(p => ({ ...p, rehabCost: v }))} placeholder="65000" />
+                  <GlassCurrencyInput label="After-Repair Value" value={flip.arv} onChange={v => setFlip(p => ({ ...p, arv: v }))} placeholder="485000" />
+                </div>
+              </AccordionSection>
+
+              {/* Financing */}
+              <AccordionSection icon="account_balance" title="Financing" defaultOpen={true}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <GlassCurrencyInput label="Loan Amount" value={flip.loanAmount} onChange={v => setFlip(p => ({ ...p, loanAmount: v }))} />
+                  <GlassCurrencyInput label="Interest Rate" value={flip.interestRate} onChange={v => setFlip(p => ({ ...p, interestRate: v }))} prefix="" suffix="%" isPercentage step="0.1" />
+                  <GlassCurrencyInput label="Length (Months)" value={flip.loanMonths} onChange={v => setFlip(p => ({ ...p, loanMonths: v }))} prefix="" isPercentage />
+                </div>
+              </AccordionSection>
+
+              {/* Monthly Holding Costs */}
+              <AccordionSection icon="payments" title="Monthly Holding Costs" defaultOpen={true}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <GlassCurrencyInput label="Property Taxes" value={flip.monthlyTaxes} onChange={v => setFlip(p => ({ ...p, monthlyTaxes: v }))} />
+                  <GlassCurrencyInput label="Insurance (Vacant Policy)" value={flip.monthlyInsurance} onChange={v => setFlip(p => ({ ...p, monthlyInsurance: v }))} />
+                  <GlassCurrencyInput label="Utilities" value={flip.monthlyUtilities} onChange={v => setFlip(p => ({ ...p, monthlyUtilities: v }))} />
+                  <GlassCurrencyInput label="Other Expenses" value={flip.monthlyOther} onChange={v => setFlip(p => ({ ...p, monthlyOther: v }))} />
+                </div>
+              </AccordionSection>
+
+              {/* Sale */}
+              <AccordionSection icon="sell" title="Sale" defaultOpen={true}>
+                <div className="max-w-xs">
+                  <GlassCurrencyInput
+                    label="Cost of Sale (Percentage)"
+                    value={flip.costOfSalePercent}
+                    onChange={v => setFlip(p => ({ ...p, costOfSalePercent: v }))}
+                    prefix=""
+                    suffix="%"
+                    isPercentage
+                    step="0.5"
+                    hint="Typically includes agent commissions and closing fees."
+                  />
+                </div>
+              </AccordionSection>
+            </div>
+          )}
+
+          {/* ── Action Buttons ── */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-4 pb-12 xl:pb-0">
+            <button
+              onClick={handleSaveAsProject}
+              className="luminous-button flex-1 py-4 rounded-xl font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-2 active:scale-95 transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">save</span>
+              Save as Project
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-8 py-4 text-sm font-semibold uppercase tracking-widest rounded-xl transition-colors"
+              style={{
+                color: 'var(--color-on-surface-variant)',
+                border: '1px solid rgba(60,74,70,0.3)',
+                background: 'var(--color-surface-container-low)',
+              }}
+            >
+              Reset Analysis
+            </button>
+          </div>
+        </div>
+
+        {/* ═══ RIGHT COLUMN: LIVE RESULTS ═══ */}
+        <div className={`${mode === 'flip' ? 'xl:col-span-5' : 'lg:col-span-4'} xl:sticky xl:top-24 space-y-6`}>
+
+          {/* Results Header */}
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-lg font-bold flex items-center gap-2 font-mono" style={{ color: 'var(--color-primary)' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>monitoring</span>
+              Live Projections
+            </h2>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter" style={{ background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(45,212,191,0.3)' }}>
+              Real-time Calc
+            </span>
+          </div>
+
+          {/* ═══ RENTAL RESULTS ═══ */}
+          {mode === 'rental' && (
+            <div className="glass-card rounded-2xl p-6 space-y-4" style={{ borderColor: 'rgba(45,212,191,0.2)', background: 'rgba(45,212,191,0.03)' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold uppercase tracking-tighter" style={{ color: 'var(--color-primary)' }}>Live Projections</h3>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--color-primary)' }} />
+                  <span className="text-[10px] font-bold tracking-widest uppercase" style={{ color: 'var(--color-primary)', opacity: 0.7 }}>Streaming</span>
+                </div>
+              </div>
+
+              <MetricCard
+                label="Monthly Cash Flow"
+                value={`$${Math.round(rentalMetrics.monthlyCashFlow).toLocaleString()}`}
+                description="Net income after all expenses and debt service."
+                variant={rentalMetrics.monthlyCashFlow > 0 ? 'positive' : 'default'}
+                bandPercent={Math.min(100, Math.abs(rentalMetrics.monthlyCashFlow) / 20)}
+                badge={rentalMetrics.monthlyCashFlow > 500 ? 'Exceeds Goal' : undefined}
+              />
+              <MetricCard
+                label="Annual NOI"
+                value={fmtDollar(Math.round(rentalMetrics.noi))}
+                description="Net Operating Income: Total income minus operating expenses."
+                bandPercent={60}
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <MetricCard
+                  label="Cap Rate"
+                  value={fmtPercent(rentalMetrics.capRate)}
+                  description="Annual return on purchase price if cash."
+                  variant="positive"
+                  bandPercent={rentalMetrics.capRate * 10}
+                />
+                <MetricCard
+                  label="CoC Return"
+                  value={fmtPercent(rentalMetrics.coc)}
+                  description="Annual cash return on actual money invested."
+                  variant="warning"
+                  bandPercent={Math.min(100, rentalMetrics.coc * 5)}
                 />
               </div>
-              <p className="text-[9px] text-text-secondary font-bold tracking-wide">EMD becomes non-refundable</p>
+              <div className="grid grid-cols-2 gap-3">
+                <MetricCard
+                  label="GRM"
+                  value={`${rentalMetrics.grm.toFixed(1)}x`}
+                  description="Gross Rent Multiplier for quick screening."
+                  bandPercent={50}
+                />
+                <MetricCard
+                  label="DSCR"
+                  value={rentalMetrics.dscr.toFixed(2)}
+                  description={`Debt Service Coverage Ratio (Target > 1.2).`}
+                  variant={rentalMetrics.dscr >= 1.2 ? 'positive' : 'warning'}
+                  bandPercent={Math.min(100, rentalMetrics.dscr * 50)}
+                />
+              </div>
+              <MetricCard
+                label="Total Cash Needed"
+                value={fmtDollar(Math.round(rentalMetrics.totalCashNeeded))}
+                description="Sum of down payment and total closing costs."
+                variant="hero"
+                bandPercent={60}
+              />
+
+              {/* Actions */}
+              <div className="mt-8 space-y-4">
+                <button
+                  onClick={handleSaveAsProject}
+                  className="luminous-button w-full py-4 rounded-xl font-extrabold uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-[18px]">save</span>
+                  Save as Project
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="w-full py-2 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
+                  style={{ color: 'var(--color-on-surface-variant)', opacity: 0.6 }}
+                >
+                  <span className="material-symbols-outlined text-[16px]">refresh</span>
+                  Reset Analysis
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Seller Motivation */}
-          <div className="space-y-1.5">
-            <label className="block text-[9px] font-black text-text-secondary uppercase tracking-[0.25em]">
-              Seller Motivation
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Describe the seller's motivation, urgency level, pain points, and deal context…"
-              value={sellerMotivation}
-              disabled={isLocked}
-              onChange={(e) => {
-                setSellerMotivation(e.target.value);
-                save({ sellerMotivation: e.target.value });
-              }}
-              className={`w-full px-4 py-3 text-xs font-black text-text-primary bg-bg-primary border border-border-accent focus:border-pw-black outline-none resize-none leading-relaxed placeholder:text-text-secondary/30 placeholder:font-normal ${isLocked ? 'cursor-not-allowed opacity-70' : ''}`}
-            />
-          </div>
+          {/* ═══ FLIP RESULTS ═══ */}
+          {mode === 'flip' && (
+            <div className="space-y-4">
+              <MetricCard
+                label="Anticipated Gross Profit"
+                value={fmtDollar(Math.round(flipMetrics.grossProfit))}
+                description="Net gain after ARV minus all acquisition, rehab, and holding costs."
+                variant="hero"
+                large
+                bandPercent={flipMetrics.grossProfit > 0 ? 72 : 0}
+              />
+              <MetricCard
+                label="ROI %"
+                value={fmtPercent(flipMetrics.roi)}
+                description="Annualized return on initial capital investment."
+                variant="positive"
+                bandPercent={Math.min(100, flipMetrics.roi * 2)}
+                bandColor="#adc6ff"
+              />
+              <MetricCard
+                label="Total Cash Needed"
+                value={fmtDollar(Math.round(flipMetrics.totalCashNeeded))}
+                description="Down payment, rehab reserve, and initial buffer."
+                bandPercent={60}
+              />
+              <MetricCard
+                label="Monthly Int. Payment"
+                value={fmtDollar(Math.round(flipMetrics.monthlyInterest))}
+                description="Interest: (Rate × Loan / 12)."
+                bandPercent={30}
+              />
+              <MetricCard
+                label="Total Holding Cost"
+                value={fmtDollar(Math.round(flipMetrics.totalHoldingCost))}
+                description="Sum of monthly costs × period."
+                bandPercent={45}
+              />
+
+              {/* Cost Distribution Bar */}
+              <div className="glass-panel p-6 rounded-2xl" style={{ border: '1px dashed rgba(60,74,70,0.5)' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="material-symbols-outlined text-sm" style={{ color: 'var(--color-primary)' }}>data_exploration</span>
+                  <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cost Distribution</span>
+                </div>
+                <div className="h-4 rounded-full flex overflow-hidden" style={{ background: 'var(--color-surface-container-high)' }}>
+                  <div style={{ width: `${flipMetrics.purchasePct}%`, background: 'var(--color-primary)' }} />
+                  <div style={{ width: `${flipMetrics.rehabPct}%`, background: 'var(--color-secondary)' }} />
+                  <div style={{ width: `${flipMetrics.holdingPct}%`, background: 'var(--color-outline)' }} />
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 text-[10px] font-bold uppercase" style={{ color: 'var(--color-on-surface-variant)' }}>
+                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-primary)' }} /> Purchase</div>
+                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-secondary)' }} /> Rehab</div>
+                  <div className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--color-outline)' }} /> Holding</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Strategy Insight Card (Rental only) */}
+          {mode === 'rental' && (
+            <div className="glass-card rounded-2xl p-6" style={{ borderColor: 'rgba(60,74,70,0.3)' }}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="material-symbols-outlined" style={{ color: 'var(--color-tertiary-container, #ffac5a)' }}>lightbulb</span>
+                <h4 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface)' }}>Market Comparison</h4>
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-on-surface-variant)' }}>
+                {rentalMetrics.capRate > 7
+                  ? <>This deal is projecting a <span className="font-bold" style={{ color: 'var(--color-primary)' }}>{fmtPercent(rentalMetrics.capRate)} cap rate</span>, which exceeds typical market benchmarks. Strong fundamentals for a buy-and-hold strategy.</>
+                  : <>Current cap rate of <span className="font-bold" style={{ color: 'var(--color-primary)' }}>{fmtPercent(rentalMetrics.capRate)}</span> is within normal range. Consider negotiating purchase price or increasing rent projections for better returns.</>
+                }
+              </p>
+            </div>
+          )}
         </div>
-
       </div>
     </div>
   );

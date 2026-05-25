@@ -24,6 +24,8 @@ function LoginPageInner() {
   const urlRedirectTo = searchParams.get('redirectTo') || searchParams.get('redirect') || '';
   const urlPlan       = searchParams.get('plan') || '';
   const sessionReason = searchParams.get('reason');
+  const urlAccountType = (searchParams.get('accountType') || 'investor') as 'investor' | 'vendor';
+  const urlMode       = searchParams.get('mode'); // 'signup' when arriving from /register
 
   const {
     login,
@@ -135,7 +137,7 @@ function LoginPageInner() {
   const [isSubmitting, setIsSubmitting]       = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
   const [loginMode, setLoginMode]             = useState<'password' | 'magic-link'>('password');
-  const [isSignUp, setIsSignUp]               = useState(false);
+  const [isSignUp, setIsSignUp]               = useState(urlMode === 'signup');
   const [magicLinkSent, setMagicLinkSent]     = useState(false);
   const [magicEmail, setMagicEmail]           = useState('');
 
@@ -167,7 +169,7 @@ function LoginPageInner() {
     setIsSubmitting(true);
     clearError();
     try {
-      await authRegister(data.email, data.password, data.fullName);
+      await authRegister(data.email, data.password, data.fullName, urlAccountType);
       navigatingRef.current = true;
       const dest = getRedirectDestination();
       window.location.replace(dest);
@@ -190,6 +192,10 @@ function LoginPageInner() {
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     setLoadingProvider(provider);
     clearError();
+    // Persist account type for provisionSocialUser() to read
+    if (typeof window !== 'undefined' && urlAccountType) {
+      window.localStorage.setItem('pw_pending_account_type', urlAccountType);
+    }
     try {
       if (provider === 'google') await loginWithGoogle();
       else await loginWithFacebook();
@@ -204,7 +210,7 @@ function LoginPageInner() {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center max-w-[420px] mx-auto w-full">
 
       {/* ── Heading ── */}
       <div className="mb-8 text-center">
@@ -348,13 +354,12 @@ function LoginPageInner() {
             )}
 
             <div className="flex justify-between items-center mt-2">
-              <button
-                type="button"
-                onClick={() => setIsSignUp(true)}
+              <Link
+                href="/register"
                 className="text-[12px] text-white font-medium hover:underline transition-colors"
               >
                 Create an account
-              </button>
+              </Link>
               <Link
                 href="/forgot-password"
                 className="text-[12px] text-[#555] hover:text-[#aaa] transition-colors"

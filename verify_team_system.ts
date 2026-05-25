@@ -91,14 +91,14 @@ async function runTests() {
     try {
       const snapA1 = await getDoc(doc(clientDb, 'projects', PROJECT_A1_ID));
       console.log('Tenant Isolation (Allowed Read):', snapA1.exists() ? 'PASS' : 'FAIL (Not found)');
-    } catch (e) {
+    } catch (e: any) {
       console.log('Tenant Isolation (Allowed Read): FAIL', e.message);
     }
 
     try {
       await getDoc(doc(clientDb, 'projects', PROJECT_B1_ID));
       console.log('Tenant Isolation (Denied Read): FAIL (Should have thrown permission denied)');
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'permission-denied') {
         console.log('Tenant Isolation (Denied Read): PASS');
       } else {
@@ -111,7 +111,7 @@ async function runTests() {
     try {
       await updateDoc(doc(clientDb, 'projects', PROJECT_A1_ID), { status: 'closed_won' });
       console.log('Permission Enforcement (Analyst Update): FAIL (Should have thrown)');
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'permission-denied') {
         console.log('Permission Enforcement (Analyst Update): PASS');
       } else {

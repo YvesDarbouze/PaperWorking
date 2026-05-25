@@ -1,20 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Calendar, 
-  Users, 
-  DollarSign, 
-  Download, 
-  FileText, 
-  Building,
-  Target,
-  Percent,
-  RefreshCw,
-  ChevronRight
-} from 'lucide-react';
+import { BarChart3, RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
@@ -682,205 +669,470 @@ export default function ReportsPage() {
   }, [reportsTab, filteredSnapshots, taxReportData, scope]);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+    <div className="max-w-7xl mx-auto mb-12 animate-in fade-in duration-700" style={{ color: 'var(--color-on-background, #dae4ec)' }}>
       
-      {/* ── Page Title ── */}
-      <div className="flex justify-between items-end border-b border-border-ui pb-6">
-        <div>
-          <div className="flex items-center space-x-2 mb-2">
-            <div className="bg-pw-black p-1.5 rounded-none text-white">
-              <BarChart3 className="w-4 h-4" />
+      {/* ── Header & Controls ── */}
+      <div className="flex flex-col gap-6 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--color-on-background)' }}>
+              Reports Command Center
+            </h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--color-on-surface-variant, #bacac5)' }}>
+              Real-time performance analytics and fiscal intelligence.
+            </p>
+          </div>
+
+          {/* Scope Selectors */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Period Segmented Control */}
+            <div className="glass-card p-1 rounded-xl flex">
+              {([
+                { id: 'monthly' as const, label: 'Month' },
+                { id: 'quarterly' as const, label: 'Quarter' },
+                { id: 'yearly' as const, label: 'Year' },
+                { id: 'overall' as const, label: 'Overall' }
+              ]).map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    setPeriodType(p.id);
+                    setStartDate('');
+                    setEndDate('');
+                  }}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    periodType === p.id
+                      ? 'shadow-sm'
+                      : 'hover:opacity-80'
+                  }`}
+                  style={{
+                    background: periodType === p.id ? 'var(--color-primary-container, #2dd4bf)' : 'transparent',
+                    color: periodType === p.id ? 'var(--color-on-primary-container, #00574d)' : 'var(--color-on-surface-variant, #bacac5)',
+                  }}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
-            <span className="text-[10px] font-bold text-pw-black uppercase tracking-[0.2em]">Portfolio Intelligence</span>
-          </div>
-          <h1 className="text-3xl font-light text-text-primary tracking-tight">
-            {reportsTab === 'performance' ? 'Performance Snapshots' : 'Tax Ledger (CPA Export)'}
-          </h1>
-          <p className="text-text-secondary text-xs font-medium mt-1">
-            {reportsTab === 'performance' 
-              ? 'Aggregated historical financials, yields, and analytics.' 
-              : 'Period P&L statements mapped to Schedule E / Form 4797 line items.'}
-          </p>
-        </div>
 
-        <div className="flex gap-2">
-          <button 
-            onClick={reportsTab === 'performance' ? handleExportCSV : handleExportTaxCSV}
-            disabled={isExportDisabled}
-            className="flex items-center gap-1.5 px-4 py-2 border border-border-ui bg-bg-surface text-[10px] font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary hover:border-pw-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>CSV</span>
-          </button>
-          <button 
-            onClick={reportsTab === 'performance' ? handleExportPDF : handleExportTaxPDF}
-            disabled={isExportDisabled}
-            className="flex items-center gap-1.5 px-4 py-2 bg-pw-black text-white text-[10px] font-bold uppercase tracking-wider hover:bg-pw-fg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>PDF</span>
-          </button>
-        </div>
-      </div>
-
-      {/* ── Sub-tab Toggle ── */}
-      <div className="flex border-b border-border-ui">
-        <button
-          onClick={() => setReportsTab('performance')}
-          className={`px-6 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
-            reportsTab === 'performance' 
-              ? 'border-pw-black text-text-primary' 
-              : 'border-transparent text-text-secondary hover:text-text-primary'
-          }`}
-        >
-          Performance Snapshots
-        </button>
-        <button
-          onClick={() => setReportsTab('tax')}
-          className={`px-6 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
-            reportsTab === 'tax' 
-              ? 'border-pw-black text-text-primary' 
-              : 'border-transparent text-text-secondary hover:text-text-primary'
-          }`}
-        >
-          Tax Ledger (CPA Export)
-        </button>
-      </div>
-
-      {/* ── Selectors Toolbar ── */}
-      <div className="flex flex-wrap items-center justify-between gap-6 p-5 border border-border-ui bg-bg-surface">
-        
-        {/* Scope Selector */}
-        <div className="flex items-center gap-4">
-          <div className="flex border border-border-ui p-0.5 bg-bg-primary">
-            <button
-              onClick={() => setScope('portfolio')}
-              className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                scope === 'portfolio' ? 'bg-pw-black text-white' : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Whole Portfolio
-            </button>
-            <button
-              onClick={() => setScope('project')}
-              className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                scope === 'project' ? 'bg-pw-black text-white' : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Single Project
-            </button>
-          </div>
-
-          {scope === 'project' && (
-            <div className="relative">
-              <select
-                value={selectedProjectId}
-                onChange={(e) => setSelectedProjectId(e.target.value)}
-                className="bg-bg-surface border border-border-ui px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-text-primary outline-none focus:border-pw-black appearance-none pr-8 min-w-[180px]"
+            {/* Scope Dropdown */}
+            <div className="relative group">
+              <button
+                className="glass-card px-4 py-2.5 rounded-xl flex items-center gap-3 min-w-[200px] justify-between transition-colors"
+                style={{ borderColor: 'rgba(255,255,255,0.1)' }}
               >
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'var(--color-primary, #57f1db)' }}>domain</span>
+                  <span className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>
+                    {scope === 'portfolio' ? 'Whole Portfolio' : (selectedProject?.propertyName || 'Select Project')}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined" style={{ color: 'var(--color-on-surface-variant)' }}>expand_more</span>
+              </button>
+              {/* Scope Dropdown Menu */}
+              <div className="hidden group-focus-within:block absolute top-full left-0 mt-1 glass-card rounded-xl py-1 z-20 min-w-full">
+                <button
+                  onClick={() => setScope('portfolio')}
+                  className="w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 transition-colors"
+                  style={{ color: scope === 'portfolio' ? 'var(--color-primary)' : 'var(--color-on-surface)' }}
+                >
+                  Whole Portfolio
+                </button>
                 {projects.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.propertyName}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-secondary">
-                <ChevronRight className="w-3 h-3 rotate-90" />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Period Selector / Year Selector */}
-        {reportsTab === 'performance' ? (
-          <>
-            <div className="flex items-center gap-4">
-              <div className="flex border border-border-ui p-0.5 bg-bg-primary">
-                {([
-                  { id: 'monthly', label: 'Monthly' },
-                  { id: 'quarterly', label: 'Quarterly' },
-                  { id: 'yearly', label: 'Yearly' },
-                  { id: 'overall', label: 'Overall' }
-                ] as const).map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => {
-                      setPeriodType(p.id);
-                      setStartDate('');
-                      setEndDate('');
-                    }}
-                    className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                      periodType === p.id ? 'bg-pw-black text-white' : 'text-text-secondary hover:text-text-primary'
-                    }`}
+                    onClick={() => { setScope('project'); setSelectedProjectId(p.id); }}
+                    className="w-full text-left px-4 py-2 text-xs font-semibold hover:bg-white/5 transition-colors"
+                    style={{ color: scope === 'project' && selectedProjectId === p.id ? 'var(--color-primary)' : 'var(--color-on-surface)' }}
                   >
-                    {p.label}
+                    {p.propertyName}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Date Filters */}
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">Filter Range:</span>
-              <input 
-                type="month"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="border border-border-ui bg-bg-surface text-text-primary px-3 py-1.5 text-[10px] font-bold outline-none focus:border-pw-black font-mono"
-                placeholder="Start Month"
-              />
-              <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">to</span>
-              <input 
-                type="month"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="border border-border-ui bg-bg-surface text-text-primary px-3 py-1.5 text-[10px] font-bold outline-none focus:border-pw-black font-mono"
-                placeholder="End Month"
-              />
-              {(startDate || endDate) && (
-                <button 
-                  onClick={() => { setStartDate(''); setEndDate(''); }}
-                  className="text-[9px] font-bold uppercase tracking-wider text-rose-500 hover:underline"
-                >
-                  Clear
-                </button>
-              )}
+            {/* Property / My-Share Toggle */}
+            <div className="flex items-center gap-3 glass-card px-4 py-2 rounded-xl">
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Property</span>
+              <div className="w-10 h-5 rounded-full relative cursor-pointer" style={{ background: 'var(--color-surface-container-highest, #2d363d)' }}>
+                <div className="absolute top-1 left-1 w-3 h-3 rounded-full transition-transform" style={{ background: 'var(--color-primary, #57f1db)' }} />
+              </div>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }}>My-Share</span>
             </div>
-          </>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sub-tab Toggle (Performance / Tax) ── */}
+      <div className="flex mb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <button
+          onClick={() => setReportsTab('performance')}
+          className="px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all"
+          style={{
+            borderBottom: reportsTab === 'performance' ? '2px solid var(--color-primary, #57f1db)' : '2px solid transparent',
+            color: reportsTab === 'performance' ? 'var(--color-primary)' : 'var(--color-on-surface-variant)',
+          }}
+        >
+          Performance Analytics
+        </button>
+        <button
+          onClick={() => setReportsTab('tax')}
+          className="px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all"
+          style={{
+            borderBottom: reportsTab === 'tax' ? '2px solid var(--color-primary, #57f1db)' : '2px solid transparent',
+            color: reportsTab === 'tax' ? 'var(--color-primary)' : 'var(--color-on-surface-variant)',
+          }}
+        >
+          Tax Intelligence
+        </button>
+      </div>
+
+      {reportsTab === 'performance' ? (
+        // ── PERFORMANCE REPORTING TAB ──
+        loading ? (
+          <div className="h-96 flex items-center justify-center glass-card rounded-2xl">
+            <div className="flex flex-col items-center gap-3">
+              <RefreshCw className="w-6 h-6 animate-spin" style={{ color: 'var(--color-primary)' }} />
+              <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Loading Snapshots...</span>
+            </div>
+          </div>
+        ) : filteredSnapshots.length === 0 ? (
+          <div className="glass-card rounded-2xl p-16 text-center">
+            <BarChart3 className="w-8 h-8 mx-auto mb-3 opacity-30" style={{ color: 'var(--color-on-surface-variant)' }} />
+            <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface)' }}>No Activity</h3>
+            <p className="text-[10px] mt-1 max-w-sm mx-auto font-medium" style={{ color: 'var(--color-on-surface-variant)' }}>
+              No real snapshot records exist for this period range. 
+              PaperWorking renders &quot;no activity&quot; to safeguard reports from displaying deceptive zero-value entries.
+            </p>
+          </div>
         ) : (
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Year Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">Tax Year:</span>
-              <div className="relative">
-                <select
-                  value={taxYear}
-                  onChange={(e) => setTaxYear(e.target.value)}
-                  className="bg-bg-surface border border-border-ui px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-text-primary outline-none focus:border-pw-black appearance-none pr-8 min-w-[100px]"
-                >
-                  {['2026', '2025', '2024', '2023'].map((y) => (
-                    <option key={y} value={y}>
-                      {y}
-                    </option>
-                  ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-secondary">
-                  <ChevronRight className="w-3 h-3 rotate-90" />
+          <div className="space-y-8">
+
+            {/* ── Core REI Metrics Bento Grid ── */}
+            <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {/* NOI */}
+              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-primary)', background: 'rgba(87,241,219,0.1)' }}>LIVE</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>NOI</p>
+                  </div>
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>payments</span>
                 </div>
+                <div>
+                  <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                    {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'noi', apiPeriodType) : null, 'currency')}
+                  </h3>
+                  <div className="mt-2 h-1 w-full rounded-full overflow-hidden" style={{ background: 'var(--color-surface-container-highest, #2d363d)' }}>
+                    <div className="h-full rounded-full" style={{ width: '75%', background: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Cash Flow */}
+              <button onClick={() => setSelectedMetric('cashFlow')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-primary)', background: 'rgba(87,241,219,0.1)' }}>LIVE</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cash Flow</p>
+                  </div>
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>account_balance</span>
+                </div>
+                <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                  {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'cashFlow', apiPeriodType) : null, 'currency')}
+                </h3>
+              </button>
+
+              {/* IRR */}
+              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-on-surface-variant)', background: 'var(--color-surface-container-highest)' }}>REALIZED</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>IRR</p>
+                  </div>
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>trending_up</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                    {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'irr', apiPeriodType) : null, '%')}
+                  </h3>
+                  <div className="mt-2 flex items-end gap-[1px] h-4 relative">
+                    <div className="flex-1 rounded-sm" style={{ height: '40%', background: 'rgba(87,241,219,0.4)' }} />
+                    <div className="flex-1 rounded-sm" style={{ height: '60%', background: 'rgba(87,241,219,0.5)' }} />
+                    <div className="flex-1 rounded-sm" style={{ height: '80%', background: 'rgba(87,241,219,0.6)' }} />
+                    <div className="flex-1 rounded-sm" style={{ height: '100%', background: 'var(--color-primary)' }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Cap Rate */}
+              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(133,148,144,0.4)' }}>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-on-surface-variant)', background: 'var(--color-surface-container-highest)' }}>LIVE</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cap Rate</p>
+                  </div>
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'var(--color-on-surface-variant)' }}>percent</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                    {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'capRate', apiPeriodType) : null, '%')}
+                  </h3>
+                </div>
+              </div>
+
+              {/* Cash-on-Cash */}
+              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-primary)', background: 'rgba(87,241,219,0.1)' }}>LIVE</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cash-on-Cash</p>
+                  </div>
+                  <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>account_balance_wallet</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                    {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'cashOnCashReturn', apiPeriodType) : null, '%')}
+                  </h3>
+                  <div className="flex items-center gap-1 mt-2" style={{ color: 'var(--color-primary)' }}>
+                    <span className="material-symbols-outlined text-xs">check_circle</span>
+                    <span className="text-[10px] font-bold">Stable yield</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* LTV */}
+              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(255,180,171,0.4)' }}>
+                <div className="flex flex-col">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-on-surface-variant)' }}>LTV</p>
+                  <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                    {formatValue(latestSnapshot ? (latestSnapshot as any).ltv : null, '%')}
+                  </h3>
+                </div>
+                <div className="p-1.5 rounded flex items-center gap-1.5" style={{ background: 'rgba(147,0,10,0.1)' }}>
+                  <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-error, #ffb4ab)' }} />
+                  <span className="text-[10px] font-bold" style={{ color: 'var(--color-error)' }}>Monitor</span>
+                </div>
+              </div>
+
+              {/* DSCR */}
+              <div className="glass-card p-5 rounded-2xl health-band-positive">
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>DSCR</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
+                  {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'dscr', apiPeriodType) : null, 'ratio')}
+                </h3>
+                <p className="text-xs" style={{ color: 'var(--color-primary)' }}>Healthy Coverage</p>
+              </div>
+
+              {/* GRM */}
+              <div className="glass-card p-5 rounded-2xl">
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>GRM</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
+                  {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'grossRentMultiplier', apiPeriodType) : null, '×')}
+                </h3>
+                <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Lower is better</p>
+              </div>
+
+              {/* OER */}
+              <div className="glass-card p-5 rounded-2xl">
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>OER</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
+                  {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'oer', apiPeriodType) : null, '%')}
+                </h3>
+                <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Op. Efficiency</p>
+              </div>
+
+              {/* Occupancy */}
+              <div className="glass-card p-5 rounded-2xl">
+                <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>Occupancy</p>
+                <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
+                  {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'occupancyRate', apiPeriodType) : null, '%')}
+                </h3>
+                <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Days Occupied</p>
+              </div>
+
+              {/* Appreciation — wide card */}
+              <div className="glass-card p-4 rounded-xl col-span-1 md:col-span-2 flex flex-col justify-between" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-tertiary, #ffd1aa)', background: 'rgba(255,209,170,0.1)' }}>PROJECTED</span>
+                    <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Appreciation</p>
+                  </div>
+                  <span className="font-bold" style={{ color: 'var(--color-primary)' }}>
+                    {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'appreciation', apiPeriodType) : null, '%')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div>
+                    <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
+                      {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'appreciation', apiPeriodType) : null, '%')}
+                    </h3>
+                    <p className="text-[10px] mt-1 italic" style={{ color: 'var(--color-on-surface-variant)' }}>Annual Forecast</p>
+                  </div>
+                  <div className="flex-1 h-8 flex items-center gap-1 rounded-lg px-2">
+                    <div className="h-1.5 w-full rounded-full" style={{ background: 'rgba(87,241,219,0.2)' }} />
+                    <div className="h-2.5 w-full rounded-full" style={{ background: 'rgba(87,241,219,0.4)' }} />
+                    <div className="h-4 w-full rounded-full" style={{ background: 'rgba(87,241,219,0.6)' }} />
+                    <div className="h-6 w-full rounded-full" style={{ background: 'var(--color-primary)', boxShadow: '0 0 10px rgba(45,212,191,0.5)' }} />
+                    <div className="h-3 w-full rounded-full" style={{ background: 'rgba(87,241,219,0.2)' }} />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Metric Selector & Trend Chart ── */}
+            <div className="glass-card rounded-2xl p-6 flex flex-col">
+              {/* Metric Pill Selector */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {METRICS_CONFIG.map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => setSelectedMetric(m.key)}
+                    className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
+                    style={{
+                      background: selectedMetric === m.key ? 'var(--color-primary-container, #2dd4bf)' : 'rgba(255,255,255,0.05)',
+                      color: selectedMetric === m.key ? 'var(--color-on-primary-container, #00574d)' : 'var(--color-on-surface-variant)',
+                      border: selectedMetric === m.key ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>
+                    {activeMetricConfig.desc} Timeline
+                  </h4>
+                  <p className="text-[10px] font-medium mt-0.5 uppercase tracking-wide" style={{ color: 'var(--color-on-surface-variant)' }}>
+                    Historical compound trend via F4 metrics engine
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: 'var(--color-primary)' }} />
+                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Value</span>
+                </div>
+              </div>
+
+              <div className="h-[300px]">
+                <MetricChart
+                  series={chartSeries}
+                  timeWindow={periodType === 'yearly' ? 'annual' : periodType}
+                  scope={scope}
+                  unit={activeMetricConfig.unit}
+                  title={activeMetricConfig.label}
+                />
               </div>
             </div>
 
-            {/* Period Selector */}
+            {/* ── Performance Ledger Table ── */}
+            <div className="glass-card rounded-2xl overflow-hidden">
+              <div className="px-6 py-4 flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
+                <h4 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface)' }}>
+                  Performance Ledger
+                </h4>
+                <div className="flex items-center gap-3">
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>
+                    {filteredSnapshots.length} Records
+                  </span>
+                  <button
+                    onClick={handleExportCSV}
+                    disabled={isExportDisabled}
+                    className="p-2 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40"
+                    style={{ color: 'var(--color-on-surface-variant)' }}
+                  >
+                    <span className="material-symbols-outlined text-base">csv</span>
+                  </button>
+                  <button
+                    onClick={handleExportPDF}
+                    disabled={isExportDisabled}
+                    className="p-2 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40"
+                    style={{ color: 'var(--color-on-surface-variant)' }}
+                  >
+                    <span className="material-symbols-outlined text-base">picture_as_pdf</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="overflow-x-auto custom-scrollbar">
+                <table className="w-full text-[10px] border-collapse font-mono text-left">
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Period</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>NOI</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Cash Flow</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Cap Rate</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>CoC</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>DSCR</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Occupancy</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>OER</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>GRM</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>IRR</th>
+                      <th className="px-4 py-3 font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Apprec.</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSnapshots.map((s) => (
+                      <tr key={s.period} className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <td className="px-4 py-3.5 font-bold" style={{ color: 'var(--color-on-surface)' }}>
+                          {formatPeriodLabel(s.period, apiPeriodType)}
+                        </td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'noi', apiPeriodType), 'currency')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'cashFlow', apiPeriodType), 'currency')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'capRate', apiPeriodType), '%')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'cashOnCashReturn', apiPeriodType), '%')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'dscr', apiPeriodType), 'ratio')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'occupancyRate', apiPeriodType), '%')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'oer', apiPeriodType), '%')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'grossRentMultiplier', apiPeriodType), '×')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'irr', apiPeriodType), '%')}</td>
+                        <td className="px-4 py-3.5" style={{ color: 'var(--color-on-surface)' }}>{formatValue(getMetricValue(s, 'appreciation', apiPeriodType), '%')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        )
+      ) : (
+        // ── TAX INTELLIGENCE TAB ──
+        <div className="space-y-8">
+          
+          {/* ── Date Range Controls for Tax ── */}
+          <div className="glass-card rounded-xl p-4 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">Period:</span>
-              <div className="flex border border-border-ui p-0.5 bg-bg-primary">
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Tax Year:</span>
+              <div className="glass-card p-1 rounded-lg flex">
+                {['2026', '2025', '2024', '2023'].map((y) => (
+                  <button
+                    key={y}
+                    onClick={() => setTaxYear(y)}
+                    className="px-3 py-1 rounded-md text-[10px] font-bold transition-all"
+                    style={{
+                      background: taxYear === y ? 'var(--color-primary-container, #2dd4bf)' : 'transparent',
+                      color: taxYear === y ? 'var(--color-on-primary-container, #00574d)' : 'var(--color-on-surface-variant)',
+                    }}
+                  >
+                    {y}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Period:</span>
+              <div className="glass-card p-1 rounded-lg flex">
                 {(['Q1', 'Q2', 'Q3', 'Q4', 'Annual', 'Overall'] as const).map((p) => (
                   <button
                     key={p}
                     onClick={() => setTaxPeriod(p)}
-                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
-                      taxPeriod === p ? 'bg-pw-black text-white' : 'text-text-secondary hover:text-text-primary'
-                    }`}
+                    className="px-3 py-1 rounded-md text-[10px] font-bold transition-all"
+                    style={{
+                      background: taxPeriod === p ? 'var(--color-primary-container, #2dd4bf)' : 'transparent',
+                      color: taxPeriod === p ? 'var(--color-on-primary-container, #00574d)' : 'var(--color-on-surface-variant)',
+                    }}
                   >
                     {p}
                   </button>
@@ -888,181 +1140,18 @@ export default function ReportsPage() {
               </div>
             </div>
           </div>
-        )}
 
-      </div>
-
-      {reportsTab === 'performance' ? (
-        // ── PERFORMANCE REPORTING TAB ──
-        loading ? (
-          <div className="h-96 flex items-center justify-center border border-border-ui bg-bg-surface">
-            <div className="flex flex-col items-center gap-3">
-              <RefreshCw className="w-6 h-6 animate-spin text-pw-black" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">Loading Snapshots...</span>
-            </div>
-          </div>
-        ) : filteredSnapshots.length === 0 ? (
-          <div className="bg-bg-surface border border-border-ui p-16 text-center">
-            <BarChart3 className="w-8 h-8 mx-auto mb-3 text-text-secondary opacity-30" />
-            <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest">No Activity</h3>
-            <p className="text-[10px] text-text-secondary mt-1 max-w-sm mx-auto font-medium">
-              No real snapshot records exist for this period range. 
-              PaperWorking renders "no activity" to safeguard reports from displaying deceptive zero-value entries.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-            
-            {/* Left Sidebar Metric Tabs */}
-            <div className="lg:col-span-1 flex flex-col gap-2">
-              <div className="px-2 py-1 bg-pw-black/5 text-[9px] font-bold uppercase tracking-widest text-text-secondary mb-1">
-                Select Metric to Trend
-              </div>
-              {METRICS_CONFIG.map((m) => {
-                const isSelected = selectedMetric === m.key;
-                const val = latestSnapshot ? getMetricValue(latestSnapshot, m.key, apiPeriodType) : null;
-                
-                return (
-                  <button
-                    key={m.key}
-                    onClick={() => setSelectedMetric(m.key)}
-                    className="w-full text-left p-3.5 border transition-all flex flex-col justify-between h-20"
-                    style={{
-                      borderColor: isSelected ? 'var(--pw-black, #000000)' : 'var(--border-ui)',
-                      background: isSelected ? 'var(--pw-black, #0d0d0d)' : 'var(--bg-surface)',
-                      color: isSelected ? '#ffffff' : 'var(--text-primary)'
-                    }}
-                  >
-                    <div className="flex justify-between items-start w-full">
-                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">{m.label}</span>
-                      <span className="text-[9px] font-medium opacity-65 truncate max-w-[80px]">{m.desc}</span>
-                    </div>
-                    <span className="text-lg font-light tracking-tight font-mono mt-1">
-                      {formatValue(val, m.unit)}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Main Trend Chart */}
-            <div className="lg:col-span-3 space-y-6">
-              
-              <div className="bg-bg-surface border border-border-ui p-6 flex flex-col">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-                      {activeMetricConfig.desc} Timeline
-                    </h4>
-                    <p className="text-[10px] text-text-secondary font-medium mt-0.5 uppercase tracking-wide">
-                      Historical compound trend via F4 metrics engine
-                  </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-pw-black" />
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-text-secondary">Value</span>
-                  </div>
-                </div>
-
-                <div className="h-[300px]">
-                  <MetricChart
-                    series={chartSeries}
-                    timeWindow={periodType === 'yearly' ? 'annual' : periodType}
-                    scope={scope}
-                    unit={activeMetricConfig.unit}
-                    title={activeMetricConfig.label}
-                  />
-                </div>
-              </div>
-
-              {/* Summary Data Grid */}
-              <div className="bg-bg-surface border border-border-ui overflow-hidden">
-                <div className="px-6 py-4 border-b border-border-ui bg-bg-primary flex justify-between items-center">
-                  <h4 className="text-[10px] font-bold text-text-primary uppercase tracking-widest">
-                    Performance Ledger
-                  </h4>
-                  <span className="text-[9px] font-bold text-text-secondary uppercase tracking-widest">
-                    {filteredSnapshots.length} Records
-                  </span>
-                </div>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full text-[10px] border-collapse font-mono text-left">
-                    <thead>
-                      <tr className="bg-bg-primary border-b border-border-ui">
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">Period</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">NOI</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">Cash Flow</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">Cap Rate</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">CoC</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">DSCR</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">Occupancy</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">OER</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">GRM</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">IRR</th>
-                        <th className="px-4 py-3 font-bold text-text-secondary uppercase tracking-wider">Appreciation</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border-ui">
-                      {filteredSnapshots.map((s) => (
-                        <tr key={s.period} className="hover:bg-bg-primary transition-colors">
-                          <td className="px-4 py-3.5 font-bold text-text-primary">
-                            {formatPeriodLabel(s.period, apiPeriodType)}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'noi', apiPeriodType), 'currency')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'cashFlow', apiPeriodType), 'currency')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'capRate', apiPeriodType), '%')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'cashOnCashReturn', apiPeriodType), '%')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'dscr', apiPeriodType), 'ratio')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'occupancyRate', apiPeriodType), '%')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'oer', apiPeriodType), '%')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'grossRentMultiplier', apiPeriodType), '×')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'irr', apiPeriodType), '%')}
-                          </td>
-                          <td className="px-4 py-3.5">
-                            {formatValue(getMetricValue(s, 'appreciation', apiPeriodType), '%')}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )
-      ) : (
-        // ── TAX LEDGER SUB-TAB (CPA EXPORT) ──
-        <div className="space-y-6 max-w-4xl mx-auto">
-          
           {/* Missing Fields Checklist */}
           {taxReportData.missingFields.length > 0 && (
-            <div className="border border-amber-200 bg-amber-50/50 p-4 text-xs text-amber-800 space-y-2 rounded-none">
-              <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-amber-900">
-                <span>⚠️ Needed for Tax Export ({taxReportData.missingFields.length})</span>
+            <div className="glass-card rounded-xl p-4 space-y-2" style={{ borderLeft: '4px solid var(--color-tertiary-container, #ffac5a)' }}>
+              <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-tertiary, #ffd1aa)' }}>
+                <span className="material-symbols-outlined text-base">warning</span>
+                <span>Needed for Tax Export ({taxReportData.missingFields.length})</span>
               </div>
-              <p className="text-[10px] text-amber-700">
-                The following fields are missing or incomplete. Please update them in the project purchases or hold details to ensure a complete tax filing ledger:
+              <p className="text-[10px]" style={{ color: 'var(--color-on-surface-variant)' }}>
+                The following fields are missing or incomplete. Update them in the project purchases or hold details:
               </p>
-              <ul className="list-disc pl-5 space-y-1 font-mono text-[10px]">
+              <ul className="list-disc pl-5 space-y-1 font-mono text-[10px]" style={{ color: 'var(--color-on-surface-variant)' }}>
                 {taxReportData.missingFields.slice(0, 10).map((field, idx) => (
                   <li key={idx}>{field}</li>
                 ))}
@@ -1073,26 +1162,132 @@ export default function ReportsPage() {
             </div>
           )}
 
-          {/* Main Statement Ledger */}
+          {/* CPA Reports & Automation Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* CPA-Ready P&L Reports */}
+            <div className="glass-card p-8 rounded-3xl lg:col-span-2">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="material-symbols-outlined" style={{ color: 'var(--color-primary)', fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+                <h3 className="text-lg font-bold" style={{ color: 'var(--color-on-background)' }}>CPA-Ready P&L Reports</h3>
+              </div>
+              <div className="space-y-4">
+                {/* Report Row: Quarterly */}
+                <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl" style={{ background: 'var(--color-surface-container-highest, #2d363d)' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--color-on-surface-variant)' }}>calendar_month</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>Quarterly P&L Statement</h4>
+                      <p className="text-[10px]" style={{ color: 'var(--color-on-surface-variant)' }}>{taxPeriod !== 'Annual' && taxPeriod !== 'Overall' ? `${taxPeriod} ${taxYear}` : `Q1-Q4 ${taxYear}`}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={handleExportTaxPDF} disabled={isExportDisabled} className="p-2 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">picture_as_pdf</span>
+                    </button>
+                    <button onClick={handleExportTaxCSV} disabled={isExportDisabled} className="p-2 rounded-lg hover:bg-white/10 transition-colors disabled:opacity-40" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">csv</span>
+                    </button>
+                  </div>
+                </div>
+                {/* Report Row: Annual */}
+                <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl" style={{ background: 'var(--color-surface-container-highest, #2d363d)' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--color-on-surface-variant)' }}>event_note</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>Annual Tax Summary</h4>
+                      <p className="text-[10px]" style={{ color: 'var(--color-on-surface-variant)' }}>FY {taxYear} Consolidated Report</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setTaxPeriod('Annual'); setTimeout(handleExportTaxPDF, 100); }} className="p-2 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">picture_as_pdf</span>
+                    </button>
+                    <button onClick={() => { setTaxPeriod('Annual'); setTimeout(handleExportTaxCSV, 100); }} className="p-2 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">csv</span>
+                    </button>
+                  </div>
+                </div>
+                {/* Report Row: Overall */}
+                <div className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl" style={{ background: 'var(--color-surface-container-highest, #2d363d)' }}>
+                      <span className="material-symbols-outlined" style={{ color: 'var(--color-on-surface-variant)' }}>history</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>Overall Lifetime Ledger</h4>
+                      <p className="text-[10px]" style={{ color: 'var(--color-on-surface-variant)' }}>Inception to date (ITD)</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setTaxPeriod('Overall'); setTimeout(handleExportTaxPDF, 100); }} className="p-2 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">picture_as_pdf</span>
+                    </button>
+                    <button onClick={() => { setTaxPeriod('Overall'); setTimeout(handleExportTaxCSV, 100); }} className="p-2 rounded-lg hover:bg-white/10 transition-colors" style={{ color: 'var(--color-on-surface-variant)' }}>
+                      <span className="material-symbols-outlined">csv</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-8 pt-6 flex items-center gap-2" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--color-on-surface-variant)' }}>
+                <span className="material-symbols-outlined text-sm">info</span>
+                <p className="text-[10px] font-semibold">Organized for your tax professional.</p>
+              </div>
+            </div>
+
+            {/* Automation Card */}
+            <div className="glass-card p-8 rounded-3xl flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--color-on-background)' }}>Automation</h3>
+                <p className="text-xs mb-6" style={{ color: 'var(--color-on-surface-variant)' }}>Schedule regular data exports for your accounting software.</p>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>Monthly Auto-sync</span>
+                    <div className="w-10 h-5 rounded-full relative" style={{ background: 'rgba(87,241,219,0.2)' }}>
+                      <div className="absolute top-1 right-1 w-3 h-3 rounded-full" style={{ background: 'var(--color-primary)' }} />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between opacity-50">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--color-on-surface)' }}>QuickBooks Integration</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded uppercase font-bold" style={{ background: 'rgba(255,255,255,0.1)', color: 'var(--color-on-surface-variant)' }}>Beta</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={handleExportTaxPDF}
+                disabled={isExportDisabled}
+                className="w-full luminous-button py-4 rounded-2xl flex items-center justify-center gap-2 text-xs font-semibold mt-6 disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined">cloud_upload</span>
+                Export to CPA
+              </button>
+            </div>
+          </div>
+
+          {/* ── Full Tax Statement Ledger ── */}
           {!taxReportData.report || (scope === 'portfolio' && taxReportData.activeReports.length === 0) || (scope === 'project' && taxReportData.report.activeMonths === 0) ? (
-            <div className="bg-bg-surface border border-border-ui p-16 text-center">
-              <BarChart3 className="w-8 h-8 mx-auto mb-3 text-text-secondary opacity-30" />
-              <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest">No Hold Period Activity</h3>
-              <p className="text-[10px] text-text-secondary mt-1 max-w-sm mx-auto font-medium">
+            <div className="glass-card rounded-2xl p-16 text-center">
+              <BarChart3 className="w-8 h-8 mx-auto mb-3 opacity-30" style={{ color: 'var(--color-on-surface-variant)' }} />
+              <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--color-on-surface)' }}>No Hold Period Activity</h3>
+              <p className="text-[10px] mt-1 max-w-sm mx-auto font-medium" style={{ color: 'var(--color-on-surface-variant)' }}>
                 No active hold period overlaps with the selected period. 
-                PaperWorking renders "no activity" to prevent presenting misleading zero values.
+                PaperWorking renders &quot;no activity&quot; to prevent presenting misleading zero values.
               </p>
             </div>
           ) : (
             <div className="space-y-6">
               
               {/* CPA Disclaimer Box */}
-              <div className="border border-border-ui bg-bg-surface p-5 space-y-3">
-                <div className="flex items-center gap-2 text-pw-black font-bold uppercase tracking-wider text-[10px]">
-                  <Target className="w-4 h-4 text-pw-black" />
+              <div className="glass-card rounded-xl p-5 space-y-3" style={{ borderLeft: '4px solid var(--color-primary, #57f1db)' }}>
+                <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-[10px]" style={{ color: 'var(--color-primary)' }}>
+                  <span className="material-symbols-outlined text-base" style={{ color: 'var(--color-primary)' }}>gavel</span>
                   <span>Tax Professional Audit Disclaimer</span>
                 </div>
-                <p className="text-[11px] text-text-secondary leading-relaxed">
+                <p className="text-[11px] leading-relaxed" style={{ color: 'var(--color-on-surface-variant)' }}>
                   This ledger compiles historical transaction entries, approved rehab allocations, and month-by-month mortgage interest amortization. 
                   Real estate investor vs. dealer status, Schedule E expense category boundaries, and depreciation starting methods must be reviewed and finalized by a licensed CPA. 
                   PaperWorking does not compile formal tax filings or provide legal tax advise.
@@ -1100,140 +1295,126 @@ export default function ReportsPage() {
               </div>
 
               {/* Statement Sheet */}
-              <div className="border border-border-ui bg-bg-surface overflow-hidden">
-                <div className="px-6 py-4 border-b border-border-ui bg-bg-primary flex justify-between items-center">
-                  <h3 className="text-xs font-bold text-text-primary uppercase tracking-widest font-mono">Tax Ledger Statement</h3>
-                  <span className="text-[9px] font-bold text-text-secondary uppercase tracking-widest font-mono">
+              <div className="glass-card rounded-2xl overflow-hidden">
+                <div className="px-6 py-4 flex justify-between items-center" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
+                  <h3 className="text-xs font-bold uppercase tracking-widest font-mono" style={{ color: 'var(--color-on-surface)' }}>Tax Ledger Statement</h3>
+                  <span className="text-[9px] font-bold uppercase tracking-widest font-mono" style={{ color: 'var(--color-on-surface-variant)' }}>
                     Active hold period: {taxReportData.report.activeMonths.toFixed(2)} Months
                   </span>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar">
                   <table className="w-full text-xs border-collapse font-mono text-left">
                     <thead>
-                      <tr className="bg-bg-primary border-b border-border-ui text-[9px] uppercase tracking-wider text-text-secondary">
-                        <th className="px-6 py-3 font-bold">Line Item Description</th>
-                        <th className="px-6 py-3 font-bold text-right">Amount</th>
+                      <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.02)' }}>
+                        <th className="px-6 py-3 font-bold text-[9px] uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Line Item Description</th>
+                        <th className="px-6 py-3 font-bold text-right text-[9px] uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Amount</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-border-ui">
+                    <tbody>
                       
                       {/* Income */}
-                      <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                        <td className="px-6 py-2.5" colSpan={2}>Gross Income</td>
+                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Gross Income</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Gross Rental Income</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.rentalIncome, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Gross Rental Income</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.rentalIncome, 'currency')}</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Other Income (laundry, parking, utilities fees)</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.otherIncome, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Other Income (laundry, parking, utilities fees)</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.otherIncome, 'currency')}</td>
                       </tr>
                       {taxReportData.report.isSoldInPeriod && (
-                        <tr className="hover:bg-bg-primary/30">
-                          <td className="px-6 py-3">Sale Proceeds (Gross Exit Value)</td>
-                          <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.saleProceeds, 'currency')}</td>
+                        <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Sale Proceeds (Gross Exit Value)</td>
+                          <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.saleProceeds, 'currency')}</td>
                         </tr>
                       )}
-                      <tr className="font-bold border-b border-border-ui bg-bg-primary/20">
-                        <td className="px-6 py-3 pl-8">Total Gross Income</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.totalGrossIncome, 'currency')}</td>
+                      <tr className="font-bold" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3 pl-8" style={{ color: 'var(--color-on-surface)' }}>Total Gross Income</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-primary)' }}>{formatValue(taxReportData.report.totalGrossIncome, 'currency')}</td>
                       </tr>
 
                       {/* Deductibles */}
-                      <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                        <td className="px-6 py-2.5" colSpan={2}>Deductible Operating Expenses (Schedule E Aligned)</td>
+                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Deductible Operating Expenses (Schedule E Aligned)</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Property Taxes</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.propertyTaxes, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Insurance</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.insurance, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Utilities</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.utilities, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Property Management Fees</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.propertyManagement, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Repairs & Maintenance</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.repairsMaintenance, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">HOA Fees</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.hoaFees, 'currency')}</td>
-                      </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Mortgage Interest (Amortized Schedule)</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.mortgageInterest, 'currency')}</td>
-                      </tr>
-                      <tr className="font-bold border-b border-border-ui bg-bg-primary/20">
-                        <td className="px-6 py-3 pl-8">Total Deductible Operating Expenses</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.totalDeductibleExpenses, 'currency')}</td>
+                      {[
+                        { label: 'Property Taxes', value: taxReportData.report.propertyTaxes },
+                        { label: 'Insurance', value: taxReportData.report.insurance },
+                        { label: 'Utilities', value: taxReportData.report.utilities },
+                        { label: 'Property Management Fees', value: taxReportData.report.propertyManagement },
+                        { label: 'Repairs & Maintenance', value: taxReportData.report.repairsMaintenance },
+                        { label: 'HOA Fees', value: taxReportData.report.hoaFees },
+                        { label: 'Mortgage Interest (Amortized Schedule)', value: taxReportData.report.mortgageInterest },
+                      ].map((item) => (
+                        <tr key={item.label} className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                          <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>{item.label}</td>
+                          <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(item.value, 'currency')}</td>
+                        </tr>
+                      ))}
+                      <tr className="font-bold" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3 pl-8" style={{ color: 'var(--color-on-surface)' }}>Total Deductible Operating Expenses</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-error)' }}>{formatValue(taxReportData.report.totalDeductibleExpenses, 'currency')}</td>
                       </tr>
 
                       {/* Operating Summary */}
-                      <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                        <td className="px-6 py-2.5" colSpan={2}>Operating Result Summary</td>
+                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Operating Result Summary</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Net Operating Result (Income - Deductible Opex excluding Mortgage Interest)</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.netOperatingResult, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Net Operating Result (Income - Deductible Opex excluding Mortgage Interest)</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.netOperatingResult, 'currency')}</td>
                       </tr>
-                      <tr className="font-bold bg-bg-primary/20">
-                        <td className="px-6 py-3 pl-8">Net Taxable Operating Result</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.netTaxableResult, 'currency')}</td>
+                      <tr className="font-bold" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3 pl-8" style={{ color: 'var(--color-on-surface)' }}>Net Taxable Operating Result</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-primary)' }}>{formatValue(taxReportData.report.netTaxableResult, 'currency')}</td>
                       </tr>
 
                       {/* Non-Deductibles */}
-                      <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                        <td className="px-6 py-2.5" colSpan={2}>Capitalized Balance Sheet Items (Non-Expensed / Form 4562)</td>
+                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Capitalized Balance Sheet Items (Non-Expensed / Form 4562)</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Mortgage Principal Paydown</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.mortgagePrincipal, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Mortgage Principal Paydown</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.mortgagePrincipal, 'currency')}</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Approved Rehab / Capital Improvements</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.capitalizedRehab, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Approved Rehab / Capital Improvements</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.capitalizedRehab, 'currency')}</td>
                       </tr>
 
                       {/* Depreciation */}
-                      <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                        <td className="px-6 py-2.5" colSpan={2}>Depreciation Estimate</td>
+                      <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                        <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Depreciation Estimate</td>
                       </tr>
-                      <tr className="hover:bg-bg-primary/30">
-                        <td className="px-6 py-3">Straight-Line Depreciation Estimate (27.5-Yr Standard)</td>
-                        <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.depreciationEstimate, 'currency')}</td>
+                      <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                        <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Straight-Line Depreciation Estimate (27.5-Yr Standard)</td>
+                        <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.depreciationEstimate, 'currency')}</td>
                       </tr>
 
                       {/* Exit capital gain */}
                       {taxReportData.report.isSoldInPeriod && (
                         <>
-                          <tr className="bg-bg-primary/50 text-[10px] font-bold uppercase tracking-wider text-text-primary">
-                            <td className="px-6 py-2.5" colSpan={2}>Capital Gain / Exit Reconciliation (Form 4797)</td>
+                          <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
+                            <td className="px-6 py-2.5 text-[10px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-on-surface)' }} colSpan={2}>Capital Gain / Exit Reconciliation (Form 4797)</td>
                           </tr>
-                          <tr className="hover:bg-bg-primary/30">
-                            <td className="px-6 py-3">Acquisition Basis (Purchase Price + Acquisition Closing Costs)</td>
-                            <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.acquisitionBasis, 'currency')}</td>
+                          <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Acquisition Basis (Purchase Price + Acquisition Closing Costs)</td>
+                            <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.acquisitionBasis, 'currency')}</td>
                           </tr>
-                          <tr className="hover:bg-bg-primary/30">
-                            <td className="px-6 py-3">Lifetime Capitalized Rehab / Improvements</td>
-                            <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.lifetimeCapitalizedRehab, 'currency')}</td>
+                          <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Lifetime Capitalized Rehab / Improvements</td>
+                            <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.lifetimeCapitalizedRehab, 'currency')}</td>
                           </tr>
-                          <tr className="hover:bg-bg-primary/30">
-                            <td className="px-6 py-3">Selling Costs (Commissions + Exit Closing Fees)</td>
-                            <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.sellingCosts, 'currency')}</td>
+                          <tr className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                            <td className="px-6 py-3" style={{ color: 'var(--color-on-surface)' }}>Selling Costs (Commissions + Exit Closing Fees)</td>
+                            <td className="px-6 py-3 text-right" style={{ color: 'var(--color-on-surface)' }}>{formatValue(taxReportData.report.sellingCosts, 'currency')}</td>
                           </tr>
-                          <tr className={`font-bold bg-bg-primary/20 ${taxReportData.report.realizedGainLoss >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
-                            <td className="px-6 py-3 pl-8">Realized Capital Gain / Loss on Sale</td>
-                            <td className="px-6 py-3 text-right">{formatValue(taxReportData.report.realizedGainLoss, 'currency')}</td>
+                          <tr className="font-bold" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                            <td className="px-6 py-3 pl-8" style={{ color: taxReportData.report.realizedGainLoss >= 0 ? 'var(--color-primary)' : 'var(--color-error)' }}>Realized Capital Gain / Loss on Sale</td>
+                            <td className="px-6 py-3 text-right" style={{ color: taxReportData.report.realizedGainLoss >= 0 ? 'var(--color-primary)' : 'var(--color-error)' }}>{formatValue(taxReportData.report.realizedGainLoss, 'currency')}</td>
                           </tr>
                         </>
                       )}

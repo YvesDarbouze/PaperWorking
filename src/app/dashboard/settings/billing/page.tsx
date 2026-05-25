@@ -1,19 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { CreditCard, CheckCircle2, AlertTriangle, Loader2, ExternalLink, Download, FileText, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════
-   Billing & Subscription Settings
-
-   Refactored to render inside the settings layout shell.
-   Four cards:
-   1. Current Plan Overview — tier + pricing + next billing
-   2. Payment Method — masked card on file
-   3. Invoice History — downloadable table
-   4. Account Details — summary info
+   Billing & Subscription Settings (Luminous Glass Terminal)
    ═══════════════════════════════════════════════════════ */
 
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
@@ -23,12 +15,12 @@ const PLAN_PRICING: Record<string, { label: string; price: string; period: strin
   'None':            { label: 'No active plan',      price: '—',    period: ''    },
 };
 
-const STATUS_BADGE: Record<string, { label: string; cls: string; Icon: typeof CheckCircle2 }> = {
-  active:   { label: 'Active',   cls: 'bg-green-50  text-green-700 border-green-200',  Icon: CheckCircle2  },
-  trialing: { label: 'Trial',    cls: 'bg-blue-50   text-blue-700  border-blue-200',   Icon: CheckCircle2  },
-  past_due: { label: 'Past Due', cls: 'bg-amber-50  text-amber-700 border-amber-200',  Icon: AlertTriangle },
-  canceled: { label: 'Canceled', cls: 'bg-red-50    text-red-700   border-red-200',     Icon: AlertTriangle },
-  inactive: { label: 'Inactive', cls: 'bg-bg-primary  text-text-secondary  border-border-accent',   Icon: AlertTriangle },
+const STATUS_BADGE: Record<string, { label: string; cls: string; iconName: string }> = {
+  active:   { label: 'Active',   cls: 'bg-[#57f1db]/10 text-[#57f1db] border-[#57f1db]/30 shadow-[0_0_15px_rgba(87,241,219,0.1)]', iconName: 'check_circle' },
+  trialing: { label: 'Trial',    cls: 'bg-[#adc6ff]/10 text-[#adc6ff] border-[#adc6ff]/30', iconName: 'check_circle' },
+  past_due: { label: 'Past Due', cls: 'bg-amber-500/10 text-amber-400 border-amber-500/30', iconName: 'warning' },
+  canceled: { label: 'Canceled', cls: 'bg-red-500/10 text-red-400 border-red-500/30', iconName: 'warning' },
+  inactive: { label: 'Inactive', cls: 'bg-white/5 text-[#8a9b9b] border-white/10', iconName: 'warning' },
 };
 
 interface BillingInvoice {
@@ -86,7 +78,6 @@ export default function BillingSettingsPage() {
 
   const planInfo    = PLAN_PRICING[plan]   ?? PLAN_PRICING['None'];
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
-  const StatusIcon  = statusBadge.Icon;
 
   // Format next billing date from actual stripe subscription data
   const nextBillingStr = currentPeriodEnd
@@ -117,34 +108,34 @@ export default function BillingSettingsPage() {
   };
 
   return (
-    <div className="dashboard-context space-y-8">
+    <div className="space-y-8 max-w-3xl">
       
       {/* ═══ Card 1: Subscription Overview ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <div className="flex items-center justify-between mb-8">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
           <div>
-            <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-1">Current Subscription</h2>
-            <p className="text-xl font-bold text-[#1A1A1A]">{planInfo.label}</p>
+            <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b] mb-1">Current Subscription</h2>
+            <p className="text-xl font-bold text-white">{planInfo.label}</p>
           </div>
           <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest border px-3 py-1 rounded-full ${statusBadge.cls}`}>
-            <StatusIcon className="w-3.5 h-3.5" />
+            <span className="material-symbols-outlined text-[12px] select-none">{statusBadge.iconName}</span>
             {statusBadge.label}
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pt-8 border-t border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pt-2">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Monthly Commitment</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b] mb-2">Monthly Commitment</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-normal text-[#1A1A1A]">{planInfo.price}</span>
-              <span className="text-sm text-[#7F7F7F]">{planInfo.period}</span>
+              <span className="text-3xl font-light text-white">{planInfo.price}</span>
+              <span className="text-sm text-[#8a9b9b]">{planInfo.period}</span>
             </div>
           </div>
           
           {plan !== 'None' && (
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-2">Next Billing Date</p>
-              <p className="text-sm font-bold text-[#1A1A1A]">{nextBillingStr}</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b] mb-2">Next Billing Date</p>
+              <p className="text-sm font-semibold text-white">{nextBillingStr}</p>
             </div>
           )}
         </div>
@@ -152,61 +143,75 @@ export default function BillingSettingsPage() {
         <button
           onClick={openPortal}
           disabled={portalLoading}
-          className="ag-button !w-auto !px-8 !py-3 !text-xs font-bold uppercase tracking-widest"
+          className="luminous-button w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#57f1db]/20 border border-[#57f1db]/30 text-[#57f1db] text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg hover:bg-[#57f1db]/30 transition-all disabled:opacity-50"
         >
           {portalLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Synchronizing…</>
+            <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
           ) : (
-            <>Manage Subscription <ExternalLink className="w-4 h-4 ml-2" /></>
+            <span className="material-symbols-outlined text-sm select-none">open_in_new</span>
           )}
+          {portalLoading ? 'Synchronizing…' : 'Manage Subscription'}
         </button>
       </section>
 
       {/* ═══ Card 2: Payment Method (Credit Card Manager) ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F] mb-6">Payment Method</h2>
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] mb-6 flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">credit_card</span>
+          Payment Method
+        </h2>
 
         {(profile?.stripeCustomerId || plan !== 'None') ? (
-          <div className="flex flex-col md:flex-row items-center gap-6 p-6 bg-gray-50 border border-border-accent rounded-[8px]">
-            <div className="w-16 h-10 bg-[#595959] rounded flex items-center justify-center shadow-md">
-              <CreditCard className="w-6 h-6 text-white" />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <p className="text-sm font-bold text-[#1A1A1A]">{cardBrand} ending in •••• {lastFour}</p>
-              <p className="text-xs text-[#7F7F7F] flex items-center justify-center md:justify-start gap-1 mt-1">
-                <Lock className="w-3 h-3" /> Secure Payment via Stripe
-              </p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-5 bg-black/30 border border-white/10 rounded-xl">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-9 bg-gradient-to-br from-gray-800 to-black rounded border border-gray-700 flex items-center justify-center shadow-sm">
+                <span className="text-white font-bold italic text-xs tracking-wider">VISA</span>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-white flex items-center gap-2">
+                  <span className="tracking-widest text-[#8a9b9b]">•••• •••• ••••</span> 
+                  <span>{lastFour}</span>
+                </p>
+                <p className="text-xs text-[#8a9b9b] flex items-center gap-1.5 mt-1">
+                  <span className="material-symbols-outlined text-xs text-[#57f1db] select-none">lock</span> 
+                  Secure Payment via Stripe
+                </p>
+              </div>
             </div>
             <button
               onClick={openPortal}
-              className="text-xs font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline px-4 py-2"
+              className="text-xs font-bold text-[#57f1db] uppercase tracking-widest hover:underline px-4 py-2"
             >
               Update Card
             </button>
           </div>
         ) : (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-[8px]">
-            <CreditCard className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3" />
-            <p className="text-sm text-[#7F7F7F] mb-4">No payment method on file.</p>
-            <Link href="/pricing" className="ag-button !w-auto !px-6 !text-xs">
+          <div className="text-center py-8 border-2 border-dashed border-white/10 rounded-2xl bg-black/10">
+            <span className="material-symbols-outlined text-3xl text-[#8a9b9b] mb-2 select-none">credit_card</span>
+            <p className="text-sm text-[#8a9b9b] mb-4">No payment method on file.</p>
+            <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 bg-[#57f1db]/20 border border-[#57f1db]/30 text-[#57f1db] text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg hover:bg-[#57f1db]/30 transition-all">
               Configure Payment
             </Link>
           </div>
         )}
 
         {portalError && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-100 text-red-600 text-xs font-bold rounded-[8px]">
+          <p className="text-xs text-red-400 bg-red-950/20 border border-red-500/30 rounded-lg px-4 py-3 mt-4 flex items-center gap-2">
+            <span className="material-symbols-outlined text-sm select-none">error</span>
             {portalError}
-          </div>
+          </p>
         )}
       </section>
 
       {/* ═══ Card 3: Billing Archive (Invoices) ═══ */}
-      <section className="bg-white border border-border-accent p-8 rounded-[8px] shadow-sm">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Billing Archive</h2>
-          {plan !== 'None' && (
-            <button className="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-widest hover:underline">
+      <section className="glass-card p-6 sm:p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
+        <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/5">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-[#57f1db] flex items-center gap-2">
+            <span className="material-symbols-outlined text-base">receipt_long</span>
+            Billing Archive
+          </h2>
+          {plan !== 'None' && invoices.length > 0 && (
+            <button className="text-[10px] font-bold text-[#57f1db] uppercase tracking-widest hover:underline">
               Download All
             </button>
           )}
@@ -214,60 +219,61 @@ export default function BillingSettingsPage() {
 
         {invoicesLoading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 className="w-5 h-5 animate-spin text-[#A5A5A5]" />
+            <span className="material-symbols-outlined animate-spin text-2xl text-[#8a9b9b] select-none">progress_activity</span>
           </div>
         ) : plan === 'None' || invoices.length === 0 ? (
           <div className="text-center py-8">
-            <FileText className="w-8 h-8 text-[#A5A5A5] mx-auto mb-3 opacity-20" />
-            <p className="text-sm text-[#7F7F7F]">No transactional history recorded.</p>
+            <span className="material-symbols-outlined text-3xl text-[#8a9b9b]/20 mb-2 select-none">description</span>
+            <p className="text-sm text-[#8a9b9b]">No transactional history recorded.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto -mx-8">
-            <table className="w-full text-left">
+          <div className="overflow-x-auto -mx-6 sm:-mx-8">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Statement</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Issue Date</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Amount</th>
-                  <th className="px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#7F7F7F]">Status</th>
-                  <th className="px-8 py-4 text-right"></th>
+                <tr className="border-b border-white/5 bg-black/20">
+                  <th className="px-6 sm:px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b]">Statement</th>
+                  <th className="px-6 sm:px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b]">Issue Date</th>
+                  <th className="px-6 sm:px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b]">Amount</th>
+                  <th className="px-6 sm:px-8 py-4 text-[10px] font-bold uppercase tracking-widest text-[#8a9b9b]">Status</th>
+                  <th className="px-6 sm:px-8 py-4 text-right"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/5">
                 {invoices.map((inv) => (
-                  <tr key={inv.id} className="group hover:bg-gray-50/50 transition-colors">
-                    <td className="px-8 py-4">
-                      <span className="flex items-center gap-2 text-sm font-bold text-[#1A1A1A]">
-                        <FileText className="w-4 h-4 text-[#A5A5A5]" />
-                        {inv.number ?? inv.id}
+                  <tr key={inv.id} className="group hover:bg-white/5 transition-colors">
+                    <td className="px-6 sm:px-8 py-4">
+                      <span className="flex items-center gap-2 text-sm font-semibold text-white">
+                        <span className="material-symbols-outlined text-[#8a9b9b] text-lg select-none">description</span>
+                        {inv.number ?? inv.id.substring(0, 12)}
                       </span>
                     </td>
-                    <td className="px-8 py-4 text-sm text-[#7F7F7F]">{inv.date}</td>
-                    <td className="px-8 py-4 text-sm font-bold text-[#1A1A1A]">{inv.amount}</td>
-                    <td className="px-8 py-4">
+                    <td className="px-6 sm:px-8 py-4 text-sm text-[#8a9b9b]">{inv.date}</td>
+                    <td className="px-6 sm:px-8 py-4 text-sm font-bold text-white">{inv.amount}</td>
+                    <td className="px-6 sm:px-8 py-4">
                       <span className={`inline-flex px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border rounded-sm ${
                         inv.status === 'paid'
-                          ? 'bg-green-50 text-green-700 border-green-100'
+                          ? 'bg-[#57f1db]/10 text-[#57f1db] border-[#57f1db]/20'
                           : inv.status === 'open'
-                          ? 'bg-amber-50 text-amber-700 border-amber-100'
-                          : 'bg-gray-50 text-[#7F7F7F] border-gray-100'
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          : 'bg-white/5 text-[#8a9b9b] border-white/5'
                       }`}>
                         {inv.status}
                       </span>
                     </td>
-                    <td className="px-8 py-4 text-right">
+                    <td className="px-6 sm:px-8 py-4 text-right">
                       {inv.pdfUrl ? (
                         <a
                           href={inv.pdfUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 text-[#A5A5A5] hover:text-[#1A1A1A] transition-colors inline-block"
+                          className="p-2 text-[#8a9b9b] hover:text-[#57f1db] transition-colors inline-block"
+                          title="Download PDF statement"
                         >
-                          <Download className="w-4 h-4" />
+                          <span className="material-symbols-outlined text-lg select-none">download</span>
                         </a>
                       ) : (
-                        <span className="p-2 text-[#CCCCCC] inline-block">
-                          <Download className="w-4 h-4" />
+                        <span className="p-2 text-white/20 inline-block">
+                          <span className="material-symbols-outlined text-lg select-none">download</span>
                         </span>
                       )}
                     </td>
@@ -281,3 +287,4 @@ export default function BillingSettingsPage() {
     </div>
   );
 }
+

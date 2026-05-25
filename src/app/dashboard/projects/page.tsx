@@ -1,414 +1,407 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import {
-  Search,
-  ChevronDown,
-  ChevronUp,
-  ChevronsUpDown,
-  FolderOpen,
-  Building2,
-  MoreHorizontal,
-  Pencil,
-  Archive,
-  ExternalLink,
-} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { Search, Plus, FolderX, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import type { Project } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects — Project Directory Table
+   /dashboard/projects — Folder Grid (Stitch Schema ed38cf94)
 
-   Industry-standard directory UI for managing project folders.
-   Features: local search, phase/status filter dropdowns,
-   sortable column headers, and navigable row hover states.
-
-   Palette: --bg-canvas, --bg-surface, --border-ui,
-            --text-primary, --text-secondary
+   Glass folder cards with phase-colored tabs, strategy badges,
+   live headline metrics, and phase progress indicators.
+   Filters: Phase, Strategy, Status, Search, Sort.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Types ── */
-type DealStatus = 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold';
-type PhaseLabel = 'Sourcing' | 'Due Diligence' | 'Closing' | 'Renovation' | 'Stabilization' | 'Disposition';
-type SortDir = 'asc' | 'desc' | null;
-type SortKey = 'projectName' | 'phase' | 'status' | 'updatedAt';
+/* ── Phase color mapping (matches Stitch schema exactly) ── */
+const PHASE_COLORS: Record<number, { border: string; bg: string; text: string; label: string }> = {
+  1: { border: 'border-l-primary',       bg: 'bg-primary/20',       text: 'text-primary',           label: 'Acquisition' },
+  2: { border: 'border-l-secondary',     bg: 'bg-secondary/20',     text: 'text-secondary',         label: 'Purchase' },
+  3: { border: 'border-l-on-surface-variant', bg: 'bg-on-surface-variant/20', text: 'text-on-surface-variant', label: 'Hold' },
+  4: { border: 'border-l-error',         bg: 'bg-error/20',         text: 'text-error',             label: 'Exit' },
+};
 
-interface ProjectRow {
-  id: string;
-  projectName: string;
-  address: string;
-  phase: PhaseLabel;
-  status: DealStatus;
-  updatedAt: string; // ISO date
+function getPhaseConfig(phase?: number) {
+  return PHASE_COLORS[phase ?? 1] ?? PHASE_COLORS[1];
 }
 
+/* ── Headline metric per strategy type ── */
+function getHeadlineMetric(
+  project: Project,
+  metrics: ReturnType<typeof deriveAllMetrics>
+): { label: string; value: string } {
+  const strategy = project.strategyType;
+  const fin = project.financials;
 
-const ALL_PHASES: PhaseLabel[] = ['Sourcing', 'Due Diligence', 'Closing', 'Renovation', 'Stabilization', 'Disposition'];
-const ALL_STATUSES: DealStatus[] = ['Active', 'Lead', 'Under Contract', 'Renovating', 'Listed', 'Sold'];
+  if (strategy === 'Sell' || strategy === 'Fix & Flip') {
+    // For flips: show estimated ROI
+    const totalInvested = metrics.totalCashInvested || 1;
+    const arv = fin?.estimatedCurrentValue ?? fin?.estimatedARV ?? fin?.arv ?? 0;
+    const roi = totalInvested > 0 ? ((arv - totalInvested) / totalInvested) * 100 : 0;
+    return { label: 'Est. ROI', value: `${roi.toFixed(0)}%` };
+  }
 
-/* ── Status badge color map ── */
-function statusBadgeStyle(status: DealStatus): string {
-  const map: Record<DealStatus, string> = {
-    Active:           'bg-green-50 text-green-700',
-    Lead:             'bg-slate-100 text-slate-600',
-    'Under Contract': 'bg-amber-50 text-amber-700',
-    Renovating:       'bg-orange-50 text-orange-700',
-    Listed:           'bg-sky-50 text-sky-700',
-    Sold:             'bg-emerald-50 text-emerald-700',
+  if (strategy === 'Rent' || strategy === 'Buy & Hold') {
+    // For rentals: show Cash-on-Cash or Net Yield
+    const coc = metrics.cashOnCashReturn ?? 0;
+    return { label: 'Net Yield', value: `${(coc * 100).toFixed(1)}%` };
+  }
+
+  // Fallback: show Cap Rate
+  const capRate = metrics.capRate ?? 0;
+  return { label: 'Cap Rate', value: `${(capRate * 100).toFixed(1)}%` };
+}
+
+/* ── Phase progress estimation ── */
+function getPhaseProgress(project: Project): number {
+  const phase = project.currentPhase ?? 1;
+  const status = project.status;
+
+  // Status-based progress within phase
+  if (status === 'Sold' || status === 'closed_won') return 100;
+  if (status === 'Listed') return 85;
+  if (status === 'Renovating') return 40;
+  if (status === 'Under Contract') return 65;
+  if (status === 'Lead') return 15;
+
+  // Phase-based baseline progress
+  const baseProgress: Record<number, number> = { 1: 25, 2: 50, 3: 70, 4: 90 };
+  return baseProgress[phase] ?? 30;
+}
+
+/* ── Format currency ── */
+function formatCurrency(value: number): string {
+  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(1)}k`;
+  return `$${value.toFixed(0)}`;
+}
+
+/* ── Strategy display label ── */
+function getStrategyLabel(strategy?: string): string {
+  const map: Record<string, string> = {
+    'Sell': 'FLIP',
+    'Fix & Flip': 'FLIP',
+    'Rent': 'RENTAL',
+    'Buy & Hold': 'BRRRR',
   };
-  return map[status] ?? 'bg-gray-100 text-gray-600';
+  return map[strategy ?? ''] ?? 'MIXED';
 }
 
-/* ── Relative date formatter ── */
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - d.getTime();
-  const diffDays = Math.floor(diffMs / 86_400_000);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+/* ── Extract state abbreviation from address ── */
+function getStateFromAddress(address: string): string {
+  // Try to match ", ST " or ", ST\d" pattern
+  const match = address.match(/,\s*([A-Z]{2})\s/);
+  if (match) return match[1];
+  // Try last two-letter word before zip
+  const parts = address.split(/\s+/);
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (/^[A-Z]{2}$/.test(parts[i])) return parts[i];
+  }
+  return '';
 }
 
-/* ── Filter Dropdown ── */
-function FilterDropdown<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
+/* ══════════════════════════════════════════
+   FolderCard — Single project card
+   Schema: glass-card + folder tab + phase border
+   ══════════════════════════════════════════ */
+function FolderCard({
+  project,
+  onClick,
 }: {
-  label: string;
-  options: T[];
-  value: T | 'all';
-  onChange: (v: T | 'all') => void;
+  project: Project;
+  onClick: () => void;
 }) {
+  const phaseConfig = getPhaseConfig(project.currentPhase);
+  const metrics = useMemo(
+    () =>
+      deriveAllMetrics(
+        project.financials,
+        project.financials?.estimatedCurrentValue,
+        project.strategyType,
+        project.currentPhase,
+        project.createdAt
+      ),
+    [project]
+  );
+  const headlineMetric = getHeadlineMetric(project, metrics);
+  const ownership = project.financials?.ownershipPercentage ?? 100;
+  const progress = getPhaseProgress(project);
+  const stateAbbr = getStateFromAddress(project.address);
+  const strategyLabel = getStrategyLabel(project.strategyType);
+
   return (
-    <div className="relative">
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value as T | 'all')}
-        aria-label={label}
-        className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-xs font-medium cursor-pointer transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
-        style={{
-          background: 'var(--bg-surface)',
-          border: '1px solid var(--border-ui)',
-          color: 'var(--text-primary)',
-        }}
-      >
-        <option value="all">{label}</option>
-        {options.map((o) => (
-          <option key={o} value={o}>{o}</option>
-        ))}
-      </select>
-      <ChevronDown
-        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none"
-        style={{ color: 'var(--text-secondary)' }}
-        aria-hidden="true"
+    <div
+      className="group relative flex flex-col transition-transform duration-300 hover:-translate-y-2 cursor-pointer"
+      onClick={onClick}
+      role="link"
+      tabIndex={0}
+      aria-label={`View project: ${project.propertyName}`}
+    >
+      {/* Folder Tab */}
+      <div
+        className={`h-8 w-32 ${phaseConfig.bg} rounded-t-lg border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
+        style={{ clipPath: 'polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%)' }}
       />
+
+      {/* Card Body */}
+      <div className={`glass-card rounded-xl p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
+        {/* Phase Badge — top right */}
+        <div className="absolute top-0 right-0 p-4">
+          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 rounded-full text-[12px] font-medium tracking-widest uppercase`}>
+            {phaseConfig.label}
+          </span>
+        </div>
+
+        {/* Property Name + Tags */}
+        <div className="flex items-start justify-between mt-4">
+          <div>
+            <h3 className={`text-[24px] leading-[32px] font-semibold text-on-background group-hover:${phaseConfig.text.replace('text-', '')} transition-colors`}>
+              {project.propertyName}
+            </h3>
+            <div className="flex gap-2 mt-2">
+              <span className="bg-white/5 text-on-surface-variant border border-white/10 px-2 py-0.5 rounded text-[12px] font-medium tracking-[0.05em] uppercase">
+                {strategyLabel}
+              </span>
+              {stateAbbr && (
+                <span className="bg-white/5 text-on-surface-variant border border-white/10 px-2 py-0.5 rounded text-[12px] font-medium tracking-[0.05em] uppercase">
+                  {stateAbbr}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* 2-col Metric Grid */}
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="p-3 rounded-lg bg-white/5 border border-white/5">
+            <p className="text-[12px] font-medium tracking-[0.05em] text-on-surface-variant uppercase">
+              Equity
+            </p>
+            <p className={`text-[24px] leading-[32px] font-semibold ${phaseConfig.text}`}>
+              {ownership}%
+            </p>
+          </div>
+          <div className="p-3 rounded-lg bg-white/5 border border-white/5">
+            <p className="text-[12px] font-medium tracking-[0.05em] text-on-surface-variant uppercase">
+              {headlineMetric.label}
+            </p>
+            <p className={`text-[24px] leading-[32px] font-semibold ${phaseConfig.text}`}>
+              {headlineMetric.value}
+            </p>
+          </div>
+        </div>
+
+        {/* Phase Progress Bar */}
+        <div className="space-y-2 mt-2">
+          <div className="flex justify-between text-[12px] font-medium tracking-[0.05em]">
+            <span className="text-on-surface-variant">Phase Progress</span>
+            <span className={phaseConfig.text}>{progress}%</span>
+          </div>
+          <div className="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+            <div
+              className={`h-full ${phaseConfig.border.replace('border-l-', 'bg-')} luminous-glow transition-all duration-500`}
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ── Sort icon ── */
-function SortIcon({ dir }: { dir: SortDir }) {
-  if (dir === 'asc') return <ChevronUp className="w-3 h-3 ml-1" />;
-  if (dir === 'desc') return <ChevronDown className="w-3 h-3 ml-1" />;
-  return <ChevronsUpDown className="w-3 h-3 ml-1 opacity-30" />;
-}
-
 /* ══════════════════════════════════════════
-   ProjectsPage (default export)
+   ProjectsPage — Main Export
    ══════════════════════════════════════════ */
-
 export default function ProjectsPage() {
-  const storeProjects = useProjectStore(state => state.projects);
+  const router = useRouter();
+  const storeProjects = useProjectStore((state) => state.projects);
+
+  /* ── Filters ── */
   const [search, setSearch] = useState('');
-  const [phaseFilter, setPhaseFilter] = useState<PhaseLabel | 'all'>('all');
-  const [statusFilter, setStatusFilter] = useState<DealStatus | 'all'>('all');
-  const [sortKey, setSortKey] = useState<SortKey | null>(null);
-  const [sortDir, setSortDir] = useState<SortDir>(null);
-  const [openRowMenuId, setOpenRowMenuId] = useState<string | null>(null);
+  const [phaseFilter, setPhaseFilter] = useState<string>('');
+  const [strategyFilter, setStrategyFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('active');
+  const [sortBy, setSortBy] = useState<string>('recent');
 
-  const PHASE_MAP: Record<string, PhaseLabel> = {
-    'Phase 1: Find & Fund':    'Sourcing',
-    'Phase 2: Acquisition':    'Due Diligence',
-    'Phase 3: Holding & Rehab': 'Renovation',
-    'Phase 4: Closing & Exit': 'Disposition',
-  };
-
-  const projectRows: ProjectRow[] = useMemo(() =>
-    storeProjects.map(p => ({
-      id: p.id,
-      projectName: p.propertyName,
-      address: p.address,
-      phase: (p.phaseStatus ? (PHASE_MAP[p.phaseStatus] ?? 'Sourcing') : 'Sourcing'),
-      status: (p.status as DealStatus) ?? 'Active',
-      updatedAt: p.updatedAt instanceof Date ? p.updatedAt.toISOString() : String(p.updatedAt ?? ''),
-    })),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [storeProjects]
-  );
-
-  /* Toggle sort on column click */
-  const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : d === 'desc' ? null : 'asc'));
-      if (sortDir === 'desc') setSortKey(null);
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-  };
-
-  /* Filtered + sorted data */
-  const rows = useMemo(() => {
-    let data = [...projectRows];
+  /* ── Filtered + sorted data ── */
+  const filteredProjects = useMemo(() => {
+    let data = [...storeProjects];
 
     // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       data = data.filter(
         (p) =>
-          p.projectName.toLowerCase().includes(q) ||
+          p.propertyName.toLowerCase().includes(q) ||
           p.address.toLowerCase().includes(q)
       );
     }
 
-    // Filters
-    if (phaseFilter !== 'all') data = data.filter((p) => p.phase === phaseFilter);
-    if (statusFilter !== 'all') data = data.filter((p) => p.status === statusFilter);
+    // Phase filter
+    if (phaseFilter) {
+      const phaseNum = parseInt(phaseFilter);
+      data = data.filter((p) => (p.currentPhase ?? 1) === phaseNum);
+    }
+
+    // Strategy filter
+    if (strategyFilter) {
+      const map: Record<string, string[]> = {
+        flip: ['Sell', 'Fix & Flip'],
+        rental: ['Rent', 'Buy & Hold'],
+        brrrr: ['Buy & Hold'],
+      };
+      const allowedStrategies = map[strategyFilter] ?? [];
+      data = data.filter((p) => allowedStrategies.includes(p.strategyType ?? ''));
+    }
+
+    // Status filter
+    if (statusFilter === 'active') {
+      data = data.filter((p) => !['Sold', 'closed_won', 'closed_lost'].includes(p.status));
+    } else if (statusFilter === 'closed') {
+      data = data.filter((p) => ['Sold', 'closed_won', 'closed_lost'].includes(p.status));
+    } else if (statusFilter === 'pending') {
+      data = data.filter((p) => ['Lead', 'Under Contract'].includes(p.status));
+    }
 
     // Sort
-    if (sortKey && sortDir) {
+    if (sortBy === 'recent') {
       data.sort((a, b) => {
-        let cmp = 0;
-        if (sortKey === 'updatedAt') {
-          cmp = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
-        } else {
-          cmp = a[sortKey].localeCompare(b[sortKey]);
-        }
-        return sortDir === 'desc' ? -cmp : cmp;
+        const aDate = a.updatedAt instanceof Date ? a.updatedAt.getTime() : new Date(a.updatedAt).getTime();
+        const bDate = b.updatedAt instanceof Date ? b.updatedAt.getTime() : new Date(b.updatedAt).getTime();
+        return bDate - aDate;
       });
+    } else if (sortBy === 'name') {
+      data.sort((a, b) => a.propertyName.localeCompare(b.propertyName));
+    } else if (sortBy === 'phase') {
+      data.sort((a, b) => (a.currentPhase ?? 1) - (b.currentPhase ?? 1));
     }
 
     return data;
-  }, [search, phaseFilter, statusFilter, sortKey, sortDir]);
+  }, [storeProjects, search, phaseFilter, strategyFilter, statusFilter, sortBy]);
 
-  /* Column definitions */
-  const columns: { key: SortKey; label: string; className: string }[] = [
-    { key: 'projectName', label: 'Project Name',  className: 'w-[40%]' },
-    { key: 'phase',       label: 'Current Phase',  className: 'w-[20%]' },
-    { key: 'status',      label: 'Status',          className: 'w-[20%]' },
-    { key: 'updatedAt',   label: 'Last Updated',    className: 'w-[20%]' },
-  ];
+  const handleCreateProject = () => router.push('/dashboard/projects/new');
+  const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}`);
 
   return (
-    <div className="min-h-full px-8 py-8 overflow-y-auto" style={{ background: 'var(--bg-canvas)' }}>
-
-      {/* ── Page Header ── */}
-      <header className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: '#1A1A1A' }}>
-            <FolderOpen className="w-5 h-5" style={{ color: '#FFFFFF' }} aria-hidden="true" />
-          </div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
-            Deal Management
-          </p>
-        </div>
-        <h1 className="text-4xl font-extralight tracking-tight leading-none" style={{ color: 'var(--text-primary)' }}>
-          Projects
-        </h1>
-        <p className="text-sm mt-3 font-normal tracking-tight" style={{ color: 'var(--text-secondary)' }}>
-          Browse, filter, and manage all deals across your portfolio
-        </p>
-      </header>
-
-      {/* ── Controls: Search + Filters ── */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[220px] max-w-md">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-            style={{ color: 'var(--text-secondary)' }}
-            aria-hidden="true"
-          />
+    <div className="min-h-full pb-28 md:pb-0">
+      {/* ── Header & Search ── */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="flex-1 max-w-2xl relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search projects…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-lg text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-ui)',
-              color: 'var(--text-primary)',
-            }}
+            placeholder="Search properties by address or strategy..."
+            className="w-full bg-surface-container-high/50 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-[16px] leading-[24px] font-normal focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all backdrop-blur-md text-on-surface placeholder:text-on-surface-variant"
           />
         </div>
-
-        <FilterDropdown label="Filter by Phase" options={ALL_PHASES} value={phaseFilter} onChange={setPhaseFilter} />
-        <FilterDropdown label="Filter by Status" options={ALL_STATUSES} value={statusFilter} onChange={setStatusFilter} />
-
-        {/* Result count */}
-        <span className="text-[10px] font-medium ml-auto tabular-nums" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>
-          {rows.length} project{rows.length !== 1 ? 's' : ''}
-        </span>
+        <button
+          onClick={handleCreateProject}
+          className="flex items-center justify-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl text-[14px] leading-[16px] tracking-[0.02em] font-semibold luminous-glow hover:scale-[1.02] active:scale-95 transition-all duration-200"
+        >
+          <Plus className="w-5 h-5" />
+          CREATE PROJECT
+        </button>
       </div>
 
-      {/* ── Table ── */}
-      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
-        <table className="w-full text-left">
-          {/* Head */}
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-ui)' }}>
-              {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className={`${col.className} px-5 py-3.5 cursor-pointer select-none transition-colors duration-150`}
-                  style={{ color: 'var(--text-secondary)' }}
-                  onClick={() => handleSort(col.key)}
-                  aria-sort={sortKey === col.key ? (sortDir === 'asc' ? 'ascending' : sortDir === 'desc' ? 'descending' : 'none') : 'none'}
-                >
-                  <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-[0.15em]">
-                    {col.label}
-                    <SortIcon dir={sortKey === col.key ? sortDir : null} />
-                  </span>
-                </th>
-              ))}
-              {/* Actions column — no sort */}
-              <th className="w-12 px-3 py-3.5" aria-label="Row actions" />
-            </tr>
-          </thead>
+      {/* ── Filter Bar ── */}
+      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 bg-surface-container-lowest/40 rounded-2xl backdrop-blur-sm border border-white/5">
+        <div className="flex items-center px-4 py-2 gap-2 text-on-surface-variant border-r border-white/10">
+          <SlidersHorizontal className="w-5 h-5" />
+          <span className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold uppercase">Filters</span>
+        </div>
 
-          {/* Body */}
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-5 py-16 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: 'var(--bg-canvas)' }}>
-                      <FolderOpen className="w-5 h-5" style={{ color: 'var(--text-secondary)', opacity: 0.4 }} aria-hidden="true" />
-                    </div>
-                    <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: 'var(--text-secondary)' }}>
-                      No projects found
-                    </p>
-                    <p className="text-[10px] max-w-[200px] leading-relaxed" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
-                      Try adjusting your search or filters
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              rows.map((row, idx) => (
-                <tr
-                  key={row.id}
-                  className="group cursor-pointer transition-colors duration-150"
-                  style={{ borderBottom: idx < rows.length - 1 ? '1px solid var(--border-ui)' : undefined }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-canvas)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-                  onClick={() => { /* placeholder: navigate to /dashboard/projects/[id] */ }}
-                  role="link"
-                  tabIndex={0}
-                  aria-label={`View project: ${row.projectName}`}
-                >
-                  {/* Project Name + Address */}
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200 group-hover:bg-black group-hover:text-white"
-                        style={{ background: 'var(--bg-canvas)', color: 'var(--text-secondary)' }}
-                      >
-                        <Building2 className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                          {row.projectName}
-                        </p>
-                        <p className="text-[10px] truncate mt-0.5" style={{ color: 'var(--text-secondary)', opacity: 0.6 }}>
-                          {row.address}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
+        {/* Phase Filter */}
+        <select
+          value={phaseFilter}
+          onChange={(e) => setPhaseFilter(e.target.value)}
+          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+        >
+          <option value="">Phase: All</option>
+          <option value="1">Acquisition</option>
+          <option value="2">Purchase</option>
+          <option value="3">Hold</option>
+          <option value="4">Exit</option>
+        </select>
 
-                  {/* Phase */}
-                  <td className="px-5 py-4">
-                    <span className="text-xs font-medium" style={{ color: 'var(--text-primary)' }}>
-                      {row.phase}
-                    </span>
-                  </td>
+        {/* Strategy Filter */}
+        <select
+          value={strategyFilter}
+          onChange={(e) => setStrategyFilter(e.target.value)}
+          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+        >
+          <option value="">Strategy: All</option>
+          <option value="flip">Flip</option>
+          <option value="rental">Rental</option>
+          <option value="brrrr">BRRRR</option>
+        </select>
 
-                  {/* Status Badge */}
-                  <td className="px-5 py-4">
-                    <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded ${statusBadgeStyle(row.status)}`}>
-                      {row.status}
-                    </span>
-                  </td>
+        {/* Status Filter */}
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+        >
+          <option value="active">Status: Active</option>
+          <option value="">Status: All</option>
+          <option value="closed">Closed</option>
+          <option value="pending">Pending</option>
+        </select>
 
-                  {/* Last Updated */}
-                  <td className="px-5 py-4">
-                    <span className="text-xs font-medium tabular-nums" style={{ color: 'var(--text-secondary)' }}>
-                      {formatDate(row.updatedAt)}
-                    </span>
-                  </td>
-
-                  {/* ── Triple-dot actions ── */}
-                  <td className="px-3 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                    <div className="relative inline-block">
-                      <button
-                        onClick={() => setOpenRowMenuId(openRowMenuId === row.id ? null : row.id)}
-                        className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-black/5 transition-all"
-                        style={{ color: 'var(--text-secondary)' }}
-                        aria-label={`Actions for ${row.projectName}`}
-                      >
-                        <MoreHorizontal className="w-4 h-4" strokeWidth={2} />
-                      </button>
-
-                      {openRowMenuId === row.id && (
-                        <>
-                          <div className="fixed inset-0 z-10" onClick={() => setOpenRowMenuId(null)} />
-                          <div
-                            className="absolute right-0 top-full mt-1 w-44 z-20 rounded-lg py-1 shadow-lg"
-                            style={{
-                              background: 'var(--bg-surface)',
-                              border: '1px solid var(--border-ui)',
-                            }}
-                          >
-                            <button
-                              onClick={() => setOpenRowMenuId(null)}
-                              className="flex items-center gap-2.5 w-full px-3 py-2 text-xs hover:bg-bg-primary transition-colors"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" strokeWidth={2} style={{ color: 'var(--text-secondary)' }} />
-                              Open Project
-                            </button>
-                            <button
-                              onClick={() => setOpenRowMenuId(null)}
-                              className="flex items-center gap-2.5 w-full px-3 py-2 text-xs hover:bg-bg-primary transition-colors"
-                              style={{ color: 'var(--text-primary)' }}
-                            >
-                              <Pencil className="w-3.5 h-3.5" strokeWidth={2} style={{ color: 'var(--text-secondary)' }} />
-                              Edit Details
-                            </button>
-                            <div className="my-1" style={{ borderTop: '1px solid var(--border-ui)' }} />
-                            <button
-                              onClick={() => setOpenRowMenuId(null)}
-                              className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-text-secondary hover:bg-bg-primary transition-colors"
-                            >
-                              <Archive className="w-3.5 h-3.5" strokeWidth={2} />
-                              Archive
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        {/* Sort */}
+        <div className="ml-auto hidden sm:flex items-center gap-2 text-on-surface-variant pr-4">
+          <span className="text-[12px] font-medium tracking-[0.05em] uppercase">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-transparent border-none text-[12px] font-medium tracking-[0.05em] uppercase text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+          >
+            <option value="recent">Recent</option>
+            <option value="name">Name</option>
+            <option value="phase">Phase</option>
+          </select>
+        </div>
       </div>
+
+      {/* ── Project Grid ── */}
+      {filteredProjects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-8">
+          {filteredProjects.map((project) => (
+            <FolderCard
+              key={project.id}
+              project={project}
+              onClick={() => handleOpenProject(project.id)}
+            />
+          ))}
+        </div>
+      ) : (
+        /* ── Empty State (Stitch schema) ── */
+        <div className="flex flex-col items-center justify-center py-20 px-8 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center mb-12">
+          <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
+            <FolderX className="w-10 h-10 text-on-surface-variant" />
+          </div>
+          <h2 className="text-[24px] leading-[32px] font-semibold text-on-background mb-2">
+            No projects found
+          </h2>
+          <p className="text-[16px] leading-[24px] font-normal text-on-surface-variant max-w-sm mb-8">
+            It looks like your search didn&apos;t match any properties. Source your first deal or adjust your filters to get started.
+          </p>
+          <button
+            onClick={() => {
+              setSearch('');
+              setPhaseFilter('');
+              setStrategyFilter('');
+              setStatusFilter('active');
+            }}
+            className="bg-white/5 hover:bg-white/10 text-primary border border-primary/20 px-6 py-3 rounded-xl text-[14px] leading-[16px] tracking-[0.02em] font-semibold transition-all"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
     </div>
   );
 }

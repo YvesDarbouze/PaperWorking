@@ -7,6 +7,7 @@ import { useNotification } from '@/context/NotificationContext';
 import {
   LayoutDashboard,
   FolderOpen,
+  Store,
   Database,
   Mail,
   Users,
@@ -62,6 +63,12 @@ const WORKSPACE_ITEMS: NavItem[] = [
     label: 'Deals',
     href: '/dashboard/projects',
     icon: <FolderOpen className="w-4 h-4" />,
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    href: '/dashboard/marketplace',
+    icon: <Store className="w-4 h-4" />,
   },
   {
     id: 'data-hub',

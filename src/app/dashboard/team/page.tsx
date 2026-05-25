@@ -113,11 +113,23 @@ export default function TeamDirectoryPage() {
   };
 
   return (
-    <div className="dashboard-context max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 pt-4 pb-12">
+      {/* Floating Atmosphere Elements */}
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+      <div className="absolute bottom-[10%] left-[-10%] w-[30%] h-[30%] bg-primary/5 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--pw-black)' }}>Team Directory</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+              security
+            </span>
+            <span className="font-label-sm text-xs tracking-[0.2em] text-primary uppercase">
+              Authorization Hub
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-on-surface">Team Directory</h1>
+          <p className="text-sm text-on-surface-variant">
             Manage your internal team members and external collaborators across all projects.
           </p>
         </div>
@@ -125,7 +137,7 @@ export default function TeamDirectoryPage() {
         {isAdmin && (
           <Link 
             href="/dashboard/settings/team"
-            className="ag-button !py-2 !px-4 !text-xs"
+            className="luminous-button px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 font-label-md text-xs font-bold transition-all duration-300"
           >
             <Users className="w-4 h-4" />
             Manage Internal Seats
@@ -133,23 +145,23 @@ export default function TeamDirectoryPage() {
         )}
       </header>
 
-      {/* Data Table Container — Institutional Card (8px Radius) */}
-      <div className="bg-bg-surface border border-border-ui overflow-hidden rounded-lg shadow-sm">
+      {/* Data Table Container — Institutional Card (16px Radius, glass border) */}
+      <div className="glass-card rounded-2xl overflow-hidden border border-white/5 shadow-xl">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-bg-primary border-b border-border-ui" style={{ color: 'var(--text-secondary)' }}>
-              <tr>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Member Name</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Email</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Role</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px]">Access Level</th>
-                <th className="px-6 py-4 font-bold uppercase tracking-wider text-[10px] text-right">Actions</th>
+          <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
+            <thead>
+              <tr className="bg-white/5 font-label-sm text-[10px] font-bold text-on-surface-variant uppercase tracking-wider border-b border-white/5">
+                <th className="px-6 py-4">Member Name</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Role</th>
+                <th className="px-6 py-4">Access Level</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-ui">
+            <tbody className="divide-y divide-white/5">
               {unifiedTeam.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center" style={{ color: 'var(--text-secondary)' }}>
+                  <td colSpan={5} className="px-6 py-12 text-center text-on-surface-variant">
                     <UserCircle className="w-10 h-10 mx-auto mb-3 opacity-20" />
                     <p>No team members found.</p>
                   </td>
@@ -163,65 +175,98 @@ export default function TeamDirectoryPage() {
                     .toUpperCase()
                     .slice(0, 2) || member.email[0].toUpperCase();
 
+                  // Dynamic color and icon variables
+                  const isInternal = member.type === 'Internal';
+                  const isSuspended = member.status === 'suspended';
+                  const isInvited = member.status === 'invited';
+
                   return (
-                    <tr key={member.email} className="hover:bg-bg-primary/40 transition-colors">
+                    <tr key={member.email} className="hover:bg-white/[0.02] transition-colors">
+                      {/* Identity */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div 
-                            className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                            style={{ backgroundColor: member.type === 'Internal' ? '#0d0d0d' : '#7F7F7F' }}
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold border flex-shrink-0 transition-transform group-hover:scale-105 ${
+                              isInternal
+                                ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_10px_rgba(87,241,219,0.15)]'
+                                : 'bg-white/5 border-white/10 text-on-surface-variant'
+                            }`}
                           >
                             {initials}
                           </div>
-                          <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{member.displayName}</span>
+                          <div>
+                            <span className="font-semibold text-on-surface block">{member.displayName}</span>
+                            <span className="text-[10px] text-on-surface-variant font-mono">
+                              ID: AUTH-0{member.id.charCodeAt(member.id.length - 1) % 100 || '00'}
+                            </span>
+                          </div>
                         </div>
                       </td>
                       
-                      <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>
+                      {/* Email */}
+                      <td className="px-6 py-4 text-on-surface-variant font-mono text-xs">
                         {member.email}
                       </td>
-
+                      
+                      {/* Role */}
                       <td className="px-6 py-4">
-                        <span className="flex items-center gap-1.5 font-medium" style={{ color: 'var(--text-primary)' }}>
-                          {member.type === 'Internal' && member.role === 'Admin' && <Shield className="w-3.5 h-3.5 opacity-50" />}
+                        <span className={`inline-flex items-center gap-1.5 font-semibold text-xs ${
+                          isInternal ? 'text-primary' : 'text-on-surface-variant'
+                        }`}>
+                          {isInternal ? (
+                            <Shield className="w-3.5 h-3.5 opacity-80" />
+                          ) : (
+                            <span className="material-symbols-outlined text-[14px]">account_circle</span>
+                          )}
                           {member.role}
                         </span>
                       </td>
 
+                      {/* Access Level / Status */}
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <span 
-                            className="inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border"
-                            style={{ 
-                              backgroundColor: member.type === 'Internal' ? '#F2F2F2' : '#FFFFFF',
-                              color: member.type === 'Internal' ? '#0d0d0d' : '#7F7F7F',
-                              borderColor: 'var(--border-ui)'
-                            }}
+                            className={`inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border rounded-full ${
+                              isInternal
+                                ? 'bg-primary/10 text-primary border-primary/20'
+                                : 'bg-white/5 text-on-surface-variant border-white/10'
+                            }`}
                           >
-                            {member.type === 'Internal' ? 'Internal Team' : 'External Vendor'}
+                            {isInternal ? 'Internal Team' : 'External Vendor'}
                           </span>
-                          {member.status === 'invited' && (
-                            <span className="text-[9px] font-bold text-amber-600 bg-amber-50 px-1 rounded-sm border border-amber-100 uppercase">
+                          
+                          {isInvited && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 uppercase tracking-wider">
                               Invited
+                            </span>
+                          )}
+                          {isSuspended && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-error bg-error/10 px-2 py-0.5 rounded-full border border-error/20 uppercase tracking-wider animate-pulse">
+                              Suspended
+                            </span>
+                          )}
+                          {!isInvited && !isSuspended && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 uppercase tracking-wider">
+                              Active
                             </span>
                           )}
                         </div>
                       </td>
 
+                      {/* Actions */}
                       <td className="px-6 py-4 text-right">
                         {member.type === 'External' ? (
                           <button
                             onClick={() => handleRevokeExternalAccess(member.email)}
                             disabled={!isAdmin || revokingEmail === member.email}
-                            className="text-[10px] font-bold uppercase tracking-wider text-red-600 hover:underline disabled:opacity-30 disabled:no-underline"
+                            className="text-[10px] font-bold uppercase tracking-wider text-error hover:underline hover:opacity-90 disabled:opacity-30 disabled:no-underline transition-all"
                           >
-                            Revoke
+                            {revokingEmail === member.email ? 'Revoking...' : 'Revoke'}
                           </button>
                         ) : (
                           <Link
                             href="/dashboard/settings/team"
-                            className="text-[10px] font-bold uppercase tracking-wider hover:underline"
-                            style={{ color: 'var(--text-secondary)' }}
+                            className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary hover:underline transition-colors"
                           >
                             Manage
                           </Link>

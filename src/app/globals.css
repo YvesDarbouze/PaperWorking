@@ -91,6 +91,14 @@
   --spacing-container-padding: 20px;
   --spacing-stack-gap: 16px;
   --spacing-grid-gutter: 12px;
+  --spacing-gutter-desktop: 24px;
+  --spacing-gutter-mobile: 16px;
+  --spacing-stack-lg: 32px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-sm: 8px;
+  --spacing-margin-mobile: 20px;
+  --spacing-margin-desktop: 40px;
+  --spacing-container-max: 1280px;
 
   /* Typography */
   --font-hanken: "Hanken Grotesk", system-ui, sans-serif;
@@ -107,6 +115,10 @@
   --text-headline-lg-mobile-weight: 600;
   --text-headline-lg-mobile-line-height: 36px;
 
+  --text-headline-md-size: 24px;
+  --text-headline-md-weight: 600;
+  --text-headline-md-line-height: 32px;
+
   --text-title-md-size: 20px;
   --text-title-md-weight: 500;
   --text-title-md-line-height: 28px;
@@ -115,9 +127,17 @@
   --text-body-lg-weight: 400;
   --text-body-lg-line-height: 24px;
 
+  --text-body-md-size: 15px;
+  --text-body-md-weight: 400;
+  --text-body-md-line-height: 22px;
+
   --text-body-sm-size: 14px;
   --text-body-sm-weight: 400;
   --text-body-sm-line-height: 20px;
+
+  --text-label-md-size: 14px;
+  --text-label-md-weight: 600;
+  --text-label-md-line-height: 20px;
 
   --text-label-caps-size: 12px;
   --text-label-caps-weight: 600;
@@ -267,27 +287,44 @@
   --font-label-md: var(--font-mono);
   --font-label-sm: var(--font-mono);
 
-  /* Font Sizes */
-  --font-size-headline-xl: 48px;
-  --font-size-headline-lg: 32px;
-  --font-size-headline-md: 24px;
-  --font-size-headline-sm: 18px;
-  --font-size-body-lg: 18px;
-  --font-size-body-md: 16px;
-  --font-size-body-sm: 14px;
-  --font-size-label-md: 14px;
-  --font-size-label-sm: 12px;
+  /* Font Sizes & Coupled Line Heights */
+  --font-size-headline-xl: var(--text-display-lg-size);
+  --font-size-headline-xl--line-height: var(--text-display-lg-line-height);
 
-  /* Line Heights */
-  --line-height-headline-xl: 56px;
-  --line-height-headline-lg: 40px;
-  --line-height-headline-md: 32px;
-  --line-height-headline-sm: 24px;
-  --line-height-body-lg: 28px;
-  --line-height-body-md: 24px;
-  --line-height-body-sm: 20px;
-  --line-height-label-md: 16px;
-  --line-height-label-sm: 14px;
+  --font-size-headline-lg: var(--text-headline-lg-size);
+  --font-size-headline-lg--line-height: var(--text-headline-lg-line-height);
+
+  --font-size-headline-md: var(--text-headline-md-size);
+  --font-size-headline-md--line-height: var(--text-headline-md-line-height);
+
+  --font-size-headline-sm: var(--text-title-md-size);
+  --font-size-headline-sm--line-height: var(--text-title-md-line-height);
+
+  --font-size-body-lg: var(--text-body-lg-size);
+  --font-size-body-lg--line-height: var(--text-body-lg-line-height);
+
+  --font-size-body-md: var(--text-body-md-size);
+  --font-size-body-md--line-height: var(--text-body-md-line-height);
+
+  --font-size-body-sm: var(--text-body-sm-size);
+  --font-size-body-sm--line-height: var(--text-body-sm-line-height);
+
+  --font-size-label-md: var(--text-label-md-size);
+  --font-size-label-md--line-height: var(--text-label-md-line-height);
+
+  --font-size-label-sm: var(--text-label-caps-size);
+  --font-size-label-sm--line-height: var(--text-label-caps-line-height);
+
+  /* Line Heights (Legacy compatibility) */
+  --line-height-headline-xl: var(--text-display-lg-line-height);
+  --line-height-headline-lg: var(--text-headline-lg-line-height);
+  --line-height-headline-md: var(--text-headline-md-line-height);
+  --line-height-headline-sm: var(--text-title-md-line-height);
+  --line-height-body-lg: var(--text-body-lg-line-height);
+  --line-height-body-md: var(--text-body-md-line-height);
+  --line-height-body-sm: var(--text-body-sm-line-height);
+  --line-height-label-md: var(--text-label-md-line-height);
+  --line-height-label-sm: var(--text-label-caps-line-height);
   
   /* ─── Luminous Glass Radius ─── */
   --radius-sm: 0.25rem;
@@ -303,14 +340,14 @@
   --spacing-stack-gap: var(--spacing-stack-gap);
   --spacing-grid-gutter: var(--spacing-grid-gutter);
 
-  --spacing-gutter-desktop: 24px;
-  --spacing-gutter-mobile: 16px;
-  --spacing-stack-lg: 32px;
-  --spacing-stack-md: 16px;
-  --spacing-stack-sm: 8px;
-  --spacing-margin-mobile: 20px;
-  --spacing-margin-desktop: 40px;
-  --spacing-container-max: 1280px;
+  --spacing-gutter-desktop: var(--spacing-gutter-desktop);
+  --spacing-gutter-mobile: var(--spacing-gutter-mobile);
+  --spacing-stack-lg: var(--spacing-stack-lg);
+  --spacing-stack-md: var(--spacing-stack-md);
+  --spacing-stack-sm: var(--spacing-stack-sm);
+  --spacing-margin-mobile: var(--spacing-margin-mobile);
+  --spacing-margin-desktop: var(--spacing-margin-desktop);
+  --spacing-container-max: var(--spacing-container-max);
 }
 
 /* ═══════════════════════════════════════════════════════

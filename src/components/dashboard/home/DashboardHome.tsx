@@ -199,7 +199,7 @@ export default function DashboardHome() {
   // State 2 (free): enforce empty-state teaser — widgets show "—" / no data.
   // State 3 (paid): full live portfolio.
   // State 4 (guest): widgets receive empty; invited projects shown separately.
-  const portfolioProjects: Project[] = isPaid ? allProjects : [];
+  const portfolioProjects: Project[] = useMemo(() => isPaid ? allProjects : [], [isPaid, allProjects]);
 
   // Derived shapes for portfolio metric charts
   const phaseDeals = useMemo(

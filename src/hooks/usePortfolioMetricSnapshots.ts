@@ -3,7 +3,7 @@ import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { useTenant } from '@/context/TenantContext';
-import { PropertyMetricSnapshot } from '@/types/schema';
+import { PropertyMetricSnapshot, Project } from '@/types/schema';
 
 export interface PortfolioMetricSnapshot {
   organizationId: string;
@@ -42,9 +42,13 @@ export interface PortfolioMetricSnapshot {
  * for the current authenticated user's organization.
  * 
  * @param periodType - Optional filter for the type of period ('monthly' | 'quarterly' | 'annual').
+ * @param projects - Optional list of projects used to apply ownershipPercentage scaling for 'myShare' scope.
+ * @param scope - Optional scope ('property' | 'myShare').
  */
 export function usePortfolioMetricSnapshots(
-  periodType?: 'monthly' | 'quarterly' | 'annual'
+  periodType?: 'monthly' | 'quarterly' | 'annual',
+  projects?: Project[],
+  scope?: 'property' | 'myShare'
 ) {
   const { profile } = useAuth();
   const { activeTenantId } = useTenant();
@@ -82,9 +86,15 @@ export function usePortfolioMetricSnapshots(
         });
 
         // Filter by periodType in memory
-        const filteredDocs = periodType
+        let filteredDocs = periodType
           ? rawDocs.filter((doc) => doc.periodType === periodType)
           : rawDocs;
+
+        // Filter by active projects if provided
+        if (projects) {
+          const projectIds = new Set(projects.map((p) => p.id));
+          filteredDocs = filteredDocs.filter((doc) => projectIds.has(doc.projectId));
+        }
 
         // Group snapshots by period
         const groups: Record<string, PropertyMetricSnapshot[]> = {};
@@ -107,7 +117,14 @@ export function usePortfolioMetricSnapshots(
             for (const s of groupSnapshots) {
               const val = s[field];
               if (val !== null && typeof val === 'number') {
-                sum += val;
+                let factor = 1;
+                if (scope === 'myShare' && projects) {
+                  const proj = projects.find(p => p.id === s.projectId);
+                  if (proj) {
+                    factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                  }
+                }
+                sum += val * factor;
                 hasValue = true;
               }
             }
@@ -147,8 +164,15 @@ export function usePortfolioMetricSnapshots(
           let hasCapRate = false;
           for (const s of groupSnapshots) {
             if (s.noi !== null && s.propertyValue !== null) {
-              capRateNoiSum += s.noi;
-              capRateValSum += s.propertyValue;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              capRateNoiSum += s.noi * factor;
+              capRateValSum += s.propertyValue * factor;
               hasCapRate = true;
             }
           }
@@ -160,8 +184,15 @@ export function usePortfolioMetricSnapshots(
           let hasCoc = false;
           for (const s of groupSnapshots) {
             if (s.annualCashFlow !== null && s.totalCashInvested !== null) {
-              cocCashFlowSum += s.annualCashFlow;
-              cocInvestedSum += s.totalCashInvested;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              cocCashFlowSum += s.annualCashFlow * factor;
+              cocInvestedSum += s.totalCashInvested * factor;
               hasCoc = true;
             }
           }
@@ -173,8 +204,15 @@ export function usePortfolioMetricSnapshots(
           let hasGrm = false;
           for (const s of groupSnapshots) {
             if (s.propertyValue !== null && s.grossRentalIncome !== null) {
-              grmValSum += s.propertyValue;
-              grmRentalSum += s.grossRentalIncome;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              grmValSum += s.propertyValue * factor;
+              grmRentalSum += s.grossRentalIncome * factor;
               hasGrm = true;
             }
           }
@@ -186,8 +224,15 @@ export function usePortfolioMetricSnapshots(
           let hasDscr = false;
           for (const s of groupSnapshots) {
             if (s.noi !== null && s.annualDebtService !== null) {
-              dscrNoiSum += s.noi;
-              dscrDebtSum += s.annualDebtService;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              dscrNoiSum += s.noi * factor;
+              dscrDebtSum += s.annualDebtService * factor;
               hasDscr = true;
             }
           }
@@ -199,8 +244,15 @@ export function usePortfolioMetricSnapshots(
           let hasLtv = false;
           for (const s of groupSnapshots) {
             if (s.loanAmount !== null && s.propertyValue !== null) {
-              ltvLoanSum += s.loanAmount;
-              ltvValSum += s.propertyValue;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              ltvLoanSum += s.loanAmount * factor;
+              ltvValSum += s.propertyValue * factor;
               hasLtv = true;
             }
           }
@@ -212,8 +264,15 @@ export function usePortfolioMetricSnapshots(
           let hasOer = false;
           for (const s of groupSnapshots) {
             if (s.totalOperatingExpenses !== null && s.grossRentalIncome !== null) {
-              oerExpensesSum += s.totalOperatingExpenses;
-              oerRentalSum += s.grossRentalIncome;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              oerExpensesSum += s.totalOperatingExpenses * factor;
+              oerRentalSum += s.grossRentalIncome * factor;
               hasOer = true;
             }
           }
@@ -227,8 +286,15 @@ export function usePortfolioMetricSnapshots(
           let hasOccupancy = false;
           for (const s of groupSnapshots) {
             if (s.occupiedUnits !== null && s.numberOfUnits !== null) {
-              occupiedUnitsSum += s.occupiedUnits;
-              totalUnitsSum += s.numberOfUnits;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              occupiedUnitsSum += s.occupiedUnits * factor;
+              totalUnitsSum += s.numberOfUnits * factor;
               hasOccupancy = true;
             }
           }
@@ -252,8 +318,15 @@ export function usePortfolioMetricSnapshots(
           let hasIrr = false;
           for (const s of groupSnapshots) {
             if (s.irr !== null && s.totalCashInvested !== null) {
-              irrWeightedSum += s.irr * s.totalCashInvested;
-              irrInvestedSum += s.totalCashInvested;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              irrWeightedSum += s.irr * (s.totalCashInvested * factor);
+              irrInvestedSum += s.totalCashInvested * factor;
               hasIrr = true;
             }
           }
@@ -266,8 +339,15 @@ export function usePortfolioMetricSnapshots(
           for (const s of groupSnapshots) {
             const app = (s as any).appreciation;
             if (app !== null && app !== undefined && s.propertyValue !== null) {
-              appreciationWeightedSum += app * s.propertyValue;
-              appreciationValSum += s.propertyValue;
+              let factor = 1;
+              if (scope === 'myShare' && projects) {
+                const proj = projects.find(p => p.id === s.projectId);
+                if (proj) {
+                  factor = ((proj.financials as any)?.ownershipPercentage ?? 100) / 100;
+                }
+              }
+              appreciationWeightedSum += app * (s.propertyValue * factor);
+              appreciationValSum += s.propertyValue * factor;
               hasAppreciation = true;
             }
           }
@@ -323,7 +403,7 @@ export function usePortfolioMetricSnapshots(
     );
 
     return () => unsubscribe();
-  }, [activeTenantId, periodType]);
+  }, [activeTenantId, periodType, projects, scope]);
 
   return { snapshots, loading, error };
 }

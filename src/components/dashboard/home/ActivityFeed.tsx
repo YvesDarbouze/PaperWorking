@@ -5,6 +5,7 @@ import { collection, query, orderBy, limit, onSnapshot, Timestamp } from 'fireba
 import { db } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { useTenant } from '@/context/TenantContext';
+import { Terminal } from 'lucide-react';
 
 export interface ActivityEvent {
   id: string;
@@ -18,7 +19,40 @@ export interface ActivityEvent {
 }
 
 function formatTimeOnly(date: Date): string {
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+}
+
+function getLogColor(type: string, description: string): string {
+  const desc = description.toLowerCase();
+  
+  if (
+    type === 'error' ||
+    desc.includes('error') ||
+    desc.includes('fail') ||
+    desc.includes('critical') ||
+    desc.includes('unauthorized') ||
+    desc.includes('denied')
+  ) {
+    return 'var(--color-error)';
+  }
+  
+  if (
+    type === 'ledger_item' ||
+    type === 'warning' ||
+    desc.includes('warning') ||
+    desc.includes('warn') ||
+    desc.includes('threshold') ||
+    desc.includes('ledger')
+  ) {
+    return 'var(--color-tertiary)';
+  }
+  
+  return 'var(--color-primary)';
 }
 
 export default function ActivityFeed() {
@@ -66,16 +100,20 @@ export default function ActivityFeed() {
 
   if (loading) {
     return (
-      <section className="space-y-3">
-        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
-        <div className="space-y-3 px-1 animate-pulse">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex items-start gap-4">
-              <div className="w-1 h-1 rounded-full bg-white/20 mt-2"></div>
-              <div className="min-w-0 border-l border-white/5 pl-4 pb-2 w-full">
-                <div className="h-3 w-3/4 rounded bg-white/10 mb-2"></div>
-                <div className="h-2 w-1/4 rounded bg-white/5"></div>
-              </div>
+      <section className="p-6 flex flex-col h-full min-h-[350px]">
+        <div className="flex items-center gap-2 mb-4 text-on-surface border-b border-white/5 pb-2">
+          <Terminal className="w-4 h-4 text-primary" style={{ color: 'var(--color-primary)' }} />
+          <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[11px] font-bold">
+            Terminal Audit
+          </h3>
+        </div>
+        <div className="flex-1 font-mono text-[11px] leading-relaxed overflow-y-auto scrollbar-hide text-on-surface-variant/80 space-y-2 animate-pulse">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex gap-3 items-start">
+              <span className="font-bold shrink-0 opacity-40" style={{ color: 'var(--color-primary)' }}>
+                [--:--:--]
+              </span>
+              <span className="h-3 bg-white/10 rounded w-full"></span>
             </div>
           ))}
         </div>
@@ -85,45 +123,64 @@ export default function ActivityFeed() {
 
   if (events.length === 0) {
     return (
-      <section className="space-y-3">
-        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
-        <div className="glass-card p-6 rounded-2xl text-center border border-dashed border-white/10">
-          <p className="font-label-sm text-[11px] text-on-surface-variant uppercase tracking-widest">No Activity Yet</p>
+      <section className="p-6 flex flex-col h-full min-h-[350px]">
+        <div className="flex items-center gap-2 mb-4 text-on-surface border-b border-white/5 pb-2">
+          <Terminal className="w-4 h-4 text-primary" style={{ color: 'var(--color-primary)' }} />
+          <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[11px] font-bold">
+            Terminal Audit
+          </h3>
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center font-mono text-[11px] leading-relaxed text-on-surface-variant/60">
+          <span className="text-[var(--color-tertiary)] mb-2 font-bold" style={{ color: 'var(--color-tertiary)' }}>
+            [WARN] NO DATA DETECTED
+          </span>
+          <span className="opacity-80" style={{ color: 'var(--color-primary)' }}>
+            SYS: Monitoring active... <span className="animate-pulse">|</span>
+          </span>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="space-y-3">
-      <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[10px] font-bold">Audit Log</h3>
-      <div className="space-y-3 px-1">
-        {events.map((event, idx) => {
-          // Cycle colors based on index to mimic the design if event type mapping isn't strict
-          const isPrimary = idx % 2 === 0;
-          const dotColor = isPrimary ? 'bg-primary' : 'bg-secondary';
-          const textColor = isPrimary ? 'text-primary' : 'text-secondary';
-
+    <section className="p-6 flex flex-col h-full min-h-[350px]">
+      <div className="flex items-center gap-2 mb-4 text-on-surface border-b border-white/5 pb-2">
+        <Terminal className="w-4 h-4" style={{ color: 'var(--color-primary)' }} />
+        <h3 className="font-label-md text-label-md text-on-surface uppercase tracking-widest text-[11px] font-bold">
+          Terminal Audit
+        </h3>
+      </div>
+      <div className="flex-1 font-mono text-[11px] leading-relaxed overflow-y-auto scrollbar-hide text-on-surface-variant/80 space-y-2">
+        {events.map((event) => {
+          const logColor = getLogColor(event.type, event.description);
+          const actorLabel = (event.actorName || 'System').toUpperCase();
           return (
-            <div key={event.id} className="flex items-start gap-4 group">
-              <div className={`w-1 h-1 rounded-full ${dotColor} mt-2 group-hover:scale-150 transition-transform`}></div>
-              <div className="min-w-0 border-l border-white/5 pl-4 pb-2 group-last:border-transparent">
-                <p className="font-body-sm text-[13px] text-on-surface leading-snug">
-                  <span className={`${textColor} font-bold`}>{event.actorName}</span>{' '}
-                  <span className="opacity-90">{event.description}</span>{' '}
-                  {event.projectName && (
-                    <>
-                      for <span className="underline underline-offset-2 decoration-white/10 font-medium">{event.projectName}</span>
-                    </>
-                  )}
-                </p>
-                <p className="font-label-sm text-[10px] text-on-surface-variant font-mono uppercase mt-0.5 opacity-60">
-                  {formatTimeOnly(event.createdAt)}
-                </p>
-              </div>
+            <div key={event.id} className="flex gap-3 items-start hover:bg-white/5 p-1 rounded transition-colors">
+              <span className="font-bold shrink-0 opacity-60" style={{ color: 'var(--color-primary)' }}>
+                [{formatTimeOnly(event.createdAt)}]
+              </span>
+              <span style={{ color: logColor }}>
+                <span className="font-bold">{actorLabel}:</span>{' '}
+                {event.description}
+                {event.projectName && (
+                  <>
+                    {' '}
+                    for <span className="underline underline-offset-2 decoration-white/10">{event.projectName}</span>
+                  </>
+                )}
+              </span>
             </div>
           );
         })}
+        {/* Active tracking prompt line */}
+        <div className="flex gap-3 items-start opacity-60">
+          <span className="font-bold shrink-0" style={{ color: 'var(--color-primary)' }}>
+            [ONLINE]
+          </span>
+          <span style={{ color: 'var(--color-primary)' }}>
+            SYS: Monitoring active... <span className="animate-pulse">|</span>
+          </span>
+        </div>
       </div>
     </section>
   );

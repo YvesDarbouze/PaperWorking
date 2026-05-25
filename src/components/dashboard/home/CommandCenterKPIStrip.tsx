@@ -58,10 +58,10 @@ function MiniSparkline({
 }) {
   const colorClass =
     health === 'positive'
-      ? 'bg-primary'
+      ? 'bg-[#57f1db]'
       : health === 'warning'
       ? 'bg-[#ffac5a]'
-      : 'bg-error';
+      : 'bg-[#ba1a1a]';
 
   if (variant === 'bars') {
     return (
@@ -153,46 +153,34 @@ function getMetricState(metric: string, projects: Project[]): 'PROJECTED' | 'LIV
   return 'LIVE';
 }
 
-function getHealthStyles(health: 'positive' | 'warning' | 'error') {
+function getHealthColors(health: 'positive' | 'warning' | 'error') {
   switch (health) {
     case 'positive':
       return {
-        borderClass: 'border-l-4 border-l-primary/60',
-        textClass: 'text-primary',
+        bg: 'bg-[#57f1db]',
+        text: 'text-[#57f1db]',
       };
     case 'warning':
       return {
-        borderClass: 'border-l-4 border-l-[#ffac5a]/60',
-        textClass: 'text-[#ffac5a]',
+        bg: 'bg-[#ffac5a]',
+        text: 'text-[#ffac5a]',
       };
     case 'error':
       return {
-        borderClass: 'border-l-4 border-l-error/60',
-        textClass: 'text-error',
+        bg: 'bg-[#ba1a1a]',
+        text: 'text-[#ba1a1a]',
       };
   }
 }
 
-function getBadgeStyles(state: 'PROJECTED' | 'LIVE' | 'REALIZED') {
+function getStateColors(state: 'PROJECTED' | 'LIVE' | 'REALIZED') {
   switch (state) {
     case 'LIVE':
-      return {
-        color: 'var(--color-primary)',
-        background: 'rgba(45, 212, 191, 0.1)',
-        border: '1px solid rgba(45, 212, 191, 0.15)',
-      };
+      return 'text-[#2dd4bf]';
     case 'REALIZED':
-      return {
-        color: 'var(--color-on-surface-variant)',
-        background: 'var(--color-surface-container-highest)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
-      };
+      return 'text-white/40';
     case 'PROJECTED':
-      return {
-        color: '#ffb875',
-        background: 'rgba(255, 184, 117, 0.1)',
-        border: '1px solid rgba(255, 184, 117, 0.15)',
-      };
+      return 'text-[#ffb875]';
   }
 }
 
@@ -207,33 +195,40 @@ interface KPICardProps {
 }
 
 function KPICard({ label, value, health, state, sparkline }: KPICardProps) {
-  const healthStyles = getHealthStyles(health);
-  const badgeStyles = getBadgeStyles(state);
+  const healthColors = getHealthColors(health);
+  const stateColorClass = getStateColors(state);
 
   return (
     <div
-      className={`
-        w-36 h-36 flex-shrink-0 p-4 rounded-xl flex flex-col justify-between relative overflow-hidden
-        bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] ${healthStyles.borderClass}
-      `}
+      className="w-36 h-36 flex-shrink-0 relative overflow-hidden rounded-xl flex flex-col justify-between p-4 pl-8 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-[20px]"
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
+      }}
     >
-      <div className="flex justify-between items-start gap-1">
-        <span className="block text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold truncate max-w-[65%]">
-          {label}
-        </span>
-        <span
-          className="text-[7.5px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider scale-90 origin-right"
-          style={badgeStyles}
-        >
+      {/* Explicit vertical left-edge Health Band & State Label */}
+      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center bg-white/[0.01] border-r border-white/5">
+        {/* Health Band */}
+        <div className={`absolute left-0 top-0 bottom-0 w-[3.5px] ${healthColors.bg}`} />
+        
+        {/* State Label */}
+        <span className={`text-[7px] font-black tracking-widest uppercase -rotate-90 whitespace-nowrap select-none ${stateColorClass}`}>
           {state}
         </span>
       </div>
+
+      <div>
+        <span className="block text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">
+          {label}
+        </span>
+      </div>
       <div className="my-auto">
-        <span className={`block text-xl font-bold font-display leading-none tracking-tight ${healthStyles.textClass}`}>
+        <span className={`block text-xl font-bold font-display leading-none tracking-tight ${healthColors.text}`}>
           {value}
         </span>
       </div>
-      <MiniSparkline variant={sparkline} health={health} />
+      <div className="pl-0.5">
+        <MiniSparkline variant={sparkline} health={health} />
+      </div>
     </div>
   );
 }
@@ -249,7 +244,7 @@ export default function CommandCenterKPIStrip({
     const cutoff = periodCutoff(period);
     return cutoff
       ? projects.filter(p => {
-          const created = p.createdAt ? new Date(p.createdAt as any) : null;
+          const created = p.createdAt ? new Date(p.createdAt) : null;
           return created && created >= cutoff;
         })
       : projects;
@@ -294,11 +289,11 @@ export default function CommandCenterKPIStrip({
         p.financials.estimatedCurrentValue,
         p.strategyType,
         p.currentPhase,
-        p.createdAt as any
+        p.createdAt
       );
 
       const ownershipFactor = scope === 'myShare'
-        ? ((p.financials as any).ownershipPercentage ?? 100) / 100
+        ? (p.financials.ownershipPercentage ?? 100) / 100
         : 1;
 
       const purchasePrice = p.financials.purchasePrice ?? 0;

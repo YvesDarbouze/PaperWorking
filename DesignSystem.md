@@ -176,3 +176,12 @@ All variants adapt automatically inside `.pw-surface-dark`, `.pw-phase-listed`, 
 
 `.ag-button` and `.ag-button-secondary` remain functional. They now inherit focus and disabled states from the new system. **New components must use `.pw-btn` variants.**
 
+---
+
+## 7. Branding & Naming Guidelines
+
+### Authorized Brand Assets
+- **Only Brand Name**: `PaperWorking` (CamelCase, single word, no spaces).
+- **Banned Names**: Do NOT use `Equinox OS`, `Capital Alpha`, or any other developer placeholder names.
+- **Logo Description**: A stylized, minimalist desktop tray icon (inbox tray) with clean, stacked horizontal sheets of paper rising vertically above it, representing structure, organization, and a document-driven real estate workflow.
+- **Brand Text Styling**: Always render the text `PaperWorking` using structural headings (e.g., `font-headline-md tracking-tighter`) instead of generic serif fonts or standard body text.

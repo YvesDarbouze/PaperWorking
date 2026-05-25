@@ -30,16 +30,18 @@ const LifecycleMetricsDashboard = lazy(() => import('@/components/dashboard/char
 const AgentDirectory = lazy(() => import('@/components/listing/AgentDirectory'));
 const OpenHouseCalendar = lazy(() => import('@/components/listing/OpenHouseCalendar'));
 
-import DashboardKPIHeader from './DashboardKPIHeader';
 import GenerativeInsights from './GenerativeInsights';
 import ActivityFeed from './ActivityFeed';
 import ProfileWidget from './ProfileWidget';
 import ProjectsWidget from './ProjectsWidget';
 import UpcomingMeetingsWidget from './UpcomingMeetingsWidget';
 import AnalyticsWidget from './AnalyticsWidget';
-import ProjectsProgressWidget from './ProjectsProgressWidget';
+import CommandCenterKPIStrip from './CommandCenterKPIStrip';
+import type { ScopeMode, PeriodFilter } from './CommandCenterKPIStrip';
 import InvestorInviteModal from '../InvestorInviteModal';
 import MobileBottomNav from '../MobileBottomNav';
+
+const PerformanceChart = lazy(() => import('./PerformanceChart'));
 
 import toast from 'react-hot-toast';
 import { Project } from '@/types/schema';
@@ -191,6 +193,8 @@ export default function DashboardHome() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [scope, setScope] = useState<ScopeMode>('property');
+  const [period, setPeriod] = useState<PeriodFilter>('ALL');
 
   // State 2 (free): enforce empty-state teaser — widgets show "—" / no data.
   // State 3 (paid): full live portfolio.
@@ -287,42 +291,7 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* ── Quick Actions ── */}
-        <section className="space-y-4">
-          <div className="grid grid-cols-3 gap-2 md:max-w-md">
-            <button 
-              onClick={handleCreateProject}
-              className="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Create
-            </button>
-            <button className="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
-              <Tag className="w-4 h-4" />
-              Post Deal
-            </button>
-            <button className="h-10 glass-card rounded-lg flex items-center justify-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
-              <UserSearch className="w-4 h-4" />
-              Vendor
-            </button>
-          </div>
-        </section>
 
-        {/* Segmented Controls */}
-        <div className="flex items-center p-1 bg-white/5 border border-white/10 rounded-xl w-fit">
-          <button className="px-5 py-1.5 rounded-lg bg-white/10 text-on-surface font-label-sm text-label-sm transition-all shadow-sm">
-            Overview
-          </button>
-          <button className="px-5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all">
-            Active Deals
-          </button>
-          <button className="px-5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all">
-            Pipeline
-          </button>
-          <button className="px-5 py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all">
-            Archived
-          </button>
-        </div>
       </header>
 
       {/* ── State 4: Guest invited-project cards ── */}
@@ -355,38 +324,132 @@ export default function DashboardHome() {
         </section>
       )}
 
-      {/* ── Dashboard Top Section (Wireframe UI) ── */}
+      {/* ── Stitch Command Center Layout ── */}
       {!isGuest && (
-        <section className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
-            <div className="md:col-span-3">
-              <ProfileWidget 
-                user={user}
-                profile={profile}
-                teamMembersCount={teamMembersCount}
-                completedDeals={dealsClosedCount}
-                winsCount={dealsClosedCount} // using dealsClosedCount as mock wins for now
-                onInviteTeam={() => setIsInviteModalOpen(true)}
-              />
+        <section className="space-y-6 mb-8">
+          {/* Row 1: Control Row — Scope Toggle + Period Selector + Quick Actions */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Scope Toggle: Property / My Share */}
+            <div className="flex bg-surface-container-high rounded-lg p-1 w-fit">
+              <button
+                onClick={() => setScope('property')}
+                className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
+                  scope === 'property'
+                    ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Property
+              </button>
+              <button
+                onClick={() => setScope('myShare')}
+                className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
+                  scope === 'myShare'
+                    ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                My Share
+              </button>
             </div>
-            <div className="md:col-span-6">
-              <ProjectsWidget 
-                projects={portfolioProjects} 
+
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Period Selector */}
+              <div className="flex bg-surface-container-high rounded-lg p-1 w-fit">
+                {(['M', 'Q', 'Y', 'ALL'] as PeriodFilter[]).map(p => (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(p)}
+                    className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
+                      period === p
+                        ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
+                        : 'text-on-surface-variant hover:text-on-surface'
+                    }`}
+                  >
+                    {p === 'M' ? '30D' : p === 'Q' ? '90D' : p === 'Y' ? 'YTD' : 'ALL'}
+                  </button>
+                ))}
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleCreateProject}
+                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
+                >
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  Create
+                </button>
+                <button className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
+                  <Tag className="w-3.5 h-3.5" />
+                  Post Deal
+                </button>
+                <button className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
+                  <UserSearch className="w-3.5 h-3.5" />
+                  Vendor
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: KPI Metric Strip (11 cards, horizontal scroll) */}
+          <ErrorBoundary name="Command Center KPI Strip">
+            <CommandCenterKPIStrip
+              projects={portfolioProjects}
+              scope={scope}
+              period={period}
+            />
+          </ErrorBoundary>
+
+          {/* Row 3: Performance Chart + Pipeline Band */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ErrorBoundary name="Performance Chart">
+              <Suspense fallback={<ChartSkeleton />}>
+                <PerformanceChart projects={portfolioProjects} scope={scope} period={period} />
+              </Suspense>
+            </ErrorBoundary>
+            <ErrorBoundary name="Portfolio Summary Bar">
+              <PortfolioSummaryBar
+                projects={portfolioProjects}
+                isLoading={false}
+                className="w-full h-full"
+              />
+            </ErrorBoundary>
+          </div>
+
+          {/* Row 4: Project Folders + Activity Feed */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-8">
+              <ProjectsWidget
+                projects={portfolioProjects}
                 onCreateProject={handleCreateProject}
                 isGuest={isGuest}
               />
             </div>
-            <div className="md:col-span-3">
-              <UpcomingMeetingsWidget />
+            <div className="lg:col-span-4">
+              <ErrorBoundary name="Recent Activity">
+                <ActivityFeed />
+              </ErrorBoundary>
             </div>
           </div>
-          
+
+          {/* Row 5: Secondary widgets (moved from primary view) */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-9">
+            <div className="md:col-span-3">
+              <ProfileWidget
+                user={user}
+                profile={profile}
+                teamMembersCount={teamMembersCount}
+                completedDeals={dealsClosedCount}
+                winsCount={dealsClosedCount}
+                onInviteTeam={() => setIsInviteModalOpen(true)}
+              />
+            </div>
+            <div className="md:col-span-6">
               <AnalyticsWidget projects={portfolioProjects} />
             </div>
             <div className="md:col-span-3">
-              <ProjectsProgressWidget projects={portfolioProjects} />
+              <UpcomingMeetingsWidget />
             </div>
           </div>
         </section>
@@ -402,23 +465,7 @@ export default function DashboardHome() {
           </ErrorBoundary>
         )}
 
-        {/* KPI Header */}
-        {!isGuest && (
-          <ErrorBoundary name="KPI Header">
-            <DashboardKPIHeader />
-          </ErrorBoundary>
-        )}
 
-        {/* ── Portfolio Summary Bar ── */}
-        {!isGuest && (
-          <ErrorBoundary name="Portfolio Summary Bar">
-            <PortfolioSummaryBar
-              projects={portfolioProjects}
-              isLoading={false}
-              className="w-full"
-            />
-          </ErrorBoundary>
-        )}
 
         {/* ── Lifecycle Metrics Dashboard ── */}
         {!isGuest && (
@@ -465,12 +512,7 @@ export default function DashboardHome() {
           </div>
         )}
 
-        {/* Recent Activity / Audit Log */}
-        {!isGuest && (
-          <ErrorBoundary name="Recent Activity">
-            <ActivityFeed />
-          </ErrorBoundary>
-        )}
+
 
       </div>
       

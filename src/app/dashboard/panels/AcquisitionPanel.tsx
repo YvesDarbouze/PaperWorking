@@ -141,8 +141,8 @@ export default function AcquisitionPanel() {
     return (
       <section className="flex h-full w-full items-center justify-center" aria-label="Find & Fund panel">
         <div className="text-center">
-          <div className="w-16 h-16 bg-teal-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
-            <Search className="w-7 h-7 text-teal-400" />
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-none flex items-center justify-center mx-auto mb-4">
+            <Search className="w-7 h-7 text-pw-accent" />
           </div>
           <h2 className="text-lg font-semibold text-text-primary mb-1">Acquisition</h2>
           <p className="text-sm text-text-secondary">Select a deal from the Pipeline to begin</p>
@@ -156,14 +156,14 @@ export default function AcquisitionPanel() {
     <section
       className="h-full w-full overflow-y-auto"
       aria-label="Find & Fund panel"
-      style={{ background: 'linear-gradient(180deg, rgba(204,251,241,0.15) 0%, rgba(255,255,255,0) 40%)' }}
+      style={{ background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 40%)' }}
     >
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
         {/* Phase Header */}
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-widest rounded-full">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-pw-black text-[10px] font-bold uppercase tracking-widest rounded-none border border-pw-border">
                 Phase 01
               </span>
             </div>
@@ -181,7 +181,7 @@ export default function AcquisitionPanel() {
         </div>
 
         {/* Capital Stack Progress */}
-        <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
+        <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
           <CapitalStackProgress
             capitalNeeded={capitalNeeded}
             capitalPledged={capitalPledged}
@@ -192,18 +192,18 @@ export default function AcquisitionPanel() {
         {/* Two-Column Layout: Property + Financials */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Property Discovery */}
-          <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
+          <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
             <div className="flex items-center gap-2 mb-4">
-              <Briefcase className="w-4 h-4 text-teal-600" />
+              <Briefcase className="w-4 h-4 text-pw-accent" />
               <h2 className="text-sm font-semibold text-text-primary">Property Discovery</h2>
             </div>
             <PropertyDiscovery onPropertySelected={handlePropertySelected} />
           </div>
 
           {/* Quick Financials Summary */}
-          <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm space-y-4">
+          <div className="glass-card rounded-none p-6 border border-pw-border shadow-none space-y-4">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-4 h-4 text-teal-600" />
+              <TrendingUp className="w-4 h-4 text-pw-accent" />
               <h2 className="text-sm font-semibold text-text-primary">Deal Snapshot</h2>
             </div>
 
@@ -214,7 +214,7 @@ export default function AcquisitionPanel() {
                 { label: 'Rehab Budget', value: currentProject.financials?.projectedRehabCost, prefix: '$' },
                 { label: 'Total Capital', value: capitalNeeded, prefix: '$' },
               ].map((item) => (
-                <div key={item.label} className="bg-bg-primary rounded-xl px-4 py-3">
+                <div key={item.label} className="bg-white/5 border border-white/5 rounded-none px-4 py-3">
                   <p className="ag-label mb-1">{item.label}</p>
                   <p className="text-lg font-semibold text-text-primary">
                     {item.value ? `${item.prefix}${item.value.toLocaleString()}` : '—'}
@@ -224,15 +224,15 @@ export default function AcquisitionPanel() {
             </div>
 
             {/* Quick Stats */}
-            <div className="flex items-center gap-4 pt-2 border-t border-border-accent">
+            <div className="flex items-center gap-4 pt-2 border-t border-pw-border">
               <div className="flex items-center gap-2">
-                <DollarSign className="w-3.5 h-3.5 text-teal-500" />
+                <DollarSign className="w-3.5 h-3.5 text-pw-accent" />
                 <span className="text-xs text-text-secondary">
                   {investors.filter(i => i.loiStatus === 'Signed').length} LOIs signed
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <DollarSign className="w-3.5 h-3.5 text-teal-500" />
+                <DollarSign className="w-3.5 h-3.5 text-pw-accent" />
                 <span className="text-xs text-text-secondary">
                   ${capitalPledged.toLocaleString()} committed
                 </span>
@@ -242,7 +242,7 @@ export default function AcquisitionPanel() {
         </div>
 
         {/* Syndication Engine */}
-        <div className="bg-bg-surface rounded-2xl p-6 border border-border-accent shadow-sm">
+        <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
           <SyndicationEngine
             investors={investors}
             onInviteClick={() => setShowInviteDrawer(true)}
@@ -253,8 +253,8 @@ export default function AcquisitionPanel() {
         {/* ── Deal Metrics Section ─────────────────────────── */}
         {currentProject.financials && (
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-border-accent pb-3">
-              <BarChart2 className="w-4 h-4 text-teal-600" />
+            <div className="flex items-center gap-2 border-b border-pw-border pb-3">
+              <BarChart2 className="w-4 h-4 text-pw-accent" />
               <h2 className="text-sm font-semibold text-text-primary">Deal Metrics</h2>
             </div>
 

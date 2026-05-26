@@ -39,6 +39,7 @@ import AnalyticsWidget from './AnalyticsWidget';
 import CommandCenterKPIStrip from './CommandCenterKPIStrip';
 import type { ScopeMode, PeriodFilter } from './CommandCenterKPIStrip';
 import InvestorInviteModal from '../InvestorInviteModal';
+import PostDealModal from '../PostDealModal';
 import MobileBottomNav from '../MobileBottomNav';
 
 const PerformanceChart = lazy(() => import('./PerformanceChart'));
@@ -193,6 +194,7 @@ export default function DashboardHome() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isPostDealOpen, setIsPostDealOpen] = useState(false);
   const [scope, setScope] = useState<ScopeMode>('property');
   const [period, setPeriod] = useState<PeriodFilter>('ALL');
 
@@ -380,11 +382,17 @@ export default function DashboardHome() {
                   <PlusCircle className="w-3.5 h-3.5" />
                   Create
                 </button>
-                <button className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
+                <button
+                  onClick={() => setIsPostDealOpen(true)}
+                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
+                >
                   <Tag className="w-3.5 h-3.5" />
                   Post Deal
                 </button>
-                <button className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider">
+                <button
+                  onClick={() => router.push('/dashboard/marketplace')}
+                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
+                >
                   <UserSearch className="w-3.5 h-3.5" />
                   Vendor
                 </button>
@@ -526,6 +534,10 @@ export default function DashboardHome() {
           onClose={() => setIsInviteModalOpen(false)}
         />
       )}
+      <PostDealModal
+        isOpen={isPostDealOpen}
+        onClose={() => setIsPostDealOpen(false)}
+      />
     </div>
   );
 }

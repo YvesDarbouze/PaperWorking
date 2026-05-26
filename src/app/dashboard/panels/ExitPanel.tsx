@@ -84,7 +84,7 @@ function ReturnsAnalysisSection({
   return (
     <section aria-label="Returns Analysis" className="space-y-6 pt-4">
       {/* Section Header */}
-      <div className="flex items-center gap-3 pb-2" style={{ borderBottom: '1px solid #cccccc' }}>
+      <div className="flex items-center gap-3 pb-2 border-b border-pw-border">
         <div className="w-1.5 h-4 bg-pw-black" aria-hidden="true" />
         <h3 className="text-[10px] font-black tracking-[0.3em] uppercase text-text-secondary">
           Returns_Analysis
@@ -232,16 +232,18 @@ export default function ExitPanel() {
     <div className="bg-bg-primary text-text-primary selection:bg-pw-accent/30 min-h-full">
        
        {/* Tactical Header */}
-       <div className="border-b-2 border-pw-black bg-bg-surface px-8 py-6 flex items-center justify-between sticky top-0 z-50">
+       <div className="border-b border-pw-border bg-bg-surface/85 px-8 py-6 flex items-center justify-between sticky top-0 z-50 backdrop-blur-xl">
           <div>
              <div className="flex items-center gap-2 mb-1">
-                <div className="w-2 h-2 bg-pw-black"></div>
-                <h1 className="text-3xl font-black tracking-tighter uppercase leading-none">The_Exit_Hub</h1>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-pw-black text-[10px] font-bold uppercase tracking-widest rounded-none border border-pw-border">
+                   Phase 04
+                </span>
              </div>
-             <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.4em]">Sell or rent — your exit, your call.</p>
+             <h1 className="text-2xl font-bold text-text-primary tracking-tight">The_Exit_Hub</h1>
+             <p className="text-xs text-text-secondary mt-0.5">Sell or rent — your exit, your call.</p>
           </div>
           <select 
-              className="bg-pw-black text-pw-white text-[10px] font-black uppercase tracking-widest border border-pw-black px-6 py-3 focus:outline-none hover:bg-pw-accent transition-colors"
+              className="glass-input rounded-none text-sm py-2 pl-3 pr-8 focus:ring-pw-accent focus:border-pw-accent bg-bg-surface text-text-primary"
               value={currentProject.id}
               onChange={(e) => { const t = projects.find(d => d.id === e.target.value); if (t) setDeal(t); }}
           >
@@ -264,7 +266,7 @@ export default function ExitPanel() {
 
           {/* Hero Intelligence */}
           {strategy === 'Sell' && (
-            <div className="shadow-2xl">
+            <div className="glass-card border border-pw-border rounded-none shadow-none">
               <ProfitVarianceCard 
                 projectedProfit={dealMetrics.netProfit}
                 actualProfit={currentProject.status === 'Sold' ? Math.round(Number(actualSale) * 100) : dealMetrics.netProfit} 
@@ -280,34 +282,34 @@ export default function ExitPanel() {
 
               {/* Asset Packaging */}
               {strategy === 'Sell' && (
-                <div className="bg-bg-surface border border-border-accent p-8 relative overflow-hidden group">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-border-accent">
+                <div className="glass-card border border-pw-border p-6 rounded-none relative overflow-hidden group">
+                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-pw-border">
                     <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase flex items-center">
-                      <Camera className="w-3.5 h-3.5 mr-2" /> Asset_Packaging
+                      <Camera className="w-3.5 h-3.5 mr-2 text-pw-accent" /> Asset_Packaging
                     </h3>
                     <span className="text-[10px] font-bold text-text-secondary">STAGING</span>
                   </div>
-                  <p className="text-[10px] font-bold text-text-secondary uppercase leading-relaxed mb-8 tracking-wider">
+                  <p className="text-xs font-bold text-text-secondary uppercase leading-relaxed mb-6 tracking-wider">
                     Upload listing photos and paste your MLS link.
                   </p>
                   <div className="space-y-6">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 border border-border-accent bg-bg-primary">
+                      <div className="p-4 border border-pw-border bg-pw-bg/50 rounded-none">
                         <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">Photo Count</label>
-                        <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none ag-data" />
+                        <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-transparent text-xl font-mono font-black w-full focus:outline-none" />
                       </div>
                       <div className="flex items-center p-4">
-                        <span className="text-[10px] font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">Photos & Virtual Tour</span>
+                        <span className="text-xs font-bold text-text-secondary uppercase leading-tight tracking-widest opacity-50">Photos & Virtual Tour</span>
                       </div>
                     </div>
-                    <div className="p-4 border border-border-accent bg-bg-primary">
+                    <div className="p-4 border border-pw-border bg-pw-bg/50 rounded-none">
                       <label className="text-[9px] font-black text-text-secondary uppercase block mb-2 tracking-widest">MLS Listing Link</label>
                       <div className="relative flex items-center">
                         <LinkIcon className="w-3.5 h-3.5 text-text-secondary mr-3" />
                         <input type="url" placeholder="EX: https://zillow.com/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-transparent text-xs font-mono font-bold w-full focus:outline-none" />
                       </div>
                     </div>
-                    <button onClick={handleUpdateListing} className="w-full font-black text-[10px] py-4 uppercase tracking-[0.4em] transition-all active:scale-95" style={{ background: '#595959', color: '#ffffff', border: '1px solid #595959' }}>
+                    <button onClick={handleUpdateListing} className="w-full pw-btn pw-btn--primary font-black text-[10px] py-4 uppercase tracking-[0.4em] transition-all active:scale-97 border-0 rounded-none">
                       Sync_Market_Status
                     </button>
                   </div>
@@ -322,10 +324,10 @@ export default function ExitPanel() {
               )}
 
               {/* ── Decision Tree Form ── */}
-              <div className="p-8" style={{ border: '2px solid #595959', background: '#ffffff' }}>
+              <div className="glass-card border border-pw-border p-8 rounded-none">
                 <div className="flex items-center gap-2 mb-8">
-                  <DollarSign className="w-4 h-4" style={{ color: '#595959' }} />
-                  <h3 className="text-xs font-black tracking-[0.3em] uppercase" style={{ color: '#595959' }}>
+                  <DollarSign className="w-4 h-4 text-pw-muted" />
+                  <h3 className="text-xs font-black tracking-[0.3em] uppercase text-pw-muted">
                     {strategy === 'Sell' ? 'Settlement_Protocol' : 'Rental_Profile'}
                   </h3>
                 </div>
@@ -375,14 +377,14 @@ export default function ExitPanel() {
                   </Suspense>
 
                   {/* Market Status */}
-                  <div className="overflow-hidden relative" style={{ border: '1px solid #595959', background: '#ffffff' }}>
+                  <div className="overflow-hidden relative glass-card border border-pw-border rounded-none">
                     <div className="flex h-56 w-full items-center justify-center bg-bg-primary relative overflow-hidden group">
                       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center opacity-40 grayscale group-hover:grayscale-0 transition-all duration-1000"></div>
-                      <div className="absolute inset-0" style={{ background: 'rgba(89,89,89,0.2)' }}></div>
+                      <div className="absolute inset-0 bg-pw-black/20"></div>
                       <div className="relative z-10 flex flex-col items-center">
-                        <div className="px-8 py-4 flex items-center space-x-4 mb-4 shadow-2xl" style={{ background: '#595959', border: '1px solid rgba(255,255,255,0.1)' }}>
-                          <div className={`w-2 h-2 rounded-full animate-pulse ${currentProject.status === 'Sold' ? 'bg-white' : 'bg-white'}`} />
-                          <span className="font-black tracking-[0.4em] uppercase text-xs" style={{ color: '#ffffff' }}>
+                        <div className="px-8 py-4 flex items-center space-x-4 mb-4 shadow-2xl bg-pw-accent/90 border border-white/10 rounded-none">
+                          <div className="w-2 h-2 rounded-full animate-pulse bg-white" />
+                          <span className="font-black tracking-[0.4em] uppercase text-xs text-white">
                             Entity_Status: {currentProject.status}
                           </span>
                         </div>
@@ -391,14 +393,13 @@ export default function ExitPanel() {
                             href={currentProject.exitAssets.mlsListingLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all"
-                            style={{ background: '#ffffff', border: '1px solid #595959', color: '#595959' }}
+                            className="pw-btn pw-btn--secondary rounded-none px-6 py-2 text-[10px] font-black uppercase tracking-[0.2em] flex items-center transition-all"
                           >
                             View MLS Listing <ExternalLink className="w-3 h-3 ml-2" />
                           </a>
                         )}
                         {(currentProject.status !== 'Listed' && currentProject.status !== 'Sold') && (
-                          <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#ffffff', opacity: 0.7 }}>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white/70">
                             Not yet listed
                           </p>
                         )}
@@ -406,8 +407,8 @@ export default function ExitPanel() {
                     </div>
                   </div>
 
-                  <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
-                    <div style={{ border: '1px solid #cccccc', padding: 4 }}><DealAutopsy deal={currentProject} /></div>
+                  <Suspense fallback={<div className="h-96 animate-shimmer rounded-none" />}>
+                    <div className="glass-card rounded-none border border-pw-border p-1"><DealAutopsy deal={currentProject} /></div>
                   </Suspense>
 
                   {/* ── Returns Analysis ── */}
@@ -421,12 +422,12 @@ export default function ExitPanel() {
                   <ReturnsAnalysisSection deal={currentProject} strategy={strategy} />
 
                   {/* NOI Dashboard */}
-                  <div className="overflow-hidden" style={{ border: '2px solid #595959', background: '#ffffff' }}>
-                    <div className="px-6 py-4 flex items-center gap-2" style={{ background: '#595959' }}>
-                      <TrendingUp className="w-4 h-4" style={{ color: '#ffffff' }} />
-                      <h3 className="text-xs font-black tracking-[0.3em] uppercase" style={{ color: '#ffffff' }}>NOI_Dashboard</h3>
+                  <div className="overflow-hidden glass-card border border-pw-border rounded-none shadow-none">
+                    <div className="px-6 py-4 flex items-center gap-2 bg-pw-accent text-pw-white border-b border-pw-border">
+                      <TrendingUp className="w-4 h-4" />
+                      <h3 className="text-xs font-black tracking-[0.3em] uppercase text-pw-white">NOI_Dashboard</h3>
                     </div>
-                    <div className="grid grid-cols-2 gap-px" style={{ background: '#cccccc' }}>
+                    <div className="grid grid-cols-2 gap-px bg-pw-border">
                       {[
                         { label: 'Gross_Annual_Rent', value: grossRent },
                         { label: 'Effective_Gross', value: effectiveGross },
@@ -435,19 +436,19 @@ export default function ExitPanel() {
                         { label: 'Annual_Debt_Service', value: annualDebt, negative: true },
                         { label: 'Annual_Cash_Flow', value: cashFlow, highlight: true },
                       ].map(m => (
-                        <div key={m.label} className="px-5 py-4" style={{ background: '#ffffff' }}>
-                          <p className="text-[9px] font-black uppercase tracking-widest mb-1" style={{ color: '#7f7f7f' }}>{m.label}</p>
-                          <p className="text-xl font-black font-mono tracking-tighter" style={{
-                            color: m.highlight ? (m.value >= 0 ? '#595959' : '#595959') : m.negative ? '#7f7f7f' : '#595959'
-                          }}>
-                            {m.negative && m.value > 0 ? '−' : ''}${Math.abs(m.value).toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                        <div key={m.label} className="px-5 py-4 bg-pw-bg/50">
+                          <p className="text-[9px] font-black uppercase tracking-widest mb-1 text-pw-muted">{m.label}</p>
+                          <p className={`text-xl font-black font-mono tracking-tighter ${
+                            m.highlight ? (m.value >= 0 ? 'text-pw-accent' : 'text-pw-accent') : m.negative ? 'text-pw-muted' : 'text-pw-black'
+                          }`}>
+                            {m.negative && m.value > 0 ? '−' : ''}${Math.abs(m.value).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                           </p>
                         </div>
                       ))}
                     </div>
-                    <div className="px-6 py-4" style={{ borderTop: '2px solid #595959', background: '#f2f2f2' }}>
-                      <p className="text-[9px] font-black uppercase tracking-widest mb-1" style={{ color: '#7f7f7f' }}>Cash_on_Cash_Return</p>
-                      <p className="text-3xl font-black font-mono tracking-tighter" style={{ color: '#595959' }}>
+                    <div className="px-6 py-4 border-t border-pw-border bg-pw-bg">
+                      <p className="text-[9px] font-black uppercase tracking-widest mb-1 text-pw-muted">Cash_on_Cash_Return</p>
+                      <p className="text-3xl font-black font-mono tracking-tighter text-pw-black">
                         {currentProject.financials?.purchasePrice ? ((cashFlow / currentProject.financials.purchasePrice) * 100).toFixed(2) : '0.00'}%
                       </p>
                     </div>

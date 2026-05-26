@@ -32,18 +32,6 @@ interface SoldPropertyFormProps {
   onSave: (updates: Partial<ProjectFinancials & { legalCosts?: number; tenantName?: string; leaseStartDate?: string; annualPropertyTax?: number; annualInsurance?: number }>) => void;
 }
 
-/* ── Palette — Contrast Sentinel directives ── */
-const C = {
-  action:    { bg: '#595959', text: '#ffffff' },
-  secondary: { bg: '#cccccc', text: '#595959' },
-  border:    '#cccccc',
-  muted:     '#7f7f7f',
-  subtle:    '#a5a5a5',
-  bg:        '#f2f2f2',
-  surface:   '#ffffff',
-  label:     '#595959',
-} as const;
-
 /* ── Helpers ── */
 function fmt(n: number) {
   return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -63,16 +51,10 @@ function holdDaysFrom(project: Project): number {
 
 function FieldBox({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
   return (
-    <div
-      className="p-4"
-      style={{ border: `1px solid ${C.border}`, background: C.bg }}
-    >
-      <label
-        className="block text-[9px] font-black uppercase tracking-widest mb-2"
-        style={{ color: C.label }}
-      >
+    <div className="p-4 border border-pw-border bg-pw-bg/50 rounded-none">
+      <label className="block text-[9px] font-black uppercase tracking-widest mb-2 text-pw-muted">
         {label}
-        {required && <span style={{ color: '#595959', marginLeft: 4 }}>*</span>}
+        {required && <span className="text-pw-accent ml-1">*</span>}
       </label>
       {children}
     </div>
@@ -83,10 +65,10 @@ function ReadOnlyField({ label, value, note }: { label: string; value: string; n
   return (
     <FieldBox label={label}>
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-black font-mono tracking-tighter" style={{ color: C.label }}>
+        <span className="text-2xl font-black font-mono tracking-tighter text-pw-black">
           {value}
         </span>
-        {note && <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: C.subtle }}>{note}</span>}
+        {note && <span className="text-[9px] font-bold uppercase tracking-wider text-pw-subtle">{note}</span>}
       </div>
     </FieldBox>
   );
@@ -95,17 +77,15 @@ function ReadOnlyField({ label, value, note }: { label: string; value: string; n
 function KpiCard({
   label, value, sub, positive, warning,
 }: { label: string; value: string; sub?: string; positive?: boolean; warning?: boolean }) {
-  const color = warning ? '#7f7f7f' : positive === false ? '#595959' : C.label;
   return (
-    <div
-      className="flex-1 p-5 min-w-0"
-      style={{ border: `1px solid ${C.border}`, background: C.surface }}
-    >
-      <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2" style={{ color: C.muted }}>{label}</p>
-      <p className="text-3xl font-black font-mono tracking-tighter leading-none" style={{ color }}>
+    <div className="flex-1 p-5 min-w-0 border border-pw-border bg-pw-glass-bg backdrop-blur-xl rounded-none">
+      <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 text-pw-muted">{label}</p>
+      <p className={`text-3xl font-black font-mono tracking-tighter leading-none ${
+        warning ? 'text-color-error' : positive === false ? 'text-pw-muted' : 'text-pw-black'
+      }`}>
         {value}
       </p>
-      {sub && <p className="text-[9px] font-bold mt-1.5 uppercase tracking-wider" style={{ color: C.subtle }}>{sub}</p>}
+      {sub && <p className="text-[9px] font-bold mt-1.5 uppercase tracking-wider text-pw-subtle">{sub}</p>}
     </div>
   );
 }
@@ -202,7 +182,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         soldDate: new Date(),
       } as any);
       toast.success('Sale data saved.', {
-        style: { background: C.action.bg, color: C.action.text },
+        style: { background: '#182127', color: '#dae4ec' },
       });
     } else {
       onSave({
@@ -215,7 +195,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         annualInsurance: Number(annualInsurance),
       } as any);
       toast.success('Rental data saved.', {
-        style: { background: C.action.bg, color: C.action.text },
+        style: { background: '#182127', color: '#dae4ec' },
       });
     }
   }
@@ -229,28 +209,22 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
 
         {/* ── Warning banners ── */}
         {isLoss && (
-          <div
-            className="flex items-start gap-3 p-4 rounded"
-            style={{ background: '#f2f2f2', border: `1px solid ${C.border}` }}
-          >
-            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: '#595959' }} />
+          <div className="flex items-start gap-3 p-4 border border-color-error bg-error-container/20 rounded-none">
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-color-error" />
             <div>
-              <p className="text-xs font-black uppercase tracking-wider" style={{ color: '#595959' }}>Loss_Warning</p>
-              <p className="text-[10px] mt-0.5" style={{ color: C.muted }}>
+              <p className="text-xs font-black uppercase tracking-wider text-color-error">Loss_Warning</p>
+              <p className="text-[10px] mt-0.5 text-pw-muted">
                 Sale price is below total investment. Verify inputs.
               </p>
             </div>
           </div>
         )}
         {isExtendedHold && (
-          <div
-            className="flex items-start gap-3 p-4 rounded"
-            style={{ background: C.bg, border: `1px solid ${C.border}` }}
-          >
-            <Clock className="w-4 h-4 shrink-0 mt-0.5" style={{ color: C.muted }} />
+          <div className="flex items-start gap-3 p-4 border border-pw-border bg-pw-bg/50 rounded-none">
+            <Clock className="w-4 h-4 shrink-0 mt-0.5 text-pw-muted" />
             <div>
-              <p className="text-xs font-black uppercase tracking-wider" style={{ color: C.label }}>Extended_Hold</p>
-              <p className="text-[10px] mt-0.5" style={{ color: C.muted }}>
+              <p className="text-xs font-black uppercase tracking-wider text-pw-black">Extended_Hold</p>
+              <p className="text-[10px] mt-0.5 text-pw-muted">
                 Hold duration exceeds 180 days ({holdDays} days). Carrying costs may erode margin.
               </p>
             </div>
@@ -258,7 +232,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         )}
 
         {/* ── KPI Strip ── */}
-        <div className="flex gap-px" style={{ border: `1px solid ${C.border}`, borderRadius: 2, overflow: 'hidden' }}>
+        <div className="flex gap-px bg-pw-border rounded-none overflow-hidden">
           <KpiCard
             label="Net_Profit"
             value={`${netProfit >= 0 ? '' : '−'}$${fmt(Math.abs(netProfit))}`}
@@ -282,7 +256,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
 
         {/* ── Mandatory Fields ── */}
         <section>
-          <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-3" style={{ color: C.muted }}>
+          <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-3 text-pw-muted">
             Mandatory_Fields
           </p>
           <div className="space-y-3">
@@ -297,8 +271,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                 type="number"
                 value={salePrice}
                 onChange={e => setSalePrice(e.target.value)}
-                className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter"
-                style={{ color: C.label }}
+                className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter text-pw-black"
                 placeholder="0"
               />
             </FieldBox>
@@ -308,8 +281,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                 type="number"
                 value={rehabCost}
                 onChange={e => setRehabCost(e.target.value)}
-                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none"
-                style={{ color: C.label }}
+                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none text-pw-black"
                 placeholder="0"
               />
             </FieldBox>
@@ -320,11 +292,10 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                   type="number"
                   value={monthlyHolding}
                   onChange={e => setMonthlyHolding(e.target.value)}
-                  className="bg-transparent text-xl font-black font-mono w-full focus:outline-none"
-                  style={{ color: C.label }}
+                  className="bg-transparent text-xl font-black font-mono w-full focus:outline-none text-pw-black"
                   placeholder="0"
                 />
-                <p className="text-[9px] mt-1.5 font-bold uppercase tracking-wider" style={{ color: C.subtle }}>
+                <p className="text-[9px] mt-1.5 font-bold uppercase tracking-wider text-pw-subtle">
                   × {holdMonths.toFixed(1)} mo = ${fmt(holdingNum)}
                 </p>
               </FieldBox>
@@ -343,17 +314,15 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                   type="number"
                   value={closingCosts}
                   onChange={e => setClosingCosts(e.target.value)}
-                  className="bg-transparent text-xl font-black font-mono flex-1 focus:outline-none"
-                  style={{ color: C.label }}
+                  className="bg-transparent text-xl font-black font-mono flex-1 focus:outline-none text-pw-black"
                   placeholder="0"
                 />
-                <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: C.subtle }}>$</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-pw-subtle">$</span>
               </div>
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider transition-colors"
-                style={{ background: C.secondary.bg, color: C.secondary.text, border: `1px solid ${C.border}` }}
+                className="flex items-center gap-2 pw-btn pw-btn--secondary rounded-none py-1.5 px-3 text-[9px] font-black uppercase tracking-wider transition-colors"
               >
                 <Upload className="w-3 h-3" />
                 {closingFileName ? closingFileName : 'Upload_HUD-1'}
@@ -372,8 +341,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                 type="number"
                 value={legalCosts}
                 onChange={e => setLegalCosts(e.target.value)}
-                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none"
-                style={{ color: C.label }}
+                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none text-pw-black"
                 placeholder="0"
               />
             </FieldBox>
@@ -385,8 +353,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
           <button
             type="button"
             onClick={() => setShowOptional(v => !v)}
-            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] mb-3"
-            style={{ color: C.muted }}
+            className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] mb-3 text-pw-muted"
           >
             {showOptional ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             Optional_Fields
@@ -400,8 +367,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                     step="0.1"
                     value={buyerComm}
                     onChange={e => setBuyerComm(e.target.value)}
-                    className="bg-transparent text-lg font-black font-mono w-full focus:outline-none"
-                    style={{ color: C.label }}
+                    className="bg-transparent text-lg font-black font-mono w-full focus:outline-none text-pw-black"
                   />
                 </FieldBox>
                 <FieldBox label="Seller_Commission [%]">
@@ -410,8 +376,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                     step="0.1"
                     value={sellerComm}
                     onChange={e => setSellerComm(e.target.value)}
-                    className="bg-transparent text-lg font-black font-mono w-full focus:outline-none"
-                    style={{ color: C.label }}
+                    className="bg-transparent text-lg font-black font-mono w-full focus:outline-none text-pw-black"
                   />
                 </FieldBox>
               </div>
@@ -420,8 +385,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                   type="number"
                   value={marketingSpend}
                   onChange={e => setMarketingSpend(e.target.value)}
-                  className="bg-transparent text-lg font-black font-mono w-full focus:outline-none"
-                  style={{ color: C.label }}
+                  className="bg-transparent text-lg font-black font-mono w-full focus:outline-none text-pw-black"
                   placeholder="0"
                 />
               </FieldBox>
@@ -434,12 +398,9 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
           type="button"
           onClick={handleSave}
           disabled={!canSubmit}
-          className="w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95"
-          style={
-            canSubmit
-              ? { background: C.action.bg, color: C.action.text, border: `2px solid ${C.action.bg}` }
-              : { background: C.secondary.bg, color: C.secondary.text, border: `2px solid ${C.border}`, cursor: 'not-allowed' }
-          }
+          className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn rounded-none ${
+            canSubmit ? 'pw-btn--primary' : 'pw-btn--secondary opacity-50 cursor-not-allowed'
+          }`}
         >
           {canSubmit ? (
             <span className="flex items-center justify-center gap-2">
@@ -460,7 +421,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
     <div className="space-y-8">
 
       {/* ── KPI Strip (Rent) ── */}
-      <div className="flex gap-px" style={{ border: `1px solid ${C.border}`, borderRadius: 2, overflow: 'hidden' }}>
+      <div className="flex gap-px bg-pw-border rounded-none overflow-hidden">
         <KpiCard
           label="Gross_Annual_Rent"
           value={`$${fmt(Number(monthlyRent) * 12)}`}
@@ -484,7 +445,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
 
       {/* ── Mandatory Fields ── */}
       <section>
-        <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-3" style={{ color: C.muted }}>
+        <p className="text-[9px] font-black uppercase tracking-[0.3em] mb-3 text-pw-muted">
           Mandatory_Fields
         </p>
         <div className="space-y-3">
@@ -493,8 +454,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
               type="number"
               value={monthlyRent}
               onChange={e => setMonthlyRent(e.target.value)}
-              className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter"
-              style={{ color: C.label }}
+              className="bg-transparent text-3xl font-black font-mono w-full focus:outline-none tracking-tighter text-pw-black"
               placeholder="0"
             />
           </FieldBox>
@@ -504,8 +464,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
               type="date"
               value={leaseStart}
               onChange={e => setLeaseStart(e.target.value)}
-              className="bg-transparent text-lg font-black font-mono w-full focus:outline-none"
-              style={{ color: C.label }}
+              className="bg-transparent text-lg font-black font-mono w-full focus:outline-none text-pw-black"
             />
           </FieldBox>
 
@@ -515,8 +474,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                 type="number"
                 value={annualTax}
                 onChange={e => setAnnualTax(e.target.value)}
-                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none"
-                style={{ color: C.label }}
+                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none text-pw-black"
                 placeholder="0"
               />
             </FieldBox>
@@ -525,8 +483,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
                 type="number"
                 value={annualInsurance}
                 onChange={e => setAnnualInsurance(e.target.value)}
-                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none"
-                style={{ color: C.label }}
+                className="bg-transparent text-xl font-black font-mono w-full focus:outline-none text-pw-black"
                 placeholder="0"
               />
             </FieldBox>
@@ -535,13 +492,12 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
           {/* Tenant name — optional for privacy */}
           <FieldBox label="Tenant_Name [optional · privacy protected]">
             <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 shrink-0" style={{ color: C.subtle }} />
+              <User className="w-3.5 h-3.5 shrink-0 text-pw-subtle" />
               <input
                 type="text"
                 value={tenantName}
                 onChange={e => setTenantName(e.target.value)}
-                className="bg-transparent text-sm font-black w-full focus:outline-none"
-                style={{ color: C.label }}
+                className="bg-transparent text-sm font-black w-full focus:outline-none text-pw-black"
                 placeholder="—"
               />
             </div>
@@ -554,12 +510,9 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         type="button"
         onClick={handleSave}
         disabled={!canSubmit}
-        className="w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95"
-        style={
-          canSubmit
-            ? { background: C.action.bg, color: C.action.text, border: `2px solid ${C.action.bg}` }
-            : { background: C.secondary.bg, color: C.secondary.text, border: `2px solid ${C.border}`, cursor: 'not-allowed' }
-        }
+        className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn rounded-none ${
+          canSubmit ? 'pw-btn--primary' : 'pw-btn--secondary opacity-50 cursor-not-allowed'
+        }`}
       >
         {canSubmit ? (
           <span className="flex items-center justify-center gap-2">

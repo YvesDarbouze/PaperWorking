@@ -58,8 +58,8 @@ export default function HoldPanel() {
   return (
     <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-8 space-y-8 bg-bg-primary h-full overflow-y-auto w-full">
       <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center border border-orange-200">
-          <HardHat className="w-6 h-6 text-orange-600" />
+        <div className="w-12 h-12 rounded-none bg-white/5 flex items-center justify-center border border-pw-border">
+          <HardHat className="w-6 h-6 text-pw-accent" />
         </div>
         <div>
           <h1 className="text-3xl font-normal tracking-tight text-text-primary">Hold</h1>
@@ -68,7 +68,7 @@ export default function HoldPanel() {
       </div>
 
       {!currentProject ? (
-        <div className="p-12 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-xl bg-bg-surface">
+        <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border rounded-none glass-card shadow-none">
           <HardHat className="w-12 h-12 mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-text-primary">No Target Property Selected</h3>
           <p className="mt-1">Select an active property from the Command Center to load the Rehab Tracker.</p>
@@ -79,23 +79,23 @@ export default function HoldPanel() {
           {/* ── Yesterday's Cost Thumbnail + Burn Rate ─────────── */}
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-4">
-              <Suspense fallback={<div className="h-40 border border-border-accent animate-shimmer" />}>
+              <Suspense fallback={<div className="h-40 border border-pw-border animate-shimmer" />}>
                 <YesterdayCostCard />
               </Suspense>
             </div>
-            <div className="lg:col-span-8 bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 space-y-6">
+            <div className="lg:col-span-8 glass-card rounded-none border border-pw-border p-6 space-y-6 shadow-none">
               <div>
                  <h2 className="text-xl font-medium tracking-tight text-text-primary">Burn Rate & Capital</h2>
                  <p className="text-sm text-text-secondary mt-1">Real-time holding cost clock and monthly expense monitoring.</p>
               </div>
               <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
                  <div className="xl:col-span-8">
-                    <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
+                    <Suspense fallback={<div className="h-64 border border-pw-border animate-shimmer rounded-none" />}>
                        <HoldingTimeline />
                     </Suspense>
                  </div>
                  <div className="xl:col-span-4">
-                    <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer rounded-xl" />}>
+                    <Suspense fallback={<div className="h-64 border border-pw-border animate-shimmer rounded-none" />}>
                        <HoldingCostTicker />
                     </Suspense>
                  </div>
@@ -105,50 +105,50 @@ export default function HoldPanel() {
 
           {/* ── Renovation Lifecycle & Critical Path ─────────── */}
           <section className="space-y-4">
-            <Suspense fallback={<div className="h-20 border border-border-accent animate-shimmer" />}>
+            <Suspense fallback={<div className="h-20 border border-pw-border animate-shimmer" />}>
               <RehabPhaseBar />
             </Suspense>
-            <Suspense fallback={<div className="h-64 border border-border-accent animate-shimmer" />}>
+            <Suspense fallback={<div className="h-64 border border-pw-border animate-shimmer" />}>
               <CriticalPathGantt />
             </Suspense>
           </section>
 
           {/* High-ROI Budget Tracker */}
-          <section className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
+          <section className="glass-card rounded-none border border-pw-border p-6 shadow-none">
             <div className="mb-6">
                <h2 className="text-xl font-medium tracking-tight text-text-primary">High-ROI Modules (The &quot;Money Rooms&quot;)</h2>
                <p className="text-sm text-text-secondary mt-1">Focus capital deployment on kitchens, baths, and curb appeal.</p>
             </div>
-            <Suspense fallback={<div className="h-48 animate-shimmer rounded-xl" />}>
+            <Suspense fallback={<div className="h-48 animate-shimmer rounded-none" />}>
               <ROIRenovationTasks />
             </Suspense>
           </section>
 
           {/* Permitting & Logistics Checklist */}
-          <section className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
+          <section className="glass-card rounded-none border border-pw-border p-6 shadow-none">
             <div className="mb-6">
                <h2 className="text-xl font-medium tracking-tight text-text-primary">Permitting & Compliance</h2>
                <p className="text-sm text-text-secondary mt-1">Track regulatory approvals and inspection milestones.</p>
             </div>
-            <Suspense fallback={<div className="h-40 animate-shimmer rounded-xl" />}>
+            <Suspense fallback={<div className="h-40 animate-shimmer rounded-none" />}>
               <PermitTrackingChecklist />
             </Suspense>
           </section>
 
           {/* Contractor Bid & Milestone Manager */}
-          <section className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
+          <section className="glass-card rounded-none border border-pw-border p-6 shadow-none">
             <div className="mb-6">
                <h2 className="text-xl font-medium tracking-tight text-text-primary">Contractor Milestones</h2>
                <p className="text-sm text-text-secondary mt-1">Budget VS Actual, Contingency, and Subcontractor tracking.</p>
             </div>
-            <Suspense fallback={<div className="h-96 animate-shimmer rounded-xl" />}>
+            <Suspense fallback={<div className="h-96 animate-shimmer rounded-none" />}>
               <RehabTracker />
             </Suspense>
           </section>
 
           {/* ── Property Performance Metrics ─────────────────────── */}
           {financials && (
-            <section className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 space-y-6">
+            <section className="glass-card rounded-none border border-pw-border p-6 space-y-6 shadow-none">
               <div>
                 <h2 className="text-xl font-medium tracking-tight text-text-primary">Property Performance</h2>
                 <p className="text-sm text-text-secondary mt-1">

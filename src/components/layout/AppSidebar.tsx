@@ -16,6 +16,8 @@ import {
   Settings,
   BarChart3,
   Plus,
+  TrendingUp,
+  Lightbulb,
 } from 'lucide-react';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
@@ -27,10 +29,14 @@ import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher';
    Route Map:
      WORKSPACE
      • Command Center   → /dashboard
-     • Project Folders   → /dashboard/projects
-     • Data Hub          → /dashboard/data
-     • Inbox             → /dashboard/inbox
-     • Team Directory    → /dashboard/team
+     • Project Folders  → /dashboard/projects
+     • Marketplace      → /dashboard/marketplace
+     • Market Data      → /dashboard/data
+     • Deal Analyzer    → /dashboard/deal-analyzer
+     • Reports          → /dashboard/reports
+     • Insights         → /dashboard/insights
+     • Inbox            → /dashboard/inbox
+     • Team             → /dashboard/team
 
      ACCOUNT
      • Profile           → /dashboard/settings/profile
@@ -77,10 +83,22 @@ const WORKSPACE_ITEMS: NavItem[] = [
     icon: <Database className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
+    id: 'deal-analyzer',
+    label: 'Deal Analyzer',
+    href: '/dashboard/deal-analyzer',
+    icon: <TrendingUp className="w-4 h-4" strokeWidth={1.5} />,
+  },
+  {
     id: 'reports',
     label: 'Reports',
     href: '/dashboard/reports',
     icon: <BarChart3 className="w-4 h-4" strokeWidth={1.5} />,
+  },
+  {
+    id: 'insights',
+    label: 'Insights',
+    href: '/dashboard/insights',
+    icon: <Lightbulb className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'inbox',

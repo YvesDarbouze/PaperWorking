@@ -114,9 +114,9 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
   };
 
   return (
-    <div className="bg-bg-surface border border-border-accent relative overflow-hidden">
+    <div className="glass-card border border-pw-border rounded-none shadow-none relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border-accent bg-pw-black text-pw-white">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
           <Receipt className="w-3.5 h-3.5" />
           <h3 className="text-xs font-black tracking-[0.3em] uppercase">Settlement_Ledger</h3>
@@ -129,7 +129,7 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
       {/* Table */}
       <div className="divide-y divide-pw-border">
         {/* Column Headers */}
-        <div className="grid grid-cols-12 gap-2 px-6 py-3 bg-bg-primary text-[9px] font-black text-text-secondary uppercase tracking-widest">
+        <div className="grid grid-cols-12 gap-2 px-6 py-3 bg-pw-glass-bg/50 text-[9px] font-black text-text-secondary uppercase tracking-widest border-b border-pw-border">
           <div className="col-span-4">Line Item</div>
           <div className="col-span-2 text-right">Rate / Amount</div>
           <div className="col-span-2 text-right">Computed $</div>
@@ -142,8 +142,8 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
           <div
             key={item.id}
             className={`grid grid-cols-12 gap-2 px-6 py-3 items-center transition-colors ${
-              idx % 2 === 0 ? 'bg-bg-surface' : 'bg-bg-primary/50'
-            } ${item.locked ? 'opacity-60' : 'hover:bg-bg-primary'}`}
+              idx % 2 === 0 ? 'bg-pw-glass-bg/10' : 'bg-pw-glass-bg/20'
+            } ${item.locked ? 'opacity-60' : 'hover:bg-pw-glass-bg/30'}`}
           >
             {/* Label */}
             <div className="col-span-4">
@@ -169,7 +169,7 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
                   value={item.isPercentage ? (item.percentageRate ?? 0) : (item.flatAmount ?? 0)}
                   onChange={e => handleUpdateRate(item.id, e.target.value)}
                   disabled={item.locked}
-                  className="text-xs font-mono font-black text-right w-16 bg-transparent focus:outline-none border-b border-transparent focus:border-pw-accent disabled:cursor-not-allowed"
+                  className="text-xs font-mono font-black text-right w-16 bg-transparent focus:outline-none border-b border-transparent focus:border-pw-accent disabled:cursor-not-allowed text-text-primary"
                 />
                 {item.isPercentage ? (
                   <Percent className="w-3 h-3 text-text-secondary flex-shrink-0" />
@@ -191,12 +191,12 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
               <button
                 onClick={() => handleTogglePaidBy(item.id)}
                 disabled={item.locked}
-                className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 border transition-all disabled:cursor-not-allowed ${
+                className={`text-[9px] font-black uppercase tracking-wider px-3 py-1 border rounded-none transition-all disabled:cursor-not-allowed ${
                   item.paidBy === 'Seller'
-                    ? 'bg-red-50 border-red-200 text-red-700'
+                    ? 'bg-color-error/10 border-color-error/30 text-color-error'
                     : item.paidBy === 'Buyer'
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                    ? 'bg-pw-accent/10 border-pw-accent/30 text-pw-accent'
+                    : 'bg-pw-muted/20 border-pw-border text-text-primary'
                 }`}
               >
                 {item.paidBy}
@@ -208,7 +208,7 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
               {!item.locked && (
                 <button
                   onClick={() => handleRemove(item.id)}
-                  className="p-1 text-text-secondary hover:text-red-500 transition-colors"
+                  className="p-1 text-text-secondary hover:text-color-error transition-colors"
                   aria-label={`Remove ${item.label}`}
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -225,25 +225,25 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
       </div>
 
       {/* Footer: Totals + Add */}
-      <div className="border-t-2 border-pw-black px-6 py-4 bg-bg-primary">
-        <div className="flex items-center justify-between mb-3">
+      <div className="border-t border-pw-border px-6 py-4 bg-pw-glass-bg/30">
+        <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleAddCustom}
-            className="flex items-center gap-1.5 text-[10px] font-black text-pw-accent uppercase tracking-widest hover:text-text-primary transition-colors"
+            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
           >
             <Plus className="w-3.5 h-3.5" /> Add_Line_Item
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 border border-border-accent bg-bg-surface">
-            <p className="text-[9px] font-black text-red-500 uppercase tracking-widest mb-1">Seller_Liability</p>
+          <div className="p-4 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+            <p className="text-[9px] font-black text-color-error uppercase tracking-widest mb-1">Seller_Liability</p>
             <p className="text-2xl font-black font-mono tracking-tighter text-text-primary">
               ${sellerTotal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </p>
           </div>
-          <div className="p-4 border border-border-accent bg-bg-surface">
-            <p className="text-[9px] font-black text-blue-500 uppercase tracking-widest mb-1">Buyer_Liability</p>
+          <div className="p-4 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+            <p className="text-[9px] font-black text-pw-accent uppercase tracking-widest mb-1">Buyer_Liability</p>
             <p className="text-2xl font-black font-mono tracking-tighter text-text-primary">
               ${buyerTotal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </p>

@@ -62,12 +62,12 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
   }, [deal, tax, salePrice]);
 
   return (
-    <div className="bg-bg-surface border border-border-accent overflow-hidden">
+    <div className="glass-card border border-pw-border rounded-none shadow-none">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border-accent">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
-          <FileText className="w-3.5 h-3.5 text-pw-accent" />
-          <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">
+          <FileText className="w-3.5 h-3.5" />
+          <h3 className="text-xs font-black tracking-[0.3em] uppercase">
             Tax_Report_Generator
           </h3>
         </div>
@@ -77,9 +77,9 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
       </div>
 
       {/* Preview */}
-      <div className="px-6 py-6 space-y-4 bg-bg-primary">
-        <div className="bg-bg-surface border border-border-accent p-5 space-y-3">
-          <div className="pb-3 border-b border-border-accent">
+      <div className="px-6 py-6 space-y-4 bg-pw-glass-bg/30">
+        <div className="bg-pw-glass-bg border border-pw-border p-5 space-y-3 rounded-none">
+          <div className="pb-3 border-b border-pw-border">
             <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
               Property: {deal.propertyName || 'Untitled'}
             </p>
@@ -94,34 +94,34 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
             <Row label="Cost Basis" value={fmt(tax.costBasis)} />
             <Row label="Sell-Side Costs" value={fmt(salePrice - tax.netProceeds)} />
             <Row label="Net Proceeds" value={fmt(tax.netProceeds)} bold />
-            <div className="border-t border-border-accent my-2" />
+            <div className="border-t border-pw-border my-2" />
             <Row label="Capital Gain / (Loss)" value={fmt(tax.capitalGain)} highlight={tax.capitalGain >= 0} />
             <Row label="Holding Period" value={`${tax.holdingPeriodDays} days (${tax.isLongTerm ? 'Long-Term' : 'Short-Term'})`} />
             <Row label="Estimated Tax Rate" value={`${tax.estimatedTaxRate}%`} />
             <Row label="Estimated Tax Liability" value={fmt(tax.estimatedTaxLiability)} negative />
-            <div className="border-t-2 border-pw-black my-2" />
+            <div className="border-t border-pw-border my-2" />
             <Row label="Net After Tax" value={fmt(tax.netAfterTax)} bold highlight={tax.netAfterTax >= 0} />
           </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="px-6 py-4 border-t border-border-accent flex flex-col gap-3 sm:flex-row">
+      <div className="px-6 py-4 border-t border-pw-border flex flex-col gap-3 sm:flex-row bg-pw-glass-bg/30">
         <button
           onClick={handleDownloadPDF}
-          className="flex-1 flex items-center justify-center gap-2 bg-pw-black text-pw-white font-black text-[10px] py-3 uppercase tracking-[0.3em] hover:bg-pw-accent transition-all active:scale-95 border border-pw-black"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--primary rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <Printer className="w-3.5 h-3.5" /> Export_PDF
         </button>
         <button
           onClick={handleDownloadCSV}
-          className="flex-1 flex items-center justify-center gap-2 bg-bg-surface text-text-primary font-black text-[10px] py-3 uppercase tracking-[0.3em] hover:bg-border-accent transition-all active:scale-95 border border-border-accent"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--secondary rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <FileSpreadsheet className="w-3.5 h-3.5" /> Export_CSV
         </button>
         <button
           onClick={handleCopyText}
-          className="flex-1 flex items-center justify-center gap-2 bg-bg-primary text-text-primary font-black text-[10px] py-3 uppercase tracking-[0.3em] hover:bg-pw-accent hover:text-pw-white transition-all active:scale-95 border border-border-accent"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--outline rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <Download className="w-3.5 h-3.5" /> Copy_Text
         </button>
@@ -153,10 +153,10 @@ function Row({
         className={`font-mono ${bold ? 'font-black text-sm' : 'font-bold'} ${
           highlight !== undefined
             ? highlight
-              ? 'text-green-700'
-              : 'text-red-700'
+              ? 'text-pw-accent'
+              : 'text-color-error'
             : negative
-            ? 'text-red-600'
+            ? 'text-color-error'
             : 'text-text-primary'
         }`}
       >

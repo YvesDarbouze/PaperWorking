@@ -164,14 +164,14 @@ export default function EnginePanel() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="border-b border-border-accent overflow-x-auto">
+      <div className="border-b border-pw-border overflow-x-auto">
         <nav className="-mb-px flex space-x-8 min-w-max">
           
           {isFinanceTeam && (
           <button
             onClick={() => setActiveTab('cash')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-              activeTab === 'cash' ? 'border-gray-900 text-text-primary' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'cash' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Banknote className="mr-2 h-4 w-4" /> Cash Management (ROI)
@@ -185,7 +185,7 @@ export default function EnginePanel() {
               <button
                 onClick={() => setActiveTab('ledger')}
                 className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-                  activeTab === 'ledger' ? 'border-gray-900 text-text-primary' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+                  activeTab === 'ledger' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
                 }`}
               >
                 <ListOrdered className="mr-2 h-4 w-4" /> Digital Ledger
@@ -193,7 +193,7 @@ export default function EnginePanel() {
               <button
                 onClick={() => setActiveTab('compliance')}
                 className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-                  activeTab === 'compliance' ? 'border-gray-900 text-text-primary' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+                  activeTab === 'compliance' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
                 }`}
               >
                 <FileText className="mr-2 h-4 w-4" /> Compliance & Reporting
@@ -204,7 +204,7 @@ export default function EnginePanel() {
           <button
             onClick={() => setActiveTab('statements')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'statements' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'statements' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-pw-border hover:text-text-primary'
             }`}
           >
             <BarChart3 className="mr-2 h-4 w-4" /> Financial Statements
@@ -214,7 +214,7 @@ export default function EnginePanel() {
           <button
             onClick={() => setActiveTab('valuation')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-              activeTab === 'valuation' ? 'border-gray-900 text-text-primary' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'valuation' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Scale className="mr-2 h-4 w-4" /> Evaluation & Financing
@@ -225,70 +225,70 @@ export default function EnginePanel() {
           <button
             onClick={() => setActiveTab('rehab')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'rehab' ? 'border-orange-600 text-orange-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'rehab' ? 'border-orange-600 text-orange-700' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Hammer className="mr-2 h-4 w-4" /> Rehab Metrics
           </button>
-
+ 
           {/* Document Hub — accessible to all engine-room users */}
           <button
             onClick={() => setActiveTab('docs')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'docs' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'docs' ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <FileText className="mr-2 h-4 w-4" /> Document Hub
           </button>
-
+ 
           {/* Contact Manager — Lead Investor only */}
           {isLead && (
             <button
               onClick={() => setActiveTab('contacts')}
               className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-                activeTab === 'contacts' ? 'border-violet-600 text-violet-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+                activeTab === 'contacts' ? 'border-violet-600 text-violet-700' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
               }`}
             >
               <UserCircle className="mr-2 h-4 w-4" /> Contacts
             </button>
           )}
-
+ 
           {/* Google Drive Sync Placeholder */}
           <button
             onClick={() => setActiveTab('sync')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition ${
-              activeTab === 'sync' ? 'border-blue-600 text-blue-700' : 'border-transparent text-text-secondary hover:border-border-accent hover:text-text-primary'
+              activeTab === 'sync' ? 'border-blue-600 text-blue-700' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Cloud className="mr-2 h-4 w-4" /> Cloud Sync
           </button>
         </nav>
       </div>
-
+ 
       {/* Tab Panels */}
-      <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6 min-h-[400px]">
+      <div className="glass-card border border-pw-border p-6 min-h-[400px] rounded-none shadow-none">
         
         {activeTab === 'cash' && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Liquidity Overview</h3>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="p-4 bg-bg-primary rounded-lg">
+              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Active Deal Reno</p>
                 <p className="text-2xl font-normal text-text-primary">${dealMetrics.renovationCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-bg-primary rounded-lg">
+              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Total Approved Costs</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalApprovedCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-bg-primary rounded-lg border border-border-accent">
+              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Pending AP (GC)</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalPendingCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-bg-primary rounded-lg border border-border-accent">
+              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Realized PnL ({metrics.soldProjects})</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalRealizedProfit.toLocaleString()}</p>
               </div>
-              <div className={`p-4 rounded-lg border ${dealMetrics.netProfit >= 0 ? 'bg-bg-primary border-border-accent' : 'bg-red-50 border-red-100'}`}>
+              <div className={`p-4 rounded-none border ${dealMetrics.netProfit >= 0 ? 'bg-white/5 border-pw-border' : 'bg-red-950/20 border-red-900/30'}`}>
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Net Profit (Deal)</p>
                 <p className={`text-2xl font-normal ${dealMetrics.netProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
                   {dealMetrics.netProfit >= 0 ? '' : '-'}${Math.abs(dealMetrics.netProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -316,19 +316,19 @@ export default function EnginePanel() {
                <TaxExportCsvButton />
             </div>
             
-            <div className="mt-4 border border-border-accent rounded-lg overflow-hidden">
+            <div className="mt-4 border border-pw-border rounded-none overflow-hidden">
                {Object.keys(groupedLedger).length === 0 ? (
-                  <div className="p-12 text-center text-sm text-text-secondary bg-bg-primary">
+                  <div className="p-12 text-center text-sm text-text-secondary bg-white/5">
                      No ledger entries generated yet. Use the GC Hook to upload a receipt!
                   </div>
                ) : (
                   <div className="divide-y divide-gray-200">
                      {(Object.values(groupedLedger) as { property: string; entries: typeof masterLedger; totalApproved: number; totalPending: number }[]).map((group) => (
-                        <div key={group.property} className="bg-bg-surface">
+                        <div key={group.property} className="bg-white/5">
                            {/* High-level summary row */}
                            <div 
                               onClick={() => togglePropertyLedger(group.property)}
-                              className="px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-bg-primary transition-colors"
+                              className="px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 transition-colors"
                            >
                               <div className="flex items-center space-x-3">
                                  {expandedLedgerProperties[group.property] ? (
@@ -352,9 +352,9 @@ export default function EnginePanel() {
                            
                            {/* Granular detail row shown optionally */}
                            {expandedLedgerProperties[group.property] && (
-                              <div className="bg-bg-primary border-t border-border-accent overflow-x-auto p-4">
-                                 <table className="min-w-full divide-y divide-gray-200 bg-bg-surface rounded shadow-sm border border-border-accent">
-                                    <thead className="bg-bg-primary">
+                              <div className="bg-white/5 border-t border-pw-border overflow-x-auto p-4">
+                                 <table className="min-w-full divide-y divide-gray-200 bg-white/5 rounded-none border border-pw-border">
+                                    <thead className="bg-white/5">
                                        <tr>
                                           <th className="px-4 py-3 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Date</th>
                                           <th className="px-4 py-3 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Category / Description</th>
@@ -364,7 +364,7 @@ export default function EnginePanel() {
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                        {group.entries.map((entry) => (
-                                          <tr key={entry.id} className="hover:bg-bg-primary">
+                                          <tr key={entry.id} className="hover:bg-white/5">
                                              <td className="px-4 py-3 whitespace-nowrap text-xs text-text-secondary">
                                                 {new Date(entry.createdAt).toLocaleDateString()}
                                              </td>
@@ -407,16 +407,16 @@ export default function EnginePanel() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {projects.map(deal => (
-                 <div key={deal.id} className="p-4 border border-border-accent rounded-lg flex items-center justify-between hover:bg-bg-primary">
+                 <div key={deal.id} className="p-4 border border-pw-border rounded-none flex items-center justify-between hover:bg-white/5">
                     <div>
                       <p className="text-sm font-medium text-text-primary">{deal.propertyName}</p>
                       <p className="text-xs text-text-secondary">Folder ID: {deal.documentHubFolderId || 'Not Linked'}</p>
                     </div>
-                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium" disabled={!deal.documentHubFolderId}>Open in Drive &rarr;</button>
+                    <button className="text-pw-accent hover:opacity-85 text-sm font-medium" disabled={!deal.documentHubFolderId}>Open in Drive &rarr;</button>
                  </div>
               ))}
               {projects.length === 0 && (
-                  <div className="col-span-2 p-4 border border-dashed border-border-accent rounded-lg text-center cursor-pointer hover:bg-bg-primary mt-4 text-text-secondary">
+                  <div className="col-span-2 p-4 border border-dashed border-pw-border rounded-none text-center cursor-pointer hover:bg-white/5 mt-4 text-text-secondary">
                     No active property environments detected.
                   </div>
               )}
@@ -428,7 +428,7 @@ export default function EnginePanel() {
         {activeTab === 'statements' && (
           <div className="space-y-6">
             {/* Sub-Tab Navigation */}
-            <div className="flex flex-wrap items-center gap-1 bg-bg-primary p-1 rounded-lg w-fit">
+            <div className="flex flex-wrap items-center gap-1 bg-white/5 p-1 rounded-none w-fit border border-pw-border">
               {[
                 { key: 'pl' as StatementSubTab, label: 'P&L', icon: '📊' },
                 { key: 'cashflow' as StatementSubTab, label: 'Cash Flow', icon: '💧' },
@@ -438,9 +438,9 @@ export default function EnginePanel() {
                 <button
                   key={tab.key}
                   onClick={() => setStatementSubTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-sm font-medium transition ${
                     statementSubTab === tab.key
-                      ? 'bg-bg-surface text-text-primary shadow-sm'
+                      ? 'bg-white/10 text-text-primary border border-pw-border'
                       : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -478,7 +478,7 @@ export default function EnginePanel() {
             </div>
 
             {!currentProject ? (
-              <div className="p-12 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-xl bg-bg-primary">
+              <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border rounded-none bg-white/5">
                 <Hammer className="w-12 h-12 mx-auto text-gray-300 mb-4" />
                 <h3 className="text-lg font-medium text-text-primary">No Property Selected</h3>
                 <p className="mt-1 text-sm">Select a property from the Command Center to view rehab metrics.</p>
@@ -530,7 +530,7 @@ export default function EnginePanel() {
                 
                 {projects.length > 0 && (
                   <select 
-                     className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500"
+                     className="border border-pw-border rounded-none text-sm py-2 pl-3 pr-8 focus:ring-pw-accent focus:border-pw-accent"
                      value={currentProject?.id || ''}
                      onChange={(e) => {
                         const target = projects.find(d => d.id === e.target.value);
@@ -546,7 +546,7 @@ export default function EnginePanel() {
              </div>
 
              {projects.length === 0 ? (
-                <div className="p-12 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-xl">
+                <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border rounded-none">
                    No active properties available to analyze. Add a property lead to begin.
                 </div>
              ) : (

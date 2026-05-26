@@ -542,6 +542,10 @@ export interface Project {
   organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
   address: string;
+  phase?: string;
+  name?: string;
+  numberOfUnits?: number;
+  occupiedUnits?: number;
   squareFootage?: number; // Core metric for sqft-based reporting
   status: 'Active' | 'Lead' | 'Under Contract' | 'Renovating' | 'Listed' | 'Sold' | 'Rented' | 'closed_won' | 'closed_lost';
   phaseStatus?: PhaseStatus; // High-level horizontal phase tracker
@@ -824,6 +828,8 @@ export interface ProjectFinancials {
   propertyManagerEmail?: string;
   leasingFee?: number; // up-front leasing fee / tenant placement fee
   longTermMortgagePayment?: number; // per month
+  occupancyRate?: number;
+  grossRentMultiplier?: number;
 
   // Deal Calculator Detailed Fields
   grossIncomeBaseRent?: number;

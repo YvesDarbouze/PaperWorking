@@ -83,97 +83,97 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-end sm:items-center bg-black/80 backdrop-blur-sm p-0 sm:p-4 selection:bg-emerald-500/30 font-sans">
-      <div className="bg-pw-black text-white w-full max-w-6xl h-[90vh] sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden relative border border-gray-800">
+    <div className="fixed inset-0 z-50 flex justify-center items-end sm:items-center bg-black/80 backdrop-blur-sm p-0 sm:p-4 selection:bg-pw-accent/30 font-sans">
+      <div className="bg-bg-surface/95 text-text-primary w-full max-w-6xl h-[90vh] rounded-none shadow-2xl flex flex-col overflow-hidden relative border border-pw-border">
         
         {/* Header */}
-        <div className="border-b border-gray-800 bg-black/80 p-5 flex justify-between items-center sticky top-0 z-10">
+        <div className="border-b border-pw-border bg-bg-surface/80 p-5 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
           <div>
-            <h2 className="text-xl font-normal tracking-wide text-gray-200 flex items-center">
+            <h2 className="text-xl font-bold tracking-tight text-text-primary flex items-center">
               The Exit Strategy Board <PhaseBadge status={currentProject.status} className="ml-3" />
             </h2>
             <p className="text-xs text-text-secondary mt-1">{currentProject.propertyName} • {currentProject.address}</p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-bg-surface/10 rounded-full transition text-text-secondary">
+          <button onClick={onClose} className="p-2 hover:bg-bg-surface-variant/20 rounded-none transition text-text-secondary">
              <X className="w-5 h-5"/>
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <div className="flex-1 overflow-y-auto p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-8 duration-700 bg-pw-bg/30">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             
             {/* Left Column: Real Estate Agent Controls */}
             <div className="lg:col-span-5 space-y-8">
               
               {/* Visual Identity Block */}
-              <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 relative overflow-hidden">
-                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-bl-full blur-2xl"></div>
-                 <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase mb-4 flex items-center"><Camera className="w-3 h-3 mr-2" /> Staging & Inventory</h3>
+              <div className="glass-card border border-pw-border rounded-none p-6 relative overflow-hidden">
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-pw-accent/5 rounded-bl-full blur-2xl"></div>
+                 <h3 className="text-xs font-black tracking-widest text-pw-accent uppercase mb-4 flex items-center"><Camera className="w-3.5 h-3.5 mr-2" /> Staging & Inventory</h3>
                  
                  <div className="space-y-4">
                     <div>
-                      <label className="text-xs text-text-secondary block mb-1">Photography Assets Uploaded</label>
+                      <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">Photography Assets Uploaded</label>
                       <div className="flex items-center space-x-3">
-                         <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="bg-black border border-gray-700 rounded-lg p-2 w-20 text-center focus:border-emerald-500 focus:outline-none" />
-                         <span className="text-sm text-text-secondary">.JPG / .PNG / .MP4</span>
+                         <input type="number" value={imageCount} onChange={(e) => setImageCount(Number(e.target.value))} className="glass-input p-2 w-20 text-center text-text-primary focus:outline-none" />
+                         <span className="text-xs font-bold text-text-secondary">.JPG / .PNG / .MP4</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs text-text-secondary block mb-1">Live MLS Link</label>
+                      <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">Live MLS Link</label>
                       <div className="relative">
-                         <LinkIcon className="absolute left-3 top-2.5 w-4 h-4 text-text-secondary" />
-                         <input type="url" placeholder="https://zillow.com/homedetails/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="bg-black border border-gray-700 rounded-lg py-2 pl-9 pr-3 w-full text-sm focus:border-emerald-500 focus:outline-none" />
+                         <LinkIcon className="absolute left-3 top-3 w-4 h-4 text-text-secondary" />
+                         <input type="url" placeholder="https://zillow.com/homedetails/..." value={mlsLink} onChange={(e) => setMlsLink(e.target.value)} className="glass-input py-2 pl-9 pr-3 w-full text-sm text-text-primary focus:outline-none" />
                       </div>
                     </div>
                     
-                    <button onClick={handleUpdateListing} className="w-full mt-4 bg-bg-surface text-text-primary font-semibold text-sm py-2.5 rounded-lg hover:bg-gray-200 transition active:scale-95 flex justify-center items-center">
-                       <span>Push Updates to MLS</span>
+                    <button onClick={handleUpdateListing} className="w-full pw-btn pw-btn--secondary rounded-none font-black text-xs py-3 uppercase tracking-widest">
+                       Push Updates to MLS
                     </button>
                  </div>
               </div>
 
               {/* Closing Fee Trigger Setup */}
-              <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 relative">
-                 <div className="flex justify-between items-center mb-4">
-                   <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase flex items-center"><DollarSign className="w-3 h-3 mr-2" /> Final Capital Mechanics</h3>
+              <div className="glass-card border border-pw-border rounded-none p-6 relative">
+                 <div className="flex justify-between items-center mb-6 pb-4 border-b border-pw-border">
+                    <h3 className="text-xs font-black tracking-widest text-pw-accent uppercase flex items-center"><DollarSign className="w-3.5 h-3.5 mr-2" /> Final Capital Mechanics</h3>
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs text-text-secondary font-medium">BRRRR Mode</span>
+                      <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">BRRRR Mode</span>
                       <Switch checked={isBrrrr} onChange={() => setIsBrrrr(!isBrrrr)} />
                     </div>
                  </div>
                  
                  <div className="space-y-5">
                     <div>
-                      <label className="text-xs text-text-secondary block mb-1">{isBrrrr ? 'Refinance Appraisal Value ($)' : 'Gross Sale Trigger ($)'}</label>
-                      <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-3 w-full text-lg font-normal tracking-wide focus:border-emerald-500 focus:outline-none" />
+                      <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">{isBrrrr ? 'Refinance Appraisal Value ($)' : 'Gross Sale Trigger ($)'}</label>
+                      <input type="number" value={actualSale} onChange={(e) => setActualSale(e.target.value)} className="glass-input p-3 w-full text-lg font-bold tracking-tight text-text-primary focus:outline-none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs uppercase tracking-wider text-text-secondary block mb-1">Buyer Comm.</label>
+                        <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">Buyer Comm.</label>
                         <div className="relative">
-                          <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-text-secondary" />
+                          <input type="number" step="0.1" value={buyerComm} onChange={(e) => setBuyerComm(e.target.value)} className="glass-input p-2 w-full text-sm pr-8 text-text-primary focus:outline-none" />
+                          <Percent className="absolute right-3 top-3 w-3 h-3 text-text-secondary" />
                         </div>
                       </div>
                       <div>
-                        <label className="text-xs uppercase tracking-wider text-text-secondary block mb-1">Seller Comm.</label>
+                        <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">Seller Comm.</label>
                         <div className="relative">
-                          <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm pr-8 focus:border-emerald-500 focus:outline-none" />
-                          <Percent className="absolute right-3 top-2.5 w-3 h-3 text-text-secondary" />
+                          <input type="number" step="0.1" value={sellerComm} onChange={(e) => setSellerComm(e.target.value)} className="glass-input p-2 w-full text-sm pr-8 text-text-primary focus:outline-none" />
+                          <Percent className="absolute right-3 top-3 w-3 h-3 text-text-secondary" />
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-xs text-text-secondary block mb-1">Final Closing & Concessions ($)</label>
-                      <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="bg-black border border-gray-700 rounded-lg p-2 w-full text-sm focus:border-emerald-500 focus:outline-none" />
+                      <label className="text-[10px] font-black text-text-secondary block mb-1 uppercase tracking-widest">Final Closing & Concessions ($)</label>
+                      <input type="number" value={closingCosts} onChange={(e) => setClosingCosts(e.target.value)} className="glass-input p-2 w-full text-sm text-text-primary focus:outline-none" />
                     </div>
 
                     <div className="pt-2">
-                      <button onClick={handleExecuteSale} className="w-full bg-emerald-600 text-white font-bold text-sm py-3 rounded-lg hover:bg-emerald-500 transition active:scale-95 shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]">
+                      <button onClick={handleExecuteSale} className="w-full pw-btn pw-btn--primary rounded-none py-4 font-black uppercase tracking-widest">
                          {isBrrrr ? 'Execute Refinance' : 'Execute Final Sale'}
                       </button>
                     </div>
@@ -188,24 +188,24 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                
                {/* MLS / Listing Live Preview Pane */}
                {currentProject.status === 'Listed' || currentProject.status === 'Sold' ? (
-                  <div className="mt-6 border border-gray-800  bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
-                     <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition duration-500 flex flex-col items-center justify-center">
-                        <div className="bg-black/50 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex items-center space-x-3 mb-2">
-                           <CheckCircle className={`w-4 h-4 ${currentProject.status === 'Sold' ? 'text-red-500' : 'text-emerald-500'}`} />
-                           <span className="font-semibold text-white tracking-widest uppercase text-sm">Property is {currentProject.status}</span>
+                  <div className="mt-6 border border-pw-border rounded-none bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
+                     <div className="absolute inset-0 bg-bg-primary/70 group-hover:bg-bg-primary/50 transition duration-500 flex flex-col items-center justify-center">
+                        <div className="bg-bg-surface/80 backdrop-blur-md px-6 py-3 rounded-none border border-pw-border flex items-center space-x-3 mb-2">
+                           <CheckCircle className={`w-4 h-4 text-pw-accent`} />
+                           <span className="font-black text-text-primary tracking-widest uppercase text-xs">Property is {currentProject.status}</span>
                         </div>
                         {currentProject.exitAssets?.mlsListingLink && (
-                          <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center transition">
+                          <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-pw-accent hover:underline flex items-center transition">
                             View Staging MLS <ExternalLink className="w-3 h-3 ml-1" />
                           </a>
                         )}
                      </div>
                   </div>
                ) : (
-                  <div className="mt-6 border border-gray-800 border-dashed  h-48 flex items-center justify-center flex-col text-text-secondary bg-black/20">
-                     <BadgePercent className="w-8 h-8 mb-2 opacity-50" />
-                     <p className="text-sm font-medium">Awaiting Listing Deployment</p>
-                     <p className="text-xs mt-1">Upload Staging Images & MLS Link to syndicate.</p>
+                  <div className="mt-6 border border-pw-border border-dashed h-48 flex items-center justify-center flex-col text-text-secondary bg-pw-bg/10 rounded-none">
+                     <BadgePercent className="w-8 h-8 mb-2 opacity-50 text-pw-accent" />
+                     <p className="text-xs font-black uppercase tracking-widest text-text-primary">Awaiting Listing Deployment</p>
+                     <p className="text-[10px] text-text-secondary mt-1 uppercase tracking-wider">Upload Staging Images & MLS Link to syndicate.</p>
                   </div>
                )}
             </div>

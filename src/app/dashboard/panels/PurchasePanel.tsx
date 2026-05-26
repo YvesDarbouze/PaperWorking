@@ -252,7 +252,7 @@ export default function PurchasePanel() {
       {/* ── DSCR Gauge — Underwriting check at purchase gate ── */}
       {dscrData && (
         <div className="space-y-3">
-          <div className="border-b border-border-accent pb-2">
+          <div className="border-b border-pw-border pb-2">
             <h3 className="text-sm font-medium text-text-primary tracking-tight">Underwriting Check</h3>
             <p className="text-xs text-text-secondary mt-0.5">Debt service coverage at purchase gate</p>
           </div>
@@ -267,12 +267,12 @@ export default function PurchasePanel() {
         
         {/* Document Collection Grid */}
         <div className="lg:col-span-8 space-y-6">
-           <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
-              <h3 className="text-lg font-medium tracking-tight border-b pb-4 mb-4">Required Legal Artifacts</h3>
+           <div className="glass-card border border-pw-border p-6 rounded-none shadow-none">
+              <h3 className="text-lg font-medium tracking-tight border-b border-pw-border pb-4 mb-4">Required Legal Artifacts</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                  {(['Title Insurance', 'Closing Disclosure', 'Wiring Instructions'] as const).map(type => (
-                   <div key={type} className={`border rounded-lg p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-border-accent bg-bg-primary' : 'border-dashed border-border-accent hover:bg-bg-primary cursor-pointer'}`} onClick={() => !hasDoc(type) && uploading !== type && handleDocumentUpload(type)}>
+                   <div key={type} className={`border rounded-none p-5 flex flex-col items-center justify-center text-center transition ${hasDoc(type) ? 'border-pw-border bg-white/5' : 'border-dashed border-pw-border hover:bg-white/5 cursor-pointer'}`} onClick={() => !hasDoc(type) && uploading !== type && handleDocumentUpload(type)}>
                       {uploading === type ? (
                          <div className="w-8 h-8 mb-2 animate-spin rounded-full border-b-2 border-indigo-500" />
                       ) : hasDoc(type) ? (
@@ -289,7 +289,7 @@ export default function PurchasePanel() {
                       {hasDoc(type) && !isDocVerified(type) && (
                          <button 
                            onClick={(e) => { e.stopPropagation(); handleLawyerVerify(type); }}
-                           className="mt-3 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded hover:bg-indigo-100"
+                           className="mt-3 pw-interactive pw-btn pw-btn--secondary rounded-none shadow-none text-xs px-3 py-1"
                          >
                             Verify Document (Demo)
                          </button>
@@ -310,7 +310,7 @@ export default function PurchasePanel() {
             </Suspense>
 
            {/* Web3 Ping Interface */}
-           <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-xl shadow-lg border border-indigo-800 p-8 text-white relative overflow-hidden">
+           <div className="bg-gradient-to-br from-[#0c1f2b] to-[#122837] rounded-none border border-pw-border p-8 text-white relative overflow-hidden shadow-none">
              <div className="relative z-10">
                <div className="flex items-center space-x-2 mb-2">
                  <LinkIcon className="w-5 h-5 text-indigo-300" />
@@ -319,20 +319,20 @@ export default function PurchasePanel() {
                <p className="text-indigo-200 text-sm mb-6 max-w-lg">
                   Before releasing capital to wire, we check digital title hashes against the immutable ledger to confirm clean title before wiring funds.
                </p>
-
+ 
                {portal.blockchainTitleVerified ? (
-                 <div className="p-4 bg-black/30 border border-indigo-500/30 rounded-lg flex items-center space-x-4">
+                 <div className="p-4 bg-black/30 border border-indigo-500/30 rounded-none flex items-center space-x-4">
                     <ShieldCheck className="w-8 h-8 text-green-400" />
                     <div>
-                      <p className="text-sm font-medium text-white">Title Verified on Ledger</p>
-                      <p className="text-xs font-mono text-indigo-300 mt-1 break-all tracking-tighter">TxHash: {portal.blockchainTxHash}</p>
+                       <p className="text-sm font-medium text-white">Title Verified on Ledger</p>
+                       <p className="text-xs font-mono text-indigo-300 mt-1 break-all tracking-tighter">TxHash: {portal.blockchainTxHash}</p>
                     </div>
                  </div>
                ) : (
                  <button 
                    onClick={triggerBlockchainVerification}
                    disabled={isMining}
-                   className={`px-6 py-3 bg-bg-surface text-indigo-900 font-medium rounded-lg text-sm shadow-md transition ${isMining ? 'opacity-70' : 'hover:scale-105'} flex items-center`}
+                   className={`pw-interactive pw-btn pw-btn--primary rounded-none shadow-none text-sm ${isMining ? 'opacity-70' : ''} flex items-center`}
                  >
                    {isMining ? 'Verifying...' : 'Verify Title on Chain'}
                  </button>
@@ -343,8 +343,8 @@ export default function PurchasePanel() {
 
         {/* Lawyer Portal Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-           <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
-              <div className="flex items-center space-x-2 border-b pb-4 mb-4">
+           <div className="glass-card border border-pw-border p-6 rounded-none shadow-none">
+              <div className="flex items-center space-x-2 border-b border-pw-border pb-4 mb-4">
                 <Scale className="w-5 h-5 text-text-primary" />
                 <h3 className="text-lg font-medium tracking-tight">Attorney Network</h3>
               </div>
@@ -356,19 +356,19 @@ export default function PurchasePanel() {
                       <button 
                          onClick={searchLawyersData}
                          disabled={searchingLawyers}
-                         className="w-full flex justify-center items-center py-2.5 bg-gray-900 text-white rounded-md text-sm font-medium hover:bg-gray-800 transition"
+                         className="pw-interactive pw-btn pw-btn--primary rounded-none shadow-none w-full py-2.5 text-sm"
                       >
-                         {searchingLawyers ? 'Searching...' : <><Search className="w-4 h-4 mr-2"/> Find Attorneys</>}
+                         {searchingLawyers ? 'Searching...' : <><Search className="w-4 h-4 mr-2 inline"/> Find Attorneys</>}
                       </button>
                    ) : (
                       <div className="space-y-3">
                         {availableLawyers.map(lw => (
-                          <div key={lw.uid} className="p-3 border rounded-lg border-border-accent flex justify-between items-center">
+                          <div key={lw.uid} className="p-3 border rounded-none border-pw-border flex justify-between items-center bg-white/5">
                             <div>
                               <p className="text-sm font-medium">{lw.displayName}</p>
                               <p className="text-xs text-text-secondary">{lw.state} Licensed Attorney</p>
                             </div>
-                            <button onClick={() => assignLawyer(lw.uid)} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded hover:bg-blue-100">
+                            <button onClick={() => assignLawyer(lw.uid)} className="pw-interactive pw-btn pw-btn--secondary rounded-none shadow-none px-3 py-1 text-xs">
                                Assign
                             </button>
                           </div>
@@ -377,7 +377,7 @@ export default function PurchasePanel() {
                    )}
                  </>
               ) : (
-                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                 <div className="p-4 bg-white/5 border border-pw-border rounded-none">
                     <CheckCircle className="w-6 h-6 text-green-600 mb-2" />
                     <p className="text-sm font-medium text-green-900">Attorney Assigned</p>
                     <p className="text-xs text-green-700 mt-1">Your assigned attorney is reviewing your closing docs and flagging anything that needs attention.</p>

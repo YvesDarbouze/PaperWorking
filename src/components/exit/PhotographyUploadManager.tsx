@@ -42,7 +42,7 @@ export default function PhotographyUploadManager() {
 
   const handleUploadSimulate = (id: string) => {
     setAssets(assets.map(a => a.id === id ? { ...a, uploaded: true } : a));
-    toast.success('Asset uploaded & queued for MLS syndication', { style: { background: '#1a1a1a', color: '#fff' } });
+    toast.success('Asset uploaded & queued for MLS syndication', { style: { background: 'var(--pw-black)', color: 'var(--pw-white)' } });
   };
 
   const handleRemove = (id: string) => {
@@ -64,28 +64,28 @@ export default function PhotographyUploadManager() {
   };
 
   return (
-    <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 shadow-2xl">
+    <div className="glass-card border border-pw-border rounded-none p-6 shadow-none">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
-          <Camera className="w-4 h-4 text-emerald-500" />
-          <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase">Photography & Media</h3>
+          <Camera className="w-4 h-4 text-pw-accent" />
+          <h3 className="text-xs font-black tracking-[0.3em] text-text-primary uppercase">Photography & Media</h3>
         </div>
-        <span className="text-xs text-text-secondary">{uploadedCount}/{assets.length} ready</span>
+        <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{uploadedCount}/{assets.length} ready</span>
       </div>
 
       {/* Summary Strip */}
       <div className="grid grid-cols-3 gap-2 mb-5">
-        <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-text-secondary">Photos</p>
-          <p className="text-lg font-normal text-white">{photoCount}</p>
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+          <p className="text-[9px] uppercase tracking-widest text-text-secondary">Photos</p>
+          <p className="text-lg font-semibold text-text-primary">{photoCount}</p>
         </div>
-        <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-text-secondary">Videos</p>
-          <p className="text-lg font-normal text-white">{videoCount}</p>
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+          <p className="text-[9px] uppercase tracking-widest text-text-secondary">Videos</p>
+          <p className="text-lg font-semibold text-text-primary">{videoCount}</p>
         </div>
-        <div className="p-2.5 bg-black/40 border border-gray-800 rounded-lg text-center">
-          <p className="text-xs uppercase tracking-widest text-text-secondary">Total</p>
-          <p className="text-lg font-normal text-white">{uploadedCount}</p>
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+          <p className="text-[9px] uppercase tracking-widest text-text-secondary">Total</p>
+          <p className="text-lg font-semibold text-text-primary">{uploadedCount}</p>
         </div>
       </div>
 
@@ -93,19 +93,19 @@ export default function PhotographyUploadManager() {
       {assets.filter(a => a.uploaded && a.url).length > 0 && (
         <div className="grid grid-cols-3 gap-2 mb-5">
           {assets.filter(a => a.uploaded && a.url).map(asset => (
-            <div key={asset.id} className="relative group rounded-lg overflow-hidden border border-gray-800 aspect-video">
+            <div key={asset.id} className="relative group rounded-none overflow-hidden border border-pw-border aspect-video">
               <img
                 src={asset.url}
                 alt={asset.room}
                 className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
                 loading="lazy"
               />
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                <p className="text-xs text-white font-medium">{asset.room}</p>
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-pw-black/90 to-transparent p-2">
+                <p className="text-xs text-pw-white font-medium">{asset.room}</p>
               </div>
               <button
                 onClick={() => handleRemove(asset.id)}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-black/60 rounded text-red-400 hover:text-red-300 transition"
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-pw-black/60 rounded-none text-color-error hover:text-color-error/80 transition"
               >
                 <Trash2 className="w-3 h-3" />
               </button>
@@ -117,17 +117,17 @@ export default function PhotographyUploadManager() {
       {/* Pending Upload Items */}
       <div className="space-y-2">
         {assets.filter(a => !a.uploaded).map(asset => (
-          <div key={asset.id} className="flex items-center justify-between p-3 border border-gray-800 rounded-lg bg-black/20 group">
+          <div key={asset.id} className="flex items-center justify-between p-3 border border-pw-border rounded-none bg-pw-glass-bg/20 group">
             <div className="flex items-center space-x-3">
-              <span className="text-text-secondary">{TYPE_ICONS[asset.type]}</span>
+              <span className="text-pw-accent">{TYPE_ICONS[asset.type]}</span>
               <div>
-                <p className="text-sm text-gray-300">{asset.name || 'Untitled Asset'}</p>
+                <p className="text-sm text-text-primary">{asset.name || 'Untitled Asset'}</p>
                 <p className="text-xs text-text-secondary">{asset.type} · {asset.room || 'Unassigned'}</p>
               </div>
             </div>
             <button
               onClick={() => handleUploadSimulate(asset.id)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-emerald-900/30 text-emerald-400 border border-emerald-800 rounded hover:bg-emerald-900/50 transition"
+              className="flex items-center gap-1 pw-btn pw-btn--primary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1 px-3"
             >
               <Upload className="w-3 h-3" /> Upload
             </button>
@@ -138,7 +138,7 @@ export default function PhotographyUploadManager() {
       {/* Add Asset Button */}
       <button
         onClick={handleAddAsset}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-2 border border-dashed border-gray-700 rounded-lg text-xs text-text-secondary hover:text-gray-300 hover:border-gray-600 transition"
+        className="mt-4 w-full flex items-center justify-center gap-2 py-3 border border-dashed border-pw-border rounded-none text-xs text-text-secondary hover:text-text-primary hover:border-pw-accent transition"
       >
         <Upload className="w-3 h-3" /> Add Media Asset
       </button>

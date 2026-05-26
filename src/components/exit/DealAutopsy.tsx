@@ -26,19 +26,19 @@ type Band = 'green' | 'yellow' | 'red';
 
 const BAND_STYLES: Record<Band, { card: string; value: string; icon: React.ReactNode }> = {
   green:  {
-    card:  'bg-emerald-900/20 border-emerald-700/50',
-    value: 'text-emerald-400',
-    icon:  <CheckCircle  className="w-3.5 h-3.5 text-emerald-500" aria-hidden="true" />,
+    card:  'bg-pw-accent/5 border-pw-accent/30',
+    value: 'text-pw-accent',
+    icon:  <CheckCircle  className="w-3.5 h-3.5 text-pw-accent" aria-hidden="true" />,
   },
   yellow: {
-    card:  'bg-amber-900/20 border-amber-700/50',
-    value: 'text-amber-400',
-    icon:  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" aria-hidden="true" />,
+    card:  'bg-pw-glass-bg border-pw-border',
+    value: 'text-text-primary',
+    icon:  <AlertTriangle className="w-3.5 h-3.5 text-text-secondary" aria-hidden="true" />,
   },
   red:    {
-    card:  'bg-red-900/20 border-red-700/50',
-    value: 'text-red-400',
-    icon:  <AlertTriangle className="w-3.5 h-3.5 text-red-500" aria-hidden="true" />,
+    card:  'bg-color-error/5 border-color-error/30',
+    value: 'text-color-error',
+    icon:  <AlertTriangle className="w-3.5 h-3.5 text-color-error" aria-hidden="true" />,
   },
 };
 
@@ -84,11 +84,11 @@ function KPICard({ icon, label, value, subtext, band, locked }: KPICardProps) {
   const s = BAND_STYLES[band];
   return (
     <div
-      className={`flex flex-col p-4 rounded-xl border transition-all ${s.card} ${locked ? 'opacity-100' : 'opacity-90'}`}
+      className={`flex flex-col p-4 rounded-none border transition-all ${s.card} ${locked ? 'opacity-100' : 'opacity-90'}`}
       aria-label={`${label}: ${value}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="p-1.5 rounded-lg bg-bg-surface/5" aria-hidden="true">{icon}</div>
+        <div className="p-1.5 rounded-none bg-bg-surface/5" aria-hidden="true">{icon}</div>
         <div className="flex items-center gap-1">
           {locked && <Lock className="w-3 h-3 text-text-secondary" aria-hidden="true" />}
           {s.icon}
@@ -111,12 +111,12 @@ function CompRow({ label, estimated, actual, isTotal = false }: {
   return (
     <div className={`grid grid-cols-3 gap-4 px-4 py-2.5 text-xs ${
       isTotal
-        ? 'bg-bg-surface/5 border-t border-gray-700/50 font-semibold'
-        : 'border-b border-gray-800/50'
+        ? 'bg-bg-surface/5 border-t border-pw-border font-semibold'
+        : 'border-b border-pw-border/50'
     }`}>
-      <span className="text-gray-300">{label}</span>
+      <span className="text-text-primary">{label}</span>
       <span className="text-text-secondary text-right font-mono">{estimated}</span>
-      <span className="text-gray-200 text-right font-mono">{actual}</span>
+      <span className="text-text-primary text-right font-mono">{actual}</span>
     </div>
   );
 }
@@ -145,18 +145,18 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
 
   return (
     <section
-      className="bg-pw-black border border-gray-800 rounded-2xl overflow-hidden shadow-2xl"
+      className="glass-card border border-pw-border rounded-none overflow-hidden shadow-none"
       aria-label={`Deal Autopsy — ${deal.propertyName}`}
       aria-live="polite"
     >
       {/* ── Header ─────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 bg-black/40">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-bg/20">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-emerald-500/10" aria-hidden="true">
-            <BarChart3 className="w-5 h-5 text-emerald-400" />
+          <div className="p-2 rounded-none bg-pw-accent/10" aria-hidden="true">
+            <BarChart3 className="w-5 h-5 text-pw-accent" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white tracking-wide">Project Autopsy</h2>
+            <h2 className="text-sm font-semibold text-text-primary tracking-wide">Project Autopsy</h2>
             <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest mt-0.5">
               Phase 4 Exit Intelligence
             </p>
@@ -167,7 +167,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           {/* Finalized / Projected badge */}
           {isSold ? (
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-900/40 border border-emerald-700 text-emerald-400"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-pw-accent/10 border border-pw-accent text-pw-accent"
               role="status"
               aria-label="Values finalized and locked at closing"
             >
@@ -176,7 +176,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             </div>
           ) : (
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-900/40 border border-amber-700 text-amber-400"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-pw-glass-bg border border-pw-border text-text-secondary"
               role="status"
               aria-label="Values are projected until deal is marked Sold"
             >
@@ -189,7 +189,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             onClick={handleDownloadPDF}
             disabled={pdfLoading}
             aria-label={`Download PDF autopsy report for ${deal.propertyName}`}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-bg-surface/5 border border-gray-700 text-gray-300 text-[10px] font-bold uppercase tracking-widest hover:bg-bg-surface/10 hover:text-white transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-pw-black"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-none bg-pw-glass-bg border border-pw-border text-text-secondary text-[10px] font-bold uppercase tracking-widest hover:bg-pw-glass-bg/85 hover:text-text-primary transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent focus-visible:ring-offset-2 focus-visible:ring-offset-pw-white"
           >
             {pdfLoading
               ? <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
@@ -247,11 +247,11 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           className="grid grid-cols-2 gap-3"
           aria-label="Time metrics"
         >
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-800 bg-black/40">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/40">
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Days on Market</p>
-              <p className="text-lg font-normal text-white mt-0.5" aria-label={`Days on market: ${m.dom !== null ? m.dom : 'unknown'}`}>
+              <p className="text-lg font-normal text-text-primary mt-0.5" aria-label={`Days on market: ${m.dom !== null ? m.dom : 'unknown'}`}>
                 {m.dom !== null ? `${m.dom}d` : '—'}
               </p>
               <p className="text-[9px] text-text-secondary mt-0.5">
@@ -259,11 +259,11 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-800 bg-black/40">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/40">
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Total Hold Period</p>
-              <p className="text-lg font-normal text-white mt-0.5" aria-label={`Hold period: ${m.holdDays !== null ? m.holdDays : 'unknown'} days`}>
+              <p className="text-lg font-normal text-text-primary mt-0.5" aria-label={`Hold period: ${m.holdDays !== null ? m.holdDays : 'unknown'} days`}>
                 {m.holdDays !== null ? `${m.holdDays}d` : '—'}
               </p>
               <p className="text-[9px] text-text-secondary mt-0.5">Acquisition → closed</p>
@@ -277,13 +277,13 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             Original Estimates vs. Final Actuals
           </h3>
           <div
-            className="rounded-xl border border-gray-800 overflow-hidden"
+            className="rounded-none border border-pw-border overflow-hidden"
             role="table"
             aria-label="Estimates vs actuals comparison"
           >
             {/* Table header */}
             <div
-              className="grid grid-cols-3 gap-4 px-4 py-2 bg-bg-surface/5 text-[10px] font-bold text-text-secondary uppercase tracking-widest"
+              className="grid grid-cols-3 gap-4 px-4 py-2 bg-pw-glass-bg/5 text-[10px] font-bold text-text-secondary uppercase tracking-widest"
               role="row"
             >
               <span role="columnheader">Line Item</span>
@@ -341,22 +341,22 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
 
         {/* ── Financing Summary ────────────────────────────── */}
         {m.loanAmount > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 rounded-xl border border-gray-800/60 bg-black/20 text-xs text-text-secondary">
-            <span>Loan Amount: <span className="text-gray-300 font-mono">{fmt$(m.loanAmount)}</span></span>
-            <span>Out-of-Pocket Cash: <span className="text-gray-300 font-mono">{fmt$(m.outOfPocketCash)}</span></span>
-            <span>Total Cost Basis: <span className="text-gray-300 font-mono">{fmt$(m.totalCostBasis)}</span></span>
+          <div className="flex items-center justify-between px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/20 text-xs text-text-secondary">
+            <span>Loan Amount: <span className="text-text-primary font-mono">{fmt$(m.loanAmount)}</span></span>
+            <span>Out-of-Pocket Cash: <span className="text-text-primary font-mono">{fmt$(m.outOfPocketCash)}</span></span>
+            <span>Total Cost Basis: <span className="text-text-primary font-mono">{fmt$(m.totalCostBasis)}</span></span>
           </div>
         )}
 
         {/* ── Finalized Lock Notice ────────────────────────── */}
         {isSold && (
           <div
-            className="flex items-center gap-3 px-4 py-3 rounded-xl border border-emerald-800/40 bg-emerald-900/10"
+            className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-accent/30 bg-pw-accent/5"
             role="note"
             aria-label="This autopsy is finalized and locked"
           >
-            <Lock className="w-4 h-4 text-emerald-600 flex-shrink-0" aria-hidden="true" />
-            <p className="text-[11px] text-emerald-600">
+            <Lock className="w-4 h-4 text-pw-accent flex-shrink-0" aria-hidden="true" />
+            <p className="text-[11px] text-pw-accent">
               <strong>Record Finalized.</strong> All values are locked at the closing date and cannot be altered. Download the PDF for your investor records.
             </p>
           </div>

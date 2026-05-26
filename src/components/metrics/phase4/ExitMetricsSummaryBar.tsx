@@ -37,19 +37,18 @@ function BenchmarkBadge({ value, target }: BenchmarkBadgeProps) {
   const above = value >= target;
   return (
     <span
-      className="text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-full font-mono"
-      style={{
-        color: above ? '#0D0D0D' : '#7F7F7F',
-        backgroundColor: above ? '#0D0D0D10' : '#F2F2F2',
-        border: `1px solid ${above ? '#0D0D0D30' : '#CCCCCC'}`,
-      }}
+      className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-none font-mono border ${
+        above 
+          ? 'text-pw-accent border-pw-accent/40 bg-pw-accent/5' 
+          : 'text-text-secondary border-pw-border bg-pw-border/20'
+      }`}
     >
       {above ? 'On Target' : 'Below'}
     </span>
   );
 }
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded';
+const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
 
 interface KPITileProps {
   label: string;
@@ -65,11 +64,11 @@ function KPITile({ label, value, target, rawValue, delay = 0 }: KPITileProps) {
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: 'easeOut' }}
-      className="flex-1 flex flex-col items-center justify-center px-4 py-3 min-w-0 text-center"
+      className="flex-1 flex flex-col items-center justify-center px-4 py-4 min-w-0 text-center"
     >
-      <p className="text-[9px] font-mono text-pw-muted uppercase tracking-widest truncate w-full">{label}</p>
-      <p className="text-xl font-normal text-pw-black tracking-tight mt-1 font-mono">{value}</p>
-      <div className="mt-1.5">
+      <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest truncate w-full">{label}</p>
+      <p className="text-xl font-black text-text-primary tracking-tight mt-1 font-mono">{value}</p>
+      <div className="mt-2">
         <BenchmarkBadge value={rawValue} target={target} />
       </div>
     </motion.div>
@@ -79,7 +78,7 @@ function KPITile({ label, value, target, rawValue, delay = 0 }: KPITileProps) {
 export function ExitMetricsSummaryBar({ netProfit, roi, cocReturn, capRate, isLoading, className }: ExitMetricsSummaryBarProps) {
   if (isLoading) {
     return (
-      <div className={`flex items-stretch rounded-2xl border border-pw-border bg-pw-surface overflow-hidden divide-x divide-pw-border ${className ?? ''}`}>
+      <div className={`flex items-stretch rounded-none border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border ${className ?? ''}`}>
         {[0, 1, 2, 3].map(i => (
           <div key={i} className="flex-1 flex flex-col items-center justify-center px-4 py-3 space-y-2">
             <div className={`h-2.5 w-16 ${shimmerCls}`} />
@@ -120,7 +119,7 @@ export function ExitMetricsSummaryBar({ netProfit, roi, cocReturn, capRate, isLo
 
   return (
     <div
-      className={`flex items-stretch rounded-2xl border border-pw-border bg-pw-surface overflow-hidden divide-x divide-pw-border ${className ?? ''}`}
+      className={`flex items-stretch rounded-none border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border glass-card shadow-none ${className ?? ''}`}
       role="group"
       aria-label="Exit metrics summary"
     >

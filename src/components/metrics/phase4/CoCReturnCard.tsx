@@ -31,10 +31,10 @@ interface Band {
 }
 
 const BANDS: Band[] = [
-  { key: 'excellent', label: 'Excellent', color: '#0D0D0D', bg: '#0D0D0D10', border: '#0D0D0D40', textColor: '#0D0D0D' },
-  { key: 'good',      label: 'Good',      color: '#595959', bg: '#59595910', border: '#59595940', textColor: '#595959' },
-  { key: 'fair',      label: 'Fair',      color: '#A5A5A5', bg: '#A5A5A510', border: '#A5A5A540', textColor: '#7F7F7F' },
-  { key: 'poor',      label: 'Below Target', color: '#CCCCCC', bg: '#F2F2F2', border: '#CCCCCC', textColor: '#A5A5A5' },
+  { key: 'excellent', label: 'Excellent', color: 'var(--pw-accent)', bg: 'var(--pw-glass-bg)', border: 'var(--pw-accent)', textColor: 'var(--pw-accent)' },
+  { key: 'good',      label: 'Good',      color: 'var(--pw-accent)', bg: 'var(--pw-glass-bg)', border: 'var(--pw-border)', textColor: 'var(--text-primary)' },
+  { key: 'fair',      label: 'Fair',      color: 'var(--text-primary)', bg: 'transparent', border: 'var(--pw-border)', textColor: 'var(--text-secondary)' },
+  { key: 'poor',      label: 'Below Target', color: 'var(--color-error)', bg: 'var(--pw-glass-bg)', border: 'var(--color-error)', textColor: 'var(--color-error)' },
 ];
 
 function getBand(coc: number): Band {
@@ -62,7 +62,7 @@ function fmtDollar(n: number): string {
 
 const SP500_BENCHMARK = 7;
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded';
+const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
 
 export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, isLoading, className }: CoCReturnCardProps) {
   const coc = useMemo(() => {
@@ -75,7 +75,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
 
   if (isLoading) {
     return (
-      <div className={`rounded-2xl border border-pw-border bg-pw-surface p-6 space-y-4 ${className ?? ''}`}>
+      <div className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
         <div className={`h-4 w-32 ${shimmerCls}`} />
         <div className={`h-12 w-48 ${shimmerCls}`} />
         <div className={`h-3 w-full ${shimmerCls}`} />
@@ -97,16 +97,16 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
 
   return (
     <div
-      className={`rounded-2xl border bg-pw-surface p-6 space-y-5 transition-all ${className ?? ''}`}
+      className={`glass-card rounded-none border p-6 space-y-5 transition-all ${className ?? ''}`}
       style={{ borderColor: band.border, backgroundColor: band.bg }}
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[10px] font-mono tracking-widest text-pw-subtle uppercase">Cash-on-Cash Return</p>
-          <p className="text-[10px] text-pw-muted mt-0.5">Annual Cash Flow ÷ Total Cash Invested</p>
+          <p className="text-[10px] font-black tracking-widest text-text-secondary uppercase">Cash-on-Cash Return</p>
+          <p className="text-[10px] text-text-secondary mt-0.5 uppercase tracking-wide">Annual Cash Flow ÷ Total Cash Invested</p>
         </div>
         <span
-          className="text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border"
+          className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-none border"
           style={{ color: band.textColor, borderColor: band.border, backgroundColor: band.bg }}
         >
           {band.label}
@@ -119,7 +119,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <p
-          className="text-5xl font-normal tracking-tighter"
+          className="text-5xl font-black font-mono tracking-tighter"
           style={{ color: band.color }}
           aria-label={`Cash-on-Cash Return: ${fmtPct(coc)}`}
         >
@@ -128,39 +128,39 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
       </motion.div>
 
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded-xl border border-pw-border bg-pw-bg px-3 py-2">
-          <p className="text-[9px] text-pw-muted uppercase tracking-widest font-mono">Annual Cash Flow</p>
-          <p className="text-sm font-mono text-pw-fg mt-0.5">{fmtDollar(safe(annualCashFlow))}</p>
+        <div className="rounded-none border border-pw-border bg-pw-bg/50 px-3 py-2">
+          <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black">Annual Cash Flow</p>
+          <p className="text-sm font-bold font-mono text-text-primary mt-0.5">{fmtDollar(safe(annualCashFlow))}</p>
         </div>
-        <div className="rounded-xl border border-pw-border bg-pw-bg px-3 py-2">
-          <p className="text-[9px] text-pw-muted uppercase tracking-widest font-mono">Total Cash Invested</p>
-          <p className="text-sm font-mono text-pw-fg mt-0.5">{fmtDollar(safe(totalCashInvested))}</p>
+        <div className="rounded-none border border-pw-border bg-pw-bg/50 px-3 py-2">
+          <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black">Total Cash Invested</p>
+          <p className="text-sm font-bold font-mono text-text-primary mt-0.5">{fmtDollar(safe(totalCashInvested))}</p>
         </div>
       </div>
 
       {breakdownItems.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-[9px] text-pw-muted uppercase tracking-widest font-mono">Cash Invested Breakdown</p>
+        <div className="space-y-1.5 border-t border-pw-border pt-4">
+          <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black mb-2">Cash Invested Breakdown</p>
           {breakdownItems.map(item => (
-            <div key={item.label} className="flex items-center justify-between text-[11px]">
-              <span className="text-pw-subtle">{item.label}</span>
-              <span className="font-mono text-pw-fg">{fmtDollar(safe(item.value))}</span>
+            <div key={item.label} className="flex items-center justify-between text-[11px] uppercase tracking-wider">
+              <span className="text-text-secondary">{item.label}</span>
+              <span className="font-bold font-mono text-text-primary">{fmtDollar(safe(item.value))}</span>
             </div>
           ))}
         </div>
       )}
 
       <div className="border-t border-pw-border pt-4 space-y-2">
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="text-pw-muted flex items-center gap-1">
-            <span className="inline-block w-3 h-px bg-pw-muted" />
+        <div className="flex items-center justify-between text-[11px] uppercase tracking-wider">
+          <span className="text-text-secondary flex items-center gap-1">
+            <span className="inline-block w-3 h-px bg-text-secondary" />
             S&P 500 Avg. ({SP500_BENCHMARK}%)
           </span>
-          <span className="font-mono text-pw-fg">{fmtPct(SP500_BENCHMARK)}</span>
+          <span className="font-bold font-mono text-text-primary">{fmtPct(SP500_BENCHMARK)}</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px]">
-          <DeltaIcon className="w-3 h-3 flex-shrink-0" style={{ color: delta >= 0 ? '#0D0D0D' : '#A5A5A5' }} />
-          <span style={{ color: delta >= 0 ? '#0D0D0D' : '#7F7F7F' }}>
+        <div className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-bold">
+          <DeltaIcon className={`w-3.5 h-3.5 flex-shrink-0 ${delta >= 0 ? 'text-pw-accent' : 'text-red-500'}`} />
+          <span className={delta >= 0 ? 'text-pw-accent' : 'text-red-500'}>
             {delta >= 0 ? '+' : ''}{delta.toFixed(2)}% vs S&P 500
           </span>
         </div>
@@ -170,10 +170,10 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
         {BANDS.map(b => (
           <div key={b.key} className="flex-1 space-y-1">
             <div
-              className="h-1 rounded-full"
-              style={{ backgroundColor: b.key === band.key ? band.color : '#CCCCCC' }}
+              className="h-1 rounded-none"
+              style={{ backgroundColor: b.key === band.key ? band.color : 'var(--pw-border)' }}
             />
-            <p className="text-[8px] text-pw-muted text-center hidden sm:block">{b.label}</p>
+            <p className="text-[8px] text-text-secondary text-center hidden sm:block uppercase tracking-wider">{b.label}</p>
           </div>
         ))}
       </div>

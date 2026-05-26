@@ -258,16 +258,16 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
 
   // ── Render ──────────────────────────────────────────
   return (
-    <div className="bg-pw-white border border-pw-black p-6 md:p-8 rounded-none text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
+    <div className="glass-card border border-pw-border p-6 md:p-8 rounded-none text-left shadow-none mb-8 w-full max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center border-b border-pw-border pb-4 mb-6">
         <div>
           <h2 className="text-xs font-black uppercase tracking-[0.18em] text-text-primary">Exit Operations Wizard</h2>
-          <p className="text-[10px] text-text-secondary font-semibold uppercase mt-0.5 tracking-wider">
+          <p className="text-[10px] text-text-secondary font-bold uppercase mt-0.5 tracking-wider">
             {currentSection?.title || 'Loading…'}
           </p>
         </div>
-        <div className="text-[11px] font-mono text-text-secondary bg-pw-bg px-2.5 py-1 border border-pw-border">
+        <div className="text-[11px] font-mono text-text-secondary bg-pw-glass-bg px-2.5 py-1 border border-pw-border rounded-none">
           SECTION {currentSectionIdx + 1} OF {activeSections.length}
         </div>
       </div>
@@ -277,10 +277,8 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         {activeSections.map((s, i) => (
           <div
             key={s.id}
-            className={`h-1 flex-1 rounded-full transition-all duration-500 ${
-              i < currentSectionIdx ? 'bg-black' :
-              i === currentSectionIdx ? 'bg-[#595959]' :
-              'bg-[#F2F2F2]'
+            className={`h-1 flex-1 rounded-none transition-all duration-500 ${
+              i <= currentSectionIdx ? 'bg-pw-accent' : 'bg-pw-border'
             }`}
           />
         ))}
@@ -300,7 +298,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         <button
           onClick={handleBack}
           disabled={isFirstSection || isSaving}
-          className="pw-btn pw-btn--sm pw-btn--secondary font-bold uppercase tracking-widest text-[11px] flex items-center gap-1.5 disabled:opacity-30"
+          className="pw-btn pw-btn--sm pw-btn--secondary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 disabled:opacity-30 rounded-none"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           Back
@@ -313,7 +311,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             <button
               onClick={handleComplete}
               disabled={isSaving}
-              className="pw-btn pw-btn--sm pw-btn--primary font-bold uppercase tracking-widest text-[11px] flex items-center gap-1.5"
+              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 rounded-none"
             >
               <Check className="w-3.5 h-3.5" />
               Complete Exit Setup
@@ -322,7 +320,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             <button
               onClick={handleNext}
               disabled={isSaving}
-              className="pw-btn pw-btn--sm pw-btn--primary font-bold uppercase tracking-widest text-[11px] flex items-center gap-1.5"
+              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 rounded-none"
             >
               Next
               <ChevronRight className="w-3.5 h-3.5" />
@@ -350,7 +348,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
           <select
             value={formData.exitType}
             onChange={(e) => updateField('exitType', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none"
+            className="glass-input text-sm py-3 px-4 w-full focus:outline-none"
           >
             <option value="Sale">Sale (Liquidation / Flip)</option>
             <option value="Stabilization">Rental Stabilization (Hold as operating rental)</option>
@@ -395,7 +393,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             type="date"
             value={formData.soldDate}
             onChange={(e) => updateField('soldDate', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="glass-input text-sm py-3 px-4 w-full max-w-lg focus:outline-none"
           />
         </FieldRow>
       </div>
@@ -423,7 +421,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
           <select
             value={formData.isStabilized}
             onChange={(e) => updateField('isStabilized', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none"
+            className="glass-input text-sm py-3 px-4 w-full focus:outline-none"
           >
             <option value="yes">Yes, mark as stabilized</option>
             <option value="no">No, keep editing</option>
@@ -435,7 +433,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             type="date"
             value={formData.stabilizationDate}
             onChange={(e) => updateField('stabilizationDate', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="glass-input text-sm py-3 px-4 w-full max-w-lg focus:outline-none"
           />
         </FieldRow>
       </div>
@@ -467,9 +465,9 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
               value={formData.refiInterestRate}
               onChange={(e) => updateField('refiInterestRate', e.target.value)}
               placeholder="6.5"
-              className="pw-input text-lg py-3 pr-10 pl-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="glass-input text-sm py-3 pr-10 pl-4 w-full focus:outline-none tabular-nums text-text-primary"
             />
-            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg font-medium text-text-secondary">%</span>
+            <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-text-secondary">%</span>
           </div>
         </FieldRow>
 
@@ -480,7 +478,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
               value={formData.refiLoanTermYears}
               onChange={(e) => updateField('refiLoanTermYears', e.target.value)}
               placeholder="30"
-              className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="glass-input text-sm py-3 px-4 w-full focus:outline-none tabular-nums text-text-primary"
               min="0"
             />
           </div>
@@ -495,7 +493,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             type="date"
             value={formData.refiDate}
             onChange={(e) => updateField('refiDate', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="glass-input text-sm py-3 px-4 w-full max-w-lg focus:outline-none"
           />
         </FieldRow>
       </div>
@@ -542,18 +540,18 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         </div>
 
         {/* Summary Table */}
-        <div className="bg-pw-bg border border-pw-border divide-y divide-pw-border">
+        <div className="bg-pw-glass-bg/30 border border-pw-border divide-y divide-pw-border rounded-none">
           {summaryRows.map(row => (
             <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
               <span className="text-xs text-text-secondary">{row.label}</span>
-              <span className="text-sm font-bold tabular-nums text-text-primary">{row.value}</span>
+              <span className="text-sm font-semibold tabular-nums text-text-primary">{row.value}</span>
             </div>
           ))}
         </div>
 
         {formData.exitType === 'Sale' && (
-          <div className="flex items-start gap-3 p-4 bg-[#FEF3C7] border border-[#F59E0B] text-xs leading-relaxed text-[#92400E]">
-            <AlertTriangle className="w-5 h-5 text-[#F59E0B] flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-color-error/10 border border-color-error/30 text-xs leading-relaxed text-color-error rounded-none">
+            <AlertTriangle className="w-5 h-5 text-color-error flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-bold mb-1">Finalizing Sale</p>
               <p>Completing this will transition the project to <b>Sold</b> and move it to your archives. Realized ROI and Tax Estimates will be computed and locked.</p>
@@ -576,7 +574,7 @@ function CurrencyInput({ value, onChange, compact }: { value: string | number; o
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="0.00"
-        className={`pw-input w-full border border-pw-black rounded-none focus:outline-none tabular-nums ${
+        className={`glass-input w-full focus:outline-none tabular-nums text-text-primary ${
           compact ? 'text-sm py-2 pl-7 pr-3' : 'text-lg py-3 pl-10 pr-4'
         }`}
       />
@@ -587,8 +585,8 @@ function CurrencyInput({ value, onChange, compact }: { value: string | number; o
 function FieldRow({ label, desc, children }: { label: string; desc: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1.5">
-      <p className="text-sm font-medium text-text-primary">{label}</p>
-      <p className="text-[10px] text-text-secondary opacity-60">{desc}</p>
+      <p className="text-xs font-bold text-text-primary uppercase tracking-wider">{label}</p>
+      <p className="text-[10px] text-text-secondary mt-0.5">{desc}</p>
       <div className="max-w-lg">{children}</div>
     </div>
   );

@@ -261,13 +261,13 @@ export default function NotificationsSettingsPage() {
   return (
     <div className="w-full space-y-8">
       {/* ─── Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
         
         {/* Left Column: Guarantee Notice, Matrix & Global Dispatch */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7 space-y-stack-md">
           
           {/* Guarantee Notice */}
-          <section className="glass-card p-4 rounded-xl flex gap-3 items-start relative overflow-hidden">
+          <section className="glass-card glass-card-bright p-4 rounded-xl flex gap-3 items-start relative overflow-hidden">
             <span className="material-symbols-outlined text-base text-pw-muted mt-0.5 select-none">info</span>
             <div className="text-xs text-pw-muted space-y-1">
               <p className="font-semibold text-pw-black">Notification Guarantee</p>
@@ -278,27 +278,27 @@ export default function NotificationsSettingsPage() {
           </section>
 
           {/* Card 1: Preferences Matrix */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden flex flex-col">
             <div className="mb-6">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">grid_on</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">grid_on</span>
                 Notifications Matrix
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1">Configure granular channel selection per alert type.</p>
             </div>
 
             {/* Column Headers */}
             <div className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center mb-4 pb-2 border-b border-pw-border/50 px-1">
-              <span className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Alert Category</span>
-              <span className="text-[10px] font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
+              <span className="font-label-sm text-label-sm font-semibold text-pw-muted uppercase tracking-wider">Alert Category</span>
+              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
                 <span className="material-symbols-outlined text-lg mb-1 select-none">inbox</span>
                 Inbox
               </span>
-              <span className="text-[10px] font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
+              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
                 <span className="material-symbols-outlined text-lg mb-1 select-none">mail</span>
                 Email
               </span>
-              <span className="text-[10px] font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
+              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
                 <span className="material-symbols-outlined text-lg mb-1 select-none">phone_iphone</span>
                 Push
               </span>
@@ -317,7 +317,7 @@ export default function NotificationsSettingsPage() {
                         <span className="material-symbols-outlined text-base select-none">{iconName}</span>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-pw-black flex items-center gap-2 flex-wrap">
+                        <p className="font-body-md text-body-md font-semibold text-pw-black flex items-center gap-2 flex-wrap">
                           {label}
                           {isMandatory && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-pw-primary/10 border border-pw-primary/20 text-pw-primary uppercase tracking-wider">
@@ -325,7 +325,7 @@ export default function NotificationsSettingsPage() {
                             </span>
                           )}
                         </p>
-                        <p className="text-xs text-pw-muted mt-0.5 leading-relaxed">{description}</p>
+                        <p className="font-body-sm text-body-sm text-pw-muted mt-0.5 leading-relaxed">{description}</p>
                       </div>
                     </div>
                     
@@ -362,19 +362,19 @@ export default function NotificationsSettingsPage() {
           </section>
 
           {/* Card 2: Global Opt-Out & Quiet Hours */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden space-y-6">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden space-y-6 flex flex-col">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">settings_input_component</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">settings_input_component</span>
                 Global Dispatch Preferences
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1">Control outbound notification channels globally.</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 divide-y md:divide-y-0 md:divide-x divide-pw-border/50">
               {/* Global Toggles */}
               <div className="space-y-4">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-pw-muted mb-2">Global Channels</h3>
+                <h4 className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-muted mb-2">Global Channels</h4>
                 
                 <div className="flex items-center justify-between p-4 border border-pw-border rounded-xl bg-pw-glass-bg">
                   <div>
@@ -403,7 +403,7 @@ export default function NotificationsSettingsPage() {
               <div className="space-y-4 md:pl-6 pt-6 md:pt-0">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-pw-muted">Quiet Hours DND</h3>
+                    <h4 className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-muted">Quiet Hours DND</h4>
                     <p className="text-[10px] text-pw-muted mt-0.5">Silence & queue email alerts during specified hours</p>
                   </div>
                   <ToggleSwitch enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
@@ -413,37 +413,37 @@ export default function NotificationsSettingsPage() {
                   <div className="space-y-3 p-4 bg-pw-glass-bg border border-pw-border rounded-xl">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                        <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
                           Start Time
                         </label>
                         <input
                           type="time"
                           value={quietHours.start}
                           onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
-                          className="glass-input w-full px-3 py-1.5 text-xs text-pw-black"
+                          className="glass-input w-full px-3 py-1.5 text-sm text-pw-black"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                        <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
                           End Time
                         </label>
                         <input
                           type="time"
                           value={quietHours.end}
                           onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
-                          className="glass-input w-full px-3 py-1.5 text-xs text-pw-black"
+                          className="glass-input w-full px-3 py-1.5 text-sm text-pw-black"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-1">
+                      <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
                         Notification Timezone
                       </label>
                       <select
                         value={quietHours.timezone}
                         onChange={(e) => handleUpdateTimezone(e.target.value)}
-                        className="glass-input w-full px-3 py-2 text-xs text-pw-black"
+                        className="glass-input w-full px-3 py-2 text-sm text-pw-black"
                       >
                         {allTimezones.map((tz) => (
                           <option key={tz.value} value={tz.value} className="bg-pw-surface text-pw-black">
@@ -460,14 +460,14 @@ export default function NotificationsSettingsPage() {
         </div>
 
         {/* Right Column: Theme, Retention & Privacy */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-stack-md">
           
           {/* Card 3: Theme Customizer */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-5 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">palette</span>
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg select-none">palette</span>
               Appearance
-            </h2>
+            </h3>
 
             <div className="flex flex-col gap-4">
               {THEME_OPTIONS.map(({ value, label, iconName, description }) => {
@@ -511,19 +511,19 @@ export default function NotificationsSettingsPage() {
           </section>
 
           {/* Card 4: Inbox Retention & Cleanup */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden space-y-4">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden space-y-4">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">auto_delete</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">auto_delete</span>
                 Inbox Cleanup & Retention
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1 leading-relaxed">
                 Automatically archive notifications after they are read to keep your workspace clear.
               </p>
             </div>
 
             <div className="w-full">
-              <label className="block text-[10px] font-bold text-pw-muted uppercase tracking-wider mb-2">
+              <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">
                 Auto-Archive Retention Window
               </label>
               <select
@@ -535,7 +535,7 @@ export default function NotificationsSettingsPage() {
                       .catch(() => toast.error('Failed to update retention window'));
                   }
                 }}
-                className="glass-input w-full px-3 py-2 text-xs text-pw-black"
+                className="glass-input w-full px-3 py-2 text-sm text-pw-black"
               >
                 <option value="30" className="bg-pw-surface text-pw-black">30 Days (Default)</option>
                 <option value="60" className="bg-pw-surface text-pw-black">60 Days</option>
@@ -545,12 +545,12 @@ export default function NotificationsSettingsPage() {
           </section>
 
           {/* Card 5: Data Rights & Privacy (GDPR/CCPA) */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden space-y-6">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden space-y-6">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-widest text-error flex items-center gap-2">
-                <span className="material-symbols-outlined text-base text-error">policy</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-error flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg text-error select-none">policy</span>
                 Data Rights & Privacy (GDPR/CCPA)
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1 leading-relaxed">
                 Manage your personal data, download your records, or request complete account notification erasure.
               </p>
@@ -566,7 +566,7 @@ export default function NotificationsSettingsPage() {
                 </div>
                 <button
                   onClick={handleExportData}
-                  className="luminous-button w-fit flex items-center gap-2 px-4 py-2.5 text-xs font-semibold rounded-lg hover:bg-pw-primary/20 transition-colors cursor-pointer"
+                  className="luminous-button w-fit flex items-center gap-2 px-4 py-2.5 font-label-md text-label-md font-bold uppercase tracking-wider rounded-xl cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-base select-none">download</span>
                   Download JSON Export
@@ -582,7 +582,7 @@ export default function NotificationsSettingsPage() {
                 </div>
                 <button
                   onClick={handleDeleteData}
-                  className="w-fit flex items-center gap-2 px-4 py-2.5 bg-error/10 border border-error/20 text-error hover:bg-error/20 text-xs font-semibold rounded-lg transition-all cursor-pointer"
+                  className="w-fit flex items-center gap-2 px-4 py-2.5 bg-error/10 border border-error/20 text-error hover:bg-error/20 font-label-md text-label-md font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-base select-none">delete</span>
                   Permanently Delete Data

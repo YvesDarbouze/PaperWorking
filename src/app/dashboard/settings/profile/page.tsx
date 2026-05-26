@@ -138,12 +138,12 @@ export default function ProfileSettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Personal Information (Form) */}
-        <div className="lg:col-span-7 space-y-8">
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">manage_accounts</span>
+        <div className="lg:col-span-7 space-y-stack-md">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden flex flex-col">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg select-none">manage_accounts</span>
               Personal Information
-            </h2>
+            </h3>
 
             <form onSubmit={handleSaveProfile} className="space-y-6">
               {/* Avatar & Email */}
@@ -169,7 +169,7 @@ export default function ProfileSettingsPage() {
               {/* Name fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">First Name</label>
+                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">First Name</label>
                   <input
                     type="text"
                     value={firstName}
@@ -178,7 +178,7 @@ export default function ProfileSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">Last Name</label>
+                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Last Name</label>
                   <input
                     type="text"
                     value={lastName}
@@ -191,7 +191,7 @@ export default function ProfileSettingsPage() {
               {/* Contact fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">Phone Number</label>
+                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Phone Number</label>
                   <input
                     type="text"
                     value={phone}
@@ -201,7 +201,7 @@ export default function ProfileSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">Company Name</label>
+                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Company Name</label>
                   <input
                     type="text"
                     value={company}
@@ -217,7 +217,7 @@ export default function ProfileSettingsPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="luminous-button w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg disabled:opacity-50 cursor-pointer"
+                  className="luminous-button w-full sm:w-auto inline-flex items-center justify-center gap-2 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? (
                     <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
@@ -227,8 +227,8 @@ export default function ProfileSettingsPage() {
                   {saving ? 'Saving…' : 'Save Changes'}
                 </button>
                 {saved && (
-                  <span className="text-xs text-pw-primary flex items-center gap-1.5 animate-pulse">
-                    <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+                  <span className="font-label-sm text-pw-primary flex items-center gap-1.5 animate-pulse">
+                    <span className="material-symbols-outlined text-sm select-none">check_circle</span>
                     Profile updated successfully.
                   </span>
                 )}
@@ -238,14 +238,14 @@ export default function ProfileSettingsPage() {
         </div>
 
         {/* Right Column: Account Stats, Security, and Sessions */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-stack-md">
           
           {/* Card A: Account Completeness & Overview */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">analytics</span>
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg select-none">analytics</span>
               Account Overview
-            </h2>
+            </h3>
 
             <div className="space-y-6">
               {/* Profile completeness progress */}
@@ -292,11 +292,11 @@ export default function ProfileSettingsPage() {
           </section>
 
           {/* Card B: Authentication & Security */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">security</span>
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg select-none">security</span>
               Authentication & Security
-            </h2>
+            </h3>
 
             {/* 2FA Toggle */}
             <div className="flex items-center justify-between py-4 border-b border-pw-border/50 mb-6">
@@ -332,14 +332,14 @@ export default function ProfileSettingsPage() {
             </div>
 
             {/* Password Change Form */}
-            <h3 className="text-xs font-bold text-pw-muted uppercase tracking-wider mb-4 flex items-center gap-1.5">
+            <h4 className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-4 flex items-center gap-1.5">
               <span className="material-symbols-outlined text-sm select-none">lock_reset</span>
               Change Password
-            </h3>
+            </h4>
 
             <form onSubmit={handlePasswordChange} className="space-y-5">
               <div>
-                <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">Current Password</label>
+                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Current Password</label>
                 <div className="relative">
                   <input
                     type={showPwd ? 'text' : 'password'}
@@ -360,7 +360,7 @@ export default function ProfileSettingsPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">New Password</label>
+                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">New Password</label>
                 <input
                   type="password"
                   value={newPwd}
@@ -371,7 +371,7 @@ export default function ProfileSettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-pw-muted uppercase tracking-wider mb-2">Confirm New Password</label>
+                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Confirm New Password</label>
                 <input
                   type="password"
                   value={confirmPwd}
@@ -398,7 +398,7 @@ export default function ProfileSettingsPage() {
               <button
                 type="submit"
                 disabled={pwdLoading}
-                className="luminous-button w-full inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg disabled:opacity-50 cursor-pointer"
+                className="luminous-button w-full inline-flex items-center justify-center gap-2 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl disabled:opacity-50 cursor-pointer"
               >
                 {pwdLoading && (
                   <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
@@ -409,11 +409,11 @@ export default function ProfileSettingsPage() {
           </section>
 
           {/* Card C: Active Sessions */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">devices</span>
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-lg select-none">devices</span>
               Device Sessions
-            </h2>
+            </h3>
 
             <div className="space-y-4">
               <p className="text-xs text-pw-muted leading-relaxed">
@@ -423,7 +423,7 @@ export default function ProfileSettingsPage() {
               <button
                 onClick={handleRevokeSessions}
                 disabled={revoking}
-                className="w-full inline-flex items-center justify-center gap-2 bg-error/10 border border-error/30 text-error hover:bg-error/20 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-lg transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 bg-error/10 border border-error/30 text-error hover:bg-error/20 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
               >
                 {revoking ? (
                   <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>

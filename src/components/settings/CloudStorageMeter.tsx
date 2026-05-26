@@ -30,10 +30,10 @@ export function CloudStorageMeter() {
   const fillColor = isNearLimit ? "var(--color-error)" : "var(--color-primary)";
 
   return (
-    <section className="glass-card p-6 sm:p-8 flex flex-col rounded-2xl relative overflow-hidden">
-      <div className="flex items-center gap-2 mb-6 text-pw-primary">
-        <span className="material-symbols-outlined text-lg select-none">storage</span>
-        <h2 className="text-xs font-bold uppercase tracking-widest">
+    <section className="glass-card glass-card-bright p-6 sm:p-8 flex flex-col rounded-2xl relative overflow-hidden">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
+          <span className="material-symbols-outlined text-base select-none">storage</span>
           Cloud Storage Meter
         </h2>
       </div>
@@ -43,7 +43,7 @@ export function CloudStorageMeter() {
           <span className="text-3xl font-light text-pw-black">
             {usageGB.toFixed(2)} GB
           </span>
-          <span className="text-sm text-pw-muted ml-2">
+          <span className="text-sm text-pw-muted ml-2 font-body-md">
             of {limitGB.toFixed(0)} GB total
           </span>
         </div>
@@ -54,7 +54,7 @@ export function CloudStorageMeter() {
 
       {/* Progress Bar with glow effect */}
       <div 
-        className="w-full h-3 overflow-hidden mb-6 border border-pw-border bg-pw-glass-bg rounded-full"
+        className="w-full h-2 overflow-hidden mb-6 border border-pw-border bg-pw-glass-bg rounded-full"
       >
         <div 
           className="h-full transition-all duration-700 ease-in-out rounded-full"
@@ -78,23 +78,23 @@ export function CloudStorageMeter() {
           </div>
         </div>
       ) : (
-        <p className="text-xs text-pw-muted mb-6 leading-relaxed max-w-2xl font-medium">
+        <p className="text-xs text-pw-muted mb-6 leading-relaxed max-w-2xl font-medium font-body-sm">
           The Cloud Storage Meter aggregates all transactional documents, legal contracts, 
           and financial disclosures stored across your project vaults.
         </p>
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-stack-md">
         {isNearLimit && (
           <button 
-            className="inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-error/10 border border-error/30 text-error hover:bg-error/20 rounded-lg transition cursor-pointer"
+            className="luminous-button px-6 py-3 rounded-xl font-label-md text-label-md font-bold cursor-pointer flex items-center justify-center gap-2"
           >
             Upgrade Capacity 
             <span className="material-symbols-outlined text-sm select-none">arrow_forward</span>
           </button>
         )}
         <button 
-          className="inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-pw-glass-bg border border-pw-border text-pw-black hover:bg-pw-glass-bg/85 rounded-lg transition cursor-pointer shadow-sm"
+          className="px-6 py-3 rounded-xl font-label-md text-label-md font-bold border border-white/10 hover:bg-white/5 transition-all cursor-pointer text-pw-black shadow-sm flex items-center justify-center"
         >
           View Document Audit
         </button>

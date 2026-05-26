@@ -325,19 +325,19 @@ export default function TeamManagementPage() {
   return (
     <div className="w-full space-y-8">
       {/* ─── Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
         
         {/* Left Column (col-span-7) */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7 space-y-stack-md">
           
           {/* Card 1: Seat Usage */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">groups</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">groups</span>
                 Seat Usage
-              </h2>
-              <span className="text-xs font-bold uppercase tracking-widest text-pw-primary font-mono">
+              </h3>
+              <span className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-primary font-mono">
                 {usedSeats} of {maxSeats} Seats Filled
               </span>
             </div>
@@ -359,12 +359,12 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 2: Personnel Registry */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
             <div className="mb-6">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">badge</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">badge</span>
                 Personnel Registry
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1">Manage active workspace users and invite clearances.</p>
             </div>
 
@@ -391,12 +391,12 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 3: Invite Team Personnel */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
             <div className="mb-6">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-base">person_add</span>
+              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-lg select-none">person_add</span>
                 Invite Team Personnel
-              </h2>
+              </h3>
               <p className="text-xs text-pw-muted mt-1">Add new members to your corporate investment organization.</p>
             </div>
 
@@ -457,7 +457,7 @@ export default function TeamManagementPage() {
                 <button
                   type="submit"
                   disabled={inviting || seatsLeft <= 0}
-                  className="luminous-button rounded-xl text-xs px-6 py-3 font-bold transition-all duration-300 disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer"
+                  className="luminous-button rounded-xl font-label-md text-label-md font-bold transition-all duration-300 disabled:opacity-50 inline-flex items-center gap-2 cursor-pointer"
                 >
                   {inviting ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> <span>Sending invite…</span></>
@@ -478,14 +478,14 @@ export default function TeamManagementPage() {
         </div>
 
         {/* Right Column (col-span-5) */}
-        <div className="lg:col-span-5 space-y-8">
+        <div className="lg:col-span-5 space-y-stack-md">
           
           {/* Card 4: Role Designation Legend */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-5 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-base">shield</span>
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-lg select-none">shield</span>
               Clearance Roles Legend
-            </h2>
+            </h3>
             <div className="flex flex-col gap-4">
               {ROLE_OPTIONS.map((r) => (
                 <div key={r} className="p-4 bg-pw-glass-bg/40 border border-pw-border/50 rounded-xl flex items-start gap-3 hover:bg-pw-glass-bg/75 transition-colors">
@@ -500,10 +500,10 @@ export default function TeamManagementPage() {
           </section>
 
           {/* Card 5: Audit Ledger */}
-          <section className="glass-card p-6 sm:p-8 rounded-2xl relative overflow-hidden">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-pw-primary mb-5 flex items-center gap-2">
+          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
+            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-2">
               <Activity className="w-4 h-4 text-pw-primary" /> Audit Ledger
-            </h2>
+            </h3>
 
             {auditLogs.length === 0 ? (
               <p className="text-xs text-pw-muted font-mono">No audit logs available.</p>

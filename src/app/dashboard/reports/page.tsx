@@ -21,6 +21,7 @@ const METRICS_CONFIG = [
   { key: 'capRate', label: 'Cap Rate', unit: '%' as const, desc: 'Capitalization Rate (NOI ÷ Price)' },
   { key: 'cashOnCashReturn', label: 'CoC Return', unit: '%' as const, desc: 'Cash-on-Cash Return' },
   { key: 'dscr', label: 'DSCR', unit: 'ratio' as const, desc: 'Debt Service Coverage Ratio' },
+  { key: 'ltv', label: 'LTV', unit: '%' as const, desc: 'Loan-to-Value Ratio' },
   { key: 'occupancyRate', label: 'Occupancy', unit: '%' as const, desc: 'Days Occupied ÷ Total Days' },
   { key: 'oer', label: 'Expense Ratio', unit: '%' as const, desc: 'Operating Expense Ratio (Opex ÷ Gross Rent)' },
   { key: 'grossRentMultiplier', label: 'GRM', unit: '×' as const, desc: 'Gross Rent Multiplier' },
@@ -811,15 +812,15 @@ export default function ReportsPage() {
             {/* ── Core REI Metrics Bento Grid ── */}
             <section className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {/* NOI */}
-              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
-                <div className="flex justify-between items-start">
+              <button onClick={() => setSelectedMetric('noi')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start w-full">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-primary)', background: 'rgba(87,241,219,0.1)' }}>LIVE</span>
                     <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>NOI</p>
                   </div>
                   <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>payments</span>
                 </div>
-                <div>
+                <div className="w-full">
                   <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                     {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'noi', apiPeriodType) : null, 'currency')}
                   </h3>
@@ -827,7 +828,7 @@ export default function ReportsPage() {
                     <div className="h-full rounded-full" style={{ width: '75%', background: 'var(--color-primary)' }} />
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Cash Flow */}
               <button onClick={() => setSelectedMetric('cashFlow')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
@@ -844,15 +845,15 @@ export default function ReportsPage() {
               </button>
 
               {/* IRR */}
-              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
-                <div className="flex justify-between items-start">
+              <button onClick={() => setSelectedMetric('irr')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start w-full">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-on-surface-variant)', background: 'var(--color-surface-container-highest)' }}>REALIZED</span>
                     <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>IRR</p>
                   </div>
                   <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>trending_up</span>
                 </div>
-                <div>
+                <div className="w-full">
                   <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                     {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'irr', apiPeriodType) : null, '%')}
                   </h3>
@@ -863,34 +864,34 @@ export default function ReportsPage() {
                     <div className="flex-1 rounded-sm" style={{ height: '100%', background: 'var(--color-primary)' }} />
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* Cap Rate */}
-              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(133,148,144,0.4)' }}>
-                <div className="flex justify-between items-start">
+              <button onClick={() => setSelectedMetric('capRate')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(133,148,144,0.4)' }}>
+                <div className="flex justify-between items-start w-full">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-on-surface-variant)', background: 'var(--color-surface-container-highest)' }}>LIVE</span>
                     <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cap Rate</p>
                   </div>
                   <span className="material-symbols-outlined text-lg" style={{ color: 'var(--color-on-surface-variant)' }}>percent</span>
                 </div>
-                <div>
+                <div className="w-full">
                   <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                     {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'capRate', apiPeriodType) : null, '%')}
                   </h3>
                 </div>
-              </div>
+              </button>
 
               {/* Cash-on-Cash */}
-              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
-                <div className="flex justify-between items-start">
+              <button onClick={() => setSelectedMetric('cashOnCashReturn')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-start w-full">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-primary)', background: 'rgba(87,241,219,0.1)' }}>LIVE</span>
                     <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Cash-on-Cash</p>
                   </div>
                   <span className="material-symbols-outlined text-lg" style={{ color: 'rgba(87,241,219,0.5)' }}>account_balance_wallet</span>
                 </div>
-                <div>
+                <div className="w-full">
                   <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                     {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'cashOnCashReturn', apiPeriodType) : null, '%')}
                   </h3>
@@ -899,61 +900,61 @@ export default function ReportsPage() {
                     <span className="text-[10px] font-bold">Stable yield</span>
                   </div>
                 </div>
-              </div>
+              </button>
 
               {/* LTV */}
-              <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32" style={{ borderLeft: '4px solid rgba(255,180,171,0.4)' }}>
+              <button onClick={() => setSelectedMetric('ltv')} className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(255,180,171,0.4)' }}>
                 <div className="flex flex-col">
                   <p className="text-[10px] font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--color-on-surface-variant)' }}>LTV</p>
                   <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                     {formatValue(latestSnapshot ? (latestSnapshot as any).ltv : null, '%')}
                   </h3>
                 </div>
-                <div className="p-1.5 rounded flex items-center gap-1.5" style={{ background: 'rgba(147,0,10,0.1)' }}>
+                <div className="p-1.5 rounded flex items-center gap-1.5 w-fit" style={{ background: 'rgba(147,0,10,0.1)' }}>
                   <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--color-error, #ffb4ab)' }} />
                   <span className="text-[10px] font-bold" style={{ color: 'var(--color-error)' }}>Monitor</span>
                 </div>
-              </div>
+              </button>
 
               {/* DSCR */}
-              <div className="glass-card p-5 rounded-2xl health-band-positive">
+              <button onClick={() => setSelectedMetric('dscr')} className="glass-card p-5 rounded-2xl health-band-positive text-left transition-all hover:border-white/20">
                 <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>DSCR</p>
                 <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
                   {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'dscr', apiPeriodType) : null, 'ratio')}
                 </h3>
                 <p className="text-xs" style={{ color: 'var(--color-primary)' }}>Healthy Coverage</p>
-              </div>
+              </button>
 
               {/* GRM */}
-              <div className="glass-card p-5 rounded-2xl">
+              <button onClick={() => setSelectedMetric('grossRentMultiplier')} className="glass-card p-5 rounded-2xl text-left transition-all hover:border-white/20">
                 <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>GRM</p>
                 <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
                   {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'grossRentMultiplier', apiPeriodType) : null, '×')}
                 </h3>
                 <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Lower is better</p>
-              </div>
+              </button>
 
               {/* OER */}
-              <div className="glass-card p-5 rounded-2xl">
+              <button onClick={() => setSelectedMetric('oer')} className="glass-card p-5 rounded-2xl text-left transition-all hover:border-white/20">
                 <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>OER</p>
                 <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
                   {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'oer', apiPeriodType) : null, '%')}
                 </h3>
                 <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Op. Efficiency</p>
-              </div>
+              </button>
 
               {/* Occupancy */}
-              <div className="glass-card p-5 rounded-2xl">
+              <button onClick={() => setSelectedMetric('occupancyRate')} className="glass-card p-5 rounded-2xl text-left transition-all hover:border-white/20">
                 <p className="text-[10px] font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--color-on-surface-variant)' }}>Occupancy</p>
                 <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--color-on-background)' }}>
                   {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'occupancyRate', apiPeriodType) : null, '%')}
                 </h3>
                 <p className="text-xs" style={{ color: 'var(--color-on-surface-variant)' }}>Days Occupied</p>
-              </div>
+              </button>
 
               {/* Appreciation — wide card */}
-              <div className="glass-card p-4 rounded-xl col-span-1 md:col-span-2 flex flex-col justify-between" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
-                <div className="flex justify-between items-center mb-2">
+              <button onClick={() => setSelectedMetric('appreciation')} className="glass-card p-4 rounded-xl col-span-1 md:col-span-2 flex flex-col justify-between text-left transition-all hover:border-white/20" style={{ borderLeft: '4px solid rgba(87,241,219,0.4)' }}>
+                <div className="flex justify-between items-center mb-2 w-full">
                   <div className="flex flex-col">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full mb-1 w-fit" style={{ color: 'var(--color-tertiary, #ffd1aa)', background: 'rgba(255,209,170,0.1)' }}>PROJECTED</span>
                     <p className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--color-on-surface-variant)' }}>Appreciation</p>
@@ -962,7 +963,7 @@ export default function ReportsPage() {
                     {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'appreciation', apiPeriodType) : null, '%')}
                   </span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 w-full">
                   <div>
                     <h3 className="text-xl font-bold leading-none" style={{ color: 'var(--color-on-background)' }}>
                       {formatValue(latestSnapshot ? getMetricValue(latestSnapshot, 'appreciation', apiPeriodType) : null, '%')}
@@ -977,7 +978,7 @@ export default function ReportsPage() {
                     <div className="h-3 w-full rounded-full" style={{ background: 'rgba(87,241,219,0.2)' }} />
                   </div>
                 </div>
-              </div>
+              </button>
             </section>
 
             {/* ── Metric Selector & Trend Chart ── */}

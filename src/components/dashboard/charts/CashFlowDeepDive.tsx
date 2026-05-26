@@ -10,11 +10,10 @@ import {
   deriveDualScopeMetrics,
   type NOIComponents,
 } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  ReferenceLine,
-} from 'recharts';
+import CashFlowWaterfallChart from '@/components/Charts/CashFlowWaterfallChart';
+import ExpenseDonutChart from '@/components/Charts/ExpenseDonutChart';
+import CashFlowTrendChart from '@/components/Charts/CashFlowTrendChart';
+import CashFlowCompareChart from '@/components/Charts/CashFlowCompareChart';
 import {
   DollarSign, TrendingDown, TrendingUp, BarChart3,
   AlertTriangle, CheckCircle, Info, ArrowRight, ShieldCheck,
@@ -101,23 +100,6 @@ function buildCashFlowWaterfall(noi: number, annualDebtService: number, annualCa
   ];
 }
 
-/* ── Custom waterfall tooltip ── */
-function CashFlowTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: d.value >= 0 ? '#595959' : '#EF4444' }}>
-        {fmtUSD(d.value)}
-      </p>
-    </div>
-  );
-}
-
 /* ── Month-to-month cash flow generator ── */
 const CF_MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const CF_VAC_MULT = [2.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0];
@@ -156,27 +138,7 @@ function generateMonthlyCashFlow(
   });
 }
 
-/* ── Monthly cash flow tooltip ── */
-function MonthlyCFTooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  const rawData = payload[0].payload;
-  const cf  = rawData.cashFlow;
-  const noi = rawData.noi;
-  const ds  = rawData.debtService;
-  const isAnnual = rawData.isAnnual;
-  const cfColor = cf < 0 ? '#EF4444' : isAnnual ? '#595959' : '#7F7F7F';
-  return (
-    <div className="rounded-lg px-3 py-2 shadow-lg text-xs space-y-1"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{label}</p>
-      <p style={{ color: '#595959' }}>NOI: {fmtUSD(noi)}</p>
-      <p style={{ color: '#EF4444' }}>Debt Service: ({fmtUSD(ds)})</p>
-      <p style={{ color: cfColor, fontWeight: 700 }}>
-        Cash Flow: {cf >= 0 ? '+' : ''}{fmtUSD(cf)}
-      </p>
-    </div>
-  );
-}
+
 
 /* ── DSCR Verdict Badge ── */
 function DSCRBadge({ dscr }: { dscr: number }) {
@@ -430,32 +392,7 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
             Cash Flow Waterfall — Portfolio
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={waterfallData} margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  height={40}
-                />
-                <YAxis
-                  fontSize={9}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={55}
-                />
-                <Tooltip content={<CashFlowTooltip />} />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={80}>
-                  {waterfallData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <CashFlowWaterfallChart data={waterfallData} />
           </div>
         </div>
 
@@ -468,54 +405,15 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
             Where Your Rent Goes
           </h4>
           <div className="flex-1 min-h-0 relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={[
-                    ...expenseDonut,
-                    ...(isPositive ? [{ name: 'Cash Flow', value: aggregate.annualCashFlow, fill: '#7F7F7F' }] : []),
-                  ]}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="50%"
-                  outerRadius="72%"
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {[
-                    ...expenseDonut,
-                    ...(isPositive ? [{ name: 'Cash Flow', value: aggregate.annualCashFlow, fill: '#7F7F7F' }] : []),
-                  ].map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: any) => fmtUSD(Number(value))}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '9px', paddingTop: '8px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-              <div className="text-center">
-                <span className="block text-xl font-bold" style={{ color: isPositive ? '#7F7F7F' : '#EF4444' }}>
-                  {isPositive ? '+' : ''}{fmtUSD(aggregate.annualCashFlow)}
-                </span>
-                <span className="block text-[9px] uppercase tracking-wider text-text-secondary">
-                  Cash Flow
-                </span>
-              </div>
-            </div>
+            <ExpenseDonutChart
+              data={[
+                ...expenseDonut,
+                ...(isPositive ? [{ name: 'Cash Flow', value: aggregate.annualCashFlow, fill: '#7F7F7F' }] : []),
+              ]}
+              height={220}
+              centerText={isPositive ? `+${fmtUSD(aggregate.annualCashFlow)}` : fmtUSD(aggregate.annualCashFlow)}
+              centerSubtext="Cash Flow"
+            />
           </div>
         </div>
       </div>
@@ -644,27 +542,7 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
             </span>
           </div>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={trendChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229,231,235,0.3)" />
-                <XAxis dataKey="month" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis fontSize={9} tickFormatter={fmtK} tickLine={false} axisLine={false} width={52} domain={['auto', 'auto']} />
-                <Tooltip content={<MonthlyCFTooltip />} />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="4 3" strokeWidth={1.5}
-                  label={{ value: 'Break-even', position: 'insideTopRight', fontSize: 9, fill: '#9CA3AF' }} />
-                <Bar dataKey="cashFlow" radius={[4, 4, 0, 0]}>
-                  {trendChartData.map((entry, index) => {
-                    const isNeg = entry.cashFlow < 0;
-                    const fill = isNeg
-                      ? '#EF4444'
-                      : entry.isAnnual
-                        ? '#595959'
-                        : '#7F7F7F';
-                    return <Cell key={`cell-${index}`} fill={fill} />;
-                  })}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <CashFlowTrendChart data={trendChartData} />
           </div>
           <div className="flex gap-6 mt-3">
             <div className="flex items-center gap-1.5">
@@ -694,54 +572,14 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
             Cash Flow by Property — Portfolio View
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'NOI': b.noi,
-                  'Debt Service': -b.annualDebtService,
-                  'Cash Flow': b.annualCashFlow,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={55}
-                />
-                <Tooltip
-                  formatter={(value: any) => fmtUSD(Number(value))}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="top"
-                  height={30}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '10px' }}
-                />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" />
-                <Bar dataKey="NOI" fill="#595959" radius={[4, 4, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="Debt Service" fill="#EF4444" radius={[4, 4, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="Cash Flow" fill="#7F7F7F" radius={[4, 4, 0, 0]} maxBarSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
+            <CashFlowCompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                noi: b.noi,
+                debtService: b.annualDebtService,
+                cashFlow: b.annualCashFlow,
+              }))}
+            />
           </div>
         </div>
       )}

@@ -7,11 +7,9 @@ import {
   computeTotalCashInvested,
   computeCoCReturn,
 } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell, Legend,
-  PieChart, Pie, ReferenceArea,
-} from 'recharts';
+import ExpenseDonutChart from '@/components/Charts/ExpenseDonutChart';
+import CoCAlternativesChart from '@/components/Charts/CoCAlternativesChart';
+import CoCCompareChart from '@/components/Charts/CoCCompareChart';
 import {
   DollarSign, TrendingUp, AlertTriangle, ArrowRight,
   Target, PiggyBank, Percent, BarChart3,
@@ -118,42 +116,7 @@ function deriveCoCBreakdowns(projects: Project[]): PropertyCoCData[] {
     .slice(0, 8);
 }
 
-/* ── Custom tooltip ── */
-function CoCTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#7F7F7F' }}>
-        CoC Return: {fmtPct(d['CoC Return'] ?? d.cocReturn ?? 0)}
-      </p>
-      <p className="tabular-nums" style={{ color: '#595959' }}>
-        Cash Flow: {fmtUSD(d.annualCashFlow ?? 0)}/yr
-      </p>
-      <p className="tabular-nums" style={{ color: 'var(--text-secondary)' }}>
-        Invested: {fmtUSD(d.totalCashInvested ?? 0)}
-      </p>
-    </div>
-  );
-}
 
-/* ── Donut label ── */
-function renderDonutLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) {
-  const RADIAN = Math.PI / 180;
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  if (percent < 0.05) return null;
-  return (
-    <text x={x} y={y} fill="#fff" textAnchor="middle" dominantBaseline="central" fontSize={9} fontWeight={700}>
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-}
 
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
@@ -319,35 +282,16 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
             Capital Invested Breakdown
           </h4>
           {capitalPieces.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
-                <Pie
-                  data={capitalPieces}
-                  dataKey="value"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  strokeWidth={2}
-                  stroke="var(--bg-surface)"
-                  labelLine={false}
-                  label={renderDonutLabel}
-                >
-                  {capitalPieces.map((p, i) => (
-                    <Cell key={i} fill={p.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: any) => fmtUSD(value)}
-                  contentStyle={{
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border-ui)',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <ExpenseDonutChart
+              data={capitalPieces.map(p => ({
+                name: p.name,
+                value: p.value,
+                fill: p.color
+              }))}
+              height={200}
+              centerText={fmtUSD(aggregate.totalInvested)}
+              centerSubtext="Total Invested"
+            />
           ) : (
             <p className="text-xs text-text-secondary opacity-50">No capital data</p>
           )}
@@ -373,46 +317,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
           </h4>
         </div>
         <div className="flex-1 min-h-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={alternatives}
-              layout="vertical"
-              margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#F2F2F2" />
-              <XAxis
-                type="number"
-                fontSize={10}
-                tickFormatter={(v: number) => `${v}%`}
-                tickLine={false}
-                axisLine={false}
-                domain={[0, 'auto']}
-              />
-              <YAxis
-                dataKey="name"
-                type="category"
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                width={100}
-              />
-              <Tooltip
-                formatter={(value: any) => `${value.toFixed(2)}%`}
-                contentStyle={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border-ui)',
-                  borderRadius: '8px',
-                  fontSize: '11px',
-                }}
-              />
-              <ReferenceArea x1={8} x2={12} fill="rgba(127,127,127,0.05)" strokeWidth={0} />
-              <Bar dataKey="rate" radius={[0, 4, 4, 0]} maxBarSize={24}>
-                {alternatives.map((a, i) => (
-                  <Cell key={i} fill={a.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <CoCAlternativesChart data={alternatives} height={200} />
         </div>
       </div>
 
@@ -500,46 +405,15 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
             CoC Return by Property — Portfolio Comparison
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'CoC Return': b.cocReturn,
-                  annualCashFlow: b.annualCashFlow,
-                  totalCashInvested: b.totalCashInvested,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={(v: number) => `${v}%`}
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                  domain={['auto', 'auto']}
-                />
-                <Tooltip content={<CoCTooltip />} />
-                {/* Target zone */}
-                <ReferenceLine y={8} stroke="#595959" strokeDasharray="4 4" label={{ value: '8% target', position: 'right', fontSize: 9, fill: '#595959' }} />
-                <ReferenceLine y={12} stroke="#7F7F7F" strokeDasharray="4 4" label={{ value: '12% excellent', position: 'right', fontSize: 9, fill: '#7F7F7F' }} />
-                <ReferenceArea y1={8} y2={12} fill="rgba(127,127,127,0.05)" strokeWidth={0} />
-                <Bar dataKey="CoC Return" radius={[4, 4, 0, 0]} maxBarSize={36}>
-                  {breakdowns.map((b, i) => (
-                    <Cell key={i} fill={b.classification.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <CoCCompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                cocReturn: b.cocReturn,
+                annualCashFlow: b.annualCashFlow,
+                totalCashInvested: b.totalCashInvested,
+                color: b.classification.color
+              }))}
+            />
           </div>
         </div>
       )}

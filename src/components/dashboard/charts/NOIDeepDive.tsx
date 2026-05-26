@@ -3,12 +3,10 @@
 import React, { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import { computeNOIComponents, type NOIComponents } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, PieChart, Pie, Cell,
-  AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  ReferenceLine
-} from 'recharts';
+import NOIWaterfallChart from '@/components/Charts/NOIWaterfallChart';
+import NOITrendChart from '@/components/Charts/NOITrendChart';
+import NOICompareChart from '@/components/Charts/NOICompareChart';
+import ExpenseDonutChart from '@/components/Charts/ExpenseDonutChart';
 import {
   DollarSign, TrendingDown, TrendingUp, BarChart3,
   AlertTriangle, CheckCircle, Info, ArrowRight
@@ -104,24 +102,7 @@ function generateMonthlyNOI(c: NOIComponents): { month: string; noi: number; ben
   });
 }
 
-/* ── Custom monthly trend tooltip ── */
-function MonthlyNOITooltip({ active, payload, label }: any) {
-  if (!active || !payload?.length) return null;
-  const noi  = payload.find((p: any) => p.dataKey === 'noi')?.value ?? 0;
-  const bench = payload.find((p: any) => p.dataKey === 'benchmark')?.value ?? 0;
-  const diff  = noi - bench;
-  return (
-    <div className="rounded-lg px-3 py-2 shadow-lg text-xs space-y-1"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{label}</p>
-      <p style={{ color: noi >= 0 ? '#595959' : '#EF4444' }}>NOI: {fmtUSD(noi)}</p>
-      <p style={{ color: '#A5A5A5' }}>50% Rule: {fmtUSD(bench)}</p>
-      <p style={{ color: diff >= 0 ? '#595959' : '#F87171', fontSize: '10px' }}>
-        {diff >= 0 ? '+' : ''}{fmtUSD(diff)} vs benchmark
-      </p>
-    </div>
-  );
-}
+
 
 /* ── Build expense composition for donut ── */
 function buildExpenseDonut(c: NOIComponents) {
@@ -138,22 +119,7 @@ function buildExpenseDonut(c: NOIComponents) {
   return items;
 }
 
-/* ── Custom waterfall tooltip ── */
-function WaterfallTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: d.value >= 0 ? '#595959' : '#EF4444' }}>
-        {fmtUSD(d.value)}
-      </p>
-    </div>
-  );
-}
+
 
 /* ── Benchmark verdict badge ── */
 function BenchmarkBadge({ noi, estimate }: { noi: number; estimate: number }) {
@@ -368,34 +334,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             NOI Waterfall — Portfolio
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={waterfallData} margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={9}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-45}
-                  textAnchor="end"
-                  height={50}
-                />
-                <YAxis
-                  fontSize={9}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={50}
-                />
-                <Tooltip content={<WaterfallTooltip />} />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={48}>
-                  {waterfallData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <NOIWaterfallChart data={waterfallData} />
           </div>
         </div>
 
@@ -408,48 +347,12 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             Expense Composition
           </h4>
           <div className="flex-1 min-h-0 relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={expenseDonut}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius="50%"
-                  outerRadius="72%"
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {expenseDonut.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: any) => fmtUSD(Number(value))}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '9px', paddingTop: '8px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
-              <div className="text-center">
-                <span className="block text-xl font-bold text-text-primary">
-                  {fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss)}
-                </span>
-                <span className="block text-[9px] uppercase tracking-wider text-text-secondary">
-                  Total Costs
-                </span>
-              </div>
-            </div>
+            <ExpenseDonutChart
+              data={expenseDonut}
+              height={220}
+              centerText={fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss)}
+              centerSubtext="Total Costs"
+            />
           </div>
         </div>
       </div>
@@ -624,50 +527,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             </span>
           </div>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyNOIData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="noiGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="#595959" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#595959" stopOpacity={0.02} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(229,231,235,0.3)" />
-                <XAxis
-                  dataKey="month"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <YAxis
-                  fontSize={9}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={52}
-                />
-                <Tooltip content={<MonthlyNOITooltip />} />
-                <ReferenceLine y={0} stroke="#9CA3AF" strokeDasharray="3 3" strokeWidth={1} />
-                {/* 50% Rule reference line */}
-                <ReferenceLine
-                  y={monthlyNOIData[0]?.benchmark ?? 0}
-                  stroke="#A5A5A5"
-                  strokeDasharray="6 4"
-                  strokeWidth={1.5}
-                  label={{ value: '50% Rule', position: 'insideTopRight', fontSize: 9, fill: '#A5A5A5' }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="noi"
-                  stroke="#595959"
-                  strokeWidth={2}
-                  fill="url(#noiGrad)"
-                  dot={{ r: 3, fill: '#595959', strokeWidth: 0 }}
-                  activeDot={{ r: 5, fill: '#595959' }}
-                  name="NOI"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <NOITrendChart data={monthlyNOIData} />
           </div>
           <p className="text-[10px] mt-2" style={{ color: 'var(--text-secondary)', opacity: 0.55 }}>
             Seasonal variance applied: summer vacancy zero, winter utilities +40%, spring/winter maintenance spikes.
@@ -683,51 +543,13 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             NOI vs 50% Rule — By Property
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'Actual NOI': b.components.noi,
-                  '50% Estimate': b.fiftyPercentEstimate,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={fmtK}
-                  tickLine={false}
-                  axisLine={false}
-                  width={50}
-                />
-                <Tooltip
-                  formatter={(value: any) => fmtUSD(Number(value))}
-                  contentStyle={{
-                    borderRadius: '8px',
-                    border: 'none',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-                    fontSize: '11px',
-                  }}
-                />
-                <Legend
-                  verticalAlign="top"
-                  height={30}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '10px' }}
-                />
-                <Bar dataKey="Actual NOI" fill="#595959" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                <Bar dataKey="50% Estimate" fill="#A5A5A5" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
+            <NOICompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                actualNOI: b.components.noi,
+                estimate50: b.fiftyPercentEstimate
+              }))}
+            />
           </div>
         </div>
       )}

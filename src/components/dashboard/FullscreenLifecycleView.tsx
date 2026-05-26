@@ -32,6 +32,7 @@ const OccupancyDeepDive = lazy(() => import('@/components/dashboard/charts/Occup
 const ExpenseRatioDeepDive = lazy(() => import('@/components/dashboard/charts/ExpenseRatioDeepDive'));
 const AppreciationDeepDive = lazy(() => import('@/components/dashboard/charts/AppreciationDeepDive'));
 const FlipProfitabilityDashboard = lazy(() => import('@/components/dashboard/charts/FlipProfitabilityDashboard'));
+const LTVDeepDive = lazy(() => import('@/components/dashboard/charts/LTVDeepDive'));
 const MLSPropertyScout = lazy(() => import('@/components/acquisition/MLSPropertyScout'));
 
 interface FullscreenLifecycleViewProps {
@@ -846,6 +847,15 @@ function StaticPhase2({ deal }: { deal: Project }) {
          <div className="text-left mb-8">
            <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading Flip Profitability…</span></div>}>
              <FlipProfitabilityDashboard projects={[deal]} />
+           </Suspense>
+         </div>
+       )}
+
+       {/* ── LTV Risk Analysis ── */}
+       {loanAmount > 0 && (
+         <div className="text-left mb-8">
+           <Suspense fallback={<div className="animate-pulse bg-bg-surface/40 rounded-xl h-64 flex items-center justify-center"><span className="text-xs text-text-secondary uppercase tracking-widest">Loading LTV Analytics…</span></div>}>
+             <LTVDeepDive projects={[deal]} />
            </Suspense>
          </div>
        )}

@@ -7,11 +7,7 @@ import {
   computeCapRate,
   computeNOIComponents,
 } from '@/lib/metrics/reiMetrics';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell, Legend,
-  RadialBarChart, RadialBar,
-} from 'recharts';
+import CapRateCompareChart from '@/components/Charts/CapRateCompareChart';
 import {
   Target, TrendingUp, AlertTriangle, ShieldCheck,
   Info, ArrowRight, Gauge, Building2,
@@ -117,27 +113,7 @@ function deriveCapRateBreakdowns(projects: Project[]): PropertyCapRateData[] {
     .slice(0, 8);
 }
 
-/* ── Custom tooltip ── */
-function CapRateTooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
-  return (
-    <div
-      className="rounded-lg px-3 py-2 shadow-lg text-xs"
-      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
-    >
-      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{d.name}</p>
-      <p className="tabular-nums" style={{ color: '#7F7F7F' }}>
-        Cap Rate: {fmtPct(d['Cap Rate'] ?? d.capRate ?? d.value)}
-      </p>
-      {d['ARV Cap Rate'] != null && (
-        <p className="tabular-nums" style={{ color: '#8B5CF6' }}>
-          ARV Cap Rate: {fmtPct(d['ARV Cap Rate'])}
-        </p>
-      )}
-    </div>
-  );
-}
+
 
 /* ── Gauge component ── */
 function CapRateGauge({ capRate }: { capRate: number }) {
@@ -447,52 +423,14 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
             Cap Rate by Property — Portfolio Comparison
           </h4>
           <div className="flex-1 min-h-0">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={breakdowns.map(b => ({
-                  name: b.name,
-                  'Cap Rate': b.capRate,
-                  'ARV Cap Rate': b.arvCapRate,
-                }))}
-                margin={{ top: 10, right: 10, left: -10, bottom: 30 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2F2F2" />
-                <XAxis
-                  dataKey="name"
-                  fontSize={10}
-                  tickLine={false}
-                  axisLine={false}
-                  angle={-30}
-                  textAnchor="end"
-                  height={40}
-                />
-                <YAxis
-                  fontSize={10}
-                  tickFormatter={(v: number) => `${v}%`}
-                  tickLine={false}
-                  axisLine={false}
-                  width={40}
-                  domain={[0, 'auto']}
-                />
-                <Tooltip content={<CapRateTooltip />} />
-                <Legend
-                  verticalAlign="top"
-                  height={30}
-                  iconType="circle"
-                  wrapperStyle={{ fontSize: '10px' }}
-                />
-                {/* Reference zones */}
-                <ReferenceLine y={4} stroke="#595959" strokeDasharray="4 4" label={{ value: '4%', position: 'right', fontSize: 9, fill: '#595959' }} />
-                <ReferenceLine y={6} stroke="#7F7F7F" strokeDasharray="4 4" label={{ value: '6%', position: 'right', fontSize: 9, fill: '#7F7F7F' }} />
-                <ReferenceLine y={10} stroke="#EF4444" strokeDasharray="4 4" label={{ value: '10%', position: 'right', fontSize: 9, fill: '#EF4444' }} />
-                <Bar dataKey="Cap Rate" fill="#7F7F7F" radius={[4, 4, 0, 0]} maxBarSize={36}>
-                  {breakdowns.map((b, i) => (
-                    <Cell key={i} fill={b.classification.color} />
-                  ))}
-                </Bar>
-                <Bar dataKey="ARV Cap Rate" fill="#8B5CF6" radius={[4, 4, 0, 0]} maxBarSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
+            <CapRateCompareChart
+              data={breakdowns.map(b => ({
+                name: b.name,
+                capRate: b.capRate,
+                arvCapRate: b.arvCapRate,
+                color: b.classification.color
+              }))}
+            />
           </div>
         </div>
       )}

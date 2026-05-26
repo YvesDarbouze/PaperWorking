@@ -21,7 +21,7 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
 
   // Determine if the phase is "dark" (requires white text)
   const isDarkPhase = [
-    'Rehab', 'Renovating', 'Listed', 'Sold', 'Rented', 'Closed'
+    'Listed', 'Sold', 'Rented', 'Closed'
   ].includes(normalizedStatus);
 
   // Map normalized status to phase background variables
@@ -47,12 +47,12 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
   };
 
   const bgColorClass = getBadgeStyle(normalizedStatus);
-  const textColorClass = isDarkPhase ? 'text-white' : 'text-[#111111]';
+  const textColorClass = isDarkPhase ? 'text-white' : 'text-pw-black';
 
   return (
     <span className={`
       inline-flex items-center px-2 py-0.5 
-      text-[10px] font-black uppercase tracking-[0.15em] 
+      text-xs font-black uppercase tracking-widest 
       rounded-none border border-black/5
       ${bgColorClass} ${textColorClass}
       ${className}

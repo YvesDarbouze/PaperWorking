@@ -4,10 +4,15 @@ import React, { useMemo, useState } from 'react';
 import { useUserStore } from '@/store/userStore';
 import { useProjectStore } from '@/store/projectStore';
 import { useAuth } from '@/context/AuthContext';
-import { Shield, ShieldAlert, Trash2, Mail, Users, CheckCircle2, UserCircle } from 'lucide-react';
+import { Shield, Users, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import type { ProjectTeamMember } from '@/types/schema';
 import { usePermissions } from '@/hooks/usePermissions';
+
+/* ═══════════════════════════════════════════════════════
+   Team Directory & Access Management
+   (Luminous Glass Terminal)
+   ═══════════════════════════════════════════════════════ */
 
 type UnifiedMemberType = 'Internal' | 'External';
 
@@ -113,23 +118,19 @@ export default function TeamDirectoryPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pt-4 pb-12">
-      {/* Floating Atmosphere Elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
-      <div className="absolute bottom-[10%] left-[-10%] w-[30%] h-[30%] bg-primary/5 blur-[100px] rounded-full pointer-events-none -z-10"></div>
-
+    <div className="max-w-6xl mx-auto space-y-6 pt-4 pb-12 px-4 sm:px-6">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span className="material-symbols-outlined text-pw-primary text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
               security
             </span>
-            <span className="font-label-sm text-xs tracking-[0.2em] text-primary uppercase">
+            <span className="text-xs tracking-[0.2em] text-pw-primary uppercase font-bold">
               Authorization Hub
             </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-on-surface">Team Directory</h1>
-          <p className="text-sm text-on-surface-variant">
+          <h1 className="text-2xl font-bold tracking-tight text-pw-black">Team Directory</h1>
+          <p className="text-sm text-pw-muted">
             Manage your internal team members and external collaborators across all projects.
           </p>
         </div>
@@ -137,7 +138,7 @@ export default function TeamDirectoryPage() {
         {isAdmin && (
           <Link 
             href="/dashboard/settings/team"
-            className="luminous-button px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 font-label-md text-xs font-bold transition-all duration-300"
+            className="luminous-button px-5 py-2.5 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all duration-300 cursor-pointer"
           >
             <Users className="w-4 h-4" />
             Manage Internal Seats
@@ -149,19 +150,19 @@ export default function TeamDirectoryPage() {
       <div className="glass-card rounded-2xl overflow-hidden border border-white/5 shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
-            <thead>
-              <tr className="bg-white/5 font-label-sm text-[10px] font-bold text-on-surface-variant uppercase tracking-wider border-b border-white/5">
-                <th className="px-6 py-4">Member Name</th>
-                <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4">Role</th>
-                <th className="px-6 py-4">Access Level</th>
-                <th className="px-6 py-4 text-right">Actions</th>
+            <thead className="bg-surface-container-highest/50 backdrop-blur-md border-b border-white/5">
+              <tr>
+                <th className="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Member Name</th>
+                <th className="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Role</th>
+                <th className="px-6 py-4 font-label-md text-label-md text-outline uppercase tracking-wider">Access Level</th>
+                <th className="px-6 py-4 text-right font-label-md text-label-md text-outline uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {unifiedTeam.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-on-surface-variant">
+                  <td colSpan={5} className="px-6 py-12 text-center text-pw-muted">
                     <UserCircle className="w-10 h-10 mx-auto mb-3 opacity-20" />
                     <p>No team members found.</p>
                   </td>
@@ -181,22 +182,22 @@ export default function TeamDirectoryPage() {
                   const isInvited = member.status === 'invited';
 
                   return (
-                    <tr key={member.email} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={member.email} className="hover:bg-white/5 transition-colors duration-200 cursor-pointer">
                       {/* Identity */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div 
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold border flex-shrink-0 transition-transform group-hover:scale-105 ${
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold border flex-shrink-0 transition-transform ${
                               isInternal
-                                ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_10px_rgba(87,241,219,0.15)]'
-                                : 'bg-white/5 border-white/10 text-on-surface-variant'
+                                ? 'bg-pw-primary/10 border-pw-primary/20 text-pw-primary shadow-[0_0_10px_rgba(87,241,219,0.15)]'
+                                : 'bg-pw-glass-bg border-pw-border/50 text-pw-muted'
                             }`}
                           >
                             {initials}
                           </div>
                           <div>
-                            <span className="font-semibold text-on-surface block">{member.displayName}</span>
-                            <span className="text-[10px] text-on-surface-variant font-mono">
+                            <span className="font-semibold text-pw-black block">{member.displayName}</span>
+                            <span className="text-[10px] text-pw-muted font-mono">
                               ID: AUTH-0{member.id.charCodeAt(member.id.length - 1) % 100 || '00'}
                             </span>
                           </div>
@@ -204,14 +205,14 @@ export default function TeamDirectoryPage() {
                       </td>
                       
                       {/* Email */}
-                      <td className="px-6 py-4 text-on-surface-variant font-mono text-xs">
+                      <td className="px-6 py-4 text-pw-muted font-mono text-xs">
                         {member.email}
                       </td>
                       
                       {/* Role */}
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1.5 font-semibold text-xs ${
-                          isInternal ? 'text-primary' : 'text-on-surface-variant'
+                          isInternal ? 'text-pw-primary' : 'text-pw-muted'
                         }`}>
                           {isInternal ? (
                             <Shield className="w-3.5 h-3.5 opacity-80" />
@@ -228,8 +229,8 @@ export default function TeamDirectoryPage() {
                           <span 
                             className={`inline-flex px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest border rounded-full ${
                               isInternal
-                                ? 'bg-primary/10 text-primary border-primary/20'
-                                : 'bg-white/5 text-on-surface-variant border-white/10'
+                                ? 'bg-pw-primary/10 text-pw-primary border-pw-primary/20'
+                                : 'bg-pw-glass-bg text-pw-muted border-pw-border/50'
                             }`}
                           >
                             {isInternal ? 'Internal Team' : 'External Vendor'}
@@ -246,7 +247,7 @@ export default function TeamDirectoryPage() {
                             </span>
                           )}
                           {!isInvited && !isSuspended && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20 uppercase tracking-wider">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-pw-primary bg-pw-primary/10 px-2 py-0.5 rounded-full border border-pw-primary/20 uppercase tracking-wider">
                               Active
                             </span>
                           )}
@@ -259,14 +260,14 @@ export default function TeamDirectoryPage() {
                           <button
                             onClick={() => handleRevokeExternalAccess(member.email)}
                             disabled={!isAdmin || revokingEmail === member.email}
-                            className="text-[10px] font-bold uppercase tracking-wider text-error hover:underline hover:opacity-90 disabled:opacity-30 disabled:no-underline transition-all"
+                            className="text-[10px] font-bold uppercase tracking-wider text-error hover:underline hover:opacity-90 disabled:opacity-30 disabled:no-underline transition-all cursor-pointer"
                           >
                             {revokingEmail === member.email ? 'Revoking...' : 'Revoke'}
                           </button>
                         ) : (
                           <Link
                             href="/dashboard/settings/team"
-                            className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary hover:underline transition-colors"
+                            className="text-[10px] font-bold uppercase tracking-wider text-pw-muted hover:text-pw-primary hover:underline transition-colors"
                           >
                             Manage
                           </Link>

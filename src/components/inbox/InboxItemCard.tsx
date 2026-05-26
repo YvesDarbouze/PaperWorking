@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Archive, Trash2, ExternalLink, Check, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Checkbox } from '../ui';
 import { Notification, NotificationType } from '@/types/notification';
 import toast from 'react-hot-toast';
 
@@ -217,11 +218,9 @@ export default function InboxItemCard({
             onToggleSelect?.(item.id);
           }}
         >
-          <input
-            type="checkbox"
+          <Checkbox
             checked={isSelected}
             onChange={() => {}} // click event is intercepted by parent div click handler
-            className="w-4 h-4 rounded border-white/20 bg-white/5 checked:bg-primary checked:border-primary text-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
           />
         </div>
 

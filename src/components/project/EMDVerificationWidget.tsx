@@ -1,5 +1,5 @@
-import React from 'react';
 import { Calendar, CheckCircle, Clock, DollarSign } from 'lucide-react';
+import { Checkbox } from '../ui';
 
 interface EMDVerificationWidgetProps {
   emdAmount?: number;
@@ -104,9 +104,7 @@ export function EMDVerificationWidget({
         <div className="space-y-4">
           <label className="flex items-start gap-3 p-4 rounded-md border cursor-pointer hover:bg-gray-50 transition-colors" style={{ borderColor: 'var(--border-ui)' }}>
             <div className="pt-0.5">
-              <input 
-                type="checkbox" 
-                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+              <Checkbox
                 checked={emdVerified}
                 onChange={handleCheckboxChange}
                 disabled={readOnly}

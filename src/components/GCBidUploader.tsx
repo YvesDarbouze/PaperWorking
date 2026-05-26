@@ -315,29 +315,36 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
               onDragLeave={() => setDragOver(false)}
               onDrop={handleDrop}
               onClick={() => !isUploading && !isProcessing && fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-                dragOver
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-border-accent hover:border-gray-400 hover:bg-bg-primary'
-              }`}
+              className="relative rounded-xl p-8 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg min-h-[180px] flex flex-col items-center justify-center overflow-hidden group"
             >
+              {/* Inner Dashed Border Indicator */}
+              <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+                dragOver 
+                  ? 'border-primary bg-primary/10' 
+                  : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+              }`} />
+
               {selectedFile ? (
-                <div className="flex flex-col items-center gap-2">
-                  <FileCheck2 className="w-8 h-8 text-emerald-500" />
+                <div className="relative z-10 flex flex-col items-center gap-2">
+                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-emerald-500 shadow-lg shadow-emerald-500/10">
+                    <FileCheck2 className="w-6 h-6" />
+                  </div>
                   <p className="text-sm font-medium text-text-primary">{selectedFile.name}</p>
                   <p className="text-xs text-text-secondary">{(selectedFile.size / 1024).toFixed(0)} KB</p>
                   {!isUploading && !isProcessing && (
                     <button
                       onClick={e => { e.stopPropagation(); setSelectedFile(null); }}
-                      className="mt-1 text-text-secondary hover:text-red-500 transition"
+                      className="mt-1 text-text-secondary hover:text-red-500 transition cursor-pointer active:scale-95 p-1 rounded-full hover:bg-white/10"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <Upload className="w-8 h-8 text-text-secondary" />
+                <div className="relative z-10 flex flex-col items-center gap-2">
+                  <div className="w-14 h-14 mb-1 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-300">
+                    <Upload className="w-6 h-6" />
+                  </div>
                   <p className="text-sm font-medium text-text-primary">Drop GC bid here or click to browse</p>
                   <p className="text-xs text-text-secondary">PDF, JPEG, PNG, WebP — AI extracts line items automatically</p>
                 </div>
@@ -360,7 +367,7 @@ export default function GCBidUploader({ projectId, onBidSaved }: Props) {
               <button
                 onClick={handleUploadAndParse}
                 disabled={isUploading || isProcessing}
-                className="mt-3 w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-gray-800 transition disabled:opacity-40 active:scale-[0.99]"
+                className="mt-3 w-full flex items-center justify-center gap-2 luminous-button py-3 rounded-lg text-sm font-semibold disabled:opacity-40"
               >
                 {isUploading ? (
                   <>

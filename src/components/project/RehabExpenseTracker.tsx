@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RehabExpense, RehabExpenseCategory } from '@/types/schema';
 import { Plus, Receipt, Trash2, Check, ExternalLink } from 'lucide-react';
+import { Checkbox } from '../ui';
 import toast from 'react-hot-toast';
 
 interface RehabExpenseTrackerProps {
@@ -171,11 +172,9 @@ export function RehabExpenseTracker({ expenses, onChange, totalBudget = 0 }: Reh
               </div>
               <div className="flex items-end gap-2">
                 <label className="flex items-center gap-2 text-sm text-gray-700 pb-2">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={newExpense.paid}
                     onChange={e => setNewExpense({...newExpense, paid: e.target.checked})}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   Mark as Paid
                 </label>

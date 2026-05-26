@@ -484,45 +484,45 @@ export default function MarketplacePage() {
         </div>
 
         {/* Tab Switcher */}
-        <div className="glass-card p-1 rounded-2xl flex gap-1 self-start md:self-auto">
+        <div className="pw-tabs--pill flex gap-1 self-start md:self-auto border border-pw-border rounded-none">
           <button 
             onClick={() => { setActiveTab('deals'); setSearchTerm(''); }}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+            className={`pw-tab px-6 py-2.5 text-xs font-bold uppercase tracking-wider ${
               activeTab === 'deals' 
-                ? 'bg-[#57f1db] text-[#003731] luminous-button' 
-                : 'text-[#bacac5] hover:bg-white/5'
+                ? 'pw-tab--active' 
+                : ''
             }`}
           >
             Deal Marketplace
           </button>
           <button 
             onClick={() => { setActiveTab('vendors'); setSearchTerm(''); }}
-            className={`px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+            className={`pw-tab px-6 py-2.5 text-xs font-bold uppercase tracking-wider ${
               activeTab === 'vendors' 
-                ? 'bg-[#57f1db] text-[#003731] luminous-button' 
-                : 'text-[#bacac5] hover:bg-white/5'
+                ? 'pw-tab--active' 
+                : ''
             }`}
           >
             Vendor Marketplace
           </button>
         </div>
             {/* ── Search & Filter Controls ── */}
-      <div className="glass-card p-5 rounded-2xl flex flex-col gap-5 mb-8 border border-white/10">
+      <div className="glass-card p-5 rounded-none flex flex-col gap-5 mb-8 border border-pw-border">
         <div className="flex flex-wrap items-center gap-4 w-full">
           {activeTab === 'deals' ? (
             <>
               {/* Location Input (Search Global Regions...) */}
               <div className="flex-1 min-w-[200px] group">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5] opacity-60 mb-1.5 block">Location</label>
+                <label className="text-xs font-black uppercase tracking-widest text-pw-muted mb-1.5 block">Location</label>
                 <div className="relative">
                   <input 
                     type="text"
                     placeholder="Search Global Regions..."
-                    className="w-full pl-11 pr-4 py-3 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-xs focus:outline-none transition-colors placeholder:text-[#bacac5]/40 text-[#dae4ec]"
+                    className="w-full pl-11 pr-4 py-3 bg-pw-glass-bg border border-pw-border focus:border-pw-primary focus:ring-1 focus:ring-pw-primary rounded-none text-xs focus:outline-none transition-colors placeholder:text-pw-muted text-pw-black"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
-                  <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-base opacity-60" style={{ fontVariationSettings: "'FILL' 0" }}>
+                  <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-pw-muted text-base" style={{ fontVariationSettings: "'FILL' 0" }}>
                     location_on
                   </span>
                 </div>
@@ -530,9 +530,9 @@ export default function MarketplacePage() {
 
               {/* Strategy Dropdown */}
               <div className="w-full md:w-auto">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5] opacity-60 mb-1.5 block">Strategy</label>
+                <label className="text-xs font-black uppercase tracking-widest text-pw-muted mb-1.5 block">Strategy</label>
                 <select 
-                  className="w-full md:w-auto px-4 py-3 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary rounded-xl text-xs font-semibold focus:outline-none text-[#dae4ec]"
+                  className="w-full md:w-auto px-4 py-3 bg-pw-glass-bg border border-pw-border focus:border-pw-primary rounded-none text-xs font-semibold focus:outline-none text-pw-black"
                   value={strategyFilter}
                   onChange={(e) => setStrategyFilter(e.target.value)}
                 >
@@ -545,9 +545,9 @@ export default function MarketplacePage() {
 
               {/* Min Invest Dropdown */}
               <div className="w-full md:w-auto">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5] opacity-60 mb-1.5 block">Min Invest</label>
+                <label className="text-xs font-black uppercase tracking-widest text-pw-muted mb-1.5 block">Min Invest</label>
                 <select 
-                  className="w-full md:w-auto px-4 py-3 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary rounded-xl text-xs font-semibold focus:outline-none text-[#dae4ec]"
+                  className="w-full md:w-auto px-4 py-3 bg-pw-glass-bg border border-pw-border focus:border-pw-primary rounded-none text-xs font-semibold focus:outline-none text-pw-black"
                   value={minInvestFilter}
                   onChange={(e) => setMinInvestFilter(e.target.value)}
                 >
@@ -560,9 +560,9 @@ export default function MarketplacePage() {
 
               {/* Target Return Dropdown */}
               <div className="w-full md:w-auto">
-                <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5] opacity-60 mb-1.5 block">Target Return</label>
+                <label className="text-xs font-black uppercase tracking-widest text-pw-muted mb-1.5 block">Target Return</label>
                 <select 
-                  className="w-full md:w-auto px-4 py-3 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary rounded-xl text-xs font-semibold focus:outline-none text-[#dae4ec]"
+                  className="w-full md:w-auto px-4 py-3 bg-pw-glass-bg border border-pw-border focus:border-pw-primary rounded-none text-xs font-semibold focus:outline-none text-pw-black"
                   value={targetReturnFilter}
                   onChange={(e) => setTargetReturnFilter(e.target.value)}
                 >
@@ -583,7 +583,7 @@ export default function MarketplacePage() {
                   setTargetReturnFilter('All');
                   toast.success('Filters reset to default.');
                 }}
-                className="mt-5 md:mt-5 bg-white/5 border border-[#3c4a46] hover:bg-white/10 hover:border-primary/50 text-[#bacac5] hover:text-white p-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center"
+                className="pw-interactive border border-pw-border hover:bg-pw-primary/10 hover:text-pw-primary hover:border-pw-primary/30 p-2.5 rounded-none flex items-center justify-center mt-5 md:mt-5 text-pw-muted"
               >
                 <span className="material-symbols-outlined text-sm">tune</span>
               </button>
@@ -592,13 +592,13 @@ export default function MarketplacePage() {
             <>
               {/* Location Input (Zip code or City) */}
               <div className="relative flex-1 min-w-[240px] group">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#bacac5] group-focus-within:text-primary transition-colors">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-pw-muted group-focus-within:text-pw-primary transition-colors">
                   location_on
                 </span>
                 <input 
                   type="text"
                   placeholder="Search by City or Zip Code..."
-                  className="w-full pl-12 pr-4 py-3.5 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm focus:outline-none transition-all placeholder:text-[#bacac5]/40 text-[#dae4ec]"
+                  className="w-full pl-12 pr-4 py-3.5 bg-pw-glass-bg border border-pw-border focus:border-pw-primary focus:ring-1 focus:ring-pw-primary rounded-none text-sm focus:outline-none transition-all placeholder:text-pw-muted text-pw-black"
                   value={zipFilter}
                   onChange={(e) => setZipFilter(e.target.value)}
                 />
@@ -606,11 +606,11 @@ export default function MarketplacePage() {
 
               {/* Text Search Input (for company/bio/specialty) */}
               <div className="relative flex-1 min-w-[240px] group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#bacac5] opacity-60" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted" />
                 <input 
                   type="text"
                   placeholder="Filter by specialty (e.g. Appraisal, Contractor)..."
-                  className="w-full pl-11 pr-4 py-3.5 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary focus:ring-1 focus:ring-primary rounded-xl text-sm focus:outline-none transition-all placeholder:text-[#bacac5]/40 text-[#dae4ec]"
+                  className="w-full pl-11 pr-4 py-3.5 bg-pw-glass-bg border border-pw-border focus:border-pw-primary focus:ring-1 focus:ring-pw-primary rounded-none text-sm focus:outline-none transition-all placeholder:text-pw-muted text-pw-black"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -618,7 +618,7 @@ export default function MarketplacePage() {
 
               {/* State Dropdown */}
               <select 
-                className="px-4 py-3.5 bg-[#141d23]/80 border border-[#3c4a46] focus:border-primary rounded-xl text-sm font-semibold focus:outline-none text-[#dae4ec]"
+                className="px-4 py-3.5 bg-pw-glass-bg border border-pw-border focus:border-pw-primary rounded-none text-sm font-semibold focus:outline-none text-pw-black"
                 value={stateFilter}
                 onChange={(e) => setStateFilter(e.target.value)}
               >
@@ -649,10 +649,10 @@ export default function MarketplacePage() {
                   key={chip.value}
                   type="button"
                   onClick={() => setRoleFilter(chip.value)}
-                  className={`whitespace-nowrap px-4 py-2 border rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 ${
+                  className={`whitespace-nowrap px-4 py-2 border rounded-none font-bold text-xs uppercase tracking-wider transition-all duration-200 ${
                     isChipActive
-                      ? 'border-primary bg-primary/10 text-primary shadow-[0_0_10px_rgba(87,241,219,0.15)]'
-                      : 'border-[#3c4a46] text-[#bacac5] hover:border-primary/50 hover:text-primary hover:bg-white/5'
+                      ? 'border-pw-primary bg-pw-primary/10 text-pw-primary shadow-[0_0_10px_rgba(87,241,219,0.15)]'
+                      : 'border-pw-border text-pw-muted hover:border-pw-primary/50 hover:text-pw-primary hover:bg-white/5'
                   }`}
                 >
                   {chip.label}
@@ -669,10 +669,10 @@ export default function MarketplacePage() {
         /* ==================== CROWDFUNDING DEALS TAB ==================== */
         <div className="grid grid-cols-1 gap-6 animate-in fade-in duration-300">
           {filteredDeals.length === 0 ? (
-            <div className="py-20 glass-card rounded-3xl flex flex-col items-center justify-center gap-4 border border-dashed border-white/10 text-center px-6">
-              <Building2 className="w-8 h-8 text-[#bacac5] opacity-20" />
-              <p className="text-xs uppercase font-bold tracking-widest text-[#bacac5]/50">No crowdfunding opportunities match your criteria.</p>
-              <p className="text-xs text-[#bacac5]/40 max-w-sm">Try broadening your search term or adjusting filters.</p>
+            <div className="py-20 glass-card rounded-none flex flex-col items-center justify-center gap-4 border border-dashed border-pw-border text-center px-6 text-pw-black">
+              <Building2 className="w-8 h-8 text-pw-muted opacity-20" />
+              <p className="text-xs uppercase font-bold tracking-widest text-pw-muted">No crowdfunding opportunities match your criteria.</p>
+              <p className="text-xs text-pw-muted/60 max-w-sm">Try broadening your search term or adjusting filters.</p>
             </div>
           ) : (
             <>
@@ -692,7 +692,7 @@ export default function MarketplacePage() {
                 
                 return (
                   <article 
-                    className="glass-card rounded-2xl overflow-hidden border-2 border-primary/30 ring-1 ring-primary/20 shadow-[0_0_40px_rgba(87,241,219,0.1)] cursor-pointer"
+                    className="glass-card rounded-none overflow-hidden border border-pw-primary/40 hover:border-pw-primary transition-all duration-300 cursor-pointer shadow-[0_0_40px_rgba(87,241,219,0.1)]"
                     onClick={() => setSelectedDeal(deal)}
                   >
                     <div className="flex flex-col lg:flex-row">
@@ -704,11 +704,11 @@ export default function MarketplacePage() {
                           src={imageSrc}
                         />
                         <div className="absolute top-4 left-4 flex gap-2">
-                          <span className="bg-primary text-[#003731] font-bold text-[10px] px-3 py-1 rounded-full uppercase tracking-wider">
+                          <span className="bg-[#57f1db] text-[#003731] font-bold text-[10px] px-3 py-1 rounded-none uppercase tracking-wider">
                             Active Deal
                           </span>
-                          <span className="bg-black/60 backdrop-blur-md text-white font-bold text-[10px] px-3 py-1 rounded-full flex items-center gap-1 border border-white/10">
-                            <span className="material-symbols-outlined text-xs text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          <span className="bg-pw-glass-bg backdrop-blur-md text-pw-black font-bold text-[10px] px-3 py-1 rounded-none flex items-center gap-1 border border-pw-border">
+                            <span className="material-symbols-outlined text-xs text-[#57f1db]" style={{ fontVariationSettings: "'FILL' 1" }}>
                               verified
                             </span> 
                             Verified
@@ -720,9 +720,9 @@ export default function MarketplacePage() {
                       <div className="lg:w-3/5 p-6 md:p-8 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start mb-2">
-                            <h2 className="text-2xl font-bold text-white tracking-tight">{deal.propertyName}</h2>
+                            <h2 className="text-2xl font-bold text-pw-black tracking-tight">{deal.propertyName}</h2>
                             <span 
-                              className="material-symbols-outlined text-[#bacac5] cursor-pointer hover:text-primary transition-colors"
+                              className="material-symbols-outlined text-pw-muted cursor-pointer hover:text-pw-primary transition-colors"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 toast.success('Added to bookmarks.');
@@ -731,22 +731,22 @@ export default function MarketplacePage() {
                               bookmark
                             </span>
                           </div>
-                          <p className="text-xs text-[#bacac5] mb-6 flex items-center gap-1.5 font-semibold">
-                            <span className="material-symbols-outlined text-primary text-sm">explore</span> 
+                          <p className="text-xs text-pw-muted mb-6 flex items-center gap-1.5 font-semibold">
+                            <span className="material-symbols-outlined text-pw-primary text-sm">explore</span> 
                             {deal.address} • {strategyName} Strategy
                           </p>
                           
                           {/* Progress */}
                           <div className="mb-8">
                             <div className="flex justify-between text-xs font-bold mb-2">
-                              <span className="text-[#bacac5]">Funding Progress</span>
-                              <span className="text-primary font-bold">
-                                {formatCurrency(raised)} <span className="text-[#bacac5]/60">/ {formatCurrency(target)}</span>
+                              <span className="text-pw-muted">Funding Progress</span>
+                              <span className="text-pw-primary font-bold">
+                                {formatCurrency(raised)} <span className="text-pw-muted/60">/ {formatCurrency(target)}</span>
                               </span>
                             </div>
-                            <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div className="h-3 w-full bg-pw-glass-bg rounded-none overflow-hidden border border-pw-border">
                               <div 
-                                className="h-full bg-primary luminous-teal-glow progress-fill transition-all duration-500" 
+                                className="h-full bg-pw-primary progress-fill transition-all duration-500" 
                                 style={{ width: `${pct}%` }}
                               />
                             </div>
@@ -754,17 +754,17 @@ export default function MarketplacePage() {
 
                           {/* Stats Grid */}
                           <div className="grid grid-cols-3 gap-4 mb-8">
-                            <div className="p-4 rounded-xl bg-[#141d23]/80 border border-white/5">
-                              <span className="block text-[10px] uppercase font-bold tracking-widest text-[#bacac5]/60 mb-1">Target IRR</span>
-                              <span className="text-lg font-bold text-primary">{irr}</span>
+                            <div className="p-4 rounded-none bg-pw-glass-bg border border-pw-border">
+                              <span className="block text-[10px] uppercase font-bold tracking-widest text-pw-muted/60 mb-1">Target IRR</span>
+                              <span className="text-lg font-bold text-pw-primary">{irr}</span>
                             </div>
-                            <div className="p-4 rounded-xl bg-[#141d23]/80 border border-white/5">
-                              <span className="block text-[10px] uppercase font-bold tracking-widest text-[#bacac5]/60 mb-1">Net ROI</span>
+                            <div className="p-4 rounded-none bg-pw-glass-bg border border-pw-border">
+                              <span className="block text-[10px] uppercase font-bold tracking-widest text-pw-muted/60 mb-1">Net ROI</span>
                               <span className="text-lg font-bold text-[#adc6ff]">{roi}</span>
                             </div>
-                            <div className="p-4 rounded-xl bg-[#141d23]/80 border border-white/5">
-                              <span className="block text-[10px] uppercase font-bold tracking-widest text-[#bacac5]/60 mb-1">Equity Left</span>
-                              <span className="text-lg font-bold text-white">{formatCurrency(target - raised)}</span>
+                            <div className="p-4 rounded-none bg-pw-glass-bg border border-pw-border">
+                              <span className="block text-[10px] uppercase font-bold tracking-widest text-pw-muted/60 mb-1">Equity Left</span>
+                              <span className="text-lg font-bold text-pw-black">{formatCurrency(target - raised)}</span>
                             </div>
                           </div>
                         </div>
@@ -778,7 +778,7 @@ export default function MarketplacePage() {
                               setSelectedDeal(deal);
                               setPledgeOpen(true);
                             }}
-                            className="flex-1 bg-primary text-[#003731] font-bold text-xs uppercase tracking-wider py-4 rounded-xl luminous-teal-glow transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+                            className="flex-1 pw-btn pw-btn--primary font-bold text-xs uppercase tracking-wider py-4 rounded-none flex items-center justify-center gap-1.5"
                           >
                             <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
                               bolt
@@ -791,7 +791,7 @@ export default function MarketplacePage() {
                               e.stopPropagation();
                               toast.success('Interest registered successfully.');
                             }}
-                            className="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold text-xs uppercase tracking-wider py-4 rounded-xl transition-all active:scale-[0.98]"
+                            className="flex-1 pw-btn pw-btn--outline hover:bg-pw-glass-bg text-pw-black font-bold text-xs uppercase tracking-wider py-4 rounded-none"
                           >
                             Express Interest
                           </button>
@@ -815,7 +815,7 @@ export default function MarketplacePage() {
                 return (
                   <article 
                     key={deal.id}
-                    className="glass-card rounded-2xl overflow-hidden hover:border-primary/20 transition-all duration-300 cursor-pointer"
+                    className="glass-card rounded-none overflow-hidden hover:border-pw-primary/30 border border-pw-border transition-all duration-300 cursor-pointer"
                     onClick={() => setSelectedDeal(deal)}
                   >
                     <div className="flex flex-col md:flex-row">
@@ -827,7 +827,7 @@ export default function MarketplacePage() {
                           src={imageSrc}
                         />
                         {deal.id.startsWith('mock-') && (
-                          <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest text-[#ffb875] border border-[#ffb875]/20">
+                          <div className="absolute top-3 left-3 bg-pw-glass-bg backdrop-blur-md px-2 py-0.5 rounded-none text-[8px] font-bold uppercase tracking-widest text-[#ffb875] border border-pw-border">
                             Sample
                           </div>
                         )}
@@ -837,37 +837,37 @@ export default function MarketplacePage() {
                       <div className="flex-grow p-6 flex flex-col justify-between">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
                           <div>
-                            <h3 className="text-base font-bold text-white tracking-tight">{deal.propertyName}</h3>
+                            <h3 className="text-base font-bold text-pw-black tracking-tight">{deal.propertyName}</h3>
                             <div className="flex items-center gap-2 mt-1">
-                              <span className="bg-white/5 text-[#bacac5] font-bold text-[9px] px-2 py-0.5 rounded border border-white/5 uppercase">
+                              <span className="bg-pw-glass-bg text-pw-muted font-bold text-[9px] px-2 py-0.5 rounded-none border border-pw-border uppercase">
                                 {strategyName}
                               </span>
-                              <span className="flex items-center gap-1 text-[#bacac5]/60 font-bold text-[9px] uppercase tracking-wider">
-                                <span className="material-symbols-outlined text-xs text-[#bacac5]">verified_user</span> 
+                              <span className="flex items-center gap-1 text-pw-muted/60 font-bold text-[9px] uppercase tracking-wider">
+                                <span className="material-symbols-outlined text-xs text-pw-muted">verified_user</span> 
                                 Verified Investor Only
                               </span>
                             </div>
                           </div>
                           <div className="text-left md:text-right">
-                            <span className="block text-[9px] uppercase font-bold tracking-widest text-[#bacac5]/50">Available Equity</span>
-                            <p className="text-sm font-bold text-white mt-0.5">{formatCurrency(target - raised)}</p>
+                            <span className="block text-[9px] uppercase font-bold tracking-widest text-pw-muted/50">Available Equity</span>
+                            <p className="text-sm font-bold text-pw-black mt-0.5">{formatCurrency(target - raised)}</p>
                           </div>
                         </div>
 
                         {/* Progress + Stats Row */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
                           <div className="md:col-span-2">
-                            <div className="flex justify-between text-[10px] font-bold mb-1 text-[#bacac5]">
+                            <div className="flex justify-between text-[10px] font-bold mb-1 text-pw-muted">
                               <span>Funding</span>
-                              <span className="text-primary">{pct}%</span>
+                              <span className="text-pw-primary">{pct}%</span>
                             </div>
-                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                              <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                            <div className="h-1.5 w-full bg-pw-glass-bg rounded-none overflow-hidden border border-pw-border">
+                              <div className="h-full bg-pw-primary" style={{ width: `${pct}%` }} />
                             </div>
                           </div>
                           <div className="text-left md:text-center">
-                            <span className="block text-[9px] uppercase font-bold tracking-widest text-[#bacac5]/50">Target IRR</span>
-                            <span className="text-sm font-bold text-primary mt-0.5">{irr}</span>
+                            <span className="block text-[9px] uppercase font-bold tracking-widest text-pw-muted/50">Target IRR</span>
+                            <span className="text-sm font-bold text-pw-primary mt-0.5">{irr}</span>
                           </div>
                           <div className="flex justify-end">
                             <button 
@@ -876,7 +876,7 @@ export default function MarketplacePage() {
                                 e.stopPropagation();
                                 setSelectedDeal(deal);
                               }}
-                              className="p-2 rounded-xl border border-white/10 hover:bg-primary/15 hover:text-primary hover:border-primary/30 transition-all duration-200 active:scale-90"
+                              className="pw-interactive p-2 rounded-none border border-pw-border hover:bg-pw-primary/10 hover:text-pw-primary hover:border-pw-primary/30"
                             >
                               <span className="material-symbols-outlined text-base">chevron_right</span>
                             </button>
@@ -895,24 +895,24 @@ export default function MarketplacePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-300">
           {/* Disclaimer Notice */}
           <div className="col-span-full mb-2">
-            <div className="glass-card border-l-4 border-l-primary p-4 flex items-start gap-4 rounded-xl border border-white/5">
-              <span className="material-symbols-outlined text-primary shrink-0">info</span>
-              <p className="font-label-md text-xs text-on-surface-variant leading-relaxed">
-                <span className="text-primary font-bold">DISCLAIMER:</span> PaperWorking does not vet vendors. Investors must perform their own due diligence prior to engagement.
+            <div className="glass-card border-l-4 border-l-pw-primary p-4 flex items-start gap-4 rounded-none border border-pw-border">
+              <span className="material-symbols-outlined text-pw-primary shrink-0">info</span>
+              <p className="font-label-md text-xs text-pw-black leading-relaxed">
+                <span className="text-pw-primary font-bold">DISCLAIMER:</span> PaperWorking does not vet vendors. Investors must perform their own due diligence prior to engagement.
               </p>
             </div>
           </div>
 
           {loadingVendors ? (
             <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
-              <Loader2 className="w-8 h-8 text-[#57f1db] animate-spin" />
-              <p className="text-xs uppercase font-bold tracking-widest text-[#bacac5]/60">Procuring professionals...</p>
+              <Loader2 className="w-8 h-8 text-pw-primary animate-spin" />
+              <p className="text-xs uppercase font-bold tracking-widest text-pw-muted">Procuring professionals...</p>
             </div>
           ) : filteredVendors.length === 0 ? (
-            <div className="col-span-full py-20 glass-card rounded-3xl flex flex-col items-center justify-center gap-4 border border-dashed border-white/10 text-center px-6">
-              <Building2 className="w-8 h-8 text-[#bacac5] opacity-20" />
-              <p className="text-xs uppercase font-bold tracking-widest text-[#bacac5]/50">No verified professionals match your criteria.</p>
-              <p className="text-xs text-[#bacac5]/40 max-w-sm">Try broadening your state search or adjusting specialties filters.</p>
+            <div className="col-span-full py-20 glass-card rounded-none flex flex-col items-center justify-center gap-4 border border-dashed border-pw-border text-center px-6 text-pw-black">
+              <Building2 className="w-8 h-8 text-pw-muted opacity-20" />
+              <p className="text-xs uppercase font-bold tracking-widest text-pw-muted">No verified professionals match your criteria.</p>
+              <p className="text-xs text-pw-muted/60 max-w-sm">Try broadening your state search or adjusting specialties filters.</p>
             </div>
           ) : (
             filteredVendors.map((vendor) => {
@@ -922,12 +922,12 @@ export default function MarketplacePage() {
               return (
                 <div 
                   key={vendor.id}
-                  className="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-primary/40 transition-all duration-300 group border border-white/10 relative overflow-hidden"
+                  className="glass-card p-6 rounded-none flex flex-col justify-between hover:border-pw-primary/40 transition-all duration-300 group border border-pw-border relative overflow-hidden"
                 >
                   {/* Bookmark Icon */}
                   <div className="absolute top-0 right-0 p-4">
                     <span 
-                      className="material-symbols-outlined text-[#bacac5]/40 group-hover:text-primary transition-colors cursor-pointer"
+                      className="material-symbols-outlined text-pw-muted/40 group-hover:text-pw-primary transition-colors cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         toast.success(`Bookmarked ${vendor.companyName}.`);
@@ -941,17 +941,17 @@ export default function MarketplacePage() {
                     {/* Top Row: Badge & Rating */}
                     <div className="flex justify-between items-start">
                       <div className="flex items-start gap-3">
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center border ${badgeClass}`}>
+                        <div className={`h-12 w-12 rounded-none flex items-center justify-center border ${badgeClass}`}>
                           <span className="material-symbols-outlined text-2xl">{icon}</span>
                         </div>
                         
                         <div className="space-y-0.5">
-                          <span className="inline-block text-[9px] uppercase tracking-widest font-bold text-[#bacac5]/60">
+                          <span className="inline-block text-[9px] uppercase tracking-widest font-bold text-pw-muted/60">
                             {vendor.type || 'Professional'}
                           </span>
                           {vendor.verified && (
-                            <div className="flex items-center gap-1 text-[8px] uppercase tracking-widest text-[#bacac5]/40 font-bold">
-                              <span className="material-symbols-outlined text-[10px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
+                            <div className="flex items-center gap-1 text-[8px] uppercase tracking-widest text-pw-muted/40 font-bold">
+                              <span className="material-symbols-outlined text-[10px] text-pw-primary" style={{ fontVariationSettings: "'FILL' 1" }}>
                                 verified_user
                               </span> 
                               Verified
@@ -960,21 +960,21 @@ export default function MarketplacePage() {
                         </div>
                       </div>
                       
-                      <div className="flex items-center gap-1 bg-[#141d23]/80 px-2 py-0.5 rounded-lg border border-white/5">
+                      <div className="flex items-center gap-1 bg-pw-glass-bg px-2 py-0.5 rounded-none border border-pw-border">
                         <span className="material-symbols-outlined text-[#ffb875] text-xs" style={{ fontVariationSettings: "'FILL' 1" }}>
                           star
                         </span>
-                        <span className="text-[10px] font-bold text-white">{vendor.overallRating || '5.0'}</span>
-                        <span className="text-[8px] text-[#bacac5]/40 font-medium">({reviews})</span>
+                        <span className="text-[10px] font-bold text-pw-black">{vendor.overallRating || '5.0'}</span>
+                        <span className="text-[8px] text-pw-muted/40 font-medium">({reviews})</span>
                       </div>
                     </div>
 
                     {/* Company Name + Bio */}
                     <div>
-                      <h4 className="text-base font-bold text-white uppercase tracking-tight group-hover:text-primary transition-colors">
+                      <h4 className="text-base font-bold text-pw-black uppercase tracking-tight group-hover:text-pw-primary transition-colors">
                         {vendor.companyName}
                       </h4>
-                      <p className="text-xs text-[#bacac5] font-medium leading-relaxed mt-2 line-clamp-2">
+                      <p className="text-xs text-pw-muted font-medium leading-relaxed mt-2 line-clamp-2">
                         {vendor.bio}
                       </p>
                     </div>
@@ -982,29 +982,29 @@ export default function MarketplacePage() {
                     {/* Specialties Pills */}
                     <div className="flex flex-wrap gap-1">
                       {vendor.specialties?.slice(0, 3).map((spec, idx) => (
-                        <span key={idx} className="bg-white/5 px-2 py-0.5 rounded-lg text-[8px] uppercase tracking-wider font-bold text-[#bacac5]/70 border border-white/5">
+                        <span key={idx} className="bg-pw-glass-bg px-2 py-0.5 rounded-none text-[8px] uppercase tracking-wider font-bold text-pw-muted/70 border border-pw-border">
                           {spec}
                         </span>
                       ))}
                     </div>
 
                     {/* Metadata fields */}
-                    <div className="pt-4 border-t border-white/5 space-y-2.5">
-                      <div className="flex items-center gap-3 text-[#bacac5]/80">
-                        <span className="material-symbols-outlined text-base text-primary/70">location_on</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                    <div className="pt-4 border-t border-pw-border space-y-2.5">
+                      <div className="flex items-center gap-3 text-pw-muted/80">
+                        <span className="material-symbols-outlined text-base text-pw-primary/70">location_on</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
                           {vendor.licensingStates?.join(' / ') || 'TX / FL'} Jurisdiction
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-[#bacac5]/80">
-                        <span className="material-symbols-outlined text-base text-primary/70">schedule</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                      <div className="flex items-center gap-3 text-pw-muted/80">
+                        <span className="material-symbols-outlined text-base text-pw-primary/70">schedule</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
                           {vendor.avgTurnaroundDays || '3-5'} Days Turnaround
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 text-[#bacac5]/80">
-                        <span className="material-symbols-outlined text-base text-primary/70">payments</span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                      <div className="flex items-center gap-3 text-pw-muted/80">
+                        <span className="material-symbols-outlined text-base text-pw-primary/70">payments</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-pw-black">
                           {vendor.feeRangeLabel || 'Contact'} Fee
                         </span>
                       </div>
@@ -1012,14 +1012,14 @@ export default function MarketplacePage() {
                   </div>
 
                   {/* Bottom connect CTA & Profile Link */}
-                  <div className="pt-6 border-t border-white/5 flex flex-col gap-3 mt-4">
+                  <div className="pt-6 border-t border-pw-border flex flex-col gap-3 mt-4">
                     <button 
                       onClick={() => handleRequestQuote(vendor)}
                       disabled={!hasActiveSub}
-                      className={`w-full py-3 border text-xs font-bold uppercase tracking-wider rounded-xl transition-all duration-200 active:scale-[0.98] ${
+                      className={`w-full py-3 border text-xs font-bold uppercase tracking-wider rounded-none transition-all duration-200 active:scale-[0.98] ${
                         hasActiveSub 
-                          ? 'border-primary/30 text-primary hover:bg-primary hover:text-on-primary hover:border-transparent luminous-glow' 
-                          : 'border-white/5 text-[#bacac5]/40 bg-[#141d23] opacity-40 cursor-not-allowed'
+                          ? 'border-pw-primary/30 text-pw-primary hover:bg-pw-primary hover:text-on-primary hover:border-transparent luminous-glow' 
+                          : 'border-pw-border text-pw-muted/40 bg-pw-glass-bg opacity-40 cursor-not-allowed'
                       }`}
                     >
                       {!hasActiveSub ? 'Subscription Required' : getConnectButtonLabel(vendor.type)}
@@ -1029,7 +1029,7 @@ export default function MarketplacePage() {
                         setSelectedVendor(vendor);
                         toast.success(`Opening profile for ${vendor.companyName} (Simulated)`);
                       }}
-                      className="text-center font-bold text-[9px] uppercase tracking-widest text-[#bacac5] hover:text-white transition-colors"
+                      className="text-center font-bold text-[9px] uppercase tracking-widest text-pw-muted hover:text-pw-black transition-colors"
                     >
                       View Full Profile
                     </button>

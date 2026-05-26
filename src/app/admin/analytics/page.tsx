@@ -193,23 +193,22 @@ function TopRegions() {
   return (
     <ChartCard title="Top Regions by Activity">
       <div
-        className="overflow-hidden"
-        style={{ border: '1px solid var(--border-ui)', borderRadius: 'var(--radius-sm)' }}
+        className="overflow-hidden border border-white/5 rounded-xl glass-card"
       >
-        <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-ui)' }}>
-              <th className="text-left px-3 py-2 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Region</th>
-              <th className="text-right px-3 py-2 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Users</th>
-              <th className="text-right px-3 py-2 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>Deals</th>
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-surface-container-highest/50 backdrop-blur-md border-b border-white/5">
+            <tr>
+              <th className="text-left px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Region</th>
+              <th className="text-right px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Users</th>
+              <th className="text-right px-4 py-2.5 font-label-md text-label-md text-outline uppercase tracking-wider">Deals</th>
             </tr>
           </thead>
-          <tbody>
-            {regions.map((r, i) => (
-              <tr key={r.name} style={{ borderBottom: i < regions.length - 1 ? '1px solid var(--border-ui)' : undefined }}>
-                <td className="px-3 py-2" style={{ color: 'var(--text-primary)' }}>{r.name}</td>
-                <td className="px-3 py-2 text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{r.users}</td>
-                <td className="px-3 py-2 text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{r.deals}</td>
+          <tbody className="divide-y divide-white/5">
+            {regions.map((r) => (
+              <tr key={r.name} className="hover:bg-white/5 transition-colors duration-200 cursor-pointer">
+                <td className="px-4 py-2.5 text-pw-black font-body-sm text-body-sm">{r.name}</td>
+                <td className="px-4 py-2.5 text-right text-pw-black font-body-sm text-body-sm font-semibold">{r.users}</td>
+                <td className="px-4 py-2.5 text-right text-pw-black font-body-sm text-body-sm font-semibold">{r.deals}</td>
               </tr>
             ))}
           </tbody>

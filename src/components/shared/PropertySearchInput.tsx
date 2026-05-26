@@ -103,7 +103,7 @@ export default function PropertySearchInput({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 top-full left-0 right-0 border border-border-accent border-t-0 bg-bg-surface shadow-lg max-h-80 overflow-y-auto">
+        <div className="pw-dropdown-overlay absolute z-50 top-full left-0 right-0 max-h-80 overflow-y-auto">
           {credentialsMissing && (
             <div className="px-6 py-3 bg-amber-50 border-b border-border-accent">
               <p className="text-xs font-black text-amber-700 uppercase tracking-widest">
@@ -123,7 +123,7 @@ export default function PropertySearchInput({
               key={property.listingKey}
               type="button"
               onPointerDown={() => handleSelect(property)}
-              className="w-full text-left px-6 py-4 hover:bg-bg-primary transition-all border-b border-border-accent last:border-b-0 group"
+              className="pw-dropdown-item w-full text-left px-6 py-4 hover:bg-bg-primary transition-all border-b border-border-accent last:border-b-0 group"
             >
               <div className="flex items-start gap-4">
                 {property.thumbnailUrl ? (

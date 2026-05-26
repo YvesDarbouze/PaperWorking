@@ -83,21 +83,21 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const DocsComplete = closingRoom.titleInsuranceUrl && closingRoom.closingDisclosureUrl && closingRoom.wiringInstructionsUrl;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-md p-4">
+            <div className="bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
                 
                 {/* Global Tracker */}
                 <DealProgressTracker currentPhase="Closing" />
                 
                 {/* Header */}
-                <div className="border-b border-border-accent p-6 flex justify-between items-center bg-bg-primary sticky top-[72px] z-10">
+                <div className="border-b border-pw-border p-6 flex justify-between items-center bg-pw-glass-bg/90 backdrop-blur-md sticky top-[72px] z-10 text-pw-black">
                     <div>
                          <h2 className="text-2xl font-semibold flex items-center gap-2">
                              The Closing Room
                          </h2>
-                         <p className="text-sm text-text-secondary mt-1">{deal.propertyName} • {deal.address}</p>
+                         <p className="text-sm text-pw-muted mt-1">{deal.propertyName} • {deal.address}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-gray-200 rounded-full transition"><X className="w-5 h-5 text-text-secondary"/></button>
+                    <button onClick={onClose} className="p-2 hover:bg-pw-glass-bg/25 rounded-full transition text-pw-black"><X className="w-5 h-5"/></button>
                 </div>
 
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -106,26 +106,26 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     <div className="space-y-6">
                         
                         {/* Web3 Title Check */}
-                        <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm">
-                            <h3 className="text-md font-medium flex items-center gap-2 mb-3">
-                                <Link className="w-5 h-5 text-indigo-500" /> Digital Chain of Title
+                        <div className="bg-pw-glass-bg border border-pw-border rounded-2xl p-5 shadow-sm">
+                            <h3 className="text-md font-medium flex items-center gap-2 mb-3 text-pw-black">
+                                <Link className="w-5 h-5 text-indigo-400" /> Digital Chain of Title
                             </h3>
-                            <div className="bg-bg-primary p-4 rounded-lg flex flex-col gap-3">
+                            <div className="bg-pw-glass-bg/50 border border-pw-border/50 p-4 rounded-2xl flex flex-col gap-3">
                                 {closingRoom.chainOfTitleStatus === 'verified' ? (
                                     <>
-                                       <div className="flex items-center text-green-700">
+                                       <div className="flex items-center text-green-500">
                                             <ShieldCheck className="w-5 h-5 mr-2" />
                                             <span className="font-medium text-sm">Title Cleared via Smart Contract</span>
                                        </div>
-                                       <p className="text-xs text-text-secondary break-all font-mono">TX: {closingRoom.blockchainTxHash}</p>
+                                       <p className="text-xs text-pw-muted break-all font-mono">TX: {closingRoom.blockchainTxHash}</p>
                                     </>
                                 ) : (
                                     <>
-                                       <p className="text-sm text-text-secondary">Pending immutable verification of property transfer chain.</p>
+                                       <p className="text-sm text-pw-muted">Pending immutable verification of property transfer chain.</p>
                                        <button 
                                           onClick={handleWeb3Ping} 
                                           disabled={isPinging}
-                                          className="w-full bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50"
+                                          className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition disabled:opacity-50"
                                        >
                                           {isPinging ? 'Pinging Registry Nodes...' : 'Verify Chain of Title Now'}
                                        </button>
@@ -135,29 +135,29 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         </div>
 
                         {/* Lawyer Marketplace API */}
-                        <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm">
-                            <h3 className="text-md font-medium flex items-center gap-2 mb-3">
-                                <Users className="w-5 h-5 text-blue-500" /> Real Estate Attorney
+                        <div className="bg-pw-glass-bg border border-pw-border rounded-2xl p-5 shadow-sm">
+                            <h3 className="text-md font-medium flex items-center gap-2 mb-3 text-pw-black">
+                                <Users className="w-5 h-5 text-blue-400" /> Real Estate Attorney
                             </h3>
                             {closingRoom.assignedLawyerUid ? (
-                                <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg">
+                                <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-2xl">
                                     <div className="flex justify-between items-center mb-2">
-                                        <p className="font-medium text-blue-900 text-sm">Lawyer Assigned</p>
-                                        <button onClick={() => updateClosingRoom(deal.id, { assignedLawyerUid: null, lawyerVerified: false })} className="text-xs text-blue-600 hover:underline">Change</button>
+                                        <p className="font-medium text-blue-400 text-sm">Lawyer Assigned</p>
+                                        <button onClick={() => updateClosingRoom(deal.id, { assignedLawyerUid: null, lawyerVerified: false })} className="text-xs text-blue-400 hover:underline">Change</button>
                                     </div>
-                                    <p className="text-sm text-blue-700">{matchingLawyers.find(l => l.uid === closingRoom.assignedLawyerUid)?.displayName || 'Unknown Attorney'}</p>
+                                    <p className="text-sm text-pw-black">{matchingLawyers.find(l => l.uid === closingRoom.assignedLawyerUid)?.displayName || 'Unknown Attorney'}</p>
                                 </div>
                             ) : (
-                                <div className="bg-bg-primary border border-border-accent p-4 rounded-lg space-y-3">
-                                    <p className="text-xs text-text-secondary flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches Near Property:</p>
+                                <div className="bg-pw-glass-bg/50 border border-pw-border p-4 rounded-2xl space-y-3">
+                                    <p className="text-xs text-pw-muted flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches Near Property:</p>
                                     {isSearchingLawyers ? (
-                                        <p className="text-sm text-text-secondary">Searching for attorneys nearby...</p>
+                                        <p className="text-sm text-pw-muted">Searching for attorneys nearby...</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {matchingLawyers.map(l => (
-                                                <div key={l.uid} className="flex justify-between items-center p-2 bg-bg-surface rounded border border-border-accent shadow-sm">
-                                                    <p className="text-sm">{l.displayName}</p>
-                                                    <button onClick={() => updateClosingRoom(deal.id, {assignedLawyerUid: l.uid})} className="text-xs font-medium bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition">Assign</button>
+                                                <div key={l.uid} className="flex justify-between items-center p-2 bg-pw-glass-bg/40 rounded-xl border border-pw-border shadow-sm">
+                                                    <p className="text-sm text-pw-black">{l.displayName}</p>
+                                                    <button onClick={() => updateClosingRoom(deal.id, {assignedLawyerUid: l.uid})} className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill">Assign</button>
                                                 </div>
                                             ))}
                                         </div>
@@ -167,13 +167,13 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
                             {/* Demo Lawyer Verification Action */}
                             {closingRoom.assignedLawyerUid && !closingRoom.lawyerVerified && (
-                                <div className="mt-4 pt-4 border-t border-border-accent">
+                                <div className="mt-4 pt-4 border-t border-pw-border">
                                    <button 
                                       onClick={() => {
                                         toast.success('Lawyer verified the transaction.', { icon: '🧑‍⚖️' });
                                         updateClosingRoom(deal.id, { lawyerVerified: true });
                                       }}
-                                      className="w-full bg-slate-900 text-white rounded-lg py-2 text-sm font-medium hover:bg-slate-800 transition"
+                                      className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition"
                                    >
                                       Verify Document (Demo)
                                    </button>
@@ -181,7 +181,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                             )}
                             
                             {closingRoom.lawyerVerified && (
-                                 <div className="mt-3 flex items-center text-green-600 text-sm font-medium">
+                                 <div className="mt-3 flex items-center text-green-500 text-sm font-medium">
                                      <CheckCircle className="w-4 h-4 mr-2" />
                                      Approved by Legal
                                  </div>
@@ -192,7 +192,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
                     {/* Right Column: Required Documents */}
                     <div className="space-y-4">
-                        <h3 className="text-md font-medium text-text-primary">Required Document Checkpoints</h3>
+                        <h3 className="text-md font-medium text-pw-black">Required Document Checkpoints</h3>
                         
                         <DocumentZone 
                            title="1. Title Insurance"
@@ -216,7 +216,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         />
 
                         {(!DocsComplete || !closingRoom.lawyerVerified) && (
-                            <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg flex items-start gap-3 mt-4 text-orange-800">
+                            <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-2xl flex items-start gap-3 mt-4 text-orange-400">
                                 <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm">
                                     <p className="font-medium mb-1">Acquisition Blocked</p>
@@ -226,7 +226,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         )}
                         
                         {(DocsComplete && closingRoom.lawyerVerified) && (
-                             <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex flex-col gap-3 mt-4 text-green-800">
+                             <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-2xl flex flex-col gap-3 mt-4 text-green-400">
                                  <div className="flex items-start gap-3">
                                    <ShieldCheck className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                    <div className="text-sm">
@@ -234,7 +234,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                        <p className="opacity-90">All closing contingencies have been met. Execute final signatures to transfer into the Renovation phase.</p>
                                    </div>
                                  </div>
-                                 <div className="mt-2 pt-3 border-t border-green-200 flex justify-end">
+                                 <div className="mt-2 pt-3 border-t border-green-500/30 flex justify-end">
                                      <ESignAction 
                                         documentName="Final Closing Disclosures" 
                                         signeeRole={role}
@@ -255,18 +255,18 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
 function DocumentZone({ title, description, isUploaded, onUpload }: { title: string, description: string, isUploaded: boolean, onUpload: () => void }) {
     return (
-        <div className={`p-4 border-2 border-dashed rounded-xl transition-colors ${isUploaded ? 'border-green-300 bg-green-50' : 'border-border-accent hover:border-gray-400 bg-bg-primary'}`}>
+        <div className={`p-4 border border-dashed rounded-2xl transition-colors ${isUploaded ? 'border-green-300 bg-green-500/10' : 'border-pw-border hover:border-pw-muted bg-pw-glass-bg/30'}`}>
             <div className="flex justify-between items-center">
                 <div>
-                   <h4 className={`text-sm font-semibold ${isUploaded ? 'text-green-800' : 'text-text-primary'}`}>{title}</h4>
-                   <p className="text-xs text-text-secondary mt-1">{description}</p>
+                   <h4 className={`text-sm font-semibold ${isUploaded ? 'text-green-400' : 'text-pw-black'}`}>{title}</h4>
+                   <p className="text-xs text-pw-muted mt-1">{description}</p>
                 </div>
                 {isUploaded ? (
-                    <div className="flex items-center text-green-600 bg-green-100 px-2 py-1 rounded-full text-xs font-bold">
+                    <div className="flex items-center text-green-500 bg-green-500/20 px-2 py-1 rounded-full text-xs font-bold">
                         <CheckCircle className="w-3 h-3 mr-1" /> PDF Attached
                     </div>
                 ) : (
-                    <button onClick={onUpload} className="flex items-center gap-1 bg-bg-surface border border-border-accent shadow-sm px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:bg-bg-primary">
+                    <button onClick={onUpload} className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill flex items-center gap-1">
                         <UploadCloud className="w-3 h-3" /> Upload
                     </button>
                 )}

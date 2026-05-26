@@ -20,17 +20,6 @@ function MagicLinkFinishInner() {
   const [emailInput, setEmailInput] = useState('');
   const { verifyMagicLink, error: authError, clearError } = useAuth();
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.href.includes('apiKey=')) {
-      const storedEmail = window.localStorage.getItem('emailForSignIn');
-      if (storedEmail) handleVerification(storedEmail);
-      else setStatus('email-needed');
-    } else {
-      setStatus('error');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const handleVerification = async (email: string) => {
     setStatus('verifying');
     clearError();
@@ -56,91 +45,129 @@ function MagicLinkFinishInner() {
     } catch { setStatus('error'); }
   };
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.href.includes('apiKey=')) {
+      const storedEmail = window.localStorage.getItem('emailForSignIn');
+      if (storedEmail) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        handleVerification(storedEmail);
+      } else {
+        setStatus('email-needed');
+      }
+    } else {
+      setStatus('error');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (emailInput) handleVerification(emailInput);
   };
 
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="auth-card-container auth-glass-card rounded-xl p-6 md:p-10 relative overflow-hidden animate-in fade-in duration-500">
+      <div 
+        className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" 
+        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+      />
+      <div 
+        className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" 
+        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+      />
 
-      {/* ── Heading ── */}
-      <div className="mb-8">
-        <h1 className="text-[28px] font-semibold tracking-tight text-white">Authenticating</h1>
-        <p className="mt-2 text-[14px] text-[#888]">Connecting your session securely.</p>
-      </div>
+      <div className="flex flex-col items-center w-full relative z-10">
+        {/* ── Heading ── */}
+        <div className="mb-6 text-center">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-2 font-headline-md">
+            Authenticating
+          </h1>
+          <p className="text-xs md:text-sm text-pw-muted font-body-sm">
+            Connecting your session securely.
+          </p>
+        </div>
 
-      <div className="w-full flex flex-col items-center justify-center py-6">
+        <div className="w-full flex flex-col items-center justify-center py-4">
 
-        {/* Verifying */}
-        {status === 'verifying' && (
-          <div className="flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-400">
-            <Loader2 className="w-12 h-12 animate-spin text-white" />
-            <p className="text-[13px] text-[#666] uppercase tracking-widest">Verifying token…</p>
-          </div>
-        )}
-
-        {/* Success */}
-        {status === 'success' && (
-          <div className="flex flex-col items-center gap-5 animate-in fade-in zoom-in slide-in-from-bottom-4 duration-400">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-950/60 border border-green-800/30">
-              <CheckCircle2 className="w-8 h-8 text-green-400" />
+          {/* Verifying */}
+          {status === 'verifying' && (
+            <div className="flex flex-col items-center gap-5 animate-in fade-in zoom-in duration-400 py-6">
+              <Loader2 className="w-10 h-10 animate-spin text-white" />
+              <p className="text-xs text-pw-muted uppercase tracking-widest font-semibold">Verifying token…</p>
             </div>
-            <div>
-              <h2 className="text-[18px] font-semibold text-white">Login Successful</h2>
-              <p className="mt-1 text-[13px] text-[#666]">Redirecting you now…</p>
-            </div>
-          </div>
-        )}
+          )}
 
-        {/* Email needed (opened on different device) */}
-        {status === 'email-needed' && (
-          <div className="w-full text-left animate-in fade-in duration-300">
-            <div className="mb-5 px-4 py-3 bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl flex items-start gap-3">
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-[#888]" />
-              <p className="text-[13px] text-[#888] leading-relaxed">
-                This link was opened on a different device. Confirm your email to continue.
-              </p>
-            </div>
-            <form onSubmit={handleEmailSubmit} className="space-y-3">
-              <input
-                type="email"
-                value={emailInput}
-                onChange={e => setEmailInput(e.target.value)}
-                placeholder="Enter your email address"
-                required
-                className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
-              />
-              <button
-                type="submit"
-                className="w-full h-[52px] bg-[#2a2a2a] hover:bg-[#333] border border-[#3a3a3a] rounded-xl text-[14px] font-semibold text-white transition-colors"
+          {/* Success */}
+          {status === 'success' && (
+            <div className="flex flex-col items-center gap-5 animate-in fade-in zoom-in slide-in-from-bottom-4 duration-400 py-4">
+              <div 
+                className="flex h-14 w-14 items-center justify-center rounded-full border"
+                style={{ backgroundColor: 'rgba(5, 46, 22, 0.4)', borderColor: 'rgba(22, 101, 52, 0.3)' }}
               >
-                Confirm &amp; Sign In
-              </button>
-            </form>
-          </div>
-        )}
+                <CheckCircle2 className="w-7 h-7 text-green-400" />
+              </div>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-white font-headline-md">Login Successful</h2>
+                <p className="mt-1 text-xs text-pw-muted font-body-sm">Redirecting you now…</p>
+              </div>
+            </div>
+          )}
 
-        {/* Error */}
-        {status === 'error' && (
-          <div className="w-full flex flex-col items-center gap-5 animate-in fade-in duration-300">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-950/60 border border-red-800/30">
-              <AlertCircle className="w-8 h-8 text-red-400" />
+          {/* Email needed (opened on different device) */}
+          {status === 'email-needed' && (
+            <div className="w-full text-left animate-in fade-in duration-300">
+              <div className="mb-5 px-4 py-3 bg-white/5 border border-white/10 rounded-xl flex items-start gap-3">
+                <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-pw-muted" />
+                <p className="text-xs text-pw-muted leading-relaxed font-body-sm">
+                  This link was opened on a different device. Confirm your email to continue.
+                </p>
+              </div>
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <input
+                  type="email"
+                  value={emailInput}
+                  onChange={e => setEmailInput(e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                  className="w-full auth-input px-4 py-3 text-sm placeholder-text-secondary transition-all duration-300"
+                />
+                <button
+                  type="submit"
+                  className="w-full luminous-button py-4 rounded-full font-semibold text-xs tracking-wider uppercase disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  Confirm &amp; Sign In
+                </button>
+              </form>
             </div>
-            <div className="text-center">
-              <h2 className="text-[18px] font-semibold text-white">Link Invalid</h2>
-              <p className="mt-2 text-[13px] text-[#888] leading-relaxed max-w-[280px] mx-auto">
-                {authError || 'This sign-in link is invalid, expired, or has already been used.'}
-              </p>
+          )}
+
+          {/* Error */}
+          {status === 'error' && (
+            <div className="w-full flex flex-col items-center gap-5 animate-in fade-in duration-300">
+              <div 
+                className="flex h-14 w-14 items-center justify-center rounded-full border"
+                style={{ backgroundColor: 'rgba(66, 32, 32, 0.4)', borderColor: 'rgba(153, 27, 27, 0.3)' }}
+              >
+                <AlertCircle className="w-7 h-7 text-red-400" />
+              </div>
+              <div className="text-center">
+                <h2 className="text-lg font-semibold text-white font-headline-md">Link Invalid</h2>
+                <p 
+                  className="mt-2 text-xs text-pw-muted leading-relaxed mx-auto font-body-sm"
+                  style={{ maxWidth: '280px' }}
+                >
+                  {authError || 'This sign-in link is invalid, expired, or has already been used.'}
+                </p>
+              </div>
+              <Link
+                href="/login"
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 text-sm font-semibold text-pw-black transition-colors flex items-center justify-center"
+              >
+                Back to sign in
+              </Link>
             </div>
-            <Link
-              href="/login"
-              className="w-full h-[52px] bg-[#1a1a1a] hover:bg-[#232323] border border-[#2e2e2e] rounded-xl text-[14px] font-semibold text-white transition-colors flex items-center justify-center"
-            >
-              Back to sign in
-            </Link>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

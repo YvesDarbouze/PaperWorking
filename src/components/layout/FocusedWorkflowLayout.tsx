@@ -43,16 +43,16 @@ export default function FocusedWorkflowLayout({
   const progress = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-bg-surface text-text-primary overflow-hidden animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 flex flex-col bg-bg-surface text-text-primary overflow-hidden animate-in fade-in duration-300">
       
       {/* Structural Header */}
-      <header className="h-20 border-b border-border-accent flex items-center justify-between px-10 bg-bg-surface shrink-0">
+      <header className="h-20 border-b border-border-accent flex items-center justify-between px-margin-mobile lg:px-margin-desktop bg-bg-surface shrink-0">
         <div className="flex items-center gap-8">
           <div className="bg-pw-black text-pw-white px-3 py-1 font-black text-xs uppercase tracking-widest border border-pw-black">
             PW_PROTOCOL
           </div>
           <div>
-            <h1 className="text-sm font-black uppercase tracking-[0.3em]">{title}</h1>
+            <h1 className="text-sm font-black uppercase tracking-widest">{title}</h1>
             {subtitle && <p className="text-xs text-text-secondary font-bold uppercase tracking-wider mt-1">{subtitle}</p>}
           </div>
         </div>
@@ -69,9 +69,9 @@ export default function FocusedWorkflowLayout({
       <div className="flex-1 flex overflow-hidden">
         
         {/* Sidebar Nav (Split-Pane Sidebar) */}
-        <aside className="w-[320px] border-r border-border-accent bg-bg-primary flex flex-col p-12 shrink-0 overflow-y-auto">
+        <aside className="w-80 border-r border-border-accent bg-bg-primary flex flex-col p-12 shrink-0 overflow-y-auto">
           <div className="mb-12">
-            <p className="text-xs font-black text-text-secondary uppercase tracking-[0.4em] mb-4">WORKFLOW_PROGRESS</p>
+            <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-4">WORKFLOW_PROGRESS</p>
             <div className="flex items-end gap-3 mb-2">
               <span className="text-4xl font-black tracking-tighter tabular-nums">{Math.round(progress)}%</span>
               <span className="text-xs font-black text-pw-accent uppercase mb-2">Operational</span>
@@ -98,7 +98,7 @@ export default function FocusedWorkflowLayout({
                   )}
                   
                   <div className={`w-7 h-7 shrink-0 flex items-center justify-center font-mono text-xs font-black border transition-all ${
-                    isActive ? 'bg-pw-black text-pw-white border-pw-black scale-110 shadow-[0_0_15px_rgba(0,0,0,0.1)]' :
+                    isActive ? 'bg-pw-black text-pw-white border-pw-black scale-110' :
                     isComplete ? 'bg-pw-accent text-pw-white border-pw-accent' :
                     'bg-bg-surface text-text-secondary border-border-accent'
                   }`}>
@@ -133,7 +133,7 @@ export default function FocusedWorkflowLayout({
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 bg-bg-surface overflow-y-auto p-20 flex flex-col">
+        <main className="flex-1 bg-bg-surface overflow-y-auto p-margin-mobile lg:p-20 flex flex-col">
           <div className="max-w-3xl w-full mx-auto flex-1">
             {children}
           </div>
@@ -143,7 +143,7 @@ export default function FocusedWorkflowLayout({
             {onBack ? (
               <button 
                 onClick={onBack}
-                className="flex items-center gap-3 text-xs font-black text-text-secondary hover:text-text-primary uppercase tracking-[0.2em] transition-all"
+                className="flex items-center gap-3 text-xs font-black text-text-secondary hover:text-text-primary uppercase tracking-widest transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous_Phase
@@ -155,10 +155,10 @@ export default function FocusedWorkflowLayout({
                 onClick={onNext}
                 disabled={isNextDisabled}
                 className={`
-                  flex items-center gap-6 px-10 py-5 font-black text-sm uppercase tracking-[0.4em] transition-all border
+                  flex items-center gap-6 px-10 py-5 font-black text-sm uppercase tracking-widest transition-all border
                   ${isNextDisabled 
                     ? 'bg-bg-primary text-text-secondary border-border-accent cursor-not-allowed opacity-50' 
-                    : 'bg-pw-black text-pw-white border-pw-black hover:bg-pw-accent hover:border-pw-accent shadow-[0_0_20px_rgba(0,0,0,0.1)] group'
+                    : 'bg-pw-black text-pw-white border-pw-black hover:bg-pw-accent hover:border-pw-accent group'
                   }
                 `}
               >

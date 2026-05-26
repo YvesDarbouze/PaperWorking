@@ -37,13 +37,13 @@ export default function WorkspaceSwitcher() {
   const activeWorkspace = workspaces.find((w) => w.id === activeTenantId) || workspaces[0];
 
   return (
-    <div className="px-5 py-3 border-b border-[var(--border-ui)]">
+    <div className="px-5 py-3 border-b border-black/10 dark:border-white/10">
       <div className="relative">
         <select
           value={activeTenantId || workspaces[0].id}
           onChange={handleChange}
           aria-label="Select Workspace"
-          className="w-full appearance-none bg-[var(--bg-card)] border border-[var(--border-ui)] text-[var(--text-primary)] text-xs font-bold uppercase tracking-wider py-2 pl-9 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-pw-black transition-shadow cursor-pointer truncate"
+          className="w-full appearance-none bg-surface-container-low/60 border border-black/10 dark:border-white/5 text-on-surface text-xs font-bold uppercase tracking-wider py-2 pl-9 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow cursor-pointer truncate"
         >
           {workspaces.map((ws) => (
             <option key={ws.id} value={ws.id}>
@@ -53,7 +53,7 @@ export default function WorkspaceSwitcher() {
         </select>
         
         {/* Decorative Icon inside select input */}
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]">
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
           {activeWorkspace.type === 'personal' ? (
             <UserCircle className="w-4 h-4" />
           ) : (
@@ -62,12 +62,12 @@ export default function WorkspaceSwitcher() {
         </div>
 
         {/* Chevron */}
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-secondary)]">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
           <svg
             className="w-4 h-4"
             fill="none"
             stroke="currentColor"
-            viewBox="0 24 24"
+            viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />

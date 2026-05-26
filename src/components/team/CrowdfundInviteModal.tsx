@@ -118,20 +118,23 @@ export default function CrowdfundInviteModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-bg-surface max-w-md w-full mx-4 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/65 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-in zoom-in-95 duration-300">
         {/* Header */}
-        <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-border-accent">
+        <div className="px-6 pt-6 pb-4 flex items-center justify-between border-b border-pw-border bg-pw-glass-bg/90 text-pw-black">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-              <UserPlus className="w-5 h-5 text-indigo-600" />
+            <div className="w-10 h-10 bg-pw-black/10 rounded-full flex items-center justify-center">
+              <UserPlus className="w-5 h-5 text-pw-black" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-text-primary tracking-tight">Invite Investor</h2>
-              <p className="text-sm text-text-secondary">Crowdfund · {dealName}</p>
+              <h2 className="text-lg font-bold tracking-tight text-pw-black">Invite Investor</h2>
+              <p className="text-sm text-pw-muted">Crowdfund · {dealName}</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-bg-primary text-text-secondary hover:text-text-secondary transition">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-pw-black hover:bg-pw-glass-bg/25"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -139,20 +142,20 @@ export default function CrowdfundInviteModal({
         {/* Subscription Gate */}
         {!hasActiveSubscription ? (
           <div className="p-8 text-center">
-            <Lock className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-base font-medium text-text-primary mb-1">Subscription Required</h3>
-            <p className="text-sm text-text-secondary mb-4">
+            <Lock className="w-10 h-10 text-pw-muted mx-auto mb-3" />
+            <h3 className="text-base font-medium text-pw-black mb-1">Subscription Required</h3>
+            <p className="text-sm text-pw-muted mb-4">
               An active PaperWorking subscription is required to send crowdfunding invitations.
             </p>
-            <button className="px-6 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition">
+            <button className="pw-btn pw-btn--primary pw-btn--pill px-6 py-2.5 text-sm">
               Upgrade Plan
             </button>
           </div>
         ) : (
           <div className="p-6 space-y-4">
             {/* Available Equity Badge */}
-            <div className="flex items-center justify-between bg-bg-primary rounded-lg px-4 py-2.5">
-              <span className="text-sm font-bold text-text-secondary uppercase tracking-widest">Available Equity</span>
+            <div className="flex items-center justify-between bg-pw-glass-bg/50 border border-pw-border rounded-xl px-4 py-2.5">
+              <span className="text-[10px] font-black text-pw-muted uppercase tracking-[0.2em]">Available Equity</span>
               <span className={`text-sm font-semibold ${availableEquity > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {availableEquity.toFixed(1)}%
               </span>
@@ -160,35 +163,35 @@ export default function CrowdfundInviteModal({
 
             {/* Invite Person */}
             <div>
-              <label className="block text-sm font-bold text-text-secondary uppercase tracking-widest mb-1.5">Investor Name</label>
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Investor Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Jane Smith"
-                className="w-full border border-border-accent rounded-lg px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                className="glass-input w-full rounded-2xl px-4 py-2.5 text-sm focus:outline-none transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-text-secondary uppercase tracking-widest mb-1.5">Email Address</label>
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="investor@email.com"
-                  className="w-full border border-border-accent rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                  className="glass-input w-full rounded-2xl pl-10 pr-4 py-2.5 text-sm focus:outline-none transition-colors"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-bold text-text-secondary uppercase tracking-widest mb-1.5">Proposed Equity</label>
+                <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Proposed Equity</label>
                 <div className="relative">
-                  <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+                  <Percent className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted" />
                   <input
                     type="number"
                     value={equityPercent}
@@ -196,34 +199,34 @@ export default function CrowdfundInviteModal({
                     placeholder="25"
                     min="0"
                     max={availableEquity}
-                    className="w-full border border-border-accent rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="glass-input w-full rounded-2xl pl-10 pr-4 py-2.5 text-sm focus:outline-none transition-colors"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-text-secondary uppercase tracking-widest mb-1.5">Investment Amount</label>
+                <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Investment Amount</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+                  <DollarSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pw-muted" />
                   <input
                     type="number"
                     value={investmentAmount}
                     onChange={(e) => setInvestmentAmount(e.target.value)}
                     placeholder="50,000"
                     min="0"
-                    className="w-full border border-border-accent rounded-lg pl-10 pr-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="glass-input w-full rounded-2xl pl-10 pr-4 py-2.5 text-sm focus:outline-none transition-colors"
                   />
                 </div>
               </div>
             </div>
 
-            <p className="text-sm text-text-secondary leading-relaxed">
+            <p className="text-xs text-pw-muted leading-relaxed">
               The recipient will receive an email invitation. They must create an account and purchase a PaperWorking subscription to view the full deal listing and accept the equity offer.
             </p>
 
             <button
               onClick={handleSendInvite}
               disabled={sending || !email.trim() || !name.trim()}
-              className="w-full py-3 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+              className="pw-btn pw-btn--primary pw-btn--pill w-full py-3 text-pw-white text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {sending ? (
                 <span className="animate-pulse">Sending Invitation...</span>
@@ -240,3 +243,5 @@ export default function CrowdfundInviteModal({
     </div>
   );
 }
+
+

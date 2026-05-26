@@ -4,6 +4,7 @@ import { Camera, Link as LinkIcon, DollarSign, Percent, CheckCircle, ExternalLin
 import toast from 'react-hot-toast';
 import NetEngine from '@/components/exit/NetEngine';
 import PhaseBadge from '../ui/PhaseBadge';
+import { Switch } from '../ui';
 
 interface ExitStrategyBoardProps {
   projectId: string;
@@ -137,14 +138,10 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
               <div className="bg-pw-black border border-gray-800 rounded-2xl p-6 relative">
                  <div className="flex justify-between items-center mb-4">
                    <h3 className="text-xs font-mono tracking-widest text-emerald-500 uppercase flex items-center"><DollarSign className="w-3 h-3 mr-2" /> Final Capital Mechanics</h3>
-                   <label className="flex items-center space-x-2 cursor-pointer">
-                     <span className="text-xs text-text-secondary font-medium">BRRRR Mode</span>
-                     <div className="relative">
-                       <input type="checkbox" className="sr-only" checked={isBrrrr} onChange={() => setIsBrrrr(!isBrrrr)} />
-                       <div className={`block w-10 h-6 rounded-full transition-colors ${isBrrrr ? 'bg-emerald-500' : 'bg-gray-700'}`}></div>
-                       <div className={`dot absolute left-1 top-1 bg-bg-surface w-4 h-4 rounded-full transition-transform ${isBrrrr ? 'translate-x-4' : ''}`}></div>
-                     </div>
-                   </label>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-text-secondary font-medium">BRRRR Mode</span>
+                      <Switch checked={isBrrrr} onChange={() => setIsBrrrr(!isBrrrr)} />
+                    </div>
                  </div>
                  
                  <div className="space-y-5">

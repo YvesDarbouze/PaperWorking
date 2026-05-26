@@ -19,28 +19,28 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-[#0b141a] text-[#dae4ec] font-sans antialiased">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="min-h-screen bg-pw-bg text-pw-black font-sans antialiased">
+      <div className="max-w-container-max mx-auto px-margin-mobile lg:px-margin-desktop py-8 sm:py-12">
 
         {/* ─── Back nav ─── */}
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-2 text-sm text-[#8a9b9b] hover:text-[#57f1db] transition-colors mb-8 group"
+          className="inline-flex items-center gap-2 text-sm text-pw-muted hover:text-pw-primary transition-colors mb-8 group"
         >
           <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1 select-none">arrow_back</span>
           Back to Dashboard
         </Link>
 
         {/* ─── Page title ─── */}
-        <h1 className="text-3xl font-light tracking-tight text-white mb-2" style={{ textShadow: '0 0 20px rgba(87,241,219,0.1)' }}>
+        <h1 className="text-3xl font-light tracking-tight text-pw-black mb-2">
           Settings
         </h1>
-        <p className="text-sm text-[#8a9b9b] mb-8">
+        <p className="text-sm text-pw-muted mb-8">
           Manage your personal profile, team seats, notification matrices, and subscription billing.
         </p>
 
         {/* ─── Mobile tab bar ─── */}
-        <nav className="flex sm:hidden gap-2 overflow-x-auto pb-4 mb-6 border-b border-[#2dd4bf]/10 no-scrollbar">
+        <nav className="flex sm:hidden gap-2 overflow-x-auto pb-4 mb-6 border-b border-pw-primary/10 no-scrollbar">
           {NAV_ITEMS.map(({ label, href, iconName }) => {
             const isActive = pathname === href;
             return (
@@ -48,10 +48,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 key={href}
                 href={href}
                 className={`
-                  flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border
+                  flex items-center gap-2 px-4 py-2.5 rounded-none text-xs font-semibold whitespace-nowrap transition-all border
                   ${isActive
-                    ? 'bg-[#57f1db]/10 border-[#57f1db]/30 text-[#57f1db] shadow-[0_0_15px_rgba(87,241,219,0.15)]'
-                    : 'bg-white/5 border-transparent text-[#dae4ec]/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-pw-primary/10 border-pw-primary text-pw-primary'
+                    : 'bg-transparent border-transparent text-pw-muted hover:text-pw-black hover:bg-pw-muted/10'
                   }
                 `}
               >
@@ -75,10 +75,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                     key={href}
                     href={href}
                     className={`
-                      flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all border
+                      flex items-center gap-3 px-4 py-3 rounded-none text-sm font-semibold transition-all border
                       ${isActive
-                        ? 'bg-[#57f1db]/10 border-[#57f1db]/30 text-[#57f1db] shadow-[0_0_15px_rgba(87,241,219,0.15)]'
-                        : 'bg-white/5 border-transparent text-[#8a9b9b] hover:text-white hover:bg-white/10'
+                        ? 'bg-pw-primary/10 border-pw-primary text-pw-primary'
+                        : 'bg-transparent border-transparent text-pw-muted hover:text-pw-black hover:bg-pw-muted/10'
                       }
                     `}
                   >

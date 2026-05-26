@@ -190,23 +190,34 @@ export function DocumentVault({
             <div key={category} className="flex flex-col h-full">
               {/* Dropzone Card */}
               <div
-                className={`flex-1 relative flex flex-col items-center justify-center p-6 rounded-lg border-2 border-dashed transition-all cursor-pointer min-h-[200px] mb-4 ${
-                  isDragging ? 'bg-blue-50/50 border-blue-500' : 'bg-bg-default border-border-accent hover:border-gray-400'
-                }`}
+                className="relative flex flex-col items-center justify-center p-6 rounded-xl transition-all cursor-pointer min-h-[200px] mb-4 bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg overflow-hidden group"
                 onDragOver={(e) => handleDragOver(e, category)}
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, category)}
                 onClick={() => openFileDialog(category)}
               >
-                <div className={`p-4 rounded-full mb-4 transition-colors ${isDragging ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-text-secondary'}`}>
-                  {isDragging ? <UploadCloud className="w-8 h-8" /> : <Folder className="w-8 h-8" />}
+                {/* Inner Dashed Border Indicator */}
+                <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+                  isDragging 
+                    ? 'border-primary bg-primary/10' 
+                    : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+                }`} />
+
+                <div className="relative z-10 flex flex-col items-center justify-center">
+                  <div className={`w-14 h-14 mb-3 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${
+                    isDragging 
+                      ? 'bg-surface-container-highest text-primary shadow-primary/15 scale-110' 
+                      : 'bg-surface-container-highest text-text-secondary shadow-black/5 group-hover:scale-110'
+                  }`}>
+                    {isDragging ? <UploadCloud className="w-6 h-6" /> : <Folder className="w-6 h-6" />}
+                  </div>
+                  <h3 className="text-sm font-semibold text-center text-text-primary mb-1">
+                    {category}
+                  </h3>
+                  <p className="text-xs text-center text-text-secondary">
+                    Drop files here or click to browse
+                  </p>
                 </div>
-                <h3 className="text-sm font-semibold text-center text-text-primary mb-1">
-                  {category}
-                </h3>
-                <p className="text-xs text-center text-text-secondary">
-                  Drop files here or click to browse
-                </p>
               </div>
 
               {/* Uploads and Files List */}
@@ -214,11 +225,11 @@ export function DocumentVault({
                 {categoryUploads.map((upload) => (
                   <div 
                     key={upload.id}
-                    className="flex flex-col p-3 rounded-md border bg-bg-default border-border-ui shadow-sm"
+                    className="flex flex-col p-3 rounded-lg border-t border-l border-white/10 bg-surface-container/20 backdrop-blur-md shadow-sm"
                   >
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="p-1.5 rounded-md bg-white border border-border-ui">
-                        <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />
+                      <div className="p-1.5 rounded-md bg-surface-container/40 border border-white/5">
+                        <Loader2 className="w-4 h-4 text-primary animate-spin" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-text-primary truncate">
@@ -229,9 +240,9 @@ export function DocumentVault({
                         </p>
                       </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                    <div className="w-full bg-surface-container-highest rounded-full h-1 overflow-hidden">
                       <div 
-                        className="bg-blue-600 h-1 rounded-full transition-all duration-300" 
+                        className="bg-primary h-1 rounded-full transition-all duration-300" 
                         style={{ width: `${upload.progress}%` }}
                       ></div>
                     </div>

@@ -7,6 +7,7 @@ import { UploadCloud, FileText, CheckCircle2, Sliders, Info } from 'lucide-react
 import { usePermissions } from '@/hooks/usePermissions';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '@/lib/firebase/config';
+import { Switch } from '../ui';
 
 export default function LenderVault() {
   const currentProject = useProjectStore((state) => state.currentProject);
@@ -90,11 +91,7 @@ export default function LenderVault() {
                             Roll Points Into Loan
                             <span className="text-xs text-text-secondary font-normal mt-0.5">Subtracts from upfront Cash-to-Close</span>
                         </span>
-                        <div className="relative">
-                            <input type="checkbox" className="sr-only" checked={rollPoints} onChange={() => setRollPoints(!rollPoints)} />
-                            <div className={`block w-8 h-4 rounded-full transition-colors ${rollPoints ? 'bg-indigo-500' : 'bg-gray-300'}`}></div>
-                            <div className={`dot absolute left-1 top-0.5 bg-bg-surface w-3 h-3 rounded-full transition-transform ${rollPoints ? 'translate-x-4' : ''}`}></div>
-                        </div>
+                        <Switch checked={rollPoints} onChange={() => setRollPoints(!rollPoints)} />
                     </label>
                     
                     <label className="flex items-center justify-between cursor-pointer p-2 hover:bg-bg-primary rounded-md transition">
@@ -102,11 +99,7 @@ export default function LenderVault() {
                             Apply Seller Concessions
                             <span className="text-xs text-text-secondary font-normal mt-0.5">Credits closing costs heavily</span>
                         </span>
-                        <div className="relative">
-                            <input type="checkbox" className="sr-only" checked={sellerConcessions} onChange={() => setSellerConcessions(!sellerConcessions)} />
-                            <div className={`block w-8 h-4 rounded-full transition-colors ${sellerConcessions ? 'bg-indigo-500' : 'bg-gray-300'}`}></div>
-                            <div className={`dot absolute left-1 top-0.5 bg-bg-surface w-3 h-3 rounded-full transition-transform ${sellerConcessions ? 'translate-x-4' : ''}`}></div>
-                        </div>
+                        <Switch checked={sellerConcessions} onChange={() => setSellerConcessions(!sellerConcessions)} />
                     </label>
                 </div>
                 { (rollPoints || sellerConcessions) && (

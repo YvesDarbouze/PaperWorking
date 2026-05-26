@@ -8,7 +8,8 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import PlatformOverview from '@/components/landing/PlatformOverview';
 import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { CustomToaster } from '@/components/ui/CustomToaster';
 
 export default function ParallaxLandingPage() {
   const { user } = useAuth();
@@ -70,12 +71,12 @@ export default function ParallaxLandingPage() {
   }, [user]);
 
   return (
-    <div className="bg-[var(--pw-bg)] min-h-screen text-[var(--pw-fg)] relative">
+    <div className="marketing-context bg-bg-primary min-h-screen text-text-primary relative">
       {/* Loader Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pw-black/60 backdrop-blur-md">
-          <div className="bg-bg-surface p-6 rounded-2xl shadow-2xl flex flex-col items-center">
-            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent rounded-full animate-spin mb-4" />
+          <div className="bg-bg-surface p-6 rounded-none shadow-2xl flex flex-col items-center">
+            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent rounded-none animate-spin mb-4" />
             <p className="text-text-primary font-medium">Redirecting to Secure Checkout...</p>
           </div>
         </div>
@@ -97,7 +98,7 @@ export default function ParallaxLandingPage() {
       </div>
 
       {/* Foreground Content Layer - Scrolls normally over the fading background */}
-      <div className="relative z-10 w-full bg-[var(--pw-bg)] border-t border-[var(--pw-border)] shadow-2xl">
+      <div className="relative z-10 w-full bg-bg-primary border-t border-pw-border shadow-2xl">
         
         {/* ── How It Works — Platform Overview (Primary Sales Funnel) ── */}
         <PlatformOverview />
@@ -109,7 +110,7 @@ export default function ParallaxLandingPage() {
         <LandingFooter />
       </div>
 
-      <Toaster position="bottom-center" />
+      <CustomToaster position="bottom-center" />
     </div>
   );
 }

@@ -3451,6 +3451,12 @@
       "skillPath": "skills/bruno/SKILL.md",
       "computedHash": "5f345058d203208b5802e2ea418140a9886e8a81af3fbbdf85dcad7e81f47251"
     },
+    "bug-hunt": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/bug-hunt/SKILL.md",
+      "computedHash": "b7d3baa75ad299c1b1bd43b70f7d8c1931b69e754595c5278311e447961a7e45"
+    },
     "bug-hunt-swarm": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
@@ -10045,6 +10051,228 @@
       "skillPath": "skills/mvp/SKILL.md",
       "computedHash": "58ae22444b925e7c0ea4bf0e463f2fb6d362842e03c82f9efd364df2f1e6dee2"
     },
+    "my-adversarial-review": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-adversarial-review/SKILL.md",
+      "computedHash": "1f3b1803e76e51f1756f88e5ab9fce2f9d90d6d31451b16d777d994c925cb7d7"
+    },
+    "my-agent-teams": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-agent-teams/SKILL.md",
+      "computedHash": "e552ecfce362e06e01ccb2d333d50eb77d889031651f45c16a7da805a24e5536"
+    },
+    "my-autoresearch": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-autoresearch/SKILL.md",
+      "computedHash": "cc92372ae91c6a38d12551fa9fff4376ba67f0146c5daabfba44343e98f1171b"
+    },
+    "my-babysit-pr": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-babysit-pr/SKILL.md",
+      "computedHash": "39f6626d87496c2febb68bc370b8315bbaa85cbfb1febf3abaeb13dc093d1bf9"
+    },
+    "my-c4-architecture": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-c4-architecture/SKILL.md",
+      "computedHash": "6f311a36f970125e00d474c456ab2e787a2dd422c065a34f696c95bf07cb6acc"
+    },
+    "my-careful": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-careful/SKILL.md",
+      "computedHash": "e42202a2a1db337c51206b630e650517ca19f37e03da937cf0d47fd182cca8ee"
+    },
+    "my-catchup": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-catchup/SKILL.md",
+      "computedHash": "2994ccd7e4b21347a925c6a78c72a3bdc236837f9afbb4e9cf7b5371bc568cb1"
+    },
+    "my-code-gaps-fix": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-code-gaps-fix/SKILL.md",
+      "computedHash": "68bdbfeb1f85d83d0d64df1dca1cae660ee1be776fa852ef85b40d50c90b5891"
+    },
+    "my-create-acceptance-criteria": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-create-acceptance-criteria/SKILL.md",
+      "computedHash": "1139dce2de9b8ab33754b5e3c83dce85899800b64d79b17b6fc26a85a8f71e48"
+    },
+    "my-fetch-article": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-fetch-article/SKILL.md",
+      "computedHash": "1e9742053849db43eb0689bd028612840d273148fdcf34b3b824570b5a59be43"
+    },
+    "my-fetch-repo": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-fetch-repo/SKILL.md",
+      "computedHash": "f0b097b9b27bb23f90eaf4a34d950161f62dc7febc43a5c0a03edf59e9e1eb9b"
+    },
+    "my-freeze": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-freeze/SKILL.md",
+      "computedHash": "7e4cfd1581b84ded813748c247d55c7de332e06cec52df7dc2e0a3df3cccbecf"
+    },
+    "my-generate-tests": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-generate-tests/SKILL.md",
+      "computedHash": "2615e6af6f45fc84b9939bee8f66890e685cfb296f73434d6a45ef9196f52592"
+    },
+    "my-get-me-up2speed": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-get-me-up2speed/SKILL.md",
+      "computedHash": "c64c7a2cc335cc5e5a716715b364564fd75ae073c06f996caf4dbeec276069ae"
+    },
+    "my-git-sync": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-git-sync/SKILL.md",
+      "computedHash": "ddd4d091f76f09d165dc38ae2b2701cf941facc41e879a13a151e1a7d2b8d117"
+    },
+    "my-hookify": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-hookify/SKILL.md",
+      "computedHash": "4970dff0c9539945414a513e7c3800cfe8dc89cd32312bc4badf197affdfb7d9"
+    },
+    "my-incident-response": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-incident-response/SKILL.md",
+      "computedHash": "e109dab9b5220c48a46e261a7693daaa08ad5520b5f6bfacdbd038ae20c91217"
+    },
+    "my-init-session": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-init-session/SKILL.md",
+      "computedHash": "4f0a1c05d038c142cac6d6b4e191fb30f7deb6c8f9ebd5c468a8b5d89528b39a"
+    },
+    "my-llm-dev": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-llm-dev/SKILL.md",
+      "computedHash": "e5b3aef07d74fc16b16abb57dbb507c034d0e906da13ef75ed4568efdeba252c"
+    },
+    "my-loop": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-loop/SKILL.md",
+      "computedHash": "f6534de7476429642d41f4b9bbe333a89bd4f7b9c60930f758e7af5b3a752ef0"
+    },
+    "my-office-hours": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-office-hours/SKILL.md",
+      "computedHash": "c5e4b151d28e6dce1f7c92ae553389ba0f57a49900b0dadc9a01dc7e75eb1dcf"
+    },
+    "my-plugin-dev": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-plugin-dev/SKILL.md",
+      "computedHash": "2906e526fafddb0a8ad2e9e9e70e5340032d64434cf3de0bf975191ee35efa10"
+    },
+    "my-pr-review": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-pr-review/SKILL.md",
+      "computedHash": "52de655b8d936cb931aa6998f31ac245a9282a4a04132ccbfa2ce3450fe589fa"
+    },
+    "my-prd": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-prd/SKILL.md",
+      "computedHash": "54a6cce3a4fb6b532c3c2d1c397e7846547dfe540d5117167a9a63b9099fd2eb"
+    },
+    "my-prompt": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-prompt/SKILL.md",
+      "computedHash": "f7dc35a5d7ce592a46fa62fc20a4b0df7be878f5b82cd33d78df6ff1d8fc4c6d"
+    },
+    "my-prompt-history": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-prompt-history/SKILL.md",
+      "computedHash": "8cc17523a290bcc0ddf3b6f70ec9911c055938fbec92e476308d559442020355"
+    },
+    "my-qa": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-qa/SKILL.md",
+      "computedHash": "6547f64e1eadca3cc85a04d6644f5cd12b444919108816ec3392d0542ce5c475"
+    },
+    "my-qq": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-qq/SKILL.md",
+      "computedHash": "9d0fcffe6490ad722cc3439431cbd698a2b5ce8a37c96f2e4cc85db967c7809a"
+    },
+    "my-review-docs": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-review-docs/SKILL.md",
+      "computedHash": "b7c9c9a2151abd022d90a5282a6f88ad69324bfa9cd032419a9074e5b5b2fef3"
+    },
+    "my-runbook": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-runbook/SKILL.md",
+      "computedHash": "e1902925fb86694784d480f0e097d1c8fca9e294c00051809ea6a376e23cacb1"
+    },
+    "my-save": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-save/SKILL.md",
+      "computedHash": "847ac164a88a4416601ec30891a55b96be8de82916311f0dd97ed64fad979cc0"
+    },
+    "my-save-&-git-sync": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-save-&-git-sync/SKILL.md",
+      "computedHash": "588ae1fbfd0e7a9cf769b00b389d240c3340e6af2ef7ce7e0a5a804e9b9191e9"
+    },
+    "my-security-scan": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-security-scan/SKILL.md",
+      "computedHash": "ff17f2cfcec7e36386c1d25425b9861a12ac4e311527aa15243d21346f3ed374"
+    },
+    "my-self-improve": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-self-improve/SKILL.md",
+      "computedHash": "8fb73e375116ffbd57177ffa97a8bbc9681e712b8a19683535bf567b4f4711d1"
+    },
+    "my-show-info": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-show-info/SKILL.md",
+      "computedHash": "7a7980f9b98bbf2d2b52672f1c4cf5d977534728ece220409b8ecb34d0be577f"
+    },
+    "my-smoke-test": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-smoke-test/SKILL.md",
+      "computedHash": "143026311d71a91ed6283e037ca07b822f176523ae120286010f50be50895934"
+    },
+    "my-statusline": {
+      "source": "itsnavee/claude-forge",
+      "sourceType": "github",
+      "skillPath": "skills/my-statusline/SKILL.md",
+      "computedHash": "e47409d0f9f174d223fc957d25ec5028af96b478577d105410b421d60c0b52b7"
+    },
     "mysql": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
@@ -15788,10 +16016,10 @@
       "computedHash": "db47137af209a2dbc9b412609039d15ba27c59dd1a7fdd9cd366918834fb1cd9"
     },
     "webapp-testing": {
-      "source": "sickn33/antigravity-awesome-skills",
+      "source": "itsnavee/claude-forge",
       "sourceType": "github",
       "skillPath": "skills/webapp-testing/SKILL.md",
-      "computedHash": "d82a5132fcca4b2896fc9fd54a70f733b57898d1cf1c5dfff5269f92e3bd235a"
+      "computedHash": "38d45b8f1abbe23149150e89a0a8f0ff9a03815eacd551ea5d50ec548da92184"
     },
     "webauthn": {
       "source": "TerminalSkills/skills",

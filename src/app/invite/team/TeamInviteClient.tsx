@@ -118,7 +118,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
                 This invitation was sent to <strong>{invite.email}</strong>, but you are logged in as <strong>{user.email}</strong>.
               </p>
               <button 
-                onClick={() => router.push('/dashboard/account')} 
+                onClick={() => router.push('/dashboard/settings/profile')} 
                 className="pw-btn pw-btn--secondary w-full"
               >
                 Sign out and switch accounts

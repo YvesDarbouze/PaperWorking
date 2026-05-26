@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getTokensFromCode } from '@/lib/calendar/google';
 import { cookies } from 'next/headers';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {
@@ -27,6 +28,7 @@ export async function GET(request: Request) {
     }
 
     // Verify session to get uid
+    const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
     const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
     const uid = decodedToken.uid;
 
@@ -58,3 +60,4 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL('/dashboard/home?calendar_error=server_error', request.url));
   }
 }
+

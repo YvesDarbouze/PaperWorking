@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",

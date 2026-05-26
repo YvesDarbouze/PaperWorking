@@ -26,12 +26,12 @@ export function CloudStorageMeter() {
   const isNearLimit = usagePercent > 90;
 
   // Glass theme colors
-  const trackColor = "rgba(255, 255, 255, 0.05)";
-  const fillColor = isNearLimit ? "#ef4444" : "#57f1db";
+  const trackColor = "var(--color-glass-bg)";
+  const fillColor = isNearLimit ? "var(--color-error)" : "var(--color-primary)";
 
   return (
-    <section className="glass-card p-6 sm:p-8 flex flex-col mt-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md relative overflow-hidden">
-      <div className="flex items-center gap-2 mb-6 text-[#57f1db]">
+    <section className="glass-card p-6 sm:p-8 flex flex-col rounded-2xl relative overflow-hidden">
+      <div className="flex items-center gap-2 mb-6 text-pw-primary">
         <span className="material-symbols-outlined text-lg select-none">storage</span>
         <h2 className="text-xs font-bold uppercase tracking-widest">
           Cloud Storage Meter
@@ -40,46 +40,45 @@ export function CloudStorageMeter() {
 
       <div className="mb-4 flex items-end justify-between">
         <div>
-          <span className="text-3xl font-light text-white">
+          <span className="text-3xl font-light text-pw-black">
             {usageGB.toFixed(2)} GB
           </span>
-          <span className="text-sm text-[#8a9b9b] ml-2">
+          <span className="text-sm text-pw-muted ml-2">
             of {limitGB.toFixed(0)} GB total
           </span>
         </div>
-        <span className={`text-xs font-bold tracking-wider ${isNearLimit ? 'text-red-400' : 'text-[#8a9b9b]'}`}>
+        <span className={`text-xs font-bold tracking-wider ${isNearLimit ? 'text-error' : 'text-pw-muted'}`}>
           {usagePercent.toFixed(1)}% CAPACITY
         </span>
       </div>
 
       {/* Progress Bar with glow effect */}
       <div 
-        className="w-full h-3 overflow-hidden mb-6 border border-white/5" 
-        style={{ backgroundColor: trackColor, borderRadius: '6px' }}
+        className="w-full h-3 overflow-hidden mb-6 border border-pw-border bg-pw-glass-bg rounded-full"
       >
         <div 
-          className="h-full transition-all duration-700 ease-in-out"
+          className="h-full transition-all duration-700 ease-in-out rounded-full"
           style={{ 
             width: `${usagePercent}%`, 
             backgroundColor: fillColor,
-            boxShadow: isNearLimit ? '0 0 10px rgba(239, 68, 68, 0.4)' : '0 0 10px rgba(87, 241, 219, 0.3)'
+            boxShadow: isNearLimit ? '0 0 10px rgba(186, 26, 26, 0.4)' : '0 0 10px rgba(87, 241, 219, 0.3)'
           }}
         />
       </div>
 
       {isNearLimit ? (
-        <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/20 p-4 mb-6 rounded-xl">
-          <span className="material-symbols-outlined text-xl text-red-400 flex-shrink-0 select-none">warning</span>
+        <div className="flex items-start gap-3 bg-error/10 border border-error/20 p-4 mb-6 rounded-xl">
+          <span className="material-symbols-outlined text-xl text-error flex-shrink-0 select-none">warning</span>
           <div className="flex-1">
-            <p className="text-xs font-bold text-red-400">Storage Threshold Warning</p>
-            <p className="text-[11px] text-[#8a9b9b] mt-1 leading-relaxed">
+            <p className="text-xs font-bold text-error">Storage Threshold Warning</p>
+            <p className="text-[11px] text-pw-muted mt-1 leading-relaxed">
               Your organization has consumed over 90% of its storage allocation. 
               To prevent document upload interruptions, please upgrade to a higher tier.
             </p>
           </div>
         </div>
       ) : (
-        <p className="text-xs text-[#8a9b9b] mb-6 leading-relaxed max-w-2xl font-medium">
+        <p className="text-xs text-pw-muted mb-6 leading-relaxed max-w-2xl font-medium">
           The Cloud Storage Meter aggregates all transactional documents, legal contracts, 
           and financial disclosures stored across your project vaults.
         </p>
@@ -88,14 +87,14 @@ export function CloudStorageMeter() {
       <div className="flex flex-col sm:flex-row gap-4">
         {isNearLimit && (
           <button 
-            className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30 rounded-lg transition"
+            className="inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-error/10 border border-error/30 text-error hover:bg-error/20 rounded-lg transition cursor-pointer"
           >
             Upgrade Capacity 
             <span className="material-symbols-outlined text-sm select-none">arrow_forward</span>
           </button>
         )}
         <button 
-          className="inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-white/5 border border-white/10 text-white hover:bg-white/10 rounded-lg transition"
+          className="inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 bg-pw-glass-bg border border-pw-border text-pw-black hover:bg-pw-glass-bg/85 rounded-lg transition cursor-pointer shadow-sm"
         >
           View Document Audit
         </button>

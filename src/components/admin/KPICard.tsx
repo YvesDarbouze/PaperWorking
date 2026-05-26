@@ -55,11 +55,10 @@ export default function KPICard({ label, value, change, changeLabel, sparkline }
 
   return (
     <div
-      className="flex flex-col justify-between p-5 transition-shadow duration-200"
+      className="flex flex-col justify-between p-5 rounded-none"
       style={{
         background: 'var(--bg-surface)',
         border: '1px solid var(--border-ui)',
-        borderRadius: 'var(--radius-lg)',
         minHeight: 140,
       }}
     >

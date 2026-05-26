@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useNotification } from '@/context/NotificationContext';
 import {
   LayoutDashboard,
@@ -15,6 +15,7 @@ import {
   CreditCard,
   Settings,
   BarChart3,
+  Plus,
 } from 'lucide-react';
 import LogoutButton from '@/components/dashboard/LogoutButton';
 import Logo from '@/components/brand/Logo';
@@ -32,13 +33,12 @@ import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher';
      • Team Directory    → /dashboard/team
 
      ACCOUNT
-     • Profile           → /dashboard/profile
-     • Account & Billing → /dashboard/account
+     • Profile           → /dashboard/settings/profile
+     • Account & Billing → /dashboard/settings/billing
      • Settings          → /dashboard/settings
 
-   Active indicator: bold #0d0d0d pill on #f2f2f2 sidebar.
-   Inactive: #7f7f7f muted text, no background.
-   WCAG AAA contrast: #0d0d0d on #f2f2f2 = 17.1:1
+   Active indicator: bold text-primary with transparent white backdrop and active indicator.
+   Inactive: text-on-surface-variant, hover:bg-white/5.
    ═══════════════════════════════════════════════════════ */
 
 interface NavItem {
@@ -55,44 +55,44 @@ const WORKSPACE_ITEMS: NavItem[] = [
     id: 'command-center',
     label: 'Dashboard',
     href: '/dashboard',
-    icon: <LayoutDashboard className="w-4 h-4" />,
+    icon: <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} />,
     exact: true,
   },
   {
     id: 'projects',
     label: 'Deals',
     href: '/dashboard/projects',
-    icon: <FolderOpen className="w-4 h-4" />,
+    icon: <FolderOpen className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'marketplace',
     label: 'Marketplace',
     href: '/dashboard/marketplace',
-    icon: <Store className="w-4 h-4" />,
+    icon: <Store className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'data-hub',
     label: 'Market Data',
     href: '/dashboard/data',
-    icon: <Database className="w-4 h-4" />,
+    icon: <Database className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'reports',
     label: 'Reports',
     href: '/dashboard/reports',
-    icon: <BarChart3 className="w-4 h-4" />,
+    icon: <BarChart3 className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'inbox',
     label: 'Inbox',
     href: '/dashboard/inbox',
-    icon: <Mail className="w-4 h-4" />,
+    icon: <Mail className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'team',
     label: 'Team',
     href: '/dashboard/team',
-    icon: <Users className="w-4 h-4" />,
+    icon: <Users className="w-4 h-4" strokeWidth={1.5} />,
   },
 ];
 
@@ -101,20 +101,20 @@ const ACCOUNT_ITEMS: NavItem[] = [
   {
     id: 'profile',
     label: 'Profile',
-    href: '/dashboard/profile',
-    icon: <UserCircle className="w-4 h-4" />,
+    href: '/dashboard/settings/profile',
+    icon: <UserCircle className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'account',
     label: 'Billing',
-    href: '/dashboard/account',
-    icon: <CreditCard className="w-4 h-4" />,
+    href: '/dashboard/settings/billing',
+    icon: <CreditCard className="w-4 h-4" strokeWidth={1.5} />,
   },
   {
     id: 'settings',
     label: 'Settings',
     href: '/dashboard/settings',
-    icon: <Settings className="w-4 h-4" />,
+    icon: <Settings className="w-4 h-4" strokeWidth={1.5} />,
     exact: true,
   },
 ];
@@ -132,24 +132,11 @@ function SidebarLink({ item }: { item: NavItem }) {
       href={item.href}
       id={`sidebar-nav-${item.id}`}
       aria-current={isActive ? 'page' : undefined}
-      className="group flex items-center gap-3 px-3 py-2.5 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-pw-black focus-visible:outline-offset-2"
-      style={{
-        /* Active pill: #0d0d0d bg, #f2f2f2 text — 17.1:1 contrast */
-        background: isActive ? '#0d0d0d' : 'transparent',
-        color: isActive ? 'var(--bg-canvas)' : 'var(--text-secondary)',
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-primary)';
-          (e.currentTarget as HTMLAnchorElement).style.background = '#e8e8e8';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) {
-          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--text-secondary)';
-          (e.currentTarget as HTMLAnchorElement).style.background = 'transparent';
-        }
-      }}
+      className={`group flex items-center gap-3 px-4 py-2.5 rounded-none transition-all duration-200 active:scale-95 border ${
+        isActive
+          ? 'text-primary font-bold bg-white/5 border-primary/20'
+          : 'text-on-surface-variant border-transparent hover:text-on-surface hover:bg-white/5'
+      }`}
     >
       {/* Icon — aria-hidden, label carries the semantics */}
       <span aria-hidden="true" className="shrink-0">
@@ -157,22 +144,20 @@ function SidebarLink({ item }: { item: NavItem }) {
       </span>
 
       {/* Label */}
-      <span
-        className="text-xs font-bold uppercase tracking-[0.15em] truncate"
-      >
+      <span className="text-xs font-bold uppercase tracking-wider truncate">
         {item.label}
       </span>
 
       {/* Unread badge for Inbox */}
       {item.id === 'inbox' && unreadTotal > 0 && (
         <span
-          className={`flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded-full text-[10px] font-bold transition-colors duration-150 ${
-            isActive ? 'ml-2' : 'ml-auto'
+          className={`flex items-center justify-center min-w-5 h-5 px-1.5 rounded-none text-xs font-bold transition-colors duration-150 ${
+            isActive ? 'ml-auto mr-2' : 'ml-auto'
+          } ${
+            isActive
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface-container-highest text-on-surface'
           }`}
-          style={{
-            background: isActive ? '#ffffff' : '#0d0d0d',
-            color: isActive ? '#0d0d0d' : '#ffffff',
-          }}
           aria-label={`${unreadTotal} unread messages`}
         >
           {unreadTotal > 9 ? '9+' : unreadTotal}
@@ -182,8 +167,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       {/* Active dot indicator (redundant visual cue for color-blind users) */}
       {isActive && (
         <span
-          className="ml-auto w-1.5 h-1.5 rounded-full shrink-0"
-          style={{ background: 'var(--bg-canvas)' }}
+          className="ml-auto w-1.5 h-1.5 rounded-full shrink-0 bg-primary"
           aria-hidden="true"
         />
       )}
@@ -194,10 +178,7 @@ function SidebarLink({ item }: { item: NavItem }) {
 /* ── Section label ── */
 function SidebarSection({ label }: { label: string }) {
   return (
-    <p
-      className="px-3 pt-6 pb-2 text-[9px] font-bold uppercase tracking-[0.3em]"
-      style={{ color: 'var(--border-ui)' }}
-    >
+    <p className="px-4 pt-6 pb-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant/40">
       {label}
     </p>
   );
@@ -207,30 +188,24 @@ function SidebarSection({ label }: { label: string }) {
    AppSidebar
    ══════════════════════════════════════════ */
 export default function AppSidebar() {
+  const router = useRouter();
+
   return (
     <aside
-      className="flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto"
-      style={{
-        width: 240,
-        background: 'var(--bg-canvas)',
-        borderRight: '1px solid var(--border-ui)',
-      }}
+      className="flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto w-64 bg-surface-container/60 backdrop-blur-xl border-r border-black/10 dark:border-white/10"
       aria-label="Primary navigation"
     >
       {/* ── Logo ── */}
-      <div
-        className="flex items-center px-5 h-16 shrink-0"
-        style={{ borderBottom: '1px solid var(--border-ui)' }}
-      >
+      <div className="flex items-center px-5 h-16 shrink-0 border-b border-black/10 dark:border-white/10">
         <Logo href="/dashboard" size="sm" />
       </div>
 
       <WorkspaceSwitcher />
 
       {/* ── Primary Nav ── */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Main menu">
+      <nav className="flex-1 px-5 py-4 overflow-y-auto" aria-label="Main menu">
         <SidebarSection label="Workspace" />
-        <ul className="space-y-0.5" role="list">
+        <ul className="space-y-1" role="list">
           {WORKSPACE_ITEMS.map((item) => (
             <li key={item.id} role="listitem">
               <SidebarLink item={item} />
@@ -239,7 +214,7 @@ export default function AppSidebar() {
         </ul>
 
         <SidebarSection label="Account" />
-        <ul className="space-y-0.5" role="list">
+        <ul className="space-y-1" role="list">
           {ACCOUNT_ITEMS.map((item) => (
             <li key={item.id} role="listitem">
               <SidebarLink item={item} />
@@ -248,16 +223,21 @@ export default function AppSidebar() {
         </ul>
       </nav>
 
-      {/* ── Footer ── */}
-      <div
-        className="px-3 py-4 shrink-0"
-        style={{ borderTop: '1px solid var(--border-ui)' }}
-      >
-        {/* Powered-by badge */}
-        <p
-          className="px-3 pb-3 text-[9px] font-bold uppercase tracking-[0.25em]"
-          style={{ color: '#c0c0c0' }}
+      {/* ── Create Project Button ── */}
+      <div className="px-5 mb-4 shrink-0">
+        <button
+          onClick={() => router.push('/dashboard/projects/new')}
+          className="w-full py-2.5 bg-primary text-on-primary font-bold rounded-none flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer text-xs uppercase tracking-wider"
         >
+          <Plus className="w-4 h-4 text-on-primary" strokeWidth={1.5} />
+          <span>Create Project</span>
+        </button>
+      </div>
+
+      {/* ── Footer ── */}
+      <div className="px-5 py-4 shrink-0 border-t border-black/10 dark:border-white/10">
+        {/* Powered-by badge */}
+        <p className="px-3 pb-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant/40">
           PaperWorking
         </p>
         {/* Logout */}

@@ -27,7 +27,8 @@
  *   </SurfaceProvider>
  */
 
-import React, { createContext, useContext, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useMemo, ReactNode, useState, useEffect } from 'react';
+import { useSettingsStore } from '@/store/settingsStore';
 import {
   getContrastColor,
   getContrastRatio,
@@ -146,13 +147,52 @@ interface ThemeProviderProps {
 /**
  * Root-level provider. Wraps the entire app so all components
  * have access to the surface context without extra configuration.
- * Already uses the PW default canvas (#f2f2f2).
+ * Resolves theme dynamically based on settingsStore.
  *
  * Add this in src/app/layout.tsx around {children}.
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
+  const { theme } = useSettingsStore();
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const updateTheme = () => {
+      if (theme === 'system') {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setResolvedTheme(isDark ? 'dark' : 'light');
+      } else {
+        setResolvedTheme(theme);
+      }
+    };
+
+    updateTheme();
+
+    if (theme === 'system') {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', updateTheme);
+      return () => media.removeEventListener('change', updateTheme);
+    }
+  }, [theme]);
+
+  // Sync data-theme and dark class on HTML element to ensure layout-level consistency
+  useEffect(() => {
+    if (!mounted) return;
+    const root = document.documentElement;
+    if (resolvedTheme === 'dark') {
+      root.setAttribute('data-theme', 'dark');
+      root.classList.add('dark');
+    } else {
+      root.setAttribute('data-theme', 'light');
+      root.classList.remove('dark');
+    }
+  }, [resolvedTheme, mounted]);
+
+  const bg = resolvedTheme === 'dark' ? '#0b141a' : '#f9f9f9';
+
   return (
-    <SurfaceProvider bg={PW_COLORS.bg}>
+    <SurfaceProvider bg={bg}>
       {children}
     </SurfaceProvider>
   );

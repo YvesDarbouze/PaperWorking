@@ -205,7 +205,7 @@ export default function SupportPage() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 w-full mt-2 bg-[var(--pw-surface)] border border-[var(--pw-border)] rounded-[var(--radius-sm)] shadow-lg z-50 overflow-hidden"
+                  className="pw-dropdown-overlay-static absolute top-full left-0 w-full mt-2 z-50 overflow-hidden"
                 >
                   {isSearching ? (
                     <div className="p-8 flex flex-col items-center justify-center text-[var(--pw-muted)]">
@@ -224,7 +224,7 @@ export default function SupportPage() {
                               <li key={article.id}>
                                 <Link
                                   href={`/support/${article.id}`}
-                                  className="px-2 py-3 hover:bg-[var(--pw-bg)] rounded-md cursor-pointer transition-colors flex items-center gap-3"
+                                  className="pw-dropdown-item px-2 py-3 hover:bg-[var(--pw-bg)] rounded-md cursor-pointer transition-colors flex items-center gap-3"
                                 >
                                   <BookOpen className="h-4 w-4 text-[var(--pw-subtle)] shrink-0" />
                                   <div>

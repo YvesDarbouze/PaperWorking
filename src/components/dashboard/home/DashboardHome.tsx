@@ -255,7 +255,7 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="dashboard-context min-h-full pt-8 pb-24 px-gutter-mobile md:px-gutter-desktop flex flex-col gap-stack-lg overflow-y-auto">
+    <div className="dashboard-context min-h-full pt-8 pb-24 px-margin-mobile lg:px-margin-desktop flex flex-col gap-gutter-mobile lg:gap-gutter-desktop max-w-container-max mx-auto w-full overflow-y-auto">
 
       {/* State 2 — Free tier upgrade prompt */}
       {isFree && <FreeTierBanner onUpgrade={() => router.push('/pricing')} />}

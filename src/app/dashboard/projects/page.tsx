@@ -4,8 +4,9 @@ import { useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useRouter } from 'next/navigation';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
-import { Search, Plus, FolderX, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { Search, Plus, FolderX, SlidersHorizontal, ChevronDown, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
+import { EmptyState } from '@/components/ui/empty-states/EmptyState';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects — Folder Grid (Stitch Schema ed38cf94)
@@ -133,7 +134,7 @@ function FolderCard({
 
   return (
     <div
-      className="group relative flex flex-col transition-transform duration-300 hover:-translate-y-2 cursor-pointer"
+      className="group relative flex flex-col transition-all duration-300 hover:opacity-90 cursor-pointer"
       onClick={onClick}
       role="link"
       tabIndex={0}
@@ -141,15 +142,15 @@ function FolderCard({
     >
       {/* Folder Tab */}
       <div
-        className={`h-8 w-32 ${phaseConfig.bg} rounded-t-lg border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
+        className={`h-8 w-32 ${phaseConfig.bg} rounded-none border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
         style={{ clipPath: 'polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%)' }}
       />
 
       {/* Card Body */}
-      <div className={`glass-card rounded-xl p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
+      <div className={`glass-card rounded-none p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
         {/* Phase Badge — top right */}
         <div className="absolute top-0 right-0 p-4">
-          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 rounded-full text-[12px] font-medium tracking-widest uppercase`}>
+          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 rounded-none text-xs font-bold tracking-widest uppercase border border-pw-border`}>
             {phaseConfig.label}
           </span>
         </div>
@@ -157,15 +158,15 @@ function FolderCard({
         {/* Property Name + Tags */}
         <div className="flex items-start justify-between mt-4">
           <div>
-            <h3 className={`text-[24px] leading-[32px] font-semibold text-on-background group-hover:${phaseConfig.text.replace('text-', '')} transition-colors`}>
+            <h3 className={`text-headline-md font-light text-pw-black group-hover:${phaseConfig.text} transition-colors`}>
               {project.propertyName}
             </h3>
             <div className="flex gap-2 mt-2">
-              <span className="bg-white/5 text-on-surface-variant border border-white/10 px-2 py-0.5 rounded text-[12px] font-medium tracking-[0.05em] uppercase">
+              <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 rounded-none text-xs font-bold tracking-wider uppercase">
                 {strategyLabel}
               </span>
               {stateAbbr && (
-                <span className="bg-white/5 text-on-surface-variant border border-white/10 px-2 py-0.5 rounded text-[12px] font-medium tracking-[0.05em] uppercase">
+                <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 rounded-none text-xs font-bold tracking-wider uppercase">
                   {stateAbbr}
                 </span>
               )}
@@ -175,19 +176,19 @@ function FolderCard({
 
         {/* 2-col Metric Grid */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <div className="p-3 rounded-lg bg-white/5 border border-white/5">
-            <p className="text-[12px] font-medium tracking-[0.05em] text-on-surface-variant uppercase">
+          <div className="p-3 rounded-none bg-pw-glass-bg border border-pw-border">
+            <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
               Equity
             </p>
-            <p className={`text-[24px] leading-[32px] font-semibold ${phaseConfig.text}`}>
+            <p className={`text-headline-md font-light ${phaseConfig.text}`}>
               {ownership}%
             </p>
           </div>
-          <div className="p-3 rounded-lg bg-white/5 border border-white/5">
-            <p className="text-[12px] font-medium tracking-[0.05em] text-on-surface-variant uppercase">
+          <div className="p-3 rounded-none bg-pw-glass-bg border border-pw-border">
+            <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
               {headlineMetric.label}
             </p>
-            <p className={`text-[24px] leading-[32px] font-semibold ${phaseConfig.text}`}>
+            <p className={`text-headline-md font-light ${phaseConfig.text}`}>
               {headlineMetric.value}
             </p>
           </div>
@@ -195,11 +196,11 @@ function FolderCard({
 
         {/* Phase Progress Bar */}
         <div className="space-y-2 mt-2">
-          <div className="flex justify-between text-[12px] font-medium tracking-[0.05em]">
-            <span className="text-on-surface-variant">Phase Progress</span>
+          <div className="flex justify-between text-xs font-bold tracking-wider">
+            <span className="text-pw-muted">Phase Progress</span>
             <span className={phaseConfig.text}>{progress}%</span>
           </div>
-          <div className="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-pw-border/30 rounded-none overflow-hidden">
             <div
               className={`h-full ${phaseConfig.border.replace('border-l-', 'bg-')} luminous-glow transition-all duration-500`}
               style={{ width: `${progress}%` }}
@@ -210,6 +211,7 @@ function FolderCard({
     </div>
   );
 }
+
 
 /* ══════════════════════════════════════════
    ProjectsPage — Main Export
@@ -289,18 +291,18 @@ export default function ProjectsPage() {
       {/* ── Header & Search ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div className="flex-1 max-w-2xl relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pw-muted group-focus-within:text-pw-primary transition-colors" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search properties by address or strategy..."
-            className="w-full bg-surface-container-high/50 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-[16px] leading-[24px] font-normal focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all backdrop-blur-md text-on-surface placeholder:text-on-surface-variant"
+            className="w-full bg-pw-glass-bg border border-pw-border rounded-md py-4 pl-12 pr-4 text-base font-normal focus:outline-none focus:ring-2 focus:ring-pw-primary/50 focus:border-pw-primary transition-all backdrop-blur-md text-pw-black placeholder:text-pw-muted"
           />
         </div>
         <button
           onClick={handleCreateProject}
-          className="flex items-center justify-center gap-2 bg-primary text-on-primary px-8 py-4 rounded-xl text-[14px] leading-[16px] tracking-[0.02em] font-semibold luminous-glow hover:scale-[1.02] active:scale-95 transition-all duration-200"
+          className="pw-interactive pw-btn pw-btn--primary flex items-center justify-center gap-2 uppercase tracking-wider text-xs font-black"
         >
           <Plus className="w-5 h-5" />
           CREATE PROJECT
@@ -308,17 +310,17 @@ export default function ProjectsPage() {
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 bg-surface-container-lowest/40 rounded-2xl backdrop-blur-sm border border-white/5">
-        <div className="flex items-center px-4 py-2 gap-2 text-on-surface-variant border-r border-white/10">
+      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 glass-card rounded-none border border-pw-border">
+        <div className="flex items-center px-4 py-2 gap-2 text-pw-muted border-r border-pw-border">
           <SlidersHorizontal className="w-5 h-5" />
-          <span className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold uppercase">Filters</span>
+          <span className="text-sm tracking-wider font-bold uppercase">Filters</span>
         </div>
 
         {/* Phase Filter */}
         <select
           value={phaseFilter}
           onChange={(e) => setPhaseFilter(e.target.value)}
-          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
         >
           <option value="">Phase: All</option>
           <option value="1">Acquisition</option>
@@ -331,7 +333,7 @@ export default function ProjectsPage() {
         <select
           value={strategyFilter}
           onChange={(e) => setStrategyFilter(e.target.value)}
-          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
         >
           <option value="">Strategy: All</option>
           <option value="flip">Flip</option>
@@ -343,7 +345,7 @@ export default function ProjectsPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-transparent border-none text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
         >
           <option value="active">Status: Active</option>
           <option value="">Status: All</option>
@@ -352,12 +354,12 @@ export default function ProjectsPage() {
         </select>
 
         {/* Sort */}
-        <div className="ml-auto hidden sm:flex items-center gap-2 text-on-surface-variant pr-4">
-          <span className="text-[12px] font-medium tracking-[0.05em] uppercase">Sort by:</span>
+        <div className="ml-auto hidden sm:flex items-center gap-2 text-pw-muted pr-4">
+          <span className="text-xs font-bold tracking-wider uppercase">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent border-none text-[12px] font-medium tracking-[0.05em] uppercase text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors"
+            className="bg-transparent border-none text-xs font-bold tracking-wider uppercase text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
           >
             <option value="recent">Recent</option>
             <option value="name">Name</option>
@@ -377,29 +379,37 @@ export default function ProjectsPage() {
             />
           ))}
         </div>
-      ) : (
-        /* ── Empty State (Stitch schema) ── */
-        <div className="flex flex-col items-center justify-center py-20 px-8 glass-card rounded-3xl border-dashed border-2 border-white/10 text-center mb-12">
-          <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center mb-6">
-            <FolderX className="w-10 h-10 text-on-surface-variant" />
-          </div>
-          <h2 className="text-[24px] leading-[32px] font-semibold text-on-background mb-2">
-            No projects found
-          </h2>
-          <p className="text-[16px] leading-[24px] font-normal text-on-surface-variant max-w-sm mb-8">
-            It looks like your search didn&apos;t match any properties. Source your first deal or adjust your filters to get started.
-          </p>
-          <button
-            onClick={() => {
-              setSearch('');
-              setPhaseFilter('');
-              setStrategyFilter('');
-              setStatusFilter('active');
+      ) : storeProjects.length === 0 ? (
+        <div className="flex justify-center py-12">
+          <EmptyState
+            title="Your Portfolio is Empty."
+            description="Create your first project to start tracking deal phases, costs, and performance."
+            icon={FolderX}
+            action={{
+              label: "Create New Project",
+              onClick: handleCreateProject,
+              icon: Plus,
             }}
-            className="bg-white/5 hover:bg-white/10 text-primary border border-primary/20 px-6 py-3 rounded-xl text-[14px] leading-[16px] tracking-[0.02em] font-semibold transition-all"
-          >
-            Clear all filters
-          </button>
+          />
+        </div>
+      ) : (
+        <div className="flex justify-center py-12">
+          <EmptyState
+            title="No projects found"
+            description="It looks like your search didn't match any properties. Adjust your filters or clear them to see your projects."
+            icon={FolderX}
+            action={{
+              label: "Clear all filters",
+              onClick: () => {
+                setSearch('');
+                setPhaseFilter('');
+                setStrategyFilter('');
+                setStatusFilter('active');
+              },
+              icon: RotateCcw,
+            }}
+            variant="card"
+          />
         </div>
       )}
     </div>

@@ -4,7 +4,6 @@ import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChevronDown } from 'lucide-react';
 import { Project } from '@/types/schema';
-import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
 
 interface AnalyticsWidgetProps {
   projects: Project[];
@@ -21,6 +20,19 @@ const dummyData = [
   { month: 'Jan', holding: 1600, cpl: 380, arv: 490000 },
 ];
 
+function getProjectMonthKey(project: Project): string {
+  if (!project.createdAt) return '';
+  let date: Date;
+  if (typeof project.createdAt === 'string') {
+    date = new Date(project.createdAt);
+  } else if (project.createdAt && 'toDate' in project.createdAt && typeof (project.createdAt as any).toDate === 'function') {
+    date = (project.createdAt as any).toDate();
+  } else {
+    date = new Date(project.createdAt);
+  }
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
 export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
   const [selectedMetric, setSelectedMetric] = useState<ChartMetric>('Holding Costs');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -28,18 +40,52 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
   const metrics: ChartMetric[] = ['Holding Costs', 'Cost per Lead/Deal', 'After Repair Value (ARV)'];
 
   const chartData = useMemo(() => {
-    // If we have actual project data, we could calculate this over time.
-    // For now, mapping dummy data to the selected metric.
-    return dummyData.map((d) => ({
-      name: d.month,
-      value: selectedMetric === 'Holding Costs' ? d.holding : selectedMetric === 'Cost per Lead/Deal' ? d.cpl : d.arv,
-    }));
+    if (!projects || projects.length === 0) {
+      // Graceful fallback to demo metrics when no projects are available
+      return dummyData.map((d) => ({
+        name: d.month,
+        value: selectedMetric === 'Holding Costs' ? d.holding : selectedMetric === 'Cost per Lead/Deal' ? d.cpl : d.arv,
+      }));
+    }
+
+    // Generate last 6 months keys dynamically
+    const date = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(date.getFullYear(), date.getMonth() - i, 1);
+      months.push({
+        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`,
+        label: d.toLocaleString('default', { month: 'short' }),
+      });
+    }
+
+    return months.map((m) => {
+      const relevantProjects = projects.filter((p) => {
+        const pKey = getProjectMonthKey(p);
+        return pKey && pKey <= m.key;
+      });
+
+      let value = 0;
+      if (selectedMetric === 'Holding Costs') {
+        value = relevantProjects.reduce((sum, p) => sum + (p.financials?.totalHoldingCosts || 0), 0);
+      } else if (selectedMetric === 'Cost per Lead/Deal') {
+        const totalCost = relevantProjects.reduce((sum, p) => sum + (p.financials?.fixedAcquisitionCosts || 1500), 0);
+        value = relevantProjects.length > 0 ? totalCost / relevantProjects.length : 0;
+      } else {
+        value = relevantProjects.reduce((sum, p) => sum + (p.financials?.estimatedARV || p.financials?.estimatedCurrentValue || 0), 0);
+      }
+
+      return {
+        name: m.label,
+        value: value || 0,
+      };
+    });
   }, [selectedMetric, projects]);
 
   const latestValue = chartData[chartData.length - 1].value;
   const formattedValue = selectedMetric === 'After Repair Value (ARV)' 
-    ? `$${latestValue.toLocaleString()}` 
-    : `$${latestValue.toFixed(2)}`;
+    ? `$${latestValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}` 
+    : `$${latestValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
     <div className="glass-card rounded-3xl p-6 h-full flex flex-col relative overflow-visible">
@@ -84,7 +130,7 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
           <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
             <XAxis dataKey="name" fontSize={10} tickLine={false} axisLine={false} stroke="#A1A1AA" />
-            <YAxis fontSize={10} tickFormatter={(v) => `$${v}`} tickLine={false} axisLine={false} width={60} stroke="#A1A1AA" />
+            <YAxis fontSize={10} tickFormatter={(v) => `$${v.toLocaleString()}`} tickLine={false} axisLine={false} width={60} stroke="#A1A1AA" />
             <Tooltip 
               contentStyle={{ backgroundColor: '#1E1E1E', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
               itemStyle={{ color: '#FFFFFF' }}

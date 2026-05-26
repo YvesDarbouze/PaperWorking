@@ -18,7 +18,7 @@ export default function LaneIndicator() {
 
   return (
     <nav
-      className="mobile-lane-nav hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-surface/95 backdrop-blur-md border-t border-border-accent"
+      className="mobile-lane-nav hidden fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-t border-black/10 dark:border-white/5"
       style={{ height: 48 }}
       aria-label="Mobile dashboard navigation"
     >
@@ -30,8 +30,8 @@ export default function LaneIndicator() {
             flex items-center gap-1 text-xs font-bold uppercase tracking-wider
             px-2.5 py-1 rounded-md transition-all
             ${viewMode === 'minimized'
-              ? 'bg-[#595959] text-white'
-              : 'text-text-secondary hover:text-text-primary'
+              ? 'bg-primary text-on-primary shadow-[0_0_8px_rgba(45,212,191,0.3)]'
+              : 'text-on-surface-variant hover:text-on-surface hover:bg-white/5'
             }
           `}
           aria-label="Toggle board view"
@@ -59,18 +59,18 @@ export default function LaneIndicator() {
                     className={`
                       rounded-full transition-all duration-300
                       ${isActive
-                        ? 'w-6 h-2 bg-[#595959]'
+                        ? 'w-6 h-2 bg-primary shadow-[0_0_8px_rgba(45,212,191,0.6)]'
                         : isPast && !isLocked
-                          ? 'w-2 h-2 bg-[#595959]'
+                          ? 'w-2 h-2 bg-primary/60'
                           : isLocked
-                            ? 'w-2 h-2 bg-[#CCCCCC]'
-                            : 'w-2 h-2 bg-[#CCCCCC] group-hover:bg-[#A5A5A5]'
+                            ? 'w-2 h-2 bg-on-surface/20'
+                            : 'w-2 h-2 bg-on-surface/40 group-hover:bg-on-surface/60'
                       }
                     `}
                   />
                   {isLocked && (
                     <Lock
-                      className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 text-[#CCCCCC]"
+                      className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-2 h-2 text-on-surface/20"
                       aria-hidden
                     />
                   )}
@@ -78,7 +78,7 @@ export default function LaneIndicator() {
                 <span
                   className={`
                     text-xs font-semibold uppercase tracking-wider transition-colors mt-1
-                    ${isActive ? 'text-text-primary' : isLocked ? 'text-[#CCCCCC]' : 'text-text-secondary'}
+                    ${isActive ? 'text-primary font-bold' : isLocked ? 'text-on-surface-variant/20' : 'text-on-surface-variant group-hover:text-on-surface'}
                   `}
                 >
                   {lane.shortLabel}

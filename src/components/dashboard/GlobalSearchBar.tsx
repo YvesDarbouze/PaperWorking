@@ -71,7 +71,7 @@ export default function GlobalSearchBar() {
 
   return (
     <div ref={containerRef} className="relative hidden md:block">
-      <div className="flex items-center gap-2 bg-bg-primary border border-border-accent/30 rounded-lg px-3 py-1.5 focus-within:border-pw-black/50 transition-colors">
+      <div className="pw-input-wrapper gap-2 px-3 py-1.5">
         <Search className="w-3.5 h-3.5 text-text-secondary" aria-hidden="true" />
         <input
           ref={inputRef}
@@ -102,7 +102,7 @@ export default function GlobalSearchBar() {
       {/* Results Dropdown */}
       {isOpen && query.trim().length >= 2 && (
         <div
-          className="absolute top-full mt-2 left-0 w-72 bg-bg-surface border border-border-accent/20 rounded-lg shadow-xl overflow-hidden z-[100]"
+          className="pw-dropdown-overlay absolute top-full mt-2 left-0 w-72 overflow-hidden z-[100]"
           role="listbox"
           aria-label="Search results"
         >
@@ -115,7 +115,7 @@ export default function GlobalSearchBar() {
               <button
                 key={project.id}
                 onClick={() => handleSelect(project.id)}
-                className="w-full flex items-start gap-3 px-4 py-3 hover:bg-bg-primary transition-colors text-left group"
+                className="pw-dropdown-item w-full flex items-start gap-3 px-4 py-3 hover:bg-bg-primary transition-colors text-left group"
                 role="option"
                 aria-selected={false}
               >

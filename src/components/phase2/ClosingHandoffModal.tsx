@@ -73,11 +73,11 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-      <div className="bg-bg-surface rounded-2xl shadow-2xl border border-border-accent w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="p-6 border-b border-border-accent bg-gradient-to-b from-bg-primary/50 to-transparent">
-          <h2 className="text-xl font-bold text-text-primary tracking-tight">Confirm Purchase</h2>
-          <p className="text-sm text-text-secondary mt-1.5 leading-relaxed">Enter your final HUD-1 closing costs to complete Phase 2 and lock your acquisition numbers.</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-md p-4">
+      <div className="bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="p-6 border-b border-pw-border bg-pw-glass-bg/90 text-pw-black">
+          <h2 className="text-xl font-bold tracking-tight text-pw-black">Confirm Purchase</h2>
+          <p className="text-sm text-pw-muted mt-1.5 leading-relaxed">Enter your final HUD-1 closing costs to complete Phase 2 and lock your acquisition numbers.</p>
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">
@@ -92,42 +92,42 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
 
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-text-primary mb-1.5">Final Purchase Price</label>
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Final Purchase Price</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary font-medium">$</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pw-muted font-medium">$</span>
                 <input
                   type="number"
                   value={purchasePrice}
                   onChange={(e) => { setPurchasePrice(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-4 py-3 border border-border-accent rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none bg-bg-primary hover:bg-bg-primary/80 transition-all text-lg font-bold text-text-primary placeholder-text-muted"
+                  className="glass-input w-full pl-8 pr-4 py-3 text-lg font-bold rounded-2xl focus:outline-none transition-colors"
                   placeholder="0.00"
                 />
               </div>
             </div>
             
             <div>
-              <label className="block text-sm font-semibold text-text-primary mb-1.5">Title & Settlement Fees</label>
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Title & Settlement Fees</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary font-medium">$</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pw-muted font-medium">$</span>
                 <input
                   type="number"
                   value={titleFees}
                   onChange={(e) => { setTitleFees(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-4 py-2.5 border border-border-accent rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none bg-bg-primary hover:bg-bg-primary/80 transition-all text-base font-semibold text-text-primary placeholder-text-muted"
+                  className="glass-input w-full pl-8 pr-4 py-2.5 text-base font-semibold rounded-2xl focus:outline-none transition-colors"
                   placeholder="0.00"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-text-primary mb-1.5">Origination / Lender Fees</label>
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1.5">Origination / Lender Fees</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary font-medium">$</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-pw-muted font-medium">$</span>
                 <input
                   type="number"
                   value={originationFees}
                   onChange={(e) => { setOriginationFees(Number(e.target.value) || ''); setError(''); }}
-                  className="w-full pl-8 pr-4 py-2.5 border border-border-accent rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none bg-bg-primary hover:bg-bg-primary/80 transition-all text-base font-semibold text-text-primary placeholder-text-muted"
+                  className="glass-input w-full pl-8 pr-4 py-2.5 text-base font-semibold rounded-2xl focus:outline-none transition-colors"
                   placeholder="0.00"
                 />
               </div>
@@ -138,14 +138,14 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 bg-bg-primary border border-border-accent text-text-primary rounded-xl font-semibold hover:bg-bg-surface hover:border-text-secondary transition-all cursor-pointer"
+              className="pw-btn pw-btn--ghost pw-btn--pill flex-1 py-3 px-4 transition-colors font-semibold"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 flex justify-center items-center py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold transition-all shadow-[0_0_20px_rgba(52,211,153,0.3)] hover:shadow-[0_0_25px_rgba(52,211,153,0.5)] cursor-pointer disabled:opacity-50 disabled:shadow-none"
+              className="pw-btn bg-emerald-600 hover:bg-emerald-500 text-white rounded-full flex-1 flex justify-center items-center py-3 px-4 font-semibold transition-all disabled:opacity-50"
             >
               {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign HUD & Close'}
             </button>
@@ -154,5 +154,5 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
       </div>
     </div>
   );
-};
+}
 

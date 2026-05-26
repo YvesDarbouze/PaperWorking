@@ -453,8 +453,7 @@ export default function AddressAutocomplete({
             ref={dropdownRef}
             id="address-listbox"
             role="listbox"
-            className={`absolute z-50 mt-1 w-full shadow-lg max-h-64 overflow-y-auto ${isDashboard ? 'rounded-lg' : ''}`}
-            style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}
+            className={`pw-dropdown-overlay absolute z-50 mt-1 w-full max-h-64 overflow-y-auto ${isDashboard ? 'rounded-lg' : ''}`}
           >
             {predictions.map((p, idx) => (
               <button
@@ -464,7 +463,7 @@ export default function AddressAutocomplete({
                 aria-selected={idx === selectedIndex}
                 onClick={() => handleSelect(p)}
                 onMouseEnter={() => setSelectedIndex(idx)}
-                className={`w-full text-left px-6 py-4 flex items-start gap-4 transition-all border-b border-border-accent/30 last:border-b-0 ${
+                className={`pw-dropdown-item w-full text-left px-6 py-4 flex items-start gap-4 transition-all border-b border-border-accent/30 last:border-b-0 ${
                   idx === selectedIndex
                     ? 'bg-bg-primary'
                     : 'hover:bg-bg-primary/50'

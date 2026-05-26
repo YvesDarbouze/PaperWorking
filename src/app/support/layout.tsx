@@ -54,7 +54,7 @@ export default function SupportLayout({ children }: { children: React.ReactNode 
           The vertical padding between sections is owned by page.tsx
           so that individual sections can control their own spacing. */}
       <main
-        className="flex-1 w-full mx-auto max-w-7xl px-6 lg:px-8 pt-20"
+        className="flex-1 w-full mx-auto max-w-container-max px-container-padding pt-20"
         role="main"
         aria-label="Support content"
       >

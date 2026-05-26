@@ -9,6 +9,8 @@ import {
   Calendar, DollarSign, User, MapPin,
   Printer, Download, CheckSquare,
 } from 'lucide-react';
+import { Checkbox } from '../ui';
+import { EmptyState } from '../ui/empty-states/EmptyState';
 
 /* ═══════════════════════════════════════════════════════════════
    OfferLetterQuickAction — One-Click Offer Letter Generator
@@ -197,9 +199,11 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                   1. Select Deal
                 </label>
                 {eligibleDeals.length === 0 ? (
-                  <p className="text-sm text-text-secondary bg-bg-primary rounded-lg p-4 text-center">
-                    No projects in Find & Fund phase with prospects.
-                  </p>
+                  <EmptyState
+                    title="No projects in Find & Fund phase"
+                    description="There are currently no active projects with prospects in the Find & Fund phase."
+                    variant="inline"
+                  />
                 ) : (
                   <div className="space-y-1.5">
                     {eligibleDeals.map(deal => (
@@ -347,11 +351,9 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
                           key={key}
                           className="flex items-center gap-2.5 px-3 py-2 rounded-lg border border-border-accent hover:bg-bg-primary cursor-pointer transition"
                         >
-                          <input
-                            type="checkbox"
+                          <Checkbox
                             checked={form[key]}
                             onChange={() => setForm({...form, [key]: !form[key]})}
-                            className="w-4 h-4 rounded border-border-accent text-text-primary focus:ring-gray-200"
                           />
                           <span className="text-sm text-text-primary">{label}</span>
                         </label>

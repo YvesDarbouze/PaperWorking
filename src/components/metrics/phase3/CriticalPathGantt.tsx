@@ -16,6 +16,7 @@ import {
   Loader2,
   Ban,
 } from 'lucide-react';
+import { Checkbox } from '../../ui';
 
 /* ═══════════════════════════════════════════════════════
    Critical Path Gantt — Hold Phase (Phase 3)
@@ -439,11 +440,9 @@ export default function CriticalPathGantt() {
                               </div>
                               <div className="flex items-center gap-3">
                                 <label className="flex items-center gap-1.5 cursor-pointer">
-                                  <input
-                                    type="checkbox"
+                                  <Checkbox
                                     checked={task.inspectionRequired ?? false}
                                     onChange={e => updateTask(task.id, { inspectionRequired: e.target.checked })}
-                                    className="w-3 h-3"
                                   />
                                   <span className="text-[9px] font-bold text-text-secondary">Requires Inspection</span>
                                 </label>

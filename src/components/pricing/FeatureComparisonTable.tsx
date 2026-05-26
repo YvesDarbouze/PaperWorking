@@ -73,8 +73,8 @@ const tierColumns: { key: TierKey; label: string; price: string; cta: string; pl
 
 function FeatureRow({ feature }: { feature: Feature }) {
   return (
-    <tr className="hover:bg-dashboard/50 transition-colors">
-      <td className="py-4 px-4 sm:px-6 font-medium text-phase-4 text-sm">
+    <tr className="hover:bg-white/5 transition-colors duration-200 border-b border-pw-border last:border-b-0">
+      <td className="py-4 px-4 sm:px-6 font-body-sm text-body-sm font-medium text-pw-black">
         <span className="inline-flex items-center">
           {feature.name}
           {feature.tooltip && <FeatureTooltip text={feature.tooltip} />}
@@ -83,13 +83,13 @@ function FeatureRow({ feature }: { feature: Feature }) {
       {tierColumns.map(({ key }) => {
         const val = feature[key];
         return (
-          <td key={key} className={`py-4 px-3 sm:px-6 text-center ${key === 'team' ? 'bg-dashboard/50' : ''}`}>
+          <td key={key} className={`py-4 px-3 sm:px-6 text-center ${key === 'team' ? 'bg-surface-container-low/20' : ''}`}>
             {val === true ? (
-              <Check className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-phase-4" />
+              <Check className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-pw-black" />
             ) : typeof val === 'string' ? (
-              <span className="text-xs font-medium text-phase-3">{val}</span>
+              <span className="text-xs font-medium text-pw-muted">{val}</span>
             ) : (
-              <Minus className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-phase-1" />
+              <Minus className="w-4 h-4 sm:w-5 sm:h-5 mx-auto text-pw-muted/40" />
             )}
           </td>
         );
@@ -104,25 +104,25 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
   return (
     <div className="w-full max-w-5xl mx-auto my-24 px-4 overflow-x-auto">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-medium tracking-tight text-text-primary">Compare all capabilities.</h2>
-        <p className="text-sm text-phase-3 mt-2">Every plan is built for a specific role. Find yours.</p>
+        <h2 className="text-3xl font-medium tracking-tight text-pw-black">Compare all capabilities.</h2>
+        <p className="text-sm text-pw-muted mt-2">Every plan is built for a specific role. Find yours.</p>
       </div>
 
-      <div className="min-w-[580px] border border-phase-1 bg-bg-surface shadow-sm overflow-hidden">
+      <div className="border border-pw-border bg-pw-glass-bg shadow-none rounded-none overflow-hidden" style={{ minWidth: '580px' }}>
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-dashboard text-xs sm:text-xs uppercase tracking-widest text-phase-3 font-bold border-b border-phase-1">
-              <th className="py-5 px-4 sm:px-6 font-semibold">Platform Feature</th>
+            <tr className="border-b border-pw-border bg-surface-container-highest/50 backdrop-blur-md">
+              <th className="py-5 px-4 sm:px-6 font-label-md text-label-md uppercase tracking-wider text-outline">Platform Feature</th>
               {tierColumns.map(({ key, label, price }) => (
-                <th key={key} className={`py-5 px-3 sm:px-6 font-semibold text-center w-28 sm:w-36 ${key === 'team' ? 'bg-phase-1/30' : ''}`}>
+                <th key={key} className={`py-5 px-3 sm:px-6 font-label-md text-label-md uppercase tracking-wider text-outline text-center w-28 sm:w-36 ${key === 'team' ? 'bg-surface-container-high/40' : ''}`}>
                   {label}
-                  <span className="block text-xs text-phase-2 font-medium mt-0.5 normal-case tracking-normal">{price}</span>
+                  <span className="block text-xs text-pw-muted font-normal mt-0.5 normal-case tracking-normal font-body-sm">{price}</span>
                 </th>
               ))}
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-dashboard text-sm text-phase-4">
+          <tbody className="divide-y divide-pw-border text-sm text-pw-black">
             {/* Top 5 always-visible rows */}
             {decisionFeatures.map((feature, idx) => (
               <FeatureRow key={`d-${idx}`} feature={feature} />
@@ -138,11 +138,11 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
         {/* Accordion Toggle */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center py-4 text-sm font-semibold text-phase-3 hover:text-phase-4 hover:bg-dashboard transition-colors border-t border-dashboard group"
+          className="w-full flex items-center justify-center py-4 text-xs font-semibold uppercase tracking-wider text-pw-muted hover:text-pw-black hover:bg-white/5 transition-colors border-t border-pw-border group"
         >
           {expanded ? 'Show fewer features' : `See all features (${decisionFeatures.length + extendedFeatures.length})`}
           <ChevronDown
-            className={`w-4 h-4 ml-2 transition-transform duration-200 ${expanded ? 'rotate-180' : ''} group-hover:text-phase-4`}
+            className={`w-4 h-4 ml-2 transition-transform duration-200 ${expanded ? 'rotate-180' : ''} group-hover:text-pw-black`}
           />
         </button>
       </div>
@@ -153,16 +153,12 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
           <button
             key={key}
             onClick={() => onSelectPlan(planLabel)}
-            className={`
-              py-3.5 text-sm font-medium transition-all active:scale-[0.97]
-              ${key === 'team'
-                ? 'bg-black text-white hover:bg-phase-4 shadow-sm'
-                : 'bg-dashboard text-phase-4 hover:bg-phase-1 border border-phase-1'
-              }
-            `}
+            className={`pw-interactive pw-btn w-full flex flex-col items-center justify-center py-3 px-4 text-xs font-semibold uppercase tracking-wider ${
+              key === 'team' ? 'pw-btn--primary' : 'pw-btn--secondary'
+            }`}
           >
-            {cta}
-            <span className="block text-xs font-medium mt-0.5 opacity-60 normal-case">{label} · {price}</span>
+            <span>{cta}</span>
+            <span className="block text-[10px] font-normal mt-0.5 opacity-85 normal-case tracking-normal">{label} · {price}</span>
           </button>
         ))}
       </div>

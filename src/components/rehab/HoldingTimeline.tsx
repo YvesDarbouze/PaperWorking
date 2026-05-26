@@ -238,7 +238,7 @@ export default function HoldingTimeline() {
               Acquisition Date
             </label>
             <div className="flex items-center gap-3">
-              <div className="border border-border-accent bg-bg-primary focus-within:border-pw-black transition-colors flex-1">
+              <div className="pw-input-wrapper flex-1">
                 <input
                   type="date"
                   value={acquisitionDateInput}

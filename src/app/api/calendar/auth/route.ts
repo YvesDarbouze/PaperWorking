@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getAuthUrl } from '@/lib/calendar/google';
 import { cookies } from 'next/headers';
-import { adminAuth } from '@/lib/firebase/admin';
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {
@@ -14,6 +15,7 @@ export async function GET(request: Request) {
     }
 
     // Verify session
+    const { adminAuth } = await import('@/lib/firebase/admin');
     await adminAuth.verifySessionCookie(sessionCookie, true);
 
     // 2. Generate Google Auth URL
@@ -26,3 +28,4 @@ export async function GET(request: Request) {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
+

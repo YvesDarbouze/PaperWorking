@@ -87,20 +87,20 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
 /* ─── Skeleton while loading ─────────────────────────────────── */
 function WorkspaceHeaderSkeleton() {
   return (
-    <div className="sticky top-0 z-40 flex flex-col" style={{ background: 'var(--bg-surface)', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+    <div className="sticky top-0 z-40 flex flex-col" style={{ background: 'var(--bg-surface)' }}>
       {/* Row 1: breadcrumb bar skeleton */}
-      <div className="flex items-center gap-4 px-5 py-2.5" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-        <div className="h-6 w-24 animate-shimmer rounded-lg" />
+      <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-2.5" style={{ borderBottom: '1px solid var(--border-ui)' }}>
+        <div className="h-6 w-24 animate-shimmer rounded-none" />
         <div className="flex-1" />
-        <div className="h-5 w-16 animate-shimmer rounded-full" />
-        <div className="h-6 w-14 animate-shimmer rounded-lg" />
+        <div className="h-5 w-16 animate-shimmer rounded-none" />
+        <div className="h-6 w-14 animate-shimmer rounded-none" />
       </div>
       {/* Row 2: identity skeleton */}
-      <div className="flex items-center gap-4 px-5 py-3" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-        <div className="w-9 h-9 animate-shimmer rounded-lg shrink-0" />
+      <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3" style={{ borderBottom: '1px solid var(--border-ui)' }}>
+        <div className="w-9 h-9 animate-shimmer rounded-none shrink-0" />
         <div className="flex-1 space-y-1.5">
-          <div className="h-4 w-48 animate-shimmer rounded" />
-          <div className="h-3 w-64 animate-shimmer rounded" />
+          <div className="h-4 w-48 animate-shimmer rounded-none" />
+          <div className="h-3 w-64 animate-shimmer rounded-none" />
         </div>
       </div>
       {/* Phase tracker skeleton */}
@@ -134,33 +134,33 @@ function HighStressCounter({ acquisitionDate }: { acquisitionDate: string | Date
   }, [acquisitionDate]);
 
   return (
-    <div className="bg-[#B91C1C] text-white w-full py-1.5 px-4 flex flex-col md:flex-row justify-center items-center md:gap-6 shadow-[inset_0_-4px_0_rgba(153,27,27,1)] border-b border-red-900 z-50">
+    <div className="bg-red-700 text-white w-full py-1.5 px-4 flex flex-col md:flex-row justify-center items-center md:gap-6 border-b-2 border-red-950 z-50">
       <div className="flex items-center gap-2 mb-1 md:mb-0">
         <div className="w-2 h-2 rounded-full bg-red-400 animate-ping"></div>
-        <span className="font-bold tracking-[0.2em] text-[10px] uppercase text-red-200">
+        <span className="font-bold tracking-widest text-xs uppercase text-red-200">
           Holding Costs Accumulating
         </span>
       </div>
       
       <div className="flex items-baseline gap-1.5 font-mono text-shadow-sm">
-        <div className="flex flex-col items-center min-w-[3rem]">
+        <div className="flex flex-col items-center min-w-12">
           <span className="text-2xl md:text-3xl font-black text-white">{timeHeld.days.toString().padStart(2, '0')}</span>
-          <span className="text-[8px] uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Days</span>
+          <span className="text-xs uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Days</span>
         </div>
         <span className="text-xl md:text-2xl font-bold text-red-400 -mt-3">:</span>
-        <div className="flex flex-col items-center min-w-[2.5rem]">
+        <div className="flex flex-col items-center min-w-10">
           <span className="text-2xl md:text-3xl font-black text-red-50">{timeHeld.hours.toString().padStart(2, '0')}</span>
-          <span className="text-[8px] uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Hrs</span>
+          <span className="text-xs uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Hrs</span>
         </div>
         <span className="text-xl md:text-2xl font-bold text-red-400 -mt-3">:</span>
-        <div className="flex flex-col items-center min-w-[2.5rem]">
+        <div className="flex flex-col items-center min-w-10">
           <span className="text-2xl md:text-3xl font-black text-red-100">{timeHeld.minutes.toString().padStart(2, '0')}</span>
-          <span className="text-[8px] uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Min</span>
+          <span className="text-xs uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Min</span>
         </div>
         <span className="text-xl md:text-2xl font-bold text-red-400 -mt-3">:</span>
-        <div className="flex flex-col items-center min-w-[2.5rem]">
+        <div className="flex flex-col items-center min-w-10">
           <span className="text-2xl md:text-3xl font-black text-red-200">{timeHeld.seconds.toString().padStart(2, '0')}</span>
-          <span className="text-[8px] uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Sec</span>
+          <span className="text-xs uppercase tracking-widest text-red-300 font-sans font-bold -mt-1">Sec</span>
         </div>
       </div>
     </div>
@@ -184,7 +184,6 @@ function WorkspaceHeader({ project }: { project: Project }) {
       className="sticky top-0 z-40 flex flex-col"
       style={{
         background: 'var(--bg-surface)',
-        boxShadow:  '0 2px 8px rgba(0,0,0,0.06)',
       }}
     >
       {/* ── High-Stress Counter ── */}
@@ -194,12 +193,12 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
       {/* ── Row 1: Breadcrumb + status pills + exit ── */}
       <div
-        className="flex items-center gap-3 px-5 py-2.5"
+        className="flex items-center gap-3 px-margin-mobile lg:px-margin-desktop py-2.5"
         style={{ borderBottom: '1px solid var(--border-ui)' }}
       >
         <button
           onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 hover:bg-[#F2F2F2]"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5"
           style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
           aria-label="Back to all projects"
         >
@@ -210,7 +209,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
         <ChevronRight className="w-3 h-3 shrink-0" style={{ color: 'var(--border-ui)', opacity: 0.6 }} strokeWidth={2} />
 
         <span
-          className="text-[10px] font-bold uppercase tracking-[0.12em] truncate max-w-[200px]"
+          className="text-xs font-bold uppercase tracking-wider truncate max-w-48"
           style={{ color: 'var(--text-primary)' }}
         >
           {project.propertyName}
@@ -220,7 +219,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
         {/* Phase status pill */}
         <span
-          className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.14em] shrink-0"
+          className="hidden sm:inline-block px-2.5 py-1 rounded-none text-xs font-bold uppercase tracking-widest shrink-0"
           style={{ background: phaseColor.bg, color: phaseColor.text }}
         >
           {project.phaseStatus ?? 'Phase 1: Find & Fund'}
@@ -228,7 +227,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
         {/* Deal status pill */}
         <span
-          className="hidden sm:inline-block px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.14em] shrink-0"
+          className="hidden sm:inline-block px-2.5 py-1 rounded-none text-xs font-bold uppercase tracking-widest shrink-0"
           style={{ background: statusColor.bg, color: statusColor.text }}
         >
           {project.status}
@@ -237,7 +236,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
         {/* Exit button */}
         <button
           onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-[0.12em] transition-all duration-150 hover:bg-red-50 hover:border-red-200 group"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/50 group"
           style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
           aria-label="Exit project workspace"
         >
@@ -248,11 +247,11 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
       {/* ── Row 2: Property identity block ── */}
       <div
-        className="flex items-center gap-4 px-5 py-3"
+        className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3"
         style={{ borderBottom: '1px solid var(--border-ui)' }}
       >
         <div
-          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300"
+          className="w-9 h-9 rounded-none flex items-center justify-center shrink-0 transition-colors duration-300"
           style={{ background: folderColor.bg }}
         >
           <FolderOpen className="w-4 h-4" style={{ color: folderColor.icon }} strokeWidth={2} aria-hidden="true" />
@@ -264,7 +263,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
           </h1>
           <div className="flex items-center gap-1.5 mt-0.5">
             <MapPin className="w-2.5 h-2.5 shrink-0" style={{ color: 'var(--text-secondary)' }} strokeWidth={2} />
-            <p className="text-[10px] font-medium truncate" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-xs font-medium truncate" style={{ color: 'var(--text-secondary)' }}>
               {project.address}
             </p>
           </div>

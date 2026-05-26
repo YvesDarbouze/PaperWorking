@@ -46,7 +46,7 @@ export default function LogoutButton({ compact = false, className = '' }: Logout
       <button
         onClick={handleLogout}
         disabled={isLoggingOut}
-        className={`flex items-center justify-center rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
+        className={`flex items-center justify-center rounded-none p-2 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
         aria-label="Sign out"
         title="Sign out"
       >
@@ -63,7 +63,7 @@ export default function LogoutButton({ compact = false, className = '' }: Logout
     <button
       onClick={handleLogout}
       disabled={isLoggingOut}
-      className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
+      className={`flex items-center gap-2 rounded-none px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
       aria-label="Sign out"
     >
       {isLoggingOut ? (

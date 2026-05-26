@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebase/admin';
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +11,7 @@ export async function GET(request: Request) {
   }
 
   try {
+    const { adminDb } = await import('@/lib/firebase/admin');
     // Query Vendor Marketplace subscribers with a lawyer vendorType
     const vendorSnapshot = await adminDb
       .collection('users')

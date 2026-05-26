@@ -55,7 +55,7 @@ export function AcquisitionTeamAssembly({ teamMembers, onTeamMembersChange }: Ac
   };
 
   return (
-    <div className="bg-white rounded-lg border shadow-sm" style={{ borderColor: 'var(--border-ui)' }}>
+    <div className="rounded-lg border shadow-sm" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
       <div className="px-6 py-4 border-b" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
         <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Acquisition Team Assembly</h2>
         <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
@@ -104,7 +104,7 @@ function TeamMemberCard({
   };
 
   return (
-    <div className="border border-gray-100 rounded-xl p-5 shadow-md bg-white transition-shadow hover:shadow-lg">
+    <div className="rounded-xl p-5 shadow-md transition-shadow hover:shadow-lg" style={{ border: '1px solid var(--border-ui)', backgroundColor: 'var(--bg-surface)' }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-medium text-base flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
           {role}
@@ -133,20 +133,22 @@ function TeamMemberCard({
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Full Name *</label>
               <input 
                 {...register('displayName')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="Jane Doe"
+                aria-invalid={!!errors.displayName}
               />
-              {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message}</p>}
+              {errors.displayName && <p className="text-xs pw-error-text">{errors.displayName.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Firm / Company</label>
               <input 
                 {...register('firm')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="ABC Law Firm"
+                aria-invalid={!!errors.firm}
               />
             </div>
             
@@ -154,22 +156,24 @@ function TeamMemberCard({
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Email Address *</label>
               <input 
                 {...register('email')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="jane@example.com"
+                aria-invalid={!!errors.email}
               />
-              {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+              {errors.email && <p className="text-xs pw-error-text">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>Phone Number</label>
               <input 
                 {...register('phoneNumber')}
-                className="w-full px-3 py-2 border rounded-md text-sm"
-                style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
+                className="glass-input w-full px-3 py-2 text-sm"
+                style={{ color: 'var(--text-primary)' }}
                 placeholder="(555) 123-4567"
+                aria-invalid={!!errors.phoneNumber}
               />
-              {errors.phoneNumber && <p className="text-xs text-red-500">{errors.phoneNumber.message}</p>}
+              {errors.phoneNumber && <p className="text-xs pw-error-text">{errors.phoneNumber.message}</p>}
             </div>
           </div>
 
@@ -178,7 +182,7 @@ function TeamMemberCard({
               <button 
                 type="button"
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 border rounded-md text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 style={{ borderColor: 'var(--border-ui)', color: 'var(--text-primary)' }}
               >
                 Cancel
@@ -238,13 +242,13 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1.5 rounded-md hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+      className="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
       title="Copy to clipboard"
     >
       {copied ? (
         <Check className="w-3.5 h-3.5 text-green-600" />
       ) : (
-        <Copy className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600" />
+        <Copy className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
       )}
     </button>
   );

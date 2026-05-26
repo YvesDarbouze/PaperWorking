@@ -272,10 +272,13 @@ export default function DocumentHub() {
                 </button>
               </div>
             ) : (
-              <label className="block mb-4 cursor-pointer">
-                <div className="border-2 border-dashed border-border-accent rounded-lg p-6 text-center hover:border-gray-400 transition">
-                  <Upload className="w-8 h-8 text-text-secondary mx-auto mb-2" />
-                  <p className="text-sm text-text-secondary">Click to select a file</p>
+              <label className="block mb-4 cursor-pointer relative group">
+                <div className="relative rounded-lg p-6 text-center transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-md overflow-hidden">
+                  <div className={`absolute inset-2 border border-dashed rounded transition-all duration-300 pointer-events-none border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5`} />
+                  <div className="relative z-10">
+                    <Upload className="w-6 h-6 text-text-secondary mx-auto mb-2 group-hover:scale-110 transition-transform" />
+                    <p className="text-sm text-text-secondary">Click to select a file</p>
+                  </div>
                 </div>
                 <input type="file" className="hidden" onChange={handleFileSelect} />
               </label>
@@ -325,7 +328,7 @@ export default function DocumentHub() {
               <button
                 onClick={handleUpload}
                 disabled={!pendingFile || uploading}
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-700 transition disabled:opacity-50"
+                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 luminous-button"
               >
                 {uploading ? 'Uploading…' : 'Save Document'}
               </button>
@@ -334,25 +337,35 @@ export default function DocumentHub() {
         </div>
       )}
 
-      {/* Drop Zone + Document List */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative min-h-[300px] rounded-xl border-2 transition-all ${
-          isDragging ? 'border-indigo-400 bg-indigo-50' : 'border-dashed border-border-accent bg-bg-primary/50'
-        }`}
+        className="relative min-h-[300px] rounded-xl transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg overflow-hidden group"
       >
+        {/* Inner border indicator */}
+        {(filtered.length === 0 || isDragging) && (
+          <div className={`absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none ${
+            isDragging 
+              ? 'border-primary bg-primary/10 z-20' 
+              : 'border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5'
+          }`} />
+        )}
+
         {isDragging && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
-            <Upload className="w-10 h-10 text-indigo-500 mb-2" />
-            <p className="text-sm font-medium text-indigo-600">Drop to upload</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-30 bg-surface-container/40 backdrop-blur-sm">
+            <div className="w-14 h-14 mb-2 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 animate-bounce">
+              <Upload className="w-6 h-6" />
+            </div>
+            <p className="text-sm font-semibold text-text-primary">Drop to upload</p>
           </div>
         )}
 
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
-            <FileText className="w-12 h-12 text-gray-300 mb-3" />
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-[300px] text-center p-6">
+            <div className="w-14 h-14 mb-3 rounded-full bg-surface-container-highest flex items-center justify-center text-text-secondary shadow-md group-hover:scale-110 transition-transform duration-300">
+              <FileText className="w-6 h-6" />
+            </div>
             <p className="text-sm font-medium text-text-secondary">No {CATEGORIES.find(c => c.key === activeCategory)?.label} uploaded yet</p>
             <p className="text-xs text-text-secondary mt-1">Drag & drop files here or use the Upload button</p>
           </div>

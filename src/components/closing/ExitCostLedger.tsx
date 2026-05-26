@@ -14,6 +14,7 @@ import {
   DollarSign,
 } from 'lucide-react';
 import type { ExitCostLineItem, ExitCostCategory } from '@/types/schema';
+import { Checkbox } from '../ui';
 
 /* ═══════════════════════════════════════════════════════
    Exit Cost Ledger — Final Settlement Costs
@@ -297,11 +298,9 @@ export default function ExitCostLedger() {
 
                 <div className="flex gap-3 items-center">
                   <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={newIsPercentage}
                       onChange={e => setNewIsPercentage(e.target.checked)}
-                      className="rounded border-border-accent"
                     />
                     % of sale price
                   </label>

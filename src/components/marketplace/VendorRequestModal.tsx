@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Loader2 } from 'lucide-react';
 import { VendorProfile } from '@/types/schema';
+import { Checkbox } from '../ui';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/context/AuthContext';
 
@@ -77,7 +78,7 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-md"
         onClick={onClose}
       >
         <motion.div
@@ -85,34 +86,37 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-bg-surface w-full max-w-lg rounded-sm border border-border-accent shadow-xl overflow-hidden"
+          className="bg-pw-glass-bg w-full max-w-lg rounded-2xl border border-pw-border backdrop-blur-[20px] shadow-xl overflow-hidden"
         >
-          <div className="flex justify-between items-center p-6 border-b border-border-accent">
+          <div className="flex justify-between items-center p-6 border-b border-pw-border bg-pw-glass-bg/90 text-pw-black">
             <div>
-              <h2 className="text-xl font-black text-text-primary uppercase tracking-tighter">Request Quote</h2>
-              <p className="text-sm font-medium text-text-secondary mt-1">
+              <h2 className="text-xl font-bold tracking-tight text-pw-black">Request Quote</h2>
+              <p className="text-sm font-medium text-pw-muted mt-1">
                 {vendor.companyName} • {vendor.type}
               </p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-pw-dashboard transition-colors rounded-sm text-text-secondary hover:text-text-primary">
+            <button
+              onClick={onClose}
+              className="w-8 h-8 flex items-center justify-center rounded-full transition-colors text-pw-black hover:bg-pw-glass-bg/25"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            <div className="grid grid-cols-2 gap-4 bg-pw-dashboard p-4 border border-border-accent">
+            <div className="grid grid-cols-2 gap-4 bg-pw-glass-bg/50 p-4 border border-pw-border rounded-xl">
               <div>
-                <p className="text-xs uppercase tracking-widest font-black text-text-secondary mb-1">Baseline Fee</p>
-                <p className="text-sm font-bold text-text-primary">{vendor.feeRangeLabel}</p>
+                <p className="text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1">Baseline Fee</p>
+                <p className="text-sm font-bold text-pw-black">{vendor.feeRangeLabel}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest font-black text-text-secondary mb-1">Est. Turnaround</p>
-                <p className="text-sm font-bold text-text-primary">{vendor.avgTurnaroundDays} Days</p>
+                <p className="text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-1">Est. Turnaround</p>
+                <p className="text-sm font-bold text-pw-black">{vendor.avgTurnaroundDays} Days</p>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-widest font-black text-text-primary mb-2">
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-2">
                 Project ID <span className="text-red-500">*</span>
               </label>
               <input
@@ -120,34 +124,32 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
                 value={customProjectId}
                 onChange={(e) => setCustomProjectId(e.target.value)}
                 placeholder="Enter associated Project ID"
-                className="w-full px-4 py-3 bg-pw-dashboard border border-border-accent text-sm font-medium focus:outline-none focus:border-pw-black transition-colors"
+                className="glass-input w-full px-4 py-3 text-sm rounded-2xl focus:outline-none transition-colors"
                 required
                 readOnly={!!projectId} // If passed from context, lock it
               />
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-widest font-black text-text-primary mb-2">
+              <label className="block text-[10px] font-black text-pw-muted uppercase tracking-[0.3em] mb-2">
                 Context & Requirements
               </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 placeholder="Briefly describe the property condition, timelines, or specific deliverables needed..."
-                className="w-full px-4 py-3 bg-pw-dashboard border border-border-accent text-sm font-medium focus:outline-none focus:border-pw-black transition-colors min-h-[120px] resize-y"
+                className="glass-input w-full px-4 py-3 text-sm rounded-2xl focus:outline-none transition-colors min-h-[120px] resize-y"
               />
             </div>
 
             <div className="flex items-start gap-2 pt-2">
-              <input
-                type="checkbox"
+              <Checkbox
                 id="tos-checkbox"
                 checked={agreeToS}
                 onChange={(e) => setAgreeToS(e.target.checked)}
-                className="mt-1 border-border-accent text-pw-black focus:ring-pw-black rounded-sm"
               />
-              <label htmlFor="tos-checkbox" className="text-xs font-medium text-text-secondary leading-snug">
-                I agree to the <a href="/tos" target="_blank" className="underline hover:text-text-primary">Terms of Service</a> and understand that quotes and final fees may be subject to change based on actual requirements discovered during execution.
+              <label htmlFor="tos-checkbox" className="text-xs font-medium text-pw-black leading-snug">
+                I agree to the <a href="/tos" target="_blank" className="underline hover:text-pw-black">Terms of Service</a> and understand that quotes and final fees may be subject to change based on actual requirements discovered during execution.
               </label>
             </div>
 
@@ -155,7 +157,7 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-3 border border-border-accent text-xs font-black uppercase tracking-widest hover:bg-pw-dashboard transition-colors"
+                className="pw-btn pw-btn--ghost pw-btn--pill px-6 py-3 text-xs uppercase tracking-widest transition-colors"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -163,7 +165,7 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
               <button
                 type="submit"
                 disabled={isSubmitting || !customProjectId.trim() || !agreeToS}
-                className="px-6 py-3 bg-pw-black text-white text-xs font-black uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="pw-btn pw-btn--primary pw-btn--pill px-6 py-3 text-white text-xs uppercase tracking-widest transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

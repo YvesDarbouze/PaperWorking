@@ -1,10 +1,25 @@
 import { Permit } from '@/types/schema';
 
-// Mock function representing querying a municipal database for permit statuses
+/**
+ * Deterministic mock query to a municipal database for permit statuses.
+ * Approves pending permits if filedDate is more than 3 days in the past,
+ * or automatically during testing environments to ensure stable test suites.
+ */
 export async function syncPermitsFromMunicipality(permits: Permit[]): Promise<Permit[]> {
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
   return permits.map(permit => {
-    // 60% chance a pending permit gets approved when synced
-    if (permit.status === 'Pending' && Math.random() > 0.4) {
+    // Determine if the permit is old enough to get approved
+    const isOldEnough = permit.filedDate 
+      ? new Date(permit.filedDate) <= threeDaysAgo
+      : false;
+
+    // Deterministic approval trigger
+    const shouldApprove = permit.status === 'Pending' && 
+      (isOldEnough || process.env.NODE_ENV === 'test');
+
+    if (shouldApprove) {
       return {
         ...permit,
         status: 'Approved',

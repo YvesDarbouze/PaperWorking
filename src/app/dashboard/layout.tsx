@@ -3,7 +3,7 @@
 import React, { useMemo, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { Toaster } from 'react-hot-toast';
+import { CustomToaster } from '@/components/ui/CustomToaster';
 import { useAuth } from '@/context/AuthContext';
 import { usePanelContext, PanelProvider, LaneDef } from '@/components/dashboard/HorizontalPanelShell';
 import { useProjectStore } from '@/store/projectStore';
@@ -51,7 +51,7 @@ function DashboardSkeleton() {
         </div>
         <div className="flex-1 px-3 py-4 space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-8 animate-shimmer rounded" style={{ animationDelay: `${i * 60}ms` }} />
+            <div key={i} className="h-8 animate-shimmer rounded-none" style={{ animationDelay: `${i * 60}ms` }} />
           ))}
         </div>
       </aside>
@@ -63,31 +63,31 @@ function DashboardSkeleton() {
           style={{ height: 64, background: 'color-mix(in srgb, var(--bg-surface) 80%, transparent)', borderBottom: '1px solid var(--border-ui)' }}
           role="banner"
         >
-          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+          <div className="flex h-16 items-center justify-between px-margin-mobile lg:px-margin-desktop">
             <div className="flex items-center gap-8">
               <div className="lg:hidden opacity-30"><Logo size="sm" /></div>
               <div className="hidden lg:flex items-center gap-6">
                 {[24, 32, 28, 28, 20].map((w, i) => (
-                  <div key={i} className="h-4 animate-shimmer rounded" style={{ width: `${w * 4}px` }} />
+                  <div key={i} className="h-4 animate-shimmer rounded-none" style={{ width: `${w * 4}px` }} />
                 ))}
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-8 w-8 animate-shimmer rounded-full" />
-              <div className="hidden sm:block h-4 w-20 animate-shimmer rounded" />
+              <div className="hidden sm:block h-4 w-20 animate-shimmer rounded-none" />
             </div>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6 md:p-8" style={{ background: 'var(--bg-canvas)' }}>
+        <main className="flex-1 px-margin-mobile py-gutter-mobile lg:px-margin-desktop lg:py-gutter-desktop" style={{ background: 'var(--bg-canvas)' }}>
           <div className="mb-6 space-y-3">
-            <div className="h-8 w-48 sm:w-64 animate-shimmer rounded" />
-            <div className="h-4 w-full sm:w-96 animate-shimmer rounded" />
+            <div className="h-8 w-48 sm:w-64 animate-shimmer rounded-none" />
+            <div className="h-4 w-full sm:w-96 animate-shimmer rounded-none" />
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-40 animate-shimmer rounded-lg"
+                className="h-40 animate-shimmer rounded-none"
                 style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }}
               />
             ))}
@@ -178,7 +178,7 @@ function DashboardLayoutInner({ children }: { children: React.ReactNode }) {
         {/* ── Post-Checkout Success Overlay ── */}
         <CheckoutSuccessHandler />
 
-        <Toaster position="bottom-left" />
+        <CustomToaster position="bottom-left" />
         <OnboardingPromptBanner />
       </div>
     </PanelProvider>

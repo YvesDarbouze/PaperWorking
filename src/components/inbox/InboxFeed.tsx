@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { Checkbox } from '../ui';
 import { Notification } from '@/types/notification';
 import { InboxTabType } from '@/hooks/useInboxFeed';
 import InboxItemCard from './InboxItemCard';
@@ -172,11 +173,9 @@ export default function InboxFeed({
           className="flex items-center px-6 py-3 border-b border-white/10 bg-[#0b141a]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
         >
           <label className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer text-[#bacac5] hover:text-[#57f1db] transition-colors">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={allSelected}
               onChange={toggleSelectAll}
-              className="w-4 h-4 rounded border-white/20 bg-white/5 checked:bg-primary checked:border-primary text-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
             />
             {allSelected ? 'Deselect All' : 'Select All Notifications'}
           </label>

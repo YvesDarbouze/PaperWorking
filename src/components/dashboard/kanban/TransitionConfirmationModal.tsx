@@ -29,7 +29,7 @@ export default function TransitionConfirmationModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/65 backdrop-blur-md"
           />
 
           {/* Modal Content */}
@@ -37,24 +37,24 @@ export default function TransitionConfirmationModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-md bg-bg-surface rounded-3xl shadow-2xl overflow-hidden border border-border-accent"
+            className="relative w-full max-w-md bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl overflow-hidden"
           >
             <div className="p-8">
               <div className="flex justify-between items-start mb-6">
-                <div className="bg-[#CCCCCC] p-3 rounded-2xl">
-                  <AlertTriangle className="w-6 h-6 text-[#595959]" />
+                <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-2xl">
+                  <AlertTriangle className="w-6 h-6 text-amber-500" />
                 </div>
-                <button onClick={onClose} className="text-text-secondary hover:text-text-secondary transition-colors">
+                <button onClick={onClose} className="text-pw-black hover:bg-pw-glass-bg/25 p-2 rounded-full transition-all">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <h2 className="text-2xl font-normal text-text-primary mb-2 tracking-tight">
+              <h2 className="text-2xl font-normal text-pw-black mb-2 tracking-tight">
                 Update Asset Status?
               </h2>
-              <p className="text-sm text-text-secondary mb-8 leading-relaxed">
-                You are about to transition <span className="font-bold text-text-primary">"{dealName}"</span> to the 
-                <span className="inline-flex items-center mx-1 px-2 py-0.5 rounded-full bg-[#F2F2F2] text-[#595959] font-bold text-xs uppercase tracking-widest border border-[#CCCCCC]">
+              <p className="text-sm text-pw-muted mb-8 leading-relaxed">
+                You are about to transition <span className="font-bold text-pw-black">"{dealName}"</span> to the 
+                <span className="inline-flex items-center mx-1 px-2 py-0.5 rounded-full bg-pw-glass-bg/50 text-pw-black border border-pw-border font-bold text-xs uppercase tracking-widest">
                   {targetPhase}
                 </span> 
                 phase. This may trigger automated notifications and update financial projections.
@@ -63,14 +63,14 @@ export default function TransitionConfirmationModal({
               <div className="flex flex-col space-y-3">
                 <button
                   onClick={onConfirm}
-                  className="w-full flex items-center justify-center py-4 bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#595959] transition-all shadow-lg shadow-black/10 active:scale-[0.98]"
+                  className="pw-btn pw-btn--primary pw-btn--pill w-full flex items-center justify-center py-4 text-xs font-bold uppercase tracking-widest transition-all shadow-lg active:scale-[0.98]"
                 >
                   <CheckCircle2 className="w-4 h-4 mr-2" />
                   Confirm Transition
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-full py-4 bg-bg-primary text-text-secondary rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-bg-primary transition-all"
+                  className="pw-btn pw-btn--secondary pw-btn--pill w-full py-4 text-xs font-bold uppercase tracking-widest transition-all"
                 >
                   Cancel
                 </button>
@@ -78,7 +78,7 @@ export default function TransitionConfirmationModal({
             </div>
 
             {/* Visual Footer */}
-            <div className="bg-bg-primary px-8 py-4 border-t border-border-accent flex items-center justify-center italic text-xs text-text-secondary">
+            <div className="bg-pw-glass-bg/50 px-8 py-4 border-t border-pw-border flex items-center justify-center italic text-xs text-pw-muted">
               <ArrowRight className="w-3 h-3 mr-2" />
               Automated ledger entry will be recorded in the audit trail.
             </div>

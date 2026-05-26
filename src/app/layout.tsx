@@ -4,8 +4,9 @@ import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
 import { AuthProvider } from "@/context/AuthContext";
 import { TenantProvider } from "@/context/TenantContext";
+import { ThemeProvider } from "@/lib/utils/ThemeProvider";
 import ChatbotWidget from "@/components/shared/ChatbotWidget";
-import { Toaster } from "react-hot-toast";
+import { CustomToaster } from "@/components/ui/CustomToaster";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
@@ -37,23 +38,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${hankenGrotesk.variable} ${plusJakartaSans.variable} ${jetBrainsMono.variable} h-full`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const store = JSON.parse(localStorage.getItem('pw-settings-store'));
+                const theme = store?.state?.theme;
+                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                  document.documentElement.classList.add('dark');
+                } else if (theme === 'light') {
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {}
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col font-sans antialiased bg-pw-bg text-pw-black mesh-bg relative overflow-x-hidden">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none z-[-1]" />
         <AuthProvider>
           <TenantProvider>
-            <PresenceHeartbeat />
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                style: {
-                  background: '#1a1a2e',
-                  color: '#e0e0e0',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                },
-              }}
-            />
-            {children}
-            <ChatbotWidget />
+            <ThemeProvider>
+              <PresenceHeartbeat />
+              <CustomToaster position="top-center" />
+              {children}
+              <ChatbotWidget />
+            </ThemeProvider>
           </TenantProvider>
         </AuthProvider>
 

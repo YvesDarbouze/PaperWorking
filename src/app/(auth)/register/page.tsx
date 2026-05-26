@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Logo from '@/components/brand/Logo';
 import { Building2, Wrench, CheckCircle2, ArrowRight } from 'lucide-react';
 import type { AccountType } from '@/types/user';
 
@@ -52,39 +51,33 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-[800px] mx-auto animate-in fade-in duration-700">
+    <div className="register-card-container flex flex-col gap-8 animate-in fade-in duration-700">
 
-      {/* ── Logo + Header ── */}
-      <div className="mb-8 text-center">
-        <div className="mx-auto mb-4">
-          <Logo href="/" size="md" />
-        </div>
+      <div className="text-center flex flex-col gap-2">
         <h1
-          className="text-2xl md:text-[32px] font-semibold tracking-tight leading-tight"
+          className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface"
           style={{
-            fontFamily: "'Hanken Grotesk', system-ui, sans-serif",
+            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
             color: '#e2e2e2',
             letterSpacing: '-0.01em',
           }}
         >
-          Welcome to PaperWorking
+          Select Account Type
         </h1>
         <p
-          className="mt-2 max-w-md mx-auto"
+          className="text-sm md:text-base mx-auto"
           style={{
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontSize: '16px',
-            lineHeight: '24px',
-            color: 'rgba(186, 202, 197, 0.9)',
+            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+            color: '#bacac5',
+            maxWidth: '400px',
           }}
         >
-          Select your professional track to start managing your real estate
-          business with precision.
+          Join our premium network of real estate professionals.
         </p>
       </div>
 
-      {/* ── Selection Cards ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-8">
+      {/* ── Selection Container ── */}
+      <div className="flex flex-col gap-4">
         {accountTypes.map((acct) => {
           const active = selectedType === acct.key;
           return (
@@ -92,93 +85,69 @@ export default function RegisterPage() {
               key={acct.key}
               type="button"
               onClick={() => setSelectedType(acct.key)}
-              className="group relative text-left p-6 rounded-xl flex flex-col h-full cursor-pointer transition-all duration-300 active:scale-[0.98]"
-              style={{
-                background: active
-                  ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.12) 0%, rgba(87, 241, 219, 0.04) 100%)'
-                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)',
-                backdropFilter: 'blur(20px)',
-                border: active
-                  ? '1px solid rgba(87, 241, 219, 0.5)'
-                  : '1px solid rgba(255, 255, 255, 0.08)',
-                boxShadow: active
-                  ? 'inset 0 0 15px rgba(87, 241, 219, 0.05)'
-                  : 'none',
-              }}
+              className={`register-type-btn group ${active ? 'active' : ''}`}
             >
-              {/* Icon + Check */}
-              <div className="flex justify-between items-start mb-4">
-                <div
-                  className="p-3 rounded-lg transition-transform group-hover:scale-110"
+              {/* Icon */}
+              <div
+                className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                style={
+                  active
+                    ? { backgroundColor: 'rgba(87, 241, 219, 0.2)', color: '#57f1db' }
+                    : { backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--pw-muted)' }
+                }
+              >
+                {acct.icon}
+              </div>
+
+              {/* Text */}
+              <div className="flex flex-col gap-1 pr-6 flex-grow">
+                <h3
+                  className="text-lg md:text-xl font-semibold text-on-surface"
                   style={{
-                    background: active
-                      ? 'rgba(87, 241, 219, 0.1)'
-                      : 'rgba(255, 255, 255, 0.05)',
-                    border: active
-                      ? '1px solid rgba(87, 241, 219, 0.2)'
-                      : '1px solid rgba(255, 255, 255, 0.1)',
-                    color: active ? '#57f1db' : 'rgba(186, 202, 197, 0.7)',
+                    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
                   }}
                 >
-                  {acct.icon}
-                </div>
-                {/* Selection indicator */}
+                  {acct.title}
+                </h3>
+                <p
+                  className="text-xs md:text-sm leading-relaxed"
+                  style={{
+                    fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+                    color: 'rgba(186, 202, 197, 0.8)',
+                  }}
+                >
+                  {acct.description}
+                </p>
+              </div>
+
+              {/* Selection Check Indicator */}
+              <div
+                className={`flex-shrink-0 ml-auto mt-1 transition-opacity duration-200 ${
+                  active ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
                 <CheckCircle2
-                  className="w-6 h-6 transition-opacity duration-200"
+                  className="w-6 h-6"
                   style={{
                     color: '#57f1db',
-                    opacity: active ? 1 : 0,
-                    fill: active ? '#57f1db' : 'none',
+                    fill: 'rgba(87, 241, 219, 0.1)',
                   }}
                 />
               </div>
-
-              {/* Title */}
-              <h3
-                className="mb-1"
-                style={{
-                  fontFamily: "'Hanken Grotesk', system-ui, sans-serif",
-                  fontSize: '20px',
-                  fontWeight: 600,
-                  lineHeight: '28px',
-                  color: '#e2e2e2',
-                }}
-              >
-                {acct.title}
-              </h3>
-
-              {/* Description */}
-              <p
-                className="leading-relaxed"
-                style={{
-                  fontFamily: "'Inter', system-ui, sans-serif",
-                  fontSize: '14px',
-                  lineHeight: '20px',
-                  color: 'rgba(186, 202, 197, 0.7)',
-                }}
-              >
-                {acct.description}
-              </p>
             </button>
           );
         })}
       </div>
 
-      {/* ── CTA ── */}
-      <div className="w-full max-w-sm flex flex-col items-center gap-4">
+      {/* ── Actions ── */}
+      <div className="flex flex-col gap-4 pt-2 items-center">
         <button
           type="button"
           onClick={handleContinue}
           disabled={isNavigating}
-          className="w-full py-4 px-8 rounded-full uppercase tracking-widest font-bold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50"
+          className="w-full luminous-button font-semibold py-4 rounded-full uppercase tracking-wider text-xs md:text-sm disabled:opacity-50 cursor-pointer"
           style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: '12px',
-            lineHeight: '16px',
-            letterSpacing: '0.05em',
-            backgroundColor: '#57f1db',
-            color: '#00201c',
-            boxShadow: '0 0 20px -5px rgba(87, 241, 219, 0.5)',
+            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
           }}
         >
           {isNavigating ? 'Loading...' : 'Continue'}
@@ -186,31 +155,16 @@ export default function RegisterPage() {
 
         <Link
           href="/login"
-          className="flex items-center gap-2 group transition-colors"
+          className="text-xs md:text-sm hover:text-pw-primary transition-colors py-2 flex items-center gap-1 group"
           style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: '12px',
-            lineHeight: '14px',
-            letterSpacing: '0.05em',
-            fontWeight: 500,
-            color: 'rgba(186, 202, 197, 0.7)',
+            fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
+            color: '#bacac5',
           }}
         >
           Already have an account?{' '}
-          <span
-            className="font-semibold group-hover:text-[#57f1db] transition-colors"
-            style={{ color: '#e2e2e2' }}
-          >
-            Log in
-          </span>
+          <span className="font-bold group-hover:underline" style={{ color: '#57f1db' }}>Log in</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
         </Link>
-      </div>
-
-      {/* ── Ethereal glow ── */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] rounded-full blur-[120px]" style={{ background: 'rgba(87, 241, 219, 0.03)' }} />
-        <div className="absolute bottom-[20%] left-[10%] w-[30vw] h-[30vw] rounded-full blur-[100px]" style={{ background: 'rgba(87, 241, 219, 0.02)' }} />
       </div>
     </div>
   );

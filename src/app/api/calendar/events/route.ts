@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getUpcomingEvents } from '@/lib/calendar/google';
 import { cookies } from 'next/headers';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
@@ -14,6 +15,7 @@ export async function GET() {
     }
 
     // Verify session
+    const { adminAuth, adminDb } = await import('@/lib/firebase/admin');
     const decodedToken = await adminAuth.verifySessionCookie(sessionCookie, true);
     const uid = decodedToken.uid;
 
@@ -73,3 +75,4 @@ export async function GET() {
     return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
+

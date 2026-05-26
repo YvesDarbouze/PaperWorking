@@ -24,7 +24,7 @@ interface RentalOperationsLedgerProps {
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <p className="text-xs mt-1.5 font-medium" style={{ color: 'var(--text-warning, #B91C1C)' }}>
+    <p className="text-xs mt-1.5 font-medium pw-error-text">
       {message}
     </p>
   );
@@ -136,7 +136,7 @@ export function RentalOperationsLedger({
 
   // ── Shared input class ──────────────────────────────────────
   const inputCls =
-    'w-full bg-transparent text-sm py-2.5 rounded-[8px] focus:outline-none transition-all disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none';
+    'glass-input w-full text-sm py-2.5 focus:outline-none transition-all disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none';
 
   return (
     <form
@@ -210,9 +210,9 @@ export function RentalOperationsLedger({
                     {...register('projectedMonthlyRent', { valueAsNumber: true })}
                     className={`${inputCls} pl-7 pr-4`}
                     style={{
-                      border: `1px solid ${errors.projectedMonthlyRent ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.projectedMonthlyRent}
                   />
                 </div>
                 <FieldError message={errors.projectedMonthlyRent?.message} />
@@ -237,9 +237,9 @@ export function RentalOperationsLedger({
                     {...register('vacancyRate', { valueAsNumber: true })}
                     className={`${inputCls} px-4 pr-8 text-right`}
                     style={{
-                      border: `1px solid ${errors.vacancyRate ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.vacancyRate}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <span className="text-xs font-medium text-[#A5A5A5]">%</span>
@@ -272,9 +272,9 @@ export function RentalOperationsLedger({
                     {...register('maintenanceReserves', { valueAsNumber: true })}
                     className={`${inputCls} pl-7 pr-4`}
                     style={{
-                      border: `1px solid ${errors.maintenanceReserves ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.maintenanceReserves}
                   />
                 </div>
                 <FieldError message={errors.maintenanceReserves?.message} />
@@ -299,9 +299,9 @@ export function RentalOperationsLedger({
                     {...register('propertyManagementFeePercent', { valueAsNumber: true })}
                     className={`${inputCls} px-4 pr-8 text-right`}
                     style={{
-                      border: `1px solid ${errors.propertyManagementFeePercent ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.propertyManagementFeePercent}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <span className="text-xs font-medium text-[#A5A5A5]">%</span>
@@ -334,9 +334,9 @@ export function RentalOperationsLedger({
                     {...register('longTermMortgagePayment', { valueAsNumber: true })}
                     className={`${inputCls} pl-7 pr-4`}
                     style={{
-                      border: `1px solid ${errors.longTermMortgagePayment ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.longTermMortgagePayment}
                   />
                 </div>
                 <FieldError message={errors.longTermMortgagePayment?.message} />
@@ -363,9 +363,9 @@ export function RentalOperationsLedger({
                     {...register('financingCashInvested', { valueAsNumber: true })}
                     className={`${inputCls} pl-7 pr-4`}
                     style={{
-                      border: `1px solid ${errors.financingCashInvested ? '#B91C1C' : 'var(--border-ui)'}`,
                       color: 'var(--text-primary)',
                     }}
+                    aria-invalid={!!errors.financingCashInvested}
                   />
                 </div>
                 <FieldError message={errors.financingCashInvested?.message} />
@@ -376,7 +376,7 @@ export function RentalOperationsLedger({
           {/* ── Right Side: Analytics ── */}
           <div
             className="lg:col-span-2 p-6 rounded-[8px] border flex flex-col justify-between space-y-6"
-            style={{ backgroundColor: '#F9F9F9', borderColor: 'var(--border-ui)' }}
+            style={{ backgroundColor: 'var(--color-surface-container-low)', borderColor: 'var(--border-ui)' }}
           >
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
@@ -397,7 +397,7 @@ export function RentalOperationsLedger({
                 </div>
               </div>
 
-              <div className="h-px bg-[#E5E5E5] w-full" />
+              <div className="h-px w-full" style={{ backgroundColor: 'var(--border-ui)' }} />
 
               <div className="flex justify-between items-end">
                 <div>
@@ -416,7 +416,7 @@ export function RentalOperationsLedger({
               </div>
             </div>
 
-            <div className="pt-6 border-t" style={{ borderColor: '#E5E5E5' }}>
+            <div className="pt-6 border-t" style={{ borderColor: 'var(--border-ui)' }}>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7F7F7F] mb-2">
                 Monthly Net Cash Flow
               </p>

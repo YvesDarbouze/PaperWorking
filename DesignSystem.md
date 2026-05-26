@@ -109,17 +109,17 @@ Every interactive element **must** compose two classes:
 <button class="pw-menu-item pw-menu-item--active">Item</button>
 ```
 
-### Button variants
+### Button variants (Luminous Glass Theme)
 
-| Class | Surface | Use case |
-|-------|---------|----------|
-| `.pw-btn--primary`   | Black bg / white text | Primary action, one per view |
-| `.pw-btn--secondary` | Light gray / dark text | Secondary actions |
-| `.pw-btn--ghost`     | Transparent / inherits | Toolbar actions, icon buttons |
-| `.pw-btn--outline`   | Border only / dark text | Tertiary actions |
-| `.pw-btn--danger`    | Red / white text | Destructive: delete, revoke |
+| Class | Light Theme | Dark Theme | Use case |
+|-------|-------------|------------|----------|
+| `.pw-btn--primary` / raw `button` | Status Info Blue (`#163144`), white text | Status Info Blue (`#004395`), white text | Primary action, one per view (or default raw button) |
+| `.pw-btn--secondary` | Frosted glass (`rgba(255,255,255,0.4)`), `#002a43` text | Frosted glass (`rgba(255,255,255,0.03)`), `#dae4ec` text | Secondary actions |
+| `.pw-btn--outline` | Transparent, outline border, `#002a43` text | Transparent, outline border, `#dae4ec` text | Tertiary actions |
+| `.pw-btn--ghost` | Transparent, no border, inherits color | Transparent, no border, inherits color | Toolbar actions, icon buttons |
+| `.pw-btn--danger` | Red (`#ba1a1a`), white text | Red (`#ffb4ab`), dark red (`#690005`) text | Destructive: delete, revoke |
 
-All variants adapt automatically inside `.pw-surface-dark`, `.pw-phase-listed`, `.pw-phase-closed` containers.
+All buttons feature a subtle inner glow (`inset 0 1px 1px rgba(255, 255, 255, 0.15)`) to enhance the 3D glass effect, and adapt automatically inside `.dark` and container overrides.
 
 ### Size modifiers
 
@@ -167,9 +167,31 @@ All variants adapt automatically inside `.pw-surface-dark`, `.pw-phase-listed`, 
 
 ### Input system
 
+All form inputs (`input[type="text"]`, `input[type="email"]`, `input[type="password"]`, `input[type="search"]`, `input[type="number"]`, `input[type="tel"]`, `input[type="url"]`, `input[type="date"]`), `textarea` elements, `select` elements, and elements with `.pw-input` are globally styled to conform to the Luminous Glass specifications:
+
+- **Border Radius**: 8px (`var(--radius-DEFAULT)`) — overriding sharp edges for inputs specifically, as per the Stitch design specifications.
+- **Glass Transparency**: Backdrop blur (`blur(20px)`) and semi-transparent background (`var(--pw-glass-bg)`).
+- **Transitions**: Smooth transitions on `border-color`, `box-shadow`, and `background-color`.
+- **States**:
+  - *Hover*: Borders highlight to `var(--color-outline)`.
+  - *Focus*: Focus rings highlight to `var(--color-brand-primary)` (teal `#2dd4bf` in dark, brand primary `#1b405b` in light) with a custom `box-shadow` glow: `0 0 8px var(--input-focus-glow-color)`.
+  - *Disabled*: Reduced opacity to `0.38` with `pointer-events: none` and `cursor: not-allowed`.
+  - *Error*: Border accentuates to error color (`var(--color-error)` or `#ba1a1a`).
+
+#### Base Selector Usage
 ```html
-<input class="pw-input" placeholder="Enter value" />
-<input class="pw-input pw-input--error" />
+<!-- Input, Textarea or Select will automatically style correctly without any extra wrapper classes! -->
+<input type="text" placeholder="Enter value" />
+<textarea placeholder="Write message"></textarea>
+```
+
+#### Custom Input Wrapper System (e.g. for Prefix/Suffix inputs)
+For compound inputs, wrap the layout elements using the `.pw-input-wrapper` container:
+```html
+<div class="pw-input-wrapper">
+  <span class="prefix">$</span>
+  <input class="bg-transparent outline-none" />
+</div>
 ```
 
 ### Backward compatibility
@@ -185,3 +207,20 @@ All variants adapt automatically inside `.pw-surface-dark`, `.pw-phase-listed`, 
 - **Banned Names**: Do NOT use any developer placeholder names.
 - **Logo Description**: A stylized, minimalist desktop tray icon (inbox tray) with clean, stacked horizontal sheets of paper rising vertically above it, representing structure, organization, and a document-driven real estate workflow.
 - **Brand Text Styling**: Always render the text `PaperWorking` using structural headings (e.g., `font-headline-md tracking-tighter`) instead of generic serif fonts or standard body text.
+
+---
+
+## 8. Drag-and-Drop File Upload Zones
+
+All drag-and-drop uploader panels and file input zones are styled following the Luminous Glass specifications:
+
+- **Outer Container**: Translucent frosted-glass card style with a dual-border layout.
+  - Tailwind Classes: `relative overflow-hidden group min-h-[180px] flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg rounded-xl`
+- **Inner Dashed Border Overlay**: An absolute-positioned overlay to represent the drop boundaries without blocking mouse event handling.
+  - HTML/React Markup: `<div className="absolute inset-3 border-2 border-dashed rounded-lg transition-all duration-300 pointer-events-none" />`
+  - Idle/Normal State: `border-outline-variant/40 group-hover:border-primary/40 group-hover:bg-primary/5`
+  - Active/Drag-over State: `border-primary bg-primary/10` (or dynamic matching colors based on progress/state).
+- **Icons & circular container wrapper**: Nested circular background container to give depth:
+  - Tailwind Classes: `w-14 h-14 mb-3 rounded-full bg-surface-container-highest flex items-center justify-center text-primary shadow-lg shadow-primary/10 group-hover:scale-110 transition-transform duration-300`
+- **Interactive Buttons**: Action buttons use the `.pw-btn` system or `.luminous-button` pattern.
+- **Preservation of Event Handlers**: All dropzone event handlers (`onDragOver`, `onDragLeave`, `onDrop`), file inputs, and backend uploads (Firestore/REST) must remain completely unchanged.

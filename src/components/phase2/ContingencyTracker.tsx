@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { Contingency, ContingencyType } from '@/types/schema';
+import { Checkbox } from '../ui';
 
 export const ContingencyTracker: React.FC = () => {
   const currentProject = useProjectStore((s) => s.currentProject);
@@ -135,22 +136,18 @@ export const ContingencyTracker: React.FC = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={c.isSatisfied}
                         onChange={() => handleToggleState(c.id, 'isSatisfied')}
                         disabled={c.isWaived}
-                        className="rounded border-border-accent text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       Satisfied
                     </label>
                     <label className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
-                      <input
-                        type="checkbox"
+                      <Checkbox
                         checked={c.isWaived}
                         onChange={() => handleToggleState(c.id, 'isWaived')}
                         disabled={c.isSatisfied}
-                        className="rounded border-border-accent text-text-secondary focus:ring-gray-500 cursor-pointer"
                       />
                       Waived
                     </label>

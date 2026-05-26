@@ -3337,6 +3337,12 @@
       "skillPath": "skills/brand-perception-psychologist/SKILL.md",
       "computedHash": "bbd0b6092728a2e38ea340a3117374b709847973c1684bc650ba440c7d70dd7c"
     },
+    "brandkit": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/brandkit/SKILL.md",
+      "computedHash": "b63012f3c3d21197e0185d3e9cc7ec40c589fb10e0b5a32a561739de31aa3f20"
+    },
     "breach-data": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
@@ -5437,6 +5443,12 @@
       "skillPath": "skills/design-taste-frontend/SKILL.md",
       "computedHash": "e4ef0064c0986135fc0f5a6452db8cf262c67d0da80f1e489378fad3752f0785"
     },
+    "design-taste-frontend-v1": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill-v1/SKILL.md",
+      "computedHash": "338a6f574f10fcdd6df0f1eae029c49ce075c7770c4217fcfe38ca9cf684bc7c"
+    },
     "design-token-extractor": {
       "source": "eyeszik/Claude-Design-Skills",
       "sourceType": "github",
@@ -6613,6 +6625,12 @@
       "skillPath": ".agents/skills/flow-nexus-swarm/SKILL.md",
       "computedHash": "c33baf63f179aa75e39ff9fb987c5fcea794de243527669c6f37301cfc56bb05"
     },
+    "flowhunt-skill": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/flowhunt-skill/SKILL.md",
+      "computedHash": "8fee36baf0ad0b3e3518876844531be8049e0f982a411e03334bc2338a673eb5"
+    },
     "fluentd": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
@@ -7014,6 +7032,12 @@
       "sourceType": "github",
       "skillPath": "skills/gemini-cli/SKILL.md",
       "computedHash": "de3c69f65ef12a45e22793273dad2f0019b9361e8564ea0fdd3b69dc34423a61"
+    },
+    "geminiignore-finops": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/geminiignore-finops/SKILL.md",
+      "computedHash": "727ce5cd3131156df7b0c801d09bf641f4aa5054099c9880236328e3e85084d1"
     },
     "geo-fundamentals": {
       "source": "sickn33/antigravity-awesome-skills",
@@ -7969,6 +7993,12 @@
       "skillPath": "skills/idor-testing/SKILL.md",
       "computedHash": "6f100962f5a7f5ffe94ee2c63ca66bbd0618cbe3d56439033f5b70613c15be04"
     },
+    "ii-commons": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ii-commons/SKILL.md",
+      "computedHash": "c79ef7f527e5c18d8018a95e37a7426ea46379979a43b380acb9dd5b05f0e0bf"
+    },
     "ilya-sutskever": {
       "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
@@ -7993,11 +8023,29 @@
       "skillPath": "skills/image-studio/SKILL.md",
       "computedHash": "16d646e83473434d456e6bf0d0e558cc4df5dc7e19a85f3b5f6ca75d95039433"
     },
+    "image-to-code": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/image-to-code-skill/SKILL.md",
+      "computedHash": "58517b03b2a01f4c9ba65861559d03df931400871bbc200978c975b24bb92c73"
+    },
     "image-to-text": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
       "skillPath": "skills/image-to-text/SKILL.md",
       "computedHash": "212d7a3a72498c477f6b5e20162e3d4012ffe7ab3a48bb68de7c475662874f37"
+    },
+    "imagegen-frontend-mobile": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/imagegen-frontend-mobile/SKILL.md",
+      "computedHash": "9ab7f4f6ce66a3cff02bbf5894e5bd5af50bf5d6ef0adffdc88e8fab772fe44f"
+    },
+    "imagegen-frontend-web": {
+      "source": "Leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/imagegen-frontend-web/SKILL.md",
+      "computedHash": "65f5ae59fa317567809438310b1c54f78cd133426deb43e4d3d4ca4c8f541628"
     },
     "imagemagick": {
       "source": "TerminalSkills/skills",
@@ -9612,6 +9660,12 @@
       "sourceType": "github",
       "skillPath": "skills/mermaid-expert/SKILL.md",
       "computedHash": "6dae987d8d84e071e106d7f181a07dd85ae1b62292891cf524addea7048f179d"
+    },
+    "mesh-memory": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/mesh-memory/SKILL.md",
+      "computedHash": "56f4b0727d4961a18d4cff5b1b51e590c77ff48de29de6620899caf56cf8c1e1"
     },
     "meta-ad-copywriter": {
       "source": "blink-new/claude",
@@ -13831,6 +13885,12 @@
       "skillPath": "skills/social-proof-architect/SKILL.md",
       "computedHash": "a3f5f4d304b1440620999445b47eabb6475c756796e337893e3b9de9c43f0aaf"
     },
+    "socialclaw": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/socialclaw/SKILL.md",
+      "computedHash": "416254f3b087a087151e64ed99b45433bf9be81522c766be6afbb22da5897b90"
+    },
     "socketio": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",
@@ -16016,10 +16076,10 @@
       "computedHash": "db47137af209a2dbc9b412609039d15ba27c59dd1a7fdd9cd366918834fb1cd9"
     },
     "webapp-testing": {
-      "source": "itsnavee/claude-forge",
+      "source": "sickn33/antigravity-awesome-skills",
       "sourceType": "github",
       "skillPath": "skills/webapp-testing/SKILL.md",
-      "computedHash": "38d45b8f1abbe23149150e89a0a8f0ff9a03815eacd551ea5d50ec548da92184"
+      "computedHash": "d82a5132fcca4b2896fc9fd54a70f733b57898d1cf1c5dfff5269f92e3bd235a"
     },
     "webauthn": {
       "source": "TerminalSkills/skills",

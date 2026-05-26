@@ -39,6 +39,18 @@
     ".next-app/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    ".next",
+    ".git",
+    ".agents",
+    ".gemini",
+    ".gstack",
+    ".kiro",
+    ".mcpjam",
+    ".roo",
+    ".trae",
+    ".vscode",
+    ".windsurf",
+    "out"
   ]
 }

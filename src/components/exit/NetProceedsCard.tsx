@@ -29,7 +29,7 @@ export default function NetProceedsCard({ deal }: NetProceedsCardProps) {
   const isProfit = tax.capitalGain > 0;
 
   return (
-    <div className="glass-card border border-pw-border rounded-none shadow-none">
+    <div className="glass-card border border-pw-border">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function NetProceedsCard({ deal }: NetProceedsCardProps) {
         <div className="bg-pw-glass-bg px-5 py-4">
           <div className="flex items-center gap-1 mb-1">
             <p className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Tax_Liability</p>
-            <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-none ${
+            <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 ${
               tax.isLongTerm ? 'bg-pw-accent/10 text-pw-accent' : 'bg-pw-muted/20 text-text-primary'
             }`}>
               {tax.estimatedTaxRate}%
@@ -113,7 +113,7 @@ export default function NetProceedsCard({ deal }: NetProceedsCardProps) {
           <span className="text-[9px] font-black text-text-secondary uppercase tracking-widest">Holding_Period</span>
           <span className="text-[10px] font-bold font-mono text-text-primary">{tax.holdingPeriodDays} days</span>
         </div>
-        <div className="w-full h-1.5 bg-pw-border rounded-none overflow-hidden">
+        <div className="w-full h-1.5 bg-pw-border overflow-hidden">
           <div
             className="h-full transition-all duration-700 bg-pw-accent"
             style={{ width: `${Math.min(100, (tax.holdingPeriodDays / 730) * 100)}%` }}

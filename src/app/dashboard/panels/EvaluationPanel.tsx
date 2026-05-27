@@ -62,7 +62,7 @@ export default function EvaluationPanel() {
   }, [currentProject?.financials]);
 
   const shimmer = (
-    <div className="h-40 border border-pw-border animate-shimmer rounded-none flex items-center justify-center">
+    <div className="h-40 border border-pw-border animate-shimmer flex items-center justify-center">
        <span className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">Module_Syncing...</span>
     </div>
   );
@@ -70,7 +70,7 @@ export default function EvaluationPanel() {
   if (!currentProject) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-20 bg-bg-primary border-x border-pw-border">
-         <div className="w-16 h-16 border border-pw-black mb-6 flex items-center justify-center opacity-20">
+         <div className="w-16 h-16 border border-pw-border mb-6 flex items-center justify-center opacity-20">
             <div className="w-1.5 h-1.5 bg-pw-black animate-ping"></div>
          </div>
          <h1 className="text-xl font-black text-text-primary tracking-widest uppercase mb-2">Target_Required</h1>
@@ -85,7 +85,7 @@ export default function EvaluationPanel() {
     <div className="px-4 sm:px-6 lg:px-8 pt-10 pb-20 max-w-6xl mx-auto space-y-12 bg-bg-primary border-x border-pw-border min-h-full">
       
       {/* ═══ Tactical Header ═══ */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-pw-black pb-8">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-pw-border pb-8">
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <span className="w-1.5 h-1.5 bg-pw-accent"></span>
@@ -110,17 +110,17 @@ export default function EvaluationPanel() {
       {/* ── Section 1: Operational Ledgers ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <Suspense fallback={shimmer}>
-          <div className="lg:col-span-1 glass-card border border-pw-border p-6 rounded-none shadow-none">
+          <div className="lg:col-span-1 glass-card border border-pw-border p-6">
             <HistoricalLedger />
           </div>
         </Suspense>
         <Suspense fallback={shimmer}>
-          <div className="lg:col-span-1 glass-card border border-pw-border p-6 rounded-none shadow-none">
+          <div className="lg:col-span-1 glass-card border border-pw-border p-6">
             <ProspectingBoard />
           </div>
         </Suspense>
         <Suspense fallback={shimmer}>
-          <div className="lg:col-span-1 glass-card border border-pw-border p-6 rounded-none shadow-none">
+          <div className="lg:col-span-1 glass-card border border-pw-border p-6">
             <PledgeTracker />
           </div>
         </Suspense>
@@ -139,17 +139,17 @@ export default function EvaluationPanel() {
  
       {/* ── Section 2: Mathematical Constraints ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="glass-card border border-pw-border p-8 rounded-none shadow-none flex flex-col justify-center">
+        <div className="glass-card border border-pw-border p-8 flex flex-col justify-center">
           <HoldingCostClock />
         </div>
-        <div className="glass-card border border-pw-border p-8 rounded-none shadow-none">
+        <div className="glass-card border border-pw-border p-8">
            <RuleOf70Warning />
         </div>
       </div>
  
       {/* ── Section 3: The 70% Anchor ── */}
       <Suspense fallback={shimmer}>
-        <div className="glass-card border border-pw-border p-8 relative overflow-hidden rounded-none shadow-none">
+        <div className="glass-card border border-pw-border p-8 relative overflow-hidden">
            <div className="absolute top-0 right-0 p-4 opacity-5">
               <span className="text-8xl font-black text-text-primary">70</span>
            </div>
@@ -171,7 +171,7 @@ export default function EvaluationPanel() {
 
         {/* Right Column: Sourcing */}
         <div className="lg:col-span-7 space-y-8">
-          <div className="bg-pw-black p-8 text-pw-white border border-pw-black shadow-2xl">
+          <div className="bg-pw-black p-8 text-pw-white border border-pw-border shadow-2xl">
             <Suspense fallback={<div className="h-60 animate-shimmer rounded-xl" />}>
               <FundingSourceTracker />
             </Suspense>
@@ -181,13 +181,13 @@ export default function EvaluationPanel() {
       </div>
 
       {/* ── Section 5: Technical Diligence ── */}
-      <div className="pt-10 border-t-4 border-pw-black">
+      <div className="pt-10 border-t-4 border-pw-border">
          <InspectionChecklist />
       </div>
 
       {/* ── Section 6: Capital Ledger (Fractional) ── */}
       <section className="pt-10 space-y-6">
-        <div className="glass-card border border-pw-border p-10 rounded-none shadow-none">
+        <div className="glass-card border border-pw-border p-10">
           <div className="flex items-center justify-between mb-10 pb-6 border-b border-pw-border">
             <div>
               <h2 className="text-2xl font-black text-text-primary tracking-tighter uppercase">Investor.Cap_Table</h2>
@@ -195,7 +195,7 @@ export default function EvaluationPanel() {
             </div>
             <button
               onClick={() => setShowCrowdfundModal(true)}
-              className="pw-interactive pw-btn pw-btn--primary rounded-none shadow-none"
+              className="pw-interactive pw-btn pw-btn--primary"
             >
               Issue Equity Invitation
             </button>
@@ -210,7 +210,7 @@ export default function EvaluationPanel() {
       {/* ── Section 7: Underwriting Metrics ── */}
       {currentProject.financials && (
         <section className="pt-10 space-y-6">
-          <div className="flex items-center justify-between border-b border-pw-black pb-4">
+          <div className="flex items-center justify-between border-b border-pw-border pb-4">
             <div>
               <h2 className="text-xs font-black text-text-primary uppercase tracking-[0.3em]">Underwriting_Metrics</h2>
               <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest mt-1">DSCR analysis and capital deployment visualization</p>
@@ -224,7 +224,7 @@ export default function EvaluationPanel() {
                 annualDebtService={underwritingData.annualDebtService}
               />
             ) : (
-              <div className="glass-card border border-pw-border p-6 flex items-center justify-center min-h-[160px] rounded-none shadow-none">
+              <div className="glass-card border border-pw-border p-6 flex items-center justify-center min-h-[160px]">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-[#A5A5A5]">
                   Enter loan amount &amp; interest rate to compute DSCR
                 </p>

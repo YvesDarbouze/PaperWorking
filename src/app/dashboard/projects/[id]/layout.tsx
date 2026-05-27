@@ -90,17 +90,17 @@ function WorkspaceHeaderSkeleton() {
     <div className="sticky top-0 z-40 flex flex-col" style={{ background: 'var(--bg-surface)' }}>
       {/* Row 1: breadcrumb bar skeleton */}
       <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-2.5" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-        <div className="h-6 w-24 animate-shimmer rounded-none" />
+        <div className="h-6 w-24 animate-shimmer" />
         <div className="flex-1" />
-        <div className="h-5 w-16 animate-shimmer rounded-none" />
-        <div className="h-6 w-14 animate-shimmer rounded-none" />
+        <div className="h-5 w-16 animate-shimmer" />
+        <div className="h-6 w-14 animate-shimmer" />
       </div>
       {/* Row 2: identity skeleton */}
       <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-        <div className="w-9 h-9 animate-shimmer rounded-none shrink-0" />
+        <div className="w-9 h-9 animate-shimmer shrink-0" />
         <div className="flex-1 space-y-1.5">
-          <div className="h-4 w-48 animate-shimmer rounded-none" />
-          <div className="h-3 w-64 animate-shimmer rounded-none" />
+          <div className="h-4 w-48 animate-shimmer" />
+          <div className="h-3 w-64 animate-shimmer" />
         </div>
       </div>
       {/* Phase tracker skeleton */}
@@ -198,7 +198,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
       >
         <button
           onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5"
           style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
           aria-label="Back to all projects"
         >
@@ -219,7 +219,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
         {/* Phase status pill */}
         <span
-          className="hidden sm:inline-block px-2.5 py-1 rounded-none text-xs font-bold uppercase tracking-widest shrink-0"
+          className="hidden sm:inline-block px-2.5 py-1 text-xs font-bold uppercase tracking-widest shrink-0"
           style={{ background: phaseColor.bg, color: phaseColor.text }}
         >
           {project.phaseStatus ?? 'Phase 1: Find & Fund'}
@@ -227,7 +227,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
 
         {/* Deal status pill */}
         <span
-          className="hidden sm:inline-block px-2.5 py-1 rounded-none text-xs font-bold uppercase tracking-widest shrink-0"
+          className="hidden sm:inline-block px-2.5 py-1 text-xs font-bold uppercase tracking-widest shrink-0"
           style={{ background: statusColor.bg, color: statusColor.text }}
         >
           {project.status}
@@ -236,7 +236,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
         {/* Exit button */}
         <button
           onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-none text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/50 group"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/50 group"
           style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
           aria-label="Exit project workspace"
         >
@@ -251,7 +251,7 @@ function WorkspaceHeader({ project }: { project: Project }) {
         style={{ borderBottom: '1px solid var(--border-ui)' }}
       >
         <div
-          className="w-9 h-9 rounded-none flex items-center justify-center shrink-0 transition-colors duration-300"
+          className="w-9 h-9 flex items-center justify-center shrink-0 transition-colors duration-300"
           style={{ background: folderColor.bg }}
         >
           <FolderOpen className="w-4 h-4" style={{ color: folderColor.icon }} strokeWidth={2} aria-hidden="true" />

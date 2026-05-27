@@ -85,7 +85,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       href={item.href}
       id={`admin-nav-${item.id}`}
       aria-current={isActive ? 'page' : undefined}
-      className={`group flex items-center gap-3 px-4 py-2.5 rounded-none transition-all duration-200 active:scale-95 border ${
+      className={`group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 active:scale-95 border ${
         isActive
           ? 'text-primary font-bold bg-white/5 border-primary/20'
           : 'text-on-surface-variant border-transparent hover:text-on-surface hover:bg-white/5'
@@ -118,7 +118,7 @@ export default function AdminSidebar() {
 
       {/* Admin badge */}
       <div className="px-5 pt-4 pb-2">
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase tracking-widest bg-primary text-on-primary rounded-none border border-primary/20">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase tracking-widest bg-primary text-on-primary border border-primary/20">
           <ShieldCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
           Admin Panel
         </span>
@@ -142,7 +142,7 @@ export default function AdminSidebar() {
       <div className="px-3 py-4 shrink-0 border-t border-black/10 dark:border-white/10">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-none text-xs font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-200"
+          className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.15em] text-on-surface-variant hover:text-on-surface hover:bg-white/5 transition-all duration-200"
         >
           <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
           Back to Dashboard

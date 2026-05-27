@@ -84,11 +84,11 @@ function KPICard({ icon, label, value, subtext, band, locked }: KPICardProps) {
   const s = BAND_STYLES[band];
   return (
     <div
-      className={`flex flex-col p-4 rounded-none border transition-all ${s.card} ${locked ? 'opacity-100' : 'opacity-90'}`}
+      className={`flex flex-col p-4 border transition-all ${s.card} ${locked ? 'opacity-100' : 'opacity-90'}`}
       aria-label={`${label}: ${value}`}
     >
       <div className="flex items-center justify-between mb-3">
-        <div className="p-1.5 rounded-none bg-bg-surface/5" aria-hidden="true">{icon}</div>
+        <div className="p-1.5 bg-bg-surface/5" aria-hidden="true">{icon}</div>
         <div className="flex items-center gap-1">
           {locked && <Lock className="w-3 h-3 text-text-secondary" aria-hidden="true" />}
           {s.icon}
@@ -145,14 +145,14 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
 
   return (
     <section
-      className="glass-card border border-pw-border rounded-none overflow-hidden shadow-none"
+      className="glass-card border border-pw-border overflow-hidden"
       aria-label={`Deal Autopsy — ${deal.propertyName}`}
       aria-live="polite"
     >
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-bg/20">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-none bg-pw-accent/10" aria-hidden="true">
+          <div className="p-2 bg-pw-accent/10" aria-hidden="true">
             <BarChart3 className="w-5 h-5 text-pw-accent" />
           </div>
           <div>
@@ -167,7 +167,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           {/* Finalized / Projected badge */}
           {isSold ? (
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-pw-accent/10 border border-pw-accent text-pw-accent"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-pw-accent/10 border border-pw-accent text-pw-accent"
               role="status"
               aria-label="Values finalized and locked at closing"
             >
@@ -176,7 +176,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             </div>
           ) : (
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-pw-glass-bg border border-pw-border text-text-secondary"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-pw-glass-bg border border-pw-border text-text-secondary"
               role="status"
               aria-label="Values are projected until deal is marked Sold"
             >
@@ -189,7 +189,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             onClick={handleDownloadPDF}
             disabled={pdfLoading}
             aria-label={`Download PDF autopsy report for ${deal.propertyName}`}
-            className="flex items-center gap-2 px-4 py-1.5 rounded-none bg-pw-glass-bg border border-pw-border text-text-secondary text-[10px] font-bold uppercase tracking-widest hover:bg-pw-glass-bg/85 hover:text-text-primary transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent focus-visible:ring-offset-2 focus-visible:ring-offset-pw-white"
+            className="flex items-center gap-2 px-4 py-1.5 bg-pw-glass-bg border border-pw-border text-text-secondary text-[10px] font-bold uppercase tracking-widest hover:bg-pw-glass-bg/85 hover:text-text-primary transition-all disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-pw-accent focus-visible:ring-offset-2 focus-visible:ring-offset-pw-white"
           >
             {pdfLoading
               ? <Loader2 className="w-3 h-3 animate-spin" aria-hidden="true" />
@@ -247,7 +247,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
           className="grid grid-cols-2 gap-3"
           aria-label="Time metrics"
         >
-          <div className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/40">
+          <div className="flex items-center gap-3 px-4 py-3 border border-pw-border bg-pw-glass-bg/40">
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Days on Market</p>
@@ -259,7 +259,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/40">
+          <div className="flex items-center gap-3 px-4 py-3 border border-pw-border bg-pw-glass-bg/40">
             <Clock className="w-4 h-4 text-text-secondary flex-shrink-0" aria-hidden="true" />
             <div>
               <p className="text-[10px] font-mono text-text-secondary uppercase tracking-widest">Total Hold Period</p>
@@ -277,7 +277,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
             Original Estimates vs. Final Actuals
           </h3>
           <div
-            className="rounded-none border border-pw-border overflow-hidden"
+            className="border border-pw-border overflow-hidden"
             role="table"
             aria-label="Estimates vs actuals comparison"
           >
@@ -341,7 +341,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
 
         {/* ── Financing Summary ────────────────────────────── */}
         {m.loanAmount > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 rounded-none border border-pw-border bg-pw-glass-bg/20 text-xs text-text-secondary">
+          <div className="flex items-center justify-between px-4 py-3 border border-pw-border bg-pw-glass-bg/20 text-xs text-text-secondary">
             <span>Loan Amount: <span className="text-text-primary font-mono">{fmt$(m.loanAmount)}</span></span>
             <span>Out-of-Pocket Cash: <span className="text-text-primary font-mono">{fmt$(m.outOfPocketCash)}</span></span>
             <span>Total Cost Basis: <span className="text-text-primary font-mono">{fmt$(m.totalCostBasis)}</span></span>
@@ -351,7 +351,7 @@ export default function DealAutopsy({ deal }: DealAutopsyProps) {
         {/* ── Finalized Lock Notice ────────────────────────── */}
         {isSold && (
           <div
-            className="flex items-center gap-3 px-4 py-3 rounded-none border border-pw-accent/30 bg-pw-accent/5"
+            className="flex items-center gap-3 px-4 py-3 border border-pw-accent/30 bg-pw-accent/5"
             role="note"
             aria-label="This autopsy is finalized and locked"
           >

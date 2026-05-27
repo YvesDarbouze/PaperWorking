@@ -34,7 +34,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
 
   return (
     <div
-      className="group relative bg-bg-surface border border-border-accent hover:border-pw-black transition-all overflow-hidden"
+      className="group relative bg-bg-surface border border-border-accent hover:border-pw-border transition-all overflow-hidden"
       onClick={() => onSelect?.(deal.id)}
     >
       {/* Property Thumbnail */}
@@ -204,7 +204,7 @@ export default function KanbanCard({ deal, onSelect, onMove }: KanbanCardProps) 
         <div className="flex justify-between items-center pt-3 border-t border-border-accent">
           <div className="flex -space-x-1.5">
             {[1, 2].map(i => (
-              <div key={i} className="w-5 h-5 border border-pw-black bg-[#F2F2F2]" />
+              <div key={i} className="w-5 h-5 border border-pw-border bg-[#F2F2F2]" />
             ))}
           </div>
           <div className="flex items-center gap-3">

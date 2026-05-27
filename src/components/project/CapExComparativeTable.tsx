@@ -55,7 +55,7 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
   const isOverBudgetOverall = totalActual > totalEstimated;
 
   return (
-    <div className="p-6 rounded-none border border-pw-border bg-pw-glass-bg shadow-none">
+    <div className="p-6 border border-pw-border bg-pw-glass-bg shadow-none">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Hammer className="w-5 h-5 text-pw-muted" />
@@ -269,7 +269,7 @@ export function CapExComparativeTable({ tasks, onChange }: CapExComparativeTable
       {!isAdding && (
         <button
           onClick={() => setIsAdding(true)}
-          className="mt-4 w-full py-3 rounded-none border border-dashed border-pw-border flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-pw-muted hover:text-pw-black"
+          className="mt-4 w-full py-3 border border-dashed border-pw-border flex items-center justify-center gap-2 hover:bg-white/5 transition-colors text-pw-muted hover:text-pw-black"
         >
           <Plus className="w-4 h-4" />
           <span className="font-semibold text-xs uppercase tracking-wider">Add CapEx Line Item</span>

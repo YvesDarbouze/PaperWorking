@@ -10,7 +10,7 @@ import { AnimatePresence, motion } from 'framer-motion';
    LandingHeader — Stitch-synchronized Public Navigation.
    
    Enforces Hanken Grotesk (font-sans) typography,
-   sharp corners (rounded-none), container padding (px-6 md:px-10),
+   glass radii (CSS cascade), container padding (px-6 md:px-10),
    and high contrast interactive buttons. Fixed header uses
    backdrop blur and sticky scroll styling.
    ═══════════════════════════════════════════════════════ */
@@ -100,7 +100,7 @@ export default function LandingHeader() {
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden flex items-center justify-center w-10 h-10 rounded-none hover:bg-white/5 transition-colors text-on-surface"
+              className="md:hidden flex items-center justify-center w-10 h-10 hover:bg-white/5 transition-colors text-on-surface"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -151,7 +151,7 @@ export default function LandingHeader() {
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center w-10 h-10 rounded-none hover:bg-white/5 transition-colors text-on-surface"
+                  className="flex items-center justify-center w-10 h-10 hover:bg-white/5 transition-colors text-on-surface"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />

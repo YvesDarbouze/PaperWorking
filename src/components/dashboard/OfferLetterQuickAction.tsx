@@ -159,7 +159,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
       {/* Trigger Button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center justify-center space-x-3 px-6 py-4 border-2 border-pw-black bg-bg-surface text-text-primary font-black uppercase tracking-[0.2em] text-[10px] hover:bg-pw-black hover:text-pw-white transition-all shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+        className="flex items-center justify-center space-x-3 px-6 py-4 border-2 border-pw-border bg-bg-surface text-text-primary font-black uppercase tracking-[0.2em] text-[10px] hover:bg-pw-black hover:text-pw-white transition-all shadow-[4px_4px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
       >
         <FileText className="w-4 h-4" />
         <span>Action: Generate_Offer</span>
@@ -177,7 +177,7 @@ export default function OfferLetterQuickAction({ projects }: OfferLetterQuickAct
           {/* Drawer panel */}
           <div className="relative w-full max-w-lg bg-bg-surface shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
             {/* Drawer header */}
-            <div className="flex items-center justify-between px-8 py-6 bg-pw-black border-b border-pw-black">
+            <div className="flex items-center justify-between px-8 py-6 bg-pw-black border-b border-pw-border">
               <div>
                 <h2 className="text-xl font-black text-pw-white uppercase tracking-tighter">Offer_Letter_System</h2>
                 <p className="text-[9px] text-pw-accent font-bold mt-1 uppercase tracking-[0.3em]">PROXIMITY_ACTION_PROTOCOL</p>

@@ -114,7 +114,7 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
   };
 
   return (
-    <div className="glass-card border border-pw-border rounded-none shadow-none relative overflow-hidden">
+    <div className="glass-card border border-pw-border relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
@@ -191,7 +191,7 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
               <button
                 onClick={() => handleTogglePaidBy(item.id)}
                 disabled={item.locked}
-                className={`text-[9px] font-black uppercase tracking-wider px-3 py-1 border rounded-none transition-all disabled:cursor-not-allowed ${
+                className={`text-[9px] font-black uppercase tracking-wider px-3 py-1 border transition-all disabled:cursor-not-allowed ${
                   item.paidBy === 'Seller'
                     ? 'bg-color-error/10 border-color-error/30 text-color-error'
                     : item.paidBy === 'Buyer'
@@ -229,20 +229,20 @@ export default function SettlementLedger({ projectId, salePrice }: SettlementLed
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleAddCustom}
-            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
+            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
           >
             <Plus className="w-3.5 h-3.5" /> Add_Line_Item
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-4 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+          <div className="p-4 border border-pw-border bg-pw-glass-bg/40">
             <p className="text-[9px] font-black text-color-error uppercase tracking-widest mb-1">Seller_Liability</p>
             <p className="text-2xl font-black font-mono tracking-tighter text-text-primary">
               ${sellerTotal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </p>
           </div>
-          <div className="p-4 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+          <div className="p-4 border border-pw-border bg-pw-glass-bg/40">
             <p className="text-[9px] font-black text-pw-accent uppercase tracking-widest mb-1">Buyer_Liability</p>
             <p className="text-2xl font-black font-mono tracking-tighter text-text-primary">
               ${buyerTotal.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}

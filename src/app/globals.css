@@ -932,7 +932,7 @@ button:not(.pw-tab):not(.pw-menu-item):not([role="tab"]):not(.pw-interactive-cus
   font-weight: 500;
   font-size: 0.875rem; /* 14px */
   padding: 12px 28px;
-  border-radius: 0 !important; /* Default to zero border radius as per PaperWorking governance */
+  border-radius: var(--radius-DEFAULT, 0.5rem); /* Luminous Glass: 8px rounded buttons */
   border: 1px solid transparent;
   cursor: pointer;
   line-height: 1.25;
@@ -957,7 +957,7 @@ button:not(.pw-tab):not(.pw-menu-item):not([role="tab"]):not(.pw-interactive-cus
 .ag-button-secondary:focus-visible {
   outline: 2px solid #1a73e8;
   outline-offset: 3px;
-  border-radius: 0 !important;
+  border-radius: var(--radius-DEFAULT, 0.5rem);
 }
 
 /* Ensure focus ring matches pill shape if it is a pill button */

@@ -26,7 +26,7 @@ export default function MarketplaceAnalytics() {
             <h1 className="text-5xl font-black text-text-primary tracking-tighter uppercase">Marketplace Audits</h1>
           </div>
           <div className="flex gap-4">
-            <button className="px-8 py-4 bg-bg-surface border border-border-accent text-xs font-black uppercase tracking-[0.2em] text-text-secondary hover:text-text-primary hover:border-pw-black transition-all">
+            <button className="px-8 py-4 bg-bg-surface border border-border-accent text-xs font-black uppercase tracking-[0.2em] text-text-secondary hover:text-text-primary hover:border-pw-border transition-all">
               Export Variance (CSV)
             </button>
             <button className="px-8 py-4 bg-pw-black text-white text-xs font-black uppercase tracking-[0.2em] hover:bg-pw-fg transition-all">
@@ -74,7 +74,7 @@ export default function MarketplaceAnalytics() {
               <h3 className="text-2xl font-black text-text-primary tracking-tighter uppercase">Jurisdiction Variance</h3>
               <p className="text-xs font-black text-text-secondary mt-2 uppercase tracking-widest leading-relaxed">Cross-metro pricing consistency audit</p>
             </div>
-            <select className="bg-pw-dashboard border border-border-accent px-6 py-3 text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black">
+            <select className="bg-pw-dashboard border border-border-accent px-6 py-3 text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-border">
               <option>Appraisal Baseline</option>
               <option>Legal Baseline</option>
             </select>
@@ -114,7 +114,7 @@ export default function MarketplaceAnalytics() {
 
           <div className="mt-16 pt-12 border-t border-border-accent">
              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 border border-pw-black flex items-center justify-center">
+                <div className="w-12 h-12 border border-pw-border flex items-center justify-center">
                    <TrendingUp className="w-6 h-6 text-text-primary" />
                 </div>
                 <div>

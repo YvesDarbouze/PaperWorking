@@ -180,7 +180,7 @@ export default function CalendarTodo() {
             ) : (
               todos.map((todo) => (
                 <div key={todo.id} className="group p-4 bg-bg-primary border border-border-accent flex items-center gap-4 hover:border-border-accent transition-all">
-                  <button className="w-5 h-5 border-2 border-pw-muted rounded-none group-hover:border-pw-accent transition-all" />
+                  <button className="w-5 h-5 border-2 border-pw-muted group-hover:border-pw-accent transition-all" />
                   <div className="flex-1">
                     <p className="text-xs font-black text-text-primary uppercase tracking-tight">{todo.task}</p>
                     <div className="flex items-center gap-3 mt-1">

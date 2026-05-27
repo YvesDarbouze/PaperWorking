@@ -171,7 +171,7 @@ export default function EnginePanel() {
           <button
             onClick={() => setActiveTab('cash')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-              activeTab === 'cash' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
+              activeTab === 'cash' ? 'border-pw-border text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Banknote className="mr-2 h-4 w-4" /> Cash Management (ROI)
@@ -185,7 +185,7 @@ export default function EnginePanel() {
               <button
                 onClick={() => setActiveTab('ledger')}
                 className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-                  activeTab === 'ledger' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
+                  activeTab === 'ledger' ? 'border-pw-border text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
                 }`}
               >
                 <ListOrdered className="mr-2 h-4 w-4" /> Digital Ledger
@@ -193,7 +193,7 @@ export default function EnginePanel() {
               <button
                 onClick={() => setActiveTab('compliance')}
                 className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-                  activeTab === 'compliance' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
+                  activeTab === 'compliance' ? 'border-pw-border text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
                 }`}
               >
                 <FileText className="mr-2 h-4 w-4" /> Compliance & Reporting
@@ -214,7 +214,7 @@ export default function EnginePanel() {
           <button
             onClick={() => setActiveTab('valuation')}
             className={`flex items-center whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium ${
-              activeTab === 'valuation' ? 'border-pw-black text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
+              activeTab === 'valuation' ? 'border-pw-border text-text-primary' : 'border-transparent text-text-secondary hover:border-pw-border hover:text-text-primary'
             }`}
           >
             <Scale className="mr-2 h-4 w-4" /> Evaluation & Financing
@@ -266,29 +266,29 @@ export default function EnginePanel() {
       </div>
  
       {/* Tab Panels */}
-      <div className="glass-card border border-pw-border p-6 min-h-[400px] rounded-none shadow-none">
+      <div className="glass-card border border-pw-border p-6 min-h-[400px]">
         
         {activeTab === 'cash' && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Liquidity Overview</h3>
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
+              <div className="p-4 bg-white/5 border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Active Deal Reno</p>
                 <p className="text-2xl font-normal text-text-primary">${dealMetrics.renovationCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
+              <div className="p-4 bg-white/5 border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Total Approved Costs</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalApprovedCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
+              <div className="p-4 bg-white/5 border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Pending AP (GC)</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalPendingCosts.toLocaleString()}</p>
               </div>
-              <div className="p-4 bg-white/5 rounded-none border border-pw-border">
+              <div className="p-4 bg-white/5 border border-pw-border">
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Realized PnL ({metrics.soldProjects})</p>
                 <p className="text-2xl font-normal text-text-primary">${metrics.totalRealizedProfit.toLocaleString()}</p>
               </div>
-              <div className={`p-4 rounded-none border ${dealMetrics.netProfit >= 0 ? 'bg-white/5 border-pw-border' : 'bg-red-950/20 border-red-900/30'}`}>
+              <div className={`p-4 border ${dealMetrics.netProfit >= 0 ? 'bg-white/5 border-pw-border' : 'bg-red-950/20 border-red-900/30'}`}>
                 <p className="text-sm text-text-secondary uppercase tracking-widest">Net Profit (Deal)</p>
                 <p className={`text-2xl font-normal ${dealMetrics.netProfit >= 0 ? 'text-text-primary' : 'text-red-600'}`}>
                   {dealMetrics.netProfit >= 0 ? '' : '-'}${Math.abs(dealMetrics.netProfit).toLocaleString(undefined, { maximumFractionDigits: 0 })}
@@ -316,7 +316,7 @@ export default function EnginePanel() {
                <TaxExportCsvButton />
             </div>
             
-            <div className="mt-4 border border-pw-border rounded-none overflow-hidden">
+            <div className="mt-4 border border-pw-border overflow-hidden">
                {Object.keys(groupedLedger).length === 0 ? (
                   <div className="p-12 text-center text-sm text-text-secondary bg-white/5">
                      No ledger entries generated yet. Use the GC Hook to upload a receipt!
@@ -353,7 +353,7 @@ export default function EnginePanel() {
                            {/* Granular detail row shown optionally */}
                            {expandedLedgerProperties[group.property] && (
                               <div className="bg-white/5 border-t border-pw-border overflow-x-auto p-4">
-                                 <table className="min-w-full divide-y divide-gray-200 bg-white/5 rounded-none border border-pw-border">
+                                 <table className="min-w-full divide-y divide-gray-200 bg-white/5 border border-pw-border">
                                     <thead className="bg-white/5">
                                        <tr>
                                           <th className="px-4 py-3 text-left text-xs font-bold text-text-secondary uppercase tracking-wider">Date</th>
@@ -407,7 +407,7 @@ export default function EnginePanel() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               {projects.map(deal => (
-                 <div key={deal.id} className="p-4 border border-pw-border rounded-none flex items-center justify-between hover:bg-white/5">
+                 <div key={deal.id} className="p-4 border border-pw-border flex items-center justify-between hover:bg-white/5">
                     <div>
                       <p className="text-sm font-medium text-text-primary">{deal.propertyName}</p>
                       <p className="text-xs text-text-secondary">Folder ID: {deal.documentHubFolderId || 'Not Linked'}</p>
@@ -416,7 +416,7 @@ export default function EnginePanel() {
                  </div>
               ))}
               {projects.length === 0 && (
-                  <div className="col-span-2 p-4 border border-dashed border-pw-border rounded-none text-center cursor-pointer hover:bg-white/5 mt-4 text-text-secondary">
+                  <div className="col-span-2 p-4 border border-dashed border-pw-border text-center cursor-pointer hover:bg-white/5 mt-4 text-text-secondary">
                     No active property environments detected.
                   </div>
               )}
@@ -428,7 +428,7 @@ export default function EnginePanel() {
         {activeTab === 'statements' && (
           <div className="space-y-6">
             {/* Sub-Tab Navigation */}
-            <div className="flex flex-wrap items-center gap-1 bg-white/5 p-1 rounded-none w-fit border border-pw-border">
+            <div className="flex flex-wrap items-center gap-1 bg-white/5 p-1 w-fit border border-pw-border">
               {[
                 { key: 'pl' as StatementSubTab, label: 'P&L', icon: '📊' },
                 { key: 'cashflow' as StatementSubTab, label: 'Cash Flow', icon: '💧' },
@@ -438,7 +438,7 @@ export default function EnginePanel() {
                 <button
                   key={tab.key}
                   onClick={() => setStatementSubTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none text-sm font-medium transition ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition ${
                     statementSubTab === tab.key
                       ? 'bg-white/10 text-text-primary border border-pw-border'
                       : 'text-text-secondary hover:text-text-primary'
@@ -478,7 +478,7 @@ export default function EnginePanel() {
             </div>
 
             {!currentProject ? (
-              <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border rounded-none bg-white/5">
+              <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border bg-white/5">
                 <Hammer className="w-12 h-12 mx-auto text-gray-300 mb-4" />
                 <h3 className="text-lg font-medium text-text-primary">No Property Selected</h3>
                 <p className="mt-1 text-sm">Select a property from the Command Center to view rehab metrics.</p>
@@ -530,7 +530,7 @@ export default function EnginePanel() {
                 
                 {projects.length > 0 && (
                   <select 
-                     className="border border-pw-border rounded-none text-sm py-2 pl-3 pr-8 focus:ring-pw-accent focus:border-pw-accent"
+                     className="border border-pw-border text-sm py-2 pl-3 pr-8 focus:ring-pw-accent focus:border-pw-accent"
                      value={currentProject?.id || ''}
                      onChange={(e) => {
                         const target = projects.find(d => d.id === e.target.value);
@@ -546,7 +546,7 @@ export default function EnginePanel() {
              </div>
 
              {projects.length === 0 ? (
-                <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border rounded-none">
+                <div className="p-12 text-center text-text-secondary border border-dashed border-pw-border">
                    No active properties available to analyze. Add a property lead to begin.
                 </div>
              ) : (

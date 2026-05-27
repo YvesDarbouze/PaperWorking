@@ -105,7 +105,7 @@ function buildWaterfall(fin: ProjectFinancials): WaterfallBar[] {
   return bars;
 }
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
+const shimmerCls = 'animate-pulse bg-pw-border/30';
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -116,7 +116,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   const bar = payload[0].payload;
   return (
-    <div className="bg-bg-surface/90 backdrop-blur-md border border-pw-border rounded-none px-4 py-3 shadow-lg text-xs">
+    <div className="bg-bg-surface/90 backdrop-blur-md border border-pw-border px-4 py-3 shadow-lg text-xs">
       <p className="font-black text-[9px] text-text-secondary uppercase tracking-widest mb-1">{bar.name}</p>
       <p className="font-black text-text-primary text-base font-mono">{fmtDollar(Math.abs(bar.value))}</p>
       <p className="text-text-secondary mt-0.5 uppercase tracking-wider text-[9px]">{bar.pct.toFixed(1)}% of sale price</p>
@@ -129,7 +129,7 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
 
   if (isLoading) {
     return (
-      <div className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
+      <div className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
         <div className={`h-4 w-40 ${shimmerCls}`} />
         <div className={`h-56 w-full ${shimmerCls}`} />
       </div>
@@ -143,7 +143,7 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-5 shadow-none ${className ?? ''}`}
+      className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-5 ${className ?? ''}`}
     >
       <div>
         <p className="text-[10px] font-black tracking-widest text-text-secondary uppercase">Exit Waterfall</p>
@@ -196,7 +196,7 @@ export function ExitWaterfallChart({ financials, isLoading, className }: ExitWat
           {bars.map((bar, i) => (
             <div key={i} className="flex items-center justify-between text-[11px] uppercase tracking-wider">
               <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-none flex-shrink-0" style={{ backgroundColor: bar.color }} />
+                <div className="w-2.5 h-2.5 flex-shrink-0" style={{ backgroundColor: bar.color }} />
                 <span className="text-text-primary font-bold">{bar.name}</span>
               </div>
               <div className="flex items-center gap-3">

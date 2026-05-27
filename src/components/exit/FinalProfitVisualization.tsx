@@ -49,7 +49,7 @@ export default function FinalProfitVisualization({ deal }: FinalProfitVisualizat
   };
 
   return (
-    <div className="glass-card rounded-none border border-pw-border overflow-hidden shadow-none bg-bg-surface">
+    <div className="glass-card border border-pw-border overflow-hidden bg-bg-surface">
       {/* ── Banner Header ── */}
       <div className="bg-bg-surface/80 px-6 py-4 flex items-center justify-between border-b border-pw-border backdrop-blur-md">
         <div className="flex items-center gap-2 text-text-primary">
@@ -94,7 +94,7 @@ export default function FinalProfitVisualization({ deal }: FinalProfitVisualizat
       <div className="p-8">
         <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-4">Capital Stack & Profit Visualization</h3>
         
-        <div className="relative h-4 w-full bg-pw-border/30 rounded-none overflow-hidden flex mb-6">
+        <div className="relative h-4 w-full bg-pw-border/30 overflow-hidden flex mb-6">
           {/* Stacked segments for All-In Cost */}
           {pctPurchase > 0 && <div className="h-full bg-pw-muted/20 transition-all duration-500" style={{ width: `${pctPurchase}%` }} title={`Purchase: ${fmtCurrency(metrics.purchasePrice)}`} />}
           {pctAcquisition > 0 && <div className="h-full bg-pw-muted/40 transition-all duration-500" style={{ width: `${pctAcquisition}%` }} title={`Acq: ${fmtCurrency(metrics.acquisitionCosts)}`} />}

@@ -48,7 +48,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
       transition={{ delay: index * 0.05 }}
       className="break-inside-avoid"
     >
-      <Link href={`/blog/${post.slug}`} className="group block border border-border-accent transition-all hover:border-pw-black">
+      <Link href={`/blog/${post.slug}`} className="group block border border-border-accent transition-all hover:border-pw-border">
         <div className="relative aspect-[16/10] overflow-hidden bg-pw-dashboard">
           <img 
             src={post.thumbnailUrl} 

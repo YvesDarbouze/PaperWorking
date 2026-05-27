@@ -87,8 +87,8 @@ export default function VendorOnboardingWizard() {
                       }}
                       className={`px-5 py-2 border text-xs font-black uppercase tracking-widest transition-all ${
                         formData.specialties.includes(s) 
-                          ? 'bg-pw-black text-white border-pw-black' 
-                          : 'bg-bg-surface text-text-secondary border-border-accent hover:border-pw-black'
+                          ? 'bg-pw-black text-white border-pw-border' 
+                          : 'bg-bg-surface text-text-secondary border-border-accent hover:border-pw-border'
                       }`}
                     >
                       {s}
@@ -113,7 +113,7 @@ export default function VendorOnboardingWizard() {
                 value={formData.licenseNumber}
                 onChange={v => setFormData({...formData, licenseNumber: v})}
               />
-              <div className="p-12 border border-dashed border-border-accent bg-pw-dashboard flex flex-col items-center justify-center text-center cursor-pointer hover:border-pw-black transition-colors group">
+              <div className="p-12 border border-dashed border-border-accent bg-pw-dashboard flex flex-col items-center justify-center text-center cursor-pointer hover:border-pw-border transition-colors group">
                 <Camera className="w-6 h-6 text-text-secondary mb-4 group-hover:text-text-primary" />
                 <p className="text-xs font-black text-text-primary uppercase tracking-widest mb-1">Upload State Credential</p>
                 <p className="text-xs text-text-secondary font-bold tracking-tight">Valid JPEG or PDF scan required</p>
@@ -144,7 +144,7 @@ export default function VendorOnboardingWizard() {
                <div>
                 <label className="block text-xs font-black uppercase tracking-widest text-text-secondary mb-3">Professional Statement</label>
                 <textarea 
-                  className="w-full px-6 py-5 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold focus:outline-none focus:border-pw-black transition-all min-h-[200px]"
+                  className="w-full px-6 py-5 bg-pw-dashboard border border-border-accent text-xs font-bold focus:outline-none focus:border-pw-border transition-all min-h-[200px]"
                   placeholder="DETAIL YOUR EXPERIENCE IN HIGH-YIELD REAL ESTATE..."
                   value={formData.bio}
                   onChange={e => setFormData({...formData, bio: e.target.value})}
@@ -155,7 +155,7 @@ export default function VendorOnboardingWizard() {
 
           {currentStep === 'Complete' && (
             <div className="flex flex-col items-center justify-center text-center py-12">
-              <div className="w-20 h-20 border-4 border-pw-black flex items-center justify-center mb-10">
+              <div className="w-20 h-20 border-4 border-pw-border flex items-center justify-center mb-10">
                 <BadgeCheck className="w-10 h-10 text-text-primary" />
               </div>
               <h3 className="text-3xl font-black text-text-primary mb-4 uppercase tracking-tighter">Registration Logged</h3>
@@ -179,13 +179,13 @@ export default function VendorOnboardingWizard() {
               {currentStep !== 'Complete' && (
                 <button 
                   onClick={handleNext}
-                  className="px-12 py-5 bg-pw-black text-white rounded-none font-black text-xs uppercase tracking-[0.3em] hover:bg-pw-fg transition-all active:scale-95"
+                  className="px-12 py-5 bg-pw-black text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-pw-fg transition-all active:scale-95"
                 >
                   {currentStep === 'Profile' ? 'Submit for Audit' : 'Next Phase'}
                 </button>
               )}
               {currentStep === 'Complete' && (
-                <button className="px-12 py-5 bg-pw-black text-white rounded-none font-black text-xs uppercase tracking-[0.3em] hover:bg-pw-fg transition-all">
+                <button className="px-12 py-5 bg-pw-black text-white font-black text-xs uppercase tracking-[0.3em] hover:bg-pw-fg transition-all">
                   Go to Marketplace
                 </button>
               )}
@@ -209,8 +209,8 @@ function SpecialityTypeCard({ icon, title, description, active, onClick }: {
       onClick={onClick}
       className={`p-10 border transition-all text-left flex items-start gap-8 ${
         active 
-          ? 'bg-pw-black text-white border-pw-black' 
-          : 'bg-bg-surface text-text-primary border-border-accent hover:border-pw-black'
+          ? 'bg-pw-black text-white border-pw-border' 
+          : 'bg-bg-surface text-text-primary border-border-accent hover:border-pw-border'
       }`}
     >
       <div className={`p-4 border ${active ? 'border-white/20' : 'border-border-accent bg-pw-dashboard'}`}>
@@ -232,7 +232,7 @@ function InputField({ label, placeholder, value, onChange }: { label: string; pl
       <label className="block text-xs font-black uppercase tracking-widest text-text-secondary mb-3">{label}</label>
       <input 
         type="text"
-        className="w-full px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold focus:outline-none focus:border-pw-black transition-all"
+        className="w-full px-6 py-4 bg-pw-dashboard border border-border-accent text-xs font-bold focus:outline-none focus:border-pw-border transition-all"
         placeholder={placeholder}
         value={value}
         onChange={e => onChange(e.target.value)}

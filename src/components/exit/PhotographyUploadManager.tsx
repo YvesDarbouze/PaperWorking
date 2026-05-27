@@ -64,7 +64,7 @@ export default function PhotographyUploadManager() {
   };
 
   return (
-    <div className="glass-card border border-pw-border rounded-none p-6 shadow-none">
+    <div className="glass-card border border-pw-border p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
           <Camera className="w-4 h-4 text-pw-accent" />
@@ -75,15 +75,15 @@ export default function PhotographyUploadManager() {
 
       {/* Summary Strip */}
       <div className="grid grid-cols-3 gap-2 mb-5">
-        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border text-center">
           <p className="text-[9px] uppercase tracking-widest text-text-secondary">Photos</p>
           <p className="text-lg font-semibold text-text-primary">{photoCount}</p>
         </div>
-        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border text-center">
           <p className="text-[9px] uppercase tracking-widest text-text-secondary">Videos</p>
           <p className="text-lg font-semibold text-text-primary">{videoCount}</p>
         </div>
-        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border rounded-none text-center">
+        <div className="p-2.5 bg-pw-glass-bg/40 border border-pw-border text-center">
           <p className="text-[9px] uppercase tracking-widest text-text-secondary">Total</p>
           <p className="text-lg font-semibold text-text-primary">{uploadedCount}</p>
         </div>
@@ -93,7 +93,7 @@ export default function PhotographyUploadManager() {
       {assets.filter(a => a.uploaded && a.url).length > 0 && (
         <div className="grid grid-cols-3 gap-2 mb-5">
           {assets.filter(a => a.uploaded && a.url).map(asset => (
-            <div key={asset.id} className="relative group rounded-none overflow-hidden border border-pw-border aspect-video">
+            <div key={asset.id} className="relative group overflow-hidden border border-pw-border aspect-video">
               <img
                 src={asset.url}
                 alt={asset.room}
@@ -105,7 +105,7 @@ export default function PhotographyUploadManager() {
               </div>
               <button
                 onClick={() => handleRemove(asset.id)}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-pw-black/60 rounded-none text-color-error hover:text-color-error/80 transition"
+                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 p-1 bg-pw-black/60 text-color-error hover:text-color-error/80 transition"
               >
                 <Trash2 className="w-3 h-3" />
               </button>
@@ -117,7 +117,7 @@ export default function PhotographyUploadManager() {
       {/* Pending Upload Items */}
       <div className="space-y-2">
         {assets.filter(a => !a.uploaded).map(asset => (
-          <div key={asset.id} className="flex items-center justify-between p-3 border border-pw-border rounded-none bg-pw-glass-bg/20 group">
+          <div key={asset.id} className="flex items-center justify-between p-3 border border-pw-border bg-pw-glass-bg/20 group">
             <div className="flex items-center space-x-3">
               <span className="text-pw-accent">{TYPE_ICONS[asset.type]}</span>
               <div>
@@ -127,7 +127,7 @@ export default function PhotographyUploadManager() {
             </div>
             <button
               onClick={() => handleUploadSimulate(asset.id)}
-              className="flex items-center gap-1 pw-btn pw-btn--primary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1 px-3"
+              className="flex items-center gap-1 pw-btn pw-btn--primary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1 px-3"
             >
               <Upload className="w-3 h-3" /> Upload
             </button>
@@ -138,7 +138,7 @@ export default function PhotographyUploadManager() {
       {/* Add Asset Button */}
       <button
         onClick={handleAddAsset}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-3 border border-dashed border-pw-border rounded-none text-xs text-text-secondary hover:text-text-primary hover:border-pw-accent transition"
+        className="mt-4 w-full flex items-center justify-center gap-2 py-3 border border-dashed border-pw-border text-xs text-text-secondary hover:text-text-primary hover:border-pw-accent transition"
       >
         <Upload className="w-3 h-3" /> Add Media Asset
       </button>

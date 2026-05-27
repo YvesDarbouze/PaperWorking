@@ -48,7 +48,7 @@ export default function FocusedWorkflowLayout({
       {/* Structural Header */}
       <header className="h-20 border-b border-border-accent flex items-center justify-between px-margin-mobile lg:px-margin-desktop bg-bg-surface shrink-0">
         <div className="flex items-center gap-8">
-          <div className="bg-pw-black text-pw-white px-3 py-1 font-black text-xs uppercase tracking-widest border border-pw-black">
+          <div className="bg-pw-black text-pw-white px-3 py-1 font-black text-xs uppercase tracking-widest border border-pw-border">
             PW_PROTOCOL
           </div>
           <div>
@@ -98,7 +98,7 @@ export default function FocusedWorkflowLayout({
                   )}
                   
                   <div className={`w-7 h-7 shrink-0 flex items-center justify-center font-mono text-xs font-black border transition-all ${
-                    isActive ? 'bg-pw-black text-pw-white border-pw-black scale-110' :
+                    isActive ? 'bg-pw-black text-pw-white border-pw-border scale-110' :
                     isComplete ? 'bg-pw-accent text-pw-white border-pw-accent' :
                     'bg-bg-surface text-text-secondary border-border-accent'
                   }`}>
@@ -158,7 +158,7 @@ export default function FocusedWorkflowLayout({
                   flex items-center gap-6 px-10 py-5 font-black text-sm uppercase tracking-widest transition-all border
                   ${isNextDisabled 
                     ? 'bg-bg-primary text-text-secondary border-border-accent cursor-not-allowed opacity-50' 
-                    : 'bg-pw-black text-pw-white border-pw-black hover:bg-pw-accent hover:border-pw-accent group'
+                    : 'bg-pw-black text-pw-white border-pw-border hover:bg-pw-accent hover:border-pw-accent group'
                   }
                 `}
               >

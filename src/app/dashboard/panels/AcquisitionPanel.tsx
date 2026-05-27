@@ -141,7 +141,7 @@ export default function AcquisitionPanel() {
     return (
       <section className="flex h-full w-full items-center justify-center" aria-label="Find & Fund panel">
         <div className="text-center">
-          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-none flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
             <Search className="w-7 h-7 text-pw-accent" />
           </div>
           <h2 className="text-lg font-semibold text-text-primary mb-1">Acquisition</h2>
@@ -163,7 +163,7 @@ export default function AcquisitionPanel() {
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-pw-black text-[10px] font-bold uppercase tracking-widest rounded-none border border-pw-border">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 text-pw-black text-[10px] font-bold uppercase tracking-widest border border-pw-border">
                 Phase 01
               </span>
             </div>
@@ -181,7 +181,7 @@ export default function AcquisitionPanel() {
         </div>
 
         {/* Capital Stack Progress */}
-        <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
+        <div className="glass-card p-6 border border-pw-border">
           <CapitalStackProgress
             capitalNeeded={capitalNeeded}
             capitalPledged={capitalPledged}
@@ -192,7 +192,7 @@ export default function AcquisitionPanel() {
         {/* Two-Column Layout: Property + Financials */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Property Discovery */}
-          <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
+          <div className="glass-card p-6 border border-pw-border">
             <div className="flex items-center gap-2 mb-4">
               <Briefcase className="w-4 h-4 text-pw-accent" />
               <h2 className="text-sm font-semibold text-text-primary">Property Discovery</h2>
@@ -201,7 +201,7 @@ export default function AcquisitionPanel() {
           </div>
 
           {/* Quick Financials Summary */}
-          <div className="glass-card rounded-none p-6 border border-pw-border shadow-none space-y-4">
+          <div className="glass-card p-6 border border-pw-border space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="w-4 h-4 text-pw-accent" />
               <h2 className="text-sm font-semibold text-text-primary">Deal Snapshot</h2>
@@ -214,7 +214,7 @@ export default function AcquisitionPanel() {
                 { label: 'Rehab Budget', value: currentProject.financials?.projectedRehabCost, prefix: '$' },
                 { label: 'Total Capital', value: capitalNeeded, prefix: '$' },
               ].map((item) => (
-                <div key={item.label} className="bg-white/5 border border-white/5 rounded-none px-4 py-3">
+                <div key={item.label} className="bg-white/5 border border-white/5 px-4 py-3">
                   <p className="ag-label mb-1">{item.label}</p>
                   <p className="text-lg font-semibold text-text-primary">
                     {item.value ? `${item.prefix}${item.value.toLocaleString()}` : '—'}
@@ -242,7 +242,7 @@ export default function AcquisitionPanel() {
         </div>
 
         {/* Syndication Engine */}
-        <div className="glass-card rounded-none p-6 border border-pw-border shadow-none">
+        <div className="glass-card p-6 border border-pw-border">
           <SyndicationEngine
             investors={investors}
             onInviteClick={() => setShowInviteDrawer(true)}

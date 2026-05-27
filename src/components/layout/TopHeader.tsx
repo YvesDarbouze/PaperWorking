@@ -140,7 +140,7 @@ export default function TopHeader() {
         {/* ── Subscription Badge ── */}
         <span
           id="header-tier-badge"
-          className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] rounded-none select-none"
+          className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] select-none"
           style={{
             background: 'var(--color-primary-container)',
             color: 'var(--color-on-primary-container)',
@@ -163,7 +163,7 @@ export default function TopHeader() {
           <button
             id="header-user-menu"
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 rounded-none px-2 py-1.5 transition-all duration-200 hover:bg-white/5"
+            className="flex items-center gap-2 px-2 py-1.5 transition-all duration-200 hover:bg-white/5"
             aria-expanded={dropdownOpen}
             aria-haspopup="true"
             aria-label={`Account menu for ${displayName}`}

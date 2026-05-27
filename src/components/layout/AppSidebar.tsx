@@ -150,7 +150,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       href={item.href}
       id={`sidebar-nav-${item.id}`}
       aria-current={isActive ? 'page' : undefined}
-      className={`group flex items-center gap-3 px-4 py-2.5 rounded-none transition-all duration-200 active:scale-95 border ${
+      className={`group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 active:scale-95 border ${
         isActive
           ? 'text-primary font-bold bg-white/5 border-primary/20'
           : 'text-on-surface-variant border-transparent hover:text-on-surface hover:bg-white/5'
@@ -169,7 +169,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       {/* Unread badge for Inbox */}
       {item.id === 'inbox' && unreadTotal > 0 && (
         <span
-          className={`flex items-center justify-center min-w-5 h-5 px-1.5 rounded-none text-xs font-bold transition-colors duration-150 ${
+          className={`flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-bold transition-colors duration-150 ${
             isActive ? 'ml-auto mr-2' : 'ml-auto'
           } ${
             isActive
@@ -245,7 +245,7 @@ export default function AppSidebar() {
       <div className="px-5 mb-4 shrink-0">
         <button
           onClick={() => router.push('/dashboard/projects/new')}
-          className="w-full py-2.5 bg-primary text-on-primary font-bold rounded-none flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer text-xs uppercase tracking-wider"
+          className="w-full py-2.5 bg-primary text-on-primary font-bold flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer text-xs uppercase tracking-wider"
         >
           <Plus className="w-4 h-4 text-on-primary" strokeWidth={1.5} />
           <span>Create Project</span>

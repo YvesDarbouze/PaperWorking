@@ -328,7 +328,7 @@ export default function CriticalPathGantt() {
                                   onBlur={() => setEditingId(null)}
                                   onKeyDown={e => { if (e.key === 'Enter') setEditingId(null); }}
                                   autoFocus
-                                  className="text-[10px] font-bold text-text-primary bg-transparent outline-none border-b border-pw-black w-full"
+                                  className="text-[10px] font-bold text-text-primary bg-transparent outline-none border-b border-pw-border w-full"
                                 />
                               ) : (
                                 <button
@@ -394,7 +394,7 @@ export default function CriticalPathGantt() {
                               initial={{ height: 0, opacity: 0 }}
                               animate={{ height: 'auto', opacity: 1 }}
                               exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden ml-[180px] border-l-2 border-pw-black pl-3 pb-2 space-y-2"
+                              className="overflow-hidden ml-[180px] border-l-2 border-pw-border pl-3 pb-2 space-y-2"
                             >
                               <div className="grid grid-cols-4 gap-2">
                                 <div>

@@ -154,7 +154,7 @@ function evaluateDeal(deal: Project, alerts: GroomingAlert[]): void {
 
 /* ─── Severity styling ─── */
 const SEVERITY_CONFIG: Record<AlertSeverity, { border: string; bg: string; text: string; dot: string; label: string }> = {
-  critical: { border: 'border-pw-black', bg: 'bg-pw-black text-white', text: 'text-white', dot: 'bg-bg-surface', label: 'Priority' },
+  critical: { border: 'border-pw-border', bg: 'bg-pw-black text-white', text: 'text-white', dot: 'bg-bg-surface', label: 'Priority' },
   action:   { border: 'border-border-accent/50', bg: 'bg-bg-primary text-text-primary', text: 'text-text-primary', dot: 'bg-pw-black', label: 'Required' },
   warning:  { border: 'border-border-accent/20', bg: 'bg-bg-primary/50 text-text-secondary', text: 'text-text-secondary', dot: 'bg-pw-muted', label: 'Monitor' },
 };

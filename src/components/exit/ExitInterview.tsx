@@ -258,7 +258,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
 
   // ── Render ──────────────────────────────────────────
   return (
-    <div className="glass-card border border-pw-border p-6 md:p-8 rounded-none text-left shadow-none mb-8 w-full max-w-3xl mx-auto">
+    <div className="glass-card border border-pw-border p-6 md:p-8 text-left mb-8 w-full max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center border-b border-pw-border pb-4 mb-6">
         <div>
@@ -267,7 +267,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             {currentSection?.title || 'Loading…'}
           </p>
         </div>
-        <div className="text-[11px] font-mono text-text-secondary bg-pw-glass-bg px-2.5 py-1 border border-pw-border rounded-none">
+        <div className="text-[11px] font-mono text-text-secondary bg-pw-glass-bg px-2.5 py-1 border border-pw-border">
           SECTION {currentSectionIdx + 1} OF {activeSections.length}
         </div>
       </div>
@@ -277,7 +277,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         {activeSections.map((s, i) => (
           <div
             key={s.id}
-            className={`h-1 flex-1 rounded-none transition-all duration-500 ${
+            className={`h-1 flex-1 transition-all duration-500 ${
               i <= currentSectionIdx ? 'bg-pw-accent' : 'bg-pw-border'
             }`}
           />
@@ -298,7 +298,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         <button
           onClick={handleBack}
           disabled={isFirstSection || isSaving}
-          className="pw-btn pw-btn--sm pw-btn--secondary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 disabled:opacity-30 rounded-none"
+          className="pw-btn pw-btn--sm pw-btn--secondary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 disabled:opacity-30"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           Back
@@ -311,7 +311,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             <button
               onClick={handleComplete}
               disabled={isSaving}
-              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 rounded-none"
+              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5"
             >
               <Check className="w-3.5 h-3.5" />
               Complete Exit Setup
@@ -320,7 +320,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
             <button
               onClick={handleNext}
               disabled={isSaving}
-              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5 rounded-none"
+              className="pw-btn pw-btn--sm pw-btn--primary font-black uppercase tracking-widest text-[10px] flex items-center gap-1.5"
             >
               Next
               <ChevronRight className="w-3.5 h-3.5" />
@@ -540,7 +540,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         </div>
 
         {/* Summary Table */}
-        <div className="bg-pw-glass-bg/30 border border-pw-border divide-y divide-pw-border rounded-none">
+        <div className="bg-pw-glass-bg/30 border border-pw-border divide-y divide-pw-border">
           {summaryRows.map(row => (
             <div key={row.label} className="flex items-center justify-between px-4 py-2.5">
               <span className="text-xs text-text-secondary">{row.label}</span>
@@ -550,7 +550,7 @@ export default function ExitInterview({ deal }: ExitInterviewProps) {
         </div>
 
         {formData.exitType === 'Sale' && (
-          <div className="flex items-start gap-3 p-4 bg-color-error/10 border border-color-error/30 text-xs leading-relaxed text-color-error rounded-none">
+          <div className="flex items-start gap-3 p-4 bg-color-error/10 border border-color-error/30 text-xs leading-relaxed text-color-error">
             <AlertTriangle className="w-5 h-5 text-color-error flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-bold mb-1">Finalizing Sale</p>

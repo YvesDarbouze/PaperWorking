@@ -87,7 +87,7 @@ export default function BlogPostPage() {
 
                 <div className="mt-16 pt-12 border-t border-border-accent flex justify-between items-center">
                   <div className="flex items-center gap-6">
-                    <div className="w-12 h-12 border border-pw-black flex items-center justify-center">
+                    <div className="w-12 h-12 border border-pw-border flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-text-primary" />
                     </div>
                     <div>
@@ -105,7 +105,7 @@ export default function BlogPostPage() {
 
         {/* Content Section */}
         <div className="prose prose-lg prose-gray max-w-none mb-32">
-          <p className="text-xl text-text-secondary font-medium leading-relaxed mb-12 italic border-l-4 border-pw-black pl-8">
+          <p className="text-xl text-text-secondary font-medium leading-relaxed mb-12 italic border-l-4 border-pw-border pl-8">
             {post.excerpt}
           </p>
           <div className="text-text-primary leading-loose space-y-8 text-base font-medium uppercase tracking-tight">
@@ -125,7 +125,7 @@ export default function BlogPostPage() {
         </div>
 
         {/* Institutional CTA */}
-        <div className="bg-pw-black p-16 text-center text-white border border-pw-black group hover:bg-bg-surface hover:text-text-primary transition-all">
+        <div className="bg-pw-black p-16 text-center text-white border border-pw-border group hover:bg-bg-surface hover:text-text-primary transition-all">
           <h4 className="text-3xl font-black tracking-tighter uppercase mb-6 transition-all">Scalability begins with visibility.</h4>
           <p className="text-white opacity-50 group-hover:text-text-secondary text-sm font-black uppercase tracking-widest mb-12 max-w-sm mx-auto transition-all">
             See every dollar, every deadline, every contractor — in one place.

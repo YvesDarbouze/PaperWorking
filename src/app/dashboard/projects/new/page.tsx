@@ -49,7 +49,7 @@ export default function NewProjectPage() {
     return (
       <div className="dashboard-context fixed inset-0 z-[200] flex items-center justify-center bg-bg-surface">
         <div className="flex flex-col items-center gap-4 animate-shimmer">
-          <div className="w-12 h-12 border-2 border-pw-black border-t-transparent rounded-full animate-spin" />
+          <div className="w-12 h-12 border-2 border-pw-border border-t-transparent rounded-full animate-spin" />
           <p className="text-xs font-black text-text-secondary uppercase tracking-[0.3em]">
             Syncing Organization…
           </p>

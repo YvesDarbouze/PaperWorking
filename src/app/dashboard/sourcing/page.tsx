@@ -48,25 +48,25 @@ export default function SourcingDashboard() {
             <h1 className="text-3xl font-thin tracking-tight">Lead Sourcing</h1>
             <p className="text-sm font-light pw-muted mt-1 uppercase tracking-widest">Phase 1 Operations</p>
           </div>
-          <button className="pw-interactive pw-btn pw-btn--primary rounded-none">
+          <button className="pw-interactive pw-btn pw-btn--primary">
             Add Manual Lead
           </button>
         </header>
 
         {/* Dual-Scope Metrics Row (R0) */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="pw-surface-light border border-pw-border p-6 rounded-none">
+          <div className="pw-surface-light border border-pw-border p-6">
             <h3 className="text-xs font-black uppercase tracking-widest pw-subtle mb-2">Total Pipeline</h3>
             <p className="text-4xl font-light">{totalPipelineCount}</p>
           </div>
-          <div className="pw-surface-light border border-pw-border p-6 rounded-none">
+          <div className="pw-surface-light border border-pw-border p-6">
             <h3 className="text-xs font-black uppercase tracking-widest pw-subtle mb-2">Avg Cost Per Lead</h3>
             <p className="text-4xl font-light">
               {avgCostPerLead > 0 ? `$${avgCostPerLead.toFixed(2)}` : '--'}
             </p>
             <p className="text-xs mt-2 pw-muted">Operational Metric</p>
           </div>
-          <div className="pw-surface-light border border-pw-border p-6 rounded-none">
+          <div className="pw-surface-light border border-pw-border p-6">
             <h3 className="text-xs font-black uppercase tracking-widest pw-subtle mb-2">Est. Equity Margin</h3>
             <p className="text-4xl font-light">
               {estEquityMargin > 0 ? formatCurrency(estEquityMargin) : '--'}
@@ -76,7 +76,7 @@ export default function SourcingDashboard() {
         </section>
 
         {/* Leads Table */}
-        <section className="border border-pw-border bg-pw-white rounded-none">
+        <section className="border border-pw-border bg-pw-white">
           <div className="border-b border-pw-border p-4 flex justify-between items-center">
             <h2 className="text-base font-regular">Recent Ingestion</h2>
             <div className="pw-tabs">

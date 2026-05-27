@@ -22,10 +22,10 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, is
   const finalClosingCosts = deal.financials?.finalClosingCosts || 0;
 
   return (
-    <div className="glass-card border border-pw-border rounded-none shadow-none mt-8">
+    <div className="glass-card border border-pw-border mt-8">
       <div className="p-6 border-b border-pw-border flex items-center justify-between bg-pw-bg/20">
          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-pw-accent/10 rounded-none">
+            <div className="p-2 bg-pw-accent/10">
               <Activity className="w-6 h-6 text-pw-accent" />
             </div>
             <div>
@@ -58,7 +58,7 @@ export default function NetEngine({ deal, isBrrrr = false }: { deal: Project, is
         </div>
 
         {/* Ledger Breakdown */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-pw-bg/30 rounded-none border border-pw-border text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-pw-bg/30 border border-pw-border text-sm">
            
            <div>
              <p className="text-text-secondary font-mono text-[10px] uppercase mb-1">{isBrrrr ? 'Refi Value (75% LTV)' : 'Gross Proceeds'}</p>

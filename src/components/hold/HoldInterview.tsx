@@ -259,7 +259,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
 
   // ── Render ──────────────────────────────────────────
   return (
-    <div className="bg-pw-white border border-pw-black p-6 md:p-8 rounded-none text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
+    <div className="bg-pw-white border border-pw-border p-6 md:p-8 text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center border-b border-pw-border pb-4 mb-6">
         <div>
@@ -461,7 +461,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
             type="date"
             value={formData.rehabDoneDate}
             onChange={(e) => updateField('rehabDoneDate', e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-border focus:outline-none"
           />
         </div>
       </div>
@@ -614,7 +614,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
           <select
             value={formData.isOccupied}
             onChange={(e) => updateField('isOccupied', e.target.value)}
-            className="pw-input text-sm py-2.5 px-4 w-full border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-sm py-2.5 px-4 w-full border border-pw-border focus:outline-none"
           >
             <option value="yes">Yes, occupied</option>
             <option value="no">No, vacant</option>
@@ -631,7 +631,7 @@ export default function HoldInterview({ deal }: HoldInterviewProps) {
               placeholder="30"
               min="0"
               max="31"
-              className="pw-input text-sm py-2.5 px-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-sm py-2.5 px-4 w-full border border-pw-border focus:outline-none tabular-nums"
             />
           </FieldRow>
         )}
@@ -765,7 +765,7 @@ function CurrencyInput({ value, onChange, compact }: { value: any; onChange: (v:
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="0.00"
-        className={`pw-input w-full border border-pw-black rounded-none focus:outline-none tabular-nums ${
+        className={`pw-input w-full border border-pw-border focus:outline-none tabular-nums ${
           compact ? 'text-sm py-2 pl-7 pr-3' : 'text-lg py-3 pl-10 pr-4'
         }`}
       />

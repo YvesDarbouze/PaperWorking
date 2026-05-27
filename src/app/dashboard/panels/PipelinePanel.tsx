@@ -116,8 +116,8 @@ export default function PipelinePanel() {
             {/* ═══ Command Center Header ═══ */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-4 border-b border-pw-border">
                <div className="space-y-4">
-                  <div className="flex items-center space-x-4 glass-card w-fit px-6 py-3 rounded-none border border-pw-border shadow-none">
-                     <div className="w-10 h-10 rounded-none bg-white/5 flex items-center justify-center border border-pw-border">
+                  <div className="flex items-center space-x-4 glass-card w-fit px-6 py-3 border border-pw-border">
+                     <div className="w-10 h-10 bg-white/5 flex items-center justify-center border border-pw-border">
                         <UserCircle className="w-6 h-6 text-text-secondary" />
                      </div>
                      <div>
@@ -137,7 +137,7 @@ export default function PipelinePanel() {
                   <div className="flex items-center gap-3">
                       <button
                         onClick={() => setIsInviteModalOpen(true)}
-                        className="pw-interactive pw-btn pw-btn--secondary rounded-none shadow-none"
+                        className="pw-interactive pw-btn pw-btn--secondary"
                       >
                         <UserPlus className="w-5 h-5 mr-2 inline" />
                         <span>Invite Investor</span>
@@ -146,7 +146,7 @@ export default function PipelinePanel() {
                       <button 
                         onClick={handleAddDeal} 
                         aria-label="Add A Project"
-                        className="pw-interactive pw-btn pw-btn--primary rounded-none shadow-none"
+                        className="pw-interactive pw-btn pw-btn--primary"
                       >
                         <Plus className="w-5 h-5 mr-3 inline transition-transform group-hover:rotate-90"/>
                         Add A Project
@@ -183,13 +183,13 @@ export default function PipelinePanel() {
 
             <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 delay-3">
               <div className="lg:col-span-8 2xl:col-span-9">
-                 <div className="glass-card border border-pw-border flex flex-col h-full min-h-[500px] rounded-none shadow-none">
+                 <div className="glass-card border border-pw-border flex flex-col h-full min-h-[500px]">
                    <div className="flex justify-between items-start mb-12">
                       <div>
                         <p className="ag-label mb-2">Budget Variance Report</p>
                         <h2 className="text-3xl font-normal text-text-primary tracking-tighter">Fiscal_Drift_Analysis</h2>
                       </div>
-                      <span className="bg-white/5 border border-pw-border text-text-primary text-[10px] font-bold px-4 py-1.5 rounded-none uppercase tracking-[0.2em] flex items-center">
+                      <span className="bg-white/5 border border-pw-border text-text-primary text-[10px] font-bold px-4 py-1.5 uppercase tracking-[0.2em] flex items-center">
                          <Activity className="w-3 h-3 mr-2 animate-pulse" aria-hidden="true" /> LIVE TELEMETRY
                       </span>
                    </div>

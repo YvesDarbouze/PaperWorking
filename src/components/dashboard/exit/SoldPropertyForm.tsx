@@ -51,7 +51,7 @@ function holdDaysFrom(project: Project): number {
 
 function FieldBox({ label, children, required }: { label: string; children: React.ReactNode; required?: boolean }) {
   return (
-    <div className="p-4 border border-pw-border bg-pw-bg/50 rounded-none">
+    <div className="p-4 border border-pw-border bg-pw-bg/50">
       <label className="block text-[9px] font-black uppercase tracking-widest mb-2 text-pw-muted">
         {label}
         {required && <span className="text-pw-accent ml-1">*</span>}
@@ -78,7 +78,7 @@ function KpiCard({
   label, value, sub, positive, warning,
 }: { label: string; value: string; sub?: string; positive?: boolean; warning?: boolean }) {
   return (
-    <div className="flex-1 p-5 min-w-0 border border-pw-border bg-pw-glass-bg backdrop-blur-xl rounded-none">
+    <div className="flex-1 p-5 min-w-0 border border-pw-border bg-pw-glass-bg backdrop-blur-xl">
       <p className="text-[9px] font-black uppercase tracking-[0.2em] mb-2 text-pw-muted">{label}</p>
       <p className={`text-3xl font-black font-mono tracking-tighter leading-none ${
         warning ? 'text-color-error' : positive === false ? 'text-pw-muted' : 'text-pw-black'
@@ -209,7 +209,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
 
         {/* ── Warning banners ── */}
         {isLoss && (
-          <div className="flex items-start gap-3 p-4 border border-color-error bg-error-container/20 rounded-none">
+          <div className="flex items-start gap-3 p-4 border border-color-error bg-error-container/20">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-color-error" />
             <div>
               <p className="text-xs font-black uppercase tracking-wider text-color-error">Loss_Warning</p>
@@ -220,7 +220,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
           </div>
         )}
         {isExtendedHold && (
-          <div className="flex items-start gap-3 p-4 border border-pw-border bg-pw-bg/50 rounded-none">
+          <div className="flex items-start gap-3 p-4 border border-pw-border bg-pw-bg/50">
             <Clock className="w-4 h-4 shrink-0 mt-0.5 text-pw-muted" />
             <div>
               <p className="text-xs font-black uppercase tracking-wider text-pw-black">Extended_Hold</p>
@@ -232,7 +232,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         )}
 
         {/* ── KPI Strip ── */}
-        <div className="flex gap-px bg-pw-border rounded-none overflow-hidden">
+        <div className="flex gap-px bg-pw-border overflow-hidden">
           <KpiCard
             label="Net_Profit"
             value={`${netProfit >= 0 ? '' : '−'}$${fmt(Math.abs(netProfit))}`}
@@ -322,7 +322,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 pw-btn pw-btn--secondary rounded-none py-1.5 px-3 text-[9px] font-black uppercase tracking-wider transition-colors"
+                className="flex items-center gap-2 pw-btn pw-btn--secondary py-1.5 px-3 text-[9px] font-black uppercase tracking-wider transition-colors"
               >
                 <Upload className="w-3 h-3" />
                 {closingFileName ? closingFileName : 'Upload_HUD-1'}
@@ -398,7 +398,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
           type="button"
           onClick={handleSave}
           disabled={!canSubmit}
-          className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn rounded-none ${
+          className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn ${
             canSubmit ? 'pw-btn--primary' : 'pw-btn--secondary opacity-50 cursor-not-allowed'
           }`}
         >
@@ -421,7 +421,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
     <div className="space-y-8">
 
       {/* ── KPI Strip (Rent) ── */}
-      <div className="flex gap-px bg-pw-border rounded-none overflow-hidden">
+      <div className="flex gap-px bg-pw-border overflow-hidden">
         <KpiCard
           label="Gross_Annual_Rent"
           value={`$${fmt(Number(monthlyRent) * 12)}`}
@@ -510,7 +510,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         type="button"
         onClick={handleSave}
         disabled={!canSubmit}
-        className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn rounded-none ${
+        className={`w-full py-5 font-black text-xs uppercase tracking-[0.5em] transition-all active:scale-95 pw-btn ${
           canSubmit ? 'pw-btn--primary' : 'pw-btn--secondary opacity-50 cursor-not-allowed'
         }`}
       >

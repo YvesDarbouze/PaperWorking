@@ -1,49 +1,26 @@
-# Handoff Handoff: Luminous Glass UI & Data Binding Integration
+# Agent Handoff — Visual Unification Refactor
 
-## Overview
-This task successfully scanned the Google Stitch design specifications for **Luminous Glass** design tokens and integrated reskinned empty states and skeleton loaders across all views in the dashboard workspace, confirming compile-time and build safety.
+**Last Updated**: 2026-05-27T10:18:00Z  
+**Agent**: Antigravity (conversation 6830b98b)
 
-## Accomplishments
+## Status: All CSS Cleanup Complete — Build Verification Pending
 
-1. **Design Theme Extraction:**
-   - Visualized and analyzed Stitch design system (`projects/11643693106955298243`).
-   - Mapped out visual tokens for "Glassmorphism" styling (translucency, backdrop-blur, gradient highlights, and rounded card styling).
+### What Was Done
+The "Luminous Glass" visual unification refactor is **100% complete** for CSS class cleanup:
 
-2. **Standardized UI Component (`EmptyState`):**
-   - Created a centralized `EmptyState.tsx` component in `src/components/ui/empty-states/EmptyState.tsx` supporting:
-     - `default` variant (for full views/pages).
-     - `card` variant (for grids and scoped folder layouts).
-     - `inline` variant (for drawers, columns, or inline selections).
+1. **globals.css** — Removed `border-radius: 0 !important` from global button rules (line 935, 960), replaced with `var(--radius-DEFAULT, 0.5rem)` (8px)
+2. **DesignSystem.md** — Updated Section 2 from "Zero Border Radius" to "Luminous Glass Radius Scale"
+3. **~75+ TSX/TS files** — All `rounded-none` removed (0 remaining), all `border-pw-black` replaced with `border-pw-border` (0 remaining)
 
-3. **Reskinned Skeleton Loaders:**
-   - Modified `src/components/ui/skeletons/index.tsx` to align with the Luminous Glass aesthetic, substituting opaque backgrounds (`bg-gray-200`) with translucent glass shapes (`bg-white/10` and `bg-white/5` with shimmer).
-   - Upgraded:
-     - `CardSkeleton` (flips/portfolio list)
-     - `ChartSkeleton` (financials/portfolio charts)
-     - `KanbanColumnSkeleton` (project board lane loaders)
+### Verification Status
+- ✅ `grep "rounded-none" src/` → **0 matches**
+- ✅ `grep "border-pw-black" src/` → **0 matches**
+- 🔄 `npm run build` — **was running when session ended** (task-7136). Check build output before deploying.
 
-4. **Integrated Layout Skeletons & Spinner Indicators:**
-   - **Global Root Loading Spinner:** Updated `src/app/loading.tsx` to display a modern, glowing teal-spin spinner overlaying a backdrop-blur.
-   - **Dashboard Page Skeleton:** Updated `src/app/dashboard/loading.tsx` to utilize `CardSkeleton` and `ChartSkeleton` for seamless dashboard load animations.
-   - **Project Detail Loading Skeleton:** Updated `src/app/dashboard/projects/[id]/loading.tsx` to style header panels and columns as Luminous Glass surfaces.
-   - **Wizard Loading Page:** Updated `src/app/dashboard/projects/new/loading.tsx` to use the new glowing spinner and blur backdrop.
+### Next Steps
+1. **Check build result** — If build passed, commit and deploy
+2. **If build failed** — Fix any TypeScript errors caused by the sed cleanup (unlikely since only className strings were touched)
+3. **Deploy** — `git add -A && git commit -m "refactor: unify UI under Luminous Glass design system" && git push`
 
-5. **Integrated Empty States & Data-Fetching Binding:**
-   - **Portfolio Folder List (`/dashboard/projects/page.tsx`):** Handled zero state queries (empty portfolio) and search mismatch queries with `EmptyState` (`default` and `card` variants).
-   - **Quick Action Deal Selector (`OfferLetterQuickAction.tsx`):** Replaced hardcoded empty state with the `inline` `EmptyState` variant when no deal is selected.
-   - **Minimized Dashboard View (`MinimizedDashboardView.tsx`):** Standardized both mobile and desktop column empty placeholders using `EmptyState` (`inline` variant).
-   - **Sourcing Leads Table (`/dashboard/sourcing/page.tsx`):** Substituted custom table td placeholder with `EmptyState` (`inline` variant) when no leads are found.
-
-6. **Drag-and-Drop File Uploader Reskins (Luminous Glass Theme):**
-   - **GCBidUploader (`GCBidUploader.tsx`):** Applied glass card container, circular icon wrapper, absolute inset dashed border overlay, and luminous action buttons.
-   - **InspectionUploadModule (`InspectionUploadModule.tsx`):** Styled inspection upload card container to glass style with dashed active drag states.
-   - **DocumentHub (`DocumentHub.tsx`):** Reskinned modal's drag-and-drop zone and file selection triggers.
-   - **ZoningScanPanel (`ZoningScanPanel.tsx`):** Transformed inline styling to Tailwind glassmorphism tokens and nested dashed overlay.
-   - **DocumentVault (`DocumentVault.tsx`):** Reskinned 3 categories of documents dropzones to use glass backgrounds, dashed highlights, and translucent loading progress bars.
-   - **SettlementDocPortal (`SettlementDocPortal.tsx`):** Styled the settlement closing uploader card to follow the frosted glass style.
-   - **Preserved Event Handlers & Upload Actions:** Fully preserved all `onDragOver`, `onDragLeave`, `onDrop` events, file input refs, and Firestore/API upload actions.
-   - **Documented Styling Specs:** Added Section 8 "Drag-and-Drop File Upload Zones" to the root `DesignSystem.md`.
-
-7. **Compile & Build Safety Verification:**
-   - Ran `npx tsc --noEmit` which completed successfully with zero type errors.
-   - Verified Next.js compilation and build safety.
+### StitchMCP Config
+Fixed to use direct HTTP connection (no more npx mcp-remote wrapper). Will be active in new session.

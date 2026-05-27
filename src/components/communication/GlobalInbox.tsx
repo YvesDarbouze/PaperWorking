@@ -102,7 +102,7 @@ export default function GlobalInbox() {
               onClick={() => setSelectedDealId(deal.id)}
               className={`w-full p-10 text-left border-b border-border-accent transition-all flex items-start gap-6 hover:bg-bg-surface ${selectedDealId === deal.id ? 'bg-bg-surface border-l-4 border-l-pw-accent' : ''}`}
             >
-              <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center border ${selectedDealId === deal.id ? 'bg-pw-black text-pw-white border-pw-black' : 'bg-bg-primary text-text-secondary border-border-accent'}`}>
+              <div className={`w-12 h-12 flex-shrink-0 flex items-center justify-center border ${selectedDealId === deal.id ? 'bg-pw-black text-pw-white border-pw-border' : 'bg-bg-primary text-text-secondary border-border-accent'}`}>
                 <span className="text-sm font-black">{deal.propertyName[0]}</span>
               </div>
               <div className="flex-1 min-w-0 pt-1">
@@ -126,7 +126,7 @@ export default function GlobalInbox() {
           <>
             <header className="p-10 border-b border-border-accent flex justify-between items-center bg-bg-surface sticky top-0 z-10">
                <div className="flex items-center gap-8">
-                  <div className="w-16 h-16 border border-pw-black flex items-center justify-center text-text-primary font-black text-2xl">
+                  <div className="w-16 h-16 border border-pw-border flex items-center justify-center text-text-primary font-black text-2xl">
                     {selectedDeal.propertyName[0]}
                   </div>
                   <div>
@@ -138,7 +138,7 @@ export default function GlobalInbox() {
                   <button className="p-4 border border-border-accent text-text-primary hover:bg-pw-black hover:text-pw-white transition-all">
                     <Filter className="w-5 h-5" />
                   </button>
-                  <button className="p-4 bg-pw-black text-pw-white border border-pw-black hover:bg-pw-accent hover:border-pw-accent transition-all">
+                  <button className="p-4 bg-pw-black text-pw-white border border-pw-border hover:bg-pw-accent hover:border-pw-accent transition-all">
                     <Sparkles className="w-5 h-5" />
                   </button>
                </div>
@@ -168,7 +168,7 @@ export default function GlobalInbox() {
                         </div>
                         <div className={`p-10 border text-sm leading-loose font-medium uppercase tracking-tight transition-all shadow-sm ${
                           msg.senderEmail.includes('you') 
-                            ? 'bg-pw-black text-pw-white border-pw-black' 
+                            ? 'bg-pw-black text-pw-white border-pw-border' 
                             : 'bg-bg-surface text-text-primary border-border-accent'
                         }`}>
                           {msg.body}
@@ -185,19 +185,19 @@ export default function GlobalInbox() {
                     placeholder="ENTER OPERATIONAL LOG OR RESPONSE DATA..."
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    className="w-full h-48 p-10 border border-border-accent rounded-none text-sm font-black uppercase tracking-widest focus:outline-none focus:border-pw-accent transition-all resize-none bg-bg-primary/30 text-text-primary placeholder:text-text-secondary"
+                    className="w-full h-48 p-10 border border-border-accent text-sm font-black uppercase tracking-widest focus:outline-none focus:border-pw-accent transition-all resize-none bg-bg-primary/30 text-text-primary placeholder:text-text-secondary"
                   />
                   <div className="absolute top-0 right-0 p-6 flex gap-6">
                     <button 
                       onClick={() => setIsDrafting(true)}
-                      className="flex items-center gap-4 px-8 py-4 bg-bg-surface border border-pw-black text-text-primary text-xs font-black uppercase tracking-[0.3em] hover:bg-pw-black hover:text-pw-white transition-all shadow-2xl"
+                      className="flex items-center gap-4 px-8 py-4 bg-bg-surface border border-pw-border text-text-primary text-xs font-black uppercase tracking-[0.3em] hover:bg-pw-black hover:text-pw-white transition-all shadow-2xl"
                     >
                       <Sparkles className="w-4 h-4 text-pw-accent" />
                       <span>COMPILE AI DRAFT</span>
                     </button>
                     <button 
                       onClick={handleSend}
-                      className="flex items-center gap-4 px-10 py-4 bg-pw-black text-pw-white text-xs font-black uppercase tracking-[0.3em] border border-pw-black hover:bg-pw-accent hover:border-pw-accent transition-all shadow-2xl"
+                      className="flex items-center gap-4 px-10 py-4 bg-pw-black text-pw-white text-xs font-black uppercase tracking-[0.3em] border border-pw-border hover:bg-pw-accent hover:border-pw-accent transition-all shadow-2xl"
                     >
                       <Send className="w-4 h-4 ml-1" />
                       <span>COMMIT</span>

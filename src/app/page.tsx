@@ -75,8 +75,8 @@ export default function ParallaxLandingPage() {
       {/* Loader Overlay */}
       {isProcessing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pw-black/60 backdrop-blur-md">
-          <div className="bg-bg-surface p-6 rounded-none shadow-2xl flex flex-col items-center">
-            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent rounded-none animate-spin mb-4" />
+          <div className="bg-bg-surface p-6 shadow-2xl flex flex-col items-center">
+            <div className="w-8 h-8 border-4 border-pw-accent border-t-transparent animate-spin mb-4" />
             <p className="text-text-primary font-medium">Redirecting to Secure Checkout...</p>
           </div>
         </div>

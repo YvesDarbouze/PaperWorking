@@ -95,13 +95,13 @@ export default function VendorDirectory() {
             <input 
               type="text"
               placeholder="Filter by specialty (e.g. Probate, Title...)"
-              className="w-full pl-11 pr-4 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-black transition-all"
+              className="w-full pl-11 pr-4 py-4 bg-pw-dashboard border border-border-accent text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-border transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <select 
-            className="px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
+            className="px-6 py-4 bg-pw-dashboard border border-border-accent text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-border"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value as any)}
           >
@@ -117,7 +117,7 @@ export default function VendorDirectory() {
             <option value="Listing Agent">Listing Agent</option>
           </select>
           <select 
-            className="px-6 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-black"
+            className="px-6 py-4 bg-pw-dashboard border border-border-accent text-xs font-black uppercase tracking-widest focus:outline-none focus:border-pw-border"
             value={stateFilter}
             onChange={(e) => setStateFilter(e.target.value)}
           >
@@ -129,7 +129,7 @@ export default function VendorDirectory() {
           <input 
             type="text"
             placeholder="Zip Code"
-            className="w-32 px-4 py-4 bg-pw-dashboard border border-border-accent rounded-none text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-black transition-all"
+            className="w-32 px-4 py-4 bg-pw-dashboard border border-border-accent text-xs font-bold uppercase tracking-widest focus:outline-none focus:ring-0 focus:border-pw-border transition-all"
             value={zipFilter}
             onChange={(e) => setZipFilter(e.target.value)}
           />
@@ -203,7 +203,7 @@ function VendorCard({ vendor, onRequestQuote, hasActiveSub }: { vendor: VendorPr
           disabled={!hasActiveSub}
           className={`w-full py-4 border text-xs font-black uppercase tracking-[0.2em] transition-all ${
             hasActiveSub 
-              ? 'border-pw-black text-text-primary hover:bg-pw-black hover:text-white' 
+              ? 'border-pw-border text-text-primary hover:bg-pw-black hover:text-white' 
               : 'border-border-accent text-text-secondary bg-pw-dashboard opacity-50 cursor-not-allowed'
           }`}
         >

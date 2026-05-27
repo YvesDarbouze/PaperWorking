@@ -18,7 +18,7 @@ export function GoNoGoGates() {
       
       <div className="p-6 space-y-4">
         
-        <div className={`border p-4 flex items-center justify-between ${physicalCleared ? 'border-pw-black bg-pw-bg' : 'border-pw-border'}`}>
+        <div className={`border p-4 flex items-center justify-between ${physicalCleared ? 'border-pw-border bg-pw-bg' : 'border-pw-border'}`}>
           <div>
             <h3 className="text-sm uppercase tracking-widest font-black text-pw-black">Physical Diligence Gate</h3>
             <p className="text-xs text-pw-muted mt-1">Inspections reviewed, repairs negotiated.</p>
@@ -31,7 +31,7 @@ export function GoNoGoGates() {
           </button>
         </div>
 
-        <div className={`border p-4 flex items-center justify-between ${titleCleared ? 'border-pw-black bg-pw-bg' : 'border-pw-border'}`}>
+        <div className={`border p-4 flex items-center justify-between ${titleCleared ? 'border-pw-border bg-pw-bg' : 'border-pw-border'}`}>
           <div>
             <h3 className="text-sm uppercase tracking-widest font-black text-pw-black">Title & Legal Gate</h3>
             <p className="text-xs text-pw-muted mt-1">Title commitment clean, entity documents finalized.</p>
@@ -44,7 +44,7 @@ export function GoNoGoGates() {
           </button>
         </div>
 
-        <div className={`border p-4 flex items-center justify-between ${financialCleared ? 'border-pw-black bg-pw-bg' : 'border-pw-border'}`}>
+        <div className={`border p-4 flex items-center justify-between ${financialCleared ? 'border-pw-border bg-pw-bg' : 'border-pw-border'}`}>
           <div>
             <h3 className="text-sm uppercase tracking-widest font-black text-pw-black">Financial & Capital Gate</h3>
             <p className="text-xs text-pw-muted mt-1">Appraisal meets value, financing clear to close.</p>

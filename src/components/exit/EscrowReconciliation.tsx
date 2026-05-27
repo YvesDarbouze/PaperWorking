@@ -93,7 +93,7 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
   const totalBuyerCredit = useMemo(() => items.reduce((s, i) => s + i.buyerCredit, 0), [items]);
 
   return (
-    <div className="glass-card border border-pw-border rounded-none shadow-none relative overflow-hidden">
+    <div className="glass-card border border-pw-border relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
@@ -192,20 +192,20 @@ export default function EscrowReconciliation({ projectId }: EscrowReconciliation
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={handleAddItem}
-            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
+            className="flex items-center gap-1.5 pw-btn pw-btn--secondary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1.5 px-3"
           >
             <Plus className="w-3.5 h-3.5" /> Add_Prorated_Item
           </button>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+          <div className="p-3 border border-pw-border bg-pw-glass-bg/40">
             <p className="text-[9px] font-black text-color-error uppercase tracking-widest mb-0.5">Seller_Owes</p>
             <p className="text-lg font-black font-mono tracking-tighter text-text-primary">
               ${totalSellerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="p-3 border border-pw-border bg-pw-glass-bg/40 rounded-none">
+          <div className="p-3 border border-pw-border bg-pw-glass-bg/40">
             <p className="text-[9px] font-black text-pw-accent uppercase tracking-widest mb-0.5">Buyer_Owes</p>
             <p className="text-lg font-black font-mono tracking-tighter text-text-primary">
               ${totalBuyerCredit.toLocaleString(undefined, { minimumFractionDigits: 2 })}

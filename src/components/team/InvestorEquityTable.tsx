@@ -95,7 +95,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
   };
 
   return (
-    <div className="glass-card rounded-none overflow-hidden">
+    <div className="glass-card overflow-hidden">
       {/* Header */}
       <div className="px-6 pt-6 pb-4 flex items-center justify-between">
         <div>
@@ -116,7 +116,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
       {/* Stacked Equity Bar */}
       {investors.length > 0 && (
         <div className="mx-6 mb-4">
-          <div className="w-full h-6 bg-surface-container rounded-none overflow-hidden flex border border-pw-border">
+          <div className="w-full h-6 bg-surface-container overflow-hidden flex border border-pw-border">
             {investors.map((inv, i) => (
               <div
                 key={inv.id}
@@ -163,7 +163,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-7 h-7 rounded-none flex items-center justify-center text-white text-xs font-bold ${
+                      className={`w-7 h-7 flex items-center justify-center text-white text-xs font-bold ${
                         EQUITY_COLORS[i % EQUITY_COLORS.length]
                       }`}
                     >
@@ -189,7 +189,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-none text-xs font-semibold uppercase tracking-wider ${
+                    className={`inline-flex items-center px-2 py-0.5 text-xs font-semibold uppercase tracking-wider ${
                       inv.status === 'confirmed'
                         ? 'bg-green-600/10 text-green-600'
                         : inv.status === 'invited'
@@ -203,7 +203,7 @@ export default function InvestorEquityTable({ projectId }: Props) {
                 <td className="px-4 py-4">
                   <button
                     onClick={() => handleRemove(inv.id)}
-                    className="p-1.5 text-error hover:bg-white/5 rounded-none transition-colors"
+                    className="p-1.5 text-error hover:bg-white/5 transition-colors"
                     title="Remove investor"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

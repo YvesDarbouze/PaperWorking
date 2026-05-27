@@ -108,7 +108,7 @@ export default function FeatureComparisonTable({ onSelectPlan }: FeatureComparis
         <p className="text-sm text-pw-muted mt-2">Every plan is built for a specific role. Find yours.</p>
       </div>
 
-      <div className="border border-pw-border bg-pw-glass-bg shadow-none rounded-none overflow-hidden" style={{ minWidth: '580px' }}>
+      <div className="border border-pw-border bg-pw-glass-bg shadow-none overflow-hidden" style={{ minWidth: '580px' }}>
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-pw-border bg-surface-container-highest/50 backdrop-blur-md">

@@ -260,7 +260,7 @@ export default function VelocityOverheadKPI({ projects }: VelocityOverheadKPIPro
         accent="text-text-primary"
         badge={
           kpis.avgTTF !== null && (
-            <div className={`w-2.5 h-2.5 rounded-full ${ttfBand(kpis.avgTTF) === 'green' ? 'bg-pw-black' : ttfBand(kpis.avgTTF) === 'yellow' ? 'bg-pw-muted' : 'border border-pw-black'}`}></div>
+            <div className={`w-2.5 h-2.5 rounded-full ${ttfBand(kpis.avgTTF) === 'green' ? 'bg-pw-black' : ttfBand(kpis.avgTTF) === 'yellow' ? 'bg-pw-muted' : 'border border-pw-border'}`}></div>
           )
         }
       />

@@ -142,15 +142,15 @@ function FolderCard({
     >
       {/* Folder Tab */}
       <div
-        className={`h-8 w-32 ${phaseConfig.bg} rounded-none border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
+        className={`h-8 w-32 ${phaseConfig.bg} border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
         style={{ clipPath: 'polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%)' }}
       />
 
       {/* Card Body */}
-      <div className={`glass-card rounded-none p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
+      <div className={`glass-card p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
         {/* Phase Badge — top right */}
         <div className="absolute top-0 right-0 p-4">
-          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 rounded-none text-xs font-bold tracking-widest uppercase border border-pw-border`}>
+          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 text-xs font-bold tracking-widest uppercase border border-pw-border`}>
             {phaseConfig.label}
           </span>
         </div>
@@ -162,11 +162,11 @@ function FolderCard({
               {project.propertyName}
             </h3>
             <div className="flex gap-2 mt-2">
-              <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 rounded-none text-xs font-bold tracking-wider uppercase">
+              <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 text-xs font-bold tracking-wider uppercase">
                 {strategyLabel}
               </span>
               {stateAbbr && (
-                <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 rounded-none text-xs font-bold tracking-wider uppercase">
+                <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 text-xs font-bold tracking-wider uppercase">
                   {stateAbbr}
                 </span>
               )}
@@ -176,7 +176,7 @@ function FolderCard({
 
         {/* 2-col Metric Grid */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <div className="p-3 rounded-none bg-pw-glass-bg border border-pw-border">
+          <div className="p-3 bg-pw-glass-bg border border-pw-border">
             <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
               Equity
             </p>
@@ -184,7 +184,7 @@ function FolderCard({
               {ownership}%
             </p>
           </div>
-          <div className="p-3 rounded-none bg-pw-glass-bg border border-pw-border">
+          <div className="p-3 bg-pw-glass-bg border border-pw-border">
             <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
               {headlineMetric.label}
             </p>
@@ -200,7 +200,7 @@ function FolderCard({
             <span className="text-pw-muted">Phase Progress</span>
             <span className={phaseConfig.text}>{progress}%</span>
           </div>
-          <div className="h-1.5 w-full bg-pw-border/30 rounded-none overflow-hidden">
+          <div className="h-1.5 w-full bg-pw-border/30 overflow-hidden">
             <div
               className={`h-full ${phaseConfig.border.replace('border-l-', 'bg-')} luminous-glow transition-all duration-500`}
               style={{ width: `${progress}%` }}
@@ -310,7 +310,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 glass-card rounded-none border border-pw-border">
+      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 glass-card border border-pw-border">
         <div className="flex items-center px-4 py-2 gap-2 text-pw-muted border-r border-pw-border">
           <SlidersHorizontal className="w-5 h-5" />
           <span className="text-sm tracking-wider font-bold uppercase">Filters</span>

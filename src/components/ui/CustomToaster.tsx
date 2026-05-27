@@ -50,7 +50,7 @@ export function CustomToaster({ position = 'bottom-left' }: CustomToasterProps) 
                   bg-[var(--pw-glass-bg)] backdrop-blur-xl
                   shadow-[0_10px_30px_rgba(0,0,0,0.08),inset_0_1px_1px_rgba(255,255,255,0.15)]
                   dark:shadow-[0_10px_30px_rgba(0,0,0,0.3),inset_0_1px_1px_rgba(255,255,255,0.05)]
-                  rounded-none font-sans text-sm tracking-wide
+                  font-sans text-sm tracking-wide
                   transition-all duration-300
                   ${t.visible ? 'animate-toast-in' : 'animate-toast-out'}
                 `}

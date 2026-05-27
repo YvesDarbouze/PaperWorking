@@ -44,7 +44,7 @@ const ComparableSalesWidget: React.FC<ComparableSalesWidgetProps> = ({
         {comps.map((comp) => (
           <div key={comp.id} className="p-10 hover:bg-bg-primary transition-all flex justify-between items-center group cursor-crosshair">
             <div className="flex items-center gap-8">
-              <div className="w-14 h-14 bg-bg-primary border border-border-accent flex items-center justify-center group-hover:bg-pw-black group-hover:border-pw-black group-hover:text-pw-white transition-all">
+              <div className="w-14 h-14 bg-bg-primary border border-border-accent flex items-center justify-center group-hover:bg-pw-black group-hover:border-pw-border group-hover:text-pw-white transition-all">
                 <MapPin className="w-5 h-5" />
               </div>
               <div>

@@ -659,7 +659,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
           <select
             value={value}
             onChange={(e) => updateValue(activeQuestion.field, e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-border focus:outline-none"
           >
             <option value="" disabled>Select an option</option>
             {activeQuestion.options?.map(o => (
@@ -676,7 +676,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
               value={value}
               onChange={(e) => updateValue(activeQuestion.field, e.target.value)}
               placeholder={activeQuestion.placeholder}
-              className="pw-input text-lg py-3 pl-10 pr-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-lg py-3 pl-10 pr-4 w-full border border-pw-border focus:outline-none tabular-nums"
             />
           </div>
         );
@@ -688,7 +688,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
               value={value}
               onChange={(e) => updateValue(activeQuestion.field, e.target.value)}
               placeholder={activeQuestion.placeholder}
-              className="pw-input text-lg py-3 pl-4 pr-10 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-lg py-3 pl-4 pr-10 w-full border border-pw-border focus:outline-none tabular-nums"
               min="0"
               max="100"
             />
@@ -702,7 +702,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
               type="date"
               value={value}
               onChange={(e) => updateValue(activeQuestion.field, e.target.value)}
-              className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none"
+              className="pw-input text-lg py-3 px-4 w-full border border-pw-border focus:outline-none"
             />
           </div>
         );
@@ -714,7 +714,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
             value={value}
             onChange={(e) => updateValue(activeQuestion.field, e.target.value)}
             placeholder={activeQuestion.placeholder}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-border focus:outline-none"
           />
         );
     }
@@ -770,7 +770,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
   const allCriteriaMet = advanceCriteria.every(c => c.met);
 
   return (
-    <div className="bg-pw-white border border-pw-black p-6 md:p-8 rounded-none text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
+    <div className="bg-pw-white border border-pw-border p-6 md:p-8 text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center border-b border-pw-border pb-4 mb-6">
         <div>
@@ -868,7 +868,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
               key={c.label}
               className={`flex items-center gap-2.5 px-3 py-2 border text-xs font-medium transition-colors ${
                 c.met
-                  ? 'border-pw-black/20 bg-pw-bg text-text-primary'
+                  ? 'border-pw-border/20 bg-pw-bg text-text-primary'
                   : 'border-pw-border bg-pw-white text-text-secondary'
               }`}
             >

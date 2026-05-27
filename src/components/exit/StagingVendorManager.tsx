@@ -26,7 +26,7 @@ interface Vendor {
 const STATUS_STYLES: Record<Vendor['status'], string> = {
   Contacted: 'bg-pw-glass-bg border-pw-border text-text-secondary',
   Booked: 'bg-pw-accent/10 border-pw-accent/30 text-pw-accent',
-  Completed: 'bg-pw-black text-pw-white border-pw-black',
+  Completed: 'bg-pw-black text-pw-white border-pw-border',
   Cancelled: 'bg-color-error/10 border-color-error/30 text-color-error',
 };
 
@@ -86,7 +86,7 @@ export default function StagingVendorManager() {
   const bookedCount = vendors.filter(v => v.status === 'Booked' || v.status === 'Completed').length;
 
   return (
-    <div className="glass-card border border-pw-border rounded-none p-6 shadow-none">
+    <div className="glass-card border border-pw-border p-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center space-x-2">
           <Users className="w-4 h-4 text-pw-accent" />
@@ -96,7 +96,7 @@ export default function StagingVendorManager() {
           <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{bookedCount}/{vendors.length} secured</span>
           <button
             onClick={handleAddVendor}
-            className="flex items-center gap-1 pw-btn pw-btn--secondary pw-btn--sm rounded-none text-[9px] font-black uppercase tracking-wider py-1 px-3"
+            className="flex items-center gap-1 pw-btn pw-btn--secondary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1 px-3"
           >
             <Plus className="w-3 h-3" /> Add
           </button>
@@ -105,13 +105,13 @@ export default function StagingVendorManager() {
 
       <div className="space-y-3">
         {vendors.map(vendor => (
-          <div key={vendor.id} className="p-4 border border-pw-border rounded-none hover:border-pw-accent transition group bg-pw-glass-bg/30">
+          <div key={vendor.id} className="p-4 border border-pw-border hover:border-pw-accent transition group bg-pw-glass-bg/30">
             <div className="flex items-start justify-between mb-2">
               <div>
                 <p className="text-sm font-semibold text-text-primary">{vendor.name || 'New Vendor'}</p>
                 <p className="text-[10px] text-text-secondary uppercase tracking-widest mt-0.5">{vendor.type}</p>
               </div>
-              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-none border ${STATUS_STYLES[vendor.status]}`}>
+              <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 border ${STATUS_STYLES[vendor.status]}`}>
                 {vendor.status}
               </span>
             </div>

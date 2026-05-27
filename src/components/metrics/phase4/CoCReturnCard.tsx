@@ -62,7 +62,7 @@ function fmtDollar(n: number): string {
 
 const SP500_BENCHMARK = 7;
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
+const shimmerCls = 'animate-pulse bg-pw-border/30';
 
 export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, isLoading, className }: CoCReturnCardProps) {
   const coc = useMemo(() => {
@@ -75,7 +75,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
 
   if (isLoading) {
     return (
-      <div className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
+      <div className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
         <div className={`h-4 w-32 ${shimmerCls}`} />
         <div className={`h-12 w-48 ${shimmerCls}`} />
         <div className={`h-3 w-full ${shimmerCls}`} />
@@ -97,7 +97,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
 
   return (
     <div
-      className={`glass-card rounded-none border p-6 space-y-5 transition-all ${className ?? ''}`}
+      className={`glass-card border p-6 space-y-5 transition-all ${className ?? ''}`}
       style={{ borderColor: band.border, backgroundColor: band.bg }}
     >
       <div className="flex items-start justify-between">
@@ -106,7 +106,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
           <p className="text-[10px] text-text-secondary mt-0.5 uppercase tracking-wide">Annual Cash Flow ÷ Total Cash Invested</p>
         </div>
         <span
-          className="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-none border"
+          className="text-[9px] font-black uppercase tracking-widest px-2 py-1 border"
           style={{ color: band.textColor, borderColor: band.border, backgroundColor: band.bg }}
         >
           {band.label}
@@ -128,11 +128,11 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
       </motion.div>
 
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded-none border border-pw-border bg-pw-bg/50 px-3 py-2">
+        <div className="border border-pw-border bg-pw-bg/50 px-3 py-2">
           <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black">Annual Cash Flow</p>
           <p className="text-sm font-bold font-mono text-text-primary mt-0.5">{fmtDollar(safe(annualCashFlow))}</p>
         </div>
-        <div className="rounded-none border border-pw-border bg-pw-bg/50 px-3 py-2">
+        <div className="border border-pw-border bg-pw-bg/50 px-3 py-2">
           <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black">Total Cash Invested</p>
           <p className="text-sm font-bold font-mono text-text-primary mt-0.5">{fmtDollar(safe(totalCashInvested))}</p>
         </div>
@@ -170,7 +170,7 @@ export function CoCReturnCard({ annualCashFlow, totalCashInvested, breakdown, is
         {BANDS.map(b => (
           <div key={b.key} className="flex-1 space-y-1">
             <div
-              className="h-1 rounded-none"
+              className="h-1"
               style={{ backgroundColor: b.key === band.key ? band.color : 'var(--pw-border)' }}
             />
             <p className="text-[8px] text-text-secondary text-center hidden sm:block uppercase tracking-wider">{b.label}</p>

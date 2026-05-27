@@ -87,7 +87,7 @@ export default function InvestorInviteModal({ isOpen, onClose, propertyName }: I
                           <button 
                             key={r.id}
                             onClick={() => setRole(r.id as any)}
-                            className={`p-4 text-left border transition-all flex justify-between items-center rounded-2xl ${role === r.id ? 'bg-pw-black border-pw-black text-pw-white' : 'bg-pw-glass-bg/50 border-pw-border text-pw-black hover:border-pw-primary'}`}
+                            className={`p-4 text-left border transition-all flex justify-between items-center rounded-2xl ${role === r.id ? 'bg-pw-black border-pw-border text-pw-white' : 'bg-pw-glass-bg/50 border-pw-border text-pw-black hover:border-pw-primary'}`}
                           >
                             <div>
                                <p className="text-xs font-black uppercase tracking-widest mb-1">{r.label}</p>

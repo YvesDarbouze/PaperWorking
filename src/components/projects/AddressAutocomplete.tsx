@@ -52,7 +52,7 @@ const US_STATES = [
 ];
 
 const INPUT_PROTOCOL =
-  'w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30';
+  'w-full border border-border-accent bg-bg-primary px-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-border focus:outline-none transition-all placeholder:text-text-secondary/30';
 
 const INPUT_DASHBOARD =
   'w-full rounded-lg px-4 py-3 text-sm font-medium transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-black/20';

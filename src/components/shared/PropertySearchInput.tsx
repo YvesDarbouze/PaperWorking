@@ -90,7 +90,7 @@ export default function PropertySearchInput({
           value={query}
           onChange={handleChange}
           onFocus={() => results.length > 0 && setIsOpen(true)}
-          className="w-full border border-border-accent bg-bg-primary pl-12 pr-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-black focus:outline-none transition-all placeholder:text-text-secondary/30"
+          className="w-full border border-border-accent bg-bg-primary pl-12 pr-6 py-5 text-sm font-black uppercase tracking-widest focus:border-pw-border focus:outline-none transition-all placeholder:text-text-secondary/30"
           placeholder={placeholder}
           autoComplete="off"
         />

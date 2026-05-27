@@ -131,7 +131,7 @@ export default function RecentActivityTable() {
     <div className="flex gap-6 relative w-full h-[600px]">
       {/* Table Container */}
       <div className={`transition-all duration-300 ease-in-out h-full overflow-hidden ${selectedDoc ? 'w-full lg:w-2/3' : 'w-full'}`}>
-        <Card className="h-full flex flex-col overflow-hidden bg-pw-glass-bg border-pw-border rounded-none shadow-none">
+        <Card className="h-full flex flex-col overflow-hidden bg-pw-glass-bg border-pw-border">
           <div className="p-6 pb-0 mb-4 flex-shrink-0">
             <h2 className="text-xl font-medium text-pw-black">Deal Activity</h2>
             <p className="text-sm text-pw-muted mt-1">Documents, tasks, and expenses across your portfolio.</p>
@@ -194,7 +194,7 @@ export default function RecentActivityTable() {
       {/* Split Pane Preview */}
       {selectedDoc && (
         <div className="hidden lg:flex w-1/3 h-full animate-in slide-in-from-right-8 duration-300">
-          <Card className="w-full h-full flex flex-col overflow-hidden border-pw-border bg-pw-glass-bg rounded-none shadow-none">
+          <Card className="w-full h-full flex flex-col overflow-hidden border-pw-border bg-pw-glass-bg">
             <div className="p-4 flex items-center justify-between border-b border-pw-border bg-pw-glass-bg backdrop-blur-md">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-pw-black" />

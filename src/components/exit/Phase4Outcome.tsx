@@ -126,16 +126,16 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                </button>
             </div>
          </div>
-         <div className="flex bg-pw-glass-bg border border-pw-border p-1 rounded-none">
+         <div className="flex bg-pw-glass-bg border border-pw-border p-1">
             <button 
                onClick={() => handleToggle('Sell')}
-               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-all ${strategy === 'Sell' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
+               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Sell' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
             >
                Exit Strategy: Sell
             </button>
             <button 
                onClick={() => handleToggle('Rent')}
-               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider rounded-none transition-all ${strategy === 'Rent' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
+               className={`px-6 py-2 text-xs font-bold uppercase tracking-wider transition-all ${strategy === 'Rent' ? 'bg-pw-accent text-pw-white' : 'text-text-secondary hover:text-text-primary'}`}
             >
                Exit Strategy: Rent & Hold
             </button>
@@ -144,15 +144,15 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
       {!isClosed && <ExitInterview deal={deal} />}
 
-      <div className="w-full max-w-4xl mx-auto aspect-video bg-pw-glass-bg border border-pw-border rounded-none flex flex-col items-center justify-center cursor-pointer hover:bg-pw-glass-bg/85 transition-colors group mb-8 shadow-none">
-        <div className="w-16 h-16 rounded-full bg-pw-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform shadow-none border border-pw-accent/20 backdrop-blur-md">
+      <div className="w-full max-w-4xl mx-auto aspect-video bg-pw-glass-bg border border-pw-border flex flex-col items-center justify-center cursor-pointer hover:bg-pw-glass-bg/85 transition-colors group mb-8">
+        <div className="w-16 h-16 rounded-full bg-pw-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform border border-pw-accent/20 backdrop-blur-md">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pw-accent opacity-80 group-hover:opacity-100 ml-1"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         </div>
         <p className="mt-4 text-[10px] font-black text-text-secondary tracking-widest uppercase">Watch Exit Explainer</p>
       </div>
 
       {viewMode === 'Listing' ? (
-        <div className="flex-1 overflow-y-auto bg-pw-glass-bg/10 rounded-none p-8 backdrop-blur-xl border border-pw-border">
+        <div className="flex-1 overflow-y-auto bg-pw-glass-bg/10 p-8 backdrop-blur-xl border border-pw-border">
            <ProfessionalListingDashboard deal={deal} />
         </div>
       ) : (
@@ -163,7 +163,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
         {/* Left Column: Form Inputs */}
         <div className="space-y-6">
           {strategy === 'Sell' ? (
-             <div className="glass-card border border-pw-border rounded-none p-8 space-y-6">
+             <div className="glass-card border border-pw-border p-8 space-y-6">
                <h3 className="text-lg text-text-primary font-semibold mb-4">Liquidation Parameters</h3>
                <div>
                  <label className="text-xs font-bold text-text-secondary mb-2 block">Actual Sale Price ($)</label>
@@ -187,7 +187,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
                </div>
              </div>
           ) : (
-             <div className="glass-card border border-pw-border rounded-none p-8 space-y-6">
+             <div className="glass-card border border-pw-border p-8 space-y-6">
                <h3 className="text-lg text-text-primary font-semibold mb-4">Revenue & Operations Ledger</h3>
                <div className="grid grid-cols-2 gap-4">
                  <div>
@@ -223,7 +223,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
         {/* Right Column: Financial Ticker Dashboard */}
         <div className="flex flex-col space-y-6">
-           <div className="glass-card border border-pw-border rounded-none p-8 shadow-none relative overflow-hidden h-full flex flex-col justify-center">
+           <div className="glass-card border border-pw-border p-8 relative overflow-hidden h-full flex flex-col justify-center">
               
               <div className="mb-8">
                  <p className="text-xs font-black text-text-secondary uppercase tracking-[0.3em] mb-1 flex items-center">
@@ -262,7 +262,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
               <button
                 onClick={handleCloseProject}
                 disabled={isClosing}
-                className="w-full py-4 mt-6 pw-btn pw-btn--primary rounded-none text-xs font-black uppercase tracking-widest flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
+                className="w-full py-4 mt-6 pw-btn pw-btn--primary text-xs font-black uppercase tracking-widest flex items-center justify-center space-x-2 transition-colors disabled:opacity-50"
               >
                 {isClosing ? (
                   <RefreshCw className="w-5 h-5 animate-spin" />
@@ -273,7 +273,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
               </button>
             )}
             {isClosed && (
-              <div className="w-full py-4 mt-6 bg-pw-glass-bg border border-pw-border text-text-secondary rounded-none font-bold text-xs uppercase tracking-widest flex items-center justify-center space-x-2">
+              <div className="w-full py-4 mt-6 bg-pw-glass-bg border border-pw-border text-text-secondary font-bold text-xs uppercase tracking-widest flex items-center justify-center space-x-2">
                 <Lock className="w-5 h-5" />
                 <span>Project Permanently Closed</span>
               </div>
@@ -286,7 +286,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
         <div className="mt-12">
           <Suspense
             fallback={
-              <div className="animate-pulse bg-pw-glass-bg/10 rounded-none h-64 flex items-center justify-center border border-pw-border">
+              <div className="animate-pulse bg-pw-glass-bg/10 h-64 flex items-center justify-center border border-pw-border">
                 <span className="text-xs text-text-secondary uppercase tracking-widest">Loading NOI Analytics…</span>
               </div>
             }
@@ -297,7 +297,7 @@ export default function Phase4Outcome({ projectId }: Phase4OutcomeProps) {
 
         {/* ── Deal Autopsy: locks all KPIs once status = Sold ── */}
         <div className="mt-12">
-          <Suspense fallback={<div className="h-96 rounded-none bg-pw-glass-bg/10 animate-shimmer border border-pw-border" />}>
+          <Suspense fallback={<div className="h-96 bg-pw-glass-bg/10 animate-shimmer border border-pw-border" />}>
             <DealAutopsy deal={deal} />
           </Suspense>
         </div>

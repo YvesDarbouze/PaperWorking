@@ -176,7 +176,7 @@ export default function RehabPhaseBar() {
                   key={s.stage}
                   className={`px-3 py-2 text-center transition-colors ${
                     isActive
-                      ? 'bg-bg-primary border border-pw-black'
+                      ? 'bg-bg-primary border border-pw-border'
                       : 'border border-border-accent'
                   }`}
                 >

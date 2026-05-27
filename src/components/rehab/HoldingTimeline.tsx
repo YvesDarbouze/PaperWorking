@@ -173,7 +173,7 @@ export default function HoldingTimeline() {
   }
 
   return (
-    <div className="space-y-0 border border-pw-black overflow-hidden">
+    <div className="space-y-0 border border-pw-border overflow-hidden">
 
       {/* ── Header ── */}
       <div className="px-6 py-4 bg-pw-black flex items-center justify-between">
@@ -448,7 +448,7 @@ export default function HoldingTimeline() {
             />
 
             {/* Divider + Total */}
-            <div className="border-t-2 border-pw-black pt-4 mt-2">
+            <div className="border-t-2 border-pw-border pt-4 mt-2">
               <div className="flex items-end justify-between">
                 <div>
                   <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em] mb-1">

@@ -37,10 +37,17 @@ Strict semantic colors for deal status states:
 - `phase-listed`   : #7F7F7F
 - `phase-closed`   : #595959
 
-## 2. Layout Aesthetics
+## 2. Layout Aesthetics (Luminous Glass)
 
-- **Strict 1px Borders**: Replace shadows with strict solid lines (`border border-pw-black` or `border border-pw-border`).
-- **Zero Border Radius**: Eliminating the 'startup' aesthetic. Eliminate `rounded-lg`, `rounded-xl`, `rounded-2xl`, etc. Everything must use absolute sharp edges (`rounded-none`).
+- **Glass Borders**: Use subtle glass borders (`border border-pw-border`) instead of heavy `border-pw-black`. For elevated containers, use frosted glass edges (`border-white/20`).
+- **Radius Scale (Luminous Glass)**: Use the Stitch-extracted radius tokens:
+  - `--radius-sm` (4px / `rounded-sm`): Small elements like checkboxes, badges
+  - `--radius-DEFAULT` (8px / `rounded-lg`): Buttons, inputs, small cards
+  - `--radius-md` (12px / `rounded-xl`): Medium containers, dropdowns
+  - `--radius-lg` (16px / `rounded-2xl`): Dashboard cards, panels, modals
+  - `--radius-xl` (24px / `rounded-3xl`): Hero sections, large feature cards
+  - `--radius-full` (9999px): Pills, avatars, status badges
+- **DO NOT use `rounded-none`** on cards, buttons, or containers. Sharp edges belong to the retired Obsidian Terminal system.
 - **Dense Spacing**: Rely on structured spacing (e.g. `px-6 py-4`) instead of arbitrary margins.
 
 ## 3. Ban on Direct Tailwind Arbitrary Brackets

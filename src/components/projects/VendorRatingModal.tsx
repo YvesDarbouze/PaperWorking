@@ -114,7 +114,7 @@ export default function VendorRatingModal({ vendorName, dealName, isOpen, onClos
           </div>
         ) : (
           <div className="p-16 text-center">
-            <div className="w-20 h-20 rounded-full border-4 border-pw-black flex items-center justify-center mx-auto mb-10 bg-pw-glass-bg">
+            <div className="w-20 h-20 rounded-full border-4 border-pw-border flex items-center justify-center mx-auto mb-10 bg-pw-glass-bg">
               <CheckCircle className="w-10 h-10 text-pw-black" />
             </div>
             <h3 className="text-3xl font-bold tracking-tight text-pw-black mb-4 uppercase">Evaluation Logged</h3>
@@ -142,7 +142,7 @@ function RatingStrip({ value, onChange }: { value: number, onChange: (v: number)
           key={v}
           onClick={() => onChange(v)}
           className={`w-4 h-4 border rounded-full transition-all ${
-            value >= v ? 'bg-pw-black border-pw-black' : 'bg-pw-glass-bg border-pw-border hover:border-pw-black'
+            value >= v ? 'bg-pw-black border-pw-border' : 'bg-pw-glass-bg border-pw-border hover:border-pw-border'
           }`}
         />
       ))}

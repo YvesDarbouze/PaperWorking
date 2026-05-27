@@ -25,7 +25,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
   if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pw-black" />
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pw-border" />
       </div>
     );
   }
@@ -33,8 +33,8 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
   if (invite.status !== 'pending') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
-        <div className="text-center max-w-sm p-6 bg-bg-surface border border-pw-black rounded-none">
-          <div className="w-16 h-16 bg-bg-primary border border-pw-border rounded-none flex items-center justify-center mx-auto mb-4">
+        <div className="text-center max-w-sm p-6 bg-bg-surface border border-pw-border">
+          <div className="w-16 h-16 bg-bg-primary border border-pw-border flex items-center justify-center mx-auto mb-4">
             <XCircle className="w-7 h-7 text-text-secondary" />
           </div>
           <h1 className="text-xl font-bold text-text-primary mb-2">Invitation {invite.status}</h1>
@@ -67,8 +67,8 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-primary px-4">
-        <div className="text-center max-w-sm p-6 bg-bg-surface border border-pw-black rounded-none">
-          <div className="w-16 h-16 bg-bg-primary border border-pw-black rounded-none flex items-center justify-center mx-auto mb-4">
+        <div className="text-center max-w-sm p-6 bg-bg-surface border border-pw-border">
+          <div className="w-16 h-16 bg-bg-primary border border-pw-border flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-text-primary" />
           </div>
           <h1 className="text-xl font-bold text-text-primary mb-2">Welcome to the Team!</h1>
@@ -85,7 +85,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
       <header className="bg-bg-surface border-b border-pw-border px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-pw-black rounded-none flex items-center justify-center">
+            <div className="w-8 h-8 bg-pw-black flex items-center justify-center">
               <span className="text-pw-white text-xs font-bold">PW</span>
             </div>
             <span className="text-sm font-semibold text-text-primary tracking-tight">PaperWorking</span>
@@ -101,7 +101,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
           </p>
         </div>
 
-        <div className="bg-bg-surface rounded-none border border-pw-black p-6">
+        <div className="bg-bg-surface border border-pw-border p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-bg-primary border border-pw-border flex items-center justify-center">
               <Users className="w-6 h-6 text-text-secondary" />
@@ -113,7 +113,7 @@ export default function TeamInviteClient({ invite, token }: { invite: TeamInvita
           </div>
 
           {!emailMatches ? (
-            <div className="p-4 border border-pw-black bg-bg-primary text-text-primary rounded-none">
+            <div className="p-4 border border-pw-border bg-bg-primary text-text-primary">
               <p className="text-sm mb-4">
                 This invitation was sent to <strong>{invite.email}</strong>, but you are logged in as <strong>{user.email}</strong>.
               </p>

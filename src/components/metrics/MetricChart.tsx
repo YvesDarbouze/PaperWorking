@@ -78,7 +78,7 @@ const CustomChartTooltip = ({ active, payload, label, unit, timeWindow }: Custom
   }
 
   return (
-    <div className="bg-pw-surface border border-pw-black rounded-none p-3 shadow-md text-xs font-sans">
+    <div className="bg-pw-surface border border-pw-border p-3 shadow-md text-xs font-sans">
       <p className="font-mono text-[9px] text-pw-muted uppercase tracking-widest mb-1">
         {displayLabel}
       </p>
@@ -159,10 +159,10 @@ export function MetricChart({
   // Loading state shimmer skeleton
   if (loading) {
     return (
-      <div className={`border border-pw-border bg-pw-surface p-6 rounded-none animate-pulse ${className ?? ''}`}>
-        <div className="h-4 w-1/4 bg-pw-border/30 rounded-none mb-2" />
-        <div className="h-8 w-1/3 bg-pw-border/30 rounded-none mb-6" />
-        <div className="h-[200px] w-full bg-pw-border/10 rounded-none" />
+      <div className={`border border-pw-border bg-pw-surface p-6 animate-pulse ${className ?? ''}`}>
+        <div className="h-4 w-1/4 bg-pw-border/30 mb-2" />
+        <div className="h-8 w-1/3 bg-pw-border/30 mb-6" />
+        <div className="h-[200px] w-full bg-pw-border/10" />
       </div>
     );
   }
@@ -170,7 +170,7 @@ export function MetricChart({
   // Guardrail 1: Empty Portfolio
   if (scope === 'portfolio' && (series.length === 0 || series.every(p => p.value === null))) {
     return (
-      <div className={`border border-pw-border bg-pw-surface p-6 rounded-none flex items-center justify-center min-h-[250px] ${className ?? ''}`}>
+      <div className={`border border-pw-border bg-pw-surface p-6 flex items-center justify-center min-h-[250px] ${className ?? ''}`}>
         <p className="text-xs font-sans font-medium uppercase tracking-widest text-pw-muted text-center max-w-sm">
           No active projects in the portfolio to display.
         </p>
@@ -204,7 +204,7 @@ export function MetricChart({
     const pctFormatted = `${isPositive ? '+' : ''}${pctChange.toFixed(2)}%`;
 
     trendElement = (
-      <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-none border text-[10px] font-mono font-semibold shrink-0 ${trendColorClass}`}>
+      <div className={`flex items-center gap-1 px-1.5 py-0.5 border text-[10px] font-mono font-semibold shrink-0 ${trendColorClass}`}>
         <TrendIcon className="w-2.5 h-2.5 shrink-0" aria-hidden="true" />
         <span>
           {pctFormatted} ({isPositive ? '+' : '-'}{absDiffFormatted})
@@ -214,7 +214,7 @@ export function MetricChart({
   }
 
   return (
-    <div className={`border border-pw-border bg-pw-surface p-6 rounded-none flex flex-col justify-between ${className ?? ''}`}>
+    <div className={`border border-pw-border bg-pw-surface p-6 flex flex-col justify-between ${className ?? ''}`}>
       {/* Scope-based Header */}
       {scope === 'project' && (
         <div className="flex flex-col gap-1 pb-4">
@@ -250,7 +250,7 @@ export function MetricChart({
 
       {/* Guardrail 2: Insufficient History */}
       {!showChart ? (
-        <div className="flex flex-col items-center justify-center min-h-[180px] bg-pw-bg border border-pw-border rounded-none p-4 mt-2">
+        <div className="flex flex-col items-center justify-center min-h-[180px] bg-pw-bg border border-pw-border p-4 mt-2">
           <p className="text-xs font-sans text-pw-muted text-center max-w-xs">
             Insufficient history to display trend chart (at least 2 data points required).
           </p>

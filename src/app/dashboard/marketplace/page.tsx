@@ -298,7 +298,7 @@ export default function MarketplacePage() {
         <button
           type="button"
           onClick={handleFindVendors}
-          className="px-6 py-3.5 bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors rounded-none"
+          className="px-6 py-3.5 bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
           Find Vendors

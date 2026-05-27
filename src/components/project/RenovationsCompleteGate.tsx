@@ -17,7 +17,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
   const isReady = !hasBlockers && finalInspectionPassed && lienWaiversSigned && allCostsLogged;
 
   return (
-    <div className="p-6 rounded-none border transition-colors duration-300" style={{ backgroundColor: 'var(--bg-surface)', borderColor: isReady ? 'var(--border-ui)' : '#fee2e2' }}>
+    <div className="p-6 border transition-colors duration-300" style={{ backgroundColor: 'var(--bg-surface)', borderColor: isReady ? 'var(--border-ui)' : '#fee2e2' }}>
       <div className="flex items-start gap-4">
         <div className={`p-3 rounded-full ${!hasBlockers ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
           {!hasBlockers ? <ShieldCheck className="w-6 h-6" /> : <AlertTriangle className="w-6 h-6" />}
@@ -30,7 +30,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
 
           {/* Automated Blockers */}
           {hasBlockers && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-none">
+            <div className="mt-4 p-4 bg-red-50 border border-red-200">
               <h4 className="text-sm font-semibold text-red-800">Cannot complete phase yet</h4>
               <ul className="list-disc ml-5 mt-2 text-sm text-red-700 space-y-1">
                 {unpaidInvoicesCount > 0 && <li>There are <strong>{unpaidInvoicesCount} unpaid invoices</strong>. Please resolve all payments.</li>}
@@ -41,7 +41,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
 
           {/* Manual Confirmations */}
           {!hasBlockers && (
-            <div className="mt-6 space-y-4 p-4 rounded-none border" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}>
+            <div className="mt-6 space-y-4 p-4 border" style={{ borderColor: 'var(--border-ui)', backgroundColor: 'var(--bg-canvas)' }}>
               <h4 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Final Clearances</h4>
               
               <label className="flex items-start gap-3 cursor-pointer">
@@ -99,7 +99,7 @@ export function RenovationsCompleteGate({ onComplete, unpaidInvoicesCount, uncom
             <button
               onClick={onComplete}
               disabled={!isReady}
-              className={`flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 rounded-none text-white font-semibold transition-all ${
+              className={`flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 text-white font-semibold transition-all ${
                 isReady 
                   ? 'bg-green-600 hover:bg-green-700' 
                   : 'bg-gray-300 cursor-not-allowed'

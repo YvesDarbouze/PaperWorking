@@ -1033,7 +1033,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
           <select
             value={value}
             onChange={(e) => updateValue(activeStep.field, e.target.value)}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-border focus:outline-none"
           >
             <option value="" disabled>Select an option</option>
             {activeStep.options?.map(o => (
@@ -1050,7 +1050,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               value={value}
               onChange={(e) => updateValue(activeStep.field, e.target.value)}
               placeholder={activeStep.placeholder}
-              className="pw-input text-lg py-3 pl-10 pr-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-lg py-3 pl-10 pr-4 w-full border border-pw-border focus:outline-none tabular-nums"
             />
           </div>
         );
@@ -1062,7 +1062,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               value={value}
               onChange={(e) => updateValue(activeStep.field, e.target.value)}
               placeholder={activeStep.placeholder}
-              className="pw-input text-lg py-3 pl-4 pr-10 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-lg py-3 pl-4 pr-10 w-full border border-pw-border focus:outline-none tabular-nums"
               min="0"
               step="0.1"
             />
@@ -1077,7 +1077,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               value={value}
               onChange={(e) => updateValue(activeStep.field, e.target.value)}
               placeholder={activeStep.placeholder}
-              className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none tabular-nums"
+              className="pw-input text-lg py-3 px-4 w-full border border-pw-border focus:outline-none tabular-nums"
               min="0"
             />
           </div>
@@ -1089,7 +1089,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
               type="date"
               value={value}
               onChange={(e) => updateValue(activeStep.field, e.target.value)}
-              className="pw-input text-lg py-3 px-4 w-full border border-pw-black rounded-none focus:outline-none"
+              className="pw-input text-lg py-3 px-4 w-full border border-pw-border focus:outline-none"
             />
           </div>
         );
@@ -1102,7 +1102,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
             value={value}
             onChange={(e) => updateValue(activeStep.field, e.target.value)}
             placeholder={activeStep.placeholder}
-            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-black rounded-none focus:outline-none"
+            className="pw-input text-lg py-3 px-4 w-full max-w-lg border border-pw-border focus:outline-none"
           />
         );
     }
@@ -1113,7 +1113,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
   // ══════════════════════════════════════════════════════════════
 
   return (
-    <div className="bg-pw-white border border-pw-black p-6 md:p-8 rounded-none text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
+    <div className="bg-pw-white border border-pw-border p-6 md:p-8 text-left shadow-sm mb-8 w-full max-w-3xl mx-auto">
 
       {/* Header */}
       <div className="flex justify-between items-center border-b border-pw-border pb-4 mb-6">
@@ -1141,7 +1141,7 @@ export default function PurchaseInterview({ deal }: PurchaseInterviewProps) {
                 ${progress === 'complete'
                   ? 'bg-black text-white border-black'
                   : progress === 'active'
-                    ? 'bg-pw-bg text-text-primary border-pw-black'
+                    ? 'bg-pw-bg text-text-primary border-pw-border'
                     : 'bg-transparent text-text-secondary/50 border-pw-border hover:bg-pw-bg/50'
                 }
               `}

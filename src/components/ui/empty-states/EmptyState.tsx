@@ -42,7 +42,7 @@ export function EmptyState({
 
   if (variant === 'card') {
     return (
-      <div className={`glass-card rounded-none p-6 flex flex-col items-center text-center max-w-md w-full border border-pw-border ${className}`}>
+      <div className={`glass-card p-6 flex flex-col items-center text-center max-w-md w-full border border-pw-border ${className}`}>
         <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
           <div className="absolute inset-0 bg-pw-primary/10 blur-xl rounded-full" />
           {Icon && <Icon className="w-8 h-8 text-pw-primary relative z-10" />}
@@ -64,7 +64,7 @@ export function EmptyState({
 
   // default: full screen / prominent portfolio style empty state matching Stitch projects empty state
   return (
-    <div className={`glass-card rounded-none p-8 md:p-12 flex flex-col items-center text-center max-w-lg w-full border border-pw-border/50 relative overflow-hidden ${className}`}>
+    <div className={`glass-card p-8 md:p-12 flex flex-col items-center text-center max-w-lg w-full border border-pw-border/50 relative overflow-hidden ${className}`}>
       {/* Glow effect */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-pw-primary/10 blur-[80px] rounded-full pointer-events-none" />
 
@@ -95,7 +95,7 @@ export function EmptyState({
       {action && (
         <button
           onClick={action.onClick}
-          className="pw-btn pw-btn--primary flex items-center gap-2 px-6 py-3 rounded-none font-bold text-sm tracking-wider uppercase shadow-[0_0_20px_-5px_rgba(45,212,191,0.4)]"
+          className="pw-btn pw-btn--primary flex items-center gap-2 px-6 py-3 font-bold text-sm tracking-wider uppercase shadow-[0_0_20px_-5px_rgba(45,212,191,0.4)]"
         >
           {action.icon && <action.icon className="w-5 h-5" />}
           {action.label}

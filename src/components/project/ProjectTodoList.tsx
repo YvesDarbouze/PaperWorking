@@ -135,7 +135,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
       </div>
 
       {showUpgradeBanner && (
-        <div className="p-4 border border-pw-black bg-bg-surface text-text-primary rounded-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div className="p-4 border border-pw-border bg-bg-surface text-text-primary flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <p className="font-semibold text-sm">Upgrade Required</p>
             <p className="text-xs text-text-secondary mt-1">
@@ -152,7 +152,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
       )}
 
       {showInactiveBanner && (
-        <div className="p-4 border border-pw-black bg-bg-surface text-text-primary rounded-none flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+        <div className="p-4 border border-pw-border bg-bg-surface text-text-primary flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <p className="font-semibold text-sm">Subscription Inactive</p>
             <p className="text-xs text-text-secondary mt-1">
@@ -172,7 +172,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
         {todos.map(todo => (
           <div 
             key={todo.id} 
-            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-none border transition-all ${todo.completed ? 'bg-bg-surface/40 border-pw-border' : (todo.needsReassignment ? 'bg-red-500/10 border-red-500' : 'bg-bg-surface border-pw-black')}`}
+            className={`flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border transition-all ${todo.completed ? 'bg-bg-surface/40 border-pw-border' : (todo.needsReassignment ? 'bg-red-500/10 border-red-500' : 'bg-bg-surface border-pw-border')}`}
           >
             <div className="flex items-start gap-4 mb-3 sm:mb-0">
               <button 
@@ -220,7 +220,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
                       isMeAllowed ? (
                         <div className="flex items-center gap-2">
                           {todo.assignee && todo.assignee !== (profile?.email || user?.email) && (
-                            <span className="text-xs text-text-secondary mr-2 bg-bg-surface/50 px-2 py-1 border border-pw-border rounded-none">
+                            <span className="text-xs text-text-secondary mr-2 bg-bg-surface/50 px-2 py-1 border border-pw-border">
                               Assigned to: {todo.assignee}
                             </span>
                           )}
@@ -299,7 +299,7 @@ export default function ProjectTodoList({ deal, phase = 1 }: { deal: Project, ph
               
               {(!canAssign || todo.completed || todo.type !== 'delegate') && todo.assignee && (
                  <div className="mt-2 sm:mt-0 sm:ml-4">
-                    <span className={`text-xs bg-bg-surface/50 px-2 py-1 rounded-none border ${todo.needsReassignment ? 'border-red-500 text-red-500' : 'border-pw-border text-text-secondary'}`}>
+                    <span className={`text-xs bg-bg-surface/50 px-2 py-1 border ${todo.needsReassignment ? 'border-red-500 text-red-500' : 'border-pw-border text-text-secondary'}`}>
                       Assigned to: {todo.assignee} {todo.needsReassignment ? '(Needs Reassignment)' : ''}
                     </span>
                  </div>

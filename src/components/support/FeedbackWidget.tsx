@@ -40,13 +40,13 @@ export function FeedbackWidget() {
           <div className="flex items-center gap-3">
             <button
               onClick={handleYes}
-              className="px-5 py-2 border border-pw-black text-pw-black bg-transparent rounded-full text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-colors"
+              className="px-5 py-2 border border-pw-border text-pw-black bg-transparent rounded-full text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-colors"
             >
               Yes
             </button>
             <button
               onClick={handleNo}
-              className="px-5 py-2 border border-pw-black text-pw-black bg-transparent rounded-full text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-colors"
+              className="px-5 py-2 border border-pw-border text-pw-black bg-transparent rounded-full text-xs font-bold uppercase tracking-widest hover:bg-pw-black hover:text-pw-white transition-colors"
             >
               No
             </button>

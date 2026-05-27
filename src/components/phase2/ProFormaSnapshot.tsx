@@ -5,7 +5,7 @@ export function ProFormaSnapshot() {
     <div className="w-full border border-pw-border bg-pw-white">
       <div className="border-b border-pw-border px-6 py-4 pw-phase-contract flex justify-between items-center">
         <h2 className="text-lg font-light uppercase tracking-widest text-pw-black">R0 Baseline Snapshot</h2>
-        <span className="text-xs font-black uppercase tracking-widest text-pw-black border border-pw-black px-2 py-1">Locked v1.0</span>
+        <span className="text-xs font-black uppercase tracking-widest text-pw-black border border-pw-border px-2 py-1">Locked v1.0</span>
       </div>
       
       <div className="p-6">

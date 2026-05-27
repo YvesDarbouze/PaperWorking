@@ -26,7 +26,7 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
   };
 
   return (
-    <div className="glass-card rounded-none border border-pw-border p-6 relative overflow-hidden">
+    <div className="glass-card border border-pw-border p-6 relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6 pb-4 border-b border-pw-border">
         <ArrowRightLeft className="w-3.5 h-3.5 text-pw-accent" />
@@ -43,7 +43,7 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
         {/* Sell Card */}
         <button
           onClick={() => handleToggle('Sell')}
-          className={`group relative p-6 border transition-all duration-300 text-left rounded-none ${
+          className={`group relative p-6 border transition-all duration-300 text-left ${
             strategy === 'Sell'
               ? 'border-pw-accent bg-pw-accent text-pw-white'
               : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'
@@ -62,7 +62,7 @@ export default function ExitStrategyFork({ projectId, strategy, onStrategyChange
         {/* Hold Card */}
         <button
           onClick={() => handleToggle('Rent')}
-          className={`group relative p-6 border transition-all duration-300 text-left rounded-none ${
+          className={`group relative p-6 border transition-all duration-300 text-left ${
             strategy === 'Rent'
               ? 'border-pw-accent bg-pw-accent text-pw-white'
               : 'border-pw-border bg-pw-glass-bg text-text-primary hover:border-pw-accent'

@@ -40,7 +40,7 @@ function fmtDollar(n: number): string {
   return `${sign}$${abs.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 }
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
+const shimmerCls = 'animate-pulse bg-pw-border/30';
 
 const METRICS_LABELS: Record<keyof YearMetrics, string> = {
   noi:       'NOI',
@@ -58,7 +58,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-bg-surface/90 backdrop-blur-md border border-pw-border rounded-none px-4 py-3 shadow-lg text-xs min-w-[140px]">
+    <div className="bg-bg-surface/90 backdrop-blur-md border border-pw-border px-4 py-3 shadow-lg text-xs min-w-[140px]">
       <p className="font-black text-[9px] text-text-secondary uppercase tracking-widest mb-2 border-b border-pw-border pb-1">{label}</p>
       {payload.map(p => (
         <div key={p.name} className="flex justify-between gap-4 mt-1 uppercase tracking-wider text-[9px]">
@@ -100,7 +100,7 @@ export function YoYComparisonChart({ currentYearMetrics, priorYearMetrics, isLoa
 
   if (isLoading) {
     return (
-      <div className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
+      <div className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-4 ${className ?? ''}`}>
         <div className={`h-4 w-48 ${shimmerCls}`} />
         <div className={`h-56 w-full ${shimmerCls}`} />
       </div>
@@ -112,7 +112,7 @@ export function YoYComparisonChart({ currentYearMetrics, priorYearMetrics, isLoa
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`glass-card rounded-none border border-pw-border bg-bg-surface p-6 space-y-5 shadow-none ${className ?? ''}`}
+      className={`glass-card border border-pw-border bg-bg-surface p-6 space-y-5 ${className ?? ''}`}
     >
       <div className="flex items-start justify-between">
         <div>
@@ -120,7 +120,7 @@ export function YoYComparisonChart({ currentYearMetrics, priorYearMetrics, isLoa
           <p className="text-[10px] text-text-secondary mt-0.5 uppercase tracking-wider">2025 vs 2026 — NOI, Cash Flow, Cap Rate, CoC</p>
         </div>
         {!hasPrior && (
-          <span className="text-[9px] text-text-secondary bg-pw-bg/50 border border-pw-border rounded-none px-2 py-0.5 font-black uppercase tracking-widest">
+          <span className="text-[9px] text-text-secondary bg-pw-bg/50 border border-pw-border px-2 py-0.5 font-black uppercase tracking-widest">
             Prior year estimated
           </span>
         )}
@@ -173,7 +173,7 @@ export function YoYComparisonChart({ currentYearMetrics, priorYearMetrics, isLoa
           const delta = curr - prev;
           const isPct = key === 'capRate' || key === 'cocReturn';
           return (
-            <div key={key} className="rounded-none border border-pw-border bg-pw-bg/50 px-3 py-2.5">
+            <div key={key} className="border border-pw-border bg-pw-bg/50 px-3 py-2.5">
               <p className="text-[9px] text-text-secondary uppercase tracking-widest font-black">{METRICS_LABELS[key]}</p>
               <p className="text-sm font-bold font-mono text-text-primary mt-0.5">
                 {isPct ? `${curr.toFixed(2)}%` : fmtDollar(curr)}

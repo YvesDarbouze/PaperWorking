@@ -32,7 +32,7 @@ function AdminSkeleton() {
         </div>
         <div className="flex-1 px-3 py-4 space-y-3">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-8 animate-shimmer rounded-none" style={{ animationDelay: `${i * 60}ms` }} />
+            <div key={i} className="h-8 animate-shimmer rounded" style={{ animationDelay: `${i * 60}ms` }} />
           ))}
         </div>
       </aside>
@@ -42,13 +42,13 @@ function AdminSkeleton() {
           style={{ height: 64, background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-ui)' }}
         >
           <div className="flex h-16 items-center px-6">
-            <div className="h-4 w-32 animate-shimmer rounded-none" />
+            <div className="h-4 w-32 animate-shimmer rounded" />
           </div>
         </header>
         <main className="flex-1 px-margin-mobile py-gutter-mobile lg:px-margin-desktop lg:py-gutter-desktop" style={{ background: 'var(--bg-canvas)' }}>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-36 animate-shimmer rounded-none" style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }} />
+              <div key={i} className="h-36 animate-shimmer rounded" style={{ border: '1px solid var(--border-ui)', animationDelay: `${i * 80}ms` }} />
             ))}
           </div>
         </main>

@@ -62,7 +62,7 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
   }, [deal, tax, salePrice]);
 
   return (
-    <div className="glass-card border border-pw-border rounded-none shadow-none">
+    <div className="glass-card border border-pw-border">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-pw-border bg-pw-black text-pw-white">
         <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
 
       {/* Preview */}
       <div className="px-6 py-6 space-y-4 bg-pw-glass-bg/30">
-        <div className="bg-pw-glass-bg border border-pw-border p-5 space-y-3 rounded-none">
+        <div className="bg-pw-glass-bg border border-pw-border p-5 space-y-3">
           <div className="pb-3 border-b border-pw-border">
             <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
               Property: {deal.propertyName || 'Untitled'}
@@ -109,19 +109,19 @@ export default function TaxReportGenerator({ deal }: TaxReportGeneratorProps) {
       <div className="px-6 py-4 border-t border-pw-border flex flex-col gap-3 sm:flex-row bg-pw-glass-bg/30">
         <button
           onClick={handleDownloadPDF}
-          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--primary rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--primary text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <Printer className="w-3.5 h-3.5" /> Export_PDF
         </button>
         <button
           onClick={handleDownloadCSV}
-          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--secondary rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--secondary text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <FileSpreadsheet className="w-3.5 h-3.5" /> Export_CSV
         </button>
         <button
           onClick={handleCopyText}
-          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--outline rounded-none text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
+          className="flex-1 flex items-center justify-center gap-2 pw-btn pw-btn--outline text-[10px] font-black py-3 uppercase tracking-[0.3em] transition-all"
         >
           <Download className="w-3.5 h-3.5" /> Copy_Text
         </button>

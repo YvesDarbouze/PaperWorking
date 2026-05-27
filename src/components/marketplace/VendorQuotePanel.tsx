@@ -117,7 +117,7 @@ export function VendorQuotePanel({ projectId }: VendorQuotePanelProps) {
                   </button>
                 )}
                 {req.status === 'ACCEPTED' && (
-                  <div className="flex items-center gap-2 text-pw-black px-6 py-2.5 border border-pw-black">
+                  <div className="flex items-center gap-2 text-pw-black px-6 py-2.5 border border-pw-border">
                     <CheckCircle className="w-4 h-4" />
                     <span className="font-black text-[10px] uppercase tracking-widest">Accepted</span>
                   </div>

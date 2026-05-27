@@ -37,7 +37,7 @@ function BenchmarkBadge({ value, target }: BenchmarkBadgeProps) {
   const above = value >= target;
   return (
     <span
-      className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-none font-mono border ${
+      className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 font-mono border ${
         above 
           ? 'text-pw-accent border-pw-accent/40 bg-pw-accent/5' 
           : 'text-text-secondary border-pw-border bg-pw-border/20'
@@ -48,7 +48,7 @@ function BenchmarkBadge({ value, target }: BenchmarkBadgeProps) {
   );
 }
 
-const shimmerCls = 'animate-pulse bg-pw-border/30 rounded-none';
+const shimmerCls = 'animate-pulse bg-pw-border/30';
 
 interface KPITileProps {
   label: string;
@@ -78,7 +78,7 @@ function KPITile({ label, value, target, rawValue, delay = 0 }: KPITileProps) {
 export function ExitMetricsSummaryBar({ netProfit, roi, cocReturn, capRate, isLoading, className }: ExitMetricsSummaryBarProps) {
   if (isLoading) {
     return (
-      <div className={`flex items-stretch rounded-none border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border ${className ?? ''}`}>
+      <div className={`flex items-stretch border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border ${className ?? ''}`}>
         {[0, 1, 2, 3].map(i => (
           <div key={i} className="flex-1 flex flex-col items-center justify-center px-4 py-3 space-y-2">
             <div className={`h-2.5 w-16 ${shimmerCls}`} />
@@ -119,7 +119,7 @@ export function ExitMetricsSummaryBar({ netProfit, roi, cocReturn, capRate, isLo
 
   return (
     <div
-      className={`flex items-stretch rounded-none border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border glass-card shadow-none ${className ?? ''}`}
+      className={`flex items-stretch border border-pw-border bg-bg-surface overflow-hidden divide-x divide-pw-border glass-card ${className ?? ''}`}
       role="group"
       aria-label="Exit metrics summary"
     >

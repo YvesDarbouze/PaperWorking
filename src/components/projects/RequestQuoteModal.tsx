@@ -122,7 +122,7 @@ export default function RequestQuoteModal({ vendor, isOpen, onClose }: RequestQu
             </div>
           ) : (
             <div className="p-16 text-center">
-              <div className="w-20 h-20 rounded-full border-4 border-pw-black flex items-center justify-center mx-auto mb-10 bg-pw-glass-bg">
+              <div className="w-20 h-20 rounded-full border-4 border-pw-border flex items-center justify-center mx-auto mb-10 bg-pw-glass-bg">
                 <CheckCircle2 className="w-10 h-10 text-pw-black" />
               </div>
               <h3 className="text-3xl font-bold tracking-tight text-pw-black mb-4 uppercase">Transmission Confirmed</h3>
@@ -152,7 +152,7 @@ function FolderCheckbox({ label, description, checked, onChange }: { label: stri
       }`}
     >
       <div className={`mt-0.5 w-4 h-4 border rounded flex items-center justify-center transition-all ${
-        checked ? 'bg-pw-black border-pw-black' : 'bg-pw-glass-bg/50 border-pw-border'
+        checked ? 'bg-pw-black border-pw-border' : 'bg-pw-glass-bg/50 border-pw-border'
       }`}>
         {checked && <div className="w-1.5 h-1.5 bg-pw-white" />}
       </div>

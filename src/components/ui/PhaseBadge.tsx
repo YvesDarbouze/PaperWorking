@@ -53,7 +53,7 @@ export default function PhaseBadge({ status, className = '' }: PhaseBadgeProps) 
     <span className={`
       inline-flex items-center px-2 py-0.5 
       text-xs font-black uppercase tracking-widest 
-      rounded-none border border-black/5
+      border border-black/5
       ${bgColorClass} ${textColorClass}
       ${className}
     `}>

@@ -84,7 +84,7 @@ export default function DraftAssistant({ deal, onClose, onInsert }: DraftAssista
         <button 
           onClick={generateDraft}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-5 py-6 bg-pw-black text-pw-white text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent disabled:opacity-20 border border-pw-black shadow-xl"
+          className="w-full flex items-center justify-center gap-5 py-6 bg-pw-black text-pw-white text-sm font-black uppercase tracking-[0.4em] transition-all hover:bg-pw-accent disabled:opacity-20 border border-pw-border shadow-xl"
         >
           {loading ? (
              <RefreshCw className="w-5 h-5 animate-spin" />
@@ -116,7 +116,7 @@ export default function DraftAssistant({ deal, onClose, onInsert }: DraftAssista
                </div>
                <button 
                   onClick={() => onInsert(draft)}
-                  className="w-full flex items-center justify-center gap-4 py-6 bg-bg-surface border border-pw-black text-text-primary text-sm font-black uppercase tracking-[0.3em] hover:bg-pw-black hover:text-pw-white transition-all shadow-xl"
+                  className="w-full flex items-center justify-center gap-4 py-6 bg-bg-surface border border-pw-border text-text-primary text-sm font-black uppercase tracking-[0.3em] hover:bg-pw-black hover:text-pw-white transition-all shadow-xl"
                >
                   <Check className="w-5 h-5" />
                   <span>COMMIT TO COMMUNICATION LEDGER</span>

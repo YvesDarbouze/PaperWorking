@@ -84,3 +84,6 @@ diagnostics_cache/
 .agents/skills/
 diagnostics_cache/
 scratch/
+
+# Temp dependencies backups
+/node_modules.old/

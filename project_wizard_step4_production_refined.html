@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Project Creation Step 4</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "secondary-fixed": "#d8e2ff",
+                "secondary-container": "#0566d9",
+                "error": "#ffb4ab",
+                "on-secondary-fixed-variant": "#004395",
+                "on-secondary-fixed": "#001a42",
+                "surface-dim": "#0b141a",
+                "surface-container-low": "#141d23",
+                "surface-container-high": "#222b32",
+                "tertiary-container": "#ffac5a",
+                "on-secondary-container": "#e6ecff",
+                "on-error": "#690005",
+                "primary-fixed-dim": "#3cddc7",
+                "surface-tint": "#3cddc7",
+                "surface-container-lowest": "#060f15",
+                "secondary-fixed-dim": "#adc6ff",
+                "primary": "#57f1db",
+                "on-tertiary-fixed": "#2d1600",
+                "on-background": "#dae4ec",
+                "inverse-surface": "#dae4ec",
+                "tertiary": "#ffd1aa",
+                "on-tertiary": "#4b2800",
+                "secondary": "#adc6ff",
+                "on-primary-container": "#00574d",
+                "primary-container": "#2dd4bf",
+                "outline-variant": "#3c4a46",
+                "surface-container-highest": "#2d363d",
+                "surface-bright": "#313a41",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#ffdcc0",
+                "surface-variant": "#2d363d",
+                "tertiary-fixed-dim": "#ffb875",
+                "primary-fixed": "#62fae3",
+                "on-tertiary-fixed-variant": "#6b3b00",
+                "on-surface-variant": "#bacac5",
+                "inverse-primary": "#006b5f",
+                "on-primary-fixed-variant": "#005047",
+                "on-primary-fixed": "#00201c",
+                "outline": "#859490",
+                "background": "#0b141a",
+                "surface-container": "#182127",
+                "on-tertiary-container": "#744000",
+                "inverse-on-surface": "#293238",
+                "on-surface": "#dae4ec",
+                "on-primary": "#003731",
+                "on-error-container": "#ffdad6",
+                "surface": "#0b141a",
+                "on-secondary": "#002e6a"
+            },
+            "fontFamily": {
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-lg": ["Hanken Grotesk"],
+                "mono": ["JetBrains Mono"],
+                "label-sm": ["Hanken Grotesk"],
+                "headline-lg": ["Plus Jakarta Sans"]
+            },
+            "spacing": {
+                "margin-mobile": "20px",
+                "margin-desktop": "40px",
+                "stack-md": "16px",
+                "stack-lg": "32px",
+                "unit": "8px"
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-card {
+            background: rgba(24, 33, 39, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .luminous-button {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .luminous-button:hover {
+            box-shadow: 0 0 25px -2px rgba(87, 241, 219, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .luminous-button:active {
+            transform: scale(0.98);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+            border: 2px solid #060f15;
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2dd4bf;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2dd4bf;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- Top Navigation Bar (Shared Component Strategy) -->
+<header class="bg-surface-container-lowest/80 backdrop-blur-xl text-primary font-headline-md text-headline-md fixed top-0 w-full z-50 border-b border-white/10 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="transition-all duration-200 active:scale-95 hover:bg-white/5 p-2 rounded-full">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">PaperWorking</span>
+</div>
+<div class="flex items-center">
+<button class="transition-all duration-200 active:scale-95 hover:bg-white/5 p-2 rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Progress Bar -->
+<div class="w-full flex gap-[8px] mb-10 h-1"><div class="h-1 flex-grow rounded-full bg-primary-container transition-all duration-300"></div>
+<div class="h-1 flex-grow rounded-full bg-primary-container transition-all duration-300"></div>
+<div class="h-1 flex-grow rounded-full bg-primary-container transition-all duration-300"></div>
+<div class="flex flex-col flex-grow gap-2">
+<div class="h-1 w-full rounded-full bg-primary-container transition-all duration-300"></div>
+<div class="h-[2px] w-full bg-primary shadow-[0_0_8px_rgba(87,241,219,0.5)]"></div>
+</div>
+<div class="h-1 flex-grow rounded-full bg-white/10 transition-all duration-300"></div></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+<!-- Left Column: Guidance -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-tight">
+                    How much of this Project do you own?
+                </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                    Some metrics — like cash-on-cash and IRR — change based on your share.
+                </p>
+<!-- Decorative Visualization -->
+<div class="mt-8 glass-card rounded-2xl p-8 aspect-square relative overflow-hidden hidden lg:flex items-center justify-center">
+<div class="relative w-48 h-48 rounded-full border-[12px] border-white/5 flex items-center justify-center" id="chart-container">
+<div class="absolute inset-0 rounded-full border-[12px] border-primary transition-all duration-500" id="ownership-fill" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%, 50% 0%);"></div>
+<div class="flex flex-col items-center">
+<span class="font-mono text-4xl font-bold text-primary" id="ownership-display">100%</span>
+<span class="text-xs uppercase tracking-widest text-on-surface-variant opacity-60">Ownership</span>
+</div>
+</div>
+<!-- Atmosphere Glow -->
+<div class="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
+</div>
+</div>
+<!-- Right Column: Interactive Form -->
+<div class="lg:col-span-7 space-y-stack-lg">
+<!-- Ownership Slider Section -->
+<section class="glass-card rounded-2xl p-8">
+<div class="flex justify-between items-end mb-6"><label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Your Ownership</label>
+<div class="flex items-center gap-3">
+<input class="w-24 bg-surface-container-lowest border border-white/10 rounded-lg px-2 py-1 text-right font-mono text-xl text-primary focus:border-primary focus:ring-1 focus:ring-primary/50" id="precision-ownership-input" max="100" min="0" step="0.01" type="number" value="100"/>
+<span class="font-mono text-[32px] text-primary" id="slider-readout">100%</span>
+</div></div>
+<div class="relative py-6">
+<input class="w-full" id="ownership-slider" max="100" min="0" step="1" type="range" value="100"/>
+<div class="absolute left-1/2 -bottom-2 transform -translate-x-1/2 flex flex-col items-center">
+<div class="w-px h-2 bg-white/20"></div>
+<span class="font-mono text-[10px] text-on-surface-variant mt-1">50%</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 mt-6 bg-white/5 p-4 rounded-xl border border-white/5">
+<span class="material-symbols-outlined text-primary text-sm mr-1">info</span>
+                        Solo investors leave this at 100%. Partnered or syndicated deals — set it lower.
+                    </p>
+</section>
+<!-- Syndication Toggle -->
+<section class="glass-card rounded-2xl p-6 flex items-center justify-between">
+<div>
+<h4 class="font-label-md text-on-surface">This is a syndicated or partnered deal</h4>
+<p class="font-body-sm text-on-surface-variant">Enable to split equity with external partners</p>
+</div>
+<div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-700 right-6 checked:right-0 transition-all duration-300" id="syndication-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer transition-colors duration-300" for="syndication-toggle"></label>
+</div>
+</section>
+<!-- Expanded Partners Section -->
+<section class="glass-card rounded-2xl p-8 space-y-stack-md transition-all duration-300 overflow-hidden" id="partners-section" style="max-height: 1000px; opacity: 1; transform: translateY(0); transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-label-md text-on-surface-variant uppercase tracking-wider text-xs">Add partners (optional in this step)</h4>
+<span class="font-body-sm text-on-surface-variant/60 italic">You can complete this in the Project</span>
+</div>
+<!-- Partner Row -->
+<div class="grid grid-cols-12 gap-3 items-center">
+<div class="col-span-7">
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary/50 focus:ring-0 transition-all" placeholder="Partner Name" type="text"/>
+</div>
+<div class="col-span-4 relative">
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:border-primary/50 focus:ring-0 transition-all pr-8" type="number" value="0"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono text-sm">%</span>
+</div>
+<div class="col-span-1 text-center">
+<button class="text-on-surface-variant hover:text-error transition-colors p-2">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Add Button -->
+<button class="w-full py-3 px-4 border border-dashed border-primary/30 rounded-xl flex items-center justify-center gap-2 text-primary font-label-md hover:bg-primary/5 transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform">add</span>
+                        + Add another partner
+                    </button>
+<!-- Allocation Strip -->
+<div class="pt-4 mt-6 border-t border-white/5">
+<div class="bg-surface-container-lowest/50 rounded-lg px-4 py-2 flex justify-between items-center">
+<div class="flex gap-4">
+<span class="font-mono text-xs text-primary">Allocated: <span class="font-bold">100%</span></span>
+<span class="font-mono text-xs text-on-surface-variant">Unallocated: <span class="font-bold">0%</span></span>
+</div>
+<div class="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-full shadow-[0_0_8px_rgba(87,241,219,0.5)]"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Sticky Footer Navigation -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest/90 backdrop-blur-2xl border-t border-white/10 px-margin-mobile md:px-margin-desktop py-6 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+<div class="max-w-container-max mx-auto flex justify-between items-center"><button class="flex items-center gap-2 text-on-surface-variant font-label-md hover:text-on-surface transition-all active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+  Back
+</button>
+<button class="luminous-button bg-primary text-on-primary px-10 py-4 rounded-xl font-headline-md font-bold flex items-center gap-2 tracking-wide">
+  Continue
+  <span class="material-symbols-outlined">arrow_forward</span>
+</button></div>
+</footer>
+<script>
+        const slider = document.getElementById('ownership-slider');
+        const readout = document.getElementById('slider-readout');
+        const visualReadout = document.getElementById('ownership-display');
+        const ownershipFill = document.getElementById('ownership-fill');
+        const syndicationToggle = document.getElementById('syndication-toggle');
+        const partnersSection = document.getElementById('partners-section');
+
+        // Slider Interaction
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            readout.textContent = `${val}%`;
+            visualReadout.textContent = `${val}%`;
+            
+            // Adjust the CSS clip path for the radial visualization
+            // Simplistic visualization of ownership percentage
+            const percentage = val;
+            if (percentage >= 100) {
+                ownershipFill.style.clipPath = 'none';
+            } else {
+                const angle = (percentage / 100) * 360;
+                // Complex clip path logic for CSS circular arc simplified for demo
+                ownershipFill.style.opacity = percentage / 100;
+            }
+        });
+
+        // Toggle Section Visibility
+        syndicationToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                partnersSection.style.maxHeight = '1000px';
+                partnersSection.style.opacity = '1';
+                partnersSection.style.transform = 'translateY(0)';
+                partnersSection.style.pointerEvents = 'auto';
+            } else {
+                partnersSection.style.maxHeight = '0';
+                partnersSection.style.opacity = '0';
+                partnersSection.style.transform = 'translateY(-10px)';
+                partnersSection.style.pointerEvents = 'none';
+            }
+        });
+
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.classList.add('scale-95');
+                setTimeout(() => this.classList.remove('scale-95'), 100);
+            });
+        });
+    </script>
+</body></html>

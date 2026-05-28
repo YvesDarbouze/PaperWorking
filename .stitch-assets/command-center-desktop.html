@@ -1,0 +1,540 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Capital Alpha | Command Center</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#2d363d",
+                      "on-error": "#690005",
+                      "primary-fixed-dim": "#3cddc7",
+                      "surface-bright": "#313a41",
+                      "on-background": "#dae4ec",
+                      "surface-container-low": "#141d23",
+                      "error": "#ffb4ab",
+                      "background": "#0b141a",
+                      "secondary": "#adc6ff",
+                      "on-primary-container": "#00574d",
+                      "surface-container-highest": "#2d363d",
+                      "on-primary": "#003731",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#004395",
+                      "tertiary-fixed": "#ffdcc0",
+                      "tertiary-container": "#ffac5a",
+                      "surface-dim": "#0b141a",
+                      "tertiary": "#ffd1aa",
+                      "inverse-on-surface": "#293238",
+                      "surface-container": "#182127",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-secondary-fixed": "#001a42",
+                      "primary": "#57f1db",
+                      "surface-container-lowest": "#060f15",
+                      "on-secondary-container": "#e6ecff",
+                      "error-container": "#93000a",
+                      "surface-container-high": "#222b32",
+                      "on-primary-fixed": "#00201c",
+                      "outline": "#859490",
+                      "on-tertiary-container": "#744000",
+                      "on-secondary": "#002e6a",
+                      "on-surface-variant": "#bacac5",
+                      "inverse-surface": "#dae4ec",
+                      "on-surface": "#dae4ec",
+                      "surface-tint": "#3cddc7",
+                      "primary-container": "#2dd4bf",
+                      "on-tertiary": "#4b2800",
+                      "tertiary-fixed-dim": "#ffb875",
+                      "outline-variant": "#3c4a46",
+                      "primary-fixed": "#62fae3",
+                      "on-tertiary-fixed-variant": "#6b3b00",
+                      "inverse-primary": "#006b5f",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed": "#2d1600",
+                      "surface": "#0b141a",
+                      "on-primary-fixed-variant": "#005047",
+                      "secondary-container": "#0566d9"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "margin-desktop": "40px",
+                      "gutter-mobile": "16px",
+                      "gutter-desktop": "24px",
+                      "container-max": "1280px",
+                      "unit": "8px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px",
+                      "stack-lg": "32px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-sm": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-lg-mobile": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-md": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-lg": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "headline-xl": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "body-sm": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "14px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        /* Base Styles & Utility Classes for the "Luminous Glass" aesthetic */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        /* Smooth scrolling for inner containers */
+        .scroller-no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .scroller-no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Glassmorphism Card Utility */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(20, 29, 35, 0.6) 0%, rgba(11, 20, 26, 0.8) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        /* Inner light leak effect for top/left edge */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: inherit;
+            border: 1px solid transparent;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .glow-accent-primary {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface h-screen w-full overflow-hidden flex antialiased">
+<!-- JSON Component: SideNavBar -->
+<nav class="bg-surface-container-low/90 backdrop-blur-2xl text-primary font-label-md text-label-md h-screen w-64 fixed left-0 top-0 flex flex-col border-r border-white/10 shadow-2xl z-50 py-stack-lg">
+<!-- Header -->
+<div class="px-6 mb-8 flex flex-col gap-2">
+<div class="h-10 w-10 rounded-lg bg-surface-variant flex items-center justify-center border border-white/10 overflow-hidden">
+<!-- Placeholder for Organization Logo -->
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary-fixed tracking-tight">Capital Alpha</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Institutional Grade</p>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="px-4 mb-8">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-2.5 rounded-lg flex items-center justify-center gap-2 glow-accent-primary hover:bg-primary-fixed transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+                Quick Insight
+            </button>
+</div>
+<!-- Main Navigation Tabs -->
+<div class="flex-1 flex flex-col gap-1 px-2">
+<!-- Active Tab: Dashboard -->
+<a class="bg-primary-container/20 text-primary-fixed border-r-4 border-primary-fixed flex items-center gap-3 px-4 py-3 rounded-lg group transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg group hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">folder_open</span>
+                Projects
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg group hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">storefront</span>
+                Marketplaces
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg group hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">query_stats</span>
+                Intelligence
+            </a>
+</div>
+<!-- Footer Navigation Tabs -->
+<div class="mt-auto flex flex-col gap-1 px-2 border-t border-white/5 pt-4">
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg group hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">settings</span>
+                Settings
+            </a>
+<a class="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-4 py-3 rounded-lg group hover:bg-white/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined group-hover:translate-x-1 duration-300">help</span>
+                Support
+            </a>
+</div>
+</nav>
+<!-- Main Content Area (Offset by sidebar width) -->
+<div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-background">
+<!-- JSON Component: TopAppBar -->
+<header class="bg-background/80 backdrop-blur-xl text-primary font-body-md text-body-md w-full sticky top-0 z-40 border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] flex justify-between items-center px-gutter-desktop h-16 w-full shrink-0">
+<!-- Left Side: Search (as requested by search_bar: "on_left") -->
+<div class="flex items-center gap-4 flex-1">
+<div class="font-headline-md text-headline-md font-bold text-primary-fixed tracking-tight mr-4">PaperWorking</div>
+<div class="relative w-64 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[20px]">search</span>
+<input class="w-full bg-surface-variant/50 border border-outline-variant rounded-full py-1.5 pl-10 pr-4 text-on-surface font-body-sm text-body-sm focus:outline-none focus:border-primary focus:bg-surface-variant transition-all placeholder:text-on-surface-variant/50" placeholder="Search portfolios..." type="text">
+</div>
+</div>
+<!-- Right Side: Actions & Profile -->
+<div class="flex items-center gap-2">
+<!-- Trailing Primary Action -->
+<button class="bg-surface-variant/50 text-on-surface border border-outline-variant hover:border-primary/50 font-label-md text-label-md px-4 py-1.5 rounded-full hover:bg-white/5 transition-colors active:scale-95 duration-200 mr-2">
+                    Create Project
+                </button>
+<!-- Trailing Icon Actions -->
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors active:scale-95 duration-200 flex items-center justify-center">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary hover:bg-white/5 transition-colors active:scale-95 duration-200 flex items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<!-- Profile Image -->
+<div class="h-8 w-8 rounded-full ml-2 border border-primary/30 overflow-hidden cursor-pointer hover:border-primary transition-colors">
+<img alt="User account profile" class="w-full h-full object-cover" data-alt="Close up portrait photo of a professional avatar user profile against a dark abstract background. The lighting is moody with subtle teal rim light on the edge of the face, aligning with the premium UI aesthetic. Shot on 85mm lens, high fidelity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCREFw8wfta_oNYWex4bWH7dDaXuTB94K1YooiGQfIiyZQZM2nJvg8Vx1HmxKcNUv3SXzvevjoQBYjGWjZrCqLJ1v7gRKSOGMjpRJm2P7hsz5g8yFWY5GkXiYb0NdoQYqvb4umXBiNNXvHpP9smM_vNC4oFJg55I1HTIArlzbillx5KrXRZZcE5Ym8YoTCGIvpS5ju-wv5ou7bDGH8kRqrzZsYXR4qaUQwCBVpelR2acizO-fEtdB9dOMdNVx4jpaRtCuE0aZ7Zn8Vp">
+</div>
+</div>
+</header>
+<!-- Main Dashboard Canvas -->
+<main class="flex-1 overflow-y-auto scroller-no-scrollbar p-gutter-desktop space-y-stack-lg pb-24">
+<!-- SECTION 1: Portfolio KPIs (Top) -->
+<section>
+<div class="flex justify-between items-end mb-stack-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Portfolio Performance</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        Live Data feed
+                    </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- KPI Card 1: IRR -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"></div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant">Target IRR</span>
+<span class="material-symbols-outlined text-primary text-[20px]">trending_up</span>
+</div>
+<div>
+<div class="font-headline-xl text-headline-xl text-on-surface">24.8<span class="text-primary text-[24px] ml-1">%</span></div>
+<div class="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2.1%
+                                </span>
+<span class="text-on-surface-variant">vs last quarter</span>
+</div>
+</div>
+</div>
+<!-- KPI Card 2: Equity Multiple -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-transparent opacity-50"></div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant">Equity Multiple</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">layers</span>
+</div>
+<div>
+<div class="font-headline-xl text-headline-xl text-on-surface">2.1x</div>
+<div class="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full">On Track</span>
+<span class="text-on-surface-variant">Projected 2.5x</span>
+</div>
+</div>
+</div>
+<!-- KPI Card 3: Total Profit -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-tertiary-container to-transparent opacity-50"></div>
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant">Realized Profit</span>
+<span class="material-symbols-outlined text-tertiary-container text-[20px]">account_balance_wallet</span>
+</div>
+<div>
+<div class="font-headline-xl text-headline-xl text-on-surface"><span class="text-on-surface-variant text-[24px] mr-1">$</span>14.2<span class="text-on-surface-variant text-[24px] ml-1">M</span></div>
+<div class="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
+<span class="bg-tertiary-container/10 text-tertiary-container px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span> 8.4%
+                                </span>
+<span class="text-on-surface-variant">YTD Growth</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Deal Pipeline (Middle) -->
+<section>
+<div class="flex justify-between items-end mb-stack-md">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Active Pipeline</h2>
+<div class="flex gap-2">
+<!-- Phase Legend -->
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 px-2"><div class="w-2 h-2 rounded-full bg-primary"></div> Acquisition</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 px-2"><div class="w-2 h-2 rounded-full bg-secondary"></div> Purchase</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 px-2"><div class="w-2 h-2 rounded-full bg-tertiary-container"></div> Hold</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1.5 px-2"><div class="w-2 h-2 rounded-full bg-primary-fixed"></div> Exit</span>
+</div>
+</div>
+<!-- Bento Grid for Pipeline Folders -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1: Acquisition (Teal/Primary) -->
+<div class="glass-card rounded-xl p-5 hover:bg-surface-variant/30 transition-colors cursor-pointer group border-t-2 border-t-primary/50">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">domain_add</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-variant rounded-md text-on-surface-variant">Underwriting</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Project Neon Sky</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Multi-family • Austin, TX</p>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[45%]"></div>
+</div>
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="">Phase 1 of 3</span>
+<span class="text-primary">45%</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Purchase (Blue/Secondary) -->
+<div class="glass-card rounded-xl p-5 hover:bg-surface-variant/30 transition-colors cursor-pointer group border-t-2 border-t-secondary/50">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-variant rounded-md text-on-surface-variant">Closing</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Vertex Logistics Center</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Industrial • Phoenix, AZ</p>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="">Finalizing Docs</span>
+<span class="text-secondary">85%</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Hold (Amber/Tertiary-container) -->
+<div class="glass-card rounded-xl p-5 hover:bg-surface-variant/30 transition-colors cursor-pointer group border-t-2 border-t-tertiary-container/50">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-tertiary-container/10 rounded-lg text-tertiary-container">
+<span class="material-symbols-outlined">construction</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-variant rounded-md text-on-surface-variant">Renovation</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">The Foundry Bloc</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Mixed-Use • Denver, CO</p>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full w-[30%]"></div>
+</div>
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="">CapEx deployment</span>
+<span class="text-tertiary-container">30%</span>
+</div>
+</div>
+</div>
+<!-- Card 4: Exit (Greenish/Primary-fixed) -->
+<div class="glass-card rounded-xl p-5 hover:bg-surface-variant/30 transition-colors cursor-pointer group border-t-2 border-t-primary-fixed/50">
+<div class="flex justify-between items-start mb-6">
+<div class="p-2 bg-primary-fixed/10 rounded-lg text-primary-fixed">
+<span class="material-symbols-outlined">exit_to_app</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-1 bg-surface-variant rounded-md text-on-surface-variant">Marketing</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">Oasis Corporate</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">Office • Miami, FL</p>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-fixed h-full w-[60%]"></div>
+</div>
+<div class="flex justify-between mt-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="">Buyer Due Diligence</span>
+<span class="text-primary-fixed">60%</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Bottom Widgets (Activity & Heatmap) -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-80">
+<!-- Activity Log Widget (Span 1) -->
+<div class="glass-card rounded-xl flex flex-col lg:col-span-1 overflow-hidden">
+<div class="p-5 border-b border-white/5 flex justify-between items-center bg-surface-variant/20">
+<h3 class="font-label-md text-label-md text-on-surface">System Activity</h3>
+<button class="text-primary font-label-sm text-label-sm hover:underline">View All</button>
+</div>
+<div class="flex-1 overflow-y-auto scroller-no-scrollbar p-5 space-y-4">
+<!-- Log Item 1 -->
+<div class="flex gap-3 items-start group">
+<div class="mt-1 h-2 w-2 rounded-full bg-primary ring-4 ring-primary/10"></div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">CapEx Draw Request #4 Approved</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">The Foundry Bloc • 10 mins ago</p>
+</div>
+</div>
+<!-- Log Item 2 -->
+<div class="flex gap-3 items-start group">
+<div class="mt-1 h-2 w-2 rounded-full bg-secondary ring-4 ring-secondary/10"></div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">LOI Received for Vertex Logistics</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Vertex Logistics Center • 2 hours ago</p>
+</div>
+</div>
+<!-- Log Item 3 -->
+<div class="flex gap-3 items-start group">
+<div class="mt-1 h-2 w-2 rounded-full bg-outline ring-4 ring-outline/10"></div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">Monthly Financials Uploaded</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">System • 5 hours ago</p>
+</div>
+</div>
+<!-- Log Item 4 -->
+<div class="flex gap-3 items-start group">
+<div class="mt-1 h-2 w-2 rounded-full bg-error ring-4 ring-error/10"></div>
+<div>
+<p class="font-body-sm text-body-sm text-on-surface">Permit Delay Notification</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Project Neon Sky • 1 day ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Market Heatmap Widget (Span 2) -->
+<div class="glass-card rounded-xl lg:col-span-2 overflow-hidden relative group">
+<div class="absolute top-5 left-5 z-10">
+<h3 class="font-label-md text-label-md text-white drop-shadow-md">Market Heatmap: Yield Density</h3>
+<p class="font-label-sm text-label-sm text-white/70 drop-shadow-md">Top 25 MSA focus areas</p>
+</div>
+<!-- Overlay gradient for text readability -->
+<div class="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/40 z-0 pointer-events-none"></div>
+<!-- Action button overlay -->
+<div class="absolute bottom-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+<button class="bg-surface-variant/80 backdrop-blur-md text-on-surface font-label-sm text-label-sm px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">open_in_full</span> Expand Map
+                        </button>
+</div>
+<!-- Map Image -->
+<img alt="Dark mode interactive market heatmap" class="w-full h-full object-cover grayscale opacity-60 mix-blend-screen" data-alt="A highly stylized, dark-mode data visualization map of the United States. The map features a deep black and charcoal canvas overlayed with glowing, luminous thermal data points in intense teal, cyan, and deep amber. The aesthetic is strictly high-end corporate intelligence, resembling a futuristic command center terminal. The lighting suggests a glowing screen interface with soft bloom effects on the densest data clusters." data-location="North America" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClV_E6kC-cxfEdL_aYoXwCGX0IXfvER9Khxz-UKXSIHqr2mLLBRjKNiuMqMgKzLkNfCmpsvNWZdIn37Mk7SLtzkx7LnKmky-lKkmKyZaC7mLeMzCefffGLrk_IRcaUZf8VK6_D4pIrIOEcz6bNIJJtZ84D7U1PHyW4ss61PY4-T3evmJ4ByFikCKQOyzz68ADjB8VsV9ycLjgYo_RFRpegliIJtIsNjWSoEgpEFPCibyAI9-5QkJearDQDtgbA2cwBIsefGkyjw1nb" style="filter: sepia(100%) hue-rotate(140deg) saturate(300%) contrast(150%) brightness(50%);">
+</div>
+</section>
+</main>
+</div>
+
+
+</body></html>

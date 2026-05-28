@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How It Works - PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Inter:wght@300;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#2dd4bf",
+                        "on-primary": "#003731",
+                        "background": "#060f15",
+                        "surface": "#0b141a",
+                        "surface-container": "#141d23",
+                        "surface-container-high": "#1c252b",
+                        "on-background": "#dae4ec",
+                        "on-surface": "#dae4ec",
+                        "on-surface-variant": "#859490",
+                        "outline": "#3c4a46",
+                        "error": "#ffb4ab",
+                        "secondary": "#adc6ff"
+                    },
+                    "fontFamily": {
+                        "mono": ["JetBrains Mono", "monospace"],
+                        "sans": ["Plus Jakarta Sans", "sans-serif"],
+                        "inter": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-sm": ["11px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                    },
+                    "spacing": {
+                        "container-max": "1200px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .luminous-glass {
+            background: linear-gradient(135deg, rgba(20, 29, 35, 0.7) 0%, rgba(6, 15, 21, 0.4) 100%);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 212, 191, 0.1);
+            box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .luminous-glass:hover {
+            border-color: rgba(45, 212, 191, 0.3);
+            box-shadow: 0 0 30px -5px rgba(45, 212, 191, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 0;
+            background: linear-gradient(0deg, rgba(45, 212, 191, 0) 0%, rgba(45, 212, 191, 0.03) 50%, rgba(45, 212, 191, 0) 100%);
+            opacity: 0.1;
+            position: absolute;
+            pointer-events: none;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { top: -100px; }
+            100% { top: 100%; }
+        }
+
+        .terminal-grid {
+            background-size: 40px 40px;
+            background-image: radial-gradient(circle, rgba(45, 212, 191, 0.05) 1px, transparent 1px);
+        }
+
+        .teal-glow-text {
+            text-shadow: 0 0 15px rgba(45, 212, 191, 0.4);
+        }
+
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #2dd4bf;
+        }
+
+        .logo-text-paper { font-family: 'Inter', sans-serif; font-weight: 700; }
+        .logo-text-working { font-family: 'Inter', sans-serif; font-weight: 300; }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary/30">
+<div class="scanline"></div>
+<div class="fixed inset-0 terminal-grid pointer-events-none opacity-40"></div>
+<!-- Persistent Nav -->
+<nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-background/80 backdrop-blur-md">
+<div class="max-w-container-max mx-auto px-6 h-16 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 bg-primary rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-size: 16px; font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div class="text-xl tracking-tight">
+<span class="logo-text-paper text-white">Paper</span><span class="logo-text-working text-white/70">Working</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-8 font-mono text-[13px] tracking-tight text-on-surface-variant">
+<a class="nav-link text-primary" href="/#how-it-works">HOW_IT_WORKS</a>
+<a class="nav-link" href="/#pricing">PRICING</a>
+<a class="nav-link" href="/dashboard">DASHBOARD</a>
+<a class="nav-link" href="/#news">NEWS</a>
+</div>
+<div class="flex items-center gap-6">
+<a class="hidden sm:block text-[13px] font-mono text-on-surface-variant hover:text-white transition-colors" href="/login">SIGN_IN</a>
+<a class="bg-primary hover:bg-primary/90 text-on-primary px-4 py-1.5 rounded text-[13px] font-bold transition-all shadow-[0_0_15px_-3px_rgba(45,212,191,0.5)] active:scale-[0.98]" href="/#pricing">
+                    START FREE TRIAL
+                </a>
+</div>
+</div>
+</nav>
+<main class="relative z-10 pt-32 pb-24 px-6 max-w-container-max mx-auto">
+<!-- Hero Section -->
+<header class="text-center mb-24">
+<div class="inline-flex items-center gap-2 px-2 py-0.5 rounded border border-primary/20 bg-primary/5 mb-6">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-mono text-label-sm text-primary uppercase">v2.4.0_STABLE_RELEASE</span>
+</div>
+<h1 class="font-headline-xl text-white mb-6 teal-glow-text leading-[1.1]">
+                The Real Estate Investment<br/>
+<span class="text-primary italic">Operating System</span>
+</h1>
+<p class="font-body-lg text-on-surface-variant max-w-2xl mx-auto opacity-80 leading-relaxed">
+                Replace fragmented spreadsheets with a high-fidelity system architected for the four stages of a deal. Every dollar tracked. Every risk mitigated.
+            </p>
+</header>
+<!-- Four-Phase Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-24">
+<!-- Phase 1: Acquisition -->
+<div class="luminous-glass p-6 rounded-lg flex flex-col h-full border-l-2 border-l-primary/40">
+<div class="flex justify-between items-start mb-4">
+<span class="font-mono text-primary text-[11px] font-bold">01_ACQUISITION</span>
+<span class="material-symbols-outlined text-primary/40" style="font-size: 20px;">add_box</span>
+</div>
+<h3 class="font-mono text-sm font-bold text-white mb-3 tracking-wide">CAPITAL GATEWAY</h3>
+<div class="flex-grow space-y-3 mb-6">
+<p class="text-[13px] text-on-surface-variant leading-relaxed">
+                        Centralize deal sourcing and syndicate commitments. Eliminate email-based document chasing.
+                    </p>
+<ul class="text-[11px] font-mono text-primary/70 space-y-1">
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-primary/40 rounded-full"></span>
+                            OFFER_GEN_AUTO
+                        </li>
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-primary/40 rounded-full"></span>
+                            LP_COMMIT_TRACKER
+                        </li>
+</ul>
+</div>
+<!-- UI Snippet -->
+<div class="bg-black/40 rounded border border-white/5 p-3 font-mono text-[10px]">
+<div class="flex justify-between text-white/30 mb-2 border-b border-white/5 pb-1 uppercase">
+<span>Source</span>
+<span>Confidence</span>
+</div>
+<div class="flex justify-between text-primary/80 mb-1">
+<span>Direct_Mail</span>
+<span>84.2%</span>
+</div>
+<div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-[84%]"></div>
+</div>
+</div>
+</div>
+<!-- Phase 2: Purchase -->
+<div class="luminous-glass p-6 rounded-lg flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<span class="font-mono text-white/40 text-[11px] font-bold">02_PURCHASE</span>
+<span class="material-symbols-outlined text-white/20" style="font-size: 20px;">account_balance</span>
+</div>
+<h3 class="font-mono text-sm font-bold text-white mb-3 tracking-wide">COMPLIANCE VAULT</h3>
+<div class="flex-grow space-y-3 mb-6">
+<p class="text-[13px] text-on-surface-variant leading-relaxed">
+                        Secure loan docs and title commitments in a single source of truth. Manage closing deadlines.
+                    </p>
+<ul class="text-[11px] font-mono text-white/40 space-y-1">
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            CONTINGENCY_ALERTS
+                        </li>
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            HUD1_RECONCILIATION
+                        </li>
+</ul>
+</div>
+<!-- UI Snippet -->
+<div class="bg-black/40 rounded border border-white/5 p-3 flex items-center justify-between">
+<div class="space-y-1">
+<div class="w-16 h-1.5 bg-white/10 rounded"></div>
+<div class="w-10 h-1.5 bg-white/5 rounded"></div>
+</div>
+<div class="flex gap-1">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px;">check_circle</span>
+<span class="material-symbols-outlined text-white/20" style="font-size: 14px;">pending</span>
+</div>
+</div>
+</div>
+<!-- Phase 3: Hold -->
+<div class="luminous-glass p-6 rounded-lg flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<span class="font-mono text-white/40 text-[11px] font-bold">03_HOLD</span>
+<span class="material-symbols-outlined text-white/20" style="font-size: 20px;">query_stats</span>
+</div>
+<h3 class="font-mono text-sm font-bold text-white mb-3 tracking-wide">MARGIN PROTECTION</h3>
+<div class="flex-grow space-y-3 mb-6">
+<p class="text-[13px] text-on-surface-variant leading-relaxed">
+                        Track daily burn rates and holding costs to protect projected ROI during renovation.
+                    </p>
+<ul class="text-[11px] font-mono text-white/40 space-y-1">
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            BURN_RATE_CALC
+                        </li>
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            TIME_VALUE_MAP
+                        </li>
+</ul>
+</div>
+<!-- UI Snippet -->
+<div class="bg-black/40 rounded border border-white/5 p-3">
+<div class="flex justify-between font-mono text-[9px] text-white/30 mb-2">
+<span>EST_HOLD</span>
+<span class="text-white/60">42D / 60D</span>
+</div>
+<div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/30 w-[70%]"></div>
+</div>
+</div>
+</div>
+<!-- Phase 4: Exit -->
+<div class="luminous-glass p-6 rounded-lg flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<span class="font-mono text-white/40 text-[11px] font-bold">04_EXIT</span>
+<span class="material-symbols-outlined text-white/20" style="font-size: 20px;">payments</span>
+</div>
+<h3 class="font-mono text-sm font-bold text-white mb-3 tracking-wide">RECONCILIATION</h3>
+<div class="flex-grow space-y-3 mb-6">
+<p class="text-[13px] text-on-surface-variant leading-relaxed">
+                        Instant calculation of actual ROI, IRR, and cash-on-cash. Automatic investor distributions.
+                    </p>
+<ul class="text-[11px] font-mono text-white/40 space-y-1">
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            AUTO_RECON_ENGINE
+                        </li>
+<li class="flex items-center gap-2">
+<span class="w-1 h-1 bg-white/20 rounded-full"></span>
+                            DIST_K1_AUTO
+                        </li>
+</ul>
+</div>
+<!-- UI Snippet -->
+<div class="bg-black/40 rounded border border-white/5 p-3 flex justify-between items-center">
+<span class="font-mono text-[10px] text-white/40">ROI_ACTUAL</span>
+<span class="font-mono text-[12px] font-bold text-primary tracking-tight">28.4% ↑</span>
+</div>
+</div>
+</section>
+<!-- Risk Mitigation Section -->
+<section class="bg-surface-container rounded-xl overflow-hidden border border-white/5 relative group">
+<div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none"></div>
+<div class="flex flex-col lg:flex-row items-center">
+<div class="p-12 lg:w-3/5">
+<h2 class="font-headline-lg text-white mb-6">
+                        Not a project management tool.<br/>
+<span class="text-primary/90">A risk mitigation platform.</span>
+</h2>
+<p class="text-on-surface-variant body-md mb-8 max-w-xl leading-relaxed opacity-80">
+                        Spreadsheets break. PaperWorking scales. By centralizing every data point from acquisition to exit, we eliminate the blind spots that eat into your margins. This is institutional-grade infrastructure for your investment business.
+                    </p>
+<div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+<a class="bg-primary text-on-primary font-mono text-[13px] font-bold px-8 py-3 rounded hover:bg-primary/90 transition-all shadow-lg active:scale-[0.98]" href="/#pricing">
+                            DEPLOY_SYSTEM
+                        </a>
+<div class="font-mono text-[11px] text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary/60" style="font-size: 16px;">shield_locked</span>
+                            SECURE_ACCESS_14D_TRIAL
+                        </div>
+</div>
+</div>
+<div class="lg:w-2/5 h-full min-h-[300px] bg-black/30 border-l border-white/5 flex items-center justify-center relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center opacity-20">
+<div class="w-64 h-64 border border-primary/40 rounded-full animate-[spin_20s_linear_infinite]"></div>
+<div class="absolute w-48 h-48 border border-white/10 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+</div>
+<div class="relative z-10 w-40 h-40 bg-surface rounded-full border border-primary/20 flex items-center justify-center shadow-[0_0_50px_-10px_rgba(45,212,191,0.2)]">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="border-t border-white/5 bg-background relative z-10 pt-16 pb-12">
+<div class="max-w-container-max mx-auto px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-16">
+<div class="col-span-2 lg:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-5 h-5 bg-primary/20 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-size: 14px; font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div class="text-lg tracking-tight">
+<span class="logo-text-paper text-white">Paper</span><span class="logo-text-working text-white/50">Working</span>
+</div>
+</div>
+<p class="text-[13px] text-on-surface-variant max-w-xs leading-relaxed opacity-60 font-mono">
+                        The definitive operating system for professional real estate investors. Built for scale, engineered for precision.
+                    </p>
+</div>
+<div>
+<h4 class="font-mono text-[11px] text-primary mb-6 tracking-widest uppercase">PRODUCT</h4>
+<ul class="space-y-4 text-[13px] text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="/#how-it-works">How It Works</a></li>
+<li><a class="hover:text-primary transition-colors" href="/#pricing">Pricing</a></li>
+<li><a class="hover:text-primary transition-colors" href="/dashboard">Dashboard</a></li>
+<li><a class="hover:text-primary transition-colors" href="/#news">Release Notes</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-mono text-[11px] text-white/40 mb-6 tracking-widest uppercase">COMPANY</h4>
+<ul class="space-y-4 text-[13px] text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="/about">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="/careers">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="/blog">Engineering Blog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-mono text-[11px] text-white/40 mb-6 tracking-widest uppercase">LEGAL</h4>
+<ul class="space-y-4 text-[13px] text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="/privacy">Privacy</a></li>
+<li><a class="hover:text-primary transition-colors" href="/terms">Terms</a></li>
+<li><a class="hover:text-primary transition-colors" href="/support">Support</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="font-mono text-[10px] text-on-surface-variant opacity-40">
+                    © 2024 PAPERWORKING_OS. ALL RIGHTS RESERVED.
+                </div>
+<div class="flex gap-6 opacity-40 grayscale">
+<!-- Placeholder social icons -->
+<div class="w-4 h-4 bg-white/20 rounded-full"></div>
+<div class="w-4 h-4 bg-white/20 rounded-full"></div>
+<div class="w-4 h-4 bg-white/20 rounded-full"></div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

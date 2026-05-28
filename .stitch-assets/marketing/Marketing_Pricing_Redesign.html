@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Pricing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#2d363d",
+                        "on-tertiary-container": "#744000",
+                        "error-container": "#93000a",
+                        "primary": "#57f1db",
+                        "outline-variant": "#3c4a46",
+                        "on-background": "#dae4ec",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "secondary": "#adc6ff",
+                        "on-tertiary": "#4b2800",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-lowest": "#060f15",
+                        "primary-fixed-dim": "#3cddc7",
+                        "surface-container": "#182127",
+                        "surface-container-low": "#141d23",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed": "#2d1600",
+                        "surface-bright": "#313a41",
+                        "inverse-surface": "#dae4ec",
+                        "surface-container-high": "#222b32",
+                        "secondary-container": "#0566d9",
+                        "on-primary-fixed": "#00201c",
+                        "tertiary-container": "#ffac5a",
+                        "on-primary-container": "#00574d",
+                        "surface": "#0b141a",
+                        "inverse-primary": "#006b5f",
+                        "on-surface-variant": "#bacac5",
+                        "surface-tint": "#3cddc7",
+                        "surface-dim": "#0b141a",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-error": "#690005",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005047",
+                        "tertiary": "#ffd1aa",
+                        "on-surface": "#dae4ec",
+                        "primary-fixed": "#62fae3",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#e6ecff",
+                        "surface-container-highest": "#2d363d",
+                        "background": "#0b141a",
+                        "on-primary": "#003731",
+                        "tertiary-fixed": "#ffdcc0",
+                        "outline": "#859490",
+                        "inverse-on-surface": "#293238"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "unit": "8px",
+                        "gutter-desktop": "24px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px",
+                        "stack-sm": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer utilities {
+            .glass-card {
+                @apply bg-surface/40 backdrop-blur-xl border border-white/10 rounded-xl relative overflow-hidden;
+            }
+            .glass-card::before {
+                content: '';
+                @apply absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none;
+            }
+            .luminous-btn {
+                @apply bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full px-6 py-3 transition-all duration-200 hover:bg-primary-fixed hover:shadow-[0_0_20px_-5px_rgba(45,212,191,0.5)];
+            }
+            .luminous-btn-secondary {
+                @apply bg-surface-variant text-on-surface font-label-md text-label-md rounded-full px-6 py-3 border border-white/10 transition-all duration-200 hover:bg-white/5;
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pt-20">
+<!-- TopAppBar from JSON -->
+<header class="bg-surface/80 backdrop-blur-xl border-b border-white/10 fixed top-0 w-full z-50 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+<div class="flex justify-between items-center px-gutter-desktop max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[32px]" data-icon="terminal">terminal</span>
+<span class="font-headline-lg text-headline-md tracking-tighter text-primary drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">PaperWorking</span>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-primary transition-colors duration-300" href="#how-it-works">How It Works</a>
+<a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1" href="#pricing">Pricing</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-primary transition-colors duration-300" href="#news">News</a>
+<a class="font-label-md text-label-md text-on-surface/70 hover:text-primary transition-colors duration-300" href="/support">Help</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden md:block font-label-md text-label-md text-on-surface hover:text-primary transition-colors duration-300" href="/login">Sign In</a>
+<a class="luminous-btn hover:scale-95 duration-100 ease-in-out" href="/#pricing">Sign In</a>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter-mobile md:px-gutter-desktop pb-32">
+<!-- Hero Section -->
+<section class="py-24 text-center">
+<h1 class="font-headline-xl text-headline-xl md:text-[64px] md:leading-[72px] mb-6 text-on-surface">Pick your plan. <br/><span class="text-primary">Start closing more deals.</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">14-day trial on every plan. Credit card required. No charge until day 15.</p>
+<!-- Segmented Control -->
+<div class="inline-flex bg-surface-container-high rounded-full p-1 mb-16 border border-white/5">
+<button class="bg-surface-variant text-on-surface font-label-md text-label-md px-6 py-2 rounded-full shadow-sm border border-white/10">Monthly</button>
+<button class="text-on-surface-variant font-label-md text-label-md px-6 py-2 rounded-full hover:text-on-surface transition-colors flex items-center gap-2">Annually <span class="bg-primary/20 text-primary text-[10px] uppercase font-bold px-2 py-0.5 rounded-full">Save up to 20%</span></button>
+</div>
+</section>
+<!-- Pricing Cards Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
+<!-- Individual Plan -->
+<div class="glass-card p-8 flex flex-col">
+<div class="mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Individual Investor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Solo flippers tired of spreadsheet chaos.</p>
+</div>
+<div class="mb-8">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg">$50</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Billed annually at $599/yr</p>
+</div>
+<button class="luminous-btn-secondary w-full mb-8">Start 14-Day Free Trial</button>
+<div class="space-y-4 flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>1 User Seat</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Full REI Dashboard access</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Find &amp; Fund Pipeline</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Acquisition &amp; Due Diligence</li>
+</ul>
+</div>
+</div>
+<!-- Team Plan (Most Popular) -->
+<div class="glass-card p-8 flex flex-col border-primary/30 relative bg-surface-container/60 transform md:-translate-y-4 shadow-[0_0_40px_-15px_rgba(45,212,191,0.2)]">
+<div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+<div class="absolute top-4 right-4 bg-primary/20 text-primary font-label-sm text-label-sm px-3 py-1 rounded-full border border-primary/30">Most Popular</div>
+<div class="mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Team / Firm</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Scaling REI businesses managing multiple deals.</p>
+</div>
+<div class="mb-8">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg">$83</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Billed annually at $999/yr</p>
+</div>
+<button class="luminous-btn w-full mb-8">Start 14-Day Free Trial</button>
+<div class="space-y-4 flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Up to 10 User Seats</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Role-Based Access Control</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Admin vs Deal Lead permissions</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Everything in Individual</li>
+</ul>
+</div>
+</div>
+<!-- Vendor Plan -->
+<div class="glass-card p-8 flex flex-col">
+<div class="mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Vendor Marketplace</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant h-10">Appraisers, Inspectors, GCs, and tradespeople.</p>
+</div>
+<div class="mb-8">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg">$33</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Billed annually at $390/yr</p>
+</div>
+<button class="luminous-btn-secondary w-full mb-8">List Your Business</button>
+<div class="space-y-4 flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Marketplace Directory Listing</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Lead generation inbox</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Direct messaging with REI Teams</li>
+<li class="flex items-center gap-3 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-[18px]">check</span>Service area customization</li>
+</ul>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer from JSON -->
+<footer class="bg-surface-container-lowest border-t border-white/5 w-full py-stack-lg">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-stack-md px-margin-desktop max-w-container-max mx-auto">
+<div class="col-span-2 md:col-span-1 mb-8 md:mb-0">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<span class="font-headline-md text-primary">PaperWorking</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 PaperWorking OS. All rights reserved.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50" href="#">How It Works</a></li>
+<li><a class="font-label-sm text-label-sm text-primary transition-colors hover:underline decoration-primary/50" href="#">Pricing</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50" href="#">Product</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-4">Company</h4>
+<ul class="space-y-2">
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50" href="#">Company</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50" href="#">Legal</a></li>
+<li><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50" href="#">Support</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

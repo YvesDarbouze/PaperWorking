@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Project Creation Step 4</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "secondary-fixed": "#d8e2ff",
+                "secondary-container": "#0566d9",
+                "error": "#ffb4ab",
+                "on-secondary-fixed-variant": "#004395",
+                "on-secondary-fixed": "#001a42",
+                "surface-dim": "#0b141a",
+                "surface-container-low": "#141d23",
+                "surface-container-high": "#222b32",
+                "tertiary-container": "#ffac5a",
+                "on-secondary-container": "#e6ecff",
+                "on-error": "#690005",
+                "primary-fixed-dim": "#3cddc7",
+                "surface-tint": "#3cddc7",
+                "surface-container-lowest": "#060f15",
+                "secondary-fixed-dim": "#adc6ff",
+                "primary": "#57f1db",
+                "on-tertiary-fixed": "#2d1600",
+                "on-background": "#dae4ec",
+                "inverse-surface": "#dae4ec",
+                "tertiary": "#ffd1aa",
+                "on-tertiary": "#4b2800",
+                "secondary": "#adc6ff",
+                "on-primary-container": "#00574d",
+                "primary-container": "#2dd4bf",
+                "outline-variant": "#3c4a46",
+                "surface-container-highest": "#2d363d",
+                "surface-bright": "#313a41",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#ffdcc0",
+                "surface-variant": "#2d363d",
+                "tertiary-fixed-dim": "#ffb875",
+                "primary-fixed": "#62fae3",
+                "on-tertiary-fixed-variant": "#6b3b00",
+                "on-surface-variant": "#bacac5",
+                "inverse-primary": "#006b5f",
+                "on-primary-fixed-variant": "#005047",
+                "on-primary-fixed": "#00201c",
+                "outline": "#859490",
+                "background": "#0b141a",
+                "surface-container": "#182127",
+                "on-tertiary-container": "#744000",
+                "inverse-on-surface": "#293238",
+                "on-surface": "#dae4ec",
+                "on-primary": "#003731",
+                "on-error-container": "#ffdad6",
+                "surface": "#0b141a",
+                "on-secondary": "#002e6a"
+            },
+            "fontFamily": {
+                "headline-md": ["Plus Jakarta Sans"],
+                "body-lg": ["Hanken Grotesk"],
+                "mono": ["JetBrains Mono"],
+                "label-sm": ["Hanken Grotesk"],
+                "headline-lg": ["Plus Jakarta Sans"]
+            },
+            "spacing": {
+                "margin-mobile": "20px",
+                "margin-desktop": "40px",
+                "stack-md": "16px",
+                "stack-lg": "32px",
+                "unit": "8px"
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+            font-family: 'Hanken Grotesk', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100dvh;
+        }
+
+        .glass-card {
+            background: rgba(24, 33, 39, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .luminous-button {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .luminous-button:not(:disabled):hover {
+            box-shadow: 0 0 25px -2px rgba(87, 241, 219, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .luminous-button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .luminous-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            filter: grayscale(1);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #2dd4bf;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -9px;
+            box-shadow: 0 0 10px rgba(45, 212, 191, 0.5);
+            border: 2px solid #060f15;
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #2dd4bf;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #2dd4bf;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .entrance-anim {
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .partners-transition {
+            transition: all 240ms cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .partners-transition.expanded {
+            max-height: 1000px;
+            opacity: 1;
+            pointer-events: auto;
+            margin-top: 1.5rem;
+        }
+
+        [title]:hover::after {
+            content: attr(title);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: #2d363d;
+            color: #ffb4ab;
+            border: 1px solid #ffb4ab33;
+            border-radius: 8px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 60;
+            margin-bottom: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tabular-numbers {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="bg-surface-container-lowest/80 backdrop-blur-xl text-primary font-headline-md text-headline-md fixed top-0 w-full z-50 border-b border-white/10 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="transition-all duration-200 active:scale-95 hover:bg-white/5 p-2 rounded-full">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">PaperWorking</span>
+</div>
+<div class="flex items-center">
+<button class="transition-all duration-200 active:scale-95 hover:bg-white/5 p-2 rounded-full">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<main class="flex-grow pt-24 pb-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full entrance-anim">
+<!-- Progress Bar -->
+<div class="w-full flex gap-1.5 mb-10 h-1">
+<div class="h-full flex-grow rounded-full bg-primary-container"></div>
+<div class="h-full flex-grow rounded-full bg-primary-container"></div>
+<div class="h-full flex-grow rounded-full bg-primary-container"></div>
+<div class="h-full flex-grow rounded-full bg-primary-container"></div>
+<div class="h-full flex-grow rounded-full bg-white/10"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop">
+<!-- Left Column: Guidance -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-tight">
+                How much of this Project do you own?
+            </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                Some metrics — like cash-on-cash and IRR — change based on your share.
+            </p>
+<!-- Decorative Visualization -->
+<div class="mt-8 glass-card rounded-2xl p-8 aspect-square relative overflow-hidden hidden lg:flex items-center justify-center">
+<div class="relative w-48 h-48 rounded-full border-[12px] border-white/5 flex items-center justify-center" id="chart-container">
+<svg class="absolute inset-0 w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="text-primary/5" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary transition-all duration-500" cx="50" cy="50" fill="none" id="visual-ring" r="44" stroke="currentColor" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-width="12"></circle>
+</svg>
+<div class="flex flex-col items-center z-10">
+<span class="font-mono tabular-numbers text-4xl font-bold text-primary" id="ownership-display">100%</span>
+<span class="text-xs uppercase tracking-widest text-on-surface-variant opacity-60">Ownership</span>
+</div>
+</div>
+<div class="absolute -bottom-20 -left-20 w-64 h-64 bg-primary/10 blur-[80px] rounded-full"></div>
+</div>
+</div>
+<!-- Right Column: Interactive Form -->
+<div class="lg:col-span-7 space-y-stack-lg">
+<!-- Ownership Slider Section -->
+<section class="glass-card rounded-2xl p-8">
+<div class="flex justify-between items-end mb-6">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Your Ownership</label>
+<span class="font-mono tabular-numbers text-[32px] text-primary" id="slider-readout">100%</span>
+</div>
+<div class="relative py-6">
+<input class="w-full" id="ownership-slider" max="100" min="0" step="1" type="range" value="100"/>
+<div class="absolute left-1/2 -bottom-2 transform -translate-x-1/2 flex flex-col items-center">
+<div class="w-px h-2 bg-white/20"></div>
+<span class="font-mono tabular-numbers text-[10px] text-on-surface-variant mt-1">50%</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 mt-6 bg-white/5 p-4 rounded-xl border border-white/5">
+<span class="material-symbols-outlined text-primary text-sm mr-1">info</span>
+                    Solo investors leave this at 100%. Partnered or syndicated deals — set it lower.
+                </p>
+</section>
+<!-- Syndication Toggle -->
+<section class="glass-card rounded-2xl p-6 flex items-center justify-between">
+<div>
+<h4 class="font-label-md text-on-surface">This is a syndicated or partnered deal</h4>
+<p class="font-body-sm text-on-surface-variant">Enable to split equity with external partners</p>
+</div>
+<div class="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-zinc-700 right-6 checked:right-0 transition-all duration-300" id="syndication-toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-zinc-800 cursor-pointer transition-colors duration-300" for="syndication-toggle"></label>
+</div>
+</section>
+<!-- Expanded Partners Section -->
+<section class="glass-card rounded-2xl partners-transition" id="partners-section">
+<div class="p-8 space-y-stack-md">
+<div class="flex justify-between items-center mb-2">
+<h4 class="font-label-md text-on-surface-variant uppercase tracking-wider text-xs">Add partners (optional in this step)</h4>
+<span class="font-body-sm text-on-surface-variant/60 italic">You can complete this in the Project</span>
+</div>
+<!-- Partner Container -->
+<div class="space-y-3" id="partner-rows">
+<!-- Rows injected via JS -->
+</div>
+<!-- Add Button -->
+<button class="w-full mt-4 py-3 px-4 border border-dashed border-primary/30 rounded-xl flex items-center justify-center gap-2 text-primary font-label-md hover:bg-primary/5 transition-all active:scale-95 group" id="add-partner-btn">
+<span class="material-symbols-outlined text-sm group-hover:rotate-90 transition-transform">add</span>
+                        + Add another partner
+                    </button>
+<!-- Allocation Strip -->
+<div class="pt-4 mt-6 border-t border-white/5">
+<div class="bg-surface-container-lowest/50 rounded-lg px-4 py-2 flex justify-between items-center transition-colors duration-300" id="allocation-banner">
+<div class="flex gap-4">
+<span class="font-mono tabular-numbers text-xs text-primary">Allocated: <span class="font-bold" id="allocated-pct">100%</span></span>
+<span class="font-mono tabular-numbers text-xs text-on-surface-variant">Unallocated: <span class="font-bold" id="unallocated-pct">0%</span></span>
+</div>
+<div class="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary transition-all duration-300 shadow-[0_0_8px_rgba(87,241,219,0.5)]" id="allocation-bar" style="width: 100%"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer Navigation -->
+<footer class="fixed bottom-0 w-full bg-surface-container-lowest/90 backdrop-blur-2xl border-t border-white/10 px-margin-mobile md:px-margin-desktop py-5 z-50">
+<div class="max-w-container-max mx-auto flex justify-between items-center">
+<button class="flex items-center gap-2 text-on-surface-variant font-label-md hover:text-on-surface transition-colors active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+            Back
+        </button>
+<div class="relative" id="continue-btn-wrapper">
+<button class="luminous-button bg-primary text-on-primary px-8 py-3.5 rounded-xl font-headline-md flex items-center gap-2" id="continue-btn">
+                Continue
+                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+<template id="partner-row-template">
+<div class="grid grid-cols-12 gap-3 items-center partner-row animate-[slideUpFade_0.3s_ease-out]">
+<div class="col-span-7">
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary/50 focus:ring-0 transition-all" placeholder="Partner Name" type="text"/>
+</div>
+<div class="col-span-4 relative">
+<input class="partner-share-input w-full bg-surface-container-lowest border border-white/10 rounded-xl px-4 py-3 text-on-surface focus:border-primary/50 focus:ring-0 transition-all pr-8 font-mono tabular-numbers" max="100" min="0" type="number" value="0"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono text-sm">%</span>
+</div>
+<div class="col-span-1 text-center">
+<button class="remove-partner-btn text-on-surface-variant hover:text-error transition-colors p-2">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</template>
+<script>
+    const slider = document.getElementById('ownership-slider');
+    const sliderReadout = document.getElementById('slider-readout');
+    const visualReadout = document.getElementById('ownership-display');
+    const visualRing = document.getElementById('visual-ring');
+    const syndicationToggle = document.getElementById('syndication-toggle');
+    const partnersSection = document.getElementById('partners-section');
+    const partnerContainer = document.getElementById('partner-rows');
+    const addPartnerBtn = document.getElementById('add-partner-btn');
+    const rowTemplate = document.getElementById('partner-row-template');
+    
+    const allocatedLabel = document.getElementById('allocated-pct');
+    const unallocatedLabel = document.getElementById('unallocated-pct');
+    const allocationBar = document.getElementById('allocation-bar');
+    const allocationBanner = document.getElementById('allocation-banner');
+    
+    const continueBtn = document.getElementById('continue-btn');
+    const continueBtnWrapper = document.getElementById('continue-btn-wrapper');
+
+    // Allocation Logic
+    function updateAllocation() {
+        const myShare = parseInt(slider.value) || 0;
+        const partnerInputs = document.querySelectorAll('.partner-share-input');
+        let partnerTotal = 0;
+        
+        partnerInputs.forEach(input => {
+            partnerTotal += (parseInt(input.value) || 0);
+        });
+
+        const total = myShare + partnerTotal;
+        const unallocated = Math.max(0, 100 - total);
+
+        // Update Labels
+        allocatedLabel.textContent = `${total}%`;
+        unallocatedLabel.textContent = `${unallocated}%`;
+        
+        // Update Bar
+        const barWidth = Math.min(100, total);
+        allocationBar.style.width = `${barWidth}%`;
+
+        // Error State
+        if (total > 100) {
+            allocationBanner.classList.add('bg-error/20');
+            allocationBanner.classList.remove('bg-surface-container-lowest/50');
+            allocationBar.classList.replace('bg-primary', 'bg-error');
+            continueBtn.disabled = true;
+            continueBtnWrapper.setAttribute('title', 'Partner shares add up to more than 100%');
+        } else {
+            allocationBanner.classList.remove('bg-error/20');
+            allocationBanner.classList.add('bg-surface-container-lowest/50');
+            allocationBar.classList.replace('bg-error', 'bg-primary');
+            continueBtn.disabled = false;
+            continueBtnWrapper.removeAttribute('title');
+        }
+    }
+
+    // Slider Interaction
+    slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        sliderReadout.textContent = `${val}%`;
+        visualReadout.textContent = `${val}%`;
+        
+        // Ring dashoffset (circumference is ~276.46)
+        const circumference = 2 * Math.PI * 44;
+        const offset = circumference - (val / 100) * circumference;
+        visualRing.style.strokeDashoffset = offset;
+        
+        updateAllocation();
+    });
+
+    // Toggle Section Visibility
+    syndicationToggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            partnersSection.classList.add('expanded');
+            // Add initial partner row if none exist
+            if (partnerContainer.children.length === 0) {
+                addNewPartnerRow();
+            }
+        } else {
+            partnersSection.classList.remove('expanded');
+        }
+    });
+
+    // Partner Row Management
+    function addNewPartnerRow() {
+        const clone = rowTemplate.content.cloneNode(true);
+        const row = clone.querySelector('.partner-row');
+        const input = clone.querySelector('.partner-share-input');
+        const removeBtn = clone.querySelector('.remove-partner-btn');
+
+        input.addEventListener('input', updateAllocation);
+        removeBtn.addEventListener('click', () => {
+            row.classList.add('opacity-0', '-translate-y-2');
+            setTimeout(() => {
+                row.remove();
+                updateAllocation();
+            }, 300);
+        });
+
+        partnerContainer.appendChild(clone);
+        updateAllocation();
+    }
+
+    addPartnerBtn.addEventListener('click', addNewPartnerRow);
+
+    // Initial state
+    window.onload = () => {
+        slider.dispatchEvent(new Event('input'));
+    };
+</script>
+</body></html>

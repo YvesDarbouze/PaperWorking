@@ -50,7 +50,8 @@ const INITIAL_FORM = {
   financingIntent: 'financing',
   raisingOutsideCapital: 'no',
   isBackdated: 'no',
-  startingPhase: 1,
+  isCompleted: false,
+  startingPhase: null, // change to null instead of 1 to ensure user actually selects it
   leadEmail: '',
   partnerEmails: '',
   vision: '',
@@ -461,7 +462,7 @@ export default function ProjectCreationWizard({
                 <ReviewRow label="Project Name" value={formData.propertyName} />
                 <ReviewRow label="Address" value={formData.address || 'Manual Entry'} />
                 <ReviewRow label="Strategy" value={formData.strategyType} />
-                <ReviewRow label="Starting Phase" value={`Phase ${formData.startingPhase}`} />
+                <ReviewRow label="Phase" value={formData.isCompleted ? `Phase ${formData.startingPhase} (Completed)` : `Phase ${formData.startingPhase}`} />
                 <ReviewRow label="Financing" value={formData.financingIntent} />
                 <ReviewRow label="Purchase Price" value={`$${Number(formData.financials.purchasePrice || formData.financials.targetPrice).toLocaleString()}`} />
                 {formData.financials.estimatedARV && (
@@ -601,6 +602,76 @@ export default function ProjectCreationWizard({
                           e.currentTarget.style.boxShadow = 'none';
                         }}
                       />
+                    </div>
+                  )}
+
+                  {/* PHASE SELECTION (Stitch step 2) */}
+                  {activeQuestion.type === 'phase-selection' && (
+                    <div className="space-y-4">
+                      {[
+                        { id: 1, type: 'acquisition', title: 'Acquisition', desc: 'Evaluating or under contract.', icon: 'analytics', colorClass: 'text-[#57f1db]', borderClass: 'border-[#57f1db]', bgClass: 'bg-[#57f1db]', hoverBorderClass: 'group-hover:border-[#57f1db]' },
+                        { id: 2, type: 'purchase', title: 'Purchase', desc: 'Closing the transaction.', icon: 'shopping_cart', colorClass: 'text-[#adc6ff]', borderClass: 'border-[#adc6ff]', bgClass: 'bg-[#adc6ff]', hoverBorderClass: 'group-hover:border-[#adc6ff]' },
+                        { id: 3, type: 'hold', title: 'Hold', desc: 'Operating or renovating.', icon: 'warehouse', colorClass: 'text-[#ffac5a]', borderClass: 'border-[#ffac5a]', bgClass: 'bg-[#ffac5a]', hoverBorderClass: 'group-hover:border-[#ffac5a]' },
+                        { id: 4, type: 'exit', title: 'Exit', desc: 'Selling or refinancing.', icon: 'logout', colorClass: 'text-[#bacac5]', borderClass: 'border-[#bacac5]', bgClass: 'bg-[#bacac5]', hoverBorderClass: 'group-hover:border-[#bacac5]' },
+                      ].map((phase) => {
+                        const isSelected = formData.startingPhase === phase.id;
+                        return (
+                          <button
+                            key={phase.id}
+                            type="button"
+                            onClick={() => {
+                              updateFormNested('startingPhase', phase.id);
+                              // Auto-set isBackdated correctly depending on phase
+                              if (phase.id !== 4) {
+                                updateFormNested('isBackdated', phase.id >= 3 ? 'yes' : 'no');
+                                updateFormNested('isCompleted', false);
+                              } else {
+                                updateFormNested('isBackdated', 'yes'); // Always own it if selling
+                              }
+                            }}
+                            className={`w-full flex items-start gap-5 p-6 rounded-xl text-left focus:outline-none group transition-all duration-200
+                              ${isSelected ? `border border-white/20 bg-white/5 shadow-inner phase-selected` : `border border-white/10 glass-card hover:border-white/20 hover:bg-white/[0.02]`}
+                            `}
+                            style={isSelected ? { borderColor: 'rgba(87, 241, 219, 0.4)', background: 'rgba(87, 241, 219, 0.04)', boxShadow: 'inset 0 0 20px rgba(87, 241, 219, 0.05)' } : {}}
+                          >
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border ${phase.colorClass.replace('text-', 'bg-')}/10 ${phase.colorClass.replace('text-', 'border-')}/20`} style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                              <span className={`material-symbols-outlined ${phase.colorClass}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                                {phase.icon}
+                              </span>
+                            </div>
+                            <div className="flex-grow">
+                              <div className="flex justify-between items-center mb-1">
+                                <h3 className={`font-headline-md text-headline-md ${phase.colorClass}`}>
+                                  {phase.title}
+                                </h3>
+                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? phase.borderClass : `border-[#859490] ${phase.hoverBorderClass}`}`}>
+                                  {isSelected && <div className={`w-2.5 h-2.5 rounded-full ${phase.bgClass}`}></div>}
+                                </div>
+                              </div>
+                              <p className="font-body-md text-body-md text-[#bacac5] opacity-80">{phase.desc}</p>
+                            </div>
+                          </button>
+                        );
+                      })}
+                      
+                      {/* Retroactive Toggle */}
+                      <div className={`transition-all duration-300 p-4 glass-card rounded-xl flex items-center justify-between border border-white/10
+                        ${formData.startingPhase === 4 ? 'opacity-100 translate-y-0 mt-6' : 'opacity-0 translate-y-2 pointer-events-none mt-0 h-0 p-0 overflow-hidden border-0'}`}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-[14px] leading-[16px] font-semibold text-[#dae4ec] tracking-wide">Retroactive entry</span>
+                          <span className="text-[12px] text-[#bacac5] mt-1">I'm entering a deal I've already completed</span>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={formData.isCompleted === true}
+                            onChange={(e) => updateFormNested('isCompleted', e.target.checked)}
+                          />
+                          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#57f1db]"></div>
+                        </label>
+                      </div>
                     </div>
                   )}
 

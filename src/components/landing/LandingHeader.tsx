@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
-import Logo from '@/components/brand/Logo';
 import { AnimatePresence, motion } from 'framer-motion';
 
 /* ═══════════════════════════════════════════════════════
@@ -40,7 +38,7 @@ export default function LandingHeader() {
             : 'bg-surface/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]'
         }`}
       >
-        <nav className="flex justify-between items-center h-20 px-gutter-desktop max-w-container-max mx-auto">
+        <nav className="flex justify-between items-center h-16 md:h-20 px-6 md:px-gutter-desktop max-w-container-max mx-auto">
           {/* Logo Lockup */}
           <Link href="/" className="flex items-center gap-stack-md group cursor-pointer">
             <img
@@ -55,12 +53,61 @@ export default function LandingHeader() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-stack-lg">
-            <Link
-              href="/#how-it-works"
-              className="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md active:scale-95 transition-transform"
-            >
-              How It Works
-            </Link>
+            <div className="relative group">
+              <Link
+                href="/#how-it-works"
+                className="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md flex items-center gap-1 active:scale-95 transition-transform"
+              >
+                How It Works
+                <span className="material-symbols-outlined text-[18px] transition-transform group-hover:rotate-180">expand_more</span>
+              </Link>
+              {/* Dropdown Menu */}
+              <div className="absolute top-full left-0 mt-4 w-72 bg-surface/90 backdrop-blur-2xl border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 transform origin-top scale-95 opacity-0 invisible group-hover:scale-100 group-hover:opacity-100 group-hover:visible z-[60]">
+                <div className="p-2 space-y-1">
+                  <Link href="/#acquisition" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
+                      <span className="material-symbols-outlined text-primary text-xl">hub</span>
+                    </div>
+                    <div>
+                      <p className="font-label-md text-on-surface">Acquisition</p>
+                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Source & secure capital.</p>
+                    </div>
+                  </Link>
+                  <Link href="/#purchase" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
+                      <span className="material-symbols-outlined text-primary text-xl">verified_user</span>
+                    </div>
+                    <div>
+                      <p className="font-label-md text-on-surface">Purchase</p>
+                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Automated compliance.</p>
+                    </div>
+                  </Link>
+                  <Link href="/#hold" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
+                      <span className="material-symbols-outlined text-primary text-xl">speed</span>
+                    </div>
+                    <div>
+                      <p className="font-label-md text-on-surface">Hold</p>
+                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Real-time margin tracking.</p>
+                    </div>
+                  </Link>
+                  <Link href="/#exit" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
+                      <span className="material-symbols-outlined text-primary text-xl">account_balance</span>
+                    </div>
+                    <div>
+                      <p className="font-label-md text-on-surface">Exit</p>
+                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Instant ROI reporting.</p>
+                    </div>
+                  </Link>
+                </div>
+                <div className="bg-primary/5 p-3 border-t border-white/5">
+                  <Link href="/#how-it-works" className="text-[12px] text-primary font-label-md flex items-center justify-center gap-1 hover:underline underline-offset-4">
+                    View Full Process <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
             <Link
               href="/#pricing"
               className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 duration-300 px-3 py-2 rounded-DEFAULT active:scale-95"
@@ -100,10 +147,14 @@ export default function LandingHeader() {
             <button
               type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden flex items-center justify-center w-10 h-10 hover:bg-white/5 transition-colors text-on-surface"
+              className="md:hidden flex items-center justify-center w-10 h-10 hover:bg-white/5 transition-colors text-primary"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? (
+                <span className="material-symbols-outlined text-2xl">close</span>
+              ) : (
+                <span className="material-symbols-outlined text-2xl">menu</span>
+              )}
             </button>
           </div>
         </nav>
@@ -154,7 +205,7 @@ export default function LandingHeader() {
                   className="flex items-center justify-center w-10 h-10 hover:bg-white/5 transition-colors text-on-surface"
                   aria-label="Close menu"
                 >
-                  <X className="w-5 h-5" />
+                  <span className="material-symbols-outlined text-2xl">close</span>
                 </button>
               </div>
 
@@ -209,6 +260,26 @@ export default function LandingHeader() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur-xl border-t border-white/10 px-8 py-3 flex justify-between items-center z-50">
+        <Link href="/" className="flex flex-col items-center gap-1 text-primary">
+          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
+          <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
+        </Link>
+        <Link href="/dashboard" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+          <span className="material-symbols-outlined text-[20px]">account_tree</span>
+          <span className="text-[9px] uppercase tracking-tighter">Pipeline</span>
+        </Link>
+        <Link href="/#pricing" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+          <span className="material-symbols-outlined text-[20px]">payments</span>
+          <span className="text-[9px] uppercase tracking-tighter">Pricing</span>
+        </Link>
+        <Link href="/login" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+          <span className="material-symbols-outlined text-[20px]">login</span>
+          <span className="text-[9px] uppercase tracking-tighter">Sign In</span>
+        </Link>
+      </nav>
     </>
   );
 }

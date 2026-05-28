@@ -122,8 +122,7 @@ function VendorCard({
 
   return (
     <div
-      className="rounded-xl border border-white/[0.08] flex flex-col gap-4 p-5 transition-all duration-200 hover:border-teal-400/30 hover:shadow-[0_0_24px_rgba(45,212,191,0.06)]"
-      style={{ background: 'rgba(24,33,39,0.6)' }}
+      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-teal-400/30 hover:shadow-[0_0_24px_rgba(45,212,191,0.06)]"
     >
       {/* Top row: category badge */}
       <div className="flex items-center justify-between">
@@ -269,10 +268,7 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div
-      className="min-h-full px-6 lg:px-8 py-8 space-y-6"
-      style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
-    >
+    <div className="min-h-full px-6 lg:px-8 py-8 space-y-6">
       {/* ── Page Header ── */}
       <div className="space-y-1">
         <h1 className="text-4xl font-bold text-white tracking-tight">Vendor Marketplace</h1>
@@ -291,14 +287,14 @@ export default function MarketplacePage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
-            className="w-full pl-11 pr-4 py-3.5 bg-[rgba(24,33,39,0.7)] border border-white/10 border-r-0 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-teal-500/50 transition-colors"
+            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-teal-500/50 transition-colors"
             style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
           />
         </div>
         <button
           type="button"
           onClick={handleFindVendors}
-          className="px-6 py-3.5 bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
+          className="pw-interactive px-6 py-3.5 bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
           Find Vendors
@@ -327,10 +323,7 @@ export default function MarketplacePage() {
       </div>
 
       {/* ── Disclaimer Banner ── */}
-      <div
-        className="flex items-start gap-3 px-4 py-3 rounded-lg border border-white/[0.06] border-l-4 border-l-amber-500"
-        style={{ background: 'rgba(245,158,11,0.05)' }}
-      >
+      <div className="flex items-start gap-3 px-4 py-3 rounded-lg border border-amber-500/20 bg-amber-500/5">
         <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-400/80 leading-relaxed">
           <span className="font-bold text-amber-400">Disclaimer: </span>

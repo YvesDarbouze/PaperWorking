@@ -181,8 +181,7 @@ export default function SupportPage() {
             variants={fadeUp}
             className="text-base sm:text-lg text-[var(--pw-subtle)] max-w-xl mx-auto leading-relaxed mb-10"
           >
-            Search our knowledge base, reach out to our team, or explore common
-            questions below.
+            Whether you're setting up your first project or scaling your portfolio, we're here to help you get out of the spreadsheets and back to doing deals. Search our guides or reach out below.
           </motion.p>
 
           <motion.div variants={fadeUp} className="relative max-w-md mx-auto">
@@ -255,7 +254,7 @@ export default function SupportPage() {
             <span className="text-xs text-[var(--pw-fg)] uppercase tracking-wider font-semibold mr-1">
               Popular searches:
             </span>
-            {['Generate LOI', 'Capital Gains Tax', 'Invite Vendor', '70% Rule Tracker'].map((tag) => (
+            {['14-Day Trial', 'Data Security', 'Burn Rate Tracker', 'Onboarding Help'].map((tag) => (
               <button
                 key={tag}
                 onClick={() => handleTagClick(tag)}

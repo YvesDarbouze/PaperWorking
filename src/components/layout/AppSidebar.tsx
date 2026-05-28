@@ -25,26 +25,6 @@ import WorkspaceSwitcher from '@/components/workspace/WorkspaceSwitcher';
 
 /* ═══════════════════════════════════════════════════════
    AppSidebar — Primary Authenticated Navigation Shell
-
-   Route Map:
-     WORKSPACE
-     • Command Center   → /dashboard
-     • Project Folders  → /dashboard/projects
-     • Marketplace      → /dashboard/marketplace
-     • Market Data      → /dashboard/data
-     • Deal Analyzer    → /dashboard/deal-analyzer
-     • Reports          → /dashboard/reports
-     • Insights         → /dashboard/insights
-     • Inbox            → /dashboard/inbox
-     • Team             → /dashboard/team
-
-     ACCOUNT
-     • Profile           → /dashboard/settings/profile
-     • Account & Billing → /dashboard/settings/billing
-     • Settings          → /dashboard/settings
-
-   Active indicator: bold text-primary with transparent white backdrop and active indicator.
-   Inactive: text-on-surface-variant, hover:bg-white/5.
    ═══════════════════════════════════════════════════════ */
 
 interface NavItem {
@@ -61,78 +41,66 @@ const WORKSPACE_ITEMS: NavItem[] = [
     id: 'command-center',
     label: 'Dashboard',
     href: '/dashboard',
-    icon: <LayoutDashboard className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <LayoutDashboard className="w-5 h-5" strokeWidth={1.5} />,
     exact: true,
   },
   {
     id: 'projects',
     label: 'Deals',
     href: '/dashboard/projects',
-    icon: <FolderOpen className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <FolderOpen className="w-5 h-5" strokeWidth={1.5} />,
   },
   {
     id: 'marketplace',
     label: 'Marketplace',
     href: '/dashboard/marketplace',
-    icon: <Store className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <Store className="w-5 h-5" strokeWidth={1.5} />,
   },
   {
-    id: 'data-hub',
-    label: 'Market Data',
-    href: '/dashboard/data',
-    icon: <Database className="w-4 h-4" strokeWidth={1.5} />,
-  },
-  {
-    id: 'deal-analyzer',
-    label: 'Deal Analyzer',
-    href: '/dashboard/deal-analyzer',
-    icon: <TrendingUp className="w-4 h-4" strokeWidth={1.5} />,
-  },
-  {
-    id: 'reports',
-    label: 'Reports',
-    href: '/dashboard/reports',
-    icon: <BarChart3 className="w-4 h-4" strokeWidth={1.5} />,
+    id: 'intelligence',
+    label: 'Intelligence',
+    href: '/dashboard/intelligence',
+    icon: <BarChart3 className="w-5 h-5" strokeWidth={1.5} />,
   },
   {
     id: 'insights',
     label: 'Insights',
     href: '/dashboard/insights',
-    icon: <Lightbulb className="w-4 h-4" strokeWidth={1.5} />,
-  },
-  {
-    id: 'inbox',
-    label: 'Inbox',
-    href: '/dashboard/inbox',
-    icon: <Mail className="w-4 h-4" strokeWidth={1.5} />,
-  },
-  {
-    id: 'team',
-    label: 'Team',
-    href: '/dashboard/team',
-    icon: <Users className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <Database className="w-5 h-5" strokeWidth={1.5} />,
   },
 ];
 
 /* ─── Account Group ─── */
 const ACCOUNT_ITEMS: NavItem[] = [
   {
+    id: 'inbox',
+    label: 'Inbox',
+    href: '/dashboard/inbox',
+    icon: <Mail className="w-5 h-5" strokeWidth={1.5} />,
+  },
+  {
+    id: 'team',
+    label: 'Team',
+    href: '/dashboard/team',
+    icon: <Users className="w-5 h-5" strokeWidth={1.5} />,
+  },
+  {
     id: 'profile',
     label: 'Profile',
     href: '/dashboard/settings/profile',
-    icon: <UserCircle className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <UserCircle className="w-5 h-5" strokeWidth={1.5} />,
   },
   {
     id: 'account',
     label: 'Billing',
     href: '/dashboard/settings/billing',
-    icon: <CreditCard className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <CreditCard className="w-5 h-5" strokeWidth={1.5} />,
   },
   {
     id: 'settings',
     label: 'Settings',
     href: '/dashboard/settings',
-    icon: <Settings className="w-4 h-4" strokeWidth={1.5} />,
+    icon: <Settings className="w-5 h-5" strokeWidth={1.5} />,
     exact: true,
   },
 ];
@@ -150,44 +118,34 @@ function SidebarLink({ item }: { item: NavItem }) {
       href={item.href}
       id={`sidebar-nav-${item.id}`}
       aria-current={isActive ? 'page' : undefined}
-      className={`group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 active:scale-95 border ${
+      className={`group flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 active:scale-95 ${
         isActive
-          ? 'text-primary font-bold bg-white/5 border-primary/20'
-          : 'text-on-surface-variant border-transparent hover:text-on-surface hover:bg-white/5'
+          ? 'bg-primary-container text-on-primary-container font-bold'
+          : 'text-on-surface-variant hover:bg-surface-variant'
       }`}
     >
       {/* Icon — aria-hidden, label carries the semantics */}
-      <span aria-hidden="true" className="shrink-0">
+      <span aria-hidden="true" className="shrink-0 flex items-center justify-center">
         {item.icon}
       </span>
 
       {/* Label */}
-      <span className="text-xs font-bold uppercase tracking-wider truncate">
+      <span className="font-label-md text-label-md truncate">
         {item.label}
       </span>
 
       {/* Unread badge for Inbox */}
       {item.id === 'inbox' && unreadTotal > 0 && (
         <span
-          className={`flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-bold transition-colors duration-150 ${
-            isActive ? 'ml-auto mr-2' : 'ml-auto'
-          } ${
+          className={`flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-bold rounded-full transition-colors duration-150 ml-auto ${
             isActive
               ? 'bg-primary text-on-primary'
-              : 'bg-surface-container-highest text-on-surface'
+              : 'bg-primary/20 text-primary'
           }`}
           aria-label={`${unreadTotal} unread messages`}
         >
           {unreadTotal > 9 ? '9+' : unreadTotal}
         </span>
-      )}
-
-      {/* Active dot indicator (redundant visual cue for color-blind users) */}
-      {isActive && (
-        <span
-          className="ml-auto w-1.5 h-1.5 rounded-full shrink-0 bg-primary"
-          aria-hidden="true"
-        />
       )}
     </Link>
   );
@@ -210,20 +168,22 @@ export default function AppSidebar() {
 
   return (
     <aside
-      className="flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto w-64 bg-surface-container/60 backdrop-blur-xl border-r border-black/10 dark:border-white/10"
+      className="flex flex-col shrink-0 h-screen sticky top-0 overflow-y-auto w-72 p-8 border-r border-outline-variant bg-surface-container-lowest custom-scrollbar"
       aria-label="Primary navigation"
     >
-      {/* ── Logo ── */}
-      <div className="flex items-center px-5 h-16 shrink-0 border-b border-black/10 dark:border-white/10">
+      {/* ── Header ── */}
+      <div className="mb-8 flex flex-col gap-4 shrink-0">
         <Logo href="/dashboard" size="sm" />
+        <h1 className="font-headline-lg text-headline-lg text-primary mt-4">Command Center</h1>
       </div>
 
-      <WorkspaceSwitcher />
+      <div className="mb-4">
+        <WorkspaceSwitcher />
+      </div>
 
       {/* ── Primary Nav ── */}
-      <nav className="flex-1 px-5 py-4 overflow-y-auto" aria-label="Main menu">
-        <SidebarSection label="Workspace" />
-        <ul className="space-y-1" role="list">
+      <nav className="flex-1 space-y-2 overflow-y-auto" aria-label="Main menu">
+        <ul className="space-y-2" role="list">
           {WORKSPACE_ITEMS.map((item) => (
             <li key={item.id} role="listitem">
               <SidebarLink item={item} />
@@ -231,38 +191,28 @@ export default function AppSidebar() {
           ))}
         </ul>
 
-        <SidebarSection label="Account" />
-        <ul className="space-y-1" role="list">
-          {ACCOUNT_ITEMS.map((item) => (
-            <li key={item.id} role="listitem">
-              <SidebarLink item={item} />
-            </li>
-          ))}
-        </ul>
+        <div className="pt-8 border-t border-outline-variant space-y-2 mt-8">
+          <ul className="space-y-2" role="list">
+            {ACCOUNT_ITEMS.map((item) => (
+              <li key={item.id} role="listitem">
+                <SidebarLink item={item} />
+              </li>
+            ))}
+          </ul>
+        </div>
       </nav>
 
       {/* ── Create Project Button ── */}
-      <div className="px-5 mb-4 shrink-0">
-        <button
-          onClick={() => router.push('/dashboard/projects/new')}
-          className="w-full py-2.5 bg-primary text-on-primary font-bold flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer text-xs uppercase tracking-wider"
-        >
-          <Plus className="w-4 h-4 text-on-primary" strokeWidth={1.5} />
-          <span>Create Project</span>
-        </button>
-      </div>
+      {/* Removed: Using Contextual FAB in DashboardHome instead */}
 
       {/* ── Footer ── */}
-      <div className="px-5 py-4 shrink-0 border-t border-black/10 dark:border-white/10">
-        {/* Powered-by badge */}
-        <p className="px-3 pb-3 text-xs font-bold uppercase tracking-widest text-on-surface-variant/40">
-          PaperWorking
-        </p>
+      <div className="pt-4 shrink-0 border-t border-outline-variant">
         {/* Logout */}
-        <div className="px-1">
+        <div className="">
           <LogoutButton compact />
         </div>
       </div>
     </aside>
   );
 }
+

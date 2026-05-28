@@ -38,6 +38,10 @@ import UpcomingMeetingsWidget from './UpcomingMeetingsWidget';
 import AnalyticsWidget from './AnalyticsWidget';
 import CommandCenterKPIStrip from './CommandCenterKPIStrip';
 import type { ScopeMode, PeriodFilter } from './CommandCenterKPIStrip';
+import PerformanceMetrics from './PerformanceMetrics';
+import EquityGrowthChart from './EquityGrowthChart';
+import AssetBentoGrid from './AssetBentoGrid';
+import SystemActivityFeed from './SystemActivityFeed';
 import InvestorInviteModal from '../InvestorInviteModal';
 import PostDealModal from '../PostDealModal';
 import MobileBottomNav from '../MobileBottomNav';
@@ -287,8 +291,12 @@ export default function DashboardHome() {
              <button className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex flex-shrink-0 items-center justify-center hover:bg-white/10 transition-colors" title="Notifications">
                 <Calendar className="w-4 h-4 text-on-surface-variant" />
              </button>
-             <button className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex flex-shrink-0 items-center justify-center hover:bg-white/10 transition-colors" title="Profile">
-                <User className="w-4 h-4 text-on-surface-variant" />
+             <button className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:opacity-90 cursor-pointer transition-opacity flex flex-shrink-0 items-center justify-center" title="Profile">
+                <img 
+                  alt="User Profile" 
+                  className="w-full h-full object-cover" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfpWRLrfBGAP8PBiImG329fs2zBftW6rRDu3DiyDbzd6cy5qSnm5wjv5MKVxeqpVwYSByBvavyZiqZdzMKGyjXsHCO8fHPmoSoOtam05OTcWoSKIxxnZV_JhZHIhvLHlz-kMYYuDGIjS2qURVm05X1vrGBROFIc0NbGckkepOlGaufp8zHTH8hhYz37vUZRPjioH_gII-70VUr4YRoNyLndZPqR3fyl_nEWcLQVDN4ZgbqfSGdYlFSJzaqogPWzhLhne8KzI2k5qDk" 
+                />
              </button>
           </div>
         </div>
@@ -328,139 +336,38 @@ export default function DashboardHome() {
 
       {/* ── Stitch Command Center Layout ── */}
       {!isGuest && (
-        <section className="space-y-6 mb-8">
-          {/* Row 1: Control Row — Scope Toggle + Period Selector + Quick Actions */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Scope Toggle: Property / My Share */}
-            <div className="flex bg-surface-container-high rounded-lg p-1 w-fit">
-              <button
-                onClick={() => setScope('property')}
-                className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
-                  scope === 'property'
-                    ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                Property
-              </button>
-              <button
-                onClick={() => setScope('myShare')}
-                className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
-                  scope === 'myShare'
-                    ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
-                    : 'text-on-surface-variant hover:text-on-surface'
-                }`}
-              >
-                My Share
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Period Selector */}
-              <div className="flex bg-surface-container-high rounded-lg p-1 w-fit">
-                {(['M', 'Q', 'Y', 'ALL'] as PeriodFilter[]).map(p => (
-                  <button
-                    key={p}
-                    onClick={() => setPeriod(p)}
-                    className={`px-4 py-1.5 rounded-md font-label-sm text-label-sm transition-all ${
-                      period === p
-                        ? 'bg-primary/10 text-primary font-bold shadow-[0_0_10px_rgba(45,212,191,0.1)]'
-                        : 'text-on-surface-variant hover:text-on-surface'
-                    }`}
-                  >
-                    {p === 'M' ? '30D' : p === 'Q' ? '90D' : p === 'Y' ? 'YTD' : 'ALL'}
-                  </button>
-                ))}
-              </div>
-
-              {/* Quick Actions */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleCreateProject}
-                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
-                >
-                  <PlusCircle className="w-3.5 h-3.5" />
-                  Create
-                </button>
-                <button
-                  onClick={() => setIsPostDealOpen(true)}
-                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
-                >
-                  <Tag className="w-3.5 h-3.5" />
-                  Post Deal
-                </button>
-                <button
-                  onClick={() => router.push('/dashboard/marketplace')}
-                  className="h-9 px-4 glass-card rounded-lg flex items-center gap-2 text-primary hover:bg-white/5 active:scale-95 transition-all text-[11px] font-bold uppercase tracking-wider"
-                >
-                  <UserSearch className="w-3.5 h-3.5" />
-                  Vendor
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2: KPI Metric Strip (11 cards, horizontal scroll) */}
-          <ErrorBoundary name="Command Center KPI Strip">
-            <CommandCenterKPIStrip
-              projects={portfolioProjects}
-              scope={scope}
-              period={period}
-            />
-          </ErrorBoundary>
-
-          {/* Row 3: Performance Chart + Pipeline Band */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ErrorBoundary name="Performance Chart">
-              <Suspense fallback={<ChartSkeleton />}>
-                <PerformanceChart projects={portfolioProjects} scope={scope} period={period} />
-              </Suspense>
+        <div className="flex flex-col xl:flex-row gap-6 mb-8 items-stretch w-full">
+          <section className="flex-1 flex flex-col space-y-6">
+            <ErrorBoundary name="Performance Metrics">
+              <PerformanceMetrics />
             </ErrorBoundary>
-            <ErrorBoundary name="Portfolio Summary Bar">
-              <PortfolioSummaryBar
-                projects={portfolioProjects}
-                isLoading={false}
-                className="w-full h-full"
-              />
+            <ErrorBoundary name="Equity Growth Chart">
+              <EquityGrowthChart />
             </ErrorBoundary>
-          </div>
+            <ErrorBoundary name="Asset Bento Grid">
+              <AssetBentoGrid />
+            </ErrorBoundary>
+          </section>
 
-          {/* Row 4: Project Folders + Activity Feed */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-8">
-              <ProjectsWidget
-                projects={portfolioProjects}
-                onCreateProject={handleCreateProject}
-                isGuest={isGuest}
-              />
-            </div>
-            <div className="lg:col-span-4">
-              <ErrorBoundary name="Recent Activity">
-                <ActivityFeed />
-              </ErrorBoundary>
-            </div>
-          </div>
+          <aside className="w-full xl:w-96 shrink-0">
+            <ErrorBoundary name="System Activity Feed">
+              <SystemActivityFeed />
+            </ErrorBoundary>
+          </aside>
+        </div>
+      )}
 
-          {/* Row 5: Secondary widgets (moved from primary view) */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-3">
-              <ProfileWidget
-                user={user}
-                profile={profile}
-                teamMembersCount={teamMembersCount}
-                completedDeals={dealsClosedCount}
-                winsCount={dealsClosedCount}
-                onInviteTeam={() => setIsInviteModalOpen(true)}
-              />
-            </div>
-            <div className="md:col-span-6">
-              <AnalyticsWidget projects={portfolioProjects} />
-            </div>
-            <div className="md:col-span-3">
-              <UpcomingMeetingsWidget />
-            </div>
-          </div>
-        </section>
+      {/* Contextual FAB (Restricted to Home/Dashboard) */}
+      {!isGuest && (
+        <div className="fixed bottom-10 right-8 lg:right-[420px] z-[60]">
+          <button
+            onClick={handleCreateProject}
+            className="flex items-center gap-3 px-6 py-4 bg-primary text-on-primary-container rounded-full font-bold shadow-lg luminous-glow hover:scale-105 active:scale-95 transition-all group"
+          >
+            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" strokeWidth={2} />
+            <span className="font-label-md hidden sm:inline">New Investment</span>
+          </button>
+        </div>
       )}
 
       {/* ── Dashboard Content ── */}

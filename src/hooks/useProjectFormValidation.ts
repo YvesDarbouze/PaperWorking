@@ -61,9 +61,12 @@ export function useProjectFormValidation(formData: any, activeQuestion: WizardQu
 
     // Required check
     if (activeQuestion.required) {
-      if (activeQuestion.id === 'address') {
+      if (activeQuestion.id === 'address' || activeQuestion.id === 'location') {
         const addressValid = !!formData.mlsListingKey || isAddressComplete;
         if (!addressValid) return 'Please specify a valid property address.';
+        if (activeQuestion.id === 'location' && !formData.assetClass) return 'Please select a structure type.';
+      } else if (activeQuestion.type === 'phase-selection') {
+        if (!formData.startingPhase) return 'Please select a phase.';
       } else if (activeQuestion.type === 'multi-select') {
         if (!Array.isArray(val) || val.length === 0) {
           return `${activeQuestion.prompt} is required.`;

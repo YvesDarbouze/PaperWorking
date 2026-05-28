@@ -27,6 +27,8 @@ interface InboxFeedProps {
   onBulkMarkRead: (itemsToMark: { id: string; type: NotificationType }[]) => Promise<void>;
   fetchMore: () => void;
   hasMore: boolean;
+  selectedItemId?: string | null;
+  onSelectItem?: (id: string | null) => void;
 }
 
 function FeedSkeleton() {
@@ -69,11 +71,14 @@ export default function InboxFeed({
   onBulkMarkRead,
   fetchMore,
   hasMore,
+  selectedItemId,
+  onSelectItem,
 }: InboxFeedProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   // Clear selections when active tab changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedIds([]);
   }, [activeTab]);
 
@@ -195,6 +200,8 @@ export default function InboxFeed({
               isSelected={selectedIds.includes(item.id)}
               onToggleSelect={handleToggleSelect}
               showCheckbox={selectedIds.length > 0}
+              isActive={selectedItemId === item.id}
+              onSelect={() => onSelectItem?.(item.id)}
             />
           ))}
         </AnimatePresence>

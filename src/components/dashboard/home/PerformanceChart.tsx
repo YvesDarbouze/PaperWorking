@@ -149,7 +149,7 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
 
   if (loading) {
     return (
-      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[360px] items-center justify-center p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)]">
+      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] items-center justify-center p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#57f1db]"></div>
       </section>
     );
@@ -157,7 +157,7 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
 
   if (data.length === 0) {
     return (
-      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[360px] justify-between p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)]">
+      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] justify-between p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4 text-[#57f1db]" />
@@ -176,7 +176,7 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
   }
 
   return (
-    <section className="glass-card rounded-xl overflow-hidden flex flex-col justify-between h-[360px] p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)]">
+    <section className="glass-card rounded-xl overflow-hidden flex flex-col justify-between h-[450px] p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>

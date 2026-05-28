@@ -4,28 +4,44 @@ import { useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useRouter } from 'next/navigation';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
-import { Search, Plus, FolderX, SlidersHorizontal, ChevronDown, RotateCcw } from 'lucide-react';
+import { Search, Plus, FolderX, SlidersHorizontal, ChevronRight, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import { EmptyState } from '@/components/ui/empty-states/EmptyState';
 
-/* ═══════════════════════════════════════════════════════════════
-   /dashboard/projects — Folder Grid (Stitch Schema ed38cf94)
-
-   Glass folder cards with phase-colored tabs, strategy badges,
-   live headline metrics, and phase progress indicators.
-   Filters: Phase, Strategy, Status, Search, Sort.
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ── Phase color mapping (matches Stitch schema exactly) ── */
-const PHASE_COLORS: Record<number, { border: string; bg: string; text: string; label: string }> = {
-  1: { border: 'border-l-primary',       bg: 'bg-primary/20',       text: 'text-primary',           label: 'Acquisition' },
-  2: { border: 'border-l-secondary',     bg: 'bg-secondary/20',     text: 'text-secondary',         label: 'Purchase' },
-  3: { border: 'border-l-on-surface-variant', bg: 'bg-on-surface-variant/20', text: 'text-on-surface-variant', label: 'Hold' },
-  4: { border: 'border-l-error',         bg: 'bg-error/20',         text: 'text-error',             label: 'Exit' },
-};
-
-function getPhaseConfig(phase?: number) {
-  return PHASE_COLORS[phase ?? 1] ?? PHASE_COLORS[1];
+/* ── Strategy Theme Mapping ── */
+function getStrategyThemeConfig(strategy?: string) {
+  const str = strategy ?? '';
+  if (str === 'Sell' || str === 'Fix & Flip') {
+    return {
+      text: 'text-primary',
+      bgBase: 'bg-primary',
+      bg10: 'bg-primary/10',
+      bg20: 'bg-primary/20',
+      bg50: 'bg-primary/50',
+      border20: 'border-primary/20',
+      label: 'Fix & Flip'
+    };
+  }
+  if (str === 'Rent' || str === 'Buy & Hold') {
+    return {
+      text: 'text-tertiary',
+      bgBase: 'bg-tertiary',
+      bg10: 'bg-tertiary/10',
+      bg20: 'bg-tertiary/20',
+      bg50: 'bg-tertiary/50',
+      border20: 'border-tertiary/20',
+      label: 'Rental'
+    };
+  }
+  return {
+    text: 'text-secondary',
+    bgBase: 'bg-secondary',
+    bg10: 'bg-secondary/10',
+    bg20: 'bg-secondary/20',
+    bg50: 'bg-secondary/50',
+    border20: 'border-secondary/20',
+    label: 'Mixed'
+  };
 }
 
 /* ── Headline metric per strategy type ── */
@@ -37,84 +53,57 @@ function getHeadlineMetric(
   const fin = project.financials;
 
   if (strategy === 'Sell' || strategy === 'Fix & Flip') {
-    // For flips: show estimated ROI
-    const totalInvested = metrics.totalCashInvested || 1;
     const arv = fin?.estimatedCurrentValue ?? fin?.estimatedARV ?? fin?.arv ?? 0;
-    const roi = totalInvested > 0 ? ((arv - totalInvested) / totalInvested) * 100 : 0;
-    return { label: 'Est. ROI', value: `${roi.toFixed(0)}%` };
+    return { label: 'Est. Exit', value: formatCurrency(arv) };
   }
 
   if (strategy === 'Rent' || strategy === 'Buy & Hold') {
-    // For rentals: show Cash-on-Cash or Net Yield
-    const coc = metrics.cashOnCashReturn ?? 0;
-    return { label: 'Net Yield', value: `${(coc * 100).toFixed(1)}%` };
+    const rev = metrics.noiComponents?.grossRentalIncome ? metrics.noiComponents.grossRentalIncome / 12 : 0;
+    return { label: 'Monthly Rev', value: formatCurrency(rev) };
   }
 
-  // Fallback: show Cap Rate
   const capRate = metrics.capRate ?? 0;
   return { label: 'Cap Rate', value: `${(capRate * 100).toFixed(1)}%` };
 }
 
 /* ── Phase progress estimation ── */
-function getPhaseProgress(project: Project): number {
+function getPhaseProgressInfo(project: Project) {
   const phase = project.currentPhase ?? 1;
   const status = project.status;
 
-  // Status-based progress within phase
-  if (status === 'Sold' || status === 'closed_won') return 100;
-  if (status === 'Listed') return 85;
-  if (status === 'Renovating') return 40;
-  if (status === 'Under Contract') return 65;
-  if (status === 'Lead') return 15;
+  let progress = 30;
+  if (status === 'Sold' || status === 'closed_won') progress = 100;
+  else if (status === 'Listed') progress = 85;
+  else if (status === 'Renovating') progress = 40;
+  else if (status === 'Under Contract') progress = 65;
+  else if (status === 'Lead') progress = 15;
+  else {
+    const baseProgress: Record<number, number> = { 1: 25, 2: 50, 3: 70, 4: 90 };
+    progress = baseProgress[phase] ?? 30;
+  }
 
-  // Phase-based baseline progress
-  const baseProgress: Record<number, number> = { 1: 25, 2: 50, 3: 70, 4: 90 };
-  return baseProgress[phase] ?? 30;
+  const phaseNames = {
+    1: 'Acquisition',
+    2: 'Purchase',
+    3: 'Hold',
+    4: 'Exit',
+  };
+  const label = phaseNames[phase as keyof typeof phaseNames] ?? 'Planning';
+  
+  return { progress, label: `Phase ${phase}: ${label}` };
 }
 
 /* ── Format currency ── */
 function formatCurrency(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
   if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(1)}k`;
   return `$${value.toFixed(0)}`;
 }
 
-/* ── Strategy display label ── */
-function getStrategyLabel(strategy?: string): string {
-  const map: Record<string, string> = {
-    'Sell': 'FLIP',
-    'Fix & Flip': 'FLIP',
-    'Rent': 'RENTAL',
-    'Buy & Hold': 'BRRRR',
-  };
-  return map[strategy ?? ''] ?? 'MIXED';
-}
-
-/* ── Extract state abbreviation from address ── */
-function getStateFromAddress(address: string): string {
-  // Try to match ", ST " or ", ST\d" pattern
-  const match = address.match(/,\s*([A-Z]{2})\s/);
-  if (match) return match[1];
-  // Try last two-letter word before zip
-  const parts = address.split(/\s+/);
-  for (let i = parts.length - 1; i >= 0; i--) {
-    if (/^[A-Z]{2}$/.test(parts[i])) return parts[i];
-  }
-  return '';
-}
-
 /* ══════════════════════════════════════════
    FolderCard — Single project card
-   Schema: glass-card + folder tab + phase border
    ══════════════════════════════════════════ */
-function FolderCard({
-  project,
-  onClick,
-}: {
-  project: Project;
-  onClick: () => void;
-}) {
-  const phaseConfig = getPhaseConfig(project.currentPhase);
+function FolderCard({ project, onClick }: { project: Project; onClick: () => void }) {
   const metrics = useMemo(
     () =>
       deriveAllMetrics(
@@ -128,90 +117,69 @@ function FolderCard({
   );
   const headlineMetric = getHeadlineMetric(project, metrics);
   const ownership = project.financials?.ownershipPercentage ?? 100;
-  const progress = getPhaseProgress(project);
-  const stateAbbr = getStateFromAddress(project.address);
-  const strategyLabel = getStrategyLabel(project.strategyType);
+  const { progress, label: progressLabel } = getPhaseProgressInfo(project);
+  const theme = getStrategyThemeConfig(project.strategyType);
 
   return (
     <div
-      className="group relative flex flex-col transition-all duration-300 hover:opacity-90 cursor-pointer"
+      className="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden cursor-pointer"
       onClick={onClick}
       role="link"
       tabIndex={0}
       aria-label={`View project: ${project.propertyName}`}
     >
-      {/* Folder Tab */}
-      <div
-        className={`h-8 w-32 ${phaseConfig.bg} border-t border-l ${phaseConfig.border.replace('border-l-', 'border-')}/30 ml-4`}
-        style={{ clipPath: 'polygon(0% 0%, 70% 0%, 85% 100%, 0% 100%)' }}
-      />
-
-      {/* Card Body */}
-      <div className={`glass-card p-6 border-l-4 ${phaseConfig.border} flex flex-col gap-4 overflow-hidden relative`}>
-        {/* Phase Badge — top right */}
-        <div className="absolute top-0 right-0 p-4">
-          <span className={`${phaseConfig.bg.replace('/20', '/10')} ${phaseConfig.text} px-3 py-1 text-xs font-bold tracking-widest uppercase border border-pw-border`}>
-            {phaseConfig.label}
-          </span>
-        </div>
-
-        {/* Property Name + Tags */}
-        <div className="flex items-start justify-between mt-4">
+      <div className={`absolute top-0 right-0 w-32 h-32 ${theme.bg10} blur-3xl rounded-full -mr-16 -mt-16 group-hover:${theme.bg20} transition-all`} />
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-6">
           <div>
-            <h3 className={`text-headline-md font-light text-pw-black group-hover:${phaseConfig.text} transition-colors`}>
-              {project.propertyName}
-            </h3>
-            <div className="flex gap-2 mt-2">
-              <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 text-xs font-bold tracking-wider uppercase">
-                {strategyLabel}
-              </span>
-              {stateAbbr && (
-                <span className="bg-white/5 text-pw-muted border border-pw-border px-2 py-0.5 text-xs font-bold tracking-wider uppercase">
-                  {stateAbbr}
-                </span>
-              )}
-            </div>
+            <span className={`${theme.bg10} ${theme.text} text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border ${theme.border20} mb-2 inline-block`}>
+              {theme.label}
+            </span>
+            <h3 className="font-headline-md text-on-surface">{project.propertyName}</h3>
+            <p className="text-outline text-sm">{project.address}</p>
+          </div>
+          <div className="text-right">
+            <div className={`font-headline-md ${theme.text}`}>{ownership}%</div>
+            <div className="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
           </div>
         </div>
-
-        {/* 2-col Metric Grid */}
-        <div className="grid grid-cols-2 gap-4 mt-4">
-          <div className="p-3 bg-pw-glass-bg border border-pw-border">
-            <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
-              Equity
-            </p>
-            <p className={`text-headline-md font-light ${phaseConfig.text}`}>
-              {ownership}%
-            </p>
+        
+        <div className="mb-8">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-xs text-outline">Phase Progress</span>
+            <span className={`text-xs ${theme.text} font-bold`}>{progressLabel}</span>
           </div>
-          <div className="p-3 bg-pw-glass-bg border border-pw-border">
-            <p className="text-xs font-bold tracking-wider text-pw-muted uppercase">
-              {headlineMetric.label}
-            </p>
-            <p className={`text-headline-md font-light ${phaseConfig.text}`}>
-              {headlineMetric.value}
-            </p>
-          </div>
-        </div>
-
-        {/* Phase Progress Bar */}
-        <div className="space-y-2 mt-2">
-          <div className="flex justify-between text-xs font-bold tracking-wider">
-            <span className="text-pw-muted">Phase Progress</span>
-            <span className={phaseConfig.text}>{progress}%</span>
-          </div>
-          <div className="h-1.5 w-full bg-pw-border/30 overflow-hidden">
+          <div className="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
             <div
-              className={`h-full ${phaseConfig.border.replace('border-l-', 'bg-')} luminous-glow transition-all duration-500`}
+              className={`h-full ${theme.bgBase} luminous-glow rounded-full transition-all duration-500`}
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
+        
+        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+          <div>
+            <p className="text-[10px] text-outline uppercase">Acquisition</p>
+            <p className="font-label-md">{formatCurrency(project.financials?.purchasePrice ?? 0)}</p>
+          </div>
+          <div>
+            <p className="text-[10px] text-outline uppercase">{headlineMetric.label}</p>
+            <p className={`font-label-md ${theme.text}`}>{headlineMetric.value}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
+        <div className="flex -space-x-2">
+          {/* Future: User avatars can go here */}
+        </div>
+        <button className={`${theme.text} text-xs font-bold flex items-center gap-1 hover:underline`}>
+          Details <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
 }
-
 
 /* ══════════════════════════════════════════
    ProjectsPage — Main Export
@@ -227,11 +195,44 @@ export default function ProjectsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<string>('recent');
 
+  /* ── Stats Computation ── */
+  const stats = useMemo(() => {
+    let totalValue = 0;
+    let totalEquity = 0;
+    let validEquityCount = 0;
+    let totalYield = 0;
+    let validYieldCount = 0;
+
+    storeProjects.forEach((p) => {
+      const arv = p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.arv ?? p.financials?.purchasePrice ?? 0;
+      totalValue += arv;
+
+      const eq = p.financials?.ownershipPercentage ?? 100;
+      totalEquity += eq;
+      validEquityCount++;
+
+      const metrics = deriveAllMetrics(p.financials, p.financials?.estimatedCurrentValue, p.strategyType, p.currentPhase, p.createdAt);
+      if (p.strategyType === 'Sell' || p.strategyType === 'Fix & Flip') {
+        const totalInvested = metrics.totalCashInvested || 1;
+        const roi = totalInvested > 0 ? ((arv - totalInvested) / totalInvested) * 100 : 0;
+        totalYield += roi;
+      } else {
+        totalYield += (metrics.cashOnCashReturn ?? 0) * 100;
+      }
+      validYieldCount++;
+    });
+
+    return {
+      totalValue,
+      avgEquity: validEquityCount > 0 ? totalEquity / validEquityCount : 0,
+      avgYield: validYieldCount > 0 ? totalYield / validYieldCount : 0,
+    };
+  }, [storeProjects]);
+
   /* ── Filtered + sorted data ── */
   const filteredProjects = useMemo(() => {
     let data = [...storeProjects];
 
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       data = data.filter(
@@ -241,13 +242,11 @@ export default function ProjectsPage() {
       );
     }
 
-    // Phase filter
     if (phaseFilter) {
       const phaseNum = parseInt(phaseFilter);
       data = data.filter((p) => (p.currentPhase ?? 1) === phaseNum);
     }
 
-    // Strategy filter
     if (strategyFilter) {
       const map: Record<string, string[]> = {
         flip: ['Sell', 'Fix & Flip'],
@@ -258,7 +257,6 @@ export default function ProjectsPage() {
       data = data.filter((p) => allowedStrategies.includes(p.strategyType ?? ''));
     }
 
-    // Status filter
     if (statusFilter === 'active') {
       data = data.filter((p) => !['Sold', 'closed_won', 'closed_lost'].includes(p.status));
     } else if (statusFilter === 'closed') {
@@ -267,7 +265,6 @@ export default function ProjectsPage() {
       data = data.filter((p) => ['Lead', 'Under Contract'].includes(p.status));
     }
 
-    // Sort
     if (sortBy === 'recent') {
       data.sort((a, b) => {
         const aDate = a.updatedAt instanceof Date ? a.updatedAt.getTime() : new Date(a.updatedAt).getTime();
@@ -287,79 +284,83 @@ export default function ProjectsPage() {
   const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}`);
 
   return (
-    <div className="min-h-full pb-28 md:pb-0">
+    <div className="min-h-full pb-28 md:pb-28">
       {/* ── Header & Search ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div className="flex-1 max-w-2xl relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pw-muted group-focus-within:text-pw-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search properties by address or strategy..."
-            className="w-full bg-pw-glass-bg border border-pw-border rounded-md py-4 pl-12 pr-4 text-base font-normal focus:outline-none focus:ring-2 focus:ring-pw-primary/50 focus:border-pw-primary transition-all backdrop-blur-md text-pw-black placeholder:text-pw-muted"
+            className="w-full bg-surface-container-highest border-none rounded-full py-3 pl-12 pr-4 text-sm font-normal focus:outline-none focus:ring-1 focus:ring-primary transition-all text-on-surface placeholder:text-outline"
           />
         </div>
-        <button
-          onClick={handleCreateProject}
-          className="pw-interactive pw-btn pw-btn--primary flex items-center justify-center gap-2 uppercase tracking-wider text-xs font-black"
-        >
-          <Plus className="w-5 h-5" />
-          CREATE PROJECT
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleCreateProject}
+            className="luminous-glow bg-primary text-on-primary px-6 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:scale-105 transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            New Project
+          </button>
+        </div>
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="flex flex-wrap items-center gap-4 mb-8 p-2 glass-card border border-pw-border">
-        <div className="flex items-center px-4 py-2 gap-2 text-pw-muted border-r border-pw-border">
-          <SlidersHorizontal className="w-5 h-5" />
-          <span className="text-sm tracking-wider font-bold uppercase">Filters</span>
+      <div className="mb-8 glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 text-outline px-2 border-r border-outline-variant">
+            <SlidersHorizontal className="w-4 h-4" />
+          </div>
+
+          <select
+            value={phaseFilter}
+            onChange={(e) => setPhaseFilter(e.target.value)}
+            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
+          >
+            <option value="">Phase: All</option>
+            <option value="1">Acquisition</option>
+            <option value="2">Purchase</option>
+            <option value="3">Hold</option>
+            <option value="4">Exit</option>
+          </select>
+
+          <select
+            value={strategyFilter}
+            onChange={(e) => setStrategyFilter(e.target.value)}
+            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
+          >
+            <option value="">Strategy: All</option>
+            <option value="flip">Flip</option>
+            <option value="rental">Rental</option>
+            <option value="brrrr">BRRRR</option>
+          </select>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
+          >
+            <option value="active">Status: Active</option>
+            <option value="">Status: All</option>
+            <option value="closed">Closed</option>
+            <option value="pending">Pending</option>
+          </select>
+
+          <div className="h-6 w-px bg-outline-variant mx-2 hidden sm:block"></div>
+          <span className="text-outline text-xs uppercase tracking-widest font-bold">
+            {filteredProjects.length} Projects Found
+          </span>
         </div>
 
-        {/* Phase Filter */}
-        <select
-          value={phaseFilter}
-          onChange={(e) => setPhaseFilter(e.target.value)}
-          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
-        >
-          <option value="">Phase: All</option>
-          <option value="1">Acquisition</option>
-          <option value="2">Purchase</option>
-          <option value="3">Hold</option>
-          <option value="4">Exit</option>
-        </select>
-
-        {/* Strategy Filter */}
-        <select
-          value={strategyFilter}
-          onChange={(e) => setStrategyFilter(e.target.value)}
-          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
-        >
-          <option value="">Strategy: All</option>
-          <option value="flip">Flip</option>
-          <option value="rental">Rental</option>
-          <option value="brrrr">BRRRR</option>
-        </select>
-
-        {/* Status Filter */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-transparent border-none text-sm font-bold tracking-wider text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
-        >
-          <option value="active">Status: Active</option>
-          <option value="">Status: All</option>
-          <option value="closed">Closed</option>
-          <option value="pending">Pending</option>
-        </select>
-
-        {/* Sort */}
-        <div className="ml-auto hidden sm:flex items-center gap-2 text-pw-muted pr-4">
-          <span className="text-xs font-bold tracking-wider uppercase">Sort by:</span>
+        <div className="flex items-center gap-4 text-outline text-xs">
+          <span className="font-bold">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent border-none text-xs font-bold tracking-wider uppercase text-pw-black focus:ring-0 cursor-pointer hover:text-pw-primary transition-colors"
+            className="bg-transparent border-none text-sm font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors p-0"
           >
             <option value="recent">Recent</option>
             <option value="name">Name</option>
@@ -370,7 +371,7 @@ export default function ProjectsPage() {
 
       {/* ── Project Grid ── */}
       {filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredProjects.map((project) => (
             <FolderCard
               key={project.id}
@@ -378,6 +379,16 @@ export default function ProjectsPage() {
               onClick={() => handleOpenProject(project.id)}
             />
           ))}
+          {/* Add New Card Placeholder */}
+          <div
+            onClick={handleCreateProject}
+            className="glass-card folder-cut group border-dashed border-2 border-outline-variant hover:border-primary/50 transition-all cursor-pointer flex flex-col items-center justify-center p-12 min-h-[300px]"
+          >
+            <div className="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all">
+              <Plus className="w-8 h-8 text-outline group-hover:text-primary" />
+            </div>
+            <p className="font-label-md text-outline group-hover:text-primary transition-colors">Add New Project</p>
+          </div>
         </div>
       ) : storeProjects.length === 0 ? (
         <div className="flex justify-center py-12">
@@ -410,6 +421,36 @@ export default function ProjectsPage() {
             }}
             variant="card"
           />
+        </div>
+      )}
+
+      {/* ── Terminal Stats Overlay ── */}
+      {storeProjects.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-4xl px-4 z-40 hidden md:block">
+          <div className="glass-card rounded-2xl p-4 flex items-center justify-between border border-primary/20 bg-surface/80">
+            <div className="flex gap-8">
+              <div>
+                <p className="text-[10px] text-outline uppercase font-bold">Total Port. Value</p>
+                <p className="font-headline-md text-primary">{formatCurrency(stats.totalValue)}</p>
+              </div>
+              <div className="h-10 w-px bg-outline-variant"></div>
+              <div>
+                <p className="text-[10px] text-outline uppercase font-bold">Avg. Equity</p>
+                <p className="font-headline-md text-on-surface">{stats.avgEquity.toFixed(1)}%</p>
+              </div>
+              <div className="h-10 w-px bg-outline-variant"></div>
+              <div>
+                <p className="text-[10px] text-outline uppercase font-bold">Monthly ROI / Yield</p>
+                <p className="font-headline-md text-tertiary">
+                  {stats.avgYield > 0 ? '+' : ''}{stats.avgYield.toFixed(1)}%
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+              <span className="text-[10px] text-outline font-mono">LIVE_FEED_SYNCED</span>
+            </div>
+          </div>
         </div>
       )}
     </div>

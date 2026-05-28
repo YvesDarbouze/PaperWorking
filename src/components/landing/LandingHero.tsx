@@ -11,14 +11,12 @@ import Link from 'next/link';
 
 export default function LandingHero() {
   return (
-    <section className="dark relative flex items-center justify-center pt-32 pb-24 bg-background overflow-hidden w-full">
+    <section className="dark relative flex items-center justify-center pt-stack-xl md:pt-32 pb-stack-lg md:pb-24 bg-background overflow-hidden w-full terminal-grid">
       {/* Ambient glow */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
-      </div>
+      <div className="ambient-glow" />
 
       {/* Content — centered single column */}
-      <div className="relative z-20 max-w-container-max mx-auto px-gutter-desktop w-full text-center mt-20 mb-8">
+      <div className="relative z-20 max-w-md md:max-w-container-max mx-auto px-margin-mobile md:px-gutter-desktop w-full text-center mt-0 md:mt-20 mb-32">
 
         {/* Live badge */}
         <div className="inline-flex items-center gap-2 glass-panel px-4 py-2 rounded-full mb-8">
@@ -29,21 +27,21 @@ export default function LandingHero() {
         </div>
 
         {/* Title */}
-        <h1 className="font-headline-xl text-headline-xl max-w-4xl mx-auto mb-6 text-on-surface">
-          Scale Your Real Estate Portfolio <br />
-          <span className="font-extrabold text-primary">Without the Chaos.</span>
+        <h1 className="font-headline-xl text-headline-xl max-w-4xl mx-auto mb-6 text-on-surface leading-tight tracking-tight">
+          Stop losing sleep over <br className="hidden md:block" />
+          <span className="luminous-text font-extrabold">disorganized deals.</span>
         </h1>
 
         {/* Sub-copy */}
-        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10">
-          Centralize your pipeline, automate documentation, and track margins in real-time.
+        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10 px-2 md:px-0">
+          Every day a project sits idle, holding costs eat your profits. PaperWorking professionalizes your entire operation—centralizing your pipeline, tracking rehab costs in real-time, and automating docs. Save money, manage projects effortlessly, and free up your time to find more deals.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-col items-center justify-center gap-4">
           <Link
             href="/register"
-            className="px-8 py-4 rounded-lg font-label-md text-label-md text-lg inline-flex items-center gap-2 bg-primary text-on-primary hover:opacity-90 transition-opacity"
+            className="luminous-button px-8 py-4 rounded-lg font-label-md text-label-md text-lg inline-flex items-center gap-2"
           >
             Start Your 14-Day Trial
             <span
@@ -54,7 +52,7 @@ export default function LandingHero() {
             </span>
           </Link>
           <span className="font-body-sm text-body-sm text-on-surface-variant/60">
-            No credit card required. Free forever for 1 active deal.
+            14-day trial. Credit card required. No charge until day 15.
           </span>
         </div>
       </div>

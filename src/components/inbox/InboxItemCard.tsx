@@ -20,6 +20,8 @@ interface InboxItemCardProps {
   isSelected?: boolean;
   onToggleSelect?: (id: string) => void;
   showCheckbox?: boolean;
+  isActive?: boolean;
+  onSelect?: () => void;
 }
 
 function getCategoryInfo(type: NotificationType) {
@@ -154,7 +156,9 @@ export default function InboxItemCard({
   onDelete,
   isSelected = false,
   onToggleSelect,
-  showCheckbox = false
+  showCheckbox = false,
+  isActive = false,
+  onSelect
 }: InboxItemCardProps) {
   const router = useRouter();
   const [imageError, setImageError] = useState(false);
@@ -179,10 +183,14 @@ export default function InboxItemCard({
       onMarkRead(item.id);
     }
 
-    if (isActionable) {
-      setIsExpanded(!isExpanded);
+    if (onSelect) {
+      onSelect();
     } else {
-      router.push(item.deepLinkUrl);
+      if (isActionable) {
+        setIsExpanded(!isExpanded);
+      } else {
+        router.push(item.deepLinkUrl);
+      }
     }
   };
 
@@ -200,7 +208,9 @@ export default function InboxItemCard({
       id={`inbox-item-${item.id}`}
       onClick={handleClick}
       className={`group relative flex flex-col gap-3 p-5 rounded-2xl border transition-all duration-300 ${
-        item.read
+        isActive
+          ? 'bg-[#0b141a]/80 border-[#57f1db]/50 shadow-[0_0_15px_-5px_rgba(87,241,219,0.3)]'
+          : item.read
           ? 'glass-card border-white/5 bg-[#0b141a]/20 hover:bg-white/5'
           : 'glass-card border-[#2dd4bf]/20 bg-[#0b141a]/40 ring-1 ring-[#2dd4bf]/10 shadow-[0_0_15px_-5px_rgba(45,212,191,0.15)] hover:border-[#2dd4bf]/30'
       }`}

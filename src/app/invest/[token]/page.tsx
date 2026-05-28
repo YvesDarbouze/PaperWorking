@@ -74,7 +74,7 @@ export default function GuestPortalPage() {
   const [inputError, setInputError] = useState<string | null>(null);
 
   // Modals state
-  const [showDataRoom, setShowDataRoom] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
   const [showAskSponsor, setShowAskSponsor] = useState(false);
   const [sponsorMessage, setSponsorMessage] = useState('');
   const [sendingSponsorMsg, setSendingSponsorMsg] = useState(false);
@@ -476,11 +476,11 @@ export default function GuestPortalPage() {
                 
                 <div className="flex gap-3">
                   <button 
-                    onClick={() => setShowDataRoom(true)}
+                    onClick={() => setShowInsights(true)}
                     className="bg-surface/60 backdrop-blur-md border border-white/10 hover:bg-surface/80 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all group font-mono text-[10px] uppercase"
                   >
                     <span className="material-symbols-outlined text-sm select-none group-hover:text-[#57f1db]">folder_open</span>
-                    Data Room
+                    Insights
                   </button>
                   <button 
                     onClick={() => setShowAskSponsor(true)}
@@ -814,17 +814,17 @@ export default function GuestPortalPage() {
         </button>
       </nav>
 
-      {/* Modal: Data Room */}
-      {showDataRoom && (
-        <div id="data-room-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+      {/* Modal: Insights */}
+      {showInsights && (
+        <div id="insights-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0b141a]">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Secure Data Room</h3>
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Secure Insights Vault</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Project: {dealData.dealName}</p>
               </div>
               <button 
-                onClick={() => setShowDataRoom(false)}
+                onClick={() => setShowInsights(false)}
                 className="material-symbols-outlined text-[#8a9b9b] hover:text-white select-none"
               >
                 close
@@ -860,7 +860,7 @@ export default function GuestPortalPage() {
 
             <div className="p-5 border-t border-white/5 bg-[#0b141a]/50 flex justify-end">
               <button 
-                onClick={() => setShowDataRoom(false)}
+                onClick={() => setShowInsights(false)}
                 className="px-5 py-2 rounded-lg bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] text-[10px] font-bold uppercase tracking-wider transition-colors"
               >
                 Close Vault

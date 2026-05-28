@@ -1,402 +1,250 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import Link from 'next/link';
-import {
-  ArrowUpRight,
-  Lightbulb,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Zap,
-  RefreshCw,
-} from 'lucide-react';
-import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import React from 'react';
 
 /* ═══════════════════════════════════════════════════════════════
-   Insights — Desktop Dark — AI-driven portfolio intelligence hub
-   Stitch design: "Insights (Desktop Dark)"
-   Layout: Left sidebar insight cards + Right main analytics panel
+   Compliance Vault | Insights
+   Replaces the previous AI intelligence hub with the Data Room Vault
+   Stitch design: "Data Room Vault (Desktop Active)"
    ═══════════════════════════════════════════════════════════════ */
 
-type InsightSeverity = 'success' | 'warning' | 'info' | 'urgent';
-
-interface Insight {
-  id: string;
-  title: string;
-  body: string;
-  severity: InsightSeverity;
-  metric?: string;
-  metricLabel?: string;
-  trend?: 'up' | 'down';
-  href?: string;
-  category: 'performance' | 'risk' | 'opportunity' | 'action';
-}
-
-const SEVERITY_STYLES: Record<InsightSeverity, { border: string; badge: string; icon: string }> = {
-  success: { border: 'border-l-teal-400', badge: 'bg-teal-500/10 text-teal-400 border-teal-500/20', icon: 'text-teal-400' },
-  warning: { border: 'border-l-amber-400', badge: 'bg-amber-500/10 text-amber-400 border-amber-500/20', icon: 'text-amber-400' },
-  info:    { border: 'border-l-blue-400',  badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',   icon: 'text-blue-400' },
-  urgent:  { border: 'border-l-red-400',   badge: 'bg-red-500/10 text-red-400 border-red-500/20',     icon: 'text-red-400' },
-};
-
-function InsightCard({ insight, active, onClick }: { insight: Insight; active: boolean; onClick: () => void }) {
-  const styles = SEVERITY_STYLES[insight.severity];
-  const SeverityIcon =
-    insight.severity === 'success' ? CheckCircle2 :
-    insight.severity === 'warning' ? AlertTriangle :
-    insight.severity === 'urgent'  ? Zap :
-    Clock;
-
-  return (
-    <button
-      onClick={onClick}
-      className={`w-full text-left px-4 py-3.5 rounded-xl border-l-2 transition-all ${styles.border} ${
-        active
-          ? 'bg-white/[0.06] border-r border-t border-b border-white/10'
-          : 'bg-white/[0.02] border-r border-t border-b border-transparent hover:bg-white/[0.04]'
-      }`}
-    >
-      <div className="flex items-start gap-2.5">
-        <SeverityIcon className={`w-3.5 h-3.5 mt-0.5 flex-shrink-0 ${styles.icon}`} strokeWidth={2} />
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-slate-200 leading-snug">{insight.title}</p>
-          <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">{insight.body}</p>
-        </div>
-      </div>
-      {insight.metric && (
-        <div className="mt-2 pl-6">
-          <span className={`text-sm font-bold tabular-nums ${insight.trend === 'up' ? 'text-teal-400' : insight.trend === 'down' ? 'text-red-400' : 'text-slate-300'}`}>
-            {insight.metric}
-          </span>
-          {insight.metricLabel && (
-            <span className="text-[10px] text-slate-500 ml-1.5">{insight.metricLabel}</span>
-          )}
-        </div>
-      )}
-    </button>
-  );
-}
-
-function InsightDetail({ insight }: { insight: Insight }) {
-  const styles = SEVERITY_STYLES[insight.severity];
-  const SeverityIcon =
-    insight.severity === 'success' ? CheckCircle2 :
-    insight.severity === 'warning' ? AlertTriangle :
-    insight.severity === 'urgent'  ? Zap :
-    Clock;
-
-  const actions: Record<string, { label: string; href: string }[]> = {
-    'irr-performance': [
-      { label: 'View IRR Intelligence', href: '/dashboard/intelligence/irr' },
-      { label: 'Run Deal Analyzer', href: '/dashboard/deal-analyzer' },
-    ],
-    'ltv-warning': [
-      { label: 'View LTV Intelligence', href: '/dashboard/intelligence/ltv' },
-      { label: 'Open Reports', href: '/dashboard/reports' },
-    ],
-    'occupancy-risk': [
-      { label: 'View Occupancy Trends', href: '/dashboard/intelligence/occupancy' },
-      { label: 'Browse Marketplace', href: '/dashboard/marketplace' },
-    ],
-    'cap-rate-opportunity': [
-      { label: 'Cap Rate Intelligence', href: '/dashboard/intelligence/cap-rate' },
-      { label: 'Market Data', href: '/dashboard/data' },
-    ],
-    'dscr-healthy': [
-      { label: 'DSCR Intelligence', href: '/dashboard/intelligence/dscr' },
-      { label: 'Portfolio Performance', href: '/dashboard/intelligence/performance' },
-    ],
-    'exchange-window': [
-      { label: 'Tax Intelligence', href: '/dashboard/reports' },
-      { label: 'Market Data', href: '/dashboard/data' },
-    ],
-    'noi-growth': [
-      { label: 'NOI Intelligence', href: '/dashboard/intelligence/noi' },
-      { label: 'Cash Flow Analysis', href: '/dashboard/intelligence/cash-flow' },
-    ],
-    'oer-elevated': [
-      { label: 'OER Intelligence', href: '/dashboard/intelligence/oer' },
-      { label: 'Browse Vendors', href: '/dashboard/marketplace' },
-    ],
-  };
-
-  const ctaList = actions[insight.id] ?? [
-    { label: 'View Reports', href: '/dashboard/reports' },
-  ];
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-start gap-4">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-          insight.severity === 'success' ? 'bg-teal-500/15' :
-          insight.severity === 'warning' ? 'bg-amber-500/15' :
-          insight.severity === 'urgent'  ? 'bg-red-500/15' :
-          'bg-blue-500/15'
-        }`}>
-          <SeverityIcon className={`w-5 h-5 ${styles.icon}`} strokeWidth={1.5} />
-        </div>
-        <div>
-          <span className={`inline-flex text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded border ${styles.badge} mb-2`}>
-            {insight.category}
-          </span>
-          <h2 className="text-xl font-bold text-white leading-tight">{insight.title}</h2>
-        </div>
-      </div>
-
-      {/* Metric highlight */}
-      {insight.metric && (
-        <div
-          className="rounded-xl border border-white/10 p-5"
-          style={{ background: 'rgba(24,33,39,0.7)' }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">{insight.metricLabel}</p>
-          <div className="flex items-baseline gap-2">
-            <span className={`text-4xl font-bold tabular-nums ${insight.trend === 'up' ? 'text-teal-400' : insight.trend === 'down' ? 'text-red-400' : 'text-white'}`}>
-              {insight.metric}
-            </span>
-            {insight.trend && (
-              <ArrowUpRight className={`w-5 h-5 ${insight.trend === 'up' ? 'text-teal-400' : 'text-red-400 rotate-90'}`} />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Full analysis */}
-      <div
-        className="rounded-xl border border-white/10 p-5 space-y-3"
-        style={{ background: 'rgba(24,33,39,0.7)' }}
-      >
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Analysis</p>
-        <p className="text-sm text-slate-300 leading-relaxed">{insight.body}</p>
-        <p className="text-sm text-slate-400 leading-relaxed">
-          {insight.category === 'performance' && 'This signal is derived from your trailing 12-month portfolio data. Consistent improvement in this metric correlates strongly with portfolio appreciation and refinancing eligibility.'}
-          {insight.category === 'risk' && 'Risk signals are monitored against industry benchmarks for residential and commercial REI. Early identification allows for proactive mitigation before impact compounds.'}
-          {insight.category === 'opportunity' && 'Market intelligence has identified favorable conditions that align with your current portfolio positioning. Acting within the next 60–90 days maximizes the window.'}
-          {insight.category === 'action' && 'This action item has been flagged based on your current deal pipeline and market timing. Completing it now prevents downstream delays in the deal lifecycle.'}
-        </p>
-      </div>
-
-      {/* Recommended actions */}
-      <div className="space-y-2">
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Recommended Actions</p>
-        {ctaList.map((cta) => (
-          <Link
-            key={cta.href}
-            href={cta.href}
-            className="flex items-center justify-between gap-2 px-4 py-3 rounded-xl border border-white/10 hover:border-teal-500/30 hover:bg-teal-500/5 transition-all group"
-          >
-            <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{cta.label}</span>
-            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-teal-400 transition-colors flex-shrink-0" />
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 export default function InsightsPage() {
-  useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
-  const [activeId, setActiveId] = useState<string>('irr-performance');
-  const [filter, setFilter] = useState<string>('all');
-
-  const insights = useMemo((): Insight[] => {
-    const latestSnap = snapshots?.[snapshots.length - 1];
-    const irr      = latestSnap?.irr        ?? 14.2;
-    const capRate  = latestSnap?.capRate     ?? 5.85;
-    const dscr     = latestSnap?.dscr        ?? 1.42;
-    const oer      = latestSnap?.oer         ?? 38.2;
-    const ltv      = latestSnap?.ltv         ?? 68.5;
-    const occupancy= latestSnap?.occupancyRate ?? 94.2;
-    const noi      = latestSnap?.noi          ?? 482910;
-    const prevSnap = snapshots?.[snapshots.length - 2];
-    const noiPrev  = prevSnap?.noi ?? noi * 0.88;
-    const noiGrowth= noiPrev > 0 ? ((noi - noiPrev) / noiPrev) * 100 : 12.3;
-
-    return [
-      {
-        id: 'irr-performance',
-        title: 'IRR tracking above market benchmark',
-        body: `Your portfolio IRR of ${irr.toFixed(1)}% is outperforming the NCREIF Property Index by 3.2 percentage points. The 5-year hold scenario continues to show the strongest risk-adjusted returns.`,
-        severity: 'success',
-        metric: `${irr.toFixed(1)}%`,
-        metricLabel: 'Portfolio IRR',
-        trend: 'up',
-        category: 'performance',
-      },
-      {
-        id: 'ltv-warning',
-        title: 'LTV approaching refinance threshold',
-        body: `Current LTV of ${ltv.toFixed(1)}% is nearing the 70% threshold where refinancing becomes less favorable. Consider accelerated principal reduction or equity extraction to improve positioning.`,
-        severity: ltv > 70 ? 'warning' : 'info',
-        metric: `${ltv.toFixed(1)}%`,
-        metricLabel: 'Loan-to-Value',
-        trend: 'down',
-        category: 'risk',
-      },
-      {
-        id: 'occupancy-risk',
-        title: 'Occupancy rate is healthy',
-        body: `Portfolio-wide occupancy at ${occupancy.toFixed(1)}% is above the 92% benchmark. Monitor 2 units with leases expiring in Q2 — preemptive renewal outreach is recommended.`,
-        severity: occupancy >= 92 ? 'success' : 'warning',
-        metric: `${occupancy.toFixed(1)}%`,
-        metricLabel: 'Occupancy Rate',
-        trend: 'up',
-        category: 'risk',
-      },
-      {
-        id: 'cap-rate-opportunity',
-        title: 'Cap rate compression signals exit window',
-        body: `The ${capRate.toFixed(2)}% cap rate on your portfolio is in the Stable zone. Market data shows cap rate compression in your target submarkets — a favorable window for value-add dispositions in the next 6–12 months.`,
-        severity: 'info',
-        metric: `${capRate.toFixed(2)}%`,
-        metricLabel: 'Portfolio Cap Rate',
-        category: 'opportunity',
-      },
-      {
-        id: 'dscr-healthy',
-        title: 'DSCR confirms strong debt coverage',
-        body: `DSCR of ${dscr.toFixed(2)}x provides a ${((dscr - 1) * 100).toFixed(0)}% buffer above break-even. Lenders typically require 1.20–1.25x minimum — you are well-positioned for additional leverage if needed.`,
-        severity: 'success',
-        metric: `${dscr.toFixed(2)}x`,
-        metricLabel: 'Debt Service Coverage Ratio',
-        trend: 'up',
-        category: 'performance',
-      },
-      {
-        id: 'exchange-window',
-        title: '1031 Exchange window — act within 45 days',
-        body: 'Identification period for a potential 1031 exchange on the Elm Street disposition closes in 45 days. Two replacement properties in Phoenix MSA meet the like-kind requirement and are currently under asking.',
-        severity: 'urgent',
-        category: 'action',
-      },
-      {
-        id: 'noi-growth',
-        title: `NOI grew ${noiGrowth.toFixed(1)}% MoM`,
-        body: `Net Operating Income reached $${(noi / 1000).toFixed(0)}k this period, a ${noiGrowth.toFixed(1)}% increase versus the prior period. Rent escalation clauses and reduced maintenance expenses drove the improvement.`,
-        severity: 'success',
-        metric: `$${(noi / 1000).toFixed(0)}k`,
-        metricLabel: 'Monthly NOI',
-        trend: 'up',
-        category: 'performance',
-      },
-      {
-        id: 'oer-elevated',
-        title: 'OER trending above target range',
-        body: `Operating Expense Ratio of ${oer.toFixed(1)}% is above the 35% target. Primary drivers: maintenance (+18% YoY) and insurance premium increase (+9%). Vendor renegotiation could recover 3–4 OER points.`,
-        severity: oer > 40 ? 'warning' : 'info',
-        metric: `${oer.toFixed(1)}%`,
-        metricLabel: 'Operating Expense Ratio',
-        trend: 'down',
-        category: 'risk',
-      },
-    ];
-  }, [snapshots]);
-
-  const categories = ['all', 'performance', 'risk', 'opportunity', 'action'] as const;
-  const filtered = filter === 'all' ? insights : insights.filter((i) => i.category === filter);
-  const activeInsight = insights.find((i) => i.id === activeId) ?? insights[0];
-
-  const summary = useMemo(() => ({
-    total:       insights.length,
-    success:     insights.filter((i) => i.severity === 'success').length,
-    warnings:    insights.filter((i) => i.severity === 'warning' || i.severity === 'urgent').length,
-    opportunity: insights.filter((i) => i.category === 'opportunity').length,
-  }), [insights]);
-
   return (
-    <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+    <div className="flex-1 flex overflow-hidden h-full">
+      <style dangerouslySetInnerHTML={{ __html: `
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .luminous-shadow {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3c4a46;
+            border-radius: 10px;
+        }
+        .glow-text {
+            text-shadow: 0 0 8px rgba(87, 241, 219, 0.5);
+        }
+      `}} />
 
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-            <Lightbulb className="w-7 h-7 text-teal-400" strokeWidth={1.5} />
-            Insights
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">AI-driven intelligence signals across your portfolio</p>
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all">
-          <RefreshCw className="w-4 h-4" />
-          Refresh Intelligence
-        </button>
-      </div>
-
-      {/* Summary strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { label: 'Active Signals',   value: summary.total,       color: 'text-white' },
-          { label: 'Positive',         value: summary.success,     color: 'text-teal-400' },
-          { label: 'Watch Items',      value: summary.warnings,    color: 'text-amber-400' },
-          { label: 'Opportunities',    value: summary.opportunity, color: 'text-blue-400' },
-        ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-white/10 px-4 py-3" style={{ background: 'rgba(24,33,39,0.7)' }}>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{s.label}</p>
-            <p className={`text-3xl font-bold tabular-nums mt-0.5 ${s.color}`}>{s.value}</p>
+      {/* Explorer View (Center) */}
+      <section className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h3 className="font-headline-md text-2xl font-semibold mb-1 text-on-surface">Active Assets</h3>
+            <p className="text-on-surface-variant font-body-sm">Immutable storage for institutional compliance.</p>
           </div>
-        ))}
-      </div>
-
-      {/* Category filter */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setFilter(cat)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-              filter === cat
-                ? 'bg-teal-500 text-black'
-                : 'bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:border-white/20'
-            }`}
-          >
-            {cat}
+          <button className="bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-lg flex items-center gap-2 hover:opacity-90 transition-all luminous-shadow active:scale-95">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>upload</span>
+            Upload Asset
           </button>
-        ))}
-      </div>
-
-      {/* Split panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-
-        {/* Left: Insight list */}
-        <div className="lg:col-span-4 space-y-2">
-          {filtered.map((insight) => (
-            <InsightCard
-              key={insight.id}
-              insight={insight}
-              active={activeId === insight.id}
-              onClick={() => setActiveId(insight.id)}
-            />
-          ))}
-          {filtered.length === 0 && (
-            <div className="text-center py-12 text-slate-500 text-sm">
-              No signals in this category.
-            </div>
-          )}
         </div>
 
-        {/* Right: Detail panel */}
-        <div
-          className="lg:col-span-8 rounded-2xl border border-white/10 p-6"
-          style={{ background: 'rgba(20,29,35,0.5)', backdropFilter: 'blur(24px)' }}
-        >
-          {activeInsight ? (
-            <InsightDetail insight={activeInsight} />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-64 text-slate-500">
-              <Lightbulb className="w-10 h-10 mb-3 opacity-40" strokeWidth={1} />
-              <p className="text-sm">Select an insight to view details</p>
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Folder Card 1 */}
+          <div className="glass-card p-6 rounded-2xl group cursor-pointer hover:border-primary/50 transition-all">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
+                  <span className="material-symbols-outlined text-primary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>folder</span>
+                </div>
+                <div>
+                  <h4 className="font-headline-sm text-lg text-on-surface group-hover:text-primary transition-colors">Skyline Residences</h4>
+                  <p className="text-label-sm text-on-surface-variant">Asset ID: #SR-40922</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant">more_vert</span>
             </div>
-          )}
+            
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 bg-surface-container p-3 rounded-lg border border-outline-variant">
+                <p className="text-[10px] text-on-surface-variant uppercase mb-1">Documents</p>
+                <p className="text-on-surface font-bold">142 Files</p>
+              </div>
+              <div className="flex-1 bg-surface-container p-3 rounded-lg border border-outline-variant">
+                <p className="text-[10px] text-on-surface-variant uppercase mb-1">Integrity</p>
+                <p className="text-primary font-bold">100%</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                <img alt="User" className="w-6 h-6 rounded-full border border-background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhBpgIFF9PJg5nzg1C3dK4_qssj8y7QA0L_I7U-O5xW-xd9pbCOPOJ-NQoeu0LH0oHh2GtMOxBtA7V4jLYpVfZx6XAa5HkbySdaZI-x4ysn1z63MXeiK7kBZmDjzj5_qE_JpXU7JThWWxqAPGufxo8y09ysDjh4yKy-SnKfP-DWSeS8wHuI_Log3RB8CprwDiVjpDW6gnDHwN8jLEzZAIXeOEykNSt8iO1F44wqG7FOM0AeZh9FPpaYpbP73jTqLKWL3F8D0iqfyi9" />
+                <img alt="User" className="w-6 h-6 rounded-full border border-background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4ruAE_vafOkrPmGUZ1xqt0H1osmhZuzdzY9Zi8JWn2uVEGytf8L6Gz0E4kNDIKRtxAUV4Y_WeEk7Qbtga2AlW78v1f7E6b2SmL_je3a0trDJnad_VENUSUyPee3k7kGj4GwiMmESVrzHLVrX0ThMt_kJ-soGolXaCgvsxHrJarvt-iPEvcqVVEiFCdQEbjeIv6wb6CmIYF2N_DrDZ9O3RKm1g-bYu7ygojgOdzmwHbTWQPtrncaTJz380W15zyvRF4lF-iCubeaUz" />
+              </div>
+              <span className="text-xs text-on-surface-variant ml-2">Shared with Audit Committee</span>
+            </div>
+          </div>
+
+          {/* Folder Card 2 */}
+          <div className="glass-card p-6 rounded-2xl group cursor-pointer hover:border-primary/50 transition-all">
+            <div className="flex items-start justify-between mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-xl bg-tertiary/10 flex items-center justify-center border border-tertiary/20 group-hover:bg-tertiary/20 transition-all">
+                  <span className="material-symbols-outlined text-tertiary text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>folder</span>
+                </div>
+                <div>
+                  <h4 className="font-headline-sm text-lg text-on-surface group-hover:text-tertiary transition-colors">Harbor Logistics</h4>
+                  <p className="text-label-sm text-on-surface-variant">Asset ID: #HL-88210</p>
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-on-surface-variant">more_vert</span>
+            </div>
+            
+            <div className="flex gap-4 mb-6">
+              <div className="flex-1 bg-surface-container p-3 rounded-lg border border-outline-variant">
+                <p className="text-[10px] text-on-surface-variant uppercase mb-1">Documents</p>
+                <p className="text-on-surface font-bold">87 Files</p>
+              </div>
+              <div className="flex-1 bg-surface-container p-3 rounded-lg border border-outline-variant">
+                <p className="text-[10px] text-on-surface-variant uppercase mb-1">Integrity</p>
+                <p className="text-tertiary font-bold">99.8%</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-on-surface-variant text-sm">history</span>
+              <span className="text-xs text-on-surface-variant ml-1">Last synced: 14 mins ago</span>
+            </div>
+          </div>
         </div>
 
-      </div>
+        {/* Asset Table */}
+        <div className="mt-12">
+          <h3 className="font-headline-sm text-lg mb-6 text-on-surface">Recent Documents</h3>
+          <div className="glass-card rounded-2xl overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-container-high/50 border-b border-outline-variant">
+                <tr>
+                  <th className="px-6 py-4 font-label-md text-on-surface-variant uppercase text-xs tracking-wider">Name</th>
+                  <th className="px-6 py-4 font-label-md text-on-surface-variant uppercase text-xs tracking-wider">Classification</th>
+                  <th className="px-6 py-4 font-label-md text-on-surface-variant uppercase text-xs tracking-wider">Status</th>
+                  <th className="px-6 py-4 font-label-md text-on-surface-variant uppercase text-xs tracking-wider">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/30">
+                <tr className="hover:bg-white/5 transition-colors group">
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <span className="material-symbols-outlined text-error">description</span>
+                    <span className="font-body-md text-on-surface group-hover:text-primary transition-colors">Q3_Tax_Audit_Report.pdf</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-surface-container-highest px-3 py-1 rounded-full text-xs font-label-sm border border-outline-variant text-on-surface">Confidential</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-on-surface">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                      <span className="text-sm">Verified</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-on-surface-variant">Oct 24, 2023 11:22</td>
+                </tr>
+                <tr className="hover:bg-white/5 transition-colors group">
+                  <td className="px-6 py-4 flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary">gavel</span>
+                    <span className="font-body-md text-on-surface group-hover:text-primary transition-colors">Land_Deed_Registry_2023.hash</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="bg-surface-container-highest px-3 py-1 rounded-full text-xs font-label-sm border border-outline-variant text-on-surface">Restricted</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2 text-on-surface">
+                      <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      <span className="text-sm">Verified</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-on-surface-variant">Oct 23, 2023 09:45</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
 
+      {/* Details Pane (Right) */}
+      <aside className="w-96 glass-card border-l border-outline-variant overflow-y-auto custom-scrollbar flex flex-col shrink-0 hidden xl:flex">
+        <div className="p-6 border-b border-outline-variant">
+          <h3 className="font-headline-sm text-lg mb-4 text-on-surface">Vault Audit Log</h3>
+          
+          {/* Metrics Shell */}
+          <div className="space-y-4 mb-6">
+            <div className="p-4 bg-surface-container-highest rounded-xl border border-outline-variant relative overflow-hidden">
+              <div className="flex justify-between items-end mb-2">
+                <div>
+                  <p className="text-[10px] text-on-surface-variant uppercase tracking-widest">Folder Health</p>
+                  <h4 className="text-2xl font-bold text-primary glow-text">99.8%</h4>
+                </div>
+                <span className="material-symbols-outlined text-primary/40 text-4xl">ecg_heart</span>
+              </div>
+              <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                <div className="bg-primary h-full w-[99.8%] luminous-shadow"></div>
+              </div>
+            </div>
+            
+            <div className="p-4 bg-surface-container-highest rounded-xl border border-outline-variant">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-primary">enhanced_encryption</span>
+                <div>
+                  <p className="text-[10px] text-on-surface-variant uppercase">Encryption Standard</p>
+                  <p className="font-bold text-on-surface">AES-256 Poly1305</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Event Log */}
+        <div className="flex-1 p-6">
+          <h4 className="text-xs font-label-md text-on-surface-variant uppercase mb-4">Live Access Logs</h4>
+          <div className="space-y-6 relative before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-outline-variant">
+            
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-primary rounded-full border-4 border-surface shadow-[0_0_8px_rgba(87,241,219,0.5)]"></div>
+              <p className="text-sm font-bold text-on-surface">Access Granted: Node_042</p>
+              <p className="text-xs text-on-surface-variant mb-1">Authenticated via Hardware Token</p>
+              <p className="text-[10px] text-primary/60 font-mono">2023-10-24 14:12:01.445</p>
+            </div>
+            
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-outline-variant rounded-full border-4 border-surface"></div>
+              <p className="text-sm font-bold text-on-surface">Manifest Hash Re-verified</p>
+              <p className="text-xs text-on-surface-variant mb-1">SHA-512 Checksum Matching 100%</p>
+              <p className="text-[10px] text-on-surface-variant font-mono">2023-10-24 13:58:22.091</p>
+            </div>
+            
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-error rounded-full border-4 border-surface shadow-[0_0_8px_rgba(255,180,171,0.5)]"></div>
+              <p className="text-sm font-bold text-on-error-container">Unauthorized Attempt</p>
+              <p className="text-xs text-on-surface-variant mb-1">IP: 192.168.1.1 (Internal/Audit-VLAN)</p>
+              <p className="text-[10px] text-error font-mono">2023-10-24 13:45:10.772</p>
+            </div>
+            
+            <div className="relative pl-8">
+              <div className="absolute left-0 top-1 w-4 h-4 bg-outline-variant rounded-full border-4 border-surface"></div>
+              <p className="text-sm font-bold text-on-surface">Auto-Sync Completed</p>
+              <p className="text-xs text-on-surface-variant mb-1">Harbor Logistics Local Node</p>
+              <p className="text-[10px] text-on-surface-variant font-mono">2023-10-24 13:30:00.000</p>
+            </div>
+            
+          </div>
+        </div>
+        
+        <div className="p-6 border-t border-outline-variant">
+          <button className="w-full py-3 rounded-xl border border-outline-variant hover:bg-white/5 transition-colors font-label-md flex items-center justify-center gap-2 text-on-surface">
+            <span className="material-symbols-outlined text-sm">history_edu</span>
+            Export Full Audit Path
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }

@@ -11,10 +11,6 @@ import { useNotification } from '@/context/NotificationContext';
 
 /* ═══════════════════════════════════════════════════════
    TopHeader — Sticky Dashboard Banner
-
-   Layout:  [Logo (mobile)] [Search ·····] [Bell] [Badge] [Avatar ▾]
-   Palette: Inherits .dashboard-context CSS vars
-   Height:  64px — matches sidebar logo row for alignment
    ═══════════════════════════════════════════════════════ */
 
 /* ── Tier label map ── */
@@ -77,34 +73,32 @@ export default function TopHeader() {
   return (
     <header
       id="top-header"
-      className="sticky top-0 z-40 w-full bg-surface/40 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-margin-mobile lg:px-margin-desktop"
-      style={{ height: 64 }}
+      className="w-full h-20 sticky top-0 z-50 flex items-center justify-between px-margin-mobile lg:px-10 bg-glass-bg backdrop-blur-xl border-b border-outline-variant"
       role="banner"
     >
-      {/* ══════ Mobile Logo ══════ */}
-      <div className="flex-shrink-0 lg:hidden mr-4">
-        <Logo href="/dashboard" size="sm" />
+      {/* ══════ Left Content ══════ */}
+      <div className="flex items-center gap-4">
+        {/* Mobile Logo */}
+        <div className="flex-shrink-0 lg:hidden mr-4">
+          <Logo href="/dashboard" size="sm" />
+        </div>
+        <h2 className="hidden lg:block font-headline-md text-headline-md text-on-surface">Portfolio Dashboard</h2>
       </div>
 
-      {/* ══════ Global Search ══════ */}
-      <div className="flex-1 max-w-xl">
-        <div className="relative w-full focus-within:ring-2 focus-within:ring-primary/50 rounded-DEFAULT transition-all">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none text-on-surface-variant"
-            aria-hidden="true"
-          />
+      {/* ══════ Right Controls (Search + User Menu) ══════ */}
+      <div className="flex items-center gap-6 flex-shrink-0">
+        {/* Global Search */}
+        <div className="hidden md:flex items-center gap-3 bg-surface-container px-4 py-2 rounded-full border border-outline-variant transition-all focus-within:border-primary">
+          <Search className="w-4 h-4 text-outline" aria-hidden="true" />
           <input
             id="global-search"
             type="search"
-            placeholder="Search deals, files, or team…"
-            className="w-full bg-surface-container-low border-none rounded-DEFAULT pl-10 pr-4 py-2 text-on-surface font-sans text-sm placeholder:text-on-surface-variant/40 focus:ring-0"
+            placeholder="Search assets..."
+            className="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface-variant placeholder:text-outline"
             aria-label="Search deals, files, or team"
           />
         </div>
-      </div>
 
-      {/* ══════ Right Controls ══════ */}
-      <div className="flex items-center gap-4 flex-shrink-0 ml-4">
         <div className="flex items-center gap-2">
           {/* ── Notification Bell ── */}
           <Link
@@ -118,69 +112,41 @@ export default function TopHeader() {
             {/* Unread badge — shows count when messages exist */}
             {unreadTotal > 0 && (
               <span
-                className="absolute top-1.5 right-1.5 flex items-center justify-center min-w-[16px] h-[16px] rounded-full text-[9px] font-bold"
-                style={{ background: '#ba1a1a', color: '#ffffff', border: '1.5px solid var(--color-surface)', padding: '0 2px' }}
+                className="absolute top-1 right-1 flex items-center justify-center min-w-[16px] h-[16px] rounded-full text-[9px] font-bold bg-error text-on-error border border-surface"
                 aria-label={`${unreadTotal} unread messages`}
               >
                 {unreadTotal > 9 ? '9+' : unreadTotal}
               </span>
             )}
           </Link>
-
-          {/* ── Apps Launcher (Decorative) ── */}
-          <button
-            type="button"
-            className="p-2 text-on-surface-variant hover:text-primary transition-all rounded-full hover:bg-white/5"
-            aria-label="Apps launcher"
-          >
-            <LayoutGrid className="w-[20px] h-[20px]" />
-          </button>
         </div>
 
         {/* ── Subscription Badge ── */}
         <span
           id="header-tier-badge"
-          className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] select-none"
-          style={{
-            background: 'var(--color-primary-container)',
-            color: 'var(--color-on-primary-container)',
-            border: '1px solid var(--color-outline-variant)',
-            letterSpacing: '0.1em',
-          }}
+          className="hidden sm:inline-flex items-center px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] select-none rounded bg-primary-container/20 text-primary border border-outline-variant"
           title={`Account tier: ${tierLabel}`}
         >
           {tierLabel}
         </span>
-
-        {/* ── Divider ── */}
-        <div
-          className="hidden sm:block w-px h-6 bg-white/10"
-          aria-hidden="true"
-        />
 
         {/* ── User Avatar + Dropdown ── */}
         <div className="relative" ref={dropdownRef}>
           <button
             id="header-user-menu"
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2 px-2 py-1.5 transition-all duration-200 hover:bg-white/5"
+            className="flex items-center gap-2 transition-all duration-200 hover:opacity-80"
             aria-expanded={dropdownOpen}
             aria-haspopup="true"
             aria-label={`Account menu for ${displayName}`}
           >
             {/* Avatar container */}
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold shrink-0 border border-primary/20 bg-primary-container/20 text-primary"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold shrink-0 border-2 border-primary bg-primary-container/20 text-primary hover:opacity-90 transition-opacity"
               aria-hidden="true"
             >
               {initial}
             </div>
-            {/* Name — hidden on small screens */}
-            <span
-              className="hidden lg:inline text-sm font-medium truncate max-w-[120px] text-on-surface"
-            >
-              {displayName}
-            </span>
             <ChevronDown
               className="w-3.5 h-3.5 shrink-0 transition-transform duration-150 text-on-surface-variant"
               style={{
@@ -193,16 +159,16 @@ export default function TopHeader() {
           {/* ── Dropdown Menu ── */}
           {dropdownOpen && (
             <div
-              className="pw-dropdown-overlay absolute right-0 top-full mt-2 w-56 py-1.5 z-50"
+              className="pw-dropdown-overlay absolute right-0 top-full mt-2 w-56 py-1.5 z-50 rounded-xl bg-surface-container border border-outline-variant shadow-2xl"
               role="menu"
               aria-label="User menu"
             >
               {/* User info header */}
               <div
-                className="px-3 py-2.5 mb-1 border-b border-white/10"
+                className="px-3 py-2.5 mb-1 border-b border-outline-variant"
               >
                 <p
-                  className="text-sm font-semibold truncate text-on-surface"
+                  className="text-sm font-bold truncate text-on-surface"
                 >
                   {displayName}
                 </p>
@@ -218,7 +184,7 @@ export default function TopHeader() {
               {/* Profile link */}
               <Link
                 href="/dashboard/settings/profile"
-                className="pw-dropdown-item flex items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-white/5 transition-colors"
+                className="pw-dropdown-item flex items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-surface-variant transition-colors"
                 role="menuitem"
                 onClick={() => setDropdownOpen(false)}
               >
@@ -228,7 +194,7 @@ export default function TopHeader() {
 
               {/* Divider */}
               <div
-                className="my-1 border-t border-white/10"
+                className="my-1 border-t border-outline-variant"
                 aria-hidden="true"
               />
 
@@ -236,7 +202,7 @@ export default function TopHeader() {
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
-                className="pw-dropdown-item flex w-full items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-white/5 transition-colors disabled:opacity-50"
+                className="pw-dropdown-item flex w-full items-center gap-2.5 px-3 py-2 text-sm text-on-surface hover:bg-surface-variant transition-colors disabled:opacity-50"
                 role="menuitem"
               >
                 {isLoggingOut ? (

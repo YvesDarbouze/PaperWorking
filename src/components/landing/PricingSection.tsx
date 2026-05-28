@@ -64,7 +64,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'individual',
     name: 'Individual Investor',
-    target: 'Solo flippers tired of spreadsheet chaos.',
+    target: 'For the solo investor looking to replace 5 different tools with one dashboard.',
     monthlyPrice: 59,
     annualPrice: '$599',
     annualPriceNum: 599,
@@ -84,7 +84,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'team',
     name: 'Team / Firm',
-    target: 'Scaling REI businesses managing multiple deals.',
+    target: 'For scaling operations that need role-based access for partners, PMs, and agents.',
     monthlyPrice: 99,
     annualPrice: '$999',
     annualPriceNum: 999,
@@ -105,7 +105,7 @@ const PLANS: PlanTier[] = [
   {
     id: 'vendor',
     name: 'Vendor Marketplace',
-    target: 'Appraisers, Inspectors, GCs, and tradespeople.',
+    target: 'For contractors, inspectors, and trades looking for high-quality leads from active investors.',
     monthlyPrice: 39,
     annualPrice: '$390',
     annualPriceNum: 390,
@@ -176,12 +176,16 @@ const TESTIMONIALS = [
   },
 ];
 
-/* ─── FAQ Data ─── */
 const PRICING_FAQ = [
   {
-    question: 'Do Vendors get access to my financial data?',
+    question: 'How does the free trial work?',
     answer:
-      'No. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information. Access is enforced at the database level, not just the UI.',
+      "Every new account starts with a full-access 14-day free trial. A credit card is collected at checkout to prevent abuse, but you won't be charged a single cent until your trial ends. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow.",
+  },
+  {
+    question: 'Is there a money-back guarantee?',
+    answer:
+      'Yes. In addition to the 14-day free trial, if you are not completely satisfied within your first 30 days of paid service, email us and we will refund 100% of your payment. No questions asked. We take on the risk so you don\'t have to.',
   },
   {
     question: 'Can I upgrade from Individual to Team later?',
@@ -189,19 +193,14 @@ const PRICING_FAQ = [
       'Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the Team plan. All your existing deals, documents, and financial records stay intact. No data migration needed.',
   },
   {
-    question: 'How does the free trial work?',
-    answer:
-      "Every new account starts with a full-access 14-day free trial. A credit card is collected at checkout, but you won't be charged until your trial ends. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.",
-  },
-  {
     question: 'What happens if I cancel?',
     answer:
-      'Cancel anytime from your account settings. You retain full access until the end of your billing period. No surprise charges, no penalty fees. Your data is preserved for 90 days, and you can export everything (CSV or PDF) at any time.',
+      'Cancel anytime from your account settings with just one click. You retain full access until the end of your billing period. No surprise charges, no penalty fees, no awkward phone calls to cancel. Your data is preserved for 90 days, and you can export everything (CSV or PDF) at any time.',
   },
   {
-    question: 'Is there volume pricing for large teams?',
+    question: 'Do Vendors get access to my financial data?',
     answer:
-      'For organizations needing more than 10 seats or enterprise-grade compliance (SOC 2, SSO/SAML), contact our sales team. We offer custom pricing with dedicated onboarding, SLA guarantees, and white-glove migration assistance.',
+      'Absolutely not. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information.',
   },
 ];
 
@@ -252,7 +251,7 @@ function BillingToggle({
     <div className="flex items-center justify-center gap-4">
       <span
         className={`text-sm font-medium transition-colors duration-300 ${
-          !isAnnual ? 'text-[#1A1A1A]' : 'text-[#a5a5a5]'
+          !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
         }`}
       >
         Monthly
@@ -261,9 +260,9 @@ function BillingToggle({
       {/* Pill toggle */}
       <button
         onClick={() => onToggle(!isAnnual)}
-        className="relative w-16 h-8 cursor-pointer transition-colors duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#595959] focus-visible:ring-offset-2"
+        className="relative w-16 h-8 cursor-pointer transition-colors duration-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         style={{
-          backgroundColor: isAnnual ? '#595959' : '#cccccc',
+          backgroundColor: isAnnual ? '#2dd4bf' : '#334155',
           borderRadius: '9999px',
         }}
         role="switch"
@@ -271,7 +270,7 @@ function BillingToggle({
         aria-label="Toggle annual billing"
       >
         <div
-          className="absolute top-1 w-6 h-6 bg-bg-surface shadow-md transition-transform duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]"
+          className="absolute top-1 w-6 h-6 bg-surface shadow-md transition-transform duration-300 ease-[cubic-bezier(0.19,1,0.22,1)]"
           style={{
             borderRadius: '9999px',
             transform: isAnnual ? 'translateX(33px)' : 'translateX(5px)',
@@ -281,7 +280,7 @@ function BillingToggle({
 
       <span
         className={`text-sm font-medium transition-colors duration-300 ${
-          isAnnual ? 'text-[#1A1A1A]' : 'text-[#a5a5a5]'
+          isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
         }`}
       >
         Annually
@@ -289,14 +288,12 @@ function BillingToggle({
 
       {/* Savings badge */}
       <span
-        className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 transition-all duration-400 ease-out ${
+        className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 transition-all duration-400 ease-out bg-primary/20 text-primary ${
           isAnnual
             ? 'opacity-100 translate-x-0 scale-100'
             : 'opacity-0 -translate-x-2 scale-90 pointer-events-none'
         }`}
         style={{
-          backgroundColor: '#595959',
-          color: '#f2f2f2',
           borderRadius: '9999px',
         }}
       >
@@ -318,178 +315,83 @@ function PricingCard({
   isAnnual: boolean;
   onSelect: (id: string) => void;
 }) {
-  const Icon = plan.icon;
   const price = isAnnual
     ? Math.round(plan.annualPriceNum / 12)
     : plan.monthlyPrice;
   const period = isAnnual ? '/mo' : '/mo';
 
-  /* Card styling based on variant */
-  const cardStyles: Record<
-    string,
-    { bg: string; text: string; textMuted: string; border: string; ctaBg: string; ctaText: string; badgeBg: string; badgeText: string }
-  > = {
-    standard: {
-      bg: '#ffffff',
-      text: '#595959',
-      textMuted: '#7f7f7f',
-      border: '1px solid #cccccc',
-      ctaBg: '#1a1a1a',
-      ctaText: '#ffffff',
-      badgeBg: '',
-      badgeText: '',
-    },
-    highlighted: {
-      bg: '#595959',
-      text: '#f2f2f2',
-      textMuted: '#cccccc',
-      border: '1px solid #595959',
-      ctaBg: '#f2f2f2',
-      ctaText: '#595959',
-      badgeBg: '#f2f2f2',
-      badgeText: '#595959',
-    },
-    vendor: {
-      bg: '#ffffff',
-      text: '#595959',
-      textMuted: '#7f7f7f',
-      border: '2px dashed #cccccc',
-      ctaBg: '#1a1a1a',
-      ctaText: '#ffffff',
-      badgeBg: '',
-      badgeText: '',
-    },
-  };
-
-  const s = cardStyles[plan.variant];
+  const isMostPopular = plan.id === 'team';
 
   return (
     <motion.div
       variants={fadeUp}
-      className={`relative flex flex-col p-8 lg:p-10 transition-all duration-500 hover:shadow-xl group ${
-        plan.isHighlighted ? 'lg:-my-4 lg:py-12 z-10 shadow-lg' : ''
+      className={`relative flex flex-col p-8 rounded-xl transition-all duration-500 hover:shadow-2xl group ${
+        isMostPopular
+          ? 'glass-panel transform md:-translate-y-4 shadow-2xl z-10'
+          : 'glass-card'
       }`}
-      style={{
-        backgroundColor: s.bg,
-        border: s.border,
-        borderRadius: '24px',
-      }}
     >
       {/* Badge */}
       {plan.badge && (
         <div
-          className="absolute -top-4 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-[0.2em] px-5 py-2 whitespace-nowrap"
-          style={{
-            backgroundColor: s.badgeBg,
-            color: s.badgeText,
-            borderRadius: '9999px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-          }}
+          className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full font-bold shadow-lg whitespace-nowrap"
         >
           {plan.badge}
         </div>
       )}
 
-      {/* Icon + Plan Name */}
-      <div className="flex items-center gap-3 mb-4 mt-2">
-        <div
-          className="w-10 h-10 flex items-center justify-center"
-          style={{
-            backgroundColor: plan.isHighlighted ? 'rgba(242,242,242,0.15)' : '#f2f2f2',
-            borderRadius: '12px',
-          }}
-        >
-          <Icon className="w-5 h-5" style={{ color: plan.isHighlighted ? '#f2f2f2' : '#595959' }} />
-        </div>
-        <h3
-          className="text-xl font-bold tracking-tight"
-          style={{ color: s.text }}
-        >
-          {plan.name}
-        </h3>
-      </div>
+      {/* Plan Name */}
+      <h3 className="font-headline-md text-headline-md text-on-surface mb-2 mt-2">
+        {plan.name}
+      </h3>
 
       {/* Target audience */}
-      <p
-        className="text-sm leading-relaxed mb-8 min-h-[44px]"
-        style={{ color: s.textMuted }}
-      >
+      <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 h-10">
         {plan.target}
       </p>
 
       {/* Price */}
-      <div className="mb-2">
-        <span
-          className="text-5xl font-black tracking-tighter tabular-nums"
-          style={{ color: s.text }}
-        >
+      <div className="mb-6">
+        <span className="font-headline-xl text-headline-xl text-primary tabular-nums">
           <AnimatedPrice value={price} />
         </span>
-        <span
-          className="text-base font-medium ml-1"
-          style={{ color: s.textMuted }}
-        >
+        <span className="font-body-sm text-body-sm text-on-surface-variant">
           {period}
         </span>
       </div>
 
       {/* Annual billing note */}
-      <div className="h-6 mb-6">
+      <div className="h-6 mb-2">
         {isAnnual && (
-          <p
-            className="text-xs font-medium transition-opacity duration-300"
-            style={{ color: s.textMuted }}
-          >
+          <p className="font-label-sm text-label-sm text-on-surface-variant transition-opacity duration-300">
             Billed annually at {plan.annualPrice}/yr
           </p>
         )}
       </div>
 
-      {/* CTA Button — uses <button> not <Link> to avoid /register fallback */}
+      {/* CTA Button */}
       <button
         type="button"
         onClick={() => onSelect(`${plan.name} ${isAnnual ? 'Annual' : 'Monthly'}`)}
-        className="w-full py-4 text-sm font-bold uppercase tracking-[0.15em] text-center transition-all duration-400 ease-[cubic-bezier(0.19,1,0.22,1)] flex items-center justify-center gap-2 hover:scale-[1.02] hover:opacity-90 active:scale-[0.97] cursor-pointer"
-        style={{
-          backgroundColor: s.ctaBg,
-          color: s.ctaText,
-          border: 'none',
-          borderRadius: '9999px',
-        }}
+        className={`w-full font-label-md text-label-md py-3 rounded-lg mb-8 transition-colors ${
+          isMostPopular
+            ? 'luminous-button'
+            : 'bg-surface-bright hover:bg-surface-variant text-on-surface border border-outline-variant'
+        }`}
       >
         {plan.ctaLabel}
-        <ArrowRight className="w-4 h-4" />
       </button>
 
-      {/* Microcopy */}
-      <p
-        className="text-center text-xs mt-3 font-medium"
-        style={{ color: s.textMuted }}
-      >
-        Credit card required · No charge for 14 days · Cancel anytime
-      </p>
-
       {/* Feature List */}
-      <div className="mt-8 flex-1">
-        <p
-          className="text-xs font-bold uppercase tracking-[0.2em] mb-5"
-          style={{ color: s.textMuted }}
-        >
+      <div className="flex-grow mt-2">
+        <p className="font-label-md text-label-md text-on-surface mb-4">
           What's included
         </p>
         <ul className="space-y-3">
           {plan.features.map((feature, idx) => (
-            <li key={idx} className="flex items-start gap-3">
-              <Check
-                className="w-4 h-4 mt-0.5 flex-shrink-0"
-                style={{ color: plan.isHighlighted ? '#cccccc' : '#595959' }}
-              />
-              <span
-                className="text-sm font-medium leading-relaxed"
-                style={{ color: s.text, opacity: 0.9 }}
-              >
-                {feature}
-              </span>
+            <li key={idx} className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
+              <Check className="w-4 h-4 text-primary shrink-0" />
+              <span>{feature}</span>
             </li>
           ))}
         </ul>
@@ -517,52 +419,34 @@ function ComparisonTable() {
       className="mx-auto max-w-5xl px-6 lg:px-8 pt-24 pb-8"
     >
       <motion.div variants={fadeUp} className="text-center mb-14">
-        <p
-          className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
-          style={{ color: '#a5a5a5' }}
-        >
+        <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4 text-primary">
           Complete Comparison
         </p>
-        <h3
-          className="text-3xl sm:text-4xl font-black tracking-tighter"
-          style={{ color: '#595959' }}
-        >
+        <h3 className="font-headline-lg text-headline-lg text-on-surface">
           Every feature, side by side.
         </h3>
-        <p className="text-sm mt-3" style={{ color: '#7f7f7f' }}>
+        <p className="font-body-md text-body-md mt-3 text-on-surface-variant">
           See exactly which tools come with each plan.
         </p>
       </motion.div>
 
       <motion.div
         variants={fadeUp}
-        className="overflow-x-auto"
-        style={{ borderRadius: '16px' }}
+        className="overflow-x-auto rounded-2xl glass-card border border-white/10"
       >
-        <div
-          className="min-w-[640px] overflow-hidden"
-          style={{
-            border: '1px solid #cccccc',
-            borderRadius: '16px',
-            backgroundColor: '#ffffff',
-          }}
-        >
+        <div className="min-w-[640px] overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr style={{ backgroundColor: '#f2f2f2' }}>
-                <th
-                  className="py-5 px-6 text-xs font-bold uppercase tracking-[0.2em]"
-                  style={{ color: '#7f7f7f' }}
-                >
+              <tr className="border-b border-white/10 bg-white/5">
+                <th className="py-5 px-6 font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant">
                   Feature
                 </th>
                 {['Individual', 'Team / Firm', 'Vendor'].map((col, idx) => (
                   <th
                     key={col}
-                    className={`py-5 px-4 text-xs font-bold uppercase tracking-[0.15em] text-center w-32 ${
-                      idx === 1 ? 'bg-[#595959]/5' : ''
+                    className={`py-5 px-4 font-label-sm text-label-sm uppercase tracking-widest text-center w-32 ${
+                      idx === 1 ? 'bg-primary/5 text-primary' : 'text-on-surface-variant'
                     }`}
-                    style={{ color: idx === 1 ? '#595959' : '#7f7f7f' }}
                   >
                     {col}
                   </th>
@@ -573,15 +457,9 @@ function ComparisonTable() {
               {visible.map((feature, idx) => (
                 <tr
                   key={idx}
-                  className="transition-colors hover:bg-[#f2f2f2]/50"
-                  style={{
-                    borderTop: '1px solid #f2f2f2',
-                  }}
+                  className="transition-colors hover:bg-white/5 border-b border-white/5 last:border-none"
                 >
-                  <td
-                    className="py-4 px-6 text-sm font-medium"
-                    style={{ color: '#595959' }}
-                  >
+                  <td className="py-4 px-6 font-body-sm text-body-sm text-on-surface font-medium">
                     {feature.name}
                   </td>
                   {(['individual', 'team', 'vendor'] as const).map(
@@ -589,19 +467,13 @@ function ComparisonTable() {
                       <td
                         key={key}
                         className={`py-4 px-4 text-center ${
-                          colIdx === 1 ? 'bg-[#595959]/5' : ''
+                          colIdx === 1 ? 'bg-primary/5' : ''
                         }`}
                       >
                         {feature[key] ? (
-                          <Check
-                            className="w-5 h-5 mx-auto"
-                            style={{ color: '#595959' }}
-                          />
+                          <Check className="w-5 h-5 mx-auto text-primary" />
                         ) : (
-                          <Minus
-                            className="w-5 h-5 mx-auto"
-                            style={{ color: '#cccccc' }}
-                          />
+                          <Minus className="w-5 h-5 mx-auto text-on-surface-variant/30" />
                         )}
                       </td>
                     )
@@ -615,11 +487,7 @@ function ComparisonTable() {
           {COMPARISON_FEATURES.length > visibleCount && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="w-full flex items-center justify-center py-4 text-sm font-semibold transition-colors hover:bg-[#f2f2f2]/50 group"
-              style={{
-                color: '#7f7f7f',
-                borderTop: '1px solid #f2f2f2',
-              }}
+              className="w-full flex items-center justify-center py-4 font-label-sm text-label-sm transition-colors hover:bg-white/10 group text-on-surface-variant border-t border-white/10"
             >
               {expanded
                 ? 'Show fewer features'
@@ -651,8 +519,7 @@ function TestimonialRow() {
     >
       <motion.p
         variants={fadeUp}
-        className="text-center text-xs font-bold uppercase tracking-[0.3em] mb-12"
-        style={{ color: '#a5a5a5' }}
+        className="text-center text-xs font-bold uppercase tracking-[0.3em] mb-12 text-primary"
       >
         What Investors Are Saying
       </motion.p>
@@ -664,52 +531,26 @@ function TestimonialRow() {
             <motion.div
               key={idx}
               variants={fadeUp}
-              className="relative p-8 transition-all duration-500 hover:shadow-md"
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e6e6e6',
-                borderRadius: '20px',
-              }}
+              className="relative p-8 transition-all duration-500 glass-card rounded-2xl flex flex-col hover:-translate-y-1"
             >
               {/* Quote icon */}
-              <Quote
-                className="w-8 h-8 mb-5"
-                style={{ color: '#cccccc' }}
-              />
+              <Quote className="w-8 h-8 mb-5 text-primary/40" />
 
               {/* Quote text */}
-              <p
-                className="text-sm leading-relaxed mb-8 italic"
-                style={{ color: '#595959' }}
-              >
+              <p className="font-body-sm text-body-sm leading-relaxed mb-8 italic text-on-surface">
                 "{t.quote}"
               </p>
 
               {/* Author */}
               <div className="flex items-center gap-3 mt-auto">
-                <div
-                  className="w-10 h-10 flex items-center justify-center"
-                  style={{
-                    backgroundColor: '#f2f2f2',
-                    borderRadius: '12px',
-                  }}
-                >
-                  <TIcon
-                    className="w-5 h-5"
-                    style={{ color: '#595959' }}
-                  />
+                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-bright">
+                  <TIcon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p
-                    className="text-sm font-bold"
-                    style={{ color: '#595959' }}
-                  >
+                  <p className="font-label-md text-label-md text-on-surface">
                     {t.author}
                   </p>
-                  <p
-                    className="text-xs font-medium"
-                    style={{ color: '#a5a5a5' }}
-                  >
+                  <p className="font-label-sm text-label-sm text-on-surface-variant">
                     {t.role}
                   </p>
                 </div>
@@ -720,8 +561,7 @@ function TestimonialRow() {
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className="w-3.5 h-3.5"
-                    style={{ color: '#595959', fill: '#595959' }}
+                    className="w-3.5 h-3.5 text-primary fill-primary"
                   />
                 ))}
               </div>
@@ -748,28 +588,17 @@ function PricingFAQAccordion() {
       className="mx-auto max-w-3xl px-6 lg:px-8 pb-28"
     >
       <motion.div variants={fadeUp} className="text-center mb-14">
-        <p
-          className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
-          style={{ color: '#a5a5a5' }}
-        >
+        <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4 text-primary">
           Before You Commit
         </p>
-        <h3
-          className="text-3xl sm:text-4xl font-black tracking-tighter"
-          style={{ color: '#595959' }}
-        >
+        <h3 className="font-headline-lg text-headline-lg text-on-surface">
           No surprises. No fine print.
         </h3>
       </motion.div>
 
       <motion.div
         variants={fadeUp}
-        className="overflow-hidden"
-        style={{
-          border: '1px solid #cccccc',
-          borderRadius: '16px',
-          backgroundColor: '#ffffff',
-        }}
+        className="overflow-hidden glass-card rounded-2xl border border-white/10"
       >
         {PRICING_FAQ.map((item, index) => {
           const isOpen = openIndex === index;
@@ -777,29 +606,22 @@ function PricingFAQAccordion() {
             <details
               key={index}
               open={isOpen}
-              className="group"
-              style={{
-                borderTop: index > 0 ? '1px solid #f2f2f2' : 'none',
-              }}
+              className="group border-b border-white/10 last:border-none"
             >
               <summary
                 onClick={(e) => {
                   e.preventDefault();
                   setOpenIndex(isOpen ? null : index);
                 }}
-                className="flex items-center justify-between py-5 px-6 cursor-pointer select-none transition-colors hover:bg-[#f2f2f2]/50 list-none"
+                className="flex items-center justify-between py-5 px-6 cursor-pointer select-none transition-colors hover:bg-white/5 list-none"
               >
-                <span
-                  className="text-sm font-semibold pr-4"
-                  style={{ color: '#595959' }}
-                >
+                <span className="font-body-md text-body-md font-semibold pr-4 text-on-surface">
                   {item.question}
                 </span>
                 <ChevronDown
-                  className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 ${
+                  className={`w-4 h-4 flex-shrink-0 transition-transform duration-300 text-on-surface-variant ${
                     isOpen ? 'rotate-180' : ''
                   }`}
-                  style={{ color: '#a5a5a5' }}
                 />
               </summary>
               <div
@@ -809,10 +631,7 @@ function PricingFAQAccordion() {
                     : 'max-h-0 opacity-0'
                 }`}
               >
-                <p
-                  className="px-6 pb-5 text-sm leading-relaxed"
-                  style={{ color: '#7f7f7f' }}
-                >
+                <p className="px-6 pb-5 font-body-sm text-body-sm leading-relaxed text-on-surface-variant">
                   {item.answer}
                 </p>
               </div>
@@ -832,7 +651,7 @@ export default function PricingSection({
 }: {
   onSelectPlan?: (plan: string) => void;
 }) {
-  const [isAnnual, setIsAnnual] = useState(true); // Default to Annually
+  const [isAnnual, setIsAnnual] = useState(true);
 
   const handleSelect = (plan: string) => {
     onSelectPlan?.(plan);
@@ -841,74 +660,76 @@ export default function PricingSection({
   return (
     <section
       id="pricing"
-      className="scroll-mt-20"
-      style={{ backgroundColor: '#f2f2f2' }}
+      className="dark scroll-mt-20 bg-background text-on-surface relative py-margin-desktop overflow-hidden"
     >
-      {/* ── Component 1: Header & Billing Toggle ── */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-60px' }}
-        variants={stagger}
-        className="mx-auto max-w-5xl px-6 lg:px-8 pt-14 sm:pt-16 pb-8 text-center"
-      >
-        <motion.p
-          variants={fadeUp}
-          className="text-xs font-bold uppercase tracking-[0.3em] mb-4"
-          style={{ color: '#a5a5a5' }}
-        >
-          Pricing
-        </motion.p>
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px]" />
+      </div>
 
-        <motion.h2
-          variants={fadeUp}
-          className="text-3xl sm:text-4xl lg:text-[2.75rem] font-black tracking-tighter leading-tight text-balance mb-6"
-          style={{ color: '#595959' }}
+      <div className="relative z-10">
+        {/* ── Component 1: Header & Billing Toggle ── */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={stagger}
+          className="mx-auto max-w-5xl px-6 lg:px-8 pt-14 sm:pt-16 pb-8 text-center"
         >
-          Pick your plan.
-          <br className="hidden sm:block" />
-          Start closing more deals.
-        </motion.h2>
+          <motion.p
+            variants={fadeUp}
+            className="text-xs font-bold uppercase tracking-[0.3em] mb-4 text-primary"
+          >
+            Pricing
+          </motion.p>
 
-        <motion.p
-          variants={fadeUp}
-          className="text-sm leading-relaxed mx-auto max-w-xl mb-8"
-          style={{ color: '#7f7f7f' }}
-        >
-          14-day trial on every plan. Credit card required. No charge until day 15.
-        </motion.p>
+          <motion.h2
+            variants={fadeUp}
+            className="font-headline-xl text-headline-xl text-on-surface mb-stack-md"
+          >
+            Simple pricing. Zero risk.
+            <br className="hidden sm:block" />
+            Start closing more deals today.
+          </motion.h2>
 
-        <motion.div variants={fadeUp}>
-          <BillingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
+          <motion.p
+            variants={fadeUp}
+            className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-stack-lg"
+          >
+            Try PaperWorking absolutely free for 14 days. We don't bill you until day 15, and you can cancel anytime with one click. If it doesn't save you money on your first deal, we don't want your money.
+          </motion.p>
+
+          <motion.div variants={fadeUp}>
+            <BillingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
+          </motion.div>
         </motion.div>
-      </motion.div>
 
-      {/* ── Component 2: 3-Tier Pricing Cards ── */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-40px' }}
-        variants={stagger}
-        className="mx-auto max-w-6xl px-6 lg:px-8 pb-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-          {PLANS.map((plan) => (
-            <PricingCard
-              key={plan.id}
-              plan={plan}
-              isAnnual={isAnnual}
-              onSelect={handleSelect}
-            />
-          ))}
-        </div>
-      </motion.div>
+        {/* ── Component 2: 3-Tier Pricing Cards ── */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={stagger}
+          className="mx-auto max-w-6xl px-6 lg:px-8 pb-8"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+            {PLANS.map((plan) => (
+              <PricingCard
+                key={plan.id}
+                plan={plan}
+                isAnnual={isAnnual}
+                onSelect={handleSelect}
+              />
+            ))}
+          </div>
+        </motion.div>
 
-      {/* ── Component 3: Feature Comparison Table ── */}
-      <ComparisonTable />
+        {/* ── Component 3: Feature Comparison Table ── */}
+        <ComparisonTable />
 
-      {/* ── Component 4: Trust & Friction Reduction ── */}
-      <TestimonialRow />
-      <PricingFAQAccordion />
+        {/* ── Component 4: Trust & Friction Reduction ── */}
+        <TestimonialRow />
+        <PricingFAQAccordion />
+      </div>
     </section>
   );
 }

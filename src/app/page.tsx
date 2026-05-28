@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
 import LandingFooter from '@/components/landing/LandingFooter';
 import PlatformOverview from '@/components/landing/PlatformOverview';
 import PricingSection from '@/components/landing/PricingSection';
-import HeroDashboard from '@/components/landing/HeroDashboard';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
 import { CustomToaster } from '@/components/ui/CustomToaster';
+import { useSearchParams } from 'next/navigation';
 
 /* ═══════════════════════════════════════════════════════
    Landing Page — Stitch-aligned redesign.
@@ -22,6 +22,46 @@ import { CustomToaster } from '@/components/ui/CustomToaster';
    5. Pricing
    6. Footer
    ═══════════════════════════════════════════════════════ */
+
+function SuccessModal() {
+  const searchParams = useSearchParams();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get('success') === 'true') {
+      setShow(true);
+    }
+  }, [searchParams]);
+  
+  if (!show) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+      <div className="bg-surface-container border border-outline/20 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center relative overflow-hidden">
+        {/* Glow effect */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
+          <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        
+        <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">Welcome to PaperWorking</h2>
+        <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">
+          Your 14-day free trial is active. Check your email for login instructions and next steps.
+        </p>
+        
+        <button
+          onClick={() => setShow(false)}
+          className="luminous-button w-full"
+        >
+          <span>Get Started</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const { user } = useAuth();
@@ -85,30 +125,17 @@ export default function LandingPage() {
         </div>
       )}
 
+      {/* Success Modal Overlay */}
+      <Suspense fallback={null}>
+        <SuccessModal />
+      </Suspense>
+
       <LandingHeader />
 
       {/* ── Hero — Centered text-only ── */}
       <LandingHero />
 
-      {/* ── Dashboard Preview — Standalone showcase below hero ── */}
-      <section className="relative z-10 max-w-5xl mx-auto px-gutter-desktop -mt-8 mb-32">
-        {/* Glow halo */}
-        <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-3xl blur-3xl opacity-50 pointer-events-none" />
 
-        {/* Dashboard shell */}
-        <div className="relative glass-card rounded-2xl overflow-hidden shadow-2xl border border-white/10">
-          {/* Window chrome */}
-          <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/10 bg-black/40">
-            <span className="w-3 h-3 rounded-full bg-red-500/70" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
-            <span className="w-3 h-3 rounded-full bg-green-500/70" />
-            <span className="ml-4 font-label-sm text-label-sm text-on-surface-variant/60 uppercase tracking-widest">
-              paperworking.co — Command Center
-            </span>
-          </div>
-          <HeroDashboard />
-        </div>
-      </section>
 
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">

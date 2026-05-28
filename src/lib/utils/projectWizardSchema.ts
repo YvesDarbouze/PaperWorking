@@ -12,6 +12,8 @@ export type WizardQuestionType =
   | 'single-select'
   | 'multi-select'
   | 'file-upload'
+  | 'bento-location'
+  | 'phase-selection'
   | 'address';
 
 export interface WizardQuestion {
@@ -30,11 +32,11 @@ export interface WizardQuestion {
 
 export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
   {
-    id: 'address',
-    prompt: 'Where is the property located?',
-    subtext: 'Search MLS listings for the address or enter details manually.',
-    type: 'address',
-    field: 'address',
+    id: 'location',
+    prompt: 'Establish Location',
+    subtext: "Enter the primary address and structure type for this new project. We'll use this to fetch zoning and climate data.",
+    type: 'bento-location',
+    field: 'location',
     required: true,
     weight: 10,
   },
@@ -48,21 +50,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     required: true,
     weight: 20,
   },
-  {
-    id: 'assetClass',
-    prompt: 'What type of asset is this?',
-    type: 'single-select',
-    field: 'assetClass',
-    options: [
-      { value: 'Residential', label: 'Residential' },
-      { value: 'Multi-Family', label: 'Multi-Family' },
-      { value: 'Commercial', label: 'Commercial' },
-      { value: 'Land', label: 'Undeveloped Land' },
-    ],
-    defaultValue: 'Residential',
-    required: true,
-    weight: 30,
-  },
+
   {
     id: 'strategyType',
     prompt: 'What is your investment strategy?',
@@ -115,33 +103,13 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     weight: 65,
   },
   {
-    id: 'isBackdated',
-    prompt: 'Do you already own this property?',
-    subtext: 'Select Yes if the property has been acquired, is mid-rehab, or has been sold.',
-    type: 'single-select',
-    field: 'isBackdated',
-    options: [
-      { value: 'no', label: 'Not Yet', description: 'Currently prospecting or under contract.' },
-      { value: 'yes', label: 'Yes, I Own It', description: 'Already acquired — entering actuals.' },
-    ],
-    defaultValue: 'no',
+    id: 'phaseSelection',
+    prompt: 'Where is this project now?',
+    subtext: "We'll tailor your workspace based on the current phase of the deal.",
+    type: 'phase-selection',
+    field: 'phaseData',
     required: true,
     weight: 70,
-  },
-  {
-    id: 'startingPhase',
-    prompt: 'Which phase is this Project entering at?',
-    type: 'single-select',
-    field: 'startingPhase',
-    options: [
-      { value: 1, label: 'Phase 1: Find & Fund', description: 'Initial sourcing and evaluation.' },
-      { value: 2, label: 'Phase 2: Acquisition', description: 'Under contract, closing prep, and due diligence.' },
-      { value: 3, label: 'Phase 3: Rehab & Hold', description: 'Active construction, stabilization, or lease-up.' },
-      { value: 4, label: 'Phase 4: Closing & Exit', description: 'Listed, sold, or finalized disposition.' },
-    ],
-    defaultValue: 1,
-    required: true,
-    weight: 80,
   },
   {
     id: 'acquisitionDate',
@@ -168,7 +136,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     type: 'date',
     field: 'financials.soldDate',
     required: true,
-    condition: (answers) => answers.isBackdated === 'yes' && answers.startingPhase === 4,
+    condition: (answers) => answers.isCompleted === true,
     weight: 90,
   },
   {
@@ -178,7 +146,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     field: 'financials.actualSalePrice',
     placeholder: '0.00',
     required: true,
-    condition: (answers) => answers.isBackdated === 'yes' && answers.startingPhase === 4,
+    condition: (answers) => answers.isCompleted === true,
     weight: 100,
   },
   {
@@ -247,7 +215,7 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     placeholder: '0.00',
     required: true,
     condition: (answers) =>
-      answers.isBackdated === 'yes' && answers.strategyType === 'Fix & Flip' && answers.startingPhase < 4,
+      answers.isBackdated === 'yes' && answers.strategyType === 'Fix & Flip' && !answers.isCompleted,
     weight: 120,
   },
   {

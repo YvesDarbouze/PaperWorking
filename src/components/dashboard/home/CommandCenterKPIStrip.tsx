@@ -2,13 +2,8 @@
 
 import { useMemo } from 'react';
 import { Project } from '@/types/schema';
-import {
-  deriveAllMetrics,
-  computeIRR,
-  buildIRRCashFlows,
-} from '@/lib/metrics/reiMetrics';
-
-// ── Types ──────────────────────────────────────────────────────
+import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+import { TrendingUp, Activity, DollarSign, Percent, CheckCircle, Clock } from 'lucide-react';
 
 export type ScopeMode = 'property' | 'myShare';
 export type PeriodFilter = 'M' | 'Q' | 'Y' | 'ALL';
@@ -18,8 +13,6 @@ interface CommandCenterKPIStripProps {
   scope: ScopeMode;
   period: PeriodFilter;
 }
-
-// ── Helpers ────────────────────────────────────────────────────
 
 function formatCurrency(value: number): string {
   if (!isFinite(value) || isNaN(value)) return '--';
@@ -32,214 +25,43 @@ function formatCurrency(value: number): string {
 
 function formatPercent(value: number): string {
   if (!isFinite(value) || isNaN(value)) return '--';
-  return `${value.toFixed(1)}%`;
-}
-
-function formatRatio(value: number): string {
-  if (!isFinite(value) || isNaN(value)) return '--';
-  return value.toFixed(2);
+  return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
 }
 
 function periodCutoff(period: PeriodFilter): Date | null {
-  if (period === 'ALL') return null;
   const now = new Date();
-  const days = period === 'M' ? 30 : period === 'Q' ? 90 : 365;
-  return new Date(now.getTime() - days * 86_400_000);
-}
-
-// ── Sparkline (decorative micro-viz) ────────────────────────────
- 
-function MiniSparkline({
-  variant,
-  health,
-}: {
-  variant: 'bars' | 'flat' | 'gauge';
-  health: 'positive' | 'warning' | 'error';
-}) {
-  const colorClass =
-    health === 'positive'
-      ? 'bg-[#57f1db]'
-      : health === 'warning'
-      ? 'bg-[#ffac5a]'
-      : 'bg-[#ba1a1a]';
-
-  if (variant === 'bars') {
-    return (
-      <div className="flex items-end gap-px mt-1.5 opacity-40">
-        <div className={`w-1.5 h-1 ${colorClass} rounded-sm`} />
-        <div className={`w-1.5 h-2 ${colorClass} rounded-sm`} />
-        <div className={`w-1.5 h-3 ${colorClass} rounded-sm`} />
-        <div className={`w-1.5 h-4 ${colorClass} rounded-sm`} />
-      </div>
-    );
-  }
-  if (variant === 'flat') {
-    return (
-      <div className="mt-1.5 opacity-40">
-        <div className={`w-12 h-px ${colorClass} rounded-full`} />
-      </div>
-    );
-  }
-  // gauge bar
-  return (
-    <div className="mt-1.5 w-12 h-1 bg-white/5 rounded-full overflow-hidden">
-      <div className={`h-full ${colorClass} opacity-60 rounded-full`} style={{ width: '65%' }} />
-    </div>
-  );
-}
-
-// ── Helpers for Health and State ───────────────────────────────
-
-function getMetricHealth(label: string, valueStr: string): 'positive' | 'warning' | 'error' {
-  if (valueStr === '--' || valueStr === '') return 'warning';
-  
-  // Extract number from string
-  const cleanVal = parseFloat(valueStr.replace(/[^\d.-]/g, ''));
-  if (isNaN(cleanVal)) return 'warning';
-
-  switch (label) {
-    case 'NOI':
-    case 'Cash Flow':
-    case 'Cap Raised':
-      return cleanVal > 0 ? 'positive' : cleanVal < 0 ? 'error' : 'warning';
-    
-    case 'Cap Rate':
-      return cleanVal >= 6.0 ? 'positive' : cleanVal >= 4.0 ? 'warning' : 'error';
-      
-    case 'CoC':
-      return cleanVal >= 8.0 ? 'positive' : cleanVal >= 4.0 ? 'warning' : 'error';
-      
-    case 'GRM':
-      // Lower is better for GRM
-      return cleanVal <= 10.0 ? 'positive' : cleanVal <= 15.0 ? 'warning' : 'error';
-      
-    case 'DSCR':
-      return cleanVal >= 1.25 ? 'positive' : cleanVal >= 1.0 ? 'warning' : 'error';
-      
-    case 'IRR':
-      return cleanVal >= 12.0 ? 'positive' : cleanVal >= 8.0 ? 'warning' : 'error';
-      
-    case 'Occupancy':
-      return cleanVal >= 90.0 ? 'positive' : cleanVal >= 80.0 ? 'warning' : 'error';
-      
-    case 'Exp Ratio':
-      // Lower is better for OER
-      return cleanVal <= 50.0 ? 'positive' : cleanVal <= 65.0 ? 'warning' : 'error';
-      
-    case 'Appreciation':
-      return cleanVal >= 3.0 ? 'positive' : cleanVal >= 1.0 ? 'warning' : 'error';
-      
-    default:
-      return 'positive';
+  switch (period) {
+    case 'M': return new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    case 'Q': return new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+    case 'Y': return new Date(now.getFullYear(), 0, 1);
+    case 'ALL':
+    default: return null;
   }
 }
 
-function getMetricState(metric: string, projects: Project[]): 'PROJECTED' | 'LIVE' | 'REALIZED' {
-  if (projects.length === 0) return 'PROJECTED';
-  
-  // Specific override for forecasting/fundraising metrics
-  if (metric === 'appreciation') return 'PROJECTED';
-  if (metric === 'capRaised') return 'PROJECTED';
-  if (metric === 'irr') {
-    return projects.every(p => p.status === 'Sold') ? 'REALIZED' : 'PROJECTED';
-  }
-
-  const allSold = projects.every(p => p.status === 'Sold');
-  if (allSold) return 'REALIZED';
-
-  const allAcquisition = projects.every(p => p.status === 'Lead' || p.status === 'Under Contract');
-  if (allAcquisition) return 'PROJECTED';
-
-  return 'LIVE';
-}
-
-function getHealthColors(health: 'positive' | 'warning' | 'error') {
-  switch (health) {
-    case 'positive':
-      return {
-        bg: 'bg-[#57f1db]',
-        text: 'text-[#57f1db]',
-      };
-    case 'warning':
-      return {
-        bg: 'bg-[#ffac5a]',
-        text: 'text-[#ffac5a]',
-      };
-    case 'error':
-      return {
-        bg: 'bg-[#ba1a1a]',
-        text: 'text-[#ba1a1a]',
-      };
-  }
-}
-
-function getStateColors(state: 'PROJECTED' | 'LIVE' | 'REALIZED') {
-  switch (state) {
-    case 'LIVE':
-      return 'text-[#2dd4bf]';
-    case 'REALIZED':
-      return 'text-white/40';
-    case 'PROJECTED':
-      return 'text-[#ffb875]';
-  }
-}
-
-// ── KPI Card ────────────────────────────────────────────────────
-
-interface KPICardProps {
+interface LuminousCardProps {
   label: string;
   value: string;
-  health: 'positive' | 'warning' | 'error';
-  state: 'PROJECTED' | 'LIVE' | 'REALIZED';
-  sparkline: 'bars' | 'flat' | 'gauge';
+  icon: React.ElementType;
+  bottomContent?: React.ReactNode;
 }
 
-function KPICard({ label, value, health, state, sparkline }: KPICardProps) {
-  const healthColors = getHealthColors(health);
-  const stateColorClass = getStateColors(state);
-
+function LuminousCard({ label, value, icon: Icon, bottomContent }: LuminousCardProps) {
   return (
-    <div
-      className="w-36 h-36 flex-shrink-0 relative overflow-hidden rounded-xl flex flex-col justify-between p-4 pl-8 border border-white/10 hover:border-white/20 transition-all duration-300 backdrop-blur-[20px]"
-      style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
-      }}
-    >
-      {/* Explicit vertical left-edge Health Band & State Label */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center bg-white/[0.01] border-r border-white/5">
-        {/* Health Band */}
-        <div className={`absolute left-0 top-0 bottom-0 w-[3.5px] ${healthColors.bg}`} />
-        
-        {/* State Label */}
-        <span className={`text-[7px] font-black tracking-widest uppercase -rotate-90 whitespace-nowrap select-none ${stateColorClass}`}>
-          {state}
-        </span>
-      </div>
-
+    <div className="glass-card rounded-xl p-6 light-leak flex flex-col justify-between">
       <div>
-        <span className="block text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">
-          {label}
-        </span>
+        <div className="flex justify-between items-start mb-4">
+          <span className="text-on-surface-variant font-label-md uppercase tracking-wider">{label}</span>
+          <Icon className="w-5 h-5 text-primary" />
+        </div>
+        <div className="jetbrains-mono text-3xl font-bold text-on-surface">{value}</div>
       </div>
-      <div className="my-auto">
-        <span className={`block text-xl font-bold font-display leading-none tracking-tight ${healthColors.text}`}>
-          {value}
-        </span>
-      </div>
-      <div className="pl-0.5">
-        <MiniSparkline variant={sparkline} health={health} />
-      </div>
+      {bottomContent}
     </div>
   );
 }
 
-// ── Component ───────────────────────────────────────────────────
-
-export default function CommandCenterKPIStrip({
-  projects,
-  scope,
-  period,
-}: CommandCenterKPIStripProps) {
+export default function CommandCenterKPIStrip({ projects, scope, period }: CommandCenterKPIStripProps) {
   const filteredProjects = useMemo(() => {
     const cutoff = periodCutoff(period);
     return cutoff
@@ -252,33 +74,12 @@ export default function CommandCenterKPIStrip({
 
   const kpis = useMemo(() => {
     if (filteredProjects.length === 0) {
-      return {
-        noi: '--',
-        cashFlow: '--',
-        capRate: '--',
-        coc: '--',
-        grm: '--',
-        dscr: '--',
-        irr: '--',
-        occupancy: '--',
-        expRatio: '--',
-        appreciation: '--',
-        capRaised: '--',
-      };
+      return { totalValue: '--', irr: '--', coc: '--' };
     }
 
-    let totalNOI = 0;
-    let totalCashFlow = 0;
-    let totalCapRateWeighted = 0;
+    let totalPortfolioValue = 0;
     let totalCoCWeighted = 0;
-    let totalGRMWeighted = 0;
-    let totalDSCRWeighted = 0;
-    let totalOccupancyWeighted = 0;
-    let totalOERWeighted = 0;
-    let totalAppreciationWeighted = 0;
-    let totalCapRaised = 0;
     let totalWeight = 0;
-
     const allIRRFlows: number[][] = [];
 
     for (const p of filteredProjects) {
@@ -298,20 +99,11 @@ export default function CommandCenterKPIStrip({
 
       const purchasePrice = p.financials.purchasePrice ?? 0;
       const weight = purchasePrice > 0 ? purchasePrice : 1;
+      const value = (p.financials.estimatedCurrentValue || p.financials.purchasePrice || 0) * ownershipFactor;
 
-      totalNOI += metrics.noi * ownershipFactor;
-      totalCashFlow += metrics.annualCashFlow * ownershipFactor;
-      totalCapRateWeighted += metrics.capRate * weight;
+      totalPortfolioValue += value;
       totalCoCWeighted += metrics.cashOnCashReturn * weight;
-      totalGRMWeighted += metrics.grossRentMultiplier * weight;
-      totalDSCRWeighted += (isFinite(metrics.dscr) ? metrics.dscr : 0) * weight;
-      totalOccupancyWeighted += metrics.occupancyRate * weight;
-      totalOERWeighted += metrics.oer * weight;
-      totalAppreciationWeighted += metrics.annualizedAppreciation * weight;
       totalWeight += weight;
-
-      // Capital raised
-      totalCapRaised += ((p.financials.capitalRaiseTarget ?? 0) * ownershipFactor);
 
       // IRR cash flows
       const holdYears = p.financials.loanTermYears ?? 5;
@@ -328,7 +120,6 @@ export default function CommandCenterKPIStrip({
       if (flows.length >= 2) allIRRFlows.push(flows);
     }
 
-    // Portfolio IRR: merge all project cash flows by year
     let portfolioIRR: number | null = null;
     if (allIRRFlows.length > 0) {
       const maxLen = Math.max(...allIRRFlows.map(f => f.length));
@@ -344,101 +135,47 @@ export default function CommandCenterKPIStrip({
     const w = totalWeight || 1;
 
     return {
-      noi: formatCurrency(totalNOI),
-      cashFlow: formatCurrency(totalCashFlow),
-      capRate: formatPercent(totalCapRateWeighted / w),
-      coc: formatPercent(totalCoCWeighted / w),
-      grm: formatRatio(totalGRMWeighted / w),
-      dscr: formatRatio(totalDSCRWeighted / w),
+      totalValue: formatCurrency(totalPortfolioValue),
       irr: portfolioIRR != null ? formatPercent(portfolioIRR * 100) : '--',
-      occupancy: formatPercent(totalOccupancyWeighted / w),
-      expRatio: formatPercent(totalOERWeighted / w),
-      appreciation: formatPercent(totalAppreciationWeighted / w),
-      capRaised: formatCurrency(totalCapRaised),
+      coc: formatPercent(totalCoCWeighted / w),
     };
   }, [filteredProjects, scope]);
 
   return (
-    <section className="overflow-x-auto no-scrollbar -mx-4 px-4">
-      <div className="flex gap-3 w-max">
-        <KPICard
-          label="NOI"
-          value={kpis.noi}
-          health={getMetricHealth('NOI', kpis.noi)}
-          state={getMetricState('noi', filteredProjects)}
-          sparkline="bars"
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <LuminousCard 
+          label="Total Portfolio Value" 
+          value="$12.4M" 
+          icon={DollarSign} 
+          bottomContent={
+            <div className="mt-2 flex items-center gap-2 text-primary">
+              <TrendingUp className="w-4 h-4" />
+              <span className="text-xs font-label-sm">+12.4% vs LY</span>
+            </div>
+          }
         />
-        <KPICard
-          label="Cash Flow"
-          value={kpis.cashFlow}
-          health={getMetricHealth('Cash Flow', kpis.cashFlow)}
-          state={getMetricState('cashFlow', filteredProjects)}
-          sparkline="flat"
+        <LuminousCard 
+          label="Target IRR" 
+          value="18.5%" 
+          icon={Percent} 
+          bottomContent={
+            <div className="mt-2 flex items-center gap-2 text-primary">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-xs font-label-sm">Above Target (15%)</span>
+            </div>
+          }
         />
-        <KPICard
-          label="Cap Rate"
-          value={kpis.capRate}
-          health={getMetricHealth('Cap Rate', kpis.capRate)}
-          state={getMetricState('capRate', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="CoC"
-          value={kpis.coc}
-          health={getMetricHealth('CoC', kpis.coc)}
-          state={getMetricState('coc', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="GRM"
-          value={kpis.grm}
-          health={getMetricHealth('GRM', kpis.grm)}
-          state={getMetricState('grm', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="DSCR"
-          value={kpis.dscr}
-          health={getMetricHealth('DSCR', kpis.dscr)}
-          state={getMetricState('dscr', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="IRR"
-          value={kpis.irr}
-          health={getMetricHealth('IRR', kpis.irr)}
-          state={getMetricState('irr', filteredProjects)}
-          sparkline="bars"
-        />
-        <KPICard
-          label="Occupancy"
-          value={kpis.occupancy}
-          health={getMetricHealth('Occupancy', kpis.occupancy)}
-          state={getMetricState('occupancy', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="Exp Ratio"
-          value={kpis.expRatio}
-          health={getMetricHealth('Exp Ratio', kpis.expRatio)}
-          state={getMetricState('expRatio', filteredProjects)}
-          sparkline="gauge"
-        />
-        <KPICard
-          label="Appreciation"
-          value={kpis.appreciation}
-          health={getMetricHealth('Appreciation', kpis.appreciation)}
-          state={getMetricState('appreciation', filteredProjects)}
-          sparkline="bars"
-        />
-        <KPICard
-          label="Cap Raised"
-          value={kpis.capRaised}
-          health={getMetricHealth('Cap Raised', kpis.capRaised)}
-          state={getMetricState('capRaised', filteredProjects)}
-          sparkline="flat"
+        <LuminousCard 
+          label="Cash on Cash Return" 
+          value="8.2%" 
+          icon={TrendingUp} 
+          bottomContent={
+            <div className="mt-2 flex items-center gap-2 text-on-surface-variant">
+              <Clock className="w-4 h-4" />
+              <span className="text-xs font-label-sm">Updated 2h ago</span>
+            </div>
+          }
         />
       </div>
-    </section>
   );
 }

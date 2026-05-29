@@ -84,6 +84,24 @@ const INITIAL_FORM = {
   },
 };
 
+const strategyConfig: Record<string, { icon: string; label: string; description: string }> = {
+  'Rent': {
+    icon: 'home_work',
+    label: 'Rental',
+    description: 'Long-term hold for cash flow and appreciation.'
+  },
+  'Fix & Flip': {
+    icon: 'architecture',
+    label: 'Flip',
+    description: 'Quick rehab and resale for maximum margin.'
+  },
+  'BRRRR': {
+    icon: 'autorenew',
+    label: 'BRRRR',
+    description: 'Buy, Rehab, Rent, Refinance, Repeat.'
+  }
+};
+
 export default function ProjectCreationWizard({
   organizationId,
   onClose,
@@ -94,6 +112,7 @@ export default function ProjectCreationWizard({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [useManualAddress, setUseManualAddress] = useState(false);
+  const [explainerOpen, setExplainerOpen] = useState(false);
 
   // Pre-populate lead email once user is loaded
   useEffect(() => {
@@ -677,43 +696,133 @@ export default function ProjectCreationWizard({
 
                   {/* SINGLE SELECT — Glass strategy cards (Stitch schema) */}
                   {activeQuestion.type === 'single-select' && (
-                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-                      {activeQuestion.options?.map((opt) => {
-                        const selected = getNestedField(formData, activeQuestion.field) === opt.value;
-                        return (
+                    activeQuestion.id === 'strategyType' ? (
+                      <div className="space-y-4 w-full animate-in fade-in duration-300" id="strategy-container">
+                        {activeQuestion.options?.map((opt) => {
+                          const valueStr = String(opt.value);
+                          const config = strategyConfig[valueStr] || {
+                            icon: 'help',
+                            label: opt.label,
+                            description: opt.description
+                          };
+                          const selected = getNestedField(formData, activeQuestion.field) === opt.value;
+                          return (
+                            <button
+                              key={valueStr}
+                              type="button"
+                              onClick={() => updateFormNested(activeQuestion.field, opt.value)}
+                              className={`w-full rounded-xl p-4 flex items-center cursor-pointer group transition-all duration-300 border text-left
+                                ${selected ? 'border-[#57f1db] shadow-[0_0_20px_-10px_#57f1db]' : 'border-white/10 hover:border-[#57f1db]/40'}
+                              `}
+                              style={{
+                                background: selected
+                                  ? 'rgba(87, 241, 219, 0.05)'
+                                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                                backdropFilter: 'blur(20px)',
+                              }}
+                            >
+                              <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#57f1db] mr-4 shrink-0 group-hover:scale-110 transition-transform">
+                                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
+                                  {config.icon}
+                                </span>
+                              </div>
+                              <div className="flex-grow">
+                                <h3 className="text-[18px] leading-[24px] font-semibold text-[#dae4ec]">{config.label}</h3>
+                                <p className="text-[14px] leading-[20px] text-[#bacac5] opacity-80">{config.description}</p>
+                              </div>
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${selected ? 'border-[#57f1db]' : 'border-[#859490]'}`}>
+                                <div className={`w-3 h-3 rounded-full bg-[#57f1db] transition-all ${selected ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+                              </div>
+                            </button>
+                          );
+                        })}
+
+                        {/* Explainer Section */}
+                        <div className="mt-8 border-t border-white/5 pt-6 w-full">
                           <button
-                            key={String(opt.value)}
                             type="button"
-                            onClick={() => updateFormNested(activeQuestion.field, opt.value)}
-                            className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
-                              ${selected
-                                ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
-                                : 'border border-white/[0.12] hover:border-[#57f1db]/30'
-                              }`}
-                            style={{
-                              background: selected
-                                ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
-                                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
-                              backdropFilter: 'blur(24px)',
+                            className="flex items-center text-[#57f1db] hover:underline decoration-[#57f1db]/30 transition-all font-medium text-[14px]"
+                            onClick={() => {
+                              setExplainerOpen(prev => {
+                                const next = !prev;
+                                if (next) {
+                                  setTimeout(() => {
+                                    const main = document.querySelector('main');
+                                    if (main) {
+                                      main.scrollTo({ top: main.scrollHeight, behavior: 'smooth' });
+                                    }
+                                  }, 100);
+                                }
+                                return next;
+                              });
                             }}
                           >
-                            <div className={`p-3 rounded-lg transition-transform group-hover:scale-110 ${selected ? 'bg-[#57f1db]/20 text-[#57f1db]' : 'bg-white/5 text-[#bacac5]'}`}>
-                              {selected ? <Check className="w-5 h-5" /> : <Target className="w-5 h-5" />}
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
-                                {opt.label}
-                              </span>
-                              {opt.description && (
-                                <span className="text-[14px] leading-[20px] text-[#bacac5]">
-                                  {opt.description}
-                                </span>
-                              )}
-                            </div>
+                            <span className="material-symbols-outlined mr-2">info</span>
+                            What's the difference?
+                            <span
+                              className="material-symbols-outlined ml-1 transition-transform duration-200"
+                              style={{ transform: explainerOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                            >
+                              expand_more
+                            </span>
                           </button>
-                        );
-                      })}
-                    </div>
+                          {explainerOpen && (
+                            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                              <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
+                                <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">RENTAL</div>
+                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">Ideal for stable, passive income. We'll set up ongoing maintenance schedules and lease tracking.</p>
+                              </div>
+                              <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
+                                <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">FLIP</div>
+                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">High-velocity projects. We'll focus on renovation budgets, contractor timelines, and resale math.</p>
+                              </div>
+                              <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
+                                <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">BRRRR</div>
+                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">A multi-phase cycle. We track the conversion from short-term hard money to long-term refinance.</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                        {activeQuestion.options?.map((opt) => {
+                          const selected = getNestedField(formData, activeQuestion.field) === opt.value;
+                          return (
+                            <button
+                              key={String(opt.value)}
+                              type="button"
+                              onClick={() => updateFormNested(activeQuestion.field, opt.value)}
+                              className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
+                                ${selected
+                                  ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
+                                  : 'border border-white/[0.12] hover:border-[#57f1db]/30'
+                                }`}
+                              style={{
+                                background: selected
+                                  ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
+                                  : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
+                                backdropFilter: 'blur(24px)',
+                              }}
+                            >
+                              <div className={`p-3 rounded-lg transition-transform group-hover:scale-110 ${selected ? 'bg-[#57f1db]/20 text-[#57f1db]' : 'bg-white/5 text-[#bacac5]'}`}>
+                                {selected ? <Check className="w-5 h-5" /> : <Target className="w-5 h-5" />}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
+                                  {opt.label}
+                                </span>
+                                {opt.description && (
+                                  <span className="text-[14px] leading-[20px] text-[#bacac5]">
+                                    {opt.description}
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )
                   )}
 
                   {/* ADDRESS — Preserve existing MLS + manual logic */}

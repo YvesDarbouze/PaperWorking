@@ -1,55 +1,44 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 /**
- * TestimonialSlider
+ * TestimonialSlider — Stitch Obsidian Edition
  *
- * Auto-advancing testimonial carousel with headshots (initials-based),
- * 5-star ratings, outcome-focused quotes, and role/company attribution.
- * Strict PaperWorking palette.
+ * Auto-advancing glass-card testimonial carousel with outcome-focused
+ * quotes from three named investors. Uses Stitch design tokens throughout.
  */
 
 const testimonials = [
   {
-    name: 'David Chen',
-    initials: 'DC',
-    role: 'Managing Partner',
-    company: 'Apex Capital Group',
-    quote: 'We closed 14 projects last quarter without a single data entry error — something that cost us $38K the year before.',
-    stars: 5,
-  },
-  {
-    name: 'Rachel Okonkwo',
-    initials: 'RO',
-    role: 'Director of Operations',
-    company: 'Meridian Property Holdings',
-    quote: 'Our back-office team went from 6 people to 2 — not layoffs, we redeployed them to acquisitions because PaperWorking handles the rest.',
-    stars: 5,
-  },
-  {
-    name: 'Marcus Torres',
+    name: 'Marcus T.',
     initials: 'MT',
-    role: 'Founder',
+    role: 'Independent Flipper',
     company: 'Iron Bridge Developments',
-    quote: 'I used to spend Sundays reconciling spreadsheets. Now the Engine Room does it in real time and I spend Sundays with my kids.',
+    quote:
+      'I used to spend Sundays reconciling spreadsheets. Now the Engine Room does it in real time and I spend Sundays with my kids.',
+    metric: '12 hrs/week saved',
     stars: 5,
   },
   {
-    name: 'Samantha Liu',
-    initials: 'SL',
-    role: 'VP of Acquisitions',
+    name: 'Samantha Cho',
+    initials: 'SC',
+    role: 'Firm Partner',
     company: 'Vanguard RE Partners',
-    quote: 'The role-based access alone saved us from a near-miss where a contractor almost saw our capital stack. Never again.',
+    quote:
+      'We closed 14 projects last quarter without a single data entry error — something that cost us $38K the year before. Role-based access alone prevented a near-miss where a contractor almost saw our capital stack.',
+    metric: '$38K errors eliminated',
     stars: 5,
   },
   {
-    name: 'James Whitfield',
-    initials: 'JW',
-    role: 'Principal',
+    name: 'David R.',
+    initials: 'DR',
+    role: 'General Contractor',
     company: 'Sterling & Associates',
-    quote: 'Due diligence that took us 3 weeks now takes 4 days. Our investors noticed, and our fund size doubled.',
+    quote:
+      'Due diligence that took us 3 weeks now takes 4 days. Our investors noticed, and our fund size doubled. The burn rate tracker alone paid for PaperWorking ten times over.',
+    metric: '3.2× faster closings',
     stars: 5,
   },
 ];
@@ -62,7 +51,7 @@ export default function TestimonialSlider() {
     if (!autoPlay) return;
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(timer);
   }, [autoPlay]);
 
@@ -84,14 +73,18 @@ export default function TestimonialSlider() {
   const t = testimonials[current];
 
   return (
-    <section className="py-24 bg-bg-surface border-b border-phase-1">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-phase-2 mb-4">
-            Elite Investors Trust PaperWorking
-          </p>
-          <h2 className="text-3xl font-medium tracking-tight text-text-primary sm:text-4xl text-balance">
-            Don&apos;t take our word for it. Look at their margins.
+    <section className="py-24 md:py-32 relative">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="mx-auto max-w-container-max px-5 md:px-6 lg:px-8 relative z-10">
+        {/* Section header */}
+        <div className="text-center mb-12 md:mb-16">
+          <span className="text-xs font-semibold uppercase tracking-[0.05em] text-primary glass-card px-3 py-1 rounded-full inline-block mb-4">
+            Don&apos;t Take Our Word For It
+          </span>
+          <h2 className="text-[28px] md:text-[32px] leading-tight font-bold tracking-tight text-on-surface">
+            Look at their margins.
           </h2>
         </div>
 
@@ -99,42 +92,60 @@ export default function TestimonialSlider() {
         <div className="mx-auto max-w-2xl">
           <div className="relative">
             {/* Card */}
-            <div className="text-center py-10 px-6 sm:px-12 border border-phase-1 bg-dashboard">
-              {/* Headshot (initials) */}
-              <div className="w-16 h-16 bg-black text-white flex items-center justify-center mx-auto mb-5">
-                <span className="text-lg font-bold tracking-tight">{t.initials}</span>
+            <div className="glass-card rounded-xl text-center py-10 px-6 sm:px-12 relative overflow-hidden">
+              {/* Quote icon */}
+              <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mx-auto mb-6">
+                <Quote className="w-5 h-5 text-primary" />
               </div>
 
               {/* Stars */}
-              <div className="flex items-center justify-center gap-0.5 mb-5">
+              <div className="flex items-center justify-center gap-0.5 mb-6">
                 {Array.from({ length: t.stars }).map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-phase-4 text-phase-4" />
+                  <Star
+                    key={i}
+                    className="w-4 h-4 fill-primary text-primary"
+                  />
                 ))}
               </div>
 
               {/* Quote */}
-              <blockquote className="text-base sm:text-lg text-phase-4 leading-relaxed mb-6 font-medium">
+              <blockquote className="text-base sm:text-lg text-on-surface leading-relaxed mb-6 font-medium">
                 &ldquo;{t.quote}&rdquo;
               </blockquote>
 
+              {/* Metric highlight */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                  {t.metric}
+                </span>
+              </div>
+
               {/* Attribution */}
-              <p className="text-sm font-bold text-text-primary">{t.name}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mt-1">
-                {t.role} at {t.company}
-              </p>
+              <div>
+                {/* Initials avatar */}
+                <div className="w-10 h-10 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center mx-auto mb-3">
+                  <span className="text-sm font-bold text-primary tracking-tight">
+                    {t.initials}
+                  </span>
+                </div>
+                <p className="text-sm font-bold text-on-surface">{t.name}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.05em] text-on-surface-variant mt-1">
+                  {t.role} · {t.company}
+                </p>
+              </div>
             </div>
 
             {/* Nav arrows */}
             <button
               onClick={prev}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-9 h-9 bg-bg-surface border border-phase-1 flex items-center justify-center text-phase-3 hover:text-text-primary hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 w-9 h-9 glass-card rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer hidden sm:flex"
               aria-label="Previous testimonial"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={next}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-9 h-9 bg-bg-surface border border-phase-1 flex items-center justify-center text-phase-3 hover:text-text-primary hover:border-phase-2 transition-colors cursor-pointer hidden sm:flex"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 w-9 h-9 glass-card rounded-lg flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors cursor-pointer hidden sm:flex"
               aria-label="Next testimonial"
             >
               <ChevronRight className="w-4 h-4" />
@@ -147,8 +158,10 @@ export default function TestimonialSlider() {
               <button
                 key={i}
                 onClick={() => goTo(i)}
-                className={`w-2 h-2 transition-all cursor-pointer ${
-                  i === current ? 'bg-black w-6' : 'bg-phase-1 hover:bg-phase-2'
+                className={`h-2 rounded-full transition-all cursor-pointer ${
+                  i === current
+                    ? 'bg-primary w-6'
+                    : 'bg-surface-container-highest w-2 hover:bg-on-surface-variant/40'
                 }`}
                 aria-label={`Go to testimonial ${i + 1}`}
               />

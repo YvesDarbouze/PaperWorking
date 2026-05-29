@@ -151,7 +151,7 @@ function InboxNotificationCenter() {
       <div className="flex w-full h-[calc(100vh-64px)] bg-[#0b141a] text-[#dae4ec] overflow-hidden">
         
         {/* ═══ List Pane (Left) ═══ */}
-        <section className="w-[420px] border-r border-white/10 flex flex-col bg-[#141d23]/50 shrink-0">
+        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#141d23]/50 shrink-0 ${ (activeThread || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-bold text-[#dae4ec]">Inbox</h3>
@@ -195,7 +195,7 @@ function InboxNotificationCenter() {
         </section>
 
         {/* ═══ Reading/Action Pane (Right) ═══ */}
-        <section className="flex-1 flex flex-col bg-[#0b141a] relative overflow-hidden">
+        <section className={`flex-1 flex flex-col bg-[#0b141a] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
           {/* Background Decorative Elements */}
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#57f1db]/5 rounded-full blur-[100px] pointer-events-none"></div>
           <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-[80px] pointer-events-none"></div>
@@ -205,12 +205,16 @@ function InboxNotificationCenter() {
               thread={activeThread}
               projectName={activeProjectName}
               onSendReply={handleSendReply}
+              onBack={() => router.push('/dashboard/inbox')}
             />
           ) : selectedItem ? (
             <div className="flex-1 overflow-y-auto z-10 flex flex-col">
                {/* Header Actions */}
                 <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0b141a]/50 backdrop-blur-sm">
                   <div className="flex items-center gap-4">
+                    <button onClick={() => setSelectedNotificationId(null)} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+                      <ArrowLeft className="w-5 h-5" />
+                    </button>
                     <div className="h-12 w-12 rounded-xl bg-[#0b141a]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#57f1db]">
                       <CheckCheck className="w-6 h-6" />
                     </div>
@@ -261,8 +265,7 @@ function InboxNotificationCenter() {
                           <p className="text-base leading-relaxed text-[#bacac5] whitespace-pre-wrap">
                             {selectedItem.body}
                           </p>
-                          
-                          {/* Render Document details if it's a specific type of notification */}
+                                                   {/* Render Document details if it's a specific type of notification */}
                           {['DOCUMENT_SIGNED', 'RECEIPT_APPROVAL'].includes(selectedItem.type) && (
                             <div className="p-4 bg-[#060f15] rounded-xl border border-[#3c4a46] flex items-center justify-between mt-6">
                               <div className="flex items-center gap-3">
@@ -273,6 +276,28 @@ function InboxNotificationCenter() {
                                 </div>
                               </div>
                               <button className="material-symbols-outlined text-[#bacac5] hover:text-[#57f1db] transition-colors">download</button>
+                            </div>
+                          )}
+
+                          {selectedItem.type === 'VENDOR_BID' && (
+                            <div className="p-4 bg-[#060f15] rounded-xl border border-[#3c4a46] flex flex-col gap-2 mt-6">
+                              <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-[#57f1db]">engineering</span>
+                                <div>
+                                  <p className="text-xs font-bold text-[#dae4ec]">ABC Inspections Bid Summary</p>
+                                  <p className="text-[10px] font-mono text-[#bacac5]">PROPOSAL // ELECTRICAL & GENERAL</p>
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4 mt-2 pt-2 border-t border-white/5 text-xs text-[#bacac5]">
+                                <div>
+                                  <p className="text-[10px] uppercase text-[#bacac5]/60 font-semibold">Proposed Service Date</p>
+                                  <p className="font-medium text-[#dae4ec]">Oct 30, 2023</p>
+                                </div>
+                                <div>
+                                  <p className="text-[10px] uppercase text-[#bacac5]/60 font-semibold">Payment Terms</p>
+                                  <p className="font-medium text-[#dae4ec]">Net 15 upon completion</p>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>

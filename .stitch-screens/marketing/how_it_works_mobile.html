@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - How It Works (Mobile)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#0b141a",
+            "outline": "#859490",
+            "outline-variant": "#3c4a46",
+            "on-surface": "#dae4ec",
+            "surface-container": "#182127",
+            "secondary-fixed-dim": "#adc6ff",
+            "inverse-primary": "#006b5f",
+            "on-primary": "#003731",
+            "on-primary-container": "#00574d",
+            "tertiary-fixed": "#ffdcc0",
+            "surface-variant": "#2d363d",
+            "on-secondary-fixed-variant": "#004395",
+            "tertiary-fixed-dim": "#ffb875",
+            "on-primary-fixed-variant": "#005047",
+            "surface-tint": "#3cddc7",
+            "on-tertiary": "#4b2800",
+            "on-error": "#690005",
+            "on-tertiary-fixed-variant": "#6b3b00",
+            "on-background": "#dae4ec",
+            "secondary-container": "#0566d9",
+            "inverse-surface": "#dae4ec",
+            "surface-container-low": "#141d23",
+            "on-surface-variant": "#bacac5",
+            "surface-container-high": "#222b32",
+            "secondary-fixed": "#d8e2ff",
+            "error-container": "#93000a",
+            "surface-container-highest": "#2d363d",
+            "surface-dim": "#0b141a",
+            "on-tertiary-fixed": "#2d1600",
+            "on-tertiary-container": "#744000",
+            "surface": "#0b141a",
+            "surface-bright": "#313a41",
+            "tertiary": "#ffd1aa",
+            "on-secondary": "#002e6a",
+            "on-secondary-container": "#e6ecff",
+            "surface-container-lowest": "#060f15",
+            "on-primary-fixed": "#00201c",
+            "primary-fixed-dim": "#3cddc7",
+            "on-error-container": "#ffdad6",
+            "tertiary-container": "#ffac5a",
+            "primary-fixed": "#62fae3",
+            "on-secondary-fixed": "#001a42",
+            "primary-container": "#2dd4bf",
+            "error": "#ffb4ab",
+            "inverse-on-surface": "#293238",
+            "secondary": "#adc6ff",
+            "primary": "#57f1db"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "unit": "8px",
+            "gutter-desktop": "24px",
+            "margin-desktop": "40px",
+            "margin-mobile": "20px",
+            "container-max": "1280px",
+            "stack-lg": "32px",
+            "gutter-mobile": "16px",
+            "stack-sm": "8px",
+            "stack-md": "16px"
+          },
+          "fontFamily": {
+            "body-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Plus Jakarta Sans"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-xl": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Plus Jakarta Sans"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+    }
+    
+    .glass-card {
+      background: linear-gradient(135deg, rgba(34, 43, 50, 0.6) 0%, rgba(20, 29, 35, 0.4) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .luminous-button {
+      box-shadow: 0 0 20px -5px theme('colors.primary');
+      transition: all 0.3s ease;
+    }
+    
+    .luminous-button:active {
+      box-shadow: 0 0 10px -2px theme('colors.primary');
+      transform: scale(0.98);
+    }
+    
+    /* Phase specific glows */
+    .glow-teal { box-shadow: inset 0 0 40px -20px theme('colors.primary'); }
+    .glow-blue { box-shadow: inset 0 0 40px -20px theme('colors.secondary-fixed-dim'); }
+    .glow-amber { box-shadow: inset 0 0 40px -20px theme('colors.tertiary-fixed-dim'); }
+    .glow-slate { box-shadow: inset 0 0 40px -20px theme('colors.on-surface'); }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased selection:bg-primary selection:text-on-primary">
+<div class="relative flex h-auto min-h-screen w-full flex-col max-w-[480px] mx-auto bg-surface overflow-x-hidden">
+<!-- Header Minimal (Back-to-Main Exception for Focused Views - though this is a destination, the prompt asked for a specific Focused View style redesign) -->
+<header class="sticky top-0 z-50 glass-card bg-surface/80 flex items-center justify-between p-4 pb-3">
+<div class="flex items-center gap-3">
+<div class="text-on-surface flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-container-high/50">
+<span class="material-symbols-outlined text-2xl" data-icon="List">list</span>
+</div>
+<h1 class="text-xl tracking-tight"><strong class="font-bold">Paper</strong><span class="font-normal text-on-surface-variant">Working</span></h1>
+</div>
+<div class="flex size-10 items-center justify-center rounded-full bg-surface-container-high/50">
+<span class="material-symbols-outlined text-xl" data-icon="User">verified_user</span>
+</div>
+</header>
+<main class="flex-1 px-4 py-6 flex flex-col gap-8">
+<!-- Hero Intro -->
+<section class="flex flex-col gap-4 text-center">
+<h2 class="text-headline-lg-mobile font-bold tracking-tight text-on-surface">How It Works</h2>
+<p class="text-body-md text-on-surface-variant">
+        PaperWorking replaces spreadsheets with one system organized around how deals actually work: four phases, acquisition through exit, with every dollar tracked along the way.
+      </p>
+</section>
+<!-- Phases Stack -->
+<div class="flex flex-col gap-6">
+<!-- Phase 1: Acquisition (Teal Accent) -->
+<article class="glass-card rounded-xl p-5 flex flex-col gap-4 glow-teal relative overflow-hidden">
+<!-- Background decorative blur -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<header class="flex items-center gap-3">
+<div class="flex size-8 items-center justify-center rounded-full bg-primary/20 text-primary font-bold text-sm">
+            01
+          </div>
+<h3 class="text-headline-md text-primary tracking-tight">Acquisition</h3>
+</header>
+<h4 class="text-label-md text-on-surface uppercase tracking-wider">The Capital Gateway</h4>
+<p class="text-body-sm text-on-surface-variant">
+          Source deals, generate offer letters, and collect capital commitments from your syndicate. No more toggling between CRMs, email threads, and shared drives to figure out where a deal stands.
+        </p>
+<!-- Video Placeholder -->
+<div class="relative w-full aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-pointer mt-2">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&amp;fit=crop&amp;q=80&amp;w=600')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-300" data-alt="A futuristic, dark-mode terminal dashboard displaying complex real estate acquisition data, illuminated by soft teal glowing charts and graphs. The scene is highly detailed, featuring translucent glass UI panels hovering over a deep navy slate background. The lighting is moody but technical, suggesting a high-end operating system."></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-12 rounded-full bg-surface-container-high/80 border border-primary/30 flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="Play_Arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+<div class="absolute bottom-2 left-2 right-2 flex justify-between items-center px-2 py-1 bg-surface-container/80 backdrop-blur-sm rounded text-[10px] text-on-surface-variant">
+<span>Watch Walkthrough</span>
+<span>2:15</span>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Offer Letters</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Capital Commitments</span>
+</div>
+</article>
+<!-- Phase 2: Purchase (Blue Accent) -->
+<article class="glass-card rounded-xl p-5 flex flex-col gap-4 glow-blue relative overflow-hidden">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary-fixed-dim/10 rounded-full blur-3xl pointer-events-none"></div>
+<header class="flex items-center gap-3">
+<div class="flex size-8 items-center justify-center rounded-full bg-secondary-fixed-dim/20 text-secondary-fixed-dim font-bold text-sm">
+            02
+          </div>
+<h3 class="text-headline-md text-secondary-fixed-dim tracking-tight">Purchase</h3>
+</header>
+<h4 class="text-label-md text-on-surface uppercase tracking-wider">The Compliance Vault</h4>
+<p class="text-body-sm text-on-surface-variant">
+          Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one place. You stop chasing PDFs through email and start closing on time.
+        </p>
+<!-- Video Placeholder -->
+<div class="relative w-full aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-pointer mt-2">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1560472354-b33ff0c44a43?auto=format&amp;fit=crop&amp;q=80&amp;w=600')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-300" data-alt="A conceptual rendering of a secure digital vault interface in a dark mode UI, glowing with deep secondary blue accents. Translucent glass panels float above a nocturnal slate background, displaying verified document icons and compliance checklists. The aesthetic is sleek, corporate, and highly secure, emphasizing data density and clarity."></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-12 rounded-full bg-surface-container-high/80 border border-secondary-fixed-dim/30 flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-secondary-fixed-dim text-2xl" data-icon="Play_Arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Loan Docs</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Contingency Deadlines</span>
+</div>
+</article>
+<!-- Phase 3: Hold (Amber Accent) -->
+<article class="glass-card rounded-xl p-5 flex flex-col gap-4 glow-amber relative overflow-hidden">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-tertiary-fixed-dim/10 rounded-full blur-3xl pointer-events-none"></div>
+<header class="flex items-center gap-3">
+<div class="flex size-8 items-center justify-center rounded-full bg-tertiary-fixed-dim/20 text-tertiary-fixed-dim font-bold text-sm">
+            03
+          </div>
+<h3 class="text-headline-md text-tertiary-fixed-dim tracking-tight">Hold</h3>
+</header>
+<h4 class="text-label-md text-on-surface uppercase tracking-wider">Margin Protection</h4>
+<p class="text-body-sm text-on-surface-variant">
+          Every day you hold a property, it costs you money. The platform tracks your daily burn rate down to the penny so you know exactly what each extra week on market does to your ROI.
+        </p>
+<!-- Video Placeholder -->
+<div class="relative w-full aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-pointer mt-2">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542435503-956c22a36b13?auto=format&amp;fit=crop&amp;q=80&amp;w=600')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-300" data-alt="A dark-themed financial dashboard highlighting daily burn rates and holding costs, lit by intense amber and warm orange accents. The interface features complex glassmorphic charts plotting real-time data against a deep black background. The mood is urgent but analytical, representing precision risk mitigation in real estate holding."></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-12 rounded-full bg-surface-container-high/80 border border-tertiary-fixed-dim/30 flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-2xl" data-icon="Play_Arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Daily Burn Rate</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Live ROI Impact</span>
+</div>
+</article>
+<!-- Phase 4: Exit (Slate/White Accent) -->
+<article class="glass-card rounded-xl p-5 flex flex-col gap-4 glow-slate relative overflow-hidden">
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-on-surface/5 rounded-full blur-3xl pointer-events-none"></div>
+<header class="flex items-center gap-3">
+<div class="flex size-8 items-center justify-center rounded-full bg-surface-container-highest text-on-surface font-bold text-sm border border-outline-variant">
+            04
+          </div>
+<h3 class="text-headline-md text-on-surface tracking-tight">Exit</h3>
+</header>
+<h4 class="text-label-md text-on-surface-variant uppercase tracking-wider">Financial Reconciliation</h4>
+<p class="text-body-sm text-on-surface-variant">
+          Sale or refi, the platform pulls every cost from Phases 1 through 3 and calculates your actual ROI, IRR, and cash-on-cash return. Export a one-page deal summary.
+        </p>
+<!-- Video Placeholder -->
+<div class="relative w-full aspect-video rounded-lg overflow-hidden border border-outline-variant group cursor-pointer mt-2">
+<div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&amp;fit=crop&amp;q=80&amp;w=600')] bg-cover bg-center opacity-40 group-hover:opacity-60 transition-opacity duration-300" data-alt="A minimalist, high-fidelity digital report summary in a dark mode environment, featuring stark white and slate gray typography on translucent glass backgrounds. The visual emphasizes final financial reconciliation, with crisp layout lines and high-contrast numerical data indicating successful real estate exit metrics. The overall feel is complete and final."></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-12 rounded-full bg-surface-container-high/80 border border-outline-variant flex items-center justify-center backdrop-blur-md group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-on-surface text-2xl" data-icon="Play_Arrow" data-weight="fill">play_arrow</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap gap-2 mt-1">
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Actual ROI / IRR</span>
+<span class="px-2.5 py-1 rounded bg-surface-container-high text-[11px] font-medium text-on-surface">Tax-ready Export</span>
+</div>
+</article>
+</div>
+<!-- Call to Action -->
+<div class="mt-8 mb-6">
+<button class="luminous-button w-full bg-primary text-on-primary py-4 px-6 rounded-full font-bold text-body-md flex items-center justify-center gap-2">
+        Start Your 14-Day Trial
+        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-center text-label-sm text-on-surface-variant mt-3">
+        Credit card required · No charge until day 15
+      </p>
+</div>
+</main>
+<!-- Shared Bottom Nav (Since this is a primary explanatory page, not a focused task flow, navigation is appropriate) -->
+<div class="flex gap-2 border-t border-outline-variant bg-surface-container-low px-4 pb-4 pt-3 mt-auto sticky bottom-0 z-50">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-on-surface-variant" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Dashboard">dashboard</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Dashboard</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 rounded-lg text-primary bg-primary/10 py-1" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Account_Tree" data-weight="fill">account_tree</span>
+</div>
+<p class="text-[10px] font-bold leading-normal tracking-wide">How It Works</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-on-surface-variant" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Payments">payments</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Pricing</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-on-surface-variant" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined text-2xl" data-icon="Article">article</span>
+</div>
+<p class="text-[10px] font-medium leading-normal tracking-wide">News</p>
+</a>
+</div>
+</div>
+</body></html>

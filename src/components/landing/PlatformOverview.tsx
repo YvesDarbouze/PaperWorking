@@ -3,88 +3,98 @@
 import React from 'react';
 
 /* ═══════════════════════════════════════════════════════
-   PlatformOverview — REIL Phases + Risk Mitigation
+   PlatformOverview — Stitch Obsidian Edition
 
-   Matches "PaperWorking Landing Page (Desktop Redesign)"
-   Stitch screen. 4-column glass-panel grid with Material
-   Symbols, plus "Stop Profit Erosion" callout.
+   4-phase REIL overview cards matching the Stitch landing
+   design. Each card uses glass-card with phase number
+   watermark, icon circle, and conversion-oriented copy.
    ═══════════════════════════════════════════════════════ */
 
 const PHASES = [
   {
-    label: 'Find More Deals',
-    body: 'Stop losing leads to competitors. Track opportunities effortlessly.',
-    icon: 'radar',
+    number: '01',
+    title: 'Acquisition',
+    subtitle: 'The Capital Gateway',
+    body: 'Source deals, generate offer letters, and collect capital commitments from your syndicate. No more toggling between CRMs, email threads, and shared drives.',
+    icon: 'search',
   },
   {
-    label: 'Professionalize',
-    body: 'Ditch spreadsheets. Present a polished front to lenders & partners.',
-    icon: 'business_center',
+    number: '02',
+    title: 'Purchase',
+    subtitle: 'The Compliance Vault',
+    body: 'Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one place. Stop chasing PDFs through email.',
+    icon: 'gavel',
   },
   {
-    label: 'Manage Projects',
-    body: 'Track rehab costs in real-time. Never go over budget blindly.',
-    icon: 'construction',
+    number: '03',
+    title: 'Hold',
+    subtitle: 'Margin Protection',
+    body: 'The platform tracks your daily burn rate down to the penny so you know exactly what each extra week on market does to your ROI.',
+    icon: 'shield',
   },
   {
-    label: 'Save Money',
-    body: 'Automate docs and compliance to close faster with zero friction.',
-    icon: 'savings',
+    number: '04',
+    title: 'Exit',
+    subtitle: 'Financial Reconciliation',
+    body: 'Calculates your actual ROI, IRR, and cash-on-cash return. Export a one-page deal summary or tax-ready CSV for your CPA.',
+    icon: 'account_balance',
   },
 ];
 
 export default function PlatformOverview() {
   return (
-    <>
-      {/* ── REIL Phases Section ── */}
-      <section
-        id="how-it-works"
-        className="max-w-container-max mx-auto px-margin-mobile md:px-gutter-desktop py-stack-lg md:py-0 md:mb-32"
-      >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
-          {PHASES.map((phase) => (
-            <div
-              key={phase.label}
-              className="glass-panel p-4 md:p-8 rounded-xl border border-white/5 md:border-primary/10 hover:border-primary/30 transition-all group"
-            >
-              {/* Icon */}
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform">
-                <span
-                  className="material-symbols-outlined text-primary text-xl md:text-2xl"
-                  style={{ fontVariationSettings: "'FILL' 0" }}
-                >
-                  {phase.icon}
-                </span>
-              </div>
+    <section
+      id="how-it-works"
+      className="max-w-container-max mx-auto px-5 md:px-6 lg:px-8 py-24 md:py-32 scroll-mt-24 relative"
+    >
+      {/* Section header — left-aligned per Stitch */}
+      <div className="text-center mb-12 md:mb-16 max-w-2xl mx-auto">
+        <h2 className="text-[28px] md:text-[32px] leading-tight font-bold tracking-tight text-on-surface mb-4">
+          Platform Overview
+        </h2>
+        <p className="text-base text-on-surface-variant leading-relaxed">
+          Most investors manage six- and seven-figure deals on spreadsheets
+          that break when you add a column. PaperWorking replaces that mess
+          with one system organized around how deals actually work: four
+          phases, acquisition through exit, with every dollar tracked along
+          the way.
+        </p>
+      </div>
 
-              {/* Title */}
-              <h3 className="font-label-md md:font-headline-md text-on-surface mb-1 md:mb-2">
-                {phase.label}
-              </h3>
-
-              {/* Description */}
-              <p className="text-[12px] md:text-base md:font-body-sm leading-tight md:leading-normal text-on-surface-variant">
-                {phase.body}
-              </p>
+      {/* 4-Phase cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+        {PHASES.map((phase) => (
+          <div
+            key={phase.number}
+            className="glass-card rounded-xl p-6 group relative overflow-hidden hover:-translate-y-1 transition-transform duration-300"
+          >
+            {/* Watermark number */}
+            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <span className="text-[48px] leading-[56px] font-bold tracking-tight">
+                {phase.number}
+              </span>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* ── Risk Mitigation Callout ── */}
-      <section className="max-w-4xl mx-auto px-margin-mobile md:px-gutter-desktop py-stack-lg md:py-0 md:mb-32">
-        <div className="glass-panel p-stack-lg md:p-12 rounded-2xl text-center border-t-4 md:border-t-2 border-t-primary md:border-t-primary/40 relative overflow-hidden">
-          {/* Decorative glow */}
-          <div className="hidden md:block absolute -right-20 -top-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+            {/* Icon circle */}
+            <div className="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+              <span className="material-symbols-outlined text-primary">
+                {phase.icon}
+              </span>
+            </div>
 
-          <h2 className="font-headline-md md:font-headline-lg text-primary mb-2 md:mb-6 relative z-10">
-            Stop Bleeding Your Margins Dry.
-          </h2>
-          <p className="font-body-md md:font-body-lg text-on-surface max-w-2xl mx-auto mb-0 relative z-10">
-            Every day you rely on fragmented spreadsheets, you risk costly mistakes. Upgrade to a single, high-fidelity operating system built for serious investors.
-          </p>
-        </div>
-      </section>
-    </>
+            {/* Text content */}
+            <h3 className="text-2xl font-semibold text-on-surface mb-1">
+              {phase.title}
+            </h3>
+            <h4 className="text-xs font-semibold uppercase tracking-[0.05em] text-primary mb-3">
+              {phase.subtitle}
+            </h4>
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              {phase.body}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

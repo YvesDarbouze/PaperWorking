@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Desktop Data Room / Insights</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Scrollbar for a premium feel */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(24, 33, 39, 0.4); /* surface-container */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 20px rgba(87, 241, 219, 0.4);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#d8e2ff",
+                        "background": "#0b141a",
+                        "surface-container-low": "#141d23",
+                        "surface-container": "#182127",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#3cddc7",
+                        "surface-container-lowest": "#060f15",
+                        "on-tertiary": "#4b2800",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-surface": "#dae4ec",
+                        "on-primary-container": "#00574d",
+                        "secondary": "#adc6ff",
+                        "inverse-primary": "#006b5f",
+                        "tertiary": "#ffd1aa",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-secondary-fixed": "#001a42",
+                        "surface": "#0b141a",
+                        "on-error": "#690005",
+                        "surface-container-highest": "#2d363d",
+                        "on-surface-variant": "#bacac5",
+                        "on-secondary": "#002e6a",
+                        "surface-container-high": "#222b32",
+                        "on-primary": "#003731",
+                        "on-background": "#dae4ec",
+                        "primary-fixed": "#62fae3",
+                        "secondary-container": "#0566d9",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-secondary-container": "#e6ecff",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-variant": "#2d363d",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#00201c",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#2d1600",
+                        "surface-bright": "#313a41",
+                        "surface-dim": "#0b141a",
+                        "outline-variant": "#3c4a46",
+                        "outline": "#859490",
+                        "primary": "#57f1db",
+                        "inverse-on-surface": "#293238",
+                        "tertiary-fixed": "#ffdcc0",
+                        "tertiary-container": "#ffac5a",
+                        "on-tertiary-container": "#744000",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-surface": "#dae4ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "gutter-desktop": "24px",
+                        "unit": "8px",
+                        "margin-desktop": "40px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface antialiased min-h-screen selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-none flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16 transition-all duration-300">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl">terminal</span>
+<span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary uppercase hidden sm:block">PRO-ANALYSIS TERMINAL</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center hover:bg-white/5 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-container/20 border border-primary/30 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-white/5 transition-colors active:scale-95 duration-150">
+<span class="font-label-sm text-label-sm text-primary">US</span>
+</div>
+</div>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<nav class="fixed inset-y-0 left-0 hidden lg:flex flex-col bg-surface-container-lowest/90 backdrop-blur-2xl h-full w-72 border-r border-outline-variant/20 shadow-2xl shadow-primary/5 pt-20 pb-6 z-40 transition-all duration-300 ease-in-out">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md text-primary tracking-tight">TERMINAL_SYSTEM_v1.0</h2>
+</div>
+<div class="flex-1 flex flex-col gap-2 px-3 overflow-y-auto">
+<a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 rounded-lg hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">grid_view</span>
+<span class="font-label-md text-label-md group-hover:text-on-surface transition-colors">Dashboard</span>
+</a>
+<!-- Active Tab: Market Analysis / Data Room equivalent -->
+<a class="bg-primary-container/20 text-primary border-r-2 border-primary px-4 py-3 flex items-center gap-3 rounded-lg hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined fill">analytics</span>
+<span class="font-label-md text-label-md">Market Analysis</span>
+</a>
+<a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 rounded-lg hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">calculate</span>
+<span class="font-label-md text-label-md group-hover:text-on-surface transition-colors">Deal Calculator</span>
+</a>
+<a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 rounded-lg hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">account_tree</span>
+<span class="font-label-md text-label-md group-hover:text-on-surface transition-colors">Active Projects</span>
+</a>
+<a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 rounded-lg hover:bg-white/5 transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-on-surface transition-colors">inventory_2</span>
+<span class="font-label-md text-label-md group-hover:text-on-surface transition-colors">Archive</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-24 lg:pb-8 lg:pl-72 px-margin-mobile md:px-margin-desktop min-h-screen max-w-container-max mx-auto w-full">
+<!-- Header & Toggles Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-stack-md mb-stack-lg">
+<div>
+<!-- Specific Logotype Request -->
+<div class="flex items-baseline gap-1 mb-2">
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">Paper</span>
+<span class="font-headline-lg text-headline-lg font-light text-on-surface-variant tracking-wider">Working</span>
+</div>
+<h1 class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#57f1db]"></span>
+                    Deep Telemetry: Portfolio Performance
+                </h1>
+</div>
+<!-- Segmented Controls / Toggles -->
+<div class="flex flex-col sm:flex-row gap-4">
+<!-- Scope Toggle -->
+<div class="glass-panel p-1 rounded-lg flex items-center">
+<button class="px-4 py-1.5 rounded-md bg-white/10 border border-white/5 shadow-sm font-label-sm text-label-sm text-on-surface transition-all">Property</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all">My Share</button>
+</div>
+<!-- Time Toggle -->
+<div class="glass-panel p-1 rounded-lg flex items-center">
+<button class="px-4 py-1.5 rounded-md bg-white/10 border border-white/5 shadow-sm font-label-sm text-label-sm text-on-surface transition-all">Yearly</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-all">Quarterly</button>
+</div>
+</div>
+</div>
+<!-- Bento Grid: High-Density Layout -->
+<div class="grid grid-cols-12 gap-stack-md lg:gap-gutter-desktop">
+<!-- NOI Card -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-xl p-stack-md relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Net Operating Income</h3>
+<span class="material-symbols-outlined text-on-surface-variant/50 text-sm">info</span>
+</div>
+<div class="relative z-10">
+<div class="font-headline-xl text-headline-xl text-on-surface mb-2 tracking-tighter">$4.2M</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[12px]">trending_up</span>
+<span class="font-label-sm text-label-sm text-primary">+12.4%</span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">YoY Trend</span>
+</div>
+</div>
+<!-- Sparkline abstraction -->
+<div class="mt-6 h-12 flex items-end gap-1 opacity-60">
+<div class="w-full bg-primary/20 h-[30%] rounded-t-sm"></div>
+<div class="w-full bg-primary/30 h-[45%] rounded-t-sm"></div>
+<div class="w-full bg-primary/40 h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-primary/60 h-[80%] rounded-t-sm"></div>
+<div class="w-full bg-primary h-full rounded-t-sm shadow-[0_0_10px_rgba(87,241,219,0.3)]"></div>
+</div>
+</div>
+<!-- Cash Flow Position -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-xl p-stack-md relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cash Flow Position</h3>
+<span class="material-symbols-outlined text-on-surface-variant/50 text-sm">account_balance_wallet</span>
+</div>
+<div class="font-headline-xl text-headline-xl text-on-surface mb-2 tracking-tighter">$1.8M</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full mt-6 overflow-hidden border border-white/5">
+<div class="bg-gradient-to-r from-primary-container to-primary h-full rounded-full w-[70%] relative">
+<div class="absolute right-0 top-0 h-full w-4 bg-white/30 blur-[2px]"></div>
+</div>
+</div>
+<div class="flex justify-between mt-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Current: 70% of target</span>
+<span class="font-label-sm text-label-sm text-primary">Target: $2.5M</span>
+</div>
+</div>
+<!-- Cap Rate Gauge -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-xl p-stack-md flex flex-col items-center justify-center relative">
+<div class="absolute top-4 left-4">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cap Rate</h3>
+</div>
+<div class="relative w-32 h-32 mt-6 flex items-center justify-center">
+<!-- Simple SVG Gauge -->
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="rgba(255,255,255,0.05)" stroke-width="8"></circle>
+<circle class="drop-shadow-[0_0_8px_rgba(87,241,219,0.5)]" cx="50" cy="50" fill="transparent" r="45" stroke="#57f1db" stroke-dasharray="282.7" stroke-dashoffset="80" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="font-headline-lg text-headline-lg text-on-surface glow-text">5.8%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Avg</span>
+</div>
+</div>
+</div>
+<!-- IRR Scenarios (Wider Card) -->
+<div class="col-span-12 lg:col-span-8 glass-panel rounded-xl p-stack-md">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">IRR Scenarios (5-Year Hold)</h3>
+<button class="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors flex items-center gap-1">
+                        Run Model <span class="material-symbols-outlined text-[14px]">play_arrow</span>
+</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<!-- Worst Case -->
+<div class="p-4 rounded-lg bg-surface-container-low border border-white/5 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full w-1 bg-error/50"></div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-1">Worst Case</h4>
+<div class="font-headline-md text-headline-md text-on-surface">11.2%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-2 opacity-70">Recession context</div>
+</div>
+<!-- Base Case -->
+<div class="p-4 rounded-lg bg-primary/5 border border-primary/20 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full w-1 bg-primary"></div>
+<h4 class="font-label-sm text-label-sm text-primary mb-1">Base Case</h4>
+<div class="font-headline-md text-headline-md text-on-surface glow-text">16.4%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-2 opacity-70">Current market trend</div>
+</div>
+<!-- Best Case -->
+<div class="p-4 rounded-lg bg-surface-container-low border border-white/5 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full w-1 bg-secondary"></div>
+<h4 class="font-label-sm text-label-sm text-on-surface-variant mb-1">Best Case</h4>
+<div class="font-headline-md text-headline-md text-on-surface">21.8%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-2 opacity-70">Optimistic growth</div>
+</div>
+</div>
+</div>
+<!-- DSCR Threshold Gauge -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 glass-panel rounded-xl p-stack-md flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">DSCR</h3>
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_5px_#57f1db]"></div>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mb-6">Debt Service Coverage Ratio</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="font-headline-lg text-headline-lg text-on-surface">1.45x</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mb-1">Safe Zone (&gt;1.25x)</span>
+</div>
+<!-- Threshold Bar -->
+<div class="relative h-3 w-full bg-surface-container-highest rounded-full overflow-hidden border border-white/5">
+<!-- Danger zone -->
+<div class="absolute left-0 top-0 h-full w-[25%] bg-error/20"></div>
+<!-- Warning zone -->
+<div class="absolute left-[25%] top-0 h-full w-[25%] bg-tertiary/20"></div>
+<!-- Safe zone -->
+<div class="absolute left-[50%] top-0 h-full w-[50%] bg-primary/10"></div>
+<!-- Value Indicator -->
+<div class="absolute left-[70%] top-0 h-full w-2 bg-primary rounded-full shadow-[0_0_8px_#57f1db] z-10 border border-background"></div>
+</div>
+<div class="flex justify-between mt-1 px-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant/50 text-[10px]">1.0x</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant/50 text-[10px]">1.25x</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant/50 text-[10px]">1.5x+</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full lg:hidden bg-surface-container-low/80 backdrop-blur-lg border-t border-outline-variant/30 shadow-none flex justify-around items-center h-16 px-gutter-mobile z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">calculate</span>
+<span class="font-label-sm text-label-sm-mobile">Calc</span>
+</a>
+<!-- Active Tab Mapping for Mobile (Deals/Analytics) -->
+<a class="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl px-3 py-1" href="#">
+<span class="material-symbols-outlined fill mb-1">analytics</span>
+<span class="font-label-sm text-label-sm-mobile">Deals</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">folder_special</span>
+<span class="font-label-sm text-label-sm-mobile">Projects</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-sm text-label-sm-mobile">Settings</span>
+</a>
+</nav>
+</body></html>

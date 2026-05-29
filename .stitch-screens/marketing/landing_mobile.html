@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking | Real Estate Investment Operating System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#00574d",
+                        "inverse-surface": "#dae4ec",
+                        "surface-container-low": "#141d23",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-container": "#182127",
+                        "on-background": "#dae4ec",
+                        "secondary-container": "#0566d9",
+                        "inverse-on-surface": "#293238",
+                        "surface-container-highest": "#2d363d",
+                        "error-container": "#93000a",
+                        "tertiary": "#ffd1aa",
+                        "primary-fixed": "#62fae3",
+                        "secondary": "#adc6ff",
+                        "primary-fixed-dim": "#3cddc7",
+                        "tertiary-container": "#ffac5a",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary-fixed": "#00201c",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#060f15",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-container": "#e6ecff",
+                        "surface-tint": "#3cddc7",
+                        "surface-variant": "#2d363d",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "background": "#0b141a",
+                        "surface": "#0b141a",
+                        "on-tertiary": "#4b2800",
+                        "error": "#ffb4ab",
+                        "outline": "#859490",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface-container-high": "#222b32",
+                        "surface-dim": "#0b141a",
+                        "on-tertiary-fixed": "#2d1600",
+                        "inverse-primary": "#006b5f",
+                        "primary": "#57f1db",
+                        "outline-variant": "#3c4a46",
+                        "surface-bright": "#313a41",
+                        "on-primary": "#003731",
+                        "on-surface": "#dae4ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-desktop": "24px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: linear-gradient(135deg, rgba(34, 43, 50, 0.4) 0%, rgba(20, 29, 35, 0.8) 100%);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .luminous-button {
+            box-shadow: 0 0 20px -5px theme('colors.primary');
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(87, 241, 219, 0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col selection:bg-primary/30 selection:text-primary">
+<!-- TopAppBar -->
+<header class="bg-background/80 backdrop-blur-xl dark:bg-background/80 fixed top-0 w-full z-50 border-b border-white/10 shadow-2xl">
+<div class="flex justify-between items-center h-16 px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-headline-md text-headline-md text-on-surface dark:text-on-surface uppercase tracking-tighter">
+<span class="font-bold">Paper</span><span class="font-light">Working</span>
+</span>
+</div>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-on-surface-variant font-light hover:text-primary transition-colors duration-300" href="#how-it-works">How It Works</a>
+<a class="text-on-surface-variant font-light hover:text-primary transition-colors duration-300" href="#pricing">Pricing</a>
+<a class="text-on-surface-variant font-light hover:text-primary transition-colors duration-300" href="/dashboard">Dashboard</a>
+</nav>
+<button class="font-label-md text-label-md bg-primary text-on-primary px-4 py-2 rounded-full luminous-button hover:bg-primary-fixed transition-colors duration-300 cursor-pointer active:scale-95">
+                Sign In
+            </button>
+</div>
+</header>
+<!-- NavigationDrawer (Mobile Only - visually hidden for this static page unless triggered via JS, but present per JSON) -->
+<aside class="hidden bg-surface-container-low/95 backdrop-blur-2xl dark:bg-surface-container-low/95 fixed inset-y-0 right-0 w-80 z-[60] border-l border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] flex flex-col h-full pt-20 pb-8 transform transition-transform duration-300 ease-in-out translate-x-full" id="mobile-drawer">
+<div class="px-6 pb-6 border-b border-white/10">
+<h2 class="font-headline-lg text-headline-lg text-primary dark:text-primary">Menu</h2>
+</div>
+<nav class="flex-1 mt-6 flex flex-col">
+<a class="flex items-center gap-4 bg-primary/10 text-primary border-r-4 border-primary px-6 py-4 hover:bg-white/5 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-lg text-body-lg">Overview</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-4 hover:bg-white/5 transition-all" href="#how-it-works">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-lg text-body-lg">How It Works</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-4 hover:bg-white/5 transition-all" href="#pricing">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-body-lg text-body-lg">Pricing</span>
+</a>
+<a class="flex items-center gap-4 text-on-surface-variant px-6 py-4 hover:bg-white/5 transition-all" href="#contact">
+<span class="material-symbols-outlined">mail</span>
+<span class="font-body-lg text-body-lg">Contact</span>
+</a>
+</nav>
+</aside>
+<main class="flex-1 pt-24 pb-stack-lg">
+<!-- Hero Section -->
+<section class="px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto py-stack-lg md:py-margin-desktop flex flex-col items-center text-center relative">
+<!-- Abstract background glow -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-primary/10 blur-[120px] rounded-full z-0 pointer-events-none"></div>
+<div class="relative z-10 max-w-3xl flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-stack-sm glass-card px-3 py-1 rounded-full inline-block">The Real Estate Investment Operating System</span>
+<h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-on-surface mb-stack-md leading-tight">
+                    Stop bleeding margins to <span class="text-primary text-glow">disorganized deals.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-2xl mx-auto">
+                    The REI Operating System that centralizes your pipeline, tracks real-time costs, and automates closing docs so you can close faster and scale without the chaos.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
+<button class="w-full sm:w-auto font-label-md text-label-md bg-primary text-on-primary px-8 py-4 rounded-full luminous-button hover:bg-primary-fixed transition-all duration-300 active:scale-95 flex items-center justify-center gap-2 group">
+                        Start Your 14-Day Trial
+                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant/70 mt-4">14-day trial · Credit card required · No charge until day 15</p>
+</div>
+<!-- Stats/Trust Bento -->
+<div class="w-full mt-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-stack-md relative z-10">
+<div class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center text-center hover:bg-surface-container-low/80 transition-colors">
+<span class="font-headline-lg text-headline-lg text-primary">$2.4B+</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mt-1">Capital Tracked</span>
+</div>
+<div class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center text-center hover:bg-surface-container-low/80 transition-colors">
+<span class="font-headline-lg text-headline-lg text-primary">12,000+</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mt-1">Active Deals</span>
+</div>
+<div class="glass-card rounded-xl p-stack-md flex flex-col items-center justify-center text-center hover:bg-surface-container-low/80 transition-colors">
+<span class="font-headline-lg text-headline-lg text-primary">4 Phases</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mt-1">End-to-End</span>
+</div>
+</div>
+</section>
+<!-- Platform Overview Section -->
+<section class="px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto py-margin-desktop relative" id="how-it-works">
+<div class="text-center mb-stack-lg max-w-2xl mx-auto">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-stack-sm">Platform Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Most investors manage six- and seven-figure deals on spreadsheets that break when you add a column. PaperWorking replaces that mess with one system organized around how deals actually work: four phases, acquisition through exit, with every dollar tracked along the way.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-stack-md">
+<!-- Phase 1 -->
+<div class="glass-card rounded-xl p-stack-md group relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="font-headline-xl text-headline-xl">01</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-stack-sm group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">search</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Acquisition</h3>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-stack-sm">The Capital Gateway</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Source deals, generate offer letters, and collect capital commitments from your syndicate. No more toggling between CRMs, email threads, and shared drives.</p>
+</div>
+<!-- Phase 2 -->
+<div class="glass-card rounded-xl p-stack-md group relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="font-headline-xl text-headline-xl">02</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-stack-sm group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">gavel</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Purchase</h3>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-stack-sm">The Compliance Vault</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one place. Stop chasing PDFs through email.</p>
+</div>
+<!-- Phase 3 -->
+<div class="glass-card rounded-xl p-stack-md group relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="font-headline-xl text-headline-xl">03</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-stack-sm group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Hold</h3>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-stack-sm">Margin Protection</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">The platform tracks your daily burn rate down to the penny so you know exactly what each extra week on market does to your ROI.</p>
+</div>
+<!-- Phase 4 -->
+<div class="glass-card rounded-xl p-stack-md group relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="font-headline-xl text-headline-xl">04</span>
+</div>
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-stack-sm group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary">account_balance</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Exit</h3>
+<h4 class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-stack-sm">Financial Reconciliation</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Calculates your actual ROI, IRR, and cash-on-cash return. Export a one-page deal summary or tax-ready CSV for your CPA.</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest relative w-full mt-stack-lg border-t border-white/5 py-margin-desktop px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-md">
+<div class="flex flex-col gap-stack-sm">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-headline-md text-headline-md text-on-surface dark:text-on-surface uppercase tracking-tighter">
+<span class="font-bold">Paper</span><span class="font-light">Working</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80">
+                    © 2024 PaperWorking. All rights reserved.
+                </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant opacity-80 mt-2 max-w-xs">
+                    Deal pipeline, rehab tracking, and closing docs — all in one place. Built for serious real estate investors.
+                </p>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-2">Product</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="#how-it-works">How It Works</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="#pricing">Pricing</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="/dashboard">Dashboard</a>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-2">Company</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="/about">About</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="/contact">Contact</a>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-2">Legal</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="/privacy">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary underline decoration-primary/30 transition-all opacity-80 hover:opacity-100" href="/terms">Terms of Service</a>
+</div>
+</div>
+</footer>
+</body></html>

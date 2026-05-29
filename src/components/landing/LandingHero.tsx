@@ -1,60 +1,63 @@
 import Link from 'next/link';
+import TrustBar from '@/components/landing/TrustBar';
 
 /* ═══════════════════════════════════════════════════════
-   LandingHero — Stitch-aligned centered hero.
+   LandingHero — Stitch Obsidian Edition.
 
-   Matches "PaperWorking Landing Page (Desktop Redesign)"
-   screen from Stitch project 11643693106955298243.
-   
-   Centered text-only layout with CTA buttons.
+   Centered hero with:
+   • Glass-pill badge ("The Real Estate Investment Operating System")
+   • Headline with text-glow on "disorganized deals."
+   • Outcome-focused sub-copy
+   • Luminous CTA → /register
+   • Trust stats bento grid
    ═══════════════════════════════════════════════════════ */
 
 export default function LandingHero() {
   return (
-    <section className="dark relative flex items-center justify-center pt-stack-xl md:pt-32 pb-stack-lg md:pb-24 bg-background overflow-hidden w-full terminal-grid">
-      {/* Ambient glow */}
-      <div className="ambient-glow" />
+    <section className="relative flex flex-col items-center justify-center pt-28 md:pt-40 pb-16 md:pb-24 overflow-hidden w-full">
+      {/* Abstract background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-primary/10 blur-[120px] rounded-full z-0 pointer-events-none" />
 
       {/* Content — centered single column */}
-      <div className="relative z-20 max-w-md md:max-w-container-max mx-auto px-margin-mobile md:px-gutter-desktop w-full text-center mt-0 md:mt-20 mb-32">
+      <div className="relative z-10 max-w-3xl mx-auto px-5 md:px-6 w-full flex flex-col items-center text-center">
+        {/* Badge */}
+        <span className="text-xs font-semibold uppercase tracking-[0.05em] text-primary glass-card px-3 py-1 rounded-full inline-block mb-6">
+          The Real Estate Investment Operating System
+        </span>
 
-        {/* Live badge */}
-        <div className="inline-flex items-center gap-2 glass-panel px-4 py-2 rounded-full mb-8">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
-            The Real Estate Investment Operating System
-          </span>
-        </div>
-
-        {/* Title */}
-        <h1 className="font-headline-xl text-headline-xl max-w-4xl mx-auto mb-6 text-on-surface leading-tight tracking-tight">
-          Stop losing sleep over <br className="hidden md:block" />
-          <span className="luminous-text font-extrabold">disorganized deals.</span>
+        {/* Headline */}
+        <h1 className="text-[28px] md:text-[48px] leading-[36px] md:leading-[56px] font-bold tracking-tight text-on-surface mb-4 max-w-4xl">
+          Stop bleeding margins to{' '}
+          <span className="text-primary text-glow">disorganized deals.</span>
         </h1>
 
         {/* Sub-copy */}
-        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-10 px-2 md:px-0">
-          Every day a project sits idle, holding costs eat your profits. PaperWorking professionalizes your entire operation—centralizing your pipeline, tracking rehab costs in real-time, and automating docs. Save money, manage projects effortlessly, and free up your time to find more deals.
+        <p className="text-base md:text-lg text-on-surface-variant max-w-2xl mx-auto mb-8 leading-relaxed">
+          The REI Operating System that centralizes your pipeline, tracks
+          real-time costs, and automates closing docs so you can close faster
+          and scale without the chaos.
         </p>
 
-        {/* CTAs */}
-        <div className="flex flex-col items-center justify-center gap-4">
-          <Link
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto mb-4">
+          <a
             href="/register"
-            className="luminous-button px-8 py-4 rounded-lg font-label-md text-label-md text-lg inline-flex items-center gap-2"
+            className="w-full sm:w-auto luminous-button px-8 py-4 rounded-full text-sm font-semibold flex items-center justify-center gap-2 group"
           >
             Start Your 14-Day Trial
-            <span
-              className="material-symbols-outlined"
-              style={{ fontVariationSettings: "'FILL' 0" }}
-            >
+            <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
               arrow_forward
             </span>
-          </Link>
-          <span className="font-body-sm text-body-sm text-on-surface-variant/60">
-            14-day trial. Credit card required. No charge until day 15.
-          </span>
+          </a>
         </div>
+        <p className="text-sm text-on-surface-variant/70">
+          14-day trial · Credit card required · No charge until day 15
+        </p>
+      </div>
+
+      {/* Trust stats bento */}
+      <div className="relative z-10 max-w-container-max mx-auto px-5 md:px-6 w-full mt-16 md:mt-20">
+        <TrustBar />
       </div>
     </section>
   );

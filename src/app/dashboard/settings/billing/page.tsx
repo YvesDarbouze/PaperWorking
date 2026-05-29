@@ -116,86 +116,111 @@ export default function BillingSettingsPage() {
 
   return (
     <div className="w-full space-y-8">
-      {/* ─── Bento Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
-        
-        {/* Subscription Status Card */}
-        <section className="lg:col-span-8 glass-card glass-card-bright p-8 rounded-2xl flex flex-col justify-between min-h-[280px]">
-          <div>
-            <div className="flex justify-between items-start mb-stack-lg">
+      {/* ─── 12-Column Bento Grid ─── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        {/* ━━━ 1. Hero Plan Card (col-span-8) ━━━ */}
+        <section className="lg:col-span-8 glass-card rounded-2xl p-8 relative overflow-hidden min-h-[280px] flex flex-col justify-between">
+          {/* Glow blob */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-pw-primary/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
               <div>
-                <span className="inline-block px-3 py-1 rounded-full bg-pw-primary/20 text-pw-primary text-[10px] font-extrabold uppercase tracking-widest mb-2 border border-pw-primary/20">Current Active Plan</span>
-                <h3 className="font-headline-md text-headline-md text-pw-black">{planInfo.label}</h3>
-                <p className="font-body-md text-body-md text-pw-muted">{planInfo.price}{planInfo.period} USD / month</p>
+                <span className="inline-block px-3 py-1 bg-pw-primary/10 text-pw-primary text-[10px] font-extrabold uppercase tracking-widest rounded-full border border-pw-primary/20 mb-3">
+                  Current Plan
+                </span>
+                <h3 className="text-3xl font-bold text-pw-black flex items-center gap-3">
+                  {planInfo.label}
+                  <span className="material-symbols-outlined text-pw-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                </h3>
               </div>
-              <div className="text-right">
-                <p className="text-[12px] text-pw-muted mb-1">Next Billing Date</p>
-                <p className="font-label-md text-label-md text-pw-black">{nextBillingStr}</p>
+              <div className="text-left md:text-right">
+                <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Next Billing Date</p>
+                <p className="font-headline-md text-headline-md text-pw-black">{nextBillingStr}</p>
+                <p className="font-body-md text-body-md text-pw-muted mt-1">{planInfo.price}{planInfo.period} USD / month</p>
               </div>
             </div>
-            
-            {/* Seat Usage */}
+
+            {/* Seat Usage Meter */}
             {plan !== 'None' && (
-              <div className="mb-stack-md">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-label-md text-label-md text-pw-black">Seat Usage</span>
-                  <span className="font-label-md text-label-md text-pw-muted">
-                    <span className="text-pw-primary font-bold">{seatsUsed}</span> / {maxSeats} seats used
-                  </span>
+              <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <h4 className="font-label-md text-label-md text-pw-black mb-1">Seat Usage</h4>
+                    <p className="font-body-sm text-body-sm text-pw-muted">
+                      <span className="text-pw-primary font-bold">{seatsUsed}</span> of {maxSeats} Active Seats
+                    </p>
+                  </div>
                 </div>
-                <div className="w-full h-2 bg-pw-glass-bg border border-pw-border rounded-full overflow-hidden flex">
-                  {/* Active Seats */}
-                  <div className="h-full bg-pw-primary glow-accent" style={{ width: `${(seatsUsed / maxSeats) * 100}%` }}></div>
+                {/* Progress Bar */}
+                <div className="h-3 w-full rounded-full bg-pw-glass-bg overflow-hidden shadow-inner">
+                  <div
+                    className="h-full bg-pw-primary rounded-full shadow-[0_0_12px_theme(colors.pw-primary/0.5)] transition-all duration-500"
+                    style={{ width: `${(seatsUsed / maxSeats) * 100}%` }}
+                  />
+                </div>
+                <div className="mt-6 flex justify-between items-center">
+                  <button className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
+                    <span className="material-symbols-outlined text-[18px]">group_add</span> Manage Team
+                  </button>
+                  <button
+                    onClick={openPortal}
+                    disabled={portalLoading}
+                    className="luminous-button px-6 py-2.5 rounded-lg font-label-md text-label-md font-bold disabled:opacity-50 cursor-pointer flex items-center gap-2"
+                  >
+                    {portalLoading ? (
+                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-[18px] select-none">add</span>
+                    )}
+                    {portalLoading ? 'Synchronizing…' : 'Add Seats'}
+                  </button>
                 </div>
               </div>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row gap-stack-md mt-4">
-            <button
-              onClick={openPortal}
-              disabled={portalLoading}
-              className="luminous-button px-6 py-3 rounded-xl font-label-md text-label-md font-bold disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-            >
-              {portalLoading ? (
-                <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
-              ) : (
-                <span className="material-symbols-outlined text-sm select-none">open_in_new</span>
-              )}
-              {portalLoading ? 'Synchronizing…' : 'Manage Subscription'}
-            </button>
-          </div>
+
+          {/* Manage Subscription button for 'None' plan or secondary action */}
+          {plan === 'None' && (
+            <div className="flex flex-col sm:flex-row gap-4 mt-6 relative z-10">
+              <Link href="/pricing" className="luminous-button inline-flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-xl">
+                Choose a Plan
+              </Link>
+            </div>
+          )}
         </section>
 
-        {/* Payment Method Card */}
-        <section className="lg:col-span-4 glass-card glass-card-bright p-8 rounded-2xl flex flex-col justify-between min-h-[280px]">
-          <h4 className="font-label-md text-label-md text-pw-muted mb-4 uppercase tracking-wider">Payment Method</h4>
-          
+        {/* ━━━ 2. Payment Method (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px]">
+          <h4 className="font-headline-md text-headline-md text-pw-black mb-6">Payment Method</h4>
+
           {(profile?.stripeCustomerId || plan !== 'None') ? (
-            <div className="flex-1 flex flex-col justify-center">
-              <div className="relative w-full aspect-[1.58/1] rounded-xl overflow-hidden bg-gradient-to-br from-pw-glass-bg to-pw-glass-bg/60 p-6 border border-white/10 mb-4">
-                <div className="absolute top-0 right-0 p-4 opacity-20">
-                  <span className="material-symbols-outlined text-[48px]">credit_card</span>
+            <div className="flex-1 flex flex-col justify-between">
+              {/* Card display */}
+              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 relative overflow-hidden group">
+                {/* Abstract blob effect */}
+                <div className="absolute -right-8 -top-8 w-24 h-24 bg-pw-primary/20 rounded-full blur-xl group-hover:bg-pw-primary/30 transition-colors" />
+                <div className="w-12 h-8 bg-pw-glass-bg rounded flex items-center justify-center border border-white/10 shrink-0 mt-1">
+                  <span className="font-mono text-xs font-bold italic text-pw-black/80">{cardBrand.toUpperCase()}</span>
                 </div>
-                <div className="flex flex-col h-full justify-between">
-                  <div className="flex justify-between items-start">
-                    <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center border border-white/10">
-                      <span className="material-symbols-outlined text-pw-primary">token</span>
-                    </div>
-                    <span className="font-bold text-pw-black italic">{cardBrand.toUpperCase()}</span>
-                  </div>
-                  <div>
-                    <p className="text-[12px] text-pw-muted mb-1">Card Number</p>
-                    <p className="font-headline-md text-pw-black tracking-widest text-[18px]">•••• •••• •••• {lastFour}</p>
-                  </div>
+                <div className="flex-1 relative z-10">
+                  <p className="font-label-md text-label-md text-pw-black flex items-center gap-2">
+                    <span className="font-mono tracking-widest">•••• {lastFour}</span>
+                    <span className="px-2 py-0.5 bg-pw-primary/10 text-pw-primary text-[10px] font-bold rounded-full border border-pw-primary/20">DEFAULT</span>
+                  </p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-1">Expires 12/26</p>
                 </div>
               </div>
+
+              {/* Update button */}
               <button
                 onClick={openPortal}
                 disabled={portalLoading}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-dashed border-white/20 hover:bg-white/5 hover:border-pw-primary/45 transition-all group cursor-pointer"
+                className="w-full py-3 rounded-lg border border-white/10 text-pw-black font-label-md text-label-md hover:bg-white/5 hover:border-white/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span className="material-symbols-outlined text-[20px] text-pw-muted group-hover:text-pw-primary transition-colors">add</span>
-                <span className="font-label-md text-label-md text-pw-muted group-hover:text-pw-black transition-colors">Update Payment Method</span>
+                <span className="material-symbols-outlined text-[18px]">credit_card</span>
+                Update Payment Method
               </button>
             </div>
           ) : (
@@ -216,23 +241,49 @@ export default function BillingSettingsPage() {
           )}
         </section>
 
-        {/* Cloud Storage Meter */}
-        <div className="lg:col-span-12">
-          <CloudStorageMeter />
-        </div>
+        {/* ━━━ 3. Billing Info (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h4 className="font-headline-md text-headline-md text-pw-black">Billing Info</h4>
+            <button
+              onClick={openPortal}
+              disabled={portalLoading}
+              className="text-pw-muted hover:text-pw-primary transition-colors p-1 cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[20px]">edit</span>
+            </button>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Company Name</p>
+              <p className="font-body-md text-body-md text-pw-black">{profile?.displayName ?? 'Not configured'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Billing Email</p>
+              <p className="font-body-md text-body-md text-pw-black">{profile?.email ?? user?.email ?? '—'}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">Status</p>
+              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusBadge.cls}`}>
+                <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>{statusBadge.iconName}</span>
+                {statusBadge.label}
+              </span>
+            </div>
+          </div>
+        </section>
 
-        {/* Invoices Table Area */}
-        <section className="lg:col-span-12 glass-card glass-card-bright rounded-2xl overflow-hidden">
-          <div className="px-8 py-6 border-b border-white/10 flex justify-between items-center">
-            <h4 className="font-label-md text-label-md text-pw-black">Recent Invoices</h4>
+        {/* ━━━ 4. Billing History (col-span-8) ━━━ */}
+        <section className="lg:col-span-8 glass-card rounded-2xl p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-pw-black">Billing History</h3>
             {plan !== 'None' && invoices.length > 0 && (
-              <button className="text-pw-primary font-label-md text-label-md flex items-center gap-1 hover:underline cursor-pointer">
-                View all
-                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              <button className="font-label-md text-label-md text-pw-primary flex items-center gap-2 hover:text-pw-primary/80 transition-colors cursor-pointer">
+                <span className="material-symbols-outlined text-[18px]">download</span>
+                Download All
               </button>
             )}
           </div>
-          
+
           {invoicesLoading ? (
             <div className="flex items-center justify-center py-10">
               <span className="material-symbols-outlined animate-spin text-2xl text-pw-muted select-none">progress_activity</span>
@@ -245,22 +296,22 @@ export default function BillingSettingsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead className="bg-white/5 border-b border-white/5">
-                  <tr>
-                    <th className="px-8 py-4 font-label-sm text-label-sm text-pw-muted uppercase tracking-wider">Date</th>
-                    <th className="px-8 py-4 font-label-sm text-label-sm text-pw-muted uppercase tracking-wider">Invoice ID</th>
-                    <th className="px-8 py-4 font-label-sm text-label-sm text-pw-muted uppercase tracking-wider">Amount</th>
-                    <th className="px-8 py-4 font-label-sm text-label-sm text-pw-muted uppercase tracking-wider">Status</th>
-                    <th className="px-8 py-4 font-label-sm text-label-sm text-pw-muted uppercase tracking-wider text-right"></th>
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="pb-4 pl-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Date</th>
+                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Invoice ID</th>
+                    <th className="pb-4 text-right text-xs font-semibold text-pw-muted uppercase tracking-wider">Amount</th>
+                    <th className="pb-4 text-xs font-semibold text-pw-muted uppercase tracking-wider">Status</th>
+                    <th className="pb-4 text-center text-xs font-semibold text-pw-muted uppercase tracking-wider w-16">Invoice</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="font-mono text-sm">
                   {invoices.map((inv) => (
-                    <tr key={inv.id} className="hover:bg-white/5 transition-colors group">
-                      <td className="px-8 py-4 font-body-sm text-body-sm text-pw-black">{inv.date}</td>
-                      <td className="px-8 py-4 font-body-sm text-body-sm text-pw-muted">{inv.number ?? inv.id.substring(0, 12)}</td>
-                      <td className="px-8 py-4 font-body-sm text-body-sm text-pw-black">{inv.amount}</td>
-                      <td className="px-8 py-4">
+                    <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="py-4 pl-4 text-pw-black">{inv.date}</td>
+                      <td className="py-4 text-pw-muted">{inv.number ?? inv.id.substring(0, 12)}</td>
+                      <td className="py-4 text-right text-pw-black">{inv.amount}</td>
+                      <td className="py-4">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
                           inv.status === 'paid'
                             ? 'bg-green-500/10 text-green-400 border-green-500/20'
@@ -271,20 +322,20 @@ export default function BillingSettingsPage() {
                           {inv.status.toUpperCase()}
                         </span>
                       </td>
-                      <td className="px-8 py-4 text-right">
+                      <td className="py-4 text-center">
                         {inv.pdfUrl ? (
                           <a
                             href={inv.pdfUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-2 rounded-lg hover:bg-white/10 transition-colors text-pw-muted hover:text-pw-primary inline-block"
+                            className="text-pw-muted hover:text-pw-primary transition-colors p-1 rounded-md hover:bg-white/5 inline-block"
                             title="Download PDF statement"
                           >
-                            <span className="material-symbols-outlined text-[20px]">download</span>
+                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
                           </a>
                         ) : (
-                          <span className="p-2 text-pw-muted/20 inline-block">
-                            <span className="material-symbols-outlined text-[20px]">download</span>
+                          <span className="p-1 text-pw-muted/20 inline-block">
+                            <span className="material-symbols-outlined text-[20px]">receipt_long</span>
                           </span>
                         )}
                       </td>
@@ -296,9 +347,12 @@ export default function BillingSettingsPage() {
           )}
         </section>
 
+        {/* ━━━ 5. Cloud Storage Meter (col-span-12) ━━━ */}
+        <div className="lg:col-span-12">
+          <CloudStorageMeter />
+        </div>
+
       </div>
     </div>
   );
 }
-
-

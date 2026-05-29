@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Inbox, TrendingUp, DollarSign, Briefcase, Users } from 'lucide-react';
+import { Inbox, TrendingUp, CheckSquare, Briefcase, Users, AlertTriangle } from 'lucide-react';
 import { InboxTabType } from '@/hooks/useInboxFeed';
 
 /* ═══════════════════════════════════════════════════════
@@ -23,17 +23,17 @@ const EMPTY_STATES: Record<
   all: {
     Icon: Inbox,
     title: 'Your inbox is clear',
-    description: 'New deal alerts, finance documents, vendor bids, and team updates will appear here.',
+    description: 'New opportunities, tasks, vendor bids, and team updates will appear here.',
   },
-  deals: {
+  opportunities: {
     Icon: TrendingUp,
-    title: 'No active deal updates',
-    description: 'Phase transitions, contingency deadlines, and burn rate warnings will show up here.',
+    title: 'No active opportunities',
+    description: 'Phase transitions, contingency deadlines, and investment invitations will show up here.',
   },
-  finance: {
-    Icon: DollarSign,
-    title: 'No finance updates',
-    description: 'Billing statements, receipt approvals, and investment invitations will appear here.',
+  tasks: {
+    Icon: CheckSquare,
+    title: 'No pending tasks',
+    description: 'Assigned tasks, checklist milestones, and completions will show up here.',
   },
   vendors: {
     Icon: Briefcase,
@@ -43,7 +43,12 @@ const EMPTY_STATES: Record<
   team: {
     Icon: Users,
     title: 'No team updates',
-    description: 'Team invitations, document signatures, and assigned tasks will appear here.',
+    description: 'Team invitations and document signatures will appear here.',
+  },
+  system: {
+    Icon: AlertTriangle,
+    title: 'No system alerts',
+    description: 'Billing statements and general system notifications will appear here.',
   },
 };
 

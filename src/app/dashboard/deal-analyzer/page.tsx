@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { DealAnalyzerTerminal } from '@/components/intelligence/DealAnalyzerTerminal';
+import { UnderwritingTerminal } from '@/components/deal-analyzer/UnderwritingTerminal';
 
 export default function DealAnalyzerPage() {
-  return <DealAnalyzerTerminal />;
+  return <UnderwritingTerminal />;
 }

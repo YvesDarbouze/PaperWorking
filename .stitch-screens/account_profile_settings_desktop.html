@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Account Profile - Paper Working</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#313a41",
+                        "secondary-container": "#0566d9",
+                        "primary-fixed": "#62fae3",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-surface-variant": "#bacac5",
+                        "on-background": "#dae4ec",
+                        "on-tertiary-fixed": "#2d1600",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container-highest": "#2d363d",
+                        "outline-variant": "#3c4a46",
+                        "surface": "#0b141a",
+                        "inverse-primary": "#006b5f",
+                        "surface-tint": "#3cddc7",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#222b32",
+                        "primary-fixed-dim": "#3cddc7",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-container": "#e6ecff",
+                        "surface-container": "#182127",
+                        "inverse-surface": "#dae4ec",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-primary-container": "#00574d",
+                        "tertiary-container": "#ffac5a",
+                        "on-error": "#690005",
+                        "surface-container-lowest": "#060f15",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-variant": "#2d363d",
+                        "on-primary": "#003731",
+                        "on-surface": "#dae4ec",
+                        "tertiary": "#ffd1aa",
+                        "outline": "#859490",
+                        "background": "#0b141a",
+                        "secondary": "#adc6ff",
+                        "on-tertiary": "#4b2800",
+                        "inverse-on-surface": "#293238",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-primary-fixed-variant": "#005047",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary": "#002e6a",
+                        "surface-dim": "#0b141a",
+                        "surface-container-low": "#141d23",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#00201c",
+                        "primary": "#57f1db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "gutter-mobile": "16px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "40px",
+                        "gutter-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .data-mono { font-family: 'JetBrains Mono', monospace; }
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(34, 43, 50, 0.4) 0%, rgba(20, 29, 35, 0.8) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            box-shadow: inset 1px 1px 0px 0px rgba(255, 255, 255, 0.12), 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .luminous-btn {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+        }
+        .luminous-btn:hover {
+            box-shadow: 0 0 25px -2px rgba(87, 241, 219, 0.6);
+        }
+        /* Custom scrollbar for an ethereal feel */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(186, 202, 197, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(186, 202, 197, 0.4); }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface flex h-screen overflow-hidden antialiased selection:bg-primary/30 selection:text-primary">
+<!-- Navigation Drawer (Shared Component execution) -->
+<nav class="bg-surface-container dark:bg-surface-container/60 backdrop-blur-2xl fixed left-0 top-0 h-full w-64 z-50 border-r border-white/10 shadow-2xl flex flex-col py-8 gap-2">
+<!-- Brand Header -->
+<div class="px-6 mb-8">
+<h1 class="font-headline-lg text-headline-lg text-primary flex items-baseline tracking-tight">
+<span class="font-bold">Paper</span>
+<span class="font-light ml-1 opacity-80">Working</span>
+</h1>
+</div>
+<!-- Main Navigation Group -->
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-outline px-4 py-2 uppercase tracking-widest mt-2 mb-1">Ecosystem</span>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                Portfolio
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_open</span>
+                Projects
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">folder_shared</span>
+                Data Room
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">inbox</span>
+                Inbox
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">group</span>
+                Team
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+                Reports
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">calculate</span>
+                Deal Analyzer
+            </a>
+</div>
+<!-- Account Navigation Group -->
+<div class="px-4 flex flex-col gap-1 pb-4">
+<div class="h-px w-full bg-white/10 my-2"></div>
+<span class="font-label-sm text-label-sm text-outline px-4 py-2 uppercase tracking-widest mb-1">Account</span>
+<!-- ACTIVE ITEM -->
+<a class="bg-secondary-container/20 text-primary border-l-4 border-primary font-bold hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-r-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">person</span>
+                Profile
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+                Billing
+            </a>
+<a class="text-on-surface-variant hover:bg-white/5 hover:bg-surface-variant/30 transition-all duration-200 active:opacity-80 flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="ml-64 flex-1 h-screen overflow-y-auto relative bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-surface-container-high/40 via-surface-container-lowest to-surface-container-lowest">
+<!-- Ambient Light Blob -->
+<div class="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+<div class="max-w-container-max mx-auto px-margin-desktop py-12">
+<!-- Header -->
+<div class="mb-12">
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-2">Account Profile</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your personal and professional identity within the platform.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter-desktop">
+<!-- Personal Information Section (Spans 12 columns for a hero-like header card) -->
+<section class="col-span-12 glass-panel rounded-2xl p-8 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="relative group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 p-1 relative z-10 bg-surface-container-highest">
+<img alt="Profile portrait" class="w-full h-full object-cover rounded-full grayscale hover:grayscale-0 transition-all duration-500" data-alt="A professional, cinematic portrait photography of a confident male executive in his early 40s. The lighting is dramatic and moody, utilizing high-contrast chiaroscuro techniques typical of modern dark-mode aesthetics. Subtle, cool teal neon accents gently illuminate the edge of his silhouette against a deep, pitch-black background, creating a high-end, cyber-chic executive vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfJgIKMIFa19VETNylPPniMNUlmIJTft0x7wF1oI7i7C8ilUm9zwNx5YAF0vxMdnk8f0hTnjWE0p4BiGeXkMehf-Hy6KFqVym5xj1fwROCsPQfF9gcNJMkeF-qxhiGEfVrDyoKRFC-LsrzIZW7_jll9WPd3jfUfYOtdMlmszMfNy-duTRMdtwphF5IKKfJrBgjpVB1BRf9hRAp2z0_7NvFr0ObWjlALQMm8BLeb-60G90jMpG3VGSRtevuDKLeOahLRsd5SFwNznGP"/>
+</div>
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+<div class="absolute bottom-0 right-0 bg-surface-container-highest border border-white/20 rounded-full p-1.5 shadow-lg z-20">
+<span class="material-symbols-outlined text-[16px] text-on-surface">edit</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Yves Darbouze</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+<span class="data-mono text-primary/80">yves@paperworking.com</span>
+</div>
+</div>
+</div>
+<div class="hidden md:block">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Verified Partner
+                        </span>
+</div>
+</section>
+<!-- Professional Profile Section -->
+<section class="col-span-12 lg:col-span-7 glass-panel rounded-2xl p-8 flex flex-col gap-6">
+<div class="flex justify-between items-center border-b border-white/10 pb-4">
+<h4 class="font-headline-md text-headline-md text-on-surface">Professional Profile</h4>
+<button class="text-primary hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined">edit_note</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-y-8 gap-x-4">
+<div>
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Investor Type</p>
+<p class="font-body-md text-body-md text-on-surface data-mono">Institutional</p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Years of Experience</p>
+<p class="font-body-md text-body-md text-on-surface data-mono text-primary">12 <span class="text-on-surface-variant text-sm">Yrs</span></p>
+</div>
+<div class="col-span-2">
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Focus Markets</p>
+<div class="flex gap-2 mt-2">
+<span class="px-3 py-1 rounded-md bg-white/5 border border-white/10 font-label-md text-label-md text-on-surface-variant hover:bg-white/10 transition-colors cursor-default">New York</span>
+<span class="px-3 py-1 rounded-md bg-white/5 border border-white/10 font-label-md text-label-md text-on-surface-variant hover:bg-white/10 transition-colors cursor-default">Miami</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Privacy & Security Section -->
+<section class="col-span-12 lg:col-span-5 glass-panel rounded-2xl p-8 flex flex-col gap-6">
+<div class="flex justify-between items-center border-b border-white/10 pb-4">
+<h4 class="font-headline-md text-headline-md text-on-surface">Security</h4>
+<span class="material-symbols-outlined text-outline">shield_lock</span>
+</div>
+<div class="flex flex-col gap-6 h-full justify-between">
+<!-- Toggle -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-surface-container/50 border border-white/5">
+<div>
+<p class="font-label-md text-label-md text-on-surface mb-1">Public Profile</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Allow others to discover your profile.</p>
+</div>
+<!-- Custom Toggle switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+</label>
+</div>
+<!-- CTA -->
+<div class="mt-auto pt-4">
+<button class="w-full bg-surface-container-high hover:bg-surface-variant border border-white/10 text-on-surface font-label-md text-label-md py-3 px-4 rounded-lg flex justify-center items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-[18px]">key</span>
+                                Change Password
+                            </button>
+</div>
+</div>
+</section>
+<!-- Connected Accounts Section -->
+<section class="col-span-12 glass-panel rounded-2xl p-8 mb-12">
+<div class="mb-6">
+<h4 class="font-headline-md text-headline-md text-on-surface">Connected Accounts</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Manage external authentication methods.</p>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<!-- Google Account Card -->
+<div class="flex-1 bg-surface-container/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-on-surface">language</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Google</p>
+<p class="font-body-sm text-body-sm text-primary/70 data-mono mt-0.5">Connected</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-error transition-colors font-label-sm text-label-sm px-3 py-1.5 border border-white/10 rounded-md bg-white/5 hover:bg-error/10 hover:border-error/30">
+                                Disconnect
+                            </button>
+</div>
+<!-- Facebook Account Card -->
+<div class="flex-1 bg-surface-container/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-surface-container/50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-on-surface">public</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Facebook</p>
+<p class="font-body-sm text-body-sm text-outline mt-0.5">Not connected</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary luminous-btn transition-all font-label-sm text-label-sm px-4 py-1.5 rounded-md font-semibold">
+                                Connect
+                            </button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Phase Router</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .font-mono-technical {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-card {
+            background: rgba(18, 26, 33, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(24, 33, 39, 0.8);
+        }
+        .selected-phase {
+            border: 2px solid #2dd4bf !important;
+            background: rgba(45, 212, 191, 0.04) !important;
+        }
+        .phase-stripe {
+            height: 4px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 4px 4px 0 0;
+        }
+        body {
+            background-color: #060f15;
+            color: #dae4ec;
+        }
+
+        /* Modal Entry Animation: 280ms ease-out fade + scale (96% to 100%) */
+        @keyframes modalEntry {
+            from {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-modal-entry {
+            animation: modalEntry 280ms cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+
+        /* Step-to-Step Slide Animations: 240ms duration */
+        @keyframes slideLeft {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideRight {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .animate-slide-left {
+            animation: slideLeft 240ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        .animate-slide-right {
+            animation: slideRight 240ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#57f1db",
+                        "on-primary": "#003731",
+                        "primary-container": "#2dd4bf",
+                        "background": "#060f15",
+                        "surface": "#0b141a",
+                        "surface-container": "#182127",
+                        "on-surface": "#dae4ec",
+                        "on-surface-variant": "#bacac5",
+                        "outline": "#859490",
+                        "outline-variant": "#3c4a46"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="font-body-md overflow-x-hidden animate-modal-entry">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:opacity-70 transition-opacity">arrow_back</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">PaperWorking</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors">close</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile max-w-2xl mx-auto animate-slide-left" id="step-container">
+<!-- Progress Header -->
+<div class="mb-stack-lg">
+<div class="flex justify-between items-end mb-4">
+<span class="font-mono-technical text-[11px] text-primary uppercase tracking-[0.1em] opacity-80">PHASE SELECTION // STEP 02</span>
+<span class="font-mono-technical text-[11px] text-outline uppercase tracking-[0.1em] opacity-80">40% Complete</span>
+</div>
+<div class="flex gap-[8px] w-full mb-4">
+<div class="flex-1 bg-primary-container rounded-full h-1"></div>
+<div class="flex-1 bg-primary-container rounded-full h-1 relative">
+<div class="absolute -bottom-2 left-0 right-0 h-[2px] bg-primary shadow-[0_0_8px_#57f1db]"></div>
+</div>
+<div class="flex-1 bg-surface-container rounded-full h-1"></div>
+<div class="flex-1 bg-surface-container rounded-full h-1"></div>
+<div class="flex-1 bg-surface-container rounded-full h-1"></div>
+</div>
+</div>
+<!-- Main Narrative -->
+<section class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg tracking-[-0.02em] leading-tight text-on-surface mb-stack-md">Where are you in this Project's lifecycle?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">Pick the phase that matches today. You'll move the Project forward as it progresses — including back into the past for deals you've already completed.</p>
+</section>
+<!-- Phase Router Cards -->
+<div class="flex flex-col gap-4">
+<!-- Acquisition -->
+<div class="glass-card relative p-6 rounded-xl cursor-pointer group overflow-hidden flex flex-col gap-4">
+<div class="phase-stripe bg-[#ffd1aa]"></div>
+<div class="flex justify-between items-start">
+<div class="flex-1 flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Acquisition</h3>
+<p class="font-body-sm text-body-sm text-on-surface mb-2">I'm evaluating this property.</p>
+<p class="font-label-sm text-label-sm italic text-on-surface-variant/70 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">calculate</span>Run the numbers before you commit.
+                            </p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors mt-1">radio_button_unchecked</span>
+</div>
+</div>
+</div>
+<!-- Purchase -->
+<div class="glass-card relative p-6 rounded-xl cursor-pointer group overflow-hidden flex flex-col gap-4">
+<div class="phase-stripe bg-[#adc6ff]"></div>
+<div class="flex justify-between items-start">
+<div class="flex-1 flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Purchase</h3>
+<p class="font-body-sm text-body-sm text-on-surface mb-2">I'm in the middle of buying it.</p>
+<p class="font-label-sm text-label-sm italic text-on-surface-variant/70 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">gavel</span>Track financing, closing costs, and diligence.
+                            </p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors mt-1">radio_button_unchecked</span>
+</div>
+</div>
+</div>
+<!-- Hold (SELECTED) -->
+<div class="glass-card relative p-6 rounded-xl cursor-pointer group overflow-hidden flex flex-col gap-4 selected-phase shadow-[0_0_30px_rgba(45,212,191,0.05)]">
+<div class="phase-stripe bg-[#2dd4bf]"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-0.5">Hold</h3>
+<p class="font-body-sm text-body-sm text-on-surface mb-1">I already own it.</p>
+<p class="font-label-sm text-label-sm italic text-primary/70 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] leading-none">key</span>Track operations, rehab, and monthly cash flow.
+                        </p>
+</div>
+<div class="bg-primary text-on-primary rounded-full p-0.5 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+<!-- Exit / Rent -->
+<div class="glass-card relative p-6 rounded-xl cursor-pointer group overflow-hidden flex flex-col gap-4">
+<div class="phase-stripe bg-[#313a41]"></div>
+<div class="flex justify-between items-start">
+<div class="flex-1 flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">Exit or Rent</h3>
+<p class="font-body-sm text-body-sm text-on-surface mb-2">I'm selling, refinancing, or stabilizing.</p>
+<p class="font-label-sm text-label-sm italic text-on-surface-variant/70 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">history</span>Close the loop and review realized numbers.
+                            </p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:text-on-surface transition-colors mt-1">radio_button_unchecked</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Action Bar -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-surface-container/90 backdrop-blur-2xl border-t border-white/10 px-margin-mobile py-6 flex justify-between items-center shadow-[0_-8px_30px_rgb(0,0,0,0.5)] rounded-t-xl">
+<button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors font-label-md" id="btn-back">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+<span class="uppercase tracking-wider">Back</span>
+</button>
+<button class="bg-primary text-on-primary font-label-md px-8 py-3 rounded-full flex items-center gap-2 shadow-[0_0_20px_-5px_rgba(45,212,191,0.5)] active:scale-95 transition-all hover:brightness-110" id="btn-continue">
+            Continue
+            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</footer>
+<script>
+        // Micro-interactions for Phase Selection
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.glass-card').forEach(c => {
+                    c.classList.remove('selected-phase', 'shadow-[0_0_30px_rgba(45,212,191,0.05)]');
+                    const headline = c.querySelector('h3');
+                    const helperText = c.querySelector('p:last-child');
+                    
+                    if(headline) {
+                        headline.classList.remove('text-primary');
+                        headline.classList.add('text-on-surface');
+                    }
+                    if(helperText) {
+                        helperText.classList.remove('text-primary/70');
+                        helperText.classList.add('text-on-surface-variant/70');
+                    }
+                    
+                    const checkDiv = c.querySelector('.bg-primary.text-on-primary');
+                    if (checkDiv) {
+                        const parent = checkDiv.parentElement;
+                        checkDiv.remove();
+                        const newIcon = document.createElement('span');
+                        newIcon.className = 'material-symbols-outlined text-outline group-hover:text-on-surface transition-colors mt-1';
+                        newIcon.innerText = 'radio_button_unchecked';
+                        parent.appendChild(newIcon);
+                    }
+                });
+
+                this.classList.add('selected-phase', 'shadow-[0_0_30px_rgba(45,212,191,0.05)]');
+                const h3 = this.querySelector('h3');
+                const pHelper = this.querySelector('p:last-child');
+                if(h3) {
+                    h3.classList.remove('text-on-surface');
+                    h3.classList.add('text-primary');
+                }
+                if(pHelper) {
+                    pHelper.classList.remove('text-on-surface-variant/70');
+                    pHelper.classList.add('text-primary/70');
+                }
+
+                const radio = this.querySelector('.material-symbols-outlined:last-child');
+                if(radio && radio.innerText === 'radio_button_unchecked') {
+                    const parent = radio.parentElement;
+                    radio.remove();
+                    const checkDiv = document.createElement('div');
+                    checkDiv.className = 'bg-primary text-on-primary rounded-full p-0.5 flex items-center justify-center';
+                    checkDiv.innerHTML = `<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>`;
+                    parent.appendChild(checkDiv);
+                }
+            });
+        });
+
+        // Step transition simulations
+        const main = document.getElementById('step-container');
+        
+        document.getElementById('btn-continue').addEventListener('click', () => {
+            main.classList.remove('animate-slide-left', 'animate-slide-right');
+            void main.offsetWidth; // trigger reflow
+            main.classList.add('animate-slide-left');
+        });
+
+        document.getElementById('btn-back').addEventListener('click', () => {
+            main.classList.remove('animate-slide-left', 'animate-slide-right');
+            void main.offsetWidth; // trigger reflow
+            main.classList.add('animate-slide-right');
+        });
+    </script>
+</body></html>

@@ -5,85 +5,90 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 /**
- * FinalCTA
+ * FinalCTA — Stitch Obsidian Edition
  *
- * Bottom-of-page "safety net" hero section — mirrors the top headline
- * but with more urgent subtext for users who scrolled all the way down.
- * Strict PaperWorking monochrome palette.
+ * Bottom-of-page "risk mitigation" conversion section.
+ * Re-anchors the value prop: "Not a project management tool. A risk mitigation platform."
+ * Uses glass-card aesthetic with luminous CTA button and ambient glow.
  */
 
 export default function FinalCTA() {
   return (
-    <section className="relative py-32 bg-dashboard border-b border-phase-1 overflow-hidden">
-      {/* Decorative grid */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
+    <section className="py-24 md:py-32 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-primary/8 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="relative mx-auto max-w-4xl px-6 lg:px-8 text-center">
-        {/* Trial tag */}
-        <div className="inline-flex items-center space-x-2 mb-8">
-          <span className="w-2 h-2 bg-black animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-[0.25em] text-phase-3">
-            14-Day Trial · Credit Card Required · Cancel Anytime
-          </span>
-        </div>
+      <div className="relative mx-auto max-w-container-max px-5 md:px-6 lg:px-8">
+        <div className="glass-card rounded-xl p-8 md:p-16 flex flex-col md:flex-row items-center gap-8 justify-between relative overflow-hidden">
+          {/* Inner gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
 
-        {/* Headline */}
-        <h2 className="text-4xl font-medium tracking-tight text-text-primary sm:text-5xl lg:text-6xl mb-6">
-          Stop Pushing Paper.
-          <br />
-          <span className="text-phase-2">Start Closing Deals.</span>
-        </h2>
+          <div className="max-w-2xl relative z-10">
+            {/* Headline reframe */}
+            <h2 className="text-[28px] md:text-[32px] leading-tight font-bold tracking-tight text-on-surface mb-4">
+              Not a project management tool.{' '}
+              <span className="text-primary text-glow">
+                A risk mitigation platform.
+              </span>
+            </h2>
 
-        {/* Subtext */}
-        <p className="mx-auto max-w-xl text-base text-phase-3 leading-relaxed mb-10">
-          Every week you spend juggling spreadsheets is a week your margins
-          erode and your pipeline stalls. PaperWorking investors close
-          3.2× more deals per quarter.
-        </p>
+            {/* Pain-point driven subtext */}
+            <p className="text-base text-on-surface-variant mb-8 leading-relaxed max-w-xl">
+              Lost documents. Untracked holding costs. Last-minute closings
+              where nobody can find the right version of the HUD-1. That&apos;s
+              what happens when your deal management lives in five different
+              places. PaperWorking puts it all under one roof so you can scale
+              without the chaos.
+            </p>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-3 gap-0 border border-phase-1 mb-10 max-w-lg mx-auto">
-          <div className="py-4 px-3 border-r border-phase-1">
-            <p className="text-2xl font-medium text-text-primary">12hrs</p>
-            <p className="text-xs text-phase-2 mt-1">Saved per week</p>
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-px mb-8 max-w-md">
+              <div className="glass-card rounded-l-lg py-4 px-3 text-center">
+                <p className="text-xl font-bold text-primary">12hrs</p>
+                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
+                  Saved/week
+                </p>
+              </div>
+              <div className="glass-card py-4 px-3 text-center">
+                <p className="text-xl font-bold text-primary">3.2×</p>
+                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
+                  Faster closings
+                </p>
+              </div>
+              <div className="glass-card rounded-r-lg py-4 px-3 text-center">
+                <p className="text-xl font-bold text-primary">$4.8K</p>
+                <p className="text-xs text-on-surface-variant mt-1 uppercase tracking-wider font-medium">
+                  Monthly savings
+                </p>
+              </div>
+            </div>
+
+            {/* CTA buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
+              <Link
+                href="/register"
+                className="luminous-button px-8 py-3.5 rounded-full text-sm font-semibold flex items-center gap-2 group"
+              >
+                <span>Start Your 14-Day Trial</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <span className="text-sm text-on-surface-variant/60 self-center">
+                Credit card required · No charge for 14 days
+              </span>
+            </div>
           </div>
-          <div className="py-4 px-3 border-r border-phase-1">
-            <p className="text-2xl font-medium text-text-primary">3.2×</p>
-            <p className="text-xs text-phase-2 mt-1">Faster closings</p>
-          </div>
-          <div className="py-4 px-3">
-            <p className="text-2xl font-medium text-text-primary">$4.8K</p>
-            <p className="text-xs text-phase-2 mt-1">Monthly savings</p>
+
+          {/* Glowing Shield Icon decoration */}
+          <div className="hidden md:flex w-48 h-48 rounded-full bg-primary/10 items-center justify-center border border-primary/30 relative flex-shrink-0">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+            <span
+              className="material-symbols-outlined text-6xl text-primary relative z-10"
+              style={{ fontVariationSettings: "'FILL' 0" }}
+            >
+              shield_locked
+            </span>
           </div>
         </div>
-
-        {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/#pricing"
-            className="px-8 py-4 bg-black text-white text-xs font-bold uppercase tracking-widest flex items-center space-x-2 hover:bg-phase-4 transition-colors"
-          >
-            <span>Start Your 14-Day Trial</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="px-8 py-4 border border-phase-1 text-phase-4 text-xs font-bold uppercase tracking-widest hover:border-black hover:text-text-primary transition-colors"
-          >
-            See How It Works
-          </Link>
-        </div>
-
-        <p className="mt-6 text-xs text-phase-2">
-          14-day trial · Credit card required · No charge until day 15 · Cancel anytime
-        </p>
       </div>
     </section>
   );

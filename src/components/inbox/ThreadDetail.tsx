@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import type { InboxThread, InboxMessage } from '@/hooks/useInboxThreads';
@@ -14,6 +14,7 @@ interface ThreadDetailProps {
   thread: InboxThread;
   projectName?: string;
   onSendReply: (body: string) => Promise<void>;
+  onBack?: () => void;
 }
 
 function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean }) {
@@ -67,7 +68,7 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
   );
 }
 
-export default function ThreadDetail({ thread, projectName, onSendReply }: ThreadDetailProps) {
+export default function ThreadDetail({ thread, projectName, onSendReply, onBack }: ThreadDetailProps) {
   const { user } = useAuth();
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
@@ -118,6 +119,11 @@ export default function ThreadDetail({ thread, projectName, onSendReply }: Threa
       {/* Header Actions */}
       <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0b141a]/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
+          {onBack && (
+            <button onClick={onBack} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
           <div className="h-12 w-12 rounded-xl bg-[#0b141a]/60 backdrop-blur-xl border border-[#57f1db]/30 shadow-[inset_1px_1px_0px_rgba(87,241,219,0.1),0_0_15px_rgba(87,241,219,0.15)] flex items-center justify-center text-[#57f1db] font-bold text-lg">
             {(thread.lastMessage.senderName?.[0] || 'P').toUpperCase()}
           </div>

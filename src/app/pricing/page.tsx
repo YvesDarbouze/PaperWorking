@@ -68,7 +68,7 @@ export default function PricingPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen font-sans text-[var(--pw-fg)] relative" style={{ backgroundColor: '#f2f2f2' }}>
+    <div className="min-h-screen font-sans text-on-surface relative bg-background dark">
 
       {/* Loader Overlay */}
       {isProcessing && (

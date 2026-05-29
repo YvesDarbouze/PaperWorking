@@ -57,6 +57,24 @@ export default function Phase2AcquisitionPage() {
   const [roleLinkedDocuments, setRoleLinkedDocuments] = useState<RoleLinkedDocument[]>([]);
   const [isClearToClose, setIsClearToClose] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedLender, setSelectedLender] = useState<'NEO' | 'LEGACY'>('NEO');
+
+  const selectLender = async (lender: 'NEO' | 'LEGACY') => {
+    setSelectedLender(lender);
+    if (!project) return;
+    const rate = lender === 'NEO' ? 6.125 : 6.450;
+    const currentFinancials = project.financials || {};
+    try {
+      await projectsService.updateProject(projectId, {
+        financials: { ...currentFinancials, loanInterestRate: rate }
+      });
+      toast.success(`Selected ${lender} Lender Option (${rate}%)`);
+      refresh();
+    } catch (e) {
+      console.error("Failed to select lender:", e);
+      toast.error("Failed to save lender selection");
+    }
+  };
 
   /* Sync local state whenever context project loads or changes */
   useEffect(() => {
@@ -385,6 +403,151 @@ export default function Phase2AcquisitionPage() {
                 </p>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* ── Lender Selection & Cost Basis Details ── */}
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-6">
+          {/* Left Column: Lender Comparison (md:col-span-7) */}
+          <div className="md:col-span-7 bg-surface-container/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden flex flex-col justify-between">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/20 to-transparent"></div>
+            <div>
+              <h3 className="font-headline-md text-lg text-on-surface flex items-center gap-2 font-bold mb-4">
+                <span className="material-symbols-outlined text-primary text-[20px]">account_balance</span>
+                Lender Selection
+              </h3>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="text-on-surface-variant/60 border-b border-white/5 uppercase tracking-wider text-[10px]">
+                      <th className="py-2.5">Parameter</th>
+                      <th className="py-2.5 text-center">NEO (Primary)</th>
+                      <th className="py-2.5 text-center">Legacy (Alt)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-on-surface font-mono">
+                    <tr className="hover:bg-white/[0.02]">
+                      <td className="py-3 font-sans text-xs">Interest Rate</td>
+                      <td className="py-3 text-center text-primary font-bold">6.125%</td>
+                      <td className="py-3 text-center text-on-surface-variant/80">6.450%</td>
+                    </tr>
+                    <tr className="hover:bg-white/[0.02]">
+                      <td className="py-3 font-sans text-xs">Points/Credits</td>
+                      <td className="py-3 text-center text-primary font-bold">1.0 Pt</td>
+                      <td className="py-3 text-center text-on-surface-variant/80">1.5 Pts</td>
+                    </tr>
+                    <tr className="hover:bg-white/[0.02]">
+                      <td className="py-3 font-sans text-xs">Lender Fees</td>
+                      <td className="py-3 text-center text-primary font-bold">$1,250</td>
+                      <td className="py-3 text-center text-on-surface-variant/80">$1,500</td>
+                    </tr>
+                    <tr className="hover:bg-white/[0.02]">
+                      <td className="py-3 font-sans text-xs">Monthly P&I</td>
+                      <td className="py-3 text-center text-primary font-bold">$1,520/mo</td>
+                      <td className="py-3 text-center text-on-surface-variant/80">$1,610/mo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 border-t border-white/5 pt-4">
+              <button
+                onClick={() => selectLender('NEO')}
+                className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
+                  selectedLender === 'NEO'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                    : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
+                }`}
+              >
+                Select NEO (6.125%)
+              </button>
+              <button
+                onClick={() => selectLender('LEGACY')}
+                className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
+                  selectedLender === 'LEGACY'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                    : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
+                }`}
+              >
+                Select Legacy (6.450%)
+              </button>
+            </div>
+          </div>
+
+          {/* Right Column: Live Cost Basis Sidebar & Minimap (md:col-span-5) */}
+          <div className="md:col-span-5 flex flex-col gap-6">
+            {/* Live Cost Basis Sidebar Card */}
+            <div className="bg-surface-container-low/50 backdrop-blur-md border border-white/5 rounded-2xl p-5 shadow-lg relative flex flex-col justify-between">
+              <div className="space-y-4">
+                <h3 className="font-label-md text-sm text-on-surface flex items-center gap-2 font-bold">
+                  <span className="material-symbols-outlined text-[#ffdcc0] text-[18px]">calculate</span>
+                  Live Cost Basis
+                </h3>
+                
+                <div className="space-y-2.5 text-xs">
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                    <span>Property Price</span>
+                    <span className="font-mono text-[#dae4ec]">{fmtDollar(costMetrics.purchasePrice)}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                    <span>Origination Fees</span>
+                    <span className="font-mono text-[#dae4ec]">$2,450</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                    <span>Recording Tax</span>
+                    <span className="font-mono text-[#dae4ec]">$1,800</span>
+                  </div>
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                    <span>Prepaids</span>
+                    <span className="font-mono text-[#dae4ec]">$950</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm text-white pt-1">
+                    <span>Total Closing Costs</span>
+                    <span className="font-mono text-[#57f1db]">{fmtDollar(costMetrics.closingCosts)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => {
+                  toast.success("Closing ledger exported successfully to CSV.");
+                }}
+                className="mt-6 w-full py-2.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-on-surface font-label-md text-xs font-semibold transition-all active:scale-97 text-center"
+              >
+                Export Closing Ledger
+              </button>
+            </div>
+
+            {/* Map Backdrop Widget */}
+            <div className="bg-[#0b141a]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
+              {/* Mock map graphic with grid lines and marker */}
+              <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              {/* Map road lines using simple SVG */}
+              <svg className="absolute inset-0 w-full h-full opacity-15 stroke-white" strokeWidth="1.5">
+                <line x1="0" y1="40" x2="300" y2="40" />
+                <line x1="0" y1="90" x2="300" y2="90" />
+                <line x1="120" y1="0" x2="120" y2="150" />
+                <line x1="220" y1="0" x2="220" y2="150" />
+              </svg>
+              <div className="absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center">
+                <span className="material-symbols-outlined text-primary text-2xl animate-bounce">location_on</span>
+                <span className="w-2.5 h-1 bg-black/60 rounded-full blur-[1px] mt-0.5"></span>
+              </div>
+              
+              {/* Dark Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              
+              {/* Status Indicator */}
+              <div className="absolute bottom-3 left-4 flex flex-col gap-0.5">
+                <span className="text-[10px] font-mono text-on-surface-variant/80 uppercase tracking-widest">Property Location</span>
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(87,241,219,0.8)]"></span>
+                  In Final Diligence
+                </span>
+              </div>
+            </div>
           </div>
         </section>
 

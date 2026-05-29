@@ -118,64 +118,101 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   const headlineMetric = getHeadlineMetric(project, metrics);
   const ownership = project.financials?.ownershipPercentage ?? 100;
   const { progress, label: progressLabel } = getPhaseProgressInfo(project);
-  const theme = getStrategyThemeConfig(project.strategyType);
+  const strategyTheme = getStrategyThemeConfig(project.strategyType);
+
+  // Phase-specific colors and icons based on mockup (8db0ebdc9f0544829656d9eb188551b3.html)
+  const phase = project.currentPhase ?? 1;
+  let phaseIcon = "folder_special";
+  let phaseIconColor = "text-primary-container";
+  let phaseIconBg = "bg-primary-container/10";
+  let phaseIconBorder = "border-primary-container/20";
+  let progressBg = "bg-primary-container";
+  let progressGlow = "shadow-[0_0_10px_rgba(45,212,191,0.8)]";
+
+  if (phase === 2) {
+    phaseIcon = "snippet_folder";
+    phaseIconColor = "text-tertiary-container";
+    phaseIconBg = "bg-tertiary-container/10";
+    phaseIconBorder = "border-tertiary-container/20";
+    progressBg = "bg-tertiary-container";
+    progressGlow = "shadow-[0_0_10px_rgba(255,172,90,0.8)]";
+  } else if (phase === 3) {
+    phaseIcon = "folder";
+    phaseIconColor = "text-secondary-container";
+    phaseIconBg = "bg-secondary-container/10";
+    phaseIconBorder = "border-secondary-container/20";
+    progressBg = "bg-secondary-container";
+    progressGlow = "shadow-[0_0_10px_rgba(5,102,217,0.8)]";
+  } else if (phase >= 4) {
+    phaseIcon = "folder_shared";
+    phaseIconColor = "text-error";
+    phaseIconBg = "bg-error/10";
+    phaseIconBorder = "border-error/20";
+    progressBg = "bg-error";
+    progressGlow = "shadow-[0_0_10px_rgba(255,180,171,0.8)]";
+  }
 
   return (
     <div
-      className="glass-card folder-cut group hover:border-primary/50 transition-all duration-300 relative overflow-hidden cursor-pointer"
+      className="bg-surface-container-low/60 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:border-primary-container/40 transition-all group relative overflow-hidden flex flex-col gap-4 hover:shadow-[0_0_30px_-10px_rgba(45,212,191,0.15)] cursor-pointer"
       onClick={onClick}
       role="link"
       tabIndex={0}
       aria-label={`View project: ${project.propertyName}`}
     >
-      <div className={`absolute top-0 right-0 w-32 h-32 ${theme.bg10} blur-3xl rounded-full -mr-16 -mt-16 group-hover:${theme.bg20} transition-all`} />
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-6">
-          <div>
-            <span className={`${theme.bg10} ${theme.text} text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest border ${theme.border20} mb-2 inline-block`}>
-              {theme.label}
-            </span>
-            <h3 className="font-headline-md text-on-surface">{project.propertyName}</h3>
-            <p className="text-outline text-sm">{project.address}</p>
-          </div>
-          <div className="text-right">
-            <div className={`font-headline-md ${theme.text}`}>{ownership}%</div>
-            <div className="text-[10px] text-outline uppercase tracking-tighter">Ownership</div>
-          </div>
+      {/* Subtle top-left glow */}
+      <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      
+      <div className="flex justify-between items-center z-10 relative">
+        <div className={`p-3 ${phaseIconBg} rounded-lg ${phaseIconColor} border ${phaseIconBorder} transition-colors`}>
+          <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+            {phaseIcon}
+          </span>
         </div>
         
-        <div className="mb-8">
-          <div className="flex justify-between items-end mb-2">
-            <span className="text-xs text-outline">Phase Progress</span>
-            <span className={`text-xs ${theme.text} font-bold`}>{progressLabel}</span>
+        {/* Strategy HSL Label */}
+        <span className={`font-label-sm text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border ${strategyTheme.text} ${strategyTheme.bg10} ${strategyTheme.border20}`}>
+          {strategyTheme.label}
+        </span>
+      </div>
+
+      <div className="z-10 relative">
+        <h3 className="font-headline-md text-[20px] leading-[28px] text-on-surface font-semibold mb-1 truncate">{project.propertyName}</h3>
+        <p className="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+          <span className="material-symbols-outlined text-[14px]">location_on</span>
+          <span className="truncate">{project.address}</span>
+        </p>
+      </div>
+
+      <div className="mt-auto pt-4 border-t border-white/5 z-10 relative flex flex-col gap-3">
+        <div className="flex justify-between items-center">
+          <span className="font-label-sm text-label-sm text-on-surface-variant">Ownership</span>
+          <span className="font-label-md text-label-md text-primary bg-primary/10 px-2 py-0.5 rounded-md">{ownership}%</span>
+        </div>
+        
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-end">
+            <span className="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">{progressLabel}</span>
+            <span className="font-label-sm text-label-sm text-on-surface-variant">{progress}%</span>
           </div>
-          <div className="w-full h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
             <div
-              className={`h-full ${theme.bgBase} luminous-glow rounded-full transition-all duration-500`}
+              className={`h-full ${progressBg} ${progressGlow} rounded-full transition-all duration-500`}
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
-        
-        <div className="grid grid-cols-2 gap-4 pt-4 border-t border-outline-variant">
+
+        <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5">
           <div>
-            <p className="text-[10px] text-outline uppercase">Acquisition</p>
-            <p className="font-label-md">{formatCurrency(project.financials?.purchasePrice ?? 0)}</p>
+            <p className="text-[10px] text-outline uppercase tracking-wider">Acquisition</p>
+            <p className="font-label-md text-xs">{formatCurrency(project.financials?.purchasePrice ?? 0)}</p>
           </div>
           <div>
-            <p className="text-[10px] text-outline uppercase">{headlineMetric.label}</p>
-            <p className={`font-label-md ${theme.text}`}>{headlineMetric.value}</p>
+            <p className="text-[10px] text-outline uppercase tracking-wider">{headlineMetric.label}</p>
+            <p className="font-label-md text-xs text-primary">{headlineMetric.value}</p>
           </div>
         </div>
-      </div>
-      
-      <div className="px-6 py-4 bg-white/5 border-t border-white/10 flex justify-between items-center group-hover:bg-primary/5 transition-colors">
-        <div className="flex -space-x-2">
-          {/* Future: User avatars can go here */}
-        </div>
-        <button className={`${theme.text} text-xs font-bold flex items-center gap-1 hover:underline`}>
-          Details <ChevronRight className="w-4 h-4" />
-        </button>
       </div>
     </div>
   );
@@ -285,26 +322,32 @@ export default function ProjectsPage() {
 
   return (
     <div className="min-h-full pb-28 md:pb-28">
-      {/* ── Header & Search ── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-        <div className="flex-1 max-w-2xl relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline group-focus-within:text-primary transition-colors pointer-events-none" />
+      {/* Page Header & Actions */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+        <div>
+          <h2 className="text-3xl font-bold text-on-surface tracking-tight">Projects Directory</h2>
+          <p className="text-sm text-on-surface-variant mt-1">Manage active properties and track phase progression.</p>
+        </div>
+        <button
+          onClick={handleCreateProject}
+          className="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 shadow-[0_0_15px_-3px_rgba(45,212,191,0.4)] cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[20px]">add</span>
+          New Project
+        </button>
+      </div>
+
+      {/* Search & Filters */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+        <div className="relative flex-1 group">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors pointer-events-none">search</span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search properties by address or strategy..."
-            className="w-full bg-surface-container-highest border-none rounded-full py-3 pl-12 pr-4 text-sm font-normal focus:outline-none focus:ring-1 focus:ring-primary transition-all text-on-surface placeholder:text-outline"
+            className="w-full bg-surface-container-low/50 backdrop-blur-md border border-white/10 rounded-xl py-3 pl-12 pr-4 text-on-surface font-body-md text-body-md focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50"
           />
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleCreateProject}
-            className="luminous-glow bg-primary text-on-primary px-6 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:scale-105 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            New Project
-          </button>
         </div>
       </div>
 
@@ -382,12 +425,12 @@ export default function ProjectsPage() {
           {/* Add New Card Placeholder */}
           <div
             onClick={handleCreateProject}
-            className="glass-card folder-cut group border-dashed border-2 border-outline-variant hover:border-primary/50 transition-all cursor-pointer flex flex-col items-center justify-center p-12 min-h-[300px]"
+            className="bg-surface-container-low/30 hover:bg-surface-container-low/60 border-2 border-dashed border-white/10 hover:border-primary/40 rounded-xl p-5 transition-all group flex flex-col items-center justify-center min-h-[260px] cursor-pointer"
           >
-            <div className="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/20 transition-all">
-              <Plus className="w-8 h-8 text-outline group-hover:text-primary" />
+            <div className="w-12 h-12 rounded-full bg-surface-variant/50 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-primary/10 transition-all">
+              <Plus className="w-6 h-6 text-on-surface-variant group-hover:text-primary" />
             </div>
-            <p className="font-label-md text-outline group-hover:text-primary transition-colors">Add New Project</p>
+            <p className="font-label-md text-sm text-on-surface-variant group-hover:text-primary transition-colors">Add New Project</p>
           </div>
         </div>
       ) : storeProjects.length === 0 ? (

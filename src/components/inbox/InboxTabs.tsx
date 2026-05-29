@@ -4,16 +4,17 @@ import React from 'react';
 import {
   Inbox,
   TrendingUp,
-  DollarSign,
+  CheckSquare,
   Briefcase,
   Users,
+  AlertTriangle,
 } from 'lucide-react';
 import type { InboxTabType } from '@/context/NotificationContext';
 
 /* ═══════════════════════════════════════════════════════
    InboxTabs — Filtered tab bar for the notification center
    
-   Tabs: All · Deals · Finance · Vendors · Team
+   Tabs: All · Opportunities · Tasks · Vendor Bids · Team · System
    Each tab displays an unread count badge when > 0.
    ═══════════════════════════════════════════════════════ */
 
@@ -28,11 +29,12 @@ const TAB_CONFIG: {
   label: string;
   Icon: React.ComponentType<{ className?: string }>;
 }[] = [
-  { id: 'all',     label: 'All',      Icon: Inbox },
-  { id: 'deals',   label: 'Deals',    Icon: TrendingUp },
-  { id: 'finance', label: 'Finance',  Icon: DollarSign },
-  { id: 'vendors', label: 'Vendors',  Icon: Briefcase },
-  { id: 'team',    label: 'Team',     Icon: Users },
+  { id: 'all',           label: 'All',            Icon: Inbox },
+  { id: 'opportunities', label: 'Opportunities',  Icon: TrendingUp },
+  { id: 'tasks',         label: 'Tasks',          Icon: CheckSquare },
+  { id: 'vendors',       label: 'Vendor Bids',    Icon: Briefcase },
+  { id: 'team',          label: 'Team',           Icon: Users },
+  { id: 'system',        label: 'System',         Icon: AlertTriangle },
 ];
 
 export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: InboxTabsProps) {

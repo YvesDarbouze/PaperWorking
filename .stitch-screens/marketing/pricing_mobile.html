@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking | Pricing</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed": "#001a42",
+                        "on-primary-container": "#00574d",
+                        "inverse-surface": "#dae4ec",
+                        "surface-container-low": "#141d23",
+                        "on-secondary": "#002e6a",
+                        "on-primary-fixed-variant": "#005047",
+                        "surface-container": "#182127",
+                        "on-background": "#dae4ec",
+                        "secondary-container": "#0566d9",
+                        "inverse-on-surface": "#293238",
+                        "surface-container-highest": "#2d363d",
+                        "error-container": "#93000a",
+                        "tertiary": "#ffd1aa",
+                        "primary-fixed": "#62fae3",
+                        "secondary": "#adc6ff",
+                        "primary-fixed-dim": "#3cddc7",
+                        "tertiary-container": "#ffac5a",
+                        "on-tertiary-container": "#744000",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-primary-fixed": "#00201c",
+                        "on-error": "#690005",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#060f15",
+                        "primary-container": "#2dd4bf",
+                        "on-secondary-container": "#e6ecff",
+                        "surface-tint": "#3cddc7",
+                        "surface-variant": "#2d363d",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "background": "#0b141a",
+                        "surface": "#0b141a",
+                        "on-tertiary": "#4b2800",
+                        "error": "#ffb4ab",
+                        "outline": "#859490",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-surface-variant": "#bacac5",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "surface-container-high": "#222b32",
+                        "surface-dim": "#0b141a",
+                        "on-tertiary-fixed": "#2d1600",
+                        "inverse-primary": "#006b5f",
+                        "primary": "#57f1db",
+                        "outline-variant": "#3c4a46",
+                        "surface-bright": "#313a41",
+                        "on-primary": "#003731",
+                        "on-surface": "#dae4ec"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-desktop": "24px",
+                        "container-max": "1280px",
+                        "stack-lg": "32px",
+                        "gutter-mobile": "16px",
+                        "stack-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit": "8px",
+                        "stack-md": "16px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col pt-16 selection:bg-primary/30">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl dark:bg-background/80 shadow-2xl border-b border-white/10">
+<div class="flex justify-between items-center h-16 px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-2 cursor-pointer active:scale-95 transition-transform duration-300">
+<span class="material-symbols-outlined text-primary dark:text-primary">grid_view</span>
+<span class="font-headline-md text-headline-md text-on-surface dark:text-on-surface uppercase tracking-tighter">
+<span class="font-bold">Paper</span><span class="font-light">Working</span>
+</span>
+</div>
+<!-- Mobile nav usually hidden or hamburger, JSON says TopAppBar. Rendering trailing action -->
+<button class="font-label-md text-label-md bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-4 py-2 text-on-surface transition-colors">
+                Sign In
+            </button>
+</div>
+</header>
+<main class="flex-grow px-gutter-mobile py-margin-mobile flex flex-col gap-stack-lg max-w-md mx-auto w-full">
+<!-- Hero Section -->
+<section class="text-center pt-8 flex flex-col gap-stack-sm">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Pick your plan.<br/>Start closing deals.</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">14-day trial on every plan. Credit card required. No charge until day 15.</p>
+</section>
+<!-- Pricing Cards Stack -->
+<section class="flex flex-col gap-stack-md">
+<!-- Individual Plan -->
+<div class="bg-surface-container-low/80 backdrop-blur-xl border border-white/10 rounded-xl p-gutter-mobile flex flex-col gap-stack-sm relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Individual Investor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Solo flippers tired of spreadsheet chaos.</p>
+<div class="mt-2 mb-4">
+<span class="font-headline-lg-mobile text-headline-lg-mobile">$50</span><span class="font-body-sm text-on-surface-variant">/mo</span>
+</div>
+<button class="w-full bg-white/5 border border-white/10 text-on-surface font-label-md py-3 rounded-full hover:bg-white/10 transition-colors">Start 14-Day Free Trial</button>
+</div>
+<!-- Team / Firm Plan (Highlighted) -->
+<div class="bg-surface-container-high/90 backdrop-blur-2xl border border-primary/40 shadow-[0_0_30px_-10px_rgba(87,241,219,0.3)] rounded-xl p-gutter-mobile flex flex-col gap-stack-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 bg-primary text-on-primary font-label-sm px-3 py-1 rounded-bl-lg rounded-tr-xl font-bold">Most Popular</div>
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-primary mt-2">Team / Firm</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Scaling businesses managing multiple deals.</p>
+<div class="mt-2 mb-4">
+<span class="font-headline-lg-mobile text-headline-lg-mobile">$83</span><span class="font-body-sm text-on-surface-variant">/mo</span>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md py-3 rounded-full shadow-[0_0_20px_-5px_rgba(87,241,219,0.6)] hover:brightness-110 active:scale-95 transition-all">Start 14-Day Free Trial</button>
+</div>
+<!-- Vendor Plan -->
+<div class="bg-surface-container-low/80 backdrop-blur-xl border border-white/10 rounded-xl p-gutter-mobile flex flex-col gap-stack-sm relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Vendor Marketplace</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Appraisers, Inspectors, GCs, and trades.</p>
+<div class="mt-2 mb-4">
+<span class="font-headline-lg-mobile text-headline-lg-mobile">$33</span><span class="font-body-sm text-on-surface-variant">/mo</span>
+</div>
+<button class="w-full bg-white/5 border border-white/10 text-on-surface font-label-md py-3 rounded-full hover:bg-white/10 transition-colors">List Your Business</button>
+</div>
+</section>
+<!-- Dense Feature Terminal List (Mobile Adaptation of Table) -->
+<section class="bg-surface-container/60 border border-white/5 rounded-xl p-gutter-mobile font-mono text-[12px] text-on-surface-variant">
+<h4 class="font-headline-md text-headline-md text-on-surface font-sans mb-4 border-b border-white/10 pb-2">Core Features</h4>
+<ul class="flex flex-col gap-2">
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Deal Pipeline Kanban</span> <span class="text-primary">All</span></li>
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Find &amp; Fund Module</span> <span class="text-primary">Ind/Team</span></li>
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Acquisition Tracker</span> <span class="text-primary">Ind/Team</span></li>
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Rehab Budget Manager</span> <span class="text-primary">Ind/Team</span></li>
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Exit Formula / ROI</span> <span class="text-primary">Ind/Team</span></li>
+<li class="flex justify-between border-b border-white/5 pb-1"><span>&gt; Holding Cost Clock</span> <span class="text-primary">Ind/Team</span></li>
+</ul>
+</section>
+<!-- FAQ Section -->
+<section class="flex flex-col gap-stack-md mt-4">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Before You Commit</h2>
+<div class="bg-surface-container-low/50 border border-white/5 rounded-lg p-4">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">How does the free trial work?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Full-access 14-day free trial. Credit card collected, but no charge until trial ends. You get the Team-tier experience to evaluate features.</p>
+</div>
+<div class="bg-surface-container-low/50 border border-white/5 rounded-lg p-4">
+<h4 class="font-label-md text-label-md text-on-surface mb-2">What happens if I cancel?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">Cancel anytime. Retain access until end of billing period. Data preserved for 90 days, exportable anytime.</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="relative w-full mt-stack-lg bg-surface-container-lowest dark:bg-surface-container-lowest grid grid-cols-1 md:grid-cols-4 gap-stack-md py-margin-desktop px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto border-t border-white/5">
+<div class="flex flex-col gap-2">
+<span class="font-headline-md text-headline-md text-on-surface dark:text-on-surface">PaperWorking</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 PaperWorking. All rights reserved.</p>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-label-md text-on-surface">Product</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">How It Works</a>
+<a class="font-body-sm text-body-sm text-on-surface dark:text-on-surface opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">Pricing</a>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-label-md text-on-surface">Company</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">About</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">Contact</a>
+</div>
+<div class="flex flex-col gap-2">
+<h4 class="font-label-md text-on-surface">Legal</h4>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant dark:text-on-surface-variant opacity-80 hover:opacity-100 hover:text-primary underline decoration-primary/30 transition-all" href="#">Terms of Service</a>
+</div>
+</footer>
+</body></html>

@@ -46,7 +46,7 @@ describe('Project Creation Wizard Schema & Branching', () => {
       const active = getActiveQuestions(answers);
       const activeIds = active.map(q => q.id);
 
-      expect(activeIds).toContain('address');
+      expect(activeIds).toContain('location');
       expect(activeIds).toContain('propertyName');
       expect(activeIds).toContain('strategyType');
       expect(activeIds).toContain('financingIntent');
@@ -99,6 +99,7 @@ describe('Project Creation Wizard Schema & Branching', () => {
         isBackdated: 'yes',
         startingPhase: 4, // Closing & Exit
         financingIntent: 'all-cash',
+        isCompleted: true,
       };
       const active = getActiveQuestions(answers);
       const activeIds = active.map(q => q.id);

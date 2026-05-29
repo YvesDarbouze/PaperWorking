@@ -133,317 +133,350 @@ export default function ProfileSettingsPage() {
   const completeness = Math.round((filledFields / fields.length) * 100);
 
   return (
-    <div className="w-full space-y-8">
-      {/* ─── Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* Left Column: Personal Information (Form) */}
-        <div className="lg:col-span-7 space-y-stack-md">
-          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden flex flex-col">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg select-none">manage_accounts</span>
-              Personal Information
-            </h3>
+    <div className="w-full space-y-0">
+      {/* ─── 12-Column Bento Grid ─── */}
+      <div className="grid grid-cols-12 gap-6">
 
-            <form onSubmit={handleSaveProfile} className="space-y-6">
-              {/* Avatar & Email */}
-              <div className="flex items-center gap-5 pb-4 border-b border-pw-border/50">
-                <div className="relative group">
-                  <div className="w-16 h-16 rounded-full bg-pw-glass-bg border border-pw-border text-pw-primary flex items-center justify-center text-xl font-bold transition-all shadow-sm shadow-pw-primary/20">
-                    {initials}
-                  </div>
-                  <button
-                    type="button"
-                    className="absolute inset-0 rounded-full bg-pw-black/60 text-pw-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-pw-primary/30"
-                    title="Upload photo"
-                  >
-                    <span className="material-symbols-outlined text-lg">photo_camera</span>
-                  </button>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-pw-black">{firstName} {lastName}</p>
-                  <p className="text-xs text-pw-muted mt-0.5">{user?.email}</p>
-                </div>
-              </div>
+        {/* ════════════════════════════════════════════════
+            1 · HERO PROFILE CARD (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 glass-card rounded-2xl p-8 flex items-center justify-between relative overflow-hidden">
+          {/* Ambient glow */}
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-pw-primary/10 rounded-full blur-[120px] pointer-events-none" />
 
-              {/* Name fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">First Name</label>
-                  <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black"
-                  />
-                </div>
-                <div>
-                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Last Name</label>
-                  <input
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black"
-                  />
-                </div>
-              </div>
-
-              {/* Contact fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Phone Number</label>
-                  <input
-                    type="text"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="(555) 123-4567"
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
-                  />
-                </div>
-                <div>
-                  <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Company Name</label>
-                  <input
-                    type="text"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                    placeholder="Realty Corp LLC"
-                    className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
-                  />
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="flex items-center gap-4 pt-2">
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="luminous-button w-full sm:w-auto inline-flex items-center justify-center gap-2 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl disabled:opacity-50 cursor-pointer"
-                >
-                  {saving ? (
-                    <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
-                  ) : (
-                    <span className="material-symbols-outlined text-sm select-none">save</span>
-                  )}
-                  {saving ? 'Saving…' : 'Save Changes'}
-                </button>
-                {saved && (
-                  <span className="font-label-sm text-pw-primary flex items-center gap-1.5 animate-pulse">
-                    <span className="material-symbols-outlined text-sm select-none">check_circle</span>
-                    Profile updated successfully.
-                  </span>
-                )}
-              </div>
-            </form>
-          </section>
-        </div>
-
-        {/* Right Column: Account Stats, Security, and Sessions */}
-        <div className="lg:col-span-5 space-y-stack-md">
-          
-          {/* Card A: Account Completeness & Overview */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg select-none">analytics</span>
-              Account Overview
-            </h3>
-
-            <div className="space-y-6">
-              {/* Profile completeness progress */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-pw-muted font-medium">Profile Completeness</span>
-                  <span className="text-pw-primary font-bold">{completeness}%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-pw-glass-bg border border-pw-border overflow-hidden">
-                  <div 
-                    className="h-full bg-pw-primary transition-all duration-500 rounded-full" 
-                    style={{ width: `${completeness}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Details table / grid */}
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-pw-border/50">
-                <div className="space-y-1">
-                  <span className="text-xs text-pw-muted">Access Role</span>
-                  <p className="text-sm font-semibold text-pw-black">{profile?.role || 'Investment Lead'}</p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs text-pw-muted">Account Status</span>
-                  <p className="text-sm font-semibold text-pw-primary flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-pw-primary animate-ping" />
-                    Active
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs text-pw-muted">Security Tier</span>
-                  <p className="text-sm font-semibold text-pw-black">
-                    {twoFAEnabled ? 'Enhanced (2FA)' : 'Standard'}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs text-pw-muted">Joined Date</span>
-                  <p className="text-sm font-semibold text-pw-black">
-                    {profile?.createdAt ? new Date(profile.createdAt.seconds * 1000).toLocaleDateString() : 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Card B: Authentication & Security */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg select-none">security</span>
-              Authentication & Security
-            </h3>
-
-            {/* 2FA Toggle */}
-            <div className="flex items-center justify-between py-4 border-b border-pw-border/50 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-pw-glass-bg border border-pw-border flex items-center justify-center text-pw-muted">
-                  <span className="material-symbols-outlined text-lg select-none">
-                    {twoFAEnabled ? 'verified_user' : 'shield'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-pw-black">Two-Factor Auth</p>
-                  <p className="text-xs text-pw-muted mt-0.5">
-                    {twoFAEnabled ? 'Protected' : 'Add shield layer'}
-                  </p>
-                </div>
+          <div className="flex items-center gap-8 relative z-10">
+            {/* Avatar */}
+            <div className="relative group cursor-pointer">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-pw-primary/30 to-pw-primary/10 border-2 border-pw-primary/30 flex items-center justify-center text-3xl font-bold text-pw-primary select-none transition-all">
+                {initials}
               </div>
               <button
-                onClick={() => setTwoFAEnabled(!twoFAEnabled)}
-                className={`
-                  relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border
-                  ${twoFAEnabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
-                `}
-                role="switch"
-                aria-checked={twoFAEnabled}
+                type="button"
+                className="absolute inset-0 rounded-full bg-pw-black/60 text-pw-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border border-pw-primary/30"
+                title="Upload photo"
               >
-                <span
-                  className={`
-                    inline-block h-4 w-4 transform rounded-full transition-all duration-300 shadow-sm
-                    ${twoFAEnabled ? 'translate-x-6 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
-                  `}
-                />
+                <span className="material-symbols-outlined text-xl">photo_camera</span>
               </button>
+              <div className="absolute bottom-0 right-0 bg-pw-glass-bg border border-white/20 rounded-full p-1.5 shadow-lg z-20">
+                <span className="material-symbols-outlined text-[14px] text-pw-black">edit</span>
+              </div>
             </div>
 
-            {/* Password Change Form */}
-            <h4 className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-4 flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-sm select-none">lock_reset</span>
-              Change Password
-            </h4>
-
-            <form onSubmit={handlePasswordChange} className="space-y-5">
-              <div>
-                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Current Password</label>
-                <div className="relative">
-                  <input
-                    type={showPwd ? 'text' : 'password'}
-                    value={currentPwd}
-                    onChange={(e) => setCurrentPwd(e.target.value)}
-                    required
-                    className="glass-input w-full text-sm px-4 py-3 pr-10 text-pw-black"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPwd(!showPwd)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
-                  >
-                    <span className="material-symbols-outlined text-lg select-none">
-                      {showPwd ? 'visibility_off' : 'visibility'}
-                    </span>
-                  </button>
-                </div>
+            {/* Name & email */}
+            <div>
+              <h3 className="text-2xl font-bold text-pw-black mb-1">
+                {firstName} {lastName}
+              </h3>
+              <div className="flex items-center gap-2 text-pw-muted text-sm">
+                <span className="material-symbols-outlined text-[16px]">mail</span>
+                <span className="text-pw-primary/80 font-mono">{user?.email}</span>
               </div>
+            </div>
+          </div>
+
+          {/* Status badge */}
+          <div className="hidden md:block relative z-10">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pw-primary/10 border border-pw-primary/20 text-pw-primary font-semibold text-xs tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-pw-primary animate-pulse" />
+              {profile?.role || 'Active Member'}
+            </span>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════
+            2 · PERSONAL INFORMATION FORM (col-span-7)
+            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 lg:col-span-7 glass-card rounded-2xl p-8 flex flex-col relative overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">person</span>
+              <h4 className="text-2xl font-bold text-pw-black">Personal Information</h4>
+            </div>
+          </div>
+
+          {/* Profile completeness mini-bar */}
+          <div className="space-y-2 mb-6">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-pw-muted font-medium">Profile Completeness</span>
+              <span className="text-pw-primary font-bold">{completeness}%</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-pw-glass-bg border border-pw-border overflow-hidden">
+              <div
+                className="h-full bg-pw-primary transition-all duration-500 rounded-full"
+                style={{ width: `${completeness}%` }}
+              />
+            </div>
+          </div>
+
+          <form onSubmit={handleSaveProfile} className="space-y-6 flex-1">
+            {/* Name fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">New Password</label>
+                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">First Name</label>
                 <input
-                  type="password"
-                  value={newPwd}
-                  onChange={(e) => setNewPwd(e.target.value)}
-                  required
-                  minLength={8}
+                  type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="glass-input w-full text-sm px-4 py-3 text-pw-black"
                 />
               </div>
               <div>
-                <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">Confirm New Password</label>
+                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Last Name</label>
                 <input
-                  type="password"
-                  value={confirmPwd}
-                  onChange={(e) => setConfirmPwd(e.target.value)}
-                  required
-                  minLength={8}
+                  type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   className="glass-input w-full text-sm px-4 py-3 text-pw-black"
                 />
               </div>
+            </div>
 
-              {pwdError && (
-                <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm select-none">error</span>
-                  {pwdError}
-                </p>
-              )}
-              {pwdSuccess && (
-                <p className="text-xs text-pw-primary bg-pw-primary/10 border border-pw-primary/25 rounded-lg px-4 py-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm select-none">check_circle</span>
-                  Password updated successfully.
-                </p>
-              )}
+            {/* Contact fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Phone Number</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(555) 123-4567"
+                  className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Company Name</label>
+                <input
+                  type="text"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  placeholder="Realty Corp LLC"
+                  className="glass-input w-full text-sm px-4 py-3 text-pw-black placeholder:text-pw-muted/40"
+                />
+              </div>
+            </div>
 
+            {/* Email (read-only) */}
+            <div>
+              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Email Address</label>
+              <div className="glass-input w-full text-sm px-4 py-3 text-pw-muted/70 flex items-center gap-2 cursor-not-allowed">
+                <span className="material-symbols-outlined text-[16px] text-pw-muted/50">lock</span>
+                {user?.email}
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="flex items-center gap-4 pt-2">
               <button
                 type="submit"
-                disabled={pwdLoading}
-                className="luminous-button w-full inline-flex items-center justify-center gap-2 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl disabled:opacity-50 cursor-pointer"
+                disabled={saving}
+                className="luminous-button inline-flex items-center justify-center gap-2 font-semibold text-sm uppercase tracking-wider px-8 py-3 rounded-xl disabled:opacity-50 cursor-pointer transition-all"
               >
-                {pwdLoading && (
+                {saving ? (
                   <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                ) : (
+                  <span className="material-symbols-outlined text-sm select-none">save</span>
                 )}
-                {pwdLoading ? 'Updating…' : 'Update Password'}
+                {saving ? 'Saving…' : 'Save Changes'}
               </button>
-            </form>
-          </section>
+              {saved && (
+                <span className="text-sm text-pw-primary flex items-center gap-1.5 animate-pulse">
+                  <span className="material-symbols-outlined text-sm select-none">check_circle</span>
+                  Profile updated successfully.
+                </span>
+              )}
+            </div>
+          </form>
+        </section>
 
-          {/* Card C: Active Sessions */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg select-none">devices</span>
-              Device Sessions
-            </h3>
+        {/* ════════════════════════════════════════════════
+            3 · SECURITY CARD (col-span-5)
+            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 lg:col-span-5 glass-card rounded-2xl p-8 flex flex-col relative overflow-hidden">
+          {/* Ambient glow */}
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="space-y-4">
-              <p className="text-xs text-pw-muted leading-relaxed">
-                Sign out of all other active sessions across your devices. This will invalidate all your refresh tokens immediately.
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">shield_lock</span>
+              <h4 className="text-2xl font-bold text-pw-black">Security</h4>
+            </div>
+          </div>
+
+          {/* 2FA Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5 mb-6">
+            <div>
+              <p className="text-sm font-semibold text-pw-black mb-0.5">Two-Factor Auth</p>
+              <p className="text-xs text-pw-muted">
+                {twoFAEnabled ? 'Enhanced protection active' : 'Add an extra shield layer'}
               </p>
-              
+            </div>
+            <button
+              onClick={() => setTwoFAEnabled(!twoFAEnabled)}
+              className={`
+                relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border
+                ${twoFAEnabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
+              `}
+              role="switch"
+              aria-checked={twoFAEnabled}
+            >
+              <span
+                className={`
+                  inline-block h-4 w-4 transform rounded-full transition-all duration-300 shadow-sm
+                  ${twoFAEnabled ? 'translate-x-6 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
+                `}
+              />
+            </button>
+          </div>
+
+          {/* ── Change Password ── */}
+          <div className="border-b border-white/10 pb-3 mb-5">
+            <h5 className="text-xs font-semibold text-pw-muted uppercase tracking-wider flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-sm select-none">lock_reset</span>
+              Change Password
+            </h5>
+          </div>
+
+          <form onSubmit={handlePasswordChange} className="space-y-4 flex-1">
+            <div>
+              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Current Password</label>
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  value={currentPwd}
+                  onChange={(e) => setCurrentPwd(e.target.value)}
+                  required
+                  className="glass-input w-full text-sm px-4 py-3 pr-10 text-pw-black"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(!showPwd)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-black transition-colors"
+                >
+                  <span className="material-symbols-outlined text-lg select-none">
+                    {showPwd ? 'visibility_off' : 'visibility'}
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">New Password</label>
+              <input
+                type="password"
+                value={newPwd}
+                onChange={(e) => setNewPwd(e.target.value)}
+                required
+                minLength={8}
+                className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPwd}
+                onChange={(e) => setConfirmPwd(e.target.value)}
+                required
+                minLength={8}
+                className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+              />
+            </div>
+
+            {pwdError && (
+              <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm select-none">error</span>
+                {pwdError}
+              </p>
+            )}
+            {pwdSuccess && (
+              <p className="text-xs text-pw-primary bg-pw-primary/10 border border-pw-primary/25 rounded-lg px-4 py-3 flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm select-none">check_circle</span>
+                Password updated successfully.
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={pwdLoading}
+              className="w-full bg-pw-glass-bg hover:bg-pw-border/30 border border-white/10 text-pw-black font-semibold text-sm uppercase tracking-wider py-3 px-4 rounded-xl flex justify-center items-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+            >
+              {pwdLoading && (
+                <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+              )}
+              <span className="material-symbols-outlined text-[18px]">key</span>
+              {pwdLoading ? 'Updating…' : 'Update Password'}
+            </button>
+          </form>
+        </section>
+
+        {/* ════════════════════════════════════════════════
+            4 · ACTIVE SESSIONS (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 glass-card rounded-2xl p-8 relative overflow-hidden">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="material-symbols-outlined text-pw-primary text-xl select-none">devices</span>
+              <h4 className="text-2xl font-bold text-pw-black">Active Sessions</h4>
+            </div>
+            <p className="text-sm text-pw-muted">Manage external authentication and active device sessions.</p>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Current session card */}
+            <div className="flex-1 bg-pw-glass-bg/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-pw-glass-bg/50 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-pw-primary text-[20px]">computer</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-pw-black">This Device</p>
+                  <p className="text-xs text-pw-primary/70 font-mono mt-0.5">Current session</p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-pw-primary/10 text-pw-primary text-xs font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-pw-primary animate-pulse" />
+                Active
+              </span>
+            </div>
+
+            {/* Other sessions card */}
+            <div className="flex-1 bg-pw-glass-bg/30 border border-white/5 rounded-xl p-5 flex items-center justify-between hover:bg-pw-glass-bg/50 transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-pw-muted text-[20px]">devices_other</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-pw-black">Other Sessions</p>
+                  <p className="text-xs text-pw-muted mt-0.5">Sign out everywhere else</p>
+                </div>
+              </div>
               <button
                 onClick={handleRevokeSessions}
                 disabled={revoking}
-                className="w-full inline-flex items-center justify-center gap-2 bg-error/10 border border-error/30 text-error hover:bg-error/20 font-label-md text-label-md font-bold uppercase tracking-wider px-6 py-3 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
+                className="text-pw-muted hover:text-error transition-colors text-xs font-semibold px-3 py-1.5 border border-white/10 rounded-lg bg-white/5 hover:bg-error/10 hover:border-error/30 disabled:opacity-50 cursor-pointer"
               >
                 {revoking ? (
-                  <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>
+                    Revoking…
+                  </span>
                 ) : (
-                  <span className="material-symbols-outlined text-sm select-none">logout</span>
+                  'Revoke All'
                 )}
-                {revoking ? 'Revoking…' : 'Revoke All Other Sessions'}
               </button>
-              
-              {revokeSuccess && (
-                <p className="text-xs text-pw-primary flex items-center gap-1.5 animate-pulse mt-2">
-                  <span className="material-symbols-outlined text-xs select-none">check_circle</span>
-                  All other active sessions have been revoked.
-                </p>
-              )}
             </div>
-          </section>
-        </div>
+          </div>
+
+          {revokeSuccess && (
+            <p className="text-xs text-pw-primary flex items-center gap-1.5 animate-pulse mt-4">
+              <span className="material-symbols-outlined text-xs select-none">check_circle</span>
+              All other active sessions have been revoked.
+            </p>
+          )}
+        </section>
       </div>
     </div>
   );
 }
-

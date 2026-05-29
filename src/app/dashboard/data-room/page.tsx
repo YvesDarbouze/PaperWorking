@@ -675,61 +675,375 @@ export default function DataRoomPage() {
         </div>
       </header>
 
-      {/* ─── Eleven Metric Panels Grid ──────────────────────────────── */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {METRIC_DETAILS.map((metric) => (
-          <div
-            key={metric.id}
-            className="glass-card rounded-2xl border border-white/10 p-5 flex flex-col justify-between hover:border-white/20 transition-all duration-300 relative group"
-            style={{ background: T.surface, backdropFilter: "blur(24px)" }}
-          >
-            {/* Top Indicator */}
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">
-                  {metric.fullName}
-                </h3>
-                <span className="text-[10px] text-slate-600 block mt-0.5">({metric.label})</span>
+      {/* ─── Metrics Vertical Flow ─── */}
+      <div className="flex flex-col gap-6">
+        {/* 1. NOI Panel */}
+        <div 
+          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
+          style={{ background: T.surface }}
+        >
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>monitoring</span>
+              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Net Operating Income</h3>
+            </div>
+            <span className="px-2 py-1 rounded bg-primary/10 text-primary font-label-sm text-xs border border-primary/20 font-bold">+8.4% YoY</span>
+          </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <div className="text-4xl font-bold text-primary drop-shadow-[0_0_8px_rgba(87,241,219,0.3)] mb-1">
+                {fmtUSD(portfolioAggregates?.noi ?? 0)}
               </div>
-              <div className={`px-2 py-0.5 rounded-full border text-[9px] font-extrabold tracking-widest ${metric.badgeColor}`}>
-                {metric.status}
+              <p className="text-sm text-on-surface-variant border-l-2 border-primary/30 pl-3">Total revenue minus operating expenses, excluding capital expenditures.</p>
+            </div>
+            {/* Simulated Sparkline */}
+            <div className="w-full md:w-1/3 h-16 relative flex items-end opacity-80 group-hover:opacity-100 transition-opacity">
+              <svg className="w-full h-full preserve-aspect-ratio-none stroke-primary fill-none" strokeWidth="2" viewBox="0 0 100 30">
+                <path className="drop-shadow-[0_2px_4px_rgba(45,212,191,0.5)]" d="M0,25 Q10,20 20,22 T40,15 T60,18 T80,5 T100,2" />
+                <path className="fill-primary/5 stroke-none" d="M0,25 Q10,20 20,22 T40,15 T60,18 T80,5 T100,2 L100,30 L0,30 Z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Cash Flow Panel */}
+        <div 
+          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
+          style={{ background: T.surface }}
+        >
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>sync_alt</span>
+              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cash Flow Position</h3>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="w-full md:w-1/3">
+              <div className="text-3xl font-bold text-on-surface mb-1">
+                {fmtUSD(portfolioAggregates?.cashFlow ?? 0)}
+              </div>
+              <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3">Net liquid cash remaining after all debt service and operating obligations.</p>
+            </div>
+            {/* Diverging Bar Chart */}
+            <div className="w-full flex-1 relative h-8 bg-surface-container-low rounded-full overflow-hidden flex items-center border border-white/5">
+              <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20 z-10" />
+              <div className="w-1/3 h-full flex justify-end" />
+              <div className="w-2/3 h-full flex justify-start">
+                <div className="h-full bg-primary shadow-[0_0_12px_rgba(98,250,227,0.4)] w-3/4 rounded-r-full relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1/2 bg-white/20" />
+                </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Middle Section: Value + Chart */}
+        {/* Grid for Gauges (Cap Rate, DSCR, CoC, IRR) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 3. Cap Rate */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>speed</span>
+                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Capitalization Rate</h3>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="flex-1 pr-4">
+                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Estimated rate of return on the real estate investment property.</p>
+                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.capRate) : "5.8%"}</div>
+              </div>
+              {/* Half-circle gauge */}
+              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
+                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
+                <div 
+                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
+                  style={{ 
+                    borderColor: T.teal,
+                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.capRate / 10) * 180 - 135, -135), 45) : 10}deg)` 
+                  }} 
+                />
+                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 5.0%</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 4. DSCR */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>account_balance</span>
+                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Debt Service Coverage</h3>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="flex-1 pr-4">
+                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Measurement of cash flow available to pay current debt obligations.</p>
+                <div className="text-3xl font-bold text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
+                  {portfolioAggregates ? `${portfolioAggregates.dscr.toFixed(2)}x` : "1.25x"}
+                </div>
+              </div>
+              {/* Half-circle gauge */}
+              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
+                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
+                <div 
+                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
+                  style={{ 
+                    borderColor: T.amber,
+                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.dscr / 2.0) * 180 - 135, -135), 45) : -15}deg)` 
+                  }} 
+                />
+                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Min 1.30</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 5. CoC Return */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>monetization_on</span>
+                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cash-on-Cash Return</h3>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="flex-1 pr-4">
+                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Annual cash flow divided by total cash invested.</p>
+                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.coc) : "8.4%"}</div>
+              </div>
+              {/* Half-circle gauge */}
+              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
+                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
+                <div 
+                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
+                  style={{ 
+                    borderColor: T.teal,
+                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.coc / 15) * 180 - 135, -135), 45) : 0}deg)` 
+                  }} 
+                />
+                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 8.0%</div>
+              </div>
+            </div>
+          </div>
+
+          {/* 6. IRR */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-8">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>trending_up</span>
+                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Internal Rate of Return</h3>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div className="flex-1 pr-4">
+                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Annualized effective compounded return rate making NPV of all cash flows zero.</p>
+                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.irr) : "18.5%"}</div>
+              </div>
+              {/* Half-circle gauge */}
+              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
+                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
+                <div 
+                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
+                  style={{ 
+                    borderColor: T.purple,
+                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.irr / 25) * 180 - 135, -135), 45) : 15}deg)` 
+                  }} 
+                />
+                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 12.0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 7. Occupancy Panel */}
+        <div 
+          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
+          style={{ background: T.surface }}
+        >
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>domain</span>
+              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Physical Occupancy</h3>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="w-full md:w-1/3">
+              <div className="text-3xl font-bold text-on-surface mb-1">
+                {portfolioAggregates ? fmtPct(portfolioAggregates.occupancy) : "94.2%"}
+              </div>
+              <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3">Percentage of total rentable square footage currently leased and occupied.</p>
+            </div>
+            {/* Progress Bar with stabilised target indicator */}
+            <div className="w-full flex-1 relative">
+              <div className="flex justify-between text-xs text-on-surface-variant mb-2">
+                <span>Current</span>
+                <span>Stabilized Target: 95%</span>
+              </div>
+              <div className="h-4 bg-surface-container-low rounded-full overflow-hidden border border-white/5 relative">
+                <div 
+                  className="h-full bg-primary shadow-[0_0_10px_rgba(87,241,219,0.5)] relative transition-all duration-1000"
+                  style={{ width: portfolioAggregates ? `${portfolioAggregates.occupancy}%` : "94.2%" }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/30" />
+                </div>
+              </div>
+              {/* Target Marker */}
+              <div className="absolute top-[28px] left-[95%] w-0.5 h-6 bg-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] -translate-x-1/2" />
+            </div>
+          </div>
+        </div>
+
+        {/* 8. GRM, Expense Ratio, Appreciation, Capital Raised Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* GRM */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Gross Rent Multiplier</h3>
+                <span className="text-[10px] text-slate-600 block mt-0.5">(GRM)</span>
+              </div>
+            </div>
             <div className="flex items-center justify-between my-3 min-h-[90px]">
               <div>
-                <span className="text-3xl font-bold font-mono tracking-tighter text-white tabular-nums">
-                  {metric.value}
+                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
+                  {portfolioAggregates ? `${portfolioAggregates.grm.toFixed(2)}x` : "10.0x"}
                 </span>
                 <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                  Target: {(benchmarks as any)[metric.id].target}
-                  {(benchmarks as any)[metric.id].units}
+                  Target: 10.0x
                 </div>
               </div>
-
-              {/* Chart Render */}
               <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
-                {metric.chartType === "gauge" && metric.gaugeValue !== undefined ? (
-                  renderGauge(metric.gaugeValue, metric.gaugeMax || 10, metric.gaugeColor || T.teal)
-                ) : (
-                  <ReactECharts
-                    option={metric.chartOption}
-                    style={{ height: 80, width: 90 }}
-                    opts={{ renderer: "canvas" }}
-                  />
-                )}
+                <ReactECharts
+                  option={METRIC_DETAILS.find(m => m.id === "grm")?.chartOption}
+                  style={{ height: 80, width: 90 }}
+                  opts={{ renderer: "canvas" }}
+                />
               </div>
             </div>
-
-            {/* Bottom definition line */}
             <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
-              {metric.desc}
+              Ratio of property price to gross rental income (lower is better).
             </div>
           </div>
-        ))}
-      </section>
+
+          {/* Expense Ratio (OER) */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Operating Expense Ratio</h3>
+                <span className="text-[10px] text-slate-600 block mt-0.5">(OER)</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between my-3 min-h-[90px]">
+              <div>
+                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
+                  {portfolioAggregates ? fmtPct(portfolioAggregates.oer) : "38.0%"}
+                </span>
+                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                  Target: 45.0%
+                </div>
+              </div>
+              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
+                <ReactECharts
+                  option={METRIC_DETAILS.find(m => m.id === "oer")?.chartOption}
+                  style={{ height: 80, width: 90 }}
+                  opts={{ renderer: "canvas" }}
+                />
+              </div>
+            </div>
+            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
+              Percentage of gross income consumed by operational costs.
+            </div>
+          </div>
+
+          {/* Appreciation */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Annualized Appreciation</h3>
+                <span className="text-[10px] text-slate-600 block mt-0.5">(Appreciation)</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between my-3 min-h-[90px]">
+              <div>
+                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
+                  {portfolioAggregates ? fmtPct(portfolioAggregates.appreciation) : "4.0%"}
+                </span>
+                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                  Target: 4.0%
+                </div>
+              </div>
+              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
+                <ReactECharts
+                  option={METRIC_DETAILS.find(m => m.id === "appreciation")?.chartOption}
+                  style={{ height: 80, width: 90 }}
+                  opts={{ renderer: "canvas" }}
+                />
+              </div>
+            </div>
+            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
+              Annual rate of appreciation in market value over original basis.
+            </div>
+          </div>
+
+          {/* Capital Raised */}
+          <div 
+            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
+            style={{ background: T.surface }}
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Equity Capital Invested</h3>
+                <span className="text-[10px] text-slate-600 block mt-0.5">(Capital Raised)</span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between my-3 min-h-[90px]">
+              <div>
+                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
+                  {portfolioAggregates ? fmtUSD(portfolioAggregates.capitalRaised) : "$500,000"}
+                </span>
+                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+                  Target: $500,000
+                </div>
+              </div>
+              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
+                <ReactECharts
+                  option={METRIC_DETAILS.find(m => m.id === "capitalRaised")?.chartOption}
+                  style={{ height: 80, width: 90 }}
+                  opts={{ renderer: "canvas" }}
+                />
+              </div>
+            </div>
+            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
+              Total equity capital deployed to fund active assets.
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ─── Bottom Section: Portfolio Comparison Matrix ───────────────── */}
       <section className="glass-card rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: T.surface, backdropFilter: "blur(24px)" }}>

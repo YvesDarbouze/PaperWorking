@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking | Advanced Debt Terminal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .font-mono-finance { font-family: 'JetBrains Mono', monospace; }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+            border-left: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glow-primary {
+            box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(87, 241, 219, 0.2);
+            border-radius: 10px;
+        }
+        .input-focus-ring:focus {
+            outline: none;
+            border-color: #57f1db;
+            box-shadow: inset 0 0 8px rgba(87, 241, 219, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#3cddc7",
+                        "primary-fixed": "#62fae3",
+                        "surface-container-lowest": "#060f15",
+                        "secondary": "#adc6ff",
+                        "inverse-primary": "#006b5f",
+                        "error": "#ffb4ab",
+                        "background": "#0b141a",
+                        "primary-container": "#2dd4bf",
+                        "on-surface": "#dae4ec",
+                        "surface-container-low": "#141d23",
+                        "on-primary": "#003731",
+                        "on-surface-variant": "#bacac5",
+                        "primary": "#57f1db"
+                    },
+                    "spacing": {
+                        "gutter-desktop": "24px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "unit": "8px",
+                    },
+                    "fontFamily": {
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-sm": ["Plus Jakarta Sans"],
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] flex justify-between items-center px-gutter-desktop h-16">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">PaperWorking</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80" href="#">Portfolio</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-body-md text-body-md cursor-pointer active:opacity-80" href="#">Underwriting</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80" href="#">Debt</a>
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80" href="#">Strategy</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors" data-icon="settings">settings</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User profile" data-alt="Close-up professional portrait of a financial analyst in a modern office, illuminated by cool teal and blue ambient screen light. The aesthetic is high-fidelity and crisp, matching a dark mode terminal environment. Soft depth of field with bokeh highlights from data servers in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwXJgtZOmsEqpDED-6bxojOwYfI1A7BVi4df-jK4H8wt9xkawS2gNuKHnlX6RNNboNpnN4LFgofU1BBKQAjymBG5RfSpjdwQAkRgnxrLwnEN57tqDpg1LtOeoukXE3KvPVU4_pDqo-TbwbZqccM5XprSR7lbxY6bLFJBj9M9LnT_vr8rv2WI7wIXbEXFG9MXpek_q8acXwKWwKZ9B1vo1GkKbaUDOaFag5zVPVRaCgEqE_ywpxCWpQZ-oFfv6Euw6pUzmvizrxg1MK"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-low/60 backdrop-blur-2xl border-r border-white/10 flex flex-col py-stack-md transition-all duration-300 ease-in-out">
+<div class="px-6 mb-8">
+<h2 class="font-headline-sm text-headline-sm text-primary">Terminal V1.0</h2>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">Operational Shell</p>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary bg-primary/10 border-r-2 border-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-label-md text-label-md">Debt Models</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+<span class="font-label-md text-label-md">Asset Management</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</div>
+</nav>
+<div class="px-4 mt-auto space-y-2">
+<button class="w-full py-3 rounded-xl bg-primary text-on-primary font-bold shadow-lg glow-primary flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Project
+            </button>
+<div class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 mt-16 p-stack-lg h-[calc(100vh-64px)] overflow-hidden flex flex-col gap-6">
+<!-- Summary Banner -->
+<section class="glass-card rounded-2xl p-6 flex justify-between items-center relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+<div class="relative z-10 flex items-center gap-8">
+<div>
+<h3 class="text-on-surface-variant text-label-md mb-1">REAL-TIME CALCULATION</h3>
+<div class="flex items-baseline gap-2">
+<span class="text-on-surface-variant font-mono-finance text-headline-md">$</span>
+<span class="text-primary font-mono-finance font-bold text-4xl tracking-tighter" id="total-cash">1,452,890.00</span>
+</div>
+<p class="text-on-surface-variant font-label-md">Total Cash to Close</p>
+</div>
+<div class="h-12 w-px bg-white/10"></div>
+<div class="grid grid-cols-2 gap-x-8 gap-y-1">
+<span class="text-on-surface-variant text-label-md">Monthly Payment</span>
+<span class="text-primary font-mono-finance text-label-md">$8,432.12</span>
+<span class="text-on-surface-variant text-label-md">LTV Ratio</span>
+<span class="text-primary font-mono-finance text-label-md">74.2%</span>
+</div>
+</div>
+<div class="relative z-10 flex gap-4">
+<button class="px-6 py-2 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-label-md">Export PDF</button>
+<button class="px-6 py-2 rounded-lg bg-primary text-on-primary font-bold glow-primary hover:opacity-90 transition-all font-label-md">Finalize Term Sheet</button>
+</div>
+</section>
+<!-- Configuration Grid -->
+<div class="flex-1 grid grid-cols-12 gap-6 overflow-hidden">
+<!-- Left Pane: Primary Inputs -->
+<div class="col-span-12 lg:col-span-5 flex flex-col gap-6 overflow-y-auto custom-scrollbar pr-2">
+<div class="glass-card rounded-2xl p-6">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance">account_balance</span>
+<h4 class="font-headline-sm text-headline-sm">Primary Loan Parameters</h4>
+</div>
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-label-md text-on-surface-variant flex justify-between">
+<span>Loan Amount</span>
+<span class="text-[10px] text-primary/60">REQUIRED</span>
+</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-finance">$</span>
+<input class="w-full bg-surface-container-lowest/80 border border-white/10 rounded-xl py-4 pl-8 pr-4 font-mono-finance text-primary text-xl input-focus-ring transition-all" type="text" value="1,200,000"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-label-md text-on-surface-variant">Annual Rate (%)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest/80 border border-white/10 rounded-xl py-4 px-4 font-mono-finance text-primary text-xl input-focus-ring transition-all" type="text" value="6.75"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono-finance">%</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md text-on-surface-variant">Term (Years)</label>
+<select class="w-full bg-surface-container-lowest/80 border border-white/10 rounded-xl py-4 px-4 font-mono-finance text-primary text-xl input-focus-ring transition-all appearance-none cursor-pointer">
+<option>30</option>
+<option selected="">15</option>
+<option>10</option>
+<option>5</option>
+</select>
+</div>
+</div>
+<div class="pt-6 border-t border-white/5 space-y-4">
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="w-6 h-6 rounded-md border-2 border-primary/30 flex items-center justify-center group-hover:border-primary transition-colors bg-surface-container">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="text-on-surface-variant font-label-md">Amortized Structure</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<div class="w-6 h-6 rounded-md border-2 border-primary/30 flex items-center justify-center group-hover:border-primary transition-colors">
+</div>
+<span class="text-on-surface-variant font-label-md">Interest Only Period</span>
+</label>
+</div>
+</div>
+</div>
+<div class="glass-card rounded-2xl p-6">
+<h4 class="font-headline-sm text-headline-sm mb-4">Risk Profile</h4>
+<div class="h-32 w-full bg-surface-container-lowest/50 rounded-xl flex items-center justify-center relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+<div class="w-full h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="text-center">
+<p class="text-xs text-on-surface-variant">DSCR</p>
+<p class="font-mono-finance text-primary text-lg">1.25x</p>
+</div>
+<div class="h-8 w-px bg-white/10"></div>
+<div class="text-center">
+<p class="text-xs text-on-surface-variant">Yield On Cost</p>
+<p class="font-mono-finance text-primary text-lg">8.4%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: Advanced Leverage (Progressive Disclosure) -->
+<div class="col-span-12 lg:col-span-7 flex flex-col gap-6 overflow-hidden">
+<div class="glass-card rounded-2xl flex-1 flex flex-col overflow-hidden">
+<div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="tune">tune</span>
+<h4 class="font-headline-sm text-headline-sm">Advanced Leverage Mechanics</h4>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold">MODE: GRANULAR</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-8">
+<!-- Fees Disclosure Section -->
+<div class="space-y-4">
+<div class="flex items-center justify-between cursor-pointer group" onclick="this.nextElementSibling.classList.toggle('hidden')">
+<h5 class="font-label-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm transition-transform" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+                                    Lender &amp; Origination Fees
+                                </h5>
+<span class="text-on-surface-variant font-mono-finance">$24,000.00</span>
+</div>
+<div class="pl-6 space-y-4">
+<div class="grid grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-xs text-on-surface-variant">Origination Points (%)</label>
+<input class="w-full bg-surface-container-lowest/60 border border-white/5 rounded-lg py-3 px-4 font-mono-finance text-on-surface input-focus-ring" type="text" value="1.50"/>
+</div>
+<div class="space-y-2">
+<label class="text-xs text-on-surface-variant">Processing Fee ($)</label>
+<input class="w-full bg-surface-container-lowest/60 border border-white/5 rounded-lg py-3 px-4 font-mono-finance text-on-surface input-focus-ring" type="text" value="1,500.00"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Junk Fees & Closing Costs -->
+<div class="space-y-4">
+<div class="flex items-center justify-between cursor-pointer group">
+<h5 class="font-label-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="keyboard_arrow_right">keyboard_arrow_right</span>
+                                    Soft Costs &amp; Third Party Fees
+                                </h5>
+<span class="text-on-surface-variant font-mono-finance">$12,450.00</span>
+</div>
+</div>
+<!-- Leverage Optimization Bento -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest/40 p-4 rounded-xl border border-white/5">
+<p class="text-xs text-on-surface-variant mb-2">Lender Credit Allocation</p>
+<div class="flex items-center gap-4">
+<input class="flex-1 accent-primary" type="range"/>
+<span class="font-mono-finance text-primary">-$1,200</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest/40 p-4 rounded-xl border border-white/5">
+<p class="text-xs text-on-surface-variant mb-2">Interest Rate Buydown</p>
+<div class="flex items-center gap-4">
+<input class="flex-1 accent-primary" type="range"/>
+<span class="font-mono-finance text-primary">+0.25 pts</span>
+</div>
+</div>
+</div>
+<!-- Scenario Comparison -->
+<div class="bg-surface-container-lowest/20 rounded-xl p-4 border border-white/5">
+<h5 class="text-xs font-bold text-primary mb-4 tracking-widest uppercase">Scenario Benchmark</h5>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Conservative (5.5%)</span>
+<div class="h-1 flex-1 mx-4 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-white/20 w-[40%]"></div>
+</div>
+<span class="text-sm font-mono-finance">$1.2M</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-on-surface-variant">Aggressive (7.2%)</span>
+<div class="h-1 flex-1 mx-4 bg-white/5 rounded-full overflow-hidden">
+<div class="h-full bg-primary/40 w-[85%]"></div>
+</div>
+<span class="text-sm font-mono-finance">$1.8M</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Financial Footer Stats -->
+<div class="p-6 bg-surface-container-low/40 grid grid-cols-3 gap-4 border-t border-white/10">
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase">Net Loan Proceeds</p>
+<p class="font-mono-finance text-lg text-on-surface">$1,176,000</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase">Eff. Borrowing Cost</p>
+<p class="font-mono-finance text-lg text-on-surface">6.92%</p>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase">Total Transaction Cost</p>
+<p class="font-mono-finance text-lg text-on-surface">$36,450</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions for financial input formatting
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('glow-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('glow-primary');
+            });
+        });
+
+        // Atmospheric mouse glow effect
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            const glow = document.createElement('div');
+            // This is handled by a single persistent element for performance usually,
+            // but for this UI we'll just use the CSS radial gradient in the background if needed.
+        });
+    </script>
+</body></html>

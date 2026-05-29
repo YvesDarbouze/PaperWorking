@@ -24,7 +24,7 @@ export default function WorkspaceSwitcher() {
     Object.entries(profile.memberships).forEach(([tenantId, membership]) => {
       workspaces.push({
         id: tenantId,
-        name: (membership as any)?.tenantName || 'Team Workspace',
+        name: (membership as { tenantName?: string })?.tenantName || 'Team Workspace',
         type: 'team',
       });
     });

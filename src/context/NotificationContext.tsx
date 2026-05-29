@@ -20,7 +20,7 @@ import { NotificationType } from '@/types/notification';
 import toast from 'react-hot-toast';
 import { requestPushPermissionAndGetToken, onForegroundMessage } from '@/lib/firebase/messaging';
 
-export type InboxTabType = 'all' | 'deals' | 'finance' | 'vendors' | 'team';
+export type InboxTabType = 'all' | 'opportunities' | 'tasks' | 'vendors' | 'team' | 'system';
 
 const SENSITIVE_NOTIFICATION_TYPES: NotificationType[] = [
   'BILLING_CHARGED',
@@ -37,22 +37,22 @@ export function mapNotificationTypeToTab(type: NotificationType): InboxTabType {
     case 'DEADLINE_ALERT':
     case 'OVER_IMPROVEMENT_ALERT':
     case 'BURN_RATE_WARNING':
-      return 'deals';
-    case 'BILLING_CHARGED':
-    case 'RECEIPT_APPROVAL':
     case 'INVEST_INVITE':
-      return 'finance';
+      return 'opportunities';
+    case 'TASK_COMPLETE':
+    case 'TASK_ASSIGNED':
+      return 'tasks';
     case 'VENDOR_BID':
     case 'VENDOR_LEAD':
       return 'vendors';
     case 'TEAM_INVITE':
     case 'TEAM_INVITE_REMINDER':
-    case 'TASK_COMPLETE':
-    case 'TASK_ASSIGNED':
     case 'DOCUMENT_SIGNED':
       return 'team';
+    case 'BILLING_CHARGED':
+    case 'RECEIPT_APPROVAL':
     default:
-      return 'team';
+      return 'system';
   }
 }
 
@@ -61,10 +61,10 @@ interface NotificationContextType {
   unreadTotal: number;
   loading: boolean;
   markAsRead: (id: string, type: NotificationType) => Promise<void>;
-  markAllRead: (unreadItems: { id: string; type: NotificationType }[]) => Promise<void>;
+  markAllRead: (items: { id: string; type: NotificationType }[]) => Promise<void>;
   archiveItem: (id: string, wasUnread: boolean, type: NotificationType) => Promise<void>;
   deleteItem: (id: string, wasUnread: boolean, type: NotificationType) => Promise<void>;
-  bulkArchive: (items: { id: string; wasUnread: boolean; type: NotificationType }[]) => Promise<void>;
+  bulkArchive: (itemsToArchive: { id: string; wasUnread: boolean; type: NotificationType }[]) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -75,10 +75,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const [unreadCounts, setUnreadCounts] = useState<Record<InboxTabType, number>>({
     all: 0,
-    deals: 0,
-    finance: 0,
+    opportunities: 0,
+    tasks: 0,
     vendors: 0,
     team: 0,
+    system: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -170,10 +171,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     if (!uid) {
       setUnreadCounts({
         all: 0,
-        deals: 0,
-        finance: 0,
+        opportunities: 0,
+        tasks: 0,
         vendors: 0,
         team: 0,
+        system: 0,
       });
       setLoading(false);
       return;
@@ -193,10 +195,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       (snapshot) => {
         const counts: Record<InboxTabType, number> = {
           all: 0,
-          deals: 0,
-          finance: 0,
+          opportunities: 0,
+          tasks: 0,
           vendors: 0,
           team: 0,
+          system: 0,
         };
 
         snapshot.docs.forEach((doc) => {

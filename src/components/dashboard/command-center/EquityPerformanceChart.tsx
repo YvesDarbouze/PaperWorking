@@ -190,7 +190,8 @@ export function EquityPerformanceChart() {
               x={pt.x}
               y={height - paddingY + 16}
               textAnchor="middle"
-              className="fill-on-surface-variant font-mono text-[10px] opacity-70"
+              className="fill-on-surface-variant font-mono opacity-70"
+              style={{ fontSize: "10px" }}
             >
               {pt.label}
             </text>
@@ -225,7 +226,7 @@ export function EquityPerformanceChart() {
             <div className="font-semibold text-on-surface text-sm">
               {points[hoveredIndex].valStr}
             </div>
-            <div className="text-on-surface-variant font-mono text-[10px] opacity-75">
+            <div className="text-on-surface-variant font-mono opacity-75" style={{ fontSize: "10px" }}>
               {points[hoveredIndex].label} · {viewMode}
             </div>
           </div>

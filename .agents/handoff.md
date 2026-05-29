@@ -1,19 +1,19 @@
-# Agent Handoff — Visual Unification Refactor & Deal Analyzer Charts
+# Agent Handoff — Persistent Global Navigation Audit
 
-**Last Updated**: 2026-05-29T04:12:00-04:00  
-**Agent**: Antigravity (conversation 7831d302)
+**Last Updated**: 2026-05-29  
+**Agent**: Antigravity (conversation dd719032-e64a-4c58-8ce7-281b56fb47ba)
 
 ## Status: Completed & Verified
 
-1. **Deal Analyzer Charts**:
-   - `CashFlowChart` and `EquityBuildupChart` are fully built using ECharts with modern styling and proper fallback states (skeletons/empty states).
-   - Guarded with `isMounted` client-side checks to prevent React/Next.js hydration mismatches.
-   - Fully integrated into `DealAnalyzerTerminal.tsx`.
-   - Unit tests are added in [DealCharts.test.tsx](file:///Users/yvesdarbouze/Documents/PaperWorking/src/__tests__/DealCharts.test.tsx) and pass successfully (6/6 tests).
+1. **Navigation Contract Audit**:
+   - Audited layouts across `src/app/dashboard`, `src/app/projects`, `src/app/rehab`, `src/app/(auth)`, `src/app/invest`, etc.
+   - All authenticated dashboard pages strictly inherit and render the persistent left-side navigation contract via `src/components/layout/Sidebar.tsx` (and `src/components/layout/BottomNav.tsx` for mobile view).
+   - No custom, hardcoded, or redundant navigation sidebars exist in page-level components.
 
-2. **Build Verification**:
-   - Run `npm run build` successfully (zero errors). Page data collection and static generation completed without issue.
-   - Run `npm run test` successfully (all 24 test suites / 276 tests passed).
+2. **Typescript & Linting Fixes**:
+   - Fixed `as any` explicit casts in both `src/components/layout/Sidebar.tsx` and `src/components/workspace/WorkspaceSwitcher.tsx` to type-safe `{ tenantName?: string }` assertions.
+   - Verified changes are clean and free of ESLint issues by running targeted checks.
 
-3. **Global Navigation**:
-   - Confirmed global navigation layouts match Sidebar components without any regressions.
+3. **Validation**:
+   - Run type-checks `npx tsc --noEmit` successfully (0 errors).
+   - Run all 276 test suites successfully (all tests pass, including `src/__tests__/navigationContract.test.tsx`).

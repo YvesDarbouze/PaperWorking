@@ -5,51 +5,48 @@ import Link from 'next/link';
 /* ═══════════════════════════════════════════════════════
    LandingFooter — Antigravity Design System
    
-   Reskinned to match the Stitch UX design exactly.
+   Reskinned to match the how_it_works.html mockup exactly.
    Clean, modern layout using Luminous Glass dark/light.
    ═══════════════════════════════════════════════════════ */
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-white/10 w-full py-stack-lg mt-24">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-lg px-gutter-desktop max-w-container-max mx-auto text-left">
+    <footer className="w-full py-stack-lg bg-surface-container-lowest border-t border-white/5 mt-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-md px-6 md:px-margin-desktop max-w-container-max mx-auto mb-stack-lg">
         
         {/* ── Brand Column ── */}
-        <div className="col-span-2 md:col-span-1">
-          <div className="flex items-center gap-2 mb-6">
+        <div className="col-span-2 md:col-span-1 mb-stack-md md:mb-0">
+          <div className="flex items-center gap-2 mb-4">
             <img
-              alt="PaperWorking Logo"
-              className="h-6 w-6 rounded-md object-contain grayscale opacity-70"
-              src="/logo.svg"
+              alt="PaperWorking Logo Minimal"
+              className="h-6 w-6 object-contain grayscale opacity-70"
+              src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
             />
-            <span className="font-headline-md text-headline-md font-bold text-on-surface">
-              PaperWorking
+            <span className="font-headline-md text-headline-md text-primary">
+              <span className="font-bold">Paper</span>Working
             </span>
           </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 pr-4">
+          <p className="font-body-sm text-body-sm text-on-surface-variant/70 mb-4 pr-4">
             Deal pipeline, rehab tracking, and closing docs — all in one place. Built for serious real estate investors.
-          </p>
-          <p className="font-body-sm text-body-sm text-on-surface-variant/50">
-            © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
           </p>
         </div>
 
         {/* ── Product Column ── */}
         <div>
           <h4 className="font-label-md text-label-md text-on-surface mb-4">Product</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
+          <ul className="space-y-2">
             <li>
               <Link
-                href="#how-it-works"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                href="/how-it-works"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 How It Works
               </Link>
             </li>
             <li>
               <Link
-                href="#pricing"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                href="/#pricing"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 Pricing
               </Link>
@@ -57,15 +54,15 @@ export default function LandingFooter() {
             <li>
               <Link
                 href="/dashboard"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 Dashboard
               </Link>
             </li>
             <li>
               <Link
-                href="#news"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                href="/#news"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 News
               </Link>
@@ -76,11 +73,11 @@ export default function LandingFooter() {
         {/* ── Company Column ── */}
         <div>
           <h4 className="font-label-md text-label-md text-on-surface mb-4">Company</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
+          <ul className="space-y-2">
             <li>
               <Link
                 href="/about"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 About
               </Link>
@@ -88,7 +85,7 @@ export default function LandingFooter() {
             <li>
               <Link
                 href="/careers"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 Careers
               </Link>
@@ -96,7 +93,7 @@ export default function LandingFooter() {
             <li>
               <Link
                 href="/blog"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 Blog
               </Link>
@@ -104,7 +101,7 @@ export default function LandingFooter() {
             <li>
               <Link
                 href="/contact"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 Contact
               </Link>
@@ -112,37 +109,58 @@ export default function LandingFooter() {
           </ul>
         </div>
 
-        {/* ── Legal Column ── */}
+        {/* ── Support Column ── */}
         <div>
-          <h4 className="font-label-md text-label-md text-on-surface mb-4">Legal</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
+          <h4 className="font-label-md text-label-md text-on-surface mb-4">Support</h4>
+          <ul className="space-y-2">
             <li>
               <Link
-                href="/privacy"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                href="/support"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
-                Privacy Policy
+                Help Center
               </Link>
             </li>
             <li>
               <Link
-                href="/terms"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+                href="/faq"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
-                Terms of Service
+                Industry FAQ
               </Link>
             </li>
             <li>
-              <Link
-                href="/cookies"
-                className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+              <a
+                href="mailto:support@paperworking.co"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
-                Cookie Policy
-              </Link>
+                support@paperworking.co
+              </a>
             </li>
           </ul>
         </div>
 
+      </div>
+
+      {/* ── Bottom Bar ── */}
+      <div className="border-t border-white/5 pt-stack-md px-6 md:px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <span className="font-body-sm text-body-sm text-on-surface-variant/50">
+          © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
+        </span>
+        <div className="flex gap-4">
+          <Link
+            href="/privacy"
+            className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+          >
+            Privacy Policy
+          </Link>
+          <Link
+            href="/terms"
+            className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+          >
+            Terms of Service
+          </Link>
+        </div>
       </div>
     </footer>
   );

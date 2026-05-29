@@ -259,338 +259,325 @@ export default function NotificationsSettingsPage() {
   }
 
   return (
-    <div className="w-full space-y-8">
-      {/* ─── Grid Layout ─── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md items-start">
-        
-        {/* Left Column: Guarantee Notice, Matrix & Global Dispatch */}
-        <div className="lg:col-span-7 space-y-stack-md">
-          
-          {/* Guarantee Notice */}
-          <section className="glass-card glass-card-bright p-4 rounded-xl flex gap-3 items-start relative overflow-hidden">
-            <span className="material-symbols-outlined text-base text-pw-muted mt-0.5 select-none">info</span>
+    <div className="w-full space-y-6">
+      {/* ─── Bento Grid Layout ─── */}
+      <div className="grid grid-cols-12 gap-6">
+
+        {/* ════ Row 1: Appearance (col-8) + Inbox Cleanup (col-4) ════ */}
+
+        {/* Appearance */}
+        <section className="col-span-12 xl:col-span-8 glass-card rounded-2xl p-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-pw-primary/5 rounded-full blur-[80px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
+            <span className="material-symbols-outlined text-pw-primary select-none">palette</span>
+            <h2 className="text-xl font-bold text-pw-black">Appearance</h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {THEME_OPTIONS.map(({ value, label, iconName, description }) => {
+              const isSelected = theme === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => setTheme(value)}
+                  className={`
+                    flex flex-col items-center gap-3 p-5 text-center transition-all border rounded-xl cursor-pointer
+                    ${isSelected
+                      ? 'bg-pw-primary/10 border-pw-primary/40 shadow-[0_0_20px_rgba(87,241,219,0.12)]'
+                      : 'border-white/5 bg-white/[0.02] hover:border-pw-muted/30 hover:bg-white/[0.04]'
+                    }
+                  `}
+                >
+                  <div className={`
+                    w-12 h-12 flex items-center justify-center rounded-xl border
+                    ${isSelected ? 'bg-pw-primary/20 border-pw-primary/30 text-pw-primary' : 'bg-pw-glass-bg border-pw-border text-pw-muted'}
+                  `}>
+                    <span className="material-symbols-outlined text-2xl select-none">{iconName}</span>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold ${isSelected ? 'text-pw-primary' : 'text-pw-black'}`}>
+                      {label}
+                    </p>
+                    <p className="text-[11px] text-pw-muted mt-1 leading-snug">{description}</p>
+                  </div>
+                  <div className={`
+                    w-4 h-4 rounded-full border-2 flex items-center justify-center
+                    ${isSelected ? 'border-pw-primary' : 'border-pw-border'}
+                  `}>
+                    {isSelected && (
+                      <div className="w-2 h-2 rounded-full bg-pw-primary" />
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Inbox Cleanup & Retention */}
+        <section className="col-span-12 xl:col-span-4 glass-card rounded-2xl p-6 flex flex-col">
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
+            <span className="material-symbols-outlined text-pw-primary select-none">auto_delete</span>
+            <h2 className="text-xl font-bold text-pw-black">Inbox Cleanup & Retention</h2>
+          </div>
+
+          <p className="text-xs text-pw-muted leading-relaxed mb-4">
+            Automatically archive notifications after they are read to keep your workspace clear.
+          </p>
+
+          <div className="mt-auto">
+            <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
+              Auto-Archive Retention Window
+            </label>
+            <select
+              value={autoArchiveDays}
+              onChange={(e) => {
+                if (user?.uid) {
+                  updateAutoArchiveDays(user.uid, Number(e.target.value))
+                    .then(() => toast.success(`Auto-archive set to ${e.target.value} days`))
+                    .catch(() => toast.error('Failed to update retention window'));
+                }
+              }}
+              className="glass-input w-full px-4 py-2.5 text-sm text-pw-black rounded-lg"
+            >
+              <option value="30" className="bg-pw-surface text-pw-black">30 Days (Default)</option>
+              <option value="60" className="bg-pw-surface text-pw-black">60 Days</option>
+              <option value="90" className="bg-pw-surface text-pw-black">90 Days</option>
+            </select>
+          </div>
+        </section>
+
+        {/* ════ Row 2: Notifications Matrix (col-12) ════ */}
+
+        <section className="col-span-12 glass-card rounded-2xl p-6 overflow-hidden">
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
+            <span className="material-symbols-outlined text-pw-primary select-none">notifications_active</span>
+            <h2 className="text-xl font-bold text-pw-black">Routing & Delivery</h2>
+          </div>
+
+          {/* Guarantee Banner */}
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-pw-primary/5 border border-pw-primary/10 mb-6">
+            <span className="material-symbols-outlined text-pw-primary text-base mt-0.5 select-none">info</span>
             <div className="text-xs text-pw-muted space-y-1">
               <p className="font-semibold text-pw-black">Notification Guarantee</p>
               <p className="leading-relaxed">
                 You can customize, mute, or redirect any alert category below. Critical Billing and Expiring Contract Deadlines are locked to ensure you do not miss payment status updates or trigger default clauses on active real estate contracts.
               </p>
             </div>
-          </section>
+          </div>
 
-          {/* Card 1: Preferences Matrix */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden flex flex-col">
-            <div className="mb-6">
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">grid_on</span>
-                Notifications Matrix
-              </h3>
-              <p className="text-xs text-pw-muted mt-1">Configure granular channel selection per alert type.</p>
-            </div>
+          {/* Full-width Table */}
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="border-b border-white/5">
+                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted w-1/2">Event Category</th>
+                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">In-App</th>
+                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">Email</th>
+                  <th className="py-3 text-xs font-medium uppercase tracking-wider text-pw-muted text-center">Push</th>
+                </tr>
+              </thead>
+              <tbody>
+                {CATEGORY_ROWS.map(({ key, label, description, iconName }) => {
+                  const rowPrefs = categories[key] || DEFAULT_CATEGORY_PREFERENCES[key];
+                  const isMandatory = key === 'billing' || key === 'deadlines';
 
-            {/* Column Headers */}
-            <div className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center mb-4 pb-2 border-b border-pw-border/50 px-1">
-              <span className="font-label-sm text-label-sm font-semibold text-pw-muted uppercase tracking-wider">Alert Category</span>
-              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
-                <span className="material-symbols-outlined text-lg mb-1 select-none">inbox</span>
-                Inbox
-              </span>
-              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
-                <span className="material-symbols-outlined text-lg mb-1 select-none">mail</span>
-                Email
-              </span>
-              <span className="font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider text-center flex flex-col items-center">
-                <span className="material-symbols-outlined text-lg mb-1 select-none">phone_iphone</span>
-                Push
-              </span>
-            </div>
+                  return (
+                    <tr key={key} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                      <td className="py-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center flex-shrink-0 mt-0.5 text-pw-muted">
+                            <span className="material-symbols-outlined text-base select-none">{iconName}</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-pw-black flex items-center gap-2 flex-wrap">
+                              {label}
+                              {isMandatory && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-pw-primary/10 border border-pw-primary/20 text-pw-primary uppercase tracking-wider">
+                                  Required
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-pw-muted mt-0.5 leading-relaxed">{description}</p>
+                          </div>
+                        </div>
+                      </td>
 
-            {/* Rows */}
-            <div className="divide-y divide-pw-border/50">
-              {CATEGORY_ROWS.map(({ key, label, description, iconName }) => {
-                const rowPrefs = categories[key] || DEFAULT_CATEGORY_PREFERENCES[key];
-                const isMandatory = key === 'billing' || key === 'deadlines';
+                      {/* In-App Channel */}
+                      <td className="py-4 text-center">
+                        <div className="flex justify-center">
+                          <ToggleSwitch
+                            enabled={rowPrefs.inbox}
+                            disabled={isMandatory}
+                            onToggle={() => handleToggleCategoryChannel(key, 'inbox')}
+                          />
+                        </div>
+                      </td>
 
-                return (
-                  <div key={key} className="grid grid-cols-[1fr_64px_64px_64px] gap-4 items-center py-4 px-1 hover:bg-pw-glass-bg transition-colors">
-                    <div className="flex gap-3 items-start pr-2">
-                      <div className="w-8 h-8 rounded bg-pw-glass-bg border border-pw-border flex items-center justify-center flex-shrink-0 mt-0.5 text-pw-muted">
-                        <span className="material-symbols-outlined text-base select-none">{iconName}</span>
-                      </div>
-                      <div>
-                        <p className="font-body-md text-body-md font-semibold text-pw-black flex items-center gap-2 flex-wrap">
-                          {label}
-                          {isMandatory && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-semibold bg-pw-primary/10 border border-pw-primary/20 text-pw-primary uppercase tracking-wider">
-                              Required
-                            </span>
-                          )}
-                        </p>
-                        <p className="font-body-sm text-body-sm text-pw-muted mt-0.5 leading-relaxed">{description}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Inbox Channel */}
-                    <div className="flex justify-center">
-                      <ToggleSwitch
-                        enabled={rowPrefs.inbox}
-                        disabled={isMandatory}
-                        onToggle={() => handleToggleCategoryChannel(key, 'inbox')}
-                      />
-                    </div>
+                      {/* Email Channel */}
+                      <td className="py-4 text-center">
+                        <div className="flex justify-center">
+                          <ToggleSwitch
+                            enabled={rowPrefs.email}
+                            disabled={isMandatory}
+                            onToggle={() => handleToggleCategoryChannel(key, 'email')}
+                          />
+                        </div>
+                      </td>
 
-                    {/* Email Channel */}
-                    <div className="flex justify-center">
-                      <ToggleSwitch
-                        enabled={rowPrefs.email}
-                        disabled={isMandatory}
-                        onToggle={() => handleToggleCategoryChannel(key, 'email')}
-                      />
-                    </div>
+                      {/* Push Channel */}
+                      <td className="py-4 text-center">
+                        <div className="flex justify-center">
+                          <ToggleSwitch
+                            enabled={rowPrefs.push}
+                            disabled={false}
+                            onToggle={() => handleToggleCategoryChannel(key, 'push')}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-                    {/* Push Channel */}
-                    <div className="flex justify-center">
-                      <ToggleSwitch
-                        enabled={rowPrefs.push}
-                        disabled={false}
-                        onToggle={() => handleToggleCategoryChannel(key, 'push')}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+        {/* ════ Row 3: Global Dispatch (col-7) + Data Rights (col-5) ════ */}
 
-          {/* Card 2: Global Opt-Out & Quiet Hours */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl relative overflow-hidden space-y-6 flex flex-col">
-            <div>
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">settings_input_component</span>
-                Global Dispatch Preferences
-              </h3>
-              <p className="text-xs text-pw-muted mt-1">Control outbound notification channels globally.</p>
-            </div>
+        {/* Global Dispatch Preferences */}
+        <section className="col-span-12 xl:col-span-7 glass-card rounded-2xl p-6 flex flex-col gap-6">
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+            <span className="material-symbols-outlined text-pw-primary select-none">tune</span>
+            <h2 className="text-xl font-bold text-pw-black">Global Dispatch Preferences</h2>
+          </div>
 
-            <div className="grid md:grid-cols-2 gap-6 divide-y md:divide-y-0 md:divide-x divide-pw-border/50">
-              {/* Global Toggles */}
-              <div className="space-y-4">
-                <h4 className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-muted mb-2">Global Channels</h4>
-                
-                <div className="flex items-center justify-between p-4 border border-pw-border rounded-xl bg-pw-glass-bg">
-                  <div>
-                    <p className="text-xs font-bold text-pw-black">Email Notifications</p>
-                    <p className="text-[10px] text-pw-muted mt-0.5">Receive system & transactional mail alerts</p>
-                  </div>
-                  <ToggleSwitch enabled={emailEnabled} onToggle={handleToggleGlobalEmail} />
+          {/* Global Channel Toggles */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Global Channels</h3>
+
+            <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-pw-primary/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-pw-primary text-lg select-none">mail</span>
                 </div>
-
-                <div className="flex items-center justify-between p-4 border border-pw-border rounded-xl bg-pw-glass-bg">
-                  <div>
-                    <p className="text-xs font-bold text-pw-black">Web Push Notifications</p>
-                    <p className="text-[10px] text-pw-muted mt-0.5">Show notifications directly in browser</p>
-                  </div>
-                  <ToggleSwitch enabled={pushEnabled} onToggle={handleToggleGlobalPush} />
+                <div>
+                  <p className="text-sm font-semibold text-pw-black">Email Notifications</p>
+                  <p className="text-[11px] text-pw-muted mt-0.5">Receive system & transactional mail alerts</p>
                 </div>
-
-                {(!emailEnabled || !pushEnabled) && (
-                  <p className="text-[10px] text-pw-muted/60 italic leading-relaxed">
-                    Note: Disabling channels globally overrides per-category active checkboxes.
-                  </p>
-                )}
               </div>
+              <ToggleSwitch enabled={emailEnabled} onToggle={handleToggleGlobalEmail} />
+            </div>
 
-              {/* Quiet Hours / DND */}
-              <div className="space-y-4 md:pl-6 pt-6 md:pt-0">
-                <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-pw-primary/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-pw-primary text-lg select-none">phone_iphone</span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-pw-black">Web Push Notifications</p>
+                  <p className="text-[11px] text-pw-muted mt-0.5">Show notifications directly in browser</p>
+                </div>
+              </div>
+              <ToggleSwitch enabled={pushEnabled} onToggle={handleToggleGlobalPush} />
+            </div>
+
+            {(!emailEnabled || !pushEnabled) && (
+              <p className="text-[11px] text-pw-muted/60 italic leading-relaxed px-1">
+                Note: Disabling channels globally overrides per-category active checkboxes.
+              </p>
+            )}
+          </div>
+
+          {/* Quiet Hours / DND */}
+          <div className="space-y-3 border-t border-white/5 pt-5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-semibold text-pw-muted uppercase tracking-wider">Quiet Hours DND</h3>
+                <p className="text-[11px] text-pw-muted mt-0.5">Silence & queue email alerts during specified hours</p>
+              </div>
+              <ToggleSwitch enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
+            </div>
+
+            {quietHours.enabled && (
+              <div className="space-y-3 p-4 bg-white/[0.02] border border-white/5 rounded-xl">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <h4 className="font-label-sm text-label-sm font-bold uppercase tracking-wider text-pw-muted">Quiet Hours DND</h4>
-                    <p className="text-[10px] text-pw-muted mt-0.5">Silence & queue email alerts during specified hours</p>
+                    <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
+                      Start Time
+                    </label>
+                    <input
+                      type="time"
+                      value={quietHours.start}
+                      onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
+                      className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
+                    />
                   </div>
-                  <ToggleSwitch enabled={quietHours.enabled} onToggle={handleToggleQuietHours} />
+                  <div>
+                    <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
+                      End Time
+                    </label>
+                    <input
+                      type="time"
+                      value={quietHours.end}
+                      onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
+                      className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
+                    />
+                  </div>
                 </div>
 
-                {quietHours.enabled && (
-                  <div className="space-y-3 p-4 bg-pw-glass-bg border border-pw-border rounded-xl">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
-                          Start Time
-                        </label>
-                        <input
-                          type="time"
-                          value={quietHours.start}
-                          onChange={(e) => handleUpdateQuietTime('start', e.target.value)}
-                          className="glass-input w-full px-3 py-1.5 text-sm text-pw-black"
-                        />
-                      </div>
-                      <div>
-                        <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
-                          End Time
-                        </label>
-                        <input
-                          type="time"
-                          value={quietHours.end}
-                          onChange={(e) => handleUpdateQuietTime('end', e.target.value)}
-                          className="glass-input w-full px-3 py-1.5 text-sm text-pw-black"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-1">
-                        Notification Timezone
-                      </label>
-                      <select
-                        value={quietHours.timezone}
-                        onChange={(e) => handleUpdateTimezone(e.target.value)}
-                        className="glass-input w-full px-3 py-2 text-sm text-pw-black"
-                      >
-                        {allTimezones.map((tz) => (
-                          <option key={tz.value} value={tz.value} className="bg-pw-surface text-pw-black">
-                            {tz.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </section>
-        </div>
-
-        {/* Right Column: Theme, Retention & Privacy */}
-        <div className="lg:col-span-5 space-y-stack-md">
-          
-          {/* Card 3: Theme Customizer */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden">
-            <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary mb-5 flex items-center gap-2">
-              <span className="material-symbols-outlined text-lg select-none">palette</span>
-              Appearance
-            </h3>
-
-            <div className="flex flex-col gap-4">
-              {THEME_OPTIONS.map(({ value, label, iconName, description }) => {
-                const isSelected = theme === value;
-                return (
-                  <button
-                    key={value}
-                    onClick={() => setTheme(value)}
-                    className={`
-                      flex items-center gap-3 p-4 text-left transition-all border rounded-xl cursor-pointer
-                      ${isSelected
-                        ? 'bg-pw-primary/10 border-pw-primary/45 text-pw-primary shadow-[0_0_15px_rgba(87,241,219,0.15)]'
-                        : 'border-pw-border bg-pw-glass-bg/50 text-pw-muted hover:border-pw-muted/40'
-                      }
-                    `}
+                <div>
+                  <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">
+                    Notification Timezone
+                  </label>
+                  <select
+                    value={quietHours.timezone}
+                    onChange={(e) => handleUpdateTimezone(e.target.value)}
+                    className="glass-input w-full px-3 py-2 text-sm text-pw-black rounded-lg"
                   >
-                    <div className={`
-                      w-8 h-8 flex items-center justify-center flex-shrink-0 rounded-lg border
-                      ${isSelected ? 'bg-pw-primary/20 border-pw-primary/30 text-pw-primary' : 'bg-pw-glass-bg border-pw-border text-pw-muted'}
-                    `}>
-                      <span className="material-symbols-outlined text-base select-none">{iconName}</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-pw-black truncate">
-                        {label}
-                      </p>
-                      <p className="text-[10px] text-pw-muted truncate mt-0.5 leading-normal">{description}</p>
-                    </div>
-                    <div className={`
-                      w-3.5 h-3.5 rounded-full border flex items-center justify-center flex-shrink-0
-                      ${isSelected ? 'border-pw-primary' : 'border-pw-border'}
-                    `}>
-                      {isSelected && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-pw-primary" />
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Card 4: Inbox Retention & Cleanup */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden space-y-4">
-            <div>
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-pw-primary flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg select-none">auto_delete</span>
-                Inbox Cleanup & Retention
-              </h3>
-              <p className="text-xs text-pw-muted mt-1 leading-relaxed">
-                Automatically archive notifications after they are read to keep your workspace clear.
-              </p>
-            </div>
-
-            <div className="w-full">
-              <label className="block font-label-sm text-label-sm font-bold text-pw-muted uppercase tracking-wider mb-2">
-                Auto-Archive Retention Window
-              </label>
-              <select
-                value={autoArchiveDays}
-                onChange={(e) => {
-                  if (user?.uid) {
-                    updateAutoArchiveDays(user.uid, Number(e.target.value))
-                      .then(() => toast.success(`Auto-archive set to ${e.target.value} days`))
-                      .catch(() => toast.error('Failed to update retention window'));
-                  }
-                }}
-                className="glass-input w-full px-3 py-2 text-sm text-pw-black"
-              >
-                <option value="30" className="bg-pw-surface text-pw-black">30 Days (Default)</option>
-                <option value="60" className="bg-pw-surface text-pw-black">60 Days</option>
-                <option value="90" className="bg-pw-surface text-pw-black">90 Days</option>
-              </select>
-            </div>
-          </section>
-
-          {/* Card 5: Data Rights & Privacy (GDPR/CCPA) */}
-          <section className="glass-card glass-card-bright p-8 rounded-2xl flex flex-col relative overflow-hidden space-y-6">
-            <div>
-              <h3 className="font-label-md text-label-md font-bold uppercase tracking-wider text-error flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg text-error select-none">policy</span>
-                Data Rights & Privacy (GDPR/CCPA)
-              </h3>
-              <p className="text-xs text-pw-muted mt-1 leading-relaxed">
-                Manage your personal data, download your records, or request complete account notification erasure.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="border border-pw-border rounded-xl p-4 bg-pw-glass-bg flex flex-col gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-pw-black">Export My Notification Data</p>
-                  <p className="text-[10px] text-pw-muted leading-relaxed">
-                    Download a complete copy of all your in-app notifications, queued emails, and system preferences in structured JSON format.
-                  </p>
+                    {allTimezones.map((tz) => (
+                      <option key={tz.value} value={tz.value} className="bg-pw-surface text-pw-black">
+                        {tz.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <button
-                  onClick={handleExportData}
-                  className="luminous-button w-fit flex items-center gap-2 px-4 py-2.5 font-label-md text-label-md font-bold uppercase tracking-wider rounded-xl cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base select-none">download</span>
-                  Download JSON Export
-                </button>
               </div>
+            )}
+          </div>
+        </section>
 
-              <div className="border border-pw-border rounded-xl p-4 bg-pw-glass-bg flex flex-col gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-error">Delete My Notification History</p>
-                  <p className="text-[10px] text-pw-muted leading-relaxed">
-                    Permanently erase all in-app notifications, pending emails, and push tokens. Your preferences will be reset to default. This action is irreversible.
-                  </p>
-                </div>
-                <button
-                  onClick={handleDeleteData}
-                  className="w-fit flex items-center gap-2 px-4 py-2.5 bg-error/10 border border-error/20 text-error hover:bg-error/20 font-label-md text-label-md font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-base select-none">delete</span>
-                  Permanently Delete Data
-                </button>
-              </div>
-            </div>
-          </section>
-        </div>
+        {/* Data Rights & Privacy (Danger Zone) */}
+        <section className="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6 border border-red-500/20 relative overflow-hidden flex flex-col gap-6">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
+
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+            <span className="material-symbols-outlined text-red-400 select-none">policy</span>
+            <h2 className="text-xl font-bold text-pw-black">Data Rights & Privacy</h2>
+          </div>
+
+          <p className="text-sm text-pw-muted leading-relaxed">
+            Manage your personal data, download your records, or request complete account notification erasure. Actions here comply with GDPR and CCPA regulations and are immutable.
+          </p>
+
+          <div className="mt-auto space-y-3">
+            <button
+              onClick={handleExportData}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg border border-white/10 text-pw-black font-semibold text-sm hover:bg-white/[0.04] transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-lg select-none">download</span>
+              Export Account Payload
+            </button>
+            <button
+              onClick={handleDeleteData}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 font-semibold text-sm hover:bg-red-500/20 transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-lg select-none">delete_forever</span>
+              Initiate Deletion Sequence
+            </button>
+          </div>
+        </section>
+
       </div>
     </div>
   );

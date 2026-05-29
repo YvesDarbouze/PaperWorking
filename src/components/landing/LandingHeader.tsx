@@ -46,85 +46,36 @@ export default function LandingHeader() {
               className="h-8 w-8 rounded-md object-contain"
               src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
             />
-            <span className="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">
-              PaperWorking
+            <span className="font-headline-md text-headline-md text-primary dark:text-primary tracking-tight drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">
+              <span className="font-semibold">Paper</span><span className="font-light">Working</span>
             </span>
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-stack-lg">
-            <div className="relative group">
-              <Link
-                href="/#how-it-works"
-                className="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md flex items-center gap-1 active:scale-95 transition-transform"
-              >
-                How It Works
-                <span className="material-symbols-outlined text-[18px] transition-transform group-hover:rotate-180">expand_more</span>
-              </Link>
-              {/* Dropdown Menu */}
-              <div className="absolute top-full left-0 mt-4 w-72 bg-surface/90 backdrop-blur-2xl border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-300 transform origin-top scale-95 opacity-0 invisible group-hover:scale-100 group-hover:opacity-100 group-hover:visible z-[60]">
-                <div className="p-2 space-y-1">
-                  <Link href="/#acquisition" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                      <span className="material-symbols-outlined text-primary text-xl">hub</span>
-                    </div>
-                    <div>
-                      <p className="font-label-md text-on-surface">Acquisition</p>
-                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Source & secure capital.</p>
-                    </div>
-                  </Link>
-                  <Link href="/#purchase" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                      <span className="material-symbols-outlined text-primary text-xl">verified_user</span>
-                    </div>
-                    <div>
-                      <p className="font-label-md text-on-surface">Purchase</p>
-                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Automated compliance.</p>
-                    </div>
-                  </Link>
-                  <Link href="/#hold" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                      <span className="material-symbols-outlined text-primary text-xl">speed</span>
-                    </div>
-                    <div>
-                      <p className="font-label-md text-on-surface">Hold</p>
-                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Real-time margin tracking.</p>
-                    </div>
-                  </Link>
-                  <Link href="/#exit" className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                      <span className="material-symbols-outlined text-primary text-xl">account_balance</span>
-                    </div>
-                    <div>
-                      <p className="font-label-md text-on-surface">Exit</p>
-                      <p className="text-[12px] text-on-surface-variant/70 leading-tight">Instant ROI reporting.</p>
-                    </div>
-                  </Link>
-                </div>
-                <div className="bg-primary/5 p-3 border-t border-white/5">
-                  <Link href="/#how-it-works" className="text-[12px] text-primary font-label-md flex items-center justify-center gap-1 hover:underline underline-offset-4">
-                    View Full Process <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
+          <div className="hidden md:flex items-center gap-8">
+            <Link
+              href="/how-it-works"
+              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
+            >
+              How It Works
+            </Link>
             <Link
               href="/#pricing"
-              className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 duration-300 px-3 py-2 rounded-DEFAULT active:scale-95"
+              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
             >
               Pricing
             </Link>
             <Link
-              href="/dashboard"
-              className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 duration-300 px-3 py-2 rounded-DEFAULT active:scale-95"
-            >
-              Dashboard
-            </Link>
-            <Link
               href="/#news"
-              className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md hover:bg-white/5 duration-300 px-3 py-2 rounded-DEFAULT active:scale-95"
+              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
             >
               News
+            </Link>
+            <Link
+              href="/support"
+              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
+            >
+              Help
             </Link>
           </div>
 
@@ -137,8 +88,8 @@ export default function LandingHeader() {
               Sign In
             </Link>
             <Link
-              href="/register"
-              className="luminous-button px-6 py-3 rounded-DEFAULT font-label-md text-label-md tracking-wide"
+              href="/#pricing"
+              className="luminous-button px-6 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
             >
               Start Your 14-Day Trial
             </Link>
@@ -193,10 +144,10 @@ export default function LandingHeader() {
                   <img
                     alt="PaperWorking Logo"
                     className="h-8 w-8 rounded-md object-contain"
-                    src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
+                    src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
                   />
-                  <span className="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">
-                    PaperWorking
+                  <span className="font-headline-md text-headline-md text-primary dark:text-primary tracking-tight drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">
+                    <span className="font-semibold">Paper</span><span className="font-light">Working</span>
                   </span>
                 </Link>
                 <button
@@ -211,32 +162,32 @@ export default function LandingHeader() {
 
               <div className="flex flex-col gap-6 overflow-y-auto flex-grow">
                 <Link
-                  href="/#how-it-works"
+                  href="/how-it-works"
                   onClick={() => setMobileOpen(false)}
-                  className="text-primary font-bold border-b border-primary pb-1 font-label-md text-label-md"
+                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
                 >
                   How It Works
                 </Link>
                 <Link
                   href="/#pricing"
                   onClick={() => setMobileOpen(false)}
-                  className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md py-1"
+                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
                 >
                   Pricing
                 </Link>
                 <Link
-                  href="/dashboard"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md py-1"
-                >
-                  Dashboard
-                </Link>
-                <Link
                   href="/#news"
                   onClick={() => setMobileOpen(false)}
-                  className="text-on-surface/70 hover:text-on-surface transition-colors font-label-md text-label-md py-1"
+                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
                 >
                   News
+                </Link>
+                <Link
+                  href="/support"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
+                >
+                  Help
                 </Link>
 
                 <div className="border-t border-white/10 my-4" />
@@ -244,14 +195,14 @@ export default function LandingHeader() {
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="font-label-md text-label-md text-center border border-white/10 py-3 rounded-DEFAULT text-on-surface hover:bg-white/5 transition-colors"
+                  className="font-label-md text-label-md text-center border border-white/10 py-3 rounded-lg text-on-surface hover:bg-white/5 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
-                  href="/register"
+                  href="/#pricing"
                   onClick={() => setMobileOpen(false)}
-                  className="luminous-button py-3 rounded-DEFAULT font-label-md text-label-md text-center tracking-wide"
+                  className="luminous-button py-3 rounded-lg font-label-md text-label-md text-center tracking-wide"
                 >
                   Start Your 14-Day Trial
                 </Link>
@@ -267,9 +218,9 @@ export default function LandingHeader() {
           <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
           <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
         </Link>
-        <Link href="/dashboard" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+        <Link href="/how-it-works" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
           <span className="material-symbols-outlined text-[20px]">account_tree</span>
-          <span className="text-[9px] uppercase tracking-tighter">Pipeline</span>
+          <span className="text-[9px] uppercase tracking-tighter">How It Works</span>
         </Link>
         <Link href="/#pricing" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
           <span className="material-symbols-outlined text-[20px]">payments</span>

@@ -59,7 +59,10 @@ export default function Logo({ href, size = 'md', className = '' }: LogoProps) {
   const lockup = (
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
       <PaperWorkingIcon size={s.iconPx} />
-      <span className={`${s.text} tracking-tight`}>
+      <span 
+        className={`${s.text} tracking-tight font-plus-jakarta`}
+        style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif' }}
+      >
         <span className="font-black">Paper</span>
         <span className="font-thin text-[var(--pw-subtle)]">Working</span>
       </span>

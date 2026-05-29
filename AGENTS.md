@@ -17,3 +17,16 @@ To ensure harmony, ALL agents MUST strictly follow these rules:
 4. **Tool Integrity:** Do not overwrite code blindly. Validate types and lint errors before finalizing a modification.
 5. **Acknowledge the Team:** You are part of an AI engineering team. Work collaboratively on the codebase without destroying another agent's work.
 <!-- END:agent-harmony-protocol -->
+
+<!-- BEGIN:global-navigation-contract -->
+# 🧭 GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN
+All agents MUST strictly enforce the persistent left-side navigation contract:
+- **Top Brand Area**: PaperWorking logo mark + wordmark (Plus Jakarta Sans).
+- **Primary Group** (exact order/labels): `Portfolio` -> `Projects` -> `Data Room` -> `Inbox` (with badge) -> `Team` -> `Reports` -> `Deal Analyzer`.
+- **Section Divider**: uppercase "Account" label.
+- **Account Group** (exact order/labels): `Profile` -> `Billing` -> `Settings`.
+- **Bottom Area**: Workspace switcher ("acting as: Me / [Team Account]") and Profile menu (avatar + username + role + logout).
+
+No agent is allowed to add, remove, reorder, rename, combine, or move navigation items. This is a fixed contract. Any screen layout rendering navigation must use `src/components/layout/Sidebar.tsx` or match it exactly.
+<!-- END:global-navigation-contract -->
+

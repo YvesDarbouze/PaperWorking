@@ -549,6 +549,11 @@ html[data-theme="dark"],
     text-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
   }
 
+  .luminous-teal {
+    color: #57f1db;
+    text-shadow: 0 0 15px rgba(87, 241, 219, 0.5);
+  }
+
   .glass-card {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
     backdrop-filter: blur(20px);
@@ -1568,3 +1573,12 @@ select {
 .folder-clip {
     clip-path: polygon(0% 0%, 65% 0%, 75% 15%, 100% 15%, 100% 100%, 0% 100%);
 }
+
+.terminal-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+.terminal-scroll::-webkit-scrollbar-thumb {
+    background: rgba(87, 241, 219, 0.2);
+    border-radius: 10px;
+}
+

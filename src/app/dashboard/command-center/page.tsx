@@ -1,0 +1,15 @@
+import React from "react";
+import { CommandCenter } from "@/components/dashboard/command-center/CommandCenter";
+
+export const metadata = {
+  title: "Portfolio Command Center | PaperWorking",
+  description: "View key portfolio metrics, deal pipeline, and system audit logs in the Command Center.",
+};
+
+export default function CommandCenterPage() {
+  return (
+    <div className="min-h-full bg-surface-container-lowest">
+      <CommandCenter />
+    </div>
+  );
+}

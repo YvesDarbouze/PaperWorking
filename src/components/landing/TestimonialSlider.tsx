@@ -12,33 +12,33 @@ import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    name: 'Marcus T.',
-    initials: 'MT',
-    role: 'Independent Flipper',
-    company: 'Iron Bridge Developments',
+    name: 'Nashville Duplex Rehab Case Study',
+    initials: 'ND',
+    role: 'Solo Operator',
+    company: 'Duplex Flip • Nashville, TN',
     quote:
-      'I used to spend Sundays reconciling spreadsheets. Now the Engine Room does it in real time and I spend Sundays with my kids.',
-    metric: '12 hrs/week saved',
+      'Managing a duplex rehab in Nashville while working a day job meant receipts were always scattered in my truck. Moving our draws and receipts onto PaperWorking gave my GC a clear checklist and gave my CPA clean numbers.',
+    metric: 'materials variance managed',
     stars: 5,
   },
   {
-    name: 'Samantha Cho',
-    initials: 'SC',
-    role: 'Firm Partner',
-    company: 'Vanguard RE Partners',
+    name: 'Partnership Transparency Case Study',
+    initials: 'PT',
+    role: 'JV Partner',
+    company: '4-Unit Value-Add • Dallas, TX',
     quote:
-      'We closed 14 projects last quarter without a single data entry error — something that cost us $38K the year before. Role-based access alone prevented a near-miss where a contractor almost saw our capital stack.',
-    metric: '$38K errors eliminated',
+      'We used to spend hours before every partner meeting building updates in Excel. Now, we give our private lenders read-only dashboard logins. They see the real-time cost basis and project progress whenever they want.',
+    metric: 'read-only LP logins',
     stars: 5,
   },
   {
-    name: 'David R.',
-    initials: 'DR',
-    role: 'General Contractor',
-    company: 'Sterling & Associates',
+    name: 'Acquisition Pipeline Case Study',
+    initials: 'AP',
+    role: 'Syndication Group',
+    company: 'Multi-Family Value-Add',
     quote:
-      'Due diligence that took us 3 weeks now takes 4 days. Our investors noticed, and our fund size doubled. The burn rate tracker alone paid for PaperWorking ten times over.',
-    metric: '3.2× faster closings',
+      'Having a secure vault for title documents, escrow records, and contingency deadlines means our acquisitions team can close multiple properties in parallel without missing contingency dates.',
+    metric: 'milestones tracked',
     stars: 5,
   },
 ];

@@ -48,9 +48,9 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   individual: {
     id: 'individual',
     canonicalName: 'Individual',
-    displayName: 'Individual Investor',
-    monthlyPrice: 59,
-    annualPrice: 599,
+    displayName: 'Solo',
+    monthlyPrice: 99,
+    annualPrice: 948,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_INDIVIDUAL_MONTHLY', 'STRIPE_PRICE_INDIVIDUAL'],
@@ -60,9 +60,9 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   team: {
     id: 'team',
     canonicalName: 'Team',
-    displayName: 'Team / Firm',
-    monthlyPrice: 99,
-    annualPrice: 999,
+    displayName: 'Team',
+    monthlyPrice: 249,
+    annualPrice: 2388,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_TEAM_MONTHLY', 'STRIPE_PRICE_TEAM'],
@@ -72,9 +72,9 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   vendor: {
     id: 'vendor',
     canonicalName: 'Vendor Network',
-    displayName: 'Vendor Marketplace',
-    monthlyPrice: 39,
-    annualPrice: 390,
+    displayName: 'Enterprise',
+    monthlyPrice: 499,
+    annualPrice: 4788,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_VENDOR_MONTHLY', 'STRIPE_PRICE_VENDOR'],
@@ -111,6 +111,11 @@ const DISPLAY_NAME_ALIASES: Record<string, PlanId> = {
   // Lawyer is a vendor role, not a separate plan — route to vendor
   'lawyer': 'vendor',
   'lawyer lead-gen': 'vendor',
+
+  // New names
+  'solo': 'individual',
+  'enterprise': 'vendor',
+  'enterprise plan': 'vendor',
 };
 
 /**

@@ -67,18 +67,17 @@ interface PlanTier {
 const PLANS: PlanTier[] = [
   {
     id: 'individual',
-    name: 'Individual Investor',
-    target: 'Solo flippers tired of spreadsheet chaos.',
-    monthlyPrice: 59,
-    annualPrice: '$599',
-    annualPriceNum: 599,
+    name: 'Solo',
+    target: 'For independent operators flipping 1-3 deals at a time.',
+    monthlyPrice: 99,
+    annualPrice: '$948',
+    annualPriceNum: 948,
     features: [
-      '1 User Seat',
-      'Full REI Dashboard access',
-      'Find & Fund Pipeline',
-      'Acquisition & Due Diligence',
-      'Rehab Tracking & Budgets',
-      'Exit Formula & ROI Calculator',
+      'Up to 3 active deal pipelines',
+      'Full REIL v2 phase tracking',
+      'Standard financial calculation engine',
+      'CPA-Ready CSV exports',
+      '1 partner seat (Read-only)',
     ],
     ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: false,
@@ -87,18 +86,17 @@ const PLANS: PlanTier[] = [
   },
   {
     id: 'team',
-    name: 'Team / Firm',
-    target: 'Scaling REI businesses managing multiple deals.',
-    monthlyPrice: 99,
-    annualPrice: '$999',
-    annualPriceNum: 999,
+    name: 'Team',
+    target: 'For small partnerships and active syndication groups.',
+    monthlyPrice: 249,
+    annualPrice: '$2,388',
+    annualPriceNum: 2388,
     features: [
-      'Up to 10 User Seats',
-      'Role-Based Access Control',
-      'Admin vs Deal Lead permissions',
-      'Secure siloed account data',
-      'Everything in Individual',
-      'Priority onboarding support',
+      'Unlimited active deal pipelines',
+      '5 team seats with permissions',
+      'JV & Syndication capital trackers',
+      'Pro reporting templates (PDF export)',
+      'Custom checklists & compliance workflows',
     ],
     ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: true,
@@ -108,20 +106,19 @@ const PLANS: PlanTier[] = [
   },
   {
     id: 'vendor',
-    name: 'Vendor Marketplace',
-    target: 'Appraisers, Inspectors, GCs, and tradespeople.',
-    monthlyPrice: 39,
-    annualPrice: '$390',
-    annualPriceNum: 390,
+    name: 'Enterprise',
+    target: 'For institutional syndicators and multi-market operators.',
+    monthlyPrice: 499,
+    annualPrice: '$4,788',
+    annualPriceNum: 4788,
     features: [
-      'Marketplace Directory Listing',
-      'Lead generation inbox',
-      'Receive work requests from Teams',
-      'Direct messaging with REI Teams',
-      'Professional profile page',
-      'Service area customization',
+      'Unlimited active pipelines & seats',
+      'White-labeled reporting portals',
+      'Priority phone support & dedicated manager',
+      'API access for custom spreadsheet sync',
+      'Custom legal & contract template storage',
     ],
-    ctaLabel: 'List Your Business',
+    ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: false,
     icon: Wrench,
     variant: 'vendor',
@@ -137,74 +134,76 @@ interface ComparisonFeature {
 }
 
 const COMPARISON_FEATURES: ComparisonFeature[] = [
-  { name: 'Deal Pipeline Kanban', individual: true, team: true, vendor: false },
-  { name: 'Find & Fund Module', individual: true, team: true, vendor: false },
-  { name: 'Acquisition Tracker', individual: true, team: true, vendor: false },
-  { name: 'Rehab Budget Manager', individual: true, team: true, vendor: false },
-  { name: '70% Rule Calculator', individual: true, team: true, vendor: false },
-  { name: 'Exit Formula / ROI', individual: true, team: true, vendor: false },
-  { name: 'Holding Cost Clock', individual: true, team: true, vendor: false },
-  { name: 'Financial Reports (P&L)', individual: true, team: true, vendor: false },
-  { name: 'Document Vault', individual: true, team: true, vendor: false },
-  { name: 'Google Drive Integration', individual: false, team: true, vendor: false },
-  { name: 'Role-Based Access Control', individual: false, team: true, vendor: false },
-  { name: 'Multi-User Seats (up to 10)', individual: false, team: true, vendor: false },
-  { name: 'Siloed Account Data', individual: false, team: true, vendor: false },
-  { name: 'Marketplace Directory Listing', individual: false, team: false, vendor: true },
-  { name: 'Lead Generation Inbox', individual: false, team: false, vendor: true },
-  { name: 'Inbox / Messaging', individual: false, team: true, vendor: true },
+  // Category A: Deal Sourcing & Underwriting (Acquisition)
+  { name: 'Financial Calculator (IRR, Cap Rate, CoC)', individual: true, team: true, vendor: true },
+  { name: 'Comparable Database (Market Comps)', individual: true, team: true, vendor: true },
+  { name: 'Syndication Underwriter (Debt sizing)', individual: false, team: true, vendor: true },
+  { name: 'Investor Pitch Builder (LP PDF Summaries)', individual: false, team: true, vendor: true },
+
+  // Category B: Transaction & Escrow (Transaction)
+  { name: 'Contingency Tracker (Deadline Alerts)', individual: true, team: true, vendor: true },
+  { name: 'Escrow Document Vault (Secure Storage)', individual: true, team: true, vendor: true },
+  { name: 'Earnest Money Ledger (Deposits/Returns)', individual: true, team: true, vendor: true },
+  { name: 'Automated Title Progress (Checklists)', individual: false, team: true, vendor: true },
+
+  // Category C: Renovation & Draw Management (Rehab)
+  { name: 'Draw Checklist (GC Scope by Line-Item)', individual: true, team: true, vendor: true },
+  { name: 'Draw Submission Portal (Contractor Invoices)', individual: false, team: true, vendor: true },
+  { name: 'Contingency Fund Ledger (Budget Variance)', individual: true, team: true, vendor: true },
+  { name: 'Milestone Approvals (GC Draw Workflows)', individual: false, team: true, vendor: true },
+
+  // Category D: Operations, Exit, & Tax (Hold/Exit)
+  { name: 'Cost Basis Accumulator (Real-Time Ledger)', individual: true, team: true, vendor: true },
+  { name: 'CPA CSV Export (One-Click Hand-Off)', individual: true, team: true, vendor: true },
+  { name: 'Valuation Tracker (Market Comps Log)', individual: true, team: true, vendor: true },
+  { name: 'White-Label Exit Reports (Professional LP PDF)', individual: false, team: false, vendor: true },
 ];
 
 /* ─── Testimonial Data ─── */
 const TESTIMONIALS = [
   {
     quote:
-      "I used to track everything on a messy spreadsheet. PaperWorking's pipeline view lets me see exactly where every deal is. I closed 2 more flips last quarter because I finally had clarity.",
-    author: 'Marcus T.',
-    role: 'Solo Flipper, Charlotte NC',
+      "Managing a duplex rehab in Nashville while working a day job meant receipts were always scattered in my truck. Moving our draws and receipts onto PaperWorking gave my GC a clear checklist and gave my CPA clean numbers.",
+    author: "Nashville Duplex Rehab Case Study",
+    role: "Solo Operator • Duplex Flip • Nashville, TN",
     icon: Users,
   },
   {
     quote:
-      'Our firm manages properties across 4 states. The role-based access means my contractors see triage queues, not our capital stack. That alone is worth the price.',
-    author: 'Samantha Cho',
-    role: 'Managing Partner, Cho Capital Group',
+      "We used to spend hours before every partner meeting building updates in Excel. Now, we give our private lenders read-only dashboard logins. They see the real-time cost basis and project progress whenever they want.",
+    author: "Partnership Transparency Case Study",
+    role: "JV Partnership • 4-Unit Value-Add • Dallas, TX",
     icon: Building2,
   },
   {
     quote:
-      "Since listing on PaperWorking's Vendor Marketplace, I get 3–5 qualified leads per week from investor teams who actually have projects ready to go.",
-    author: 'David R.',
-    role: 'Licensed General Contractor, Miami FL',
-    icon: Wrench,
+      "Having a secure vault for title documents, escrow records, and contingency deadlines means our acquisitions team can close multiple properties in parallel without missing contingency dates.",
+    author: "Acquisition Pipeline Case Study",
+    role: "Syndication Group • Multi-Family Value-Add",
+    icon: Building2,
   },
 ];
 
 const PRICING_FAQ = [
   {
-    question: 'Do Vendors get access to my financial data?',
+    question: 'Can I upgrade or downgrade later?',
     answer:
-      'No. Vendor accounts are structurally isolated. They can only see their marketplace listing, inbox messages, and work requests sent to them by REI Teams. They have zero visibility into any financial data, deal analytics, or capital stack information. Access is enforced at the database level, not just the UI.',
+      'Yes. You can change your plan at any time in your Settings. If you upgrade, we will prorate the difference. If you downgrade, your account will be credited for the next billing cycle.',
   },
   {
-    question: 'Can I upgrade from Individual to Team later?',
+    question: 'Is there any discount for paying annually?',
     answer:
-      'Yes, upgrades take effect immediately. When you upgrade, we prorate the remaining balance of your current billing period and apply it to the Team plan. All your existing deals, documents, and financial records stay intact. No data migration needed.',
+      'Yes, paying annually saves you 20% compared to paying month-to-month. The savings are automatically applied at checkout.',
   },
   {
-    question: 'How does the free trial work?',
+    question: 'What is a "Read-Only Partner Seat"?',
     answer:
-      "Every new account starts with a full-access 14-day free trial. A credit card is collected at checkout, but you won't be charged until your trial ends. You get the complete Team-tier experience so you can evaluate every feature. At trial end, choose the plan that fits your workflow. If you don't convert, your data is preserved for 90 days in case you return.",
+      'Read-only seats let you invite external stakeholders—like passive investors, private lenders, or your spouse—to view project metrics and documents without being able to edit or delete any data.',
   },
   {
-    question: 'Is there a money-back guarantee?',
+    question: 'Do you charge setup fees?',
     answer:
-      'Yes. In addition to the 14-day free trial, if you are not completely satisfied within your first 30 days of paid service, email us and we will refund 100% of your payment. No questions asked.',
-  },
-  {
-    question: 'What happens if I cancel?',
-    answer:
-      'Cancel anytime from your account settings with just one click. You retain full access until the end of your billing period. No surprise charges, no penalty fees. Your data is preserved for 90 days, and you can export everything (CSV or PDF) at any time.',
+      'No. There are no setup fees, contract minimums, or hidden charges. You pay only the flat monthly or annual fee for your chosen plan.',
   },
 ];
 
@@ -649,12 +648,10 @@ function BottomCTA() {
         <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50" />
         <div className="relative z-10">
           <h2 className="font-headline-xl text-headline-xl mb-4 text-white">
-            Stop bleeding margins to disorganized deals.
+            Stop running six-figure flips out of five-column spreadsheets.
           </h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-2xl mx-auto">
-            PaperWorking centralizes your pipeline, tracks real-time costs, and
-            automates closing docs so you can close faster and scale without the
-            chaos.
+            PaperWorking tracks every document, dollar, and deadline from acquisition to exit in one dashboard.
           </p>
           <a
             className="inline-flex items-center gap-2 bg-primary text-on-primary font-label-md text-[16px] px-8 py-4 rounded-xl luminous-button hover:opacity-90 active:scale-95 transition-all"
@@ -664,7 +661,7 @@ function BottomCTA() {
             <ArrowRight className="w-5 h-5" />
           </a>
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-4 opacity-70">
-            14-day trial · Credit card required · No charge until day 15
+            Free for 14 days • No credit card required to sign up
           </p>
         </div>
       </div>
@@ -719,7 +716,7 @@ export default function PricingSection({
             variants={fadeUp}
             className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg"
           >
-            14-day trial on every plan. Credit card required. No charge until day 15.
+            14-day free trial on every plan. No credit card required to sign up.
           </motion.p>
 
           <motion.div variants={fadeUp}>

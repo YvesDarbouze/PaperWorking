@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "IRR Agent definition for the PaperWorking REIL Data Practice pipeline. Manages Internal Rate of Return calculations using Newton-Raphson iterative solver, multi-scenario comparison (3/5/7/10yr × Bear/Base/Bull = 12 scenarios), exit assumptions modeling, sensitivity analysis, and portfolio-level IRR integration.",
+  "updatedAt":  "2026-05-30T11:59:21.672145Z"
+}

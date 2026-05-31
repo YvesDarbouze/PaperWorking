@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "DSCR Agent definition for the PaperWorking REIL Data Practice pipeline. Manages Debt Service Coverage Ratio data collection, formula validation, risk strip visualization, and threshold analysis. Formula: DSCR = NOI ÷ Annual Debt Service. Includes 6 risk zones, logic-lens validations, and mapping to 5 Stitch screens.",
+  "updatedAt":  "2026-05-30T10:58:08.452905Z"
+}

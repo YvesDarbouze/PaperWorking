@@ -1,29 +1,19 @@
 'use client';
 
-import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
-import LandingHero from '@/components/landing/LandingHero';
-import HeroDashboard from '@/components/landing/HeroDashboard';
 import LandingFooter from '@/components/landing/LandingFooter';
-import PlatformOverview from '@/components/landing/PlatformOverview';
-import TestimonialSlider from '@/components/landing/TestimonialSlider';
-import FinalCTA from '@/components/landing/FinalCTA';
-import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
-import toast from 'react-hot-toast';
 import { CustomToaster } from '@/components/ui/CustomToaster';
 import { useSearchParams } from 'next/navigation';
 
 /* ═══════════════════════════════════════════════════════
-   Landing Page — Stitch-aligned redesign.
-
-   Layout order matches "PaperWorking Landing Page (Desktop Redesign)":
-   1. Nav (LandingHeader)
-   2. Hero (centered, text-only)
-   3. Dashboard Preview (standalone showcase)
-   4. REIL Phases + Risk Mitigation (PlatformOverview)
-   5. Pricing
-   6. Footer
+   Landing Page — Cinematic Glass Portal Redesign.
+   
+   Enforces Luminous Glass dark theme globally (#060f15),
+   ambient radial glows, responsive 12-column bento hero,
+   and clean institutional-grade layout.
    ═══════════════════════════════════════════════════════ */
 
 function SuccessModal() {
@@ -68,65 +58,13 @@ function SuccessModal() {
 
 export default function LandingPage() {
   const { user } = useAuth();
-  const [isProcessing, setIsProcessing] = useState<string | null>(null);
-
-  const handleSelectPlan = useCallback(async (planIdentifier: string) => {
-    setIsProcessing(planIdentifier);
-
-    // Parse "Vendor Marketplace Annual" → plan="Vendor Marketplace", interval="annual"
-    const lower = planIdentifier.toLowerCase();
-    const isAnnual = lower.endsWith(' annual');
-    const isMonthly = lower.endsWith(' monthly');
-    const interval = isAnnual ? 'annual' : 'monthly';
-    const plan = isAnnual
-      ? planIdentifier.slice(0, -' Annual'.length)
-      : isMonthly
-        ? planIdentifier.slice(0, -' Monthly'.length)
-        : planIdentifier;
-
-    try {
-      // Guest checkout: CC is always required by Stripe (payment_method_collection: 'always')
-      // Trial + auto-charge handled server-side. No login required at this step.
-      const body: Record<string, string> = { plan, billingInterval: interval };
-
-      if (user) {
-        try {
-          body.idToken = await user.getIdToken();
-          body.userId = user.uid;
-          if (user.email) body.userEmail = user.email;
-        } catch { /* non-fatal — proceed as guest */ }
-      }
-
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || 'Checkout failed');
-      window.location.href = data.url;
-    } catch (err) {
-      console.error('[Checkout]', err);
-      toast.error((err instanceof Error ? err.message : null) || 'Something went wrong. Please try again.', {
-        id: 'checkout-error',
-        duration: 6000,
-      });
-      setIsProcessing(null);
-    }
-  }, [user]);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   return (
-    <div className="marketing-context bg-background min-h-screen text-on-background relative">
-      {/* Loader Overlay */}
-      {isProcessing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <div className="bg-surface-container p-6 rounded-xl shadow-2xl flex flex-col items-center">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-on-surface font-medium">Redirecting to Secure Checkout...</p>
-          </div>
-        </div>
-      )}
+    <div className="marketing-context bg-background min-h-screen text-on-background relative overflow-x-hidden terminal-grid">
+      {/* Background Ambient Glows */}
+      <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] radial-glow pointer-events-none z-0" />
+      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] radial-glow opacity-50 pointer-events-none z-0" />
 
       {/* Success Modal Overlay */}
       <Suspense fallback={null}>
@@ -135,37 +73,155 @@ export default function LandingPage() {
 
       <LandingHeader />
 
-      {/* ── Hero — Centered text-only ── */}
-      <LandingHero />
+      {/* Main Content */}
+      <main className="pt-32 pb-40 relative z-10">
+        {/* Hero Bento Grid Section */}
+        <section className="max-w-container-max mx-auto px-6 md:px-gutter-desktop">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+            {/* Main Hero Content */}
+            <div className="md:col-span-8 bento-card p-12 rounded-3xl flex flex-col justify-center inner-glow min-h-[480px]">
+              <div className="inline-flex items-center gap-3 bg-primary/5 w-fit px-3 py-1.5 rounded-full mb-10 border border-primary/20">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="font-mono text-[10px] text-primary uppercase tracking-[0.2em]">System Status: Operational</span>
+              </div>
+              <h1 className="font-headline-xl text-headline-xl mb-6 text-white leading-[1.1]">
+                Scale Your Real Estate Portfolio <br />
+                <span className="text-primary italic">Without the Chaos.</span>
+              </h1>
+              <p className="font-body-lg text-body-lg text-on-surface/60 max-w-xl mb-12 leading-relaxed">
+                The High-Fidelity Operating System for modern investors. Centralize pipeline, automate documentation, and track margins in real-time.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-8">
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-primary rounded-xl blur-lg opacity-20 group-hover:opacity-40 transition duration-500" />
+                  <Link
+                    href="/register"
+                    className="relative px-10 py-5 rounded-xl font-bold text-lg inline-flex items-center gap-3 bg-primary text-on-primary hover:scale-[1.02] transition-transform shadow-[0_0_25px_rgba(45,212,191,0.4)]"
+                  >
+                    Initialize Deployment
+                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 600" }}>arrow_forward</span>
+                  </Link>
+                </div>
+                <span className="font-mono text-xs text-on-surface/40 uppercase tracking-widest">Free forever for 1 active deal.</span>
+              </div>
+            </div>
 
-      {/* ── Dashboard Preview (standalone showcase) ── */}
-      <section id="dashboard" className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-gutter-desktop mb-32 -mt-16">
-        <div className="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative group">
-          {/* Subtle light effect top border */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent z-20" />
-          <HeroDashboard />
-        </div>
-      </section>
+            {/* Stats/Metrics Panel */}
+            <div className="md:col-span-4 grid grid-rows-2 gap-8">
+              <div className="bento-card p-8 rounded-3xl flex flex-col justify-between inner-glow">
+                <div className="flex justify-between items-start">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary">trending_up</span>
+                  </div>
+                  <span className="text-primary font-bold text-3xl font-headline-md tracking-tighter">+14.2%</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-base mb-1">Average ROI Delta</h4>
+                  <p className="font-body-sm text-on-surface/50 text-sm">Post-implementation optimization</p>
+                </div>
+              </div>
+              <div className="bento-card p-8 rounded-3xl flex flex-col justify-between inner-glow border-primary/10">
+                <div className="flex justify-between items-start">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-primary">security</span>
+                  </div>
+                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md font-mono text-[10px] tracking-widest uppercase">Encrypted</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-base mb-1">Automated Compliance</h4>
+                  <p className="font-body-sm text-on-surface/50 text-sm">Real-time risk mitigation engine</p>
+                </div>
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 blur-3xl rounded-full" />
+              </div>
+            </div>
 
-      {/* ── Foreground Content ── */}
-      <div className="relative z-10 w-full">
+            {/* Pipeline Visualizer Panel */}
+            <div className="md:col-span-4 bento-card p-10 rounded-3xl inner-glow">
+              <h3 className="font-mono text-[10px] text-primary mb-8 uppercase tracking-[0.25em]">Active Pipeline</h3>
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-mono text-on-surface/40 uppercase">
+                    <span>Project Alpha</span>
+                    <span>75%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary w-[75%] rounded-full shadow-[0_0_8px_rgba(45,212,191,0.5)]" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-mono text-on-surface/40 uppercase">
+                    <span>Beta Assets</span>
+                    <span>40%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/40 w-[40%] rounded-full" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-[10px] font-mono text-on-surface/40 uppercase">
+                    <span>Theta Dev</span>
+                    <span>90%</span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/60 w-[90%] rounded-full" />
+                  </div>
+                </div>
+              </div>
+              <p className="mt-10 font-mono text-[11px] text-on-surface/40 leading-relaxed uppercase tracking-wider">
+                Visualizing <span className="text-white">$42M</span> in aggregate deal flow.
+              </p>
+            </div>
 
-        {/* ── How It Works — REIL Phases ── */}
-        <PlatformOverview />
+            {/* Process Grid */}
+            <div className="md:col-span-8 bento-card p-10 rounded-3xl inner-glow">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+                <Link href="/register" className="flex flex-col justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all group">
+                  <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-3xl">hub</span>
+                  <div>
+                    <span className="font-bold text-white text-sm block mb-1">Acquisition</span>
+                    <span className="font-mono text-[9px] text-on-surface/40 uppercase tracking-widest">Source &amp; Secure</span>
+                  </div>
+                </Link>
+                <Link href="/register" className="flex flex-col justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all group">
+                  <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-3xl">verified_user</span>
+                  <div>
+                    <span className="font-bold text-white text-sm block mb-1">Purchase</span>
+                    <span className="font-mono text-[9px] text-on-surface/40 uppercase tracking-widest">Compliance</span>
+                  </div>
+                </Link>
+                <Link href="/register" className="flex flex-col justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all group">
+                  <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-3xl">speed</span>
+                  <div>
+                    <span className="font-bold text-white text-sm block mb-1">Hold</span>
+                    <span className="font-mono text-[9px] text-on-surface/40 uppercase tracking-widest">Optimization</span>
+                  </div>
+                </Link>
+                <Link href="/register" className="flex flex-col justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-primary/20 transition-all group">
+                  <span className="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-3xl">account_balance</span>
+                  <div>
+                    <span className="font-bold text-white text-sm block mb-1">Exit</span>
+                    <span className="font-mono text-[9px] text-on-surface/40 uppercase tracking-widest">Instant ROI</span>
+                  </div>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        {/* ── Testimonials ── */}
-        <TestimonialSlider />
+        {/* OS Performance Section */}
+        <section className="max-w-4xl mx-auto px-6 md:px-gutter-desktop mt-48">
+          <div className="bento-card p-16 rounded-[40px] text-center border-t border-t-primary/30 relative overflow-hidden shadow-2xl">
+            <div className="absolute -right-32 -top-32 w-80 h-80 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="absolute -left-32 -bottom-32 w-80 h-80 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+            <h2 className="font-headline-lg text-4xl text-primary mb-8 tracking-tight">Eliminate Profit Erosion.</h2>
+            <p className="font-body-lg text-on-surface/70 max-w-2xl mx-auto text-xl leading-relaxed">
+              Replace fragmented spreadsheets with a single, <span className="text-white font-medium">high-fidelity operating system</span> designed for terminal efficiency and institutional scale.
+            </p>
+          </div>
+        </section>
+      </main>
 
-        {/* ── Final CTA — Risk Mitigation Reframe ── */}
-        <FinalCTA />
-
-        {/* ── Pricing ── */}
-        <PricingSection onSelectPlan={handleSelectPlan} />
-
-        {/* ── Footer ── */}
-        <LandingFooter />
-      </div>
-
+      <LandingFooter />
       <CustomToaster position="bottom-center" />
     </div>
   );

@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "Master REIL Screen Orchestrator agent definition — manages all 10 datapoint screen catalogs (NOI, Cash Flow, Cap Rate, COC, GRM, DSCR, IRR, Occupancy, OER, Appreciation) from StitchMCP. Tracks 62 total screens across collection and intelligence categories, with curation strategy for selecting the best functional versions per breakpoint for dashboard integration. Each metric entry includes formula, seed values, route, component name, and individual screen listings with Stitch IDs and device types.",
+  "updatedAt":  "2026-05-30T22:51:11.074650Z"
+}

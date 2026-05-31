@@ -1,0 +1,68 @@
+{
+  "name": "dscr-agent",
+  "description": "DSCR Agent — Manages Debt Service Coverage Ratio data collection, formula validation, risk strip visualization, and threshold analysis. Formula: DSCR = NOI ÷ Annual Debt Service.",
+  "type": "reil-metric-agent",
+  "metric": {
+    "name": "Debt Service Coverage Ratio",
+    "abbreviation": "DSCR",
+    "formula": "DSCR = NOI ÷ Annual Debt Service",
+    "seed": {
+      "noi": 12486,
+      "annualDebtService": 10764,
+      "result": 1.16
+    },
+    "thresholds": {
+      "critical": { "max": 0.8, "color": "#DC2626", "label": "Critical — default risk" },
+      "atRisk":   { "max": 1.0, "color": "#EF4444", "label": "At Risk — cannot cover debt" },
+      "marginal": { "max": 1.25, "color": "#F59E0B", "label": "Marginal — lender minimum" },
+      "adequate": { "max": 1.5, "color": "#14B8A6", "label": "Adequate — acceptable coverage" },
+      "strong":   { "max": 2.0, "color": "#3B82F6", "label": "Strong — favorable terms" },
+      "excellent": { "max": 3.0, "color": "#8B5CF6", "label": "Excellent — best-in-class" }
+    }
+  },
+  "components": {
+    "input": {
+      "name": "DSCRRiskStripTerminal",
+      "file": "src/components/intelligence/DSCRRiskStripTerminal.tsx",
+      "fields": [
+        { "label": "Annual NOI", "field": "financials.netOperatingIncome" },
+        { "label": "Monthly Debt Service", "field": "financials.monthlyMortgagePayment" }
+      ],
+      "stressTests": [
+        "25% NOI Drop",
+        "Rate +2%",
+        "50% Vacancy"
+      ]
+    },
+    "intelligence": {
+      "name": "DSCRThresholdCard",
+      "file": "src/components/intelligence/DSCRThresholdCard.tsx",
+      "features": [
+        "6-zone stacked bar (Critical to Excellent)",
+        "Formula breakdown pills (NOI / DS = DSCR)",
+        "Threshold distance table (NOI gap per level)",
+        "Max affordable debt at target DSCR"
+      ]
+    }
+  },
+  "stitchScreens": [
+    { "id": "79a55fe7911d46f1ba5adaf15f19548e", "title": "Financing Terminal: DSCR Risk Strip Integration" },
+    { "id": "6afc0a21cdc54be291dbc939027a0366", "title": "Financing Terminal: DSCR Risk Strip (Desktop)" },
+    { "id": "54e24aeb794842429aa0050df3a2150e", "title": "Financing Terminal: DSCR Risk Strip (Branded)" },
+    { "id": "d070623f69694caab0bbdc995050232a", "title": "DSCR Threshold Analysis (Desktop Refined)" },
+    { "id": "9cc64d78d6d6465e8ff9860308f5c1e6", "title": "DSCR Threshold Intelligence Card (Refined)" }
+  ],
+  "route": "src/app/dashboard/intelligence/dscr/page.tsx",
+  "formula_source": "src/lib/metrics/reiMetrics.ts:computeDSCR",
+  "logicLens": {
+    "validations": [
+      "computeDSCR(12486, 10764) should return 1.16",
+      "computeDSCR(12486, 0) should return Infinity",
+      "computeDSCR(0, 10764) should return 0.0",
+      "computeDSCR(0, 0) should return 0",
+      "DSCR < 1.0 -> riskLevel = at-risk",
+      "DSCR >= 1.0 && < 1.25 -> riskLevel = marginal",
+      "DSCR >= 1.25 -> riskLevel = healthy"
+    ]
+  }
+}

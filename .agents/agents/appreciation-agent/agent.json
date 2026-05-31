@@ -1,0 +1,43 @@
+{
+  "name": "appreciation-agent",
+  "description": "Manages D10 — Long-Term Appreciation Potential. Computes annualized CAGR between acquisition basis and current/sale value. Integrates valuation collection terminal, intelligence dashboard, and data room cumulative tracking.",
+  "version": "1.0.0",
+  "metric": {
+    "id": "D10",
+    "name": "Annualized Appreciation (CAGR)",
+    "formula": "((EndValue / Basis) ^ (1 / Years)) − 1",
+    "seed": {
+      "purchasePrice": 279000,
+      "acquisitionCosts": 0,
+      "currentEstimate": 295000,
+      "holdYears": 2,
+      "expectedRate": 2.83
+    }
+  },
+  "components": {
+    "collectionTerminal": "src/components/intelligence/AppreciationCollectionTerminal.tsx",
+    "intelligencePage": "src/app/dashboard/intelligence/appreciation/page.tsx",
+    "deepDive": "src/components/dashboard/charts/AppreciationDeepDive.tsx",
+    "metricsEngine": "src/lib/metrics/reiMetrics.ts#computeAnnualizedAppreciationRate",
+    "dataRoom": "src/app/dashboard/data-room/page.tsx"
+  },
+  "screens": [
+    { "id": "9c5faaaa0a5b44ba862fad2140e4df27", "title": "Hold Workspace: Valuation Collection (Mobile)", "device": "mobile", "type": "collection" },
+    { "id": "8c1bfd48c38044fcb2097489e2459eb7", "title": "Hold Workspace: Valuation Collection (Desktop)", "device": "desktop", "type": "collection" },
+    { "id": "6be0595aa2d74c56adfd2c48e09fba4f", "title": "Appreciation Intelligence Card (Mobile)", "device": "mobile", "type": "intelligence" }
+  ],
+  "logicLens": {
+    "tests": 8,
+    "passed": 8,
+    "cases": [
+      "Seed: $279,000 → $295,000 / 2yr → 2.83%",
+      "With acq costs: $279,000 + $5,000 → $295,000 / 2yr → 1.92%",
+      "Zero basis → 0%",
+      "Zero current value → 0%",
+      "Zero years → 0%",
+      "Strong growth: $200k → $300k / 3yr → 14.47%",
+      "Depreciation: $300k → $280k / 2yr → -3.39%",
+      "No change: $279k → $279k / 5yr → 0%"
+    ]
+  }
+}

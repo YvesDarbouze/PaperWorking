@@ -263,87 +263,43 @@ export default function NotificationsSettingsPage() {
       {/* ─── Bento Grid Layout ─── */}
       <div className="grid grid-cols-12 gap-6">
 
-        {/* ════ Row 1: Appearance (col-8) + Inbox Cleanup (col-4) ════ */}
+        {/* ════ Row 1: Inbox Retention (col-12) ════ */}
 
-        {/* Appearance */}
-        <section className="col-span-12 xl:col-span-8 glass-card rounded-2xl p-6 relative overflow-hidden">
+        {/* Inbox Retention */}
+        <section className="col-span-12 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-pw-primary/5 rounded-full blur-[80px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
-            <span className="material-symbols-outlined text-pw-primary select-none">palette</span>
-            <h2 className="text-xl font-bold text-pw-black">Appearance</h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {THEME_OPTIONS.map(({ value, label, iconName, description }) => {
-              const isSelected = theme === value;
-              return (
-                <button
-                  key={value}
-                  onClick={() => setTheme(value)}
-                  className={`
-                    flex flex-col items-center gap-3 p-5 text-center transition-all border rounded-xl cursor-pointer
-                    ${isSelected
-                      ? 'bg-pw-primary/10 border-pw-primary/40 shadow-[0_0_20px_rgba(87,241,219,0.12)]'
-                      : 'border-white/5 bg-white/[0.02] hover:border-pw-muted/30 hover:bg-white/[0.04]'
-                    }
-                  `}
-                >
-                  <div className={`
-                    w-12 h-12 flex items-center justify-center rounded-xl border
-                    ${isSelected ? 'bg-pw-primary/20 border-pw-primary/30 text-pw-primary' : 'bg-pw-glass-bg border-pw-border text-pw-muted'}
-                  `}>
-                    <span className="material-symbols-outlined text-2xl select-none">{iconName}</span>
-                  </div>
-                  <div>
-                    <p className={`text-sm font-semibold ${isSelected ? 'text-pw-primary' : 'text-pw-black'}`}>
-                      {label}
-                    </p>
-                    <p className="text-[11px] text-pw-muted mt-1 leading-snug">{description}</p>
-                  </div>
-                  <div className={`
-                    w-4 h-4 rounded-full border-2 flex items-center justify-center
-                    ${isSelected ? 'border-pw-primary' : 'border-pw-border'}
-                  `}>
-                    {isSelected && (
-                      <div className="w-2 h-2 rounded-full bg-pw-primary" />
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Inbox Cleanup & Retention */}
-        <section className="col-span-12 xl:col-span-4 glass-card rounded-2xl p-6 flex flex-col">
           <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-6">
             <span className="material-symbols-outlined text-pw-primary select-none">auto_delete</span>
             <h2 className="text-xl font-bold text-pw-black">Inbox Cleanup & Retention</h2>
           </div>
 
-          <p className="text-xs text-pw-muted leading-relaxed mb-4">
-            Automatically archive notifications after they are read to keep your workspace clear.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
+              <p className="text-sm text-pw-muted leading-relaxed">
+                Automatically archive notifications after they are read to keep your workspace clear. All historical records remain fully searchable and exportable via Compliance Data Rights.
+              </p>
+            </div>
 
-          <div className="mt-auto">
-            <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
-              Auto-Archive Retention Window
-            </label>
-            <select
-              value={autoArchiveDays}
-              onChange={(e) => {
-                if (user?.uid) {
-                  updateAutoArchiveDays(user.uid, Number(e.target.value))
-                    .then(() => toast.success(`Auto-archive set to ${e.target.value} days`))
-                    .catch(() => toast.error('Failed to update retention window'));
-                }
-              }}
-              className="glass-input w-full px-4 py-2.5 text-sm text-pw-black rounded-lg"
-            >
-              <option value="30" className="bg-pw-surface text-pw-black">30 Days (Default)</option>
-              <option value="60" className="bg-pw-surface text-pw-black">60 Days</option>
-              <option value="90" className="bg-pw-surface text-pw-black">90 Days</option>
-            </select>
+            <div className="flex-shrink-0 min-w-[220px]">
+              <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
+                Auto-Archive Retention Window
+              </label>
+              <select
+                value={autoArchiveDays}
+                onChange={(e) => {
+                  if (user?.uid) {
+                    updateAutoArchiveDays(user.uid, Number(e.target.value))
+                      .then(() => toast.success(`Auto-archive set to ${e.target.value} days`))
+                      .catch(() => toast.error('Failed to update retention window'));
+                  }
+                }}
+                className="glass-input w-full px-4 py-2.5 text-sm text-pw-black rounded-lg"
+              >
+                <option value="30" className="bg-[#141d23] text-pw-black">30 Days (Default)</option>
+                <option value="60" className="bg-[#141d23] text-pw-black">60 Days</option>
+                <option value="90" className="bg-[#141d23] text-pw-black">90 Days</option>
+              </select>
+            </div>
           </div>
         </section>
 

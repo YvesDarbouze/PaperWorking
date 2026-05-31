@@ -54,18 +54,6 @@ export default function LandingHeader() {
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8">
             <Link
-              href="/how-it-works"
-              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
-            >
-              How It Works
-            </Link>
-            <Link
-              href="/#pricing"
-              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
-            >
-              Pricing
-            </Link>
-            <Link
               href="/#news"
               className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
             >
@@ -88,7 +76,7 @@ export default function LandingHeader() {
               Sign In
             </Link>
             <Link
-              href="/#pricing"
+              href="/register"
               className="luminous-button px-6 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
             >
               Start Your 14-Day Trial
@@ -162,20 +150,6 @@ export default function LandingHeader() {
 
               <div className="flex flex-col gap-6 overflow-y-auto flex-grow">
                 <Link
-                  href="/how-it-works"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
-                >
-                  How It Works
-                </Link>
-                <Link
-                  href="/#pricing"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
-                >
-                  Pricing
-                </Link>
-                <Link
                   href="/#news"
                   onClick={() => setMobileOpen(false)}
                   className="text-on-surface/70 hover:text-primary transition-colors font-label-md text-label-md py-1"
@@ -200,7 +174,7 @@ export default function LandingHeader() {
                   Sign In
                 </Link>
                 <Link
-                  href="/#pricing"
+                  href="/register"
                   onClick={() => setMobileOpen(false)}
                   className="luminous-button py-3 rounded-lg font-label-md text-label-md text-center tracking-wide"
                 >
@@ -218,13 +192,13 @@ export default function LandingHeader() {
           <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
           <span className="text-[9px] font-bold uppercase tracking-tighter">Home</span>
         </Link>
-        <Link href="/how-it-works" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
-          <span className="material-symbols-outlined text-[20px]">account_tree</span>
-          <span className="text-[9px] uppercase tracking-tighter">How It Works</span>
+        <Link href="/#news" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+          <span className="material-symbols-outlined text-[20px]">newspaper</span>
+          <span className="text-[9px] uppercase tracking-tighter">News</span>
         </Link>
-        <Link href="/#pricing" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
-          <span className="material-symbols-outlined text-[20px]">payments</span>
-          <span className="text-[9px] uppercase tracking-tighter">Pricing</span>
+        <Link href="/support" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
+          <span className="material-symbols-outlined text-[20px]">help_outline</span>
+          <span className="text-[9px] uppercase tracking-tighter">Help</span>
         </Link>
         <Link href="/login" className="flex flex-col items-center gap-1 text-on-surface-variant/50">
           <span className="material-symbols-outlined text-[20px]">login</span>

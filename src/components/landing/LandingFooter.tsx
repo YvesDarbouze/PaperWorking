@@ -37,35 +37,21 @@ export default function LandingFooter() {
           <ul className="space-y-2">
             <li>
               <Link
-                href="/how-it-works"
-                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
-              >
-                How It Works
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/#pricing"
-                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
-              >
-                Pricing
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/dashboard"
-                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
-              >
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/#news"
                 className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
               >
                 News
               </Link>
+            </li>
+            <li>
+              <a
+                href="https://status.paperworking.co"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors hover:underline decoration-primary/50 cursor-pointer"
+              >
+                System Status
+              </a>
             </li>
           </ul>
         </div>

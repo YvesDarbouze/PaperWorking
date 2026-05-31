@@ -1561,11 +1561,11 @@ select {
 }
 
 .terminal-grid {
+  background-color: #060f15;
   background-image: 
-      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  background-position: center top;
+      linear-gradient(to right, rgba(45, 212, 191, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(45, 212, 191, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
 .ambient-glow {
@@ -1602,6 +1602,35 @@ select {
     border-top: 1px solid rgba(255, 255, 255, 0.15);
     border-left: 1px solid rgba(255, 255, 255, 0.10);
     box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.5);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02);
+}
+.bento-card {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
+.bento-card:hover {
+  border-color: rgba(45, 212, 191, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-2px);
+}
+.neon-glow-teal {
+  filter: drop-shadow(0 0 15px rgba(45, 212, 191, 0.5));
+}
+.radial-glow {
+  background: radial-gradient(circle at center, rgba(45, 212, 191, 0.15) 0%, transparent 70%);
+}
+.inner-glow {
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.03);
 }
 
 

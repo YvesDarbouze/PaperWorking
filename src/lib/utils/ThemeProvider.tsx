@@ -152,44 +152,14 @@ interface ThemeProviderProps {
  * Add this in src/app/layout.tsx around {children}.
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const { theme } = useSettingsStore();
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
+  // Enforce dark mode globally
+  const bg = '#0b141a';
 
   useEffect(() => {
-    setMounted(true);
-    const updateTheme = () => {
-      if (theme === 'system') {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setResolvedTheme(isDark ? 'dark' : 'light');
-      } else {
-        setResolvedTheme(theme);
-      }
-    };
-
-    updateTheme();
-
-    if (theme === 'system') {
-      const media = window.matchMedia('(prefers-color-scheme: dark)');
-      media.addEventListener('change', updateTheme);
-      return () => media.removeEventListener('change', updateTheme);
-    }
-  }, [theme]);
-
-  // Sync data-theme and dark class on HTML element to ensure layout-level consistency
-  useEffect(() => {
-    if (!mounted) return;
     const root = document.documentElement;
-    if (resolvedTheme === 'dark') {
-      root.setAttribute('data-theme', 'dark');
-      root.classList.add('dark');
-    } else {
-      root.setAttribute('data-theme', 'light');
-      root.classList.remove('dark');
-    }
-  }, [resolvedTheme, mounted]);
-
-  const bg = resolvedTheme === 'dark' ? '#0b141a' : '#f9f9f9';
+    root.setAttribute('data-theme', 'dark');
+    root.classList.add('dark');
+  }, []);
 
   return (
     <SurfaceProvider bg={bg}>

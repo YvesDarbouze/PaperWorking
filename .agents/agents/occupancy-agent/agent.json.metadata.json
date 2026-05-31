@@ -1,0 +1,5 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "Occupancy Agent definition for REIL Data Practice pipeline. Manages occupancy rate collection and intelligence with per-unit vacancy tracking, tenant/lease data, and dual formula support (unit-based and day-based). Seed: 92% over trailing 12 months. Logic-lens: 8/8 passed.",
+  "updatedAt":  "2026-05-30T12:34:40.170053Z"
+}

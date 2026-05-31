@@ -69,8 +69,7 @@ const SERVICES: ConnectedService[] = [
 export default function GeneralSettingsPage() {
   const { profile } = useAuth();
 
-  // ─── Appearance ────────────────────────────────────────
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
 
   // ─── Regional ──────────────────────────────────────────
   const [timezone, setTimezone] = useState('America/New_York');
@@ -127,85 +126,7 @@ export default function GeneralSettingsPage() {
     <div className="w-full space-y-0">
       <div className="grid grid-cols-12 gap-6">
 
-        {/* ════════════════════════════════════════════════
-            1 · APPEARANCE (col-span-12)
-            ════════════════════════════════════════════════ */}
-        <section className="col-span-12 glass-card rounded-2xl p-8 relative overflow-hidden">
-          <div className="absolute -top-20 -right-20 w-56 h-56 bg-pw-primary/8 rounded-full blur-[100px] pointer-events-none" />
-          
-          <div className="flex items-center gap-2 mb-6 relative z-10">
-            <span className="material-symbols-outlined text-pw-primary text-xl select-none">palette</span>
-            <h4 className="text-2xl font-bold text-pw-black">Appearance</h4>
-          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-            {/* Dark Mode Button */}
-            <button
-              onClick={() => setTheme('dark')}
-              className={`
-                flex-1 flex items-center gap-4 p-5 rounded-xl border transition-all cursor-pointer
-                ${theme === 'dark'
-                  ? 'bg-pw-primary/10 border-pw-primary/30 shadow-[0_0_15px_rgba(87,241,219,0.15)]'
-                  : 'bg-pw-glass-bg/50 border-white/5 hover:border-white/10'
-                }
-              `}
-            >
-              <div className={`
-                w-12 h-12 rounded-xl flex items-center justify-center transition-colors
-                ${theme === 'dark'
-                  ? 'bg-pw-primary/20 text-pw-primary'
-                  : 'bg-white/5 text-pw-muted'
-                }
-              `}>
-                <span className="material-symbols-outlined text-2xl">dark_mode</span>
-              </div>
-              <div className="text-left">
-                <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-pw-primary' : 'text-pw-black'}`}>
-                  Dark Mode
-                </p>
-                <p className="text-xs text-pw-muted">Luminous Glass — default experience</p>
-              </div>
-              {theme === 'dark' && (
-                <span className="material-symbols-outlined text-pw-primary text-xl ml-auto" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  check_circle
-                </span>
-              )}
-            </button>
-
-            {/* Light Mode Button */}
-            <button
-              onClick={() => setTheme('light')}
-              className={`
-                flex-1 flex items-center gap-4 p-5 rounded-xl border transition-all cursor-pointer
-                ${theme === 'light'
-                  ? 'bg-pw-primary/10 border-pw-primary/30 shadow-[0_0_15px_rgba(87,241,219,0.15)]'
-                  : 'bg-pw-glass-bg/50 border-white/5 hover:border-white/10'
-                }
-              `}
-            >
-              <div className={`
-                w-12 h-12 rounded-xl flex items-center justify-center transition-colors
-                ${theme === 'light'
-                  ? 'bg-pw-primary/20 text-pw-primary'
-                  : 'bg-white/5 text-pw-muted'
-                }
-              `}>
-                <span className="material-symbols-outlined text-2xl">light_mode</span>
-              </div>
-              <div className="text-left">
-                <p className={`text-sm font-semibold ${theme === 'light' ? 'text-pw-primary' : 'text-pw-black'}`}>
-                  Light Mode
-                </p>
-                <p className="text-xs text-pw-muted">Clean daylight interface</p>
-              </div>
-              {theme === 'light' && (
-                <span className="material-symbols-outlined text-pw-primary text-xl ml-auto" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  check_circle
-                </span>
-              )}
-            </button>
-          </div>
-        </section>
 
         {/* ════════════════════════════════════════════════
             2 · REGIONAL PREFERENCES (col-span-7)

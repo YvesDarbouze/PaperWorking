@@ -1,0 +1,52 @@
+{
+  "name": "irr-agent",
+  "version": "1.0.0",
+  "description": "IRR Agent — The most mathematically advanced REIL metric agent. Manages Internal Rate of Return using Newton-Raphson iteration, multi-scenario comparison, and exit assumptions modeling.",
+  "domain": "irr",
+  "formula": "IRR = discount rate where NPV of all hold-period cash flows = 0",
+  "solver": "Newton-Raphson (100 iterations, 1e-7 tolerance)",
+  "seeds": {
+    "totalCashInvested": 60000,
+    "annualCashFlow": 1722,
+    "purchasePrice": 279000,
+    "appreciationPercent": 3,
+    "loanAmount": 219000,
+    "loanRate": 7,
+    "loanTermYears": 30,
+    "sellingCostsPercent": 8,
+    "holdPeriods": [3, 5, 7, 10]
+  },
+  "scenarioMatrix": {
+    "dimensions": "4 hold periods x 3 variants = 12 scenarios",
+    "variants": {
+      "Bear": { "appreciationPercent": 1.5, "cashFlowMultiplier": 0.8 },
+      "Base": { "appreciationPercent": 3.0, "cashFlowMultiplier": 1.0 },
+      "Bull": { "appreciationPercent": 5.0, "cashFlowMultiplier": 1.2 }
+    },
+    "hurdleRate": 0.12
+  },
+  "components": {
+    "input": "IRRExitAssumptionsTerminal.tsx",
+    "intelligence": "IRRScenarioComparisonCard.tsx",
+    "route": "/dashboard/intelligence/irr"
+  },
+  "formulas": {
+    "computeIRR": "src/lib/metrics/reiMetrics.ts:242",
+    "buildIRRCashFlows": "src/lib/metrics/reiMetrics.ts:289"
+  },
+  "screens": {
+    "85b67466": "Exit Assumptions & IRR Analysis (Mobile)",
+    "a28d6d8a": "Exit Assumptions & IRR Analysis (Mobile) v2",
+    "bb322b1f": "IRR Intelligence: Scenario Comparison (Mobile)",
+    "9422cf72": "IRR Intelligence: Scenario Comparison (Mobile) v2",
+    "7f220ce1": "IRR Intelligence: Scenario Comparison (Mobile) v3",
+    "ab4d950e": "IRR Intelligence: Strategic Scenario Terminal (Desktop)",
+    "06a30c96": "IRR Intelligence: Strategic Scenario Terminal (Desktop) v2",
+    "8d2ab031": "Portfolio Dashboard: IRR Strategic Integration (Desktop)",
+    "193cfa7c": "Portfolio Dashboard: IRR Scenario Integration (Mobile)"
+  },
+  "logicLens": {
+    "result": "7/8 passed",
+    "note": "1 edge case (deep-negative NPV) returns null — correct Newton-Raphson behavior, solver guards against divergence"
+  }
+}

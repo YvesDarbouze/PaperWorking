@@ -1,0 +1,35 @@
+{
+  "name": "occupancy-agent",
+  "version": "1.0.0",
+  "description": "Occupancy Agent — manages per-unit vacancy day tracking, tenant/lease data, and occupancy rate computation.",
+  "domain": "occupancy",
+  "formula": "Occupancy Rate = (Days Occupied / Total Days) x 100",
+  "seeds": {
+    "vacantDays": 29,
+    "totalDays": 365,
+    "occupancyRate": 92.05,
+    "units": [
+      { "unitLabel": "Unit 1A", "tenantName": "J. Rivera", "vacantDays": 0, "status": "occupied" },
+      { "unitLabel": "Unit 1B", "tenantName": "M. Chen", "vacantDays": 0, "status": "occupied" },
+      { "unitLabel": "Unit 2A", "tenantName": "", "vacantDays": 29, "status": "vacant" },
+      { "unitLabel": "Unit 2B", "tenantName": "S. Okafor", "vacantDays": 0, "status": "occupied" }
+    ]
+  },
+  "components": {
+    "input": "OccupancyCollectionTerminal.tsx",
+    "route": "/dashboard/intelligence/occupancy"
+  },
+  "formulas": {
+    "computeOccupancyRate": "src/lib/metrics/reiMetrics.ts:407 (unit-based)",
+    "computeOccupancyRateByDays": "src/lib/metrics/reiMetrics.ts:1386 (day-based)"
+  },
+  "screens": {
+    "40fd1015": "Tenants & Leases: Occupancy Collection (Mobile)",
+    "5d26659a": "Tenants & Leases: Occupancy Collection (Desktop)",
+    "fedb8e0a": "Tenants & Leases: Occupancy Collection (Mobile) v2",
+    "529657b8": "Tenants & Leases: Occupancy Collection (Desktop) v2"
+  },
+  "logicLens": {
+    "result": "8/8 passed"
+  }
+}

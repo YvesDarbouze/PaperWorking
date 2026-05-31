@@ -48,7 +48,7 @@ export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
       notifications: defaultNotifications,
-      theme: 'light',
+      theme: 'dark',
 
       toggleNotification: (key, channel) =>
         set((state) => ({
@@ -62,16 +62,13 @@ export const useSettingsStore = create<SettingsState>()(
         })),
 
       setTheme: (theme) => {
-        // Apply data-theme attribute for CSS variable switching
+        // Enforce dark theme only
         if (typeof document !== 'undefined') {
           const root = document.documentElement;
-          if (theme === 'system') {
-            root.removeAttribute('data-theme');
-          } else {
-            root.setAttribute('data-theme', theme);
-          }
+          root.setAttribute('data-theme', 'dark');
+          root.classList.add('dark');
         }
-        set({ theme });
+        set({ theme: 'dark' });
       },
     }),
     {

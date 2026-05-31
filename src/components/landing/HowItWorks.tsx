@@ -20,32 +20,32 @@ const PHASES = [
   {
     phase: 1,
     title: 'Acquisition',
-    subtitle: 'The Capital Gateway',
-    body: 'Source deals, generate offer letters, and collect capital commitments from your syndicate. No more toggling between CRMs, email threads, and shared drives to figure out where a deal stands.',
+    subtitle: 'Know the real numbers before you sign.',
+    body: 'Calculate your projected IRR, Cap Rate, and cash-on-cash return with exact deal formulas. Build syndication pitches with real numbers that LPs trust.',
     icon: 'target',
     color: 'primary',
   },
   {
     phase: 2,
-    title: 'Purchase',
-    subtitle: 'The Compliance Vault',
-    body: 'Loan docs, attorney sign-offs, title commitments, and contingency deadlines live in one place. You stop chasing PDFs through email and start closing on time.',
+    title: 'Transaction',
+    subtitle: 'Never blow a contingency deadline.',
+    body: 'Track escrow deposits, title work, insurance binders, and closing deadlines in one dashboard. Get automated alerts before your earnest money deposit gets hard.',
     icon: 'gavel',
     color: 'secondary',
   },
   {
     phase: 3,
-    title: 'Hold',
-    subtitle: 'Margin Protection',
-    body: 'Every day you hold a property, it costs you money. The platform tracks your daily burn rate down to the penny so you know exactly what each extra week on market does to your ROI.',
+    title: 'Rehab',
+    subtitle: 'Manage contractor draws by milestone.',
+    body: 'Log materials receipts, track change orders, and authorize contractor draws only when milestone checklists are verified. Keep your contingency fund green.',
     icon: 'hourglass_empty',
     color: 'tertiary',
   },
   {
     phase: 4,
-    title: 'Exit',
-    subtitle: 'Financial Reconciliation',
-    body: 'Sale or refi, the platform pulls every cost from Phases 1 through 3 and calculates your actual ROI, IRR, and cash-on-cash return. Export a one-page deal summary or tax-ready CSV for your CPA.',
+    title: 'Hold/Exit',
+    subtitle: 'CPA-Ready tax exports on closing.',
+    body: 'Track monthly carrying costs, property valuations, and exit closing disclosures. Generate a single, clean cost-basis export for your accountant at tax time.',
     icon: 'logout',
     color: 'outline',
   },
@@ -202,22 +202,20 @@ export default function HowItWorks() {
       {/* ── Bottom CTA ── */}
       <section className="glass-card rounded-xl p-12 text-center flex flex-col items-center gap-6 mt-16">
         <h2 className="font-headline-lg text-headline-lg text-on-surface">
-          Stop bleeding margins to disorganized deals.
+          Stop running six-figure flips out of five-column spreadsheets.
         </h2>
         <p className="font-body-md text-body-md text-on-surface-variant max-w-xl">
-          PaperWorking centralizes your pipeline, tracks real-time costs, and
-          automates closing docs so you can close faster and scale without the
-          chaos.
+          PaperWorking tracks every document, dollar, and deadline from acquisition to exit in one dashboard.
         </p>
         <Link
           className="luminous-button px-8 py-4 rounded-full font-label-md text-label-md mt-4 flex items-center gap-2"
-          href="/#pricing"
+          href="/register"
         >
           Build Your Pipeline Today
           <span className="material-symbols-outlined">arrow_forward</span>
         </Link>
         <p className="font-body-sm text-body-sm text-on-surface-variant/60">
-          14-day trial · Credit card required · No charge until day 15
+          Free for 14 days • No credit card required to sign up
         </p>
       </section>
     </div>

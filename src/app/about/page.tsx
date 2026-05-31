@@ -124,11 +124,10 @@ export default function AboutPage() {
             Ready to stop losing money to bad data?
           </h2>
           <p className="font-body-sm text-body-sm text-on-surface-variant mb-8 max-w-md mx-auto">
-            Join thousands of investors who track every dollar from acquisition
-            through exit — in one workspace.
+            Join real estate operators tracking deal metrics from acquisition to exit.
           </p>
           <Link
-            href="/#pricing"
+            href="/register"
             className="luminous-button inline-flex items-center gap-2 px-8 py-3 rounded-lg font-label-md text-label-md tracking-wide active:scale-95 transition-all duration-150"
           >
             Get Started Free

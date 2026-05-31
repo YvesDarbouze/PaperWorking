@@ -29,13 +29,12 @@ We strictly rely on the "Antigravity" aesthetic (Black and White with a specific
 - `pw-subtle` : Fainter text logic.
 - `pw-accent` : Core brand interaction state color (Replaces indigo, emerald, distinct non-brand choices).
 
-### Deal Lifecycle Phases (Authorized Scale)
-Strict semantic colors for deal status states:
-- `phase-sourcing` : #F2F2F2
-- `phase-contract` : #CCCCCC
-- `phase-rehab`    : #A5A5A5
-- `phase-listed`   : #7F7F7F
-- `phase-closed`   : #595959
+### Deal Lifecycle Phases (REIL v2 Authorized Scale)
+Strict semantic colors for deal status states matching the 4-phase color system:
+- `phase-acquisition` : #F59E0B (Gold/Amber)
+- `phase-transaction` : #3B82F6 (Blue)
+- `phase-rehab`       : #F97316 (Orange)
+- `phase-hold-exit`   : #10B981 (Green)
 
 ## 2. Layout Aesthetics (Luminous Glass)
 
@@ -89,11 +88,10 @@ Apply to a **container** and children inherit the correct text color automatical
 | `.pw-surface-light` | `#f2f2f2` | `#0d0d0d` |
 | `.pw-surface-dark`  | `#0d0d0d` | `#ffffff` |
 | `.pw-surface-mid`   | `#7f7f7f` | `#ffffff` |
-| `.pw-phase-sourcing` | `#f2f2f2` | `#0d0d0d` |
-| `.pw-phase-contract` | `#cccccc` | `#0d0d0d` |
-| `.pw-phase-rehab`    | `#a5a5a5` | `#0d0d0d` |
-| `.pw-phase-listed`   | `#7f7f7f` | `#ffffff` |
-| `.pw-phase-closed`   | `#595959` | `#ffffff` |
+| `.pw-phase-acquisition` | `#F59E0B` | `#000000` |
+| `.pw-phase-transaction` | `#3B82F6` | `#ffffff` |
+| `.pw-phase-rehab`       | `#F97316` | `#ffffff` |
+| `.pw-phase-hold-exit`   | `#10B981` | `#ffffff` |
 
 Use `.pw-text-on-light` / `.pw-text-on-dark` on individual text elements when you can't modify the container.
 

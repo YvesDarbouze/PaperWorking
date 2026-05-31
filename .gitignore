@@ -87,3 +87,12 @@ scratch/
 
 # Temp dependencies backups
 /node_modules.old/
+
+# Stitch mockup downloads
+/stitch_screens/
+/stitch_marketing_screens/
+
+# Test execution logs & fixtures
+/test-results/
+/test-fixtures/
+

@@ -1,10 +1,16 @@
 # Final Copy Diff — Codebase Changes
 
-**Author**: Upstream Copy Implementer
-**Date**: 2026-05-31
-**Status**: Completed (Staging Verified)
+**Author**: Upstream Copy Implementer  
+**Date**: 2026-05-31  
+**Status**: Completed (Staging Verified & A/B Test Enabled)
 
 This document indexes all final copy modifications made to resolve the copy crimes and align the pre-login surfaces with the REIL v2 phases and locked pricing metrics.
+
+### Client-Side A/B Test (PostHog Integration)
+- **Feature Flag**: `landing-page-hero-copy`
+- **Variants**:
+  - **Variant B** (`test` / `variant-b`): Displays V2 copy (rewritten headline, sub-headline, and low-friction 14-day trial terms).
+  - **Control/Variant A** (fallback): Displays V1 copy (legacy headline, sub-headline, and 1 active deal terms).
 
 ---
 

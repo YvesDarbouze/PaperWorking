@@ -7,6 +7,7 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import { useAuth } from '@/context/AuthContext';
 import { CustomToaster } from '@/components/ui/CustomToaster';
 import { useSearchParams } from 'next/navigation';
+import { useFeatureFlagVariantKey } from 'posthog-js/react';
 
 /* ═══════════════════════════════════════════════════════
    Landing Page — Cinematic Glass Portal Redesign.
@@ -60,6 +61,9 @@ export default function LandingPage() {
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
+  const variant = useFeatureFlagVariantKey('landing-page-hero-copy');
+  const isVariantB = variant === 'test' || variant === 'variant-b';
+
   return (
     <div className="marketing-context bg-background min-h-screen text-on-background relative overflow-x-hidden terminal-grid">
       {/* Background Ambient Glows */}
@@ -85,11 +89,22 @@ export default function LandingPage() {
                 <span className="font-mono text-[10px] text-primary uppercase tracking-[0.2em]">System Status: Operational</span>
               </div>
               <h1 className="font-headline-xl text-headline-xl mb-6 text-white leading-[1.1]">
-                Stop Running Six-Figure Flips <br />
-                <span className="text-primary italic">Out of Five-Column Spreadsheets.</span>
+                {isVariantB ? (
+                  <>
+                    Stop Running Six-Figure Flips <br />
+                    <span className="text-primary italic">Out of Five-Column Spreadsheets.</span>
+                  </>
+                ) : (
+                  <>
+                    Scale Your Real Estate Portfolio <br />
+                    <span className="text-primary italic">Without the Chaos.</span>
+                  </>
+                )}
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface/60 max-w-xl mb-12 leading-relaxed">
-                The deal operating system for real estate investors. Track every document, dollar, and deadline from acquisition to exit in one dashboard.
+                {isVariantB
+                  ? "The deal operating system for real estate investors. Track every document, dollar, and deadline from acquisition to exit in one dashboard."
+                  : "The High-Fidelity Operating System for modern investors. Centralize pipeline, automate documentation, and track margins in real-time."}
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="relative group">
@@ -98,11 +113,15 @@ export default function LandingPage() {
                     href="/register"
                     className="relative px-10 py-5 rounded-xl font-bold text-lg inline-flex items-center gap-3 bg-primary text-on-primary hover:scale-[1.02] transition-transform shadow-[0_0_25px_rgba(45,212,191,0.4)]"
                   >
-                    Start Free Trial
+                    {isVariantB ? "Start Free Trial" : "Initialize Deployment"}
                     <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 600" }}>arrow_forward</span>
                   </Link>
                 </div>
-                <span className="font-mono text-xs text-on-surface/40 uppercase tracking-widest">Free for 14 days • No credit card required • Instant setup</span>
+                <span className="font-mono text-xs text-on-surface/40 uppercase tracking-widest">
+                  {isVariantB
+                    ? "Free for 14 days • No credit card required • Instant setup"
+                    : "Free forever for 1 active deal."}
+                </span>
               </div>
             </div>
 

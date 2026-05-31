@@ -119,12 +119,15 @@ export function computeProjectSnapshotData(
     return sanitizeNumber(val);
   };
 
-  const hasRent = !!(financials.monthlyGrossRent || financials.projectedMonthlyRent);
+  const hasRentInput =
+    financials.monthlyGrossRent != null ||
+    financials.projectedMonthlyRent != null ||
+    financials.projectedRent != null;
   const hasValue = !!(financials.estimatedCurrentValue || financials.estimatedARV || financials.purchasePrice);
   const hasInvested = metrics.totalCashInvested > 0;
   const hasDebt = !!financials.loanAmount;
 
-  const noiVal = financials.netOperatingIncome != null ? financials.netOperatingIncome : (hasRent ? metrics.noi : null);
+  const noiVal = (financials.netOperatingIncome != null || hasRentInput) ? metrics.noi : null;
   const annualCashFlowVal = noiVal !== null ? getSanitized(metrics.annualCashFlow, true) : null;
   const monthlyCashFlowVal = noiVal !== null ? getSanitized(metrics.monthlyCashFlow, true) : null;
   

@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { OccupancyCollectionTerminal } from '@/components/intelligence/OccupancyCollectionTerminal';
+import type { OccupancyValues } from '@/components/intelligence/OccupancyCollectionTerminal';
 
 /* ═══════════════════════════════════════════════════════════════
    Occupancy Intelligence Page
@@ -128,7 +131,11 @@ export default function OccupancyIntelligencePage() {
   const projects = useProjectStore((s) => s.projects);
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentOcc, occChange, occupiedUnits, totalUnits, trendPcts, trendMonths } = useMemo(() => {
+  /* ── Reactive state from Collection Terminal ── */
+  const [collectedValues, setCollectedValues] = useState<OccupancyValues | null>(null);
+  const handleCollectionChange = useCallback((v: OccupancyValues) => setCollectedValues(v), []);
+
+  const { isUsingDemoData, currentOcc, occChange, occupiedUnits, totalUnits, trendPcts, trendMonths } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
       const pcts   = sorted.map((s) => (s.occupancyRate ?? 0) * 100);
@@ -138,6 +145,7 @@ export default function OccupancyIntelligencePage() {
       const occ    = sorted[sorted.length - 1]?.occupiedUnits ?? 47;
       const tot    = sorted[sorted.length - 1]?.numberOfUnits ?? 50;
       return {
+        isUsingDemoData: false,
         currentOcc: last,
         occChange: last - prev,
         occupiedUnits: occ,
@@ -149,14 +157,15 @@ export default function OccupancyIntelligencePage() {
     const totalU = projects.reduce((s, p) => s + (p.numberOfUnits ?? 0), 0) || 50;
     const occupiedU = Math.round(totalU * 0.942);
     return {
-      currentOcc: 94.2,
+      isUsingDemoData: true,
+      currentOcc: collectedValues?.occupancyRate ?? 94.2,
       occChange: 1.8,
-      occupiedUnits: occupiedU,
-      totalUnits: totalU,
+      occupiedUnits: collectedValues?.occupiedUnitCount ?? occupiedU,
+      totalUnits: collectedValues?.totalUnitCount ?? totalU,
       trendPcts: DEMO_OCCUPANCY,
       trendMonths: DEMO_MONTHS,
     };
-  }, [snapshots, projects]);
+  }, [snapshots, projects, collectedValues]);
 
   const propertyRows = useMemo(() => {
     const withUnits = projects.filter((p) => (p.numberOfUnits ?? 0) > 0);
@@ -190,6 +199,8 @@ export default function OccupancyIntelligencePage() {
           Export
         </button>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -253,6 +264,11 @@ export default function OccupancyIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Occupancy Collection Terminal ── */}
+      <OccupancyCollectionTerminal
+        onValuesChange={handleCollectionChange}
+      />
 
       {/* ── Bottom: Vacancy Risk Analysis ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>

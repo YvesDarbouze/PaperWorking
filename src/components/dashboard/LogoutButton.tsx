@@ -17,9 +17,11 @@ interface LogoutButtonProps {
   compact?: boolean;
   /** Additional CSS classes */
   className?: string;
+  /** Custom styles */
+  style?: React.CSSProperties;
 }
 
-export default function LogoutButton({ compact = false, className = '' }: LogoutButtonProps) {
+export default function LogoutButton({ compact = false, className = '', style }: LogoutButtonProps) {
   const router = useRouter();
   const { logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -49,6 +51,7 @@ export default function LogoutButton({ compact = false, className = '' }: Logout
         className={`flex items-center justify-center p-2 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
         aria-label="Sign out"
         title="Sign out"
+        style={style}
       >
         {isLoggingOut ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -65,6 +68,7 @@ export default function LogoutButton({ compact = false, className = '' }: Logout
       disabled={isLoggingOut}
       className={`flex items-center gap-2 px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary disabled:opacity-50 ${className}`}
       aria-label="Sign out"
+      style={style}
     >
       {isLoggingOut ? (
         <>

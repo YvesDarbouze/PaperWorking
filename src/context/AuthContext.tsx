@@ -21,6 +21,9 @@ import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
 import { getTokenExpiryMinutes } from '@/lib/auth/sessionService';
 import SessionExpiredModal from '@/components/auth/SessionExpiredModal';
+import posthog from 'posthog-js';
+import { useProjectStore } from '@/store/projectStore';
+import { usePropertyStore } from '@/store/propertyStore';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 3.0)
@@ -82,24 +85,55 @@ async function provisionSocialUser(user: User) {
         : null) as AccountType | null;
       const acctType: AccountType = pendingAccountType || 'investor';
 
+      // Read consent metadata from localStorage if present
+      const consentIP = (typeof window !== 'undefined' ? window.localStorage.getItem('pw_pending_consent_ip') : null) || '127.0.0.1';
+      const consentVersion = (typeof window !== 'undefined' ? window.localStorage.getItem('pw_pending_consent_version') : null) || 'v1.0';
+
+      // Read UTM parameters and referral code from localStorage
+      const firstUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_first_utm') : null;
+      const lastUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_last_utm') : null;
+      const firstUtm = firstUtmStr ? JSON.parse(firstUtmStr) : null;
+      const lastUtm = lastUtmStr ? JSON.parse(lastUtmStr) : null;
+      const referredBy = typeof window !== 'undefined' ? window.localStorage.getItem('pw_referral_code') : null;
+
+      const dispName = user.displayName || 'User';
+      const referralCode = `${dispName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
+
       await setDoc(userDocRef, {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || 'User',
+        displayName: dispName,
         role: acctType === 'vendor' ? 'Vendor' : 'Lead Investor',
         accountType: acctType,
         personalOrganizationId: `org_${user.uid.slice(0, 8)}`,
         memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
+        tosConsentVersion: consentVersion,
+        tosConsentIP: consentIP,
+        tosConsentTimestamp: serverTimestamp(),
+        referralCode,
+        referredBy: referredBy || null,
+        firstUtm,
+        lastUtm,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
 
-      // Clean up the pending flag
+      // Clean up the pending flags
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('pw_pending_account_type');
+        window.localStorage.removeItem('pw_pending_consent_ip');
+        window.localStorage.removeItem('pw_pending_consent_version');
+        window.localStorage.removeItem('pw_referral_code');
       }
+
+      // Fire PostHog signup completed event
+      posthog.capture('signup_completed', {
+        email: user.email,
+        accountType: acctType,
+        ...firstUtm,
+      });
 
       // Reconcile any pending guest-checkout subscription
       if (user.email) {
@@ -260,6 +294,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, TOKEN_REFRESH_MS);
       } else {
         setProfile(null);
+        useProjectStore.getState().clearStore();
+        usePropertyStore.getState().clearStore();
       }
 
       if (firebaseUser) {
@@ -351,6 +387,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     // Lock out onAuthStateChanged's own sync so this function is the single
     // authoritative sync — same pattern as loginWithGoogle / loginWithFacebook.
     syncLockRef.current = true;
@@ -372,9 +410,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const register = async (email: string, password: string, displayName: string, accountType: AccountType = 'investor') => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
+      let clientIp = '127.0.0.1';
+      try {
+        const ipRes = await fetch('/api/auth/ip');
+        if (ipRes.ok) {
+          const ipData = await ipRes.json();
+          clientIp = ipData.ip || '127.0.0.1';
+        }
+      } catch (e) {
+        console.error('Failed to fetch client IP:', e);
+      }
+
+      // Read UTM parameters and referral code from localStorage
+      const firstUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_first_utm') : null;
+      const lastUtmStr = typeof window !== 'undefined' ? window.localStorage.getItem('pw_last_utm') : null;
+      const firstUtm = firstUtmStr ? JSON.parse(firstUtmStr) : null;
+      const lastUtm = lastUtmStr ? JSON.parse(lastUtmStr) : null;
+      const referredBy = typeof window !== 'undefined' ? window.localStorage.getItem('pw_referral_code') : null;
+
+      const referralCode = `${displayName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${Math.random().toString(36).substring(2, 7)}`;
+
       const { user: newUser } = await createUserWithEmailAndPassword(auth, email, password);
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
@@ -386,8 +446,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         memberships: {},
         subscriptionPlan: 'None',
         subscriptionStatus: 'inactive',
+        tosConsentVersion: 'v1.0',
+        tosConsentIP: clientIp,
+        tosConsentTimestamp: serverTimestamp(),
+        referralCode,
+        referredBy: referredBy || null,
+        firstUtm,
+        lastUtm,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
+      });
+
+      // Clean up the pending flags
+      if (typeof window !== 'undefined') {
+        window.localStorage.removeItem('pw_pending_account_type');
+        window.localStorage.removeItem('pw_pending_consent_ip');
+        window.localStorage.removeItem('pw_pending_consent_version');
+        window.localStorage.removeItem('pw_referral_code');
+      }
+
+      // Fire PostHog signup completed event
+      posthog.capture('signup_completed', {
+        email: newUser.email,
+        accountType,
+        ...firstUtm,
       });
 
       if (newUser.email) {
@@ -409,6 +491,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -432,6 +516,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithFacebook = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -470,6 +556,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const verifyMagicLink = async (email: string, url: string) => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     syncLockRef.current = true;
     setIsAuthenticating(true);
     try {
@@ -495,6 +583,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     setError(null);
+    useProjectStore.getState().clearStore();
+    usePropertyStore.getState().clearStore();
     try {
       await signOut(auth);
     } catch (err: any) {
@@ -569,5 +659,34 @@ export function useAuth() {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
+  // If client-side and path starts with /demo, override user/profile for seamless demo mode
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+    const demoUser = {
+      uid: 'demo_user',
+      email: 'demo@paperworking.co',
+      displayName: 'Demo Investor',
+      getIdToken: async () => 'demo_token',
+      getIdTokenResult: async () => ({ token: 'demo_token', claims: {} }),
+    } as any;
+    
+    const demoProfile = {
+      uid: 'demo_user',
+      email: 'demo@paperworking.co',
+      displayName: 'Demo Investor',
+      role: 'Lead Investor',
+      personalOrganizationId: 'org_demo_seed',
+      subscriptionPlan: 'Team',
+      subscriptionStatus: 'active',
+    } as any;
+
+    return {
+      ...context,
+      user: context.user || demoUser,
+      profile: context.profile || demoProfile,
+      loading: false,
+    };
+  }
+
   return context;
 }

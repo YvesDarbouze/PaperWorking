@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { EmptyState } from '@/components/ui/empty-states/EmptyState';
+import ManualLeadModal from '@/components/sourcing/ManualLeadModal';
 
 function formatCurrency(value: number): string {
   if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
@@ -16,6 +17,7 @@ export default function SourcingDashboard() {
   useAllDealsSync();
 
   const projects = useProjectStore((state) => state.projects);
+  const [showLeadModal, setShowLeadModal] = useState(false);
 
   // Filter projects in the Lead Sourcing phase (status === 'Lead' or phase status is Phase 1)
   const leads = projects.filter(
@@ -48,10 +50,16 @@ export default function SourcingDashboard() {
             <h1 className="text-2xl font-bold text-text-primary tracking-tight">Lead Sourcing</h1>
             <p className="text-sm text-text-secondary mt-0.5">Phase 1 Operations</p>
           </div>
-          <button className="pw-interactive pw-btn pw-btn--primary rounded-full">
+          <button
+            onClick={() => setShowLeadModal(true)}
+            className="pw-interactive pw-btn pw-btn--primary rounded-full"
+          >
             Add Manual Lead
           </button>
         </header>
+
+        {/* Manual Lead Slide-Over */}
+        <ManualLeadModal open={showLeadModal} onClose={() => setShowLeadModal(false)} />
 
         {/* Dual-Scope Metrics Row (R0) */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -79,11 +87,6 @@ export default function SourcingDashboard() {
         <section className="glass-card border border-pw-border overflow-hidden">
           <div className="border-b border-pw-border p-4 flex justify-between items-center">
             <h2 className="text-lg font-semibold text-text-primary">Recent Ingestion</h2>
-            <div className="pw-tabs">
-              <button className="pw-tab pw-tab--active" aria-selected="true">All Leads</button>
-              <button className="pw-tab">PropStream</button>
-              <button className="pw-tab">Manual</button>
-            </div>
           </div>
           
           <div className="p-0 overflow-x-auto">

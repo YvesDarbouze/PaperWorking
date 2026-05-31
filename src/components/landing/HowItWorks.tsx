@@ -146,18 +146,54 @@ export default function HowItWorks() {
                 {phase.body}
               </p>
 
-              {/* Video Placeholder */}
-              <div className="relative w-full h-32 rounded-lg overflow-hidden border border-white/10 mt-auto cursor-pointer group/video">
-                <div className="absolute inset-0 bg-surface-container/50 backdrop-blur-sm z-10 flex items-center justify-center group-hover/video:bg-surface-container/30 transition-colors">
-                  <span
-                    className={`material-symbols-outlined text-4xl ${c.playIcon}`}
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    play_circle
-                  </span>
+              {/* UI Snippets matching the Stitch mockups */}
+              {phase.phase === 1 && (
+                <div className="bg-black/40 rounded border border-white/5 p-3 font-mono text-[10px] w-full mt-auto relative z-10">
+                  <div className="flex justify-between text-white/30 mb-2 border-b border-white/5 pb-1 uppercase">
+                    <span>Source</span>
+                    <span>Confidence</span>
+                  </div>
+                  <div className="flex justify-between text-primary/80 mb-1">
+                    <span>Direct_Mail</span>
+                    <span>84.2%</span>
+                  </div>
+                  <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary/40" style={{ width: '84%' }}></div>
+                  </div>
                 </div>
-                <div className="w-full h-full bg-surface-container-high" />
-              </div>
+              )}
+
+              {phase.phase === 2 && (
+                <div className="bg-black/40 rounded border border-white/5 p-3 flex items-center justify-between w-full mt-auto relative z-10">
+                  <div className="space-y-1">
+                    <div className="w-16 h-1.5 bg-white/10 rounded"></div>
+                    <div className="w-10 h-1.5 bg-white/5 rounded"></div>
+                  </div>
+                  <div className="flex gap-1">
+                    <span className="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
+                    <span className="material-symbols-outlined text-white/20 text-[14px]">pending</span>
+                  </div>
+                </div>
+              )}
+
+              {phase.phase === 3 && (
+                <div className="bg-black/40 rounded border border-white/5 p-3 w-full mt-auto relative z-10">
+                  <div className="flex justify-between font-mono text-[9px] text-white/30 mb-2">
+                    <span>EST_HOLD</span>
+                    <span className="text-white/60">42D / 60D</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-tertiary/45" style={{ width: '70%' }}></div>
+                  </div>
+                </div>
+              )}
+
+              {phase.phase === 4 && (
+                <div className="bg-black/40 rounded border border-white/5 p-3 flex justify-between items-center w-full mt-auto relative z-10">
+                  <span className="font-mono text-[10px] text-white/40">ROI_ACTUAL</span>
+                  <span className="font-mono text-[12px] font-bold text-primary tracking-tight">28.4% ↑</span>
+                </div>
+              )}
             </section>
           );
         })}

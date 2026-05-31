@@ -1,68 +1,181 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
+
+/**
+ * TerminalAuditFeed — Activity Feed
+ *
+ * Displays 6 recent activity items with icons, actor names,
+ * action descriptions, and relative timestamps.
+ * Glass card with custom scrollbar styling.
+ */
+
+interface FeedItem {
+  id: string;
+  icon: string;
+  iconColor: string;
+  actor: string;
+  action: string;
+  target: string;
+  timestamp: string;
+}
+
+const DEMO_FEED: FeedItem[] = [
+  {
+    id: "f1",
+    icon: "swap_horiz",
+    iconColor: "#3B82F6",
+    actor: "System",
+    action: "Phase transition",
+    target: "Skyline Lofts → Transaction",
+    timestamp: "12m ago",
+  },
+  {
+    id: "f2",
+    icon: "upload_file",
+    iconColor: "#8B5CF6",
+    actor: "Yves D.",
+    action: "Document uploaded",
+    target: "Appraisal Report — Vertex Center",
+    timestamp: "2h ago",
+  },
+  {
+    id: "f3",
+    icon: "person_add",
+    iconColor: "#10B981",
+    actor: "Yves D.",
+    action: "Team member added",
+    target: "Sarah Chen (Inspector)",
+    timestamp: "4h ago",
+  },
+  {
+    id: "f4",
+    icon: "analytics",
+    iconColor: "#2dd4bf",
+    actor: "REIL Engine",
+    action: "Metric updated",
+    target: "Portfolio NOI recalculated",
+    timestamp: "6h ago",
+  },
+  {
+    id: "f5",
+    icon: "gavel",
+    iconColor: "#F59E0B",
+    actor: "System",
+    action: "Offer submitted",
+    target: "Cedar Park Duplex — $265,000",
+    timestamp: "1d ago",
+  },
+  {
+    id: "f6",
+    icon: "verified",
+    iconColor: "#10B981",
+    actor: "Marcus W.",
+    action: "Inspection cleared",
+    target: "The Foundry Bloc — Electrical",
+    timestamp: "2d ago",
+  },
+];
 
 export function TerminalAuditFeed() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  // Micro-interaction for the terminal scroll
-  useEffect(() => {
-    const terminal = scrollRef.current;
-    if (!terminal) return;
-
-    const intervalId = setInterval(() => {
-      if (terminal.scrollTop + terminal.clientHeight >= terminal.scrollHeight) {
-        terminal.scrollTop = 0;
-      } else {
-        terminal.scrollBy({ top: 1, behavior: "smooth" });
-      }
-    }, 150);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  const logs = [
-    { status: "[SUCCESS]", time: "12:04:22", msg: "Portfolio reconciliation complete. No delta found.", type: "success" },
-    { status: "[INFO]", time: "12:02:15", msg: "Syncing Skyline Lofts ledger with bank API v4.2", type: "info" },
-    { status: "[TRACE]", time: "12:01:03", msg: "Thread #819 blocked by metadata lock. Retrying...", type: "trace" },
-    { status: "[SUCCESS]", time: "11:58:45", msg: "New node deployed for Tenant Registry expansion.", type: "success" },
-    { status: "[INFO]", time: "11:55:20", msg: "Yves Darbouze logged in from IP 192.168.1.1", type: "info" },
-    { status: "[SUCCESS]", time: "11:50:00", msg: "Scheduled tax report generated for Q4 2023.", type: "success" },
-  ];
-
   return (
-    <div className="glass-card rounded-2xl overflow-hidden border-primary/20 shadow-lg luminous-glow">
-      <div className="bg-surface-container-lowest/80 border-b border-white/5 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5 animate-pulse">
-            <div className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: "#ff5f56" }}></div>
-            <div className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: "#ffbd2e" }}></div>
-            <div className="w-3 h-3 rounded-full opacity-85" style={{ backgroundColor: "#27c93f" }}></div>
-          </div>
-          <span className="font-mono text-xs text-outline tracking-widest ml-4 uppercase">System Audit Feed</span>
-        </div>
-        <div className="font-mono text-xs text-primary/40">Uptime: 99.98%</div>
-      </div>
-      <div 
-        ref={scrollRef}
-        className="h-48 terminal-scroll overflow-y-auto p-4 font-mono text-xs leading-relaxed"
+    <div
+      className="rounded-2xl overflow-hidden h-full flex flex-col"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      {/* Header */}
+      <div
+        className="px-5 py-4 flex justify-between items-center"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
-        {logs.map((log, index) => (
-          <div key={index} className={`flex gap-4 py-1 ${index === 0 ? 'animate-pulse' : ''}`}>
-            <span className={
-              log.type === 'success' ? 'text-primary' :
-              log.type === 'info' ? 'text-primary/60' :
-              'text-primary/50'
-            }>
-              {log.status}
-            </span>
-            <span className="text-outline">{log.time}</span>
-            <span className={
-              log.type === 'trace' ? 'text-outline-variant' :
-              log.type === 'info' ? 'text-on-surface-variant' :
-              'text-on-surface'
-            }>
-              {log.msg}
+        <div className="flex items-center gap-2.5">
+          <span
+            className="material-symbols-outlined text-base"
+            style={{ color: "#2dd4bf" }}
+          >
+            notifications_active
+          </span>
+          <span
+            className="text-xs font-semibold uppercase tracking-widest"
+            style={{ color: "rgba(218,228,236,0.5)" }}
+          >
+            Activity
+          </span>
+        </div>
+        <span
+          className="text-[10px] font-mono"
+          style={{ color: "rgba(218,228,236,0.25)" }}
+        >
+          {DEMO_FEED.length} events
+        </span>
+      </div>
+
+      {/* Feed Items */}
+      <div
+        className="flex-1 overflow-y-auto px-4 py-2"
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(255,255,255,0.08) transparent",
+        }}
+      >
+        {DEMO_FEED.map((item, index) => (
+          <div
+            key={item.id}
+            className="flex gap-3 py-3"
+            style={{
+              borderBottom:
+                index < DEMO_FEED.length - 1
+                  ? "1px solid rgba(255,255,255,0.04)"
+                  : "none",
+            }}
+          >
+            {/* Icon */}
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: `${item.iconColor}15` }}
+            >
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: "16px", color: item.iconColor }}
+              >
+                {item.icon}
+              </span>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: "rgba(218,228,236,0.8)" }}
+                >
+                  {item.actor}
+                </span>
+                <span
+                  className="text-[11px]"
+                  style={{ color: "rgba(218,228,236,0.4)" }}
+                >
+                  {item.action}
+                </span>
+              </div>
+              <p
+                className="text-[11px] truncate mt-0.5"
+                style={{ color: "rgba(218,228,236,0.35)" }}
+              >
+                {item.target}
+              </p>
+            </div>
+
+            {/* Timestamp */}
+            <span
+              className="text-[10px] font-mono flex-shrink-0 pt-0.5"
+              style={{ color: "rgba(218,228,236,0.25)" }}
+            >
+              {item.timestamp}
             </span>
           </div>
         ))}

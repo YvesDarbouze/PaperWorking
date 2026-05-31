@@ -1,73 +1,135 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+
+/**
+ * KPIDashStrip — 10 REIL Metric KPI Cards
+ *
+ * Displays all 10 core REI metrics in a responsive grid.
+ * Uses seed values as demo data for empty portfolios.
+ * Each card is a glass surface with status zone indicators.
+ */
+
+interface KPIMetric {
+  slug: string;
+  label: string;
+  value: string;
+  icon: string;
+  status: "healthy" | "watch" | "alert";
+}
+
+const SEED_METRICS: KPIMetric[] = [
+  { slug: "noi", label: "NOI", value: "$12,486", icon: "account_balance", status: "healthy" },
+  { slug: "cash-flow", label: "Cash Flow", value: "$1,722/yr", icon: "payments", status: "healthy" },
+  { slug: "cap-rate", label: "Cap Rate", value: "4.5%", icon: "percent", status: "watch" },
+  { slug: "coc-return", label: "CoC Return", value: "2.87%", icon: "savings", status: "alert" },
+  { slug: "grm", label: "GRM", value: "11.9x", icon: "calculate", status: "watch" },
+  { slug: "dscr", label: "DSCR", value: "1.16x", icon: "shield", status: "watch" },
+  { slug: "irr", label: "IRR", value: "11.24%", icon: "trending_up", status: "healthy" },
+  { slug: "occupancy", label: "Occupancy", value: "92%", icon: "apartment", status: "healthy" },
+  { slug: "oer", label: "OER", value: "39.6%", icon: "pie_chart", status: "healthy" },
+  { slug: "appreciation", label: "Appreciation", value: "2.83%", icon: "show_chart", status: "healthy" },
+];
+
+const statusColors: Record<KPIMetric["status"], { bg: string; dot: string; label: string }> = {
+  healthy: {
+    bg: "rgba(16,185,129,0.1)",
+    dot: "#10B981",
+    label: "Healthy",
+  },
+  watch: {
+    bg: "rgba(245,158,11,0.1)",
+    dot: "#F59E0B",
+    label: "Watch",
+  },
+  alert: {
+    bg: "rgba(239,68,68,0.1)",
+    dot: "#EF4444",
+    label: "Alert",
+  },
+};
 
 export function KPIDashStrip() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop">
-      {/* KPI Card 1: Target IRR */}
-      <div className="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden group">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"></div>
-        <div className="flex justify-between items-start mb-4">
-          <span className="font-label-md text-label-md text-on-surface-variant">Target IRR</span>
-          <span className="material-symbols-outlined text-primary text-xl">trending_up</span>
-        </div>
-        <div>
-          <div className="font-headline-xl text-headline-xl text-on-surface flex items-baseline">
-            <span>24.8</span>
-            <span className="text-primary text-2xl ml-1 font-semibold">%</span>
-          </div>
-          <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
-            <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">arrow_upward</span>
-              <span>2.1%</span>
-            </span>
-            <span className="text-on-surface-variant">vs last quarter</span>
-          </div>
-        </div>
-      </div>
+    <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 min-w-[600px] md:min-w-0">
+        {SEED_METRICS.map((metric) => {
+          const status = statusColors[metric.status];
+          return (
+            <Link
+              key={metric.slug}
+              href={`/dashboard/intelligence/${metric.slug}`}
+              className="group block"
+            >
+              <div
+                className="rounded-xl p-4 md:p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 cursor-pointer h-full"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                {/* Top accent line */}
+                <div
+                  className="absolute top-0 left-0 w-full h-[2px]"
+                  style={{
+                    background: `linear-gradient(to right, ${status.dot}, transparent)`,
+                    opacity: 0.5,
+                  }}
+                />
 
-      {/* KPI Card 2: Equity Multiple */}
-      <div className="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-transparent opacity-50"></div>
-        <div className="flex justify-between items-start mb-4">
-          <span className="font-label-md text-label-md text-on-surface-variant">Equity Multiple</span>
-          <span className="material-symbols-outlined text-secondary text-xl">layers</span>
-        </div>
-        <div>
-          <div className="font-headline-xl text-headline-xl text-on-surface">2.1x</div>
-          <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
-            <span className="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded-full">
-              On Track
-            </span>
-            <span className="text-on-surface-variant">Projected 2.5x</span>
-          </div>
-        </div>
-      </div>
+                {/* Header row */}
+                <div className="flex justify-between items-start mb-3">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-widest"
+                    style={{ color: "rgba(218,228,236,0.5)" }}
+                  >
+                    {metric.label}
+                  </span>
+                  <span
+                    className="material-symbols-outlined text-base"
+                    style={{ color: "rgba(218,228,236,0.3)" }}
+                  >
+                    {metric.icon}
+                  </span>
+                </div>
 
-      {/* KPI Card 3: Realized Profit */}
-      <div className="glass-card rounded-xl p-6 flex flex-col justify-between relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-tertiary-container to-transparent opacity-50"></div>
-        <div className="flex justify-between items-start mb-4">
-          <span className="font-label-md text-label-md text-on-surface-variant">Realized Profit</span>
-          <span className="material-symbols-outlined text-tertiary-container text-xl">account_balance_wallet</span>
-        </div>
-        <div>
-          <div className="font-headline-xl text-headline-xl text-on-surface flex items-baseline">
-            <span className="text-on-surface-variant text-2xl mr-1 font-semibold">$</span>
-            <span>14.2</span>
-            <span className="text-on-surface-variant text-2xl ml-1 font-semibold">M</span>
-          </div>
-          <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
-            <span className="bg-tertiary-container/10 text-tertiary-container px-2 py-0.5 rounded-full flex items-center gap-1">
-              <span className="material-symbols-outlined text-xs">arrow_upward</span>
-              <span>8.4%</span>
-            </span>
-            <span className="text-on-surface-variant">YTD Growth</span>
-          </div>
-        </div>
+                {/* Value */}
+                <div
+                  className="text-xl md:text-2xl font-bold tracking-tight mb-3"
+                  style={{ color: "rgba(218,228,236,0.95)" }}
+                >
+                  {metric.value}
+                </div>
+
+                {/* Status zone badge */}
+                <div
+                  className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full self-start"
+                  style={{ backgroundColor: status.bg }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: status.dot }}
+                  />
+                  <span
+                    className="text-[10px] font-medium"
+                    style={{ color: status.dot }}
+                  >
+                    {status.label}
+                  </span>
+                </div>
+
+                {/* Hover overlay */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-xl"
+                  style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+                />
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
-

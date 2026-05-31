@@ -9,10 +9,12 @@ import { usePathname } from 'next/navigation';
    ═══════════════════════════════════════════════════════ */
 
 const NAV_ITEMS = [
+  { label: 'General',       href: '/dashboard/settings/general',       iconName: 'settings' },
   { label: 'Profile',       href: '/dashboard/settings/profile',       iconName: 'person' },
   { label: 'Team',          href: '/dashboard/settings/team',          iconName: 'group' },
   { label: 'Notifications', href: '/dashboard/settings/notifications', iconName: 'notifications' },
   { label: 'Billing',       href: '/dashboard/settings/billing',       iconName: 'payments' },
+  { label: 'Data & Privacy', href: '/dashboard/settings/data',          iconName: 'security' },
 ] as const;
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

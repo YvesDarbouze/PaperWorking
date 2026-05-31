@@ -177,19 +177,25 @@ export default function PurchasePanel() {
     toast.success('Smart Contract synchronized successfully!');
   };
 
+  const [lawyerSearchDone, setLawyerSearchDone] = useState(false);
+
   const searchLawyersData = async () => {
     setSearchingLawyers(true);
+    setLawyerSearchDone(false);
     const state = currentProject.stateCode || 'FL';
     try {
-      const res = await fetch(`/api/lawyers?state=${state}`);
+      const res = await fetch(`/api/lawyers?state=${encodeURIComponent(state)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (data.success) {
-        setAvailableLawyers(data.lawyers);
+        setAvailableLawyers(data.lawyers ?? []);
       }
     } catch {
-      toast.error('API matching failed');
+      toast.error('Could not load attorneys. Please try again.');
+    } finally {
+      setSearchingLawyers(false);
+      setLawyerSearchDone(true);
     }
-    setSearchingLawyers(false);
   };
 
   const assignLawyer = (uid: string) => {
@@ -353,13 +359,20 @@ export default function PurchasePanel() {
                  <>
                    <p className="text-sm text-text-secondary mb-6">Find licensed Title Attorneys in your state through PaperWorking's professional network.</p>
                    {availableLawyers.length === 0 ? (
-                      <button 
-                         onClick={searchLawyersData}
-                         disabled={searchingLawyers}
-                         className="pw-interactive pw-btn pw-btn--primary w-full py-2.5 text-sm"
-                      >
-                         {searchingLawyers ? 'Searching...' : <><Search className="w-4 h-4 mr-2 inline"/> Find Attorneys</>}
-                      </button>
+                      <>
+                        <button 
+                           onClick={searchLawyersData}
+                           disabled={searchingLawyers}
+                           className="pw-interactive pw-btn pw-btn--primary w-full py-2.5 text-sm"
+                        >
+                           {searchingLawyers ? 'Searching...' : <><Search className="w-4 h-4 mr-2 inline"/> Find Attorneys</>}
+                        </button>
+                        {lawyerSearchDone && !searchingLawyers && (
+                          <p className="text-xs text-text-secondary mt-3 text-center">
+                            No attorneys found in {currentProject.stateCode || 'FL'}. Try expanding your search or contact support.
+                          </p>
+                        )}
+                      </>
                    ) : (
                       <div className="space-y-3">
                         {availableLawyers.map(lw => (

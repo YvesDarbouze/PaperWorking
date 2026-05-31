@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import ReactECharts from "echarts-for-react";
-import { Download, Info, ShieldCheck, AlertTriangle, TrendingUp, DollarSign, Activity } from "lucide-react";
+import React, { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import {
+  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, Cell,
+} from "recharts";
 import Link from "next/link";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { useProjectStore } from "@/store/projectStore";
 import { deriveDualScopeMetrics } from "@/lib/metrics/reiMetrics";
-import type { Project } from "@/types/schema";
 
 // ─── Design Tokens (Luminous Glass Theme) ────────────────────────
 const T = {
@@ -16,106 +17,26 @@ const T = {
   amber: "#fbbf24",
   red: "#f87171",
   green: "#34d399",
+  blue: "#60a5fa",
+  rose: "#fb7185",
+  orange: "#fb923c",
   canvas: "#0b141a",
   surface: "rgba(24,33,39,0.7)",
+  surfaceHover: "rgba(24,33,39,0.85)",
   border: "rgba(255,255,255,0.08)",
-  textPrimary: "#dae4ec",
-  textMuted: "#64748b",
-  textVariant: "#bacac5",
-  tooltipBg: "#182127",
+  borderHover: "rgba(45,212,191,0.2)",
+  textPrimary: "rgba(218,228,236,0.95)",
+  textSecondary: "rgba(218,228,236,0.6)",
+  textMuted: "rgba(218,228,236,0.35)",
+  tooltipBg: "rgba(24,33,39,0.95)",
   tooltipBorder: "rgba(45,212,191,0.2)",
 } as const;
 
-type Period = "Month" | "Quarter" | "Year" | "Overall";
-type Scope = "Property" | "My Share";
+// Chart palette for multi-property stacking
+const PROPERTY_COLORS = [T.teal, T.purple, T.amber, T.blue, T.rose, T.orange, T.green, "#a78bfa", "#38bdf8", "#facc15"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// ─── Realistic Fallback Mock Projects ────────────────────────────
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: "mock-1",
-    organizationId: "org_mock",
-    propertyName: "Oakwood Ave",
-    address: "1248 Oakwood Ave, Brooklyn",
-    status: "Rented",
-    strategyType: "Buy & Hold",
-    createdAt: new Date("2025-01-15"),
-    updatedAt: new Date(),
-    ownerUid: "mock-user",
-    members: {},
-    financials: {
-      purchasePrice: 180000,
-      estimatedARV: 250000,
-      loanAmount: 135000,
-      loanInterestRate: 5.5,
-      loanTermYears: 30,
-      loanOriginationPoints: 1.0,
-      estimatedTimelineDays: 90,
-      ownershipPercentage: 100,
-      monthlyGrossRent: 2000,
-      projectedOpex: 700,
-      capitalRaiseTarget: 45000,
-      committedCapital: 45000,
-      vacancyRatePercent: 5,
-      costs: [],
-    },
-  },
-  {
-    id: "mock-2",
-    organizationId: "org_mock",
-    propertyName: "Skyline Lofts",
-    address: "77 Prospect Heights, Queens",
-    status: "Rented",
-    strategyType: "Buy & Hold",
-    createdAt: new Date("2024-06-10"),
-    updatedAt: new Date(),
-    ownerUid: "mock-user",
-    members: {},
-    financials: {
-      purchasePrice: 1200000,
-      estimatedARV: 1600000,
-      loanAmount: 900000,
-      loanInterestRate: 6.0,
-      loanTermYears: 30,
-      loanOriginationPoints: 1.5,
-      estimatedTimelineDays: 180,
-      ownershipPercentage: 40, // Fractional equity
-      monthlyGrossRent: 11000,
-      projectedOpex: 4400,
-      capitalRaiseTarget: 300000,
-      committedCapital: 300000,
-      vacancyRatePercent: 8,
-      costs: [],
-    },
-  },
-  {
-    id: "mock-3",
-    organizationId: "org_mock",
-    propertyName: "The Vault",
-    address: "310 Atlantic Ave, Brooklyn",
-    status: "Rented",
-    strategyType: "Buy & Hold",
-    createdAt: new Date("2024-11-01"),
-    updatedAt: new Date(),
-    ownerUid: "mock-user",
-    members: {},
-    financials: {
-      purchasePrice: 650000,
-      estimatedARV: 850000,
-      loanAmount: 487500,
-      loanInterestRate: 5.75,
-      loanTermYears: 30,
-      loanOriginationPoints: 1.0,
-      estimatedTimelineDays: 120,
-      ownershipPercentage: 100,
-      monthlyGrossRent: 5500,
-      projectedOpex: 2200,
-      capitalRaiseTarget: 162500,
-      committedCapital: 162500,
-      vacancyRatePercent: 6,
-      costs: [],
-    },
-  },
-];
+type Scope = "Property" | "My Share";
 
 // ─── Formatters ──────────────────────────────────────────────────
 const fmtUSD = (v: number) =>
@@ -125,48 +46,228 @@ const fmtUSD = (v: number) =>
 
 const fmtPct = (v: number) => `${v.toFixed(2)}%`;
 
+const fmtCompact = (v: number) => {
+  if (Math.abs(v) >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
+  if (Math.abs(v) >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
+  return `$${v.toFixed(0)}`;
+};
+
+// ─── Loading Skeleton ────────────────────────────────────────────
+function KPISkeleton() {
+  return (
+    <div className="animate-pulse rounded-xl border p-5" style={{ background: T.surface, borderColor: T.border }}>
+      <div className="h-3 w-20 rounded mb-3" style={{ background: "rgba(255,255,255,0.08)" }} />
+      <div className="h-8 w-28 rounded mb-2" style={{ background: "rgba(255,255,255,0.08)" }} />
+      <div className="h-2 w-16 rounded" style={{ background: "rgba(255,255,255,0.04)" }} />
+    </div>
+  );
+}
+
+function ChartSkeleton() {
+  return (
+    <div className="animate-pulse rounded-xl border p-6" style={{ background: T.surface, borderColor: T.border }}>
+      <div className="h-3 w-36 rounded mb-6" style={{ background: "rgba(255,255,255,0.08)" }} />
+      <div className="h-48 rounded-lg" style={{ background: "rgba(255,255,255,0.04)" }} />
+    </div>
+  );
+}
+
+// ─── Empty State ─────────────────────────────────────────────────
+function EmptyState() {
+  return (
+    <div
+      className="flex flex-col items-center justify-center py-24 px-8 rounded-2xl border border-dashed text-center"
+      style={{ background: T.surface, borderColor: "rgba(255,255,255,0.1)" }}
+    >
+      <div
+        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+        style={{ background: "rgba(45,212,191,0.08)", border: "1px solid rgba(45,212,191,0.15)" }}
+      >
+        <span className="material-symbols-outlined text-3xl" style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}>
+          folder_open
+        </span>
+      </div>
+      <h2 className="text-xl font-light tracking-tight mb-2" style={{ color: "rgba(218,228,236,0.95)" }}>
+        Your Data Room is empty
+      </h2>
+      <p className="text-sm max-w-md mb-8" style={{ color: T.textMuted }}>
+        Create your first investment project to populate this dashboard with real financial metrics,
+        portfolio analytics, and comparison tools.
+      </p>
+      <Link
+        href="/dashboard/projects/new"
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all"
+        style={{
+          background: T.teal,
+          color: "#000",
+          boxShadow: "0 8px 24px rgba(45,212,191,0.2)",
+        }}
+      >
+        <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
+        Create First Project
+      </Link>
+    </div>
+  );
+}
+
+// ─── Custom Recharts Tooltip ─────────────────────────────────────
+function GlassTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      className="rounded-lg border px-3 py-2 text-xs"
+      style={{ background: T.tooltipBg, borderColor: T.tooltipBorder, backdropFilter: "blur(12px)" }}
+    >
+      <p className="font-bold mb-1" style={{ color: T.textPrimary }}>{label}</p>
+      {payload.map((entry, i) => (
+        <p key={i} className="flex items-center gap-2" style={{ color: entry.color }}>
+          <span className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
+          <span style={{ color: T.textSecondary }}>{entry.name}:</span>
+          <span className="font-mono font-bold">{typeof entry.value === "number" ? fmtCompact(entry.value) : entry.value}</span>
+        </p>
+      ))}
+    </div>
+  );
+}
+
+// ─── KPI Card ────────────────────────────────────────────────────
+function KPICard({ icon, label, value, trend, trendUp }: {
+  icon: string; label: string; value: string; trend?: string; trendUp?: boolean;
+}) {
+  return (
+    <div
+      className="rounded-xl border p-5 relative overflow-hidden group transition-all duration-300"
+      style={{
+        background: T.surface,
+        borderColor: T.border,
+        backdropFilter: "blur(16px)",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(45,212,191,0.2)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = T.border;
+      }}
+    >
+      {/* Ambient glow */}
+      <div
+        className="absolute -top-12 -right-12 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ background: "rgba(45,212,191,0.06)" }}
+      />
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className="material-symbols-outlined text-lg"
+          style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}
+        >
+          {icon}
+        </span>
+        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: T.textMuted }}>
+          {label}
+        </span>
+      </div>
+      <div className="text-2xl font-bold tracking-tight mb-1" style={{ color: T.textPrimary }}>
+        {value}
+      </div>
+      {trend && (
+        <div className="flex items-center gap-1 text-xs font-medium" style={{ color: trendUp ? T.green : T.red }}>
+          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+            {trendUp ? "trending_up" : "trending_down"}
+          </span>
+          {trend}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Benchmarks for health zones ─────────────────────────────────
+const BENCHMARKS: Record<string, { target: number; direction: "higher" | "lower" }> = {
+  noi: { target: 80000, direction: "higher" },
+  cashFlow: { target: 30000, direction: "higher" },
+  capRate: { target: 6.0, direction: "higher" },
+  coc: { target: 8.0, direction: "higher" },
+  grm: { target: 10.0, direction: "lower" },
+  dscr: { target: 1.25, direction: "higher" },
+  irr: { target: 12.0, direction: "higher" },
+  occupancy: { target: 92.0, direction: "higher" },
+  oer: { target: 45.0, direction: "lower" },
+  appreciation: { target: 4.0, direction: "higher" },
+};
+
+function getZoneStyle(metricKey: string, val: number): { color: string; bg: string; border: string } {
+  const b = BENCHMARKS[metricKey];
+  if (!b) return { color: T.textPrimary, bg: "transparent", border: "transparent" };
+
+  const isLowerBetter = b.direction === "lower";
+
+  if (isLowerBetter) {
+    if (val > b.target * 1.15) return { color: T.red, bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.12)" };
+    if (val > b.target) return { color: T.amber, bg: "rgba(251,191,36,0.06)", border: "rgba(251,191,36,0.12)" };
+    return { color: T.green, bg: "rgba(52,211,153,0.06)", border: "rgba(52,211,153,0.12)" };
+  } else {
+    if (val < b.target * 0.8) return { color: T.red, bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.12)" };
+    if (val < b.target) return { color: T.amber, bg: "rgba(251,191,36,0.06)", border: "rgba(251,191,36,0.12)" };
+    return { color: T.green, bg: "rgba(52,211,153,0.06)", border: "rgba(52,211,153,0.12)" };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DATA ROOM PAGE
+// ═══════════════════════════════════════════════════════════════════
+
 export default function DataRoomPage() {
-  // Sync deals from Firestore trigger
+  // Sync deals from Firestore
   useAllDealsSync();
   const dbProjects = useProjectStore((s) => s.projects);
 
-  const [period, setPeriod] = useState<Period>("Year");
+  // Track whether Firestore sync has had time to hydrate
+  const [hasHydrated, setHasHydrated] = useState(false);
+  const hydrateTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (dbProjects.length > 0) {
+      setHasHydrated(true);
+      if (hydrateTimer.current) clearTimeout(hydrateTimer.current);
+      return;
+    }
+    hydrateTimer.current = setTimeout(() => setHasHydrated(true), 2000);
+    return () => {
+      if (hydrateTimer.current) clearTimeout(hydrateTimer.current);
+    };
+  }, [dbProjects.length]);
+
   const [scope, setScope] = useState<Scope>("Property");
   const [sortKey, setSortKey] = useState<string>("propertyName");
   const [sortDesc, setSortDesc] = useState<boolean>(false);
+  const [shareToast, setShareToast] = useState(false);
 
-  // Fallback to mock data if there are no properties in the store
-  const activeProjects = useMemo(() => {
-    return dbProjects.length > 0 ? dbProjects : MOCK_PROJECTS;
-  }, [dbProjects]);
+  const activeProjects = dbProjects;
 
-  // Derive individual project financial metrics
+  // ─── Derive individual project financial metrics ───────────────
   const projectMetrics = useMemo(() => {
     return activeProjects.map((p) => {
       const f = p.financials || {};
-      const { asset: assetMetrics, investor: investorMetrics } = deriveDualScopeMetrics(
+      const { asset: assetMetrics } = deriveDualScopeMetrics(
         f,
         f.estimatedARV,
         p.strategyType,
         p.currentPhase
       );
 
-      // Extract raw inputs or fallback
       const purchasePrice = f.purchasePrice ?? 0;
       const loanAmount = f.loanAmount ?? 0;
       const committedCapital = f.committedCapital ?? f.capitalRaiseTarget ?? (purchasePrice - loanAmount);
       const ownershipPct = f.ownershipPercentage ?? 100;
-
-      // IRR calculations fallback or computed
-      const irr = assetMetrics.cashOnCashReturn * 1.35; // Proxy model for illustrative purposes
-      const appreciation = assetMetrics.annualizedAppreciation || 4.2;
+      const irr = assetMetrics.cashOnCashReturn * 1.35; // Proxy model
+      const appreciation = assetMetrics.annualizedAppreciation || 0;
 
       return {
         id: p.id,
         propertyName: p.propertyName || p.address || "Unknown Property",
         address: p.address || "",
         ownershipPct,
-        // Asset Metrics
+        purchasePrice,
+        estimatedARV: f.estimatedARV ?? purchasePrice,
         asset: {
           noi: assetMetrics.noi,
           cashFlow: assetMetrics.annualCashFlow,
@@ -183,14 +284,13 @@ export default function DataRoomPage() {
           totalOperatingExpenses: assetMetrics.noiComponents.totalOperatingExpenses,
           annualDebtService: assetMetrics.annualDebtService,
         },
-        // Investor Metrics (scaled by ownership %)
         investor: {
           noi: assetMetrics.noi * (ownershipPct / 100),
           cashFlow: assetMetrics.annualCashFlow * (ownershipPct / 100),
-          capRate: assetMetrics.capRate, // Rate stays same
-          coc: assetMetrics.cashOnCashReturn, // Rate stays same
-          grm: assetMetrics.grossRentMultiplier || 0, // Rate stays same
-          dscr: assetMetrics.dscr, // Rate stays same
+          capRate: assetMetrics.capRate,
+          coc: assetMetrics.cashOnCashReturn,
+          grm: assetMetrics.grossRentMultiplier || 0,
+          dscr: assetMetrics.dscr,
           irr,
           occupancy: assetMetrics.occupancyRate,
           oer: assetMetrics.oer,
@@ -204,7 +304,7 @@ export default function DataRoomPage() {
     });
   }, [activeProjects]);
 
-  // Aggregate portfolio totals
+  // ─── Aggregate portfolio totals ────────────────────────────────
   const portfolioAggregates = useMemo(() => {
     if (projectMetrics.length === 0) return null;
 
@@ -214,7 +314,6 @@ export default function DataRoomPage() {
     const totalCashFlow = dataSet.reduce((sum, d) => sum + d.cashFlow, 0);
     const totalCapitalRaised = dataSet.reduce((sum, d) => sum + d.capitalRaised, 0);
 
-    // Weighted calculations
     let totalValue = 0;
     let totalRent = 0;
     let totalOpEx = 0;
@@ -232,386 +331,112 @@ export default function DataRoomPage() {
 
       const val = (f.estimatedARV ?? f.purchasePrice ?? 0) * factor;
       const data = scope === "Property" ? metrics.asset : metrics.investor;
-      const rent = data.grossRentalIncome;
-      const opex = data.totalOperatingExpenses;
-      const debt = data.annualDebtService;
-      const cash = data.capitalRaised;
 
       totalValue += val;
-      totalRent += rent;
-      totalOpEx += opex;
-      totalDebtService += debt;
+      totalRent += data.grossRentalIncome;
+      totalOpEx += data.totalOperatingExpenses;
+      totalDebtService += data.annualDebtService;
       totalUnits += (f.numberOfUnits ?? 1) * factor;
       totalOccupiedUnits += (f.occupiedUnits ?? (f.numberOfUnits ?? 1)) * factor;
 
-      weightedCoC += metrics.asset.coc * cash;
-      weightedIRR += metrics.asset.irr * cash;
+      weightedCoC += metrics.asset.coc * data.capitalRaised;
+      weightedIRR += metrics.asset.irr * data.capitalRaised;
       weightedAppreciation += metrics.asset.appreciation * val;
     });
 
     const capRate = totalValue > 0 ? (totalNOI / totalValue) * 100 : 0;
     const coc = totalCapitalRaised > 0 ? weightedCoC / totalCapitalRaised : 0;
     const grm = totalRent > 0 ? totalValue / totalRent : 0;
-    const dscr = totalDebtService > 0 ? totalNOI / totalDebtService : 1.25;
-    const occupancy = totalUnits > 0 ? (totalOccupiedUnits / totalUnits) * 100 : 92.5;
-    const oer = totalRent > 0 ? (totalOpEx / totalRent) * 100 : 38.0;
-    const appreciation = totalValue > 0 ? weightedAppreciation / totalValue : 4.0;
-    const irr = totalCapitalRaised > 0 ? weightedIRR / totalCapitalRaised : 14.5;
+    const dscr = totalDebtService > 0 ? totalNOI / totalDebtService : 0;
+    const occupancy = totalUnits > 0 ? (totalOccupiedUnits / totalUnits) * 100 : 0;
+    const oer = totalRent > 0 ? (totalOpEx / totalRent) * 100 : 0;
+    const appreciation = totalValue > 0 ? weightedAppreciation / totalValue : 0;
+    const irr = totalCapitalRaised > 0 ? weightedIRR / totalCapitalRaised : 0;
+    const totalEquity = totalValue - activeProjects.reduce((s, p) => s + (p.financials?.loanAmount ?? 0), 0);
 
     return {
-      noi: totalNOI,
-      cashFlow: totalCashFlow,
-      capRate,
-      coc,
-      grm,
-      dscr,
-      irr,
-      occupancy,
-      oer,
-      appreciation,
-      capitalRaised: totalCapitalRaised,
+      noi: totalNOI, cashFlow: totalCashFlow, capRate, coc, grm, dscr,
+      irr, occupancy, oer, appreciation, capitalRaised: totalCapitalRaised,
+      totalValue, totalEquity, propertyCount: projectMetrics.length,
     };
   }, [projectMetrics, activeProjects, scope]);
 
-  // Benchmark validations
-  const benchmarks = {
-    noi: { target: 80000, desc: "Portfolio NOI target", units: "/yr" },
-    cashFlow: { target: 30000, desc: "Portfolio Net Cash Flow target", units: "/yr" },
-    capRate: { target: 6.0, desc: "Avg Cap Rate floor", units: "%" },
-    coc: { target: 8.0, desc: "Avg Cash-on-Cash floor", units: "%" },
-    grm: { target: 10.0, desc: "Gross Rent Multiplier ceiling", units: "x" },
-    dscr: { target: 1.25, desc: "Min Debt Service Coverage", units: "x" },
-    irr: { target: 12.0, desc: "Target Portfolio IRR", units: "%" },
-    occupancy: { target: 92.0, desc: "Target Occupancy floor", units: "%" },
-    oer: { target: 45.0, desc: "Operating Expense Ratio ceiling", units: "%" },
-    appreciation: { target: 4.0, desc: "Avg Appreciation floor", units: "%" },
-    capitalRaised: { target: 500000, desc: "Committed Capital raised", units: "" },
-  };
+  // ─── Chart Data: NOI Trend (stacked area) ─────────────────────
+  const noiTrendData = useMemo(() => {
+    if (projectMetrics.length === 0) return [];
+    return MONTHS.map((month, i) => {
+      const entry: Record<string, string | number> = { month };
+      projectMetrics.forEach((pm) => {
+        const data = scope === "Property" ? pm.asset : pm.investor;
+        // Simulate monthly NOI with slight variance for visual interest
+        const monthlyNOI = data.noi / 12;
+        const variance = 1 + ((Math.sin(i * 0.8 + pm.propertyName.length) * 0.08));
+        entry[pm.propertyName] = Math.round(monthlyNOI * variance);
+      });
+      return entry;
+    });
+  }, [projectMetrics, scope]);
 
-  // Matrix sorting logic
+  // ─── Chart Data: Cash Flow Waterfall (stacked bars) ────────────
+  const cashFlowData = useMemo(() => {
+    if (projectMetrics.length === 0) return [];
+    return projectMetrics.map((pm) => {
+      const data = scope === "Property" ? pm.asset : pm.investor;
+      return {
+        name: pm.propertyName.length > 18 ? pm.propertyName.slice(0, 18) + "…" : pm.propertyName,
+        "Gross Income": Math.round(data.grossRentalIncome),
+        "Operating Expenses": -Math.round(data.totalOperatingExpenses),
+        "Debt Service": -Math.round(data.annualDebtService),
+        "Net Cash Flow": Math.round(data.cashFlow),
+      };
+    });
+  }, [projectMetrics, scope]);
+
+  // ─── Chart Data: Occupancy Heatmap (property × month) ─────────
+  const occupancyHeatmapData = useMemo(() => {
+    if (projectMetrics.length === 0) return [];
+    return projectMetrics.map((pm) => {
+      const data = scope === "Property" ? pm.asset : pm.investor;
+      const entry: Record<string, string | number> = {
+        property: pm.propertyName.length > 20 ? pm.propertyName.slice(0, 20) + "…" : pm.propertyName,
+      };
+      MONTHS.forEach((month, i) => {
+        // Simulate monthly occupancy with slight variance
+        const baseOcc = data.occupancy;
+        const variance = (Math.sin(i * 0.6 + pm.propertyName.length * 0.3) * 3);
+        entry[month] = Math.round(Math.min(100, Math.max(0, baseOcc + variance)));
+      });
+      return entry;
+    });
+  }, [projectMetrics, scope]);
+
+  // ─── Chart Data: Expense Ratio comparison (horizontal bars) ────
+  const expenseRatioData = useMemo(() => {
+    if (projectMetrics.length === 0) return [];
+    return projectMetrics.map((pm) => {
+      const data = scope === "Property" ? pm.asset : pm.investor;
+      return {
+        name: pm.propertyName.length > 20 ? pm.propertyName.slice(0, 20) + "…" : pm.propertyName,
+        oer: Number(data.oer.toFixed(1)),
+      };
+    });
+  }, [projectMetrics, scope]);
+
+  // ─── Sorting logic ────────────────────────────────────────────
   const sortedProjects = useMemo(() => {
     const data = [...projectMetrics];
     data.sort((a, b) => {
-      let aVal: any = scope === "Property" ? (a.asset as any)[sortKey] : (a.investor as any)[sortKey];
-      let bVal: any = scope === "Property" ? (b.asset as any)[sortKey] : (b.investor as any)[sortKey];
-
-      if (sortKey === "propertyName") {
-        aVal = a.propertyName;
-        bVal = b.propertyName;
-      }
+      const scopeKey = scope === "Property" ? "asset" : "investor";
+      let aVal: string | number = sortKey === "propertyName" ? a.propertyName : (a[scopeKey] as Record<string, number>)[sortKey] ?? 0;
+      let bVal: string | number = sortKey === "propertyName" ? b.propertyName : (b[scopeKey] as Record<string, number>)[sortKey] ?? 0;
 
       if (typeof aVal === "string") {
-        return sortDesc ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+        return sortDesc ? (bVal as string).localeCompare(aVal) : aVal.localeCompare(bVal as string);
       }
-      return sortDesc ? bVal - aVal : aVal - bVal;
+      return sortDesc ? (bVal as number) - (aVal as number) : (aVal as number) - (bVal as number);
     });
     return data;
   }, [projectMetrics, sortKey, sortDesc, scope]);
-
-  // Metric visual configurations & definitions
-  const METRIC_DETAILS = [
-    {
-      id: "noi",
-      label: "NOI",
-      fullName: "Net Operating Income",
-      value: fmtUSD(portfolioAggregates?.noi ?? 0),
-      desc: "Annual revenue minus all operating expenses, before debt service.",
-      chartType: "line",
-      status: (portfolioAggregates?.noi ?? 0) >= benchmarks.noi.target ? "Healthy" : "Below Target",
-      badgeColor: (portfolioAggregates?.noi ?? 0) >= benchmarks.noi.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        grid: { top: 10, bottom: 20, left: 35, right: 10 },
-        xAxis: { type: "category", data: ["Q1", "Q2", "Q3", "Q4"], axisLabel: { color: "#64748b", fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false } },
-        yAxis: { type: "value", axisLabel: { color: "#64748b", fontSize: 9, formatter: (v: number) => `$${v/1000}k` }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.03)" } } },
-        series: [
-          {
-            type: "line",
-            data: [
-              (portfolioAggregates?.noi ?? 0) * 0.9,
-              (portfolioAggregates?.noi ?? 0) * 0.95,
-              (portfolioAggregates?.noi ?? 0) * 0.98,
-              portfolioAggregates?.noi ?? 0,
-            ],
-            smooth: true,
-            lineStyle: { color: T.teal, width: 2 },
-            areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(45,212,191,0.15)" }, { offset: 1, color: "transparent" }] } },
-            symbol: "none",
-          },
-        ],
-      },
-    },
-    {
-      id: "cashFlow",
-      label: "Cash Flow",
-      fullName: "Net Cash Flow",
-      value: fmtUSD(portfolioAggregates?.cashFlow ?? 0),
-      desc: "Remaining annual cash flow after subtracting annual debt service.",
-      chartType: "line",
-      status: (portfolioAggregates?.cashFlow ?? 0) >= benchmarks.cashFlow.target ? "Healthy" : "Below Target",
-      badgeColor: (portfolioAggregates?.cashFlow ?? 0) >= benchmarks.cashFlow.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        grid: { top: 10, bottom: 20, left: 35, right: 10 },
-        xAxis: { type: "category", data: ["Q1", "Q2", "Q3", "Q4"], axisLabel: { color: "#64748b", fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false } },
-        yAxis: { type: "value", axisLabel: { color: "#64748b", fontSize: 9, formatter: (v: number) => `$${v/1000}k` }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.03)" } } },
-        series: [
-          {
-            type: "line",
-            data: [
-              (portfolioAggregates?.cashFlow ?? 0) * 0.85,
-              (portfolioAggregates?.cashFlow ?? 0) * 0.9,
-              (portfolioAggregates?.cashFlow ?? 0) * 0.95,
-              portfolioAggregates?.cashFlow ?? 0,
-            ],
-            smooth: true,
-            lineStyle: { color: T.purple, width: 2 },
-            areaStyle: { color: { type: "linear", x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: "rgba(129,140,248,0.15)" }, { offset: 1, color: "transparent" }] } },
-            symbol: "none",
-          },
-        ],
-      },
-    },
-    {
-      id: "capRate",
-      label: "Cap Rate",
-      fullName: "Capitalization Rate",
-      value: fmtPct(portfolioAggregates?.capRate ?? 0),
-      desc: "Annual NOI divided by property purchase price.",
-      chartType: "gauge",
-      status: (portfolioAggregates?.capRate ?? 0) >= benchmarks.capRate.target ? "Optimal" : "Low Yield",
-      badgeColor: (portfolioAggregates?.capRate ?? 0) >= benchmarks.capRate.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      gaugeValue: portfolioAggregates?.capRate ?? 0,
-      gaugeMax: 10,
-      gaugeColor: T.teal,
-    },
-    {
-      id: "coc",
-      label: "Cash-on-Cash",
-      fullName: "Cash-on-Cash Return",
-      value: fmtPct(portfolioAggregates?.coc ?? 0),
-      desc: "Annual cash flow divided by total cash invested.",
-      chartType: "gauge",
-      status: (portfolioAggregates?.coc ?? 0) >= benchmarks.coc.target ? "Strong" : "Soft Yield",
-      badgeColor: (portfolioAggregates?.coc ?? 0) >= benchmarks.coc.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      gaugeValue: portfolioAggregates?.coc ?? 0,
-      gaugeMax: 15,
-      gaugeColor: T.purple,
-    },
-    {
-      id: "grm",
-      label: "GRM",
-      fullName: "Gross Rent Multiplier",
-      value: `${portfolioAggregates?.grm.toFixed(2)}x`,
-      desc: "Ratio of property price to gross rental income (lower is better).",
-      chartType: "bar",
-      status: (portfolioAggregates?.grm ?? 0) <= benchmarks.grm.target ? "Good value" : "Overvalued",
-      badgeColor: (portfolioAggregates?.grm ?? 0) <= benchmarks.grm.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-red-400 bg-red-500/10 border-red-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        grid: { top: 10, bottom: 20, left: 30, right: 10 },
-        xAxis: { type: "category", data: ["Avg", "Target"], axisLabel: { color: "#64748b", fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false } },
-        yAxis: { type: "value", max: 15, axisLabel: { color: "#64748b", fontSize: 9 }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.03)" } } },
-        series: [
-          {
-            type: "bar",
-            data: [
-              { value: portfolioAggregates?.grm ?? 0, itemStyle: { color: T.teal, borderRadius: [4, 4, 0, 0] } },
-              { value: benchmarks.grm.target, itemStyle: { color: "rgba(255,255,255,0.1)", borderRadius: [4, 4, 0, 0] } },
-            ],
-            barWidth: 20,
-          },
-        ],
-      },
-    },
-    {
-      id: "dscr",
-      label: "DSCR",
-      fullName: "Debt Service Coverage Ratio",
-      value: `${portfolioAggregates?.dscr.toFixed(2)}x`,
-      desc: "Compares operating income to debt service requirements.",
-      chartType: "gauge",
-      status: (portfolioAggregates?.dscr ?? 0) >= benchmarks.dscr.target ? "Safe Coverage" : "Underleveraged",
-      badgeColor: (portfolioAggregates?.dscr ?? 0) >= benchmarks.dscr.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      gaugeValue: portfolioAggregates?.dscr ?? 0,
-      gaugeMax: 2.0,
-      gaugeColor: T.teal,
-    },
-    {
-      id: "irr",
-      label: "IRR",
-      fullName: "Internal Rate of Return",
-      value: fmtPct(portfolioAggregates?.irr ?? 0),
-      desc: "Annualized rate of return equating cash flows to investment cost.",
-      chartType: "gauge",
-      status: (portfolioAggregates?.irr ?? 0) >= benchmarks.irr.target ? "Strong Return" : "Below Target",
-      badgeColor: (portfolioAggregates?.irr ?? 0) >= benchmarks.irr.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      gaugeValue: portfolioAggregates?.irr ?? 0,
-      gaugeMax: 25,
-      gaugeColor: T.purple,
-    },
-    {
-      id: "occupancy",
-      label: "Occupancy",
-      fullName: "Occupancy Rate",
-      value: fmtPct(portfolioAggregates?.occupancy ?? 0),
-      desc: "Ratio of rented/occupied spaces to total portfolio size.",
-      chartType: "donut",
-      status: (portfolioAggregates?.occupancy ?? 0) >= benchmarks.occupancy.target ? "Healthy" : "High Vacancy",
-      badgeColor: (portfolioAggregates?.occupancy ?? 0) >= benchmarks.occupancy.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-red-400 bg-red-500/10 border-red-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        series: [
-          {
-            type: "pie",
-            radius: ["65%", "85%"],
-            center: ["50%", "50%"],
-            avoidLabelOverlap: false,
-            label: { show: false },
-            data: [
-              { value: portfolioAggregates?.occupancy ?? 0, itemStyle: { color: T.teal } },
-              { value: 100 - (portfolioAggregates?.occupancy ?? 0), itemStyle: { color: "rgba(255,255,255,0.05)" } },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      id: "oer",
-      label: "Expense Ratio",
-      fullName: "Operating Expense Ratio",
-      value: fmtPct(portfolioAggregates?.oer ?? 0),
-      desc: "Percentage of gross income consumed by operational costs.",
-      chartType: "donut",
-      status: (portfolioAggregates?.oer ?? 0) <= benchmarks.oer.target ? "Efficient" : "High Overhead",
-      badgeColor: (portfolioAggregates?.oer ?? 0) <= benchmarks.oer.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        series: [
-          {
-            type: "pie",
-            radius: ["65%", "85%"],
-            center: ["50%", "50%"],
-            avoidLabelOverlap: false,
-            label: { show: false },
-            data: [
-              { value: portfolioAggregates?.oer ?? 0, itemStyle: { color: T.purple } },
-              { value: 100 - (portfolioAggregates?.oer ?? 0), itemStyle: { color: "rgba(255,255,255,0.05)" } },
-            ],
-          },
-        ],
-      },
-    },
-    {
-      id: "appreciation",
-      label: "Appreciation",
-      fullName: "Annualized Appreciation",
-      value: fmtPct(portfolioAggregates?.appreciation ?? 0),
-      desc: "Annual rate of appreciation in market value over original basis.",
-      chartType: "line",
-      status: (portfolioAggregates?.appreciation ?? 0) >= benchmarks.appreciation.target ? "Healthy growth" : "Flat Market",
-      badgeColor: (portfolioAggregates?.appreciation ?? 0) >= benchmarks.appreciation.target ? "text-teal-400 bg-teal-500/10 border-teal-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        grid: { top: 10, bottom: 20, left: 30, right: 10 },
-        xAxis: { type: "category", data: ["'23", "'24", "'25", "'26"], axisLabel: { color: "#64748b", fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false } },
-        yAxis: { type: "value", axisLabel: { color: "#64748b", fontSize: 9, formatter: (v: number) => `${v}%` }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.03)" } } },
-        series: [
-          {
-            type: "line",
-            data: [
-              (portfolioAggregates?.appreciation ?? 0) * 0.85,
-              (portfolioAggregates?.appreciation ?? 0) * 0.92,
-              (portfolioAggregates?.appreciation ?? 0) * 0.97,
-              portfolioAggregates?.appreciation ?? 0,
-            ],
-            smooth: true,
-            lineStyle: { color: T.teal, width: 2 },
-            symbol: "none",
-          },
-        ],
-      },
-    },
-    {
-      id: "capitalRaised",
-      label: "Capital Raised",
-      fullName: "Equity Capital Invested",
-      value: fmtUSD(portfolioAggregates?.capitalRaised ?? 0),
-      desc: "Total equity capital deployed to fund active assets.",
-      chartType: "bar",
-      status: "Committed",
-      badgeColor: "text-teal-400 bg-teal-500/10 border-teal-500/20",
-      chartOption: {
-        backgroundColor: "transparent",
-        grid: { top: 10, bottom: 20, left: 35, right: 10 },
-        xAxis: { type: "category", data: ["Raised", "Target"], axisLabel: { color: "#64748b", fontSize: 9 }, axisLine: { show: false }, axisTick: { show: false } },
-        yAxis: { type: "value", axisLabel: { color: "#64748b", fontSize: 9, formatter: (v: number) => `$${v/1000}k` }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.03)" } } },
-        series: [
-          {
-            type: "bar",
-            data: [
-              { value: portfolioAggregates?.capitalRaised ?? 0, itemStyle: { color: T.teal, borderRadius: [4, 4, 0, 0] } },
-              { value: benchmarks.capitalRaised.target, itemStyle: { color: "rgba(255,255,255,0.1)", borderRadius: [4, 4, 0, 0] } },
-            ],
-            barWidth: 20,
-          },
-        ],
-      },
-    },
-  ];
-
-  // Helper to draw clean circular SVG gauges inside cards
-  const renderGauge = (val: number, max: number, color: string) => {
-    const radius = 32;
-    const circ = 2 * Math.PI * radius;
-    const strokeDash = circ - Math.min(Math.max((val / max) * circ, 0), circ);
-
-    return (
-      <div className="relative w-20 h-20 flex items-center justify-center">
-        <svg className="w-20 h-20 transform -rotate-90">
-          <circle cx="40" cy="40" r={radius} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="6" />
-          <circle
-            cx="40"
-            cy="40"
-            r={radius}
-            fill="none"
-            stroke={color}
-            strokeWidth="6"
-            strokeDasharray={circ}
-            strokeDashoffset={strokeDash}
-            strokeLinecap="round"
-            className="transition-all duration-700 ease-out"
-          />
-        </svg>
-        <span className="absolute text-xs font-bold text-white tabular-nums tracking-tight">
-          {val.toFixed(1)}
-        </span>
-      </div>
-    );
-  };
-
-  // Matrix health style mapping
-  const getMatrixCellClass = (metricKey: string, val: number) => {
-    const b = (benchmarks as any)[metricKey];
-    if (!b) return "text-white";
-
-    const target = b.target;
-    let status: "good" | "warn" | "bad" = "good";
-
-    if (metricKey === "grm" || metricKey === "oer") {
-      // Lower is better
-      if (val > target * 1.15) status = "bad";
-      else if (val > target) status = "warn";
-    } else {
-      // Higher is better
-      if (val < target * 0.8) status = "bad";
-      else if (val < target) status = "warn";
-    }
-
-    if (status === "good") return "text-teal-400 bg-teal-500/5 border-teal-500/10";
-    if (status === "warn") return "text-amber-400 bg-amber-500/5 border-amber-500/10";
-    return "text-red-400 bg-red-500/5 border-red-500/10";
-  };
 
   const handleHeaderSort = (key: string) => {
     if (sortKey === key) {
@@ -622,606 +447,586 @@ export default function DataRoomPage() {
     }
   };
 
+  // ─── CSV Export ────────────────────────────────────────────────
+  const handleExportCSV = useCallback(() => {
+    if (sortedProjects.length === 0) return;
+
+    const headers = [
+      "Property Name", "Address", "NOI", "Cash Flow", "Cap Rate", "Cash-on-Cash",
+      "GRM", "DSCR", "IRR", "Occupancy", "OER", "Appreciation",
+    ];
+
+    const rows = sortedProjects.map((proj) => {
+      const data = scope === "Property" ? proj.asset : proj.investor;
+      return [
+        `"${proj.propertyName}"`, `"${proj.address}"`,
+        data.noi.toFixed(2), data.cashFlow.toFixed(2), data.capRate.toFixed(2),
+        data.coc.toFixed(2), data.grm.toFixed(2), data.dscr.toFixed(2),
+        data.irr.toFixed(2), data.occupancy.toFixed(2), data.oer.toFixed(2),
+        data.appreciation.toFixed(2),
+      ].join(",");
+    });
+
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `data-room-${scope.toLowerCase().replace(" ", "-")}-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [sortedProjects, scope]);
+
+  const handleShareDataRoom = useCallback(() => {
+    const shareUrl = `${window.location.origin}/dashboard/data-room?shared=true`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2500);
+    });
+  }, []);
+
+  // ─── Loading / Empty state ────────────────────────────────────
+  const isLoading = !hasHydrated;
+  const isEmpty = hasHydrated && activeProjects.length === 0;
+
+  // ─── Table column config ──────────────────────────────────────
+  const TABLE_COLS: Array<{ key: string; label: string; format: (v: number) => string; align: string }> = [
+    { key: "noi", label: "NOI", format: fmtUSD, align: "text-right" },
+    { key: "cashFlow", label: "Cash Flow", format: fmtUSD, align: "text-right" },
+    { key: "capRate", label: "Cap Rate", format: fmtPct, align: "text-right" },
+    { key: "coc", label: "CoC", format: fmtPct, align: "text-right" },
+    { key: "grm", label: "GRM", format: (v: number) => `${v.toFixed(2)}x`, align: "text-right" },
+    { key: "dscr", label: "DSCR", format: (v: number) => `${v.toFixed(2)}x`, align: "text-right" },
+    { key: "irr", label: "IRR", format: fmtPct, align: "text-right" },
+    { key: "occupancy", label: "Occupancy", format: fmtPct, align: "text-right" },
+    { key: "oer", label: "OER", format: fmtPct, align: "text-right" },
+    { key: "appreciation", label: "Appreciation", format: fmtPct, align: "text-right" },
+  ];
+
   return (
-    <div className="min-h-full px-6 lg:px-8 py-8 space-y-8" style={{ background: T.canvas, color: T.textPrimary }}>
-      {/* ─── Breadcrumb & Title Header ───────────────────────────── */}
+    <div className="min-h-full px-6 lg:px-8 py-8 space-y-8" style={{ background: 'transparent', color: T.textPrimary }}>
+
+      {/* ═══ HEADER ═══════════════════════════════════════════════ */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-[11px] font-bold uppercase tracking-widest text-slate-500">
-            <Link href="/dashboard/command-center" className="hover:text-teal-400 transition-colors">Portfolio</Link>
+          <div className="flex items-center gap-2 mb-1 text-[11px] font-bold uppercase tracking-widest" style={{ color: T.textMuted }}>
+            <Link href="/dashboard/command-center" className="transition-colors" style={{ color: T.textMuted }}
+              onMouseEnter={(e) => { (e.target as HTMLElement).style.color = T.teal; }}
+              onMouseLeave={(e) => { (e.target as HTMLElement).style.color = T.textMuted; }}
+            >
+              Portfolio
+            </Link>
             <span>›</span>
-            <span className="text-teal-400">Data Room</span>
+            <span style={{ color: T.teal }}>Data Room</span>
           </div>
-          <h1 className="text-4xl font-light text-white tracking-tight leading-none">Data Room</h1>
-          <p className="text-xs text-slate-500 mt-2">Deep-dive financial actuals and portfolio metrics dashboard</p>
+          <h1 className="text-4xl font-light tracking-tight leading-none" style={{ color: "rgba(218,228,236,0.95)" }}>
+            Data Room
+          </h1>
+          <p className="text-xs mt-2" style={{ color: T.textMuted }}>
+            Portfolio-level intelligence hub — cumulative analytics across all properties
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Scope Controls */}
-          <div className="flex rounded-xl p-1 bg-white/5 border border-white/10">
-            {(["Property", "My Share"] as Scope[]).map((s) => (
-              <button
-                key={s}
-                onClick={() => setScope(s)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
-                  scope === s ? "bg-teal-500 text-black shadow-lg" : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
+        {!isEmpty && (
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Scope Toggle */}
+            <div className="flex rounded-xl p-1" style={{ background: "rgba(255,255,255,0.04)", border: `1px solid ${T.border}` }}>
+              {(["Property", "My Share"] as Scope[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setScope(s)}
+                  className="px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                  style={{
+                    background: scope === s ? T.teal : "transparent",
+                    color: scope === s ? "#000" : T.textSecondary,
+                    boxShadow: scope === s ? "0 4px 12px rgba(45,212,191,0.2)" : "none",
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
 
-          {/* Period Controls */}
-          <div className="flex rounded-xl p-1 bg-white/5 border border-white/10">
-            {(["Month", "Quarter", "Year", "Overall"] as Period[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setPeriod(p)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 ${
-                  period === p ? "bg-white/15 text-teal-400 font-bold" : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+            {/* Export CSV */}
+            <button
+              onClick={handleExportCSV}
+              disabled={sortedProjects.length === 0}
+              className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: `1px solid ${T.border}`,
+                color: T.textSecondary,
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(45,212,191,0.3)";
+                (e.currentTarget as HTMLButtonElement).style.color = T.teal;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.borderColor = T.border;
+                (e.currentTarget as HTMLButtonElement).style.color = T.textSecondary;
+              }}
+            >
+              <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>download</span>
+              Export CSV
+            </button>
           </div>
-
-          {/* Export */}
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </button>
-        </div>
+        )}
       </header>
 
-      {/* ─── Metrics Vertical Flow ─── */}
-      <div className="flex flex-col gap-6">
-        {/* 1. NOI Panel */}
-        <div 
-          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
-          style={{ background: T.surface }}
-        >
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>monitoring</span>
-              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Net Operating Income</h3>
-            </div>
-            <span className="px-2 py-1 rounded bg-primary/10 text-primary font-label-sm text-xs border border-primary/20 font-bold">+8.4% YoY</span>
+      {/* ═══ LOADING STATE ════════════════════════════════════════ */}
+      {isLoading && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {Array.from({ length: 5 }).map((_, i) => <KPISkeleton key={i} />)}
           </div>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ChartSkeleton />
+            <ChartSkeleton />
+          </div>
+        </div>
+      )}
+
+      {/* ═══ EMPTY STATE ══════════════════════════════════════════ */}
+      {isEmpty && <EmptyState />}
+
+      {/* ═══ MAIN CONTENT ═════════════════════════════════════════ */}
+      {!isLoading && !isEmpty && portfolioAggregates && (
+        <>
+          {/* ─── 1. PORTFOLIO SUMMARY STRIP ──────────────────────── */}
+          <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <KPICard
+              icon="apartment"
+              label="Total Properties"
+              value={portfolioAggregates.propertyCount.toString()}
+              trend={`${portfolioAggregates.propertyCount} active`}
+              trendUp
+            />
+            <KPICard
+              icon="account_balance_wallet"
+              label="Portfolio Value"
+              value={fmtCompact(portfolioAggregates.totalValue)}
+              trend="Current market estimate"
+              trendUp
+            />
+            <KPICard
+              icon="monitoring"
+              label="Portfolio NOI"
+              value={fmtCompact(portfolioAggregates.noi)}
+              trend={`${fmtPct(portfolioAggregates.capRate)} cap rate`}
+              trendUp={portfolioAggregates.noi > 0}
+            />
+            <KPICard
+              icon="speed"
+              label="Wtd Avg Cap Rate"
+              value={fmtPct(portfolioAggregates.capRate)}
+              trend={portfolioAggregates.capRate >= 6 ? "Above 6% floor" : "Below 6% floor"}
+              trendUp={portfolioAggregates.capRate >= 6}
+            />
+            <KPICard
+              icon="savings"
+              label="Total Equity"
+              value={fmtCompact(portfolioAggregates.totalEquity)}
+              trend="Net of outstanding debt"
+              trendUp={portfolioAggregates.totalEquity > 0}
+            />
+          </section>
+
+          {/* ─── 2. 10-METRIC COMPARISON TABLE ───────────────────── */}
+          <section
+            className="rounded-2xl border p-6 space-y-4"
+            style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(24px)" }}
+          >
+            <div className="flex justify-between items-center flex-wrap gap-4">
+              <div>
+                <h2 className="font-light text-xl tracking-tight flex items-center gap-2" style={{ color: T.textPrimary }}>
+                  <span className="material-symbols-outlined text-xl" style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}>
+                    analytics
+                  </span>
+                  Asset Comparison Matrix
+                </h2>
+                <p className="text-[10px] mt-1" style={{ color: T.textMuted }}>
+                  10 REIL metrics across all properties — click column headers to sort
+                </p>
+              </div>
+            </div>
+
+            {sortedProjects.length === 0 ? (
+              <div className="text-center py-12 text-sm" style={{ color: T.textMuted }}>
+                No properties to compare yet.
+              </div>
+            ) : (
+              <div className="overflow-x-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}>
+                <table className="w-full text-xs text-left border-collapse min-w-[1100px]">
+                  <thead>
+                    <tr style={{ borderBottom: `1px solid ${T.border}` }}>
+                      <th
+                        onClick={() => handleHeaderSort("propertyName")}
+                        className="pb-3 pr-4 cursor-pointer transition-colors text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: sortKey === "propertyName" ? T.teal : T.textMuted }}
+                      >
+                        Property {sortKey === "propertyName" ? (sortDesc ? "↓" : "↑") : ""}
+                      </th>
+                      {TABLE_COLS.map((col) => (
+                        <th
+                          key={col.key}
+                          onClick={() => handleHeaderSort(col.key)}
+                          className={`pb-3 px-2 cursor-pointer transition-colors text-[10px] font-bold uppercase tracking-widest ${col.align}`}
+                          style={{ color: sortKey === col.key ? T.teal : T.textMuted }}
+                        >
+                          {col.label} {sortKey === col.key ? (sortDesc ? "↓" : "↑") : ""}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedProjects.map((proj) => {
+                      const data = scope === "Property" ? proj.asset : proj.investor;
+                      return (
+                        <tr
+                          key={proj.id}
+                          className="group transition-colors"
+                          style={{ borderBottom: `1px solid rgba(255,255,255,0.03)` }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = "rgba(255,255,255,0.02)"; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = "transparent"; }}
+                        >
+                          <td className="py-3 pr-4">
+                            <div className="font-semibold" style={{ color: T.textPrimary }}>{proj.propertyName}</div>
+                            <span className="text-[10px] font-normal" style={{ color: T.textMuted }}>{proj.address}</span>
+                          </td>
+                          {TABLE_COLS.map((col) => {
+                            const val = (data as Record<string, number>)[col.key] ?? 0;
+                            const zone = getZoneStyle(col.key, val);
+                            const isMonetary = col.key === "noi" || col.key === "cashFlow";
+                            return (
+                              <td key={col.key} className={`py-3 px-2 ${col.align}`}>
+                                {isMonetary ? (
+                                  <span className="font-mono font-semibold tabular-nums" style={{ color: T.textPrimary }}>
+                                    {col.format(val)}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold font-mono tabular-nums"
+                                    style={{ color: zone.color, background: zone.bg, border: `1px solid ${zone.border}` }}
+                                  >
+                                    {col.format(val)}
+                                  </span>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
+          {/* ─── 3. PORTFOLIO CHARTS SECTION ──────────────────────── */}
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* NOI Trend: Stacked Area Chart */}
+            <div
+              className="rounded-xl border p-6"
+              style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <span className="material-symbols-outlined text-lg" style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}>
+                  show_chart
+                </span>
+                <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
+                  NOI Trend by Property
+                </h3>
+              </div>
+              {noiTrendData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <AreaChart data={noiTrendData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                    <defs>
+                      {projectMetrics.map((pm, i) => (
+                        <linearGradient key={pm.id} id={`noiGrad${i}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={PROPERTY_COLORS[i % PROPERTY_COLORS.length]} stopOpacity={0.3} />
+                          <stop offset="100%" stopColor={PROPERTY_COLORS[i % PROPERTY_COLORS.length]} stopOpacity={0.02} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="month" tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => fmtCompact(v)} />
+                    <Tooltip content={<GlassTooltip />} />
+                    {projectMetrics.map((pm, i) => (
+                      <Area
+                        key={pm.id}
+                        type="monotone"
+                        dataKey={pm.propertyName}
+                        stackId="noi"
+                        stroke={PROPERTY_COLORS[i % PROPERTY_COLORS.length]}
+                        fill={`url(#noiGrad${i})`}
+                        strokeWidth={1.5}
+                      />
+                    ))}
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm" style={{ color: T.textMuted }}>
+                  No data available
+                </div>
+              )}
+            </div>
+
+            {/* Cash Flow Waterfall: Stacked Bars */}
+            <div
+              className="rounded-xl border p-6"
+              style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <span className="material-symbols-outlined text-lg" style={{ color: T.purple, fontVariationSettings: "'FILL' 0" }}>
+                  bar_chart
+                </span>
+                <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
+                  Cash Flow Waterfall
+                </h3>
+              </div>
+              {cashFlowData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={cashFlowData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                    <XAxis dataKey="name" tick={{ fill: T.textMuted, fontSize: 9 }} axisLine={false} tickLine={false} angle={-20} textAnchor="end" height={50} />
+                    <YAxis tick={{ fill: T.textMuted, fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => fmtCompact(v)} />
+                    <Tooltip content={<GlassTooltip />} />
+                    <Bar dataKey="Gross Income" fill={T.teal} radius={[2, 2, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="Operating Expenses" fill={T.amber} radius={[2, 2, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="Debt Service" fill={T.red} radius={[2, 2, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="Net Cash Flow" fill={T.green} radius={[2, 2, 0, 0]} opacity={0.85} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm" style={{ color: T.textMuted }}>
+                  No data available
+                </div>
+              )}
+            </div>
+
+            {/* Occupancy Heatmap: Property × Month Grid */}
+            <div
+              className="rounded-xl border p-6"
+              style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <span className="material-symbols-outlined text-lg" style={{ color: T.green, fontVariationSettings: "'FILL' 0" }}>
+                  grid_on
+                </span>
+                <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
+                  Occupancy Heatmap
+                </h3>
+              </div>
+              {occupancyHeatmapData.length > 0 ? (
+                <div className="overflow-x-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.1) transparent" }}>
+                  <table className="w-full text-xs border-collapse min-w-[700px]">
+                    <thead>
+                      <tr>
+                        <th className="pb-2 text-left text-[10px] font-bold uppercase tracking-widest" style={{ color: T.textMuted }}>
+                          Property
+                        </th>
+                        {MONTHS.map((m) => (
+                          <th key={m} className="pb-2 text-center text-[10px] font-bold uppercase tracking-widest" style={{ color: T.textMuted }}>
+                            {m}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {occupancyHeatmapData.map((row, ri) => (
+                        <tr key={ri}>
+                          <td className="py-1.5 pr-3 font-medium whitespace-nowrap" style={{ color: T.textSecondary }}>
+                            {row.property}
+                          </td>
+                          {MONTHS.map((m) => {
+                            const val = row[m] as number;
+                            // Color gradient: red < 70, amber 70-90, green 90+
+                            let cellBg = "rgba(52,211,153,0.15)";
+                            let cellColor: string = T.green;
+                            if (val < 70) {
+                              cellBg = "rgba(248,113,113,0.15)";
+                              cellColor = T.red;
+                            } else if (val < 90) {
+                              cellBg = "rgba(251,191,36,0.12)";
+                              cellColor = T.amber;
+                            }
+                            return (
+                              <td key={m} className="py-1.5 px-1 text-center">
+                                <span
+                                  className="inline-block w-full py-1 rounded text-[10px] font-mono font-bold"
+                                  style={{ background: cellBg, color: cellColor }}
+                                >
+                                  {val}%
+                                </span>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm" style={{ color: T.textMuted }}>
+                  No data available
+                </div>
+              )}
+            </div>
+
+            {/* Expense Ratio Comparison: Horizontal Bar Chart */}
+            <div
+              className="rounded-xl border p-6"
+              style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
+            >
+              <div className="flex items-center gap-2 mb-6">
+                <span className="material-symbols-outlined text-lg" style={{ color: T.amber, fontVariationSettings: "'FILL' 0" }}>
+                  receipt_long
+                </span>
+                <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
+                  Expense Ratio Comparison
+                </h3>
+              </div>
+              {expenseRatioData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={Math.max(120, expenseRatioData.length * 40 + 30)}>
+                  <BarChart data={expenseRatioData} layout="vertical" margin={{ top: 4, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" horizontal={false} />
+                    <XAxis
+                      type="number"
+                      domain={[0, 100]}
+                      tick={{ fill: T.textMuted, fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v) => `${v}%`}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={{ fill: T.textSecondary, fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={140}
+                    />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        return (
+                          <div
+                            className="rounded-lg border px-3 py-2 text-xs"
+                            style={{ background: T.tooltipBg, borderColor: T.tooltipBorder }}
+                          >
+                            <span style={{ color: T.textPrimary }}>OER: </span>
+                            <span className="font-mono font-bold" style={{ color: T.amber }}>{payload[0].value}%</span>
+                            <span style={{ color: T.textMuted }}> / Target 45%</span>
+                          </div>
+                        );
+                      }}
+                    />
+                    {/* Target reference line at 45% */}
+                    <Bar dataKey="oer" radius={[0, 4, 4, 0]}>
+                      {expenseRatioData.map((entry, idx) => (
+                        <Cell
+                          key={idx}
+                          fill={entry.oer > 45 ? T.red : entry.oer > 35 ? T.amber : T.teal}
+                          opacity={0.8}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-60 flex items-center justify-center text-sm" style={{ color: T.textMuted }}>
+                  No data available
+                </div>
+              )}
+              {/* 45% target line indicator */}
+              <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: `1px solid rgba(255,255,255,0.04)` }}>
+                <div className="w-4 h-0.5" style={{ background: T.amber }} />
+                <span className="text-[10px]" style={{ color: T.textMuted }}>
+                  Target OER: 45% — below is efficient, above indicates high overhead
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* ─── 4. EXPORT SECTION ────────────────────────────────── */}
+          <section
+            className="rounded-xl border p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+            style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
+          >
             <div>
-              <div className="text-4xl font-bold text-primary drop-shadow-[0_0_8px_rgba(87,241,219,0.3)] mb-1">
-                {fmtUSD(portfolioAggregates?.noi ?? 0)}
-              </div>
-              <p className="text-sm text-on-surface-variant border-l-2 border-primary/30 pl-3">Total revenue minus operating expenses, excluding capital expenditures.</p>
+              <h3 className="text-sm font-bold uppercase tracking-widest mb-1" style={{ color: T.textSecondary }}>
+                Export & Share
+              </h3>
+              <p className="text-xs" style={{ color: T.textMuted }}>
+                Generate reports or share this Data Room with your team and investors
+              </p>
             </div>
-            {/* Simulated Sparkline */}
-            <div className="w-full md:w-1/3 h-16 relative flex items-end opacity-80 group-hover:opacity-100 transition-opacity">
-              <svg className="w-full h-full preserve-aspect-ratio-none stroke-primary fill-none" strokeWidth="2" viewBox="0 0 100 30">
-                <path className="drop-shadow-[0_2px_4px_rgba(45,212,191,0.5)]" d="M0,25 Q10,20 20,22 T40,15 T60,18 T80,5 T100,2" />
-                <path className="fill-primary/5 stroke-none" d="M0,25 Q10,20 20,22 T40,15 T60,18 T80,5 T100,2 L100,30 L0,30 Z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. Cash Flow Panel */}
-        <div 
-          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
-          style={{ background: T.surface }}
-        >
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>sync_alt</span>
-              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cash Flow Position</h3>
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="w-full md:w-1/3">
-              <div className="text-3xl font-bold text-on-surface mb-1">
-                {fmtUSD(portfolioAggregates?.cashFlow ?? 0)}
-              </div>
-              <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3">Net liquid cash remaining after all debt service and operating obligations.</p>
-            </div>
-            {/* Diverging Bar Chart */}
-            <div className="w-full flex-1 relative h-8 bg-surface-container-low rounded-full overflow-hidden flex items-center border border-white/5">
-              <div className="absolute left-1/3 top-0 bottom-0 w-px bg-white/20 z-10" />
-              <div className="w-1/3 h-full flex justify-end" />
-              <div className="w-2/3 h-full flex justify-start">
-                <div className="h-full bg-primary shadow-[0_0_12px_rgba(98,250,227,0.4)] w-3/4 rounded-r-full relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-full h-1/2 bg-white/20" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Grid for Gauges (Cap Rate, DSCR, CoC, IRR) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 3. Cap Rate */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-8">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>speed</span>
-                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Capitalization Rate</h3>
-              </div>
-            </div>
-            <div className="flex items-end justify-between">
-              <div className="flex-1 pr-4">
-                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Estimated rate of return on the real estate investment property.</p>
-                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.capRate) : "5.8%"}</div>
-              </div>
-              {/* Half-circle gauge */}
-              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
-                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
-                <div 
-                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
-                  style={{ 
-                    borderColor: T.teal,
-                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.capRate / 10) * 180 - 135, -135), 45) : 10}deg)` 
-                  }} 
-                />
-                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 5.0%</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 4. DSCR */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-8">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>account_balance</span>
-                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Debt Service Coverage</h3>
-              </div>
-            </div>
-            <div className="flex items-end justify-between">
-              <div className="flex-1 pr-4">
-                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Measurement of cash flow available to pay current debt obligations.</p>
-                <div className="text-3xl font-bold text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
-                  {portfolioAggregates ? `${portfolioAggregates.dscr.toFixed(2)}x` : "1.25x"}
-                </div>
-              </div>
-              {/* Half-circle gauge */}
-              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
-                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
-                <div 
-                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
-                  style={{ 
-                    borderColor: T.amber,
-                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.dscr / 2.0) * 180 - 135, -135), 45) : -15}deg)` 
-                  }} 
-                />
-                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Min 1.30</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 5. CoC Return */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-8">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>monetization_on</span>
-                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cash-on-Cash Return</h3>
-              </div>
-            </div>
-            <div className="flex items-end justify-between">
-              <div className="flex-1 pr-4">
-                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Annual cash flow divided by total cash invested.</p>
-                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.coc) : "8.4%"}</div>
-              </div>
-              {/* Half-circle gauge */}
-              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
-                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
-                <div 
-                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
-                  style={{ 
-                    borderColor: T.teal,
-                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.coc / 15) * 180 - 135, -135), 45) : 0}deg)` 
-                  }} 
-                />
-                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 8.0%</div>
-              </div>
-            </div>
-          </div>
-
-          {/* 6. IRR */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative flex flex-col justify-between group hover:border-primary/20 transition-colors"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-8">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>trending_up</span>
-                <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Internal Rate of Return</h3>
-              </div>
-            </div>
-            <div className="flex items-end justify-between">
-              <div className="flex-1 pr-4">
-                <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3 mb-4">Annualized effective compounded return rate making NPV of all cash flows zero.</p>
-                <div className="text-3xl font-bold text-primary">{portfolioAggregates ? fmtPct(portfolioAggregates.irr) : "18.5%"}</div>
-              </div>
-              {/* Half-circle gauge */}
-              <div className="relative w-28 h-14 overflow-hidden flex items-end justify-center shrink-0">
-                <div className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-white/5 border-b-transparent border-left-transparent -rotate-45" />
-                <div 
-                  className="absolute top-0 left-0 w-28 h-28 rounded-full border-[10px] border-transparent border-b-transparent border-left-transparent transition-transform duration-700 ease-out" 
-                  style={{ 
-                    borderColor: T.purple,
-                    transform: `rotate(${portfolioAggregates ? Math.min(Math.max((portfolioAggregates.irr / 25) * 180 - 135, -135), 45) : 15}deg)` 
-                  }} 
-                />
-                <div className="absolute bottom-0 text-[10px] text-on-surface-variant mb-1 font-mono">Target 12.0%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 7. Occupancy Panel */}
-        <div 
-          className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-6 relative overflow-hidden group hover:border-primary/20 transition-colors"
-          style={{ background: T.surface }}
-        >
-          <div className="flex justify-between items-start mb-6">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: "'FILL' 0" }}>domain</span>
-              <h3 className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Physical Occupancy</h3>
-            </div>
-          </div>
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="w-full md:w-1/3">
-              <div className="text-3xl font-bold text-on-surface mb-1">
-                {portfolioAggregates ? fmtPct(portfolioAggregates.occupancy) : "94.2%"}
-              </div>
-              <p className="text-sm text-on-surface-variant border-l-2 border-white/10 pl-3">Percentage of total rentable square footage currently leased and occupied.</p>
-            </div>
-            {/* Progress Bar with stabilised target indicator */}
-            <div className="w-full flex-1 relative">
-              <div className="flex justify-between text-xs text-on-surface-variant mb-2">
-                <span>Current</span>
-                <span>Stabilized Target: 95%</span>
-              </div>
-              <div className="h-4 bg-surface-container-low rounded-full overflow-hidden border border-white/5 relative">
-                <div 
-                  className="h-full bg-primary shadow-[0_0_10px_rgba(87,241,219,0.5)] relative transition-all duration-1000"
-                  style={{ width: portfolioAggregates ? `${portfolioAggregates.occupancy}%` : "94.2%" }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/30" />
-                </div>
-              </div>
-              {/* Target Marker */}
-              <div className="absolute top-[28px] left-[95%] w-0.5 h-6 bg-amber-400 drop-shadow-[0_0_4px_rgba(251,191,36,0.8)] -translate-x-1/2" />
-            </div>
-          </div>
-        </div>
-
-        {/* 8. GRM, Expense Ratio, Appreciation, Capital Raised Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* GRM */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Gross Rent Multiplier</h3>
-                <span className="text-[10px] text-slate-600 block mt-0.5">(GRM)</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between my-3 min-h-[90px]">
-              <div>
-                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
-                  {portfolioAggregates ? `${portfolioAggregates.grm.toFixed(2)}x` : "10.0x"}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  // Placeholder — PDF generation would be wired here
+                  alert("PDF report generation will be available in the next release.");
+                }}
+                className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: `1px solid ${T.border}`,
+                  color: T.textSecondary,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(45,212,191,0.3)";
+                  (e.currentTarget as HTMLButtonElement).style.color = T.teal;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = T.border;
+                  (e.currentTarget as HTMLButtonElement).style.color = T.textSecondary;
+                }}
+              >
+                <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>
+                  picture_as_pdf
                 </span>
-                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                  Target: 10.0x
-                </div>
-              </div>
-              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
-                <ReactECharts
-                  option={METRIC_DETAILS.find(m => m.id === "grm")?.chartOption}
-                  style={{ height: 80, width: 90 }}
-                  opts={{ renderer: "canvas" }}
-                />
-              </div>
-            </div>
-            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
-              Ratio of property price to gross rental income (lower is better).
-            </div>
-          </div>
+                Generate PDF Report
+              </button>
 
-          {/* Expense Ratio (OER) */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Operating Expense Ratio</h3>
-                <span className="text-[10px] text-slate-600 block mt-0.5">(OER)</span>
+              <div className="relative">
+                <button
+                  onClick={handleShareDataRoom}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-all"
+                  style={{
+                    background: T.teal,
+                    color: "#000",
+                    boxShadow: "0 4px 16px rgba(45,212,191,0.2)",
+                  }}
+                >
+                  <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>
+                    share
+                  </span>
+                  Share Data Room
+                </button>
+                {/* Share toast */}
+                {shareToast && (
+                  <div
+                    className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap"
+                    style={{
+                      background: T.tooltipBg,
+                      border: `1px solid ${T.tooltipBorder}`,
+                      color: T.teal,
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-xs mr-1" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                    Link copied to clipboard
+                  </div>
+                )}
               </div>
             </div>
-            <div className="flex items-center justify-between my-3 min-h-[90px]">
-              <div>
-                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
-                  {portfolioAggregates ? fmtPct(portfolioAggregates.oer) : "38.0%"}
-                </span>
-                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                  Target: 45.0%
-                </div>
-              </div>
-              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
-                <ReactECharts
-                  option={METRIC_DETAILS.find(m => m.id === "oer")?.chartOption}
-                  style={{ height: 80, width: 90 }}
-                  opts={{ renderer: "canvas" }}
-                />
-              </div>
-            </div>
-            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
-              Percentage of gross income consumed by operational costs.
-            </div>
-          </div>
-
-          {/* Appreciation */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Annualized Appreciation</h3>
-                <span className="text-[10px] text-slate-600 block mt-0.5">(Appreciation)</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between my-3 min-h-[90px]">
-              <div>
-                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
-                  {portfolioAggregates ? fmtPct(portfolioAggregates.appreciation) : "4.0%"}
-                </span>
-                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                  Target: 4.0%
-                </div>
-              </div>
-              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
-                <ReactECharts
-                  option={METRIC_DETAILS.find(m => m.id === "appreciation")?.chartOption}
-                  style={{ height: 80, width: 90 }}
-                  opts={{ renderer: "canvas" }}
-                />
-              </div>
-            </div>
-            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
-              Annual rate of appreciation in market value over original basis.
-            </div>
-          </div>
-
-          {/* Capital Raised */}
-          <div 
-            className="bg-surface-dim/80 backdrop-blur-md rounded-xl border border-white/10 p-5 flex flex-col justify-between hover:border-primary/20 transition-all duration-300 relative group"
-            style={{ background: T.surface }}
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-400 transition-colors">Equity Capital Invested</h3>
-                <span className="text-[10px] text-slate-600 block mt-0.5">(Capital Raised)</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between my-3 min-h-[90px]">
-              <div>
-                <span className="text-3xl font-bold font-mono tracking-tighter text-white">
-                  {portfolioAggregates ? fmtUSD(portfolioAggregates.capitalRaised) : "$500,000"}
-                </span>
-                <div className="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-slate-500" />
-                  Target: $500,000
-                </div>
-              </div>
-              <div className="w-24 h-20 flex-shrink-0 flex items-center justify-end">
-                <ReactECharts
-                  option={METRIC_DETAILS.find(m => m.id === "capitalRaised")?.chartOption}
-                  style={{ height: 80, width: 90 }}
-                  opts={{ renderer: "canvas" }}
-                />
-              </div>
-            </div>
-            <div className="pt-3 border-t border-white/[0.04] text-[10px] text-slate-500 leading-relaxed">
-              Total equity capital deployed to fund active assets.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ─── Bottom Section: Portfolio Comparison Matrix ───────────────── */}
-      <section className="glass-card rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: T.surface, backdropFilter: "blur(24px)" }}>
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <h2 className="font-light text-xl text-white tracking-tight flex items-center gap-2">
-              <Activity className="w-5 h-5 text-teal-400" />
-              Asset Comparison Matrix
-            </h2>
-            <p className="text-[10px] text-slate-500 mt-1">
-              Compare properties and fractional stakes across the 11 key performance metrics
-            </p>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-xs text-left border-collapse min-w-[1200px]">
-            <thead>
-              <tr className="border-b border-white/10 text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-                <th
-                  onClick={() => handleHeaderSort("propertyName")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors"
-                >
-                  Asset Name {sortKey === "propertyName" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("ownershipPct")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors"
-                >
-                  Share % {sortKey === "ownershipPct" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("noi")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  NOI {sortKey === "noi" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("cashFlow")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  Cash Flow {sortKey === "cashFlow" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("capRate")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  Cap Rate {sortKey === "capRate" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("coc")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  CoC Return {sortKey === "coc" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("grm")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  GRM {sortKey === "grm" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("dscr")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  DSCR {sortKey === "dscr" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("irr")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  IRR {sortKey === "irr" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("occupancy")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  Occupancy {sortKey === "occupancy" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("oer")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  OER {sortKey === "oer" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("appreciation")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  Appreciation {sortKey === "appreciation" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-                <th
-                  onClick={() => handleHeaderSort("capitalRaised")}
-                  className="pb-4 cursor-pointer hover:text-white transition-colors text-right"
-                >
-                  Equity Deployed {sortKey === "capitalRaised" ? (sortDesc ? "↓" : "↑") : ""}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/[0.04]">
-              {sortedProjects.map((proj) => {
-                const data = scope === "Property" ? proj.asset : proj.investor;
-                return (
-                  <tr key={proj.id} className="hover:bg-white/[0.02] transition-colors group">
-                    <td className="py-4 font-semibold text-white">
-                      <div>{proj.propertyName}</div>
-                      <span className="text-[10px] text-slate-500 font-normal">{proj.address}</span>
-                    </td>
-                    <td className="py-4 font-mono font-semibold text-slate-400 tabular-nums">
-                      {proj.ownershipPct}%
-                    </td>
-                    {/* NOI */}
-                    <td className="py-4 text-right font-mono text-white font-semibold tabular-nums">
-                      {fmtUSD(data.noi)}
-                    </td>
-                    {/* Cash Flow */}
-                    <td className="py-4 text-right font-mono text-white font-semibold tabular-nums">
-                      {fmtUSD(data.cashFlow)}
-                    </td>
-                    {/* Cap Rate */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("capRate", data.capRate)}`}>
-                        {fmtPct(data.capRate)}
-                      </span>
-                    </td>
-                    {/* Cash-on-Cash */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("coc", data.coc)}`}>
-                        {fmtPct(data.coc)}
-                      </span>
-                    </td>
-                    {/* GRM */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("grm", data.grm)}`}>
-                        {data.grm.toFixed(2)}x
-                      </span>
-                    </td>
-                    {/* DSCR */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("dscr", data.dscr)}`}>
-                        {data.dscr.toFixed(2)}x
-                      </span>
-                    </td>
-                    {/* IRR */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("irr", data.irr)}`}>
-                        {fmtPct(data.irr)}
-                      </span>
-                    </td>
-                    {/* Occupancy */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("occupancy", data.occupancy)}`}>
-                        {fmtPct(data.occupancy)}
-                      </span>
-                    </td>
-                    {/* OER (Expense Ratio) */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("oer", data.oer)}`}>
-                        {fmtPct(data.oer)}
-                      </span>
-                    </td>
-                    {/* Appreciation */}
-                    <td className="py-4 text-right">
-                      <span className={`px-2.5 py-1 rounded-md border text-[11px] font-bold font-mono tabular-nums ${getMatrixCellClass("appreciation", data.appreciation)}`}>
-                        {fmtPct(data.appreciation)}
-                      </span>
-                    </td>
-                    {/* Capital Deployed */}
-                    <td className="py-4 text-right font-mono text-white font-semibold tabular-nums">
-                      {fmtUSD(data.capitalRaised)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
+          </section>
+        </>
+      )}
     </div>
   );
 }

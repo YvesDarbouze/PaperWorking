@@ -4,7 +4,9 @@
  * Values: dollars (not cents), percentages as 0–100 (not 0–1).
  */
 
-import type { ProjectFinancials, RehabScheduleTask, RehabStage } from '@/types/schema';
+import type { Project, ProjectFinancials, RehabScheduleTask, RehabStage, LedgerItem } from '@/types/schema';
+import { parseDate } from './helpers';
+
 
 // ── Input/Output Types ────────────────────────────────────────────────────────
 
@@ -107,8 +109,7 @@ export function computeNOIComponents(
 
   const otherMonthlyIncome =
     financials.otherMonthlyIncome ??
-    (financials.grossIncomeParking ?? 0) +
-    (financials.grossIncomeLaundry ?? 0);
+    ((financials.grossIncomeParking ?? 0) + (financials.grossIncomeLaundry ?? 0));
   const otherIncome = otherMonthlyIncome * 12;
 
   // Vacancy
@@ -158,15 +159,30 @@ export function computeNOIComponents(
 
 /**
  * Returns the scalar NOI value from a ProjectFinancials object.
- * Prefers a pre-computed `netOperatingIncome` when present; otherwise derives it.
+ * Always derives from components when individual rent fields are available.
+ * Falls back to pre-computed `netOperatingIncome` only when no component inputs exist.
  */
 export function computeNOI(
   financials: ProjectFinancials,
   strategyType?: string,
   currentPhase?: number
 ): number {
+  // Always derive from components when individual fields are available.
+  // The pre-computed netOperatingIncome may be stale if user updated
+  // rent or expenses after it was cached.
+  const hasRentInput =
+    financials.monthlyGrossRent != null ||
+    financials.projectedMonthlyRent != null ||
+    financials.projectedRent != null;
+
+  if (hasRentInput) {
+    return computeNOIComponents(financials, strategyType, currentPhase).noi;
+  }
+
+  // Fall back to pre-computed value only when no component inputs exist
   if (financials.netOperatingIncome != null) return financials.netOperatingIncome;
-  return computeNOIComponents(financials, strategyType, currentPhase).noi;
+
+  return 0;
 }
 
 /**
@@ -211,11 +227,11 @@ export function computeGRM(propertyPrice: number, grossAnnualRent: number): numb
 
 /**
  * Debt Service Coverage Ratio: NOI / AnnualDebtService
- * Returns Infinity when there is no debt (annualDebtService === 0 but NOI > 0).
+ * Returns 999 (sentinel) when there is no debt (annualDebtService === 0 but NOI > 0).
  * Returns 0 when both are zero.
  */
 export function computeDSCR(noi: number, annualDebtService: number): number {
-  if (annualDebtService === 0) return noi > 0 ? Infinity : 0;
+  if (annualDebtService === 0) return noi > 0 ? 999 : 0;
   return Math.round((noi / annualDebtService) * 1000) / 1000;
 }
 
@@ -517,15 +533,16 @@ export function computeYearsHeld(
   endDateRaw: Date | string | undefined | null,
   createdAtRaw?: Date | string | undefined | null
 ): number {
-  const start = acquisitionDateRaw
-    ? new Date(acquisitionDateRaw)
-    : (createdAtRaw ? new Date(createdAtRaw) : new Date());
-  const end = endDateRaw ? new Date(endDateRaw) : new Date();
+  const parsedStart = parseDate(acquisitionDateRaw);
+  const parsedCreated = parseDate(createdAtRaw);
+  const start = parsedStart || parsedCreated || new Date();
+  const end = parseDate(endDateRaw) || new Date();
   if (isNaN(start.getTime()) || isNaN(end.getTime())) return 1;
   const diffMs = end.getTime() - start.getTime();
   const years = diffMs / (1000 * 60 * 60 * 24 * 365.25);
   return years > 0.0833 ? years : 0.0833; // Clamp to min 1 month
 }
+
 
 /**
  * Calculates the annualized appreciation rate (CAGR) between an acquisition basis
@@ -663,9 +680,11 @@ export function deriveAllMetrics(
     createdAt
   );
   
-  const elapsedDays = financials.acquisitionDate && !isAppreciationRealized
-    ? (new Date().getTime() - new Date(financials.acquisitionDate).getTime()) / (1000 * 60 * 60 * 24)
+  const parsedAcqDate = parseDate(financials.acquisitionDate);
+  const elapsedDays = parsedAcqDate && !isAppreciationRealized
+    ? (new Date().getTime() - parsedAcqDate.getTime()) / (1000 * 60 * 60 * 24)
     : 0;
+
 
   // If not sold, and elapsed days is less than 30 days (evaluating or newly acquired), use projected hold months
   if (!isAppreciationRealized && elapsedDays < 30) {
@@ -1374,3 +1393,163 @@ export function deriveDualScopeMetrics(
     investor: investorMetrics,
   };
 }
+
+/**
+ * Occupancy Rate by Days: ((Total Days − Vacant Days) ÷ Total Days) × 100
+ * Use this variant when tracking by calendar days rather than unit count.
+ *
+ * @param vacantDays Number of days units were vacant in the period.
+ * @param totalDays  Total days in the period (default 365 for trailing 12 months).
+ * @returns Occupancy rate as a percentage (e.g. 92.0), or 0 if totalDays is zero.
+ */
+export function computeOccupancyRateByDays(
+  vacantDays: number,
+  totalDays = 365
+): number {
+  if (totalDays <= 0) return 0;
+  const clampedVacant = Math.max(0, Math.min(vacantDays, totalDays));
+  const daysOccupied = totalDays - clampedVacant;
+  return Math.round(((daysOccupied / totalDays) * 100) * 100) / 100; // 2 decimal places
+}
+
+export interface ActiveProjectMetrics {
+  purchasePrice: number;
+  renovationCosts: number;
+  closingCostsBuy: number;
+  closingCostsSell: number;
+  holdingCosts: number;
+  salePrice: number;
+  netProfit: number;
+  roi: number;
+  annualizedIrr: number;
+  holdDays: number;
+  totalInvestment: number;
+}
+
+export function deriveAllProjectMetrics(
+  project: Project,
+  whatIfOffsetMonths = 0,
+  ledgerItems: LedgerItem[] = []
+): ActiveProjectMetrics {
+  const financials = project.financials || {};
+  const purchasePrice = financials.purchasePrice || 0;
+
+  // 1. Renovation Costs (sum of all approved ledger entries from sub-collection)
+  let renovationCosts = 0;
+  if (ledgerItems.length > 0) {
+    ledgerItems.forEach(item => {
+      if (item.status === 'Approved') {
+        renovationCosts += item.amount;
+      }
+    });
+  } else if (financials.costs) {
+    financials.costs.forEach(c => {
+      if (c.approved) renovationCosts += c.amount;
+    });
+  }
+
+  const inspectionsCost = financials.inspections?.reduce((acc, curr) => acc + (curr.actualCost || 0), 0) || 0;
+  renovationCosts += inspectionsCost;
+
+  // 2. Capital Costs (Closing Costs Buy — origination points)
+  const points = (financials.loanOriginationPoints || 0) / 100;
+  const loanAmount = financials.loanAmount || (purchasePrice + renovationCosts);
+  const closingCostsBuy = loanAmount * points;
+
+  // 3. Hold Days & Holding Costs
+  const now = new Date();
+  const soldDate = parseDate(financials.soldDate);
+  const createdDate = parseDate(project.createdAt) || now;
+
+  let holdDays = financials.estimatedTimelineDays || 90;
+  if (soldDate) {
+    const ms = soldDate.getTime() - createdDate.getTime();
+    holdDays = Math.max(1, ms / (1000 * 60 * 60 * 24));
+  } else {
+    const ms = now.getTime() - createdDate.getTime();
+    const elapsed = ms / (1000 * 60 * 60 * 24);
+    holdDays = Math.max(holdDays, elapsed);
+  }
+
+  const adjustedHoldDays = Math.max(0, holdDays + whatIfOffsetMonths * 30);
+
+  // Use daily burn rate from computeDailyBurnRate
+  const burnRateBreakdown = computeDailyBurnRate(financials);
+  const holdingCosts = Math.round(burnRateBreakdown.dailyBurnRate * adjustedHoldDays * 100) / 100;
+
+  // 4. Sale Price
+  const salePrice = financials.actualSalePrice || financials.estimatedARV || 0;
+
+  // 5. Closing Costs Sell (agent commissions + final closing costs + exit ledger)
+  const buyerPercent = financials.buyersAgentCommission || 0;
+  const sellerPercent = financials.sellersAgentCommission || 0;
+  const agentCommissions = salePrice * ((buyerPercent + sellerPercent) / 100);
+  const finalClosingCosts = financials.finalClosingCosts || 0;
+
+  let ledgerExitCosts = 0;
+  project.exitCosts?.forEach(ec => {
+    if (ec.isPercentage && ec.percentageRate) {
+      ledgerExitCosts += (ec.percentageRate / 100) * salePrice;
+    } else {
+      ledgerExitCosts += ec.amount;
+    }
+  });
+
+  const closingCostsSell = agentCommissions + finalClosingCosts + ledgerExitCosts;
+
+  // 6. Net Profit & Investment
+  const totalInvestment = purchasePrice + closingCostsBuy + closingCostsSell + renovationCosts + holdingCosts;
+  const netProfit = salePrice - totalInvestment;
+
+  const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
+
+  // 7. Annualized IRR (Newton-Raphson cash flow solver)
+  const holdMonths = financials.projectedHoldTimeMonths ?? 60;
+  const holdYears = Math.max(1, Math.round(holdMonths / 12));
+  const appreciation = financials.annualAppreciationPercent ?? 3;
+  const totalCashInvested = computeTotalCashInvested(financials);
+
+  let annualizedIrr = 0;
+  if (totalCashInvested > 0) {
+    const noi = computeNOI(financials, project.strategyType, project.currentPhase);
+    const loanRate = financials.loanInterestRate ?? 0;
+    const loanTermYears = financials.loanTermYears ?? 30;
+    const annualDS = computeAnnualDebtService(loanAmount, loanRate, loanTermYears * 12);
+    const { annual: annualCashFlow } = computeCashFlow(noi, annualDS);
+
+    const cashFlows = buildIRRCashFlows(
+      totalCashInvested,
+      annualCashFlow,
+      holdYears,
+      purchasePrice,
+      appreciation,
+      loanAmount,
+      loanRate,
+      loanTermYears
+    );
+
+    const irr = computeIRR(cashFlows);
+    if (irr !== null) {
+      annualizedIrr = irr * 100;
+    } else {
+      // Fallback to linear if Newton-Raphson does not converge
+      annualizedIrr = holdDays > 0 ? roi * (365 / holdDays) : 0;
+    }
+  }
+
+  return {
+    purchasePrice,
+    renovationCosts,
+    closingCostsBuy,
+    closingCostsSell,
+    holdingCosts,
+    salePrice,
+    netProfit,
+    roi: Math.round(roi * 100) / 100,
+    annualizedIrr: Math.round(annualizedIrr * 100) / 100,
+    holdDays: Math.round(holdDays),
+    totalInvestment,
+  };
+}
+
+

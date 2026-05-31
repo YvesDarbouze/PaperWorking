@@ -14,6 +14,7 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 import { ProjectFinancials } from '@/types/schema';
+import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
 
 interface NOIBreakdownChartProps {
   financials: ProjectFinancials;
@@ -34,38 +35,20 @@ function fmt(n: number): string {
 }
 
 function computeNOI(financials: ProjectFinancials) {
-  const grossAnnualRent = (financials.monthlyGrossRent ?? 0) * 12;
-  const otherIncome = (financials.otherMonthlyIncome ?? 0) * 12;
-  const vacancyLoss = grossAnnualRent * ((financials.vacancyRatePercent ?? 7) / 100);
-  const effectiveRent = grossAnnualRent - vacancyLoss;
-
-  const annualTaxes = (financials.holdingCostTaxes ?? 0) * 12;
-  const annualInsurance = (financials.holdingCostInsurance ?? 0) * 12;
-  const annualUtilities = (financials.holdingCostUtilities ?? 0) * 12;
-
-  const mgmtBase = financials.propertyManagementFee
-    ? financials.propertyManagementFee * 12
-    : effectiveRent * ((financials.propertyManagementFeePercent ?? 10) / 100);
-
-  const maintenance = (financials.monthlyMaintenanceReserve ?? 0) * 12;
-  const hoa = (financials.monthlyHOA ?? 0) * 12;
-
-  const opEx = annualTaxes + annualInsurance + annualUtilities + mgmtBase + maintenance + hoa;
-  const noi = effectiveRent + otherIncome - opEx;
-
+  const c = computeNOIComponents(financials);
   return {
-    grossAnnualRent,
-    otherIncome,
-    vacancyLoss,
-    effectiveRent,
-    annualTaxes,
-    annualInsurance,
-    annualUtilities,
-    mgmtBase,
-    maintenance,
-    hoa,
-    opEx,
-    noi,
+    grossAnnualRent: c.grossRentalIncome,
+    otherIncome: c.otherIncome,
+    vacancyLoss: c.vacancyLoss,
+    effectiveRent: c.grossRentalIncome - c.vacancyLoss,
+    annualTaxes: c.propertyTaxes,
+    annualInsurance: c.insurance,
+    annualUtilities: c.utilities,
+    mgmtBase: c.propertyManagement,
+    maintenance: c.maintenance,
+    hoa: c.hoa,
+    opEx: c.totalOperatingExpenses,
+    noi: c.noi,
   };
 }
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { UserPlus, ArrowUpCircle, Ticket, UserMinus, CreditCard } from 'lucide-react';
-import type { ActivityItem } from '@/lib/admin/mockData';
+import type { ActivityItem } from '@/actions/admin';
 
 /* ═══════════════════════════════════════════════════════
    ActivityFeed — Recent platform activity timeline

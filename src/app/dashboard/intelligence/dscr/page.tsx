@@ -2,11 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { DSCRRiskStripTerminal } from '@/components/intelligence/DSCRRiskStripTerminal';
+import { DSCRThresholdCard } from '@/components/intelligence/DSCRThresholdCard';
 
 /* ═══════════════════════════════════════════════════════════════
    DSCR Intelligence Page
@@ -175,12 +178,36 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
 
 export default function DSCRIntelligencePage() {
   useAllDealsSync();
-  useProjectStore((s) => s.projects);
+  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentDscr, dscrChange, trendValues, trendLabels } = useMemo(() => {
+  /* ── Interactive state from DSCRRiskStripTerminal ── */
+  const [interactiveNOI, setInteractiveNOI] = useState(0);
+  const [interactiveDS, setInteractiveDS] = useState(0);
+
+  /* ── Derive portfolio NOI and debt service ── */
+  const portfolioNOI = useMemo(() => {
+    const withNOI = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
+    if (withNOI.length > 0) {
+      return withNOI.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
+    }
+    return 12486; // seed
+  }, [projects]);
+
+  const portfolioDebtService = useMemo(() => {
+    const withDS = projects.filter(p => (p.financials?.longTermMortgagePayment ?? p.financials?.financingDebtService ?? 0) > 0);
+    if (withDS.length > 0) {
+      return withDS.reduce((sum, p) => {
+        const monthly = p.financials?.longTermMortgagePayment ?? ((p.financials?.financingDebtService ?? 0) / 12);
+        return sum + monthly;
+      }, 0);
+    }
+    return 897; // seed monthly
+  }, [projects]);
+
+  const { isUsingDemoData, currentDscr, dscrChange, trendValues, trendLabels } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -191,9 +218,10 @@ export default function DSCRIntelligencePage() {
       );
       const last = vals[vals.length - 1] ?? 0;
       const prev = vals[vals.length - 2] ?? 0;
-      return { currentDscr: last, dscrChange: last - prev, trendValues: vals, trendLabels: labels };
+      return { isUsingDemoData: false, currentDscr: last, dscrChange: last - prev, trendValues: vals, trendLabels: labels };
     }
     return {
+      isUsingDemoData: true,
       currentDscr: DEMO_DSCR,
       dscrChange: DEMO_CHANGE,
       trendValues: DEMO_TREND_VALUES,
@@ -246,6 +274,8 @@ export default function DSCRIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -312,6 +342,28 @@ export default function DSCRIntelligencePage() {
             <DSCRTrendChart values={trendValues} labels={trendLabels} />
           </div>
         </div>
+      </div>
+
+      {/* ── DSCR Threshold + Risk Strip Row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Threshold Intelligence Card */}
+        <DSCRThresholdCard
+          noi={interactiveNOI || portfolioNOI}
+          annualDebtService={(interactiveDS || portfolioDebtService) * 12}
+          lenderMinDSCR={1.25}
+          targetDSCR={1.5}
+        />
+
+        {/* Risk Strip Terminal */}
+        <DSCRRiskStripTerminal
+          defaultAnnualNOI={portfolioNOI}
+          defaultMonthlyDebtService={portfolioDebtService}
+          lenderMinDSCR={1.25}
+          onValuesChange={(values) => {
+            setInteractiveNOI(values.annualNOI);
+            setInteractiveDS(values.monthlyDebtService);
+          }}
+        />
       </div>
 
       {/* ── Bottom: Property-Level DSCR Breakdown ── */}

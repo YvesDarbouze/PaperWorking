@@ -144,10 +144,10 @@ function LoginPageInner() {
     defaultValues: { email: '', password: '' },
   });
 
-  const { register: registerSignup, handleSubmit: handleSignupSubmit, formState: { errors: signupErrors } } = useForm<RegisterFormValues>({
+  const { register: registerSignup, handleSubmit: handleSignupSubmit, watch: watchSignup, formState: { errors: signupErrors } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
-    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: true },
+    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: false },
   });
 
   const onSubmitPassword = async (data: LoginFormValues) => {
@@ -187,6 +187,26 @@ function LoginPageInner() {
   };
 
   const handleSocialLogin = async (provider: 'google' | 'facebook') => {
+    if (isSignUp) {
+      const isAccepted = watchSignup('acceptTerms');
+      if (!isAccepted) {
+        toast.error('You must accept the Terms of Service and Privacy Policy to register.');
+        return;
+      }
+      
+      // Pre-fetch IP from /api/auth/ip and save to localStorage
+      try {
+        const ipRes = await fetch('/api/auth/ip');
+        if (ipRes.ok) {
+          const ipData = await ipRes.json();
+          window.localStorage.setItem('pw_pending_consent_ip', ipData.ip || '127.0.0.1');
+        }
+      } catch (e) {
+        window.localStorage.setItem('pw_pending_consent_ip', '127.0.0.1');
+      }
+      window.localStorage.setItem('pw_pending_consent_version', 'v1.0');
+    }
+
     setLoadingProvider(provider);
     clearError();
     // Persist account type for provisionSocialUser() to read
@@ -501,6 +521,29 @@ function LoginPageInner() {
                   <p className="mt-1.5 text-[11px] auth-error-text pl-1">{signupErrors.confirmPassword.message}</p>
                 )}
               </div>
+
+              <div className="flex items-start gap-2.5 mt-4">
+                <input
+                  id="signup-accept-terms"
+                  type="checkbox"
+                  {...registerSignup('acceptTerms')}
+                  className="mt-1 h-4 w-4 rounded border-white/10 bg-white/5 text-primary focus:ring-0 focus:ring-offset-0 cursor-pointer"
+                />
+                <label htmlFor="signup-accept-terms" className="text-xs text-pw-muted leading-relaxed cursor-pointer select-none">
+                  I accept the{' '}
+                  <Link href="/terms" target="_blank" className="text-white hover:text-primary underline">
+                    Terms of Service
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy" target="_blank" className="text-white hover:text-primary underline">
+                    Privacy Policy
+                  </Link>
+                  .
+                </label>
+              </div>
+              {signupErrors.acceptTerms && (
+                <p className="mt-1.5 text-[11px] auth-error-text pl-1">{signupErrors.acceptTerms.message}</p>
+              )}
 
               <div className="flex justify-between items-center mt-2">
                 <button

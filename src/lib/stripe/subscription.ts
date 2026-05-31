@@ -44,7 +44,7 @@ export function isSubscriptionActive(profile: UserProfile | null): boolean {
 
   // Grace period: past_due but billing period hasn't ended
   if (status === 'past_due') {
-    const periodEnd = (profile as any).currentPeriodEnd || (profile as any).stripeCurrentPeriodEnd;
+    const periodEnd = profile.currentPeriodEnd;
     if (periodEnd) {
       return new Date(periodEnd) > new Date();
     }
@@ -85,7 +85,7 @@ export function getSubscriptionState(profile: UserProfile | null): {
     isActive: isSubscriptionActive(profile),
     isTrial: profile.subscriptionStatus === 'trialing',
     isPastDue: profile.subscriptionStatus === 'past_due',
-    isCanceling: !!(profile as any).cancelAtPeriodEnd,
+    isCanceling: !!profile.cancelAtPeriodEnd,
     plan: profile.subscriptionPlan || 'None',
   };
 }

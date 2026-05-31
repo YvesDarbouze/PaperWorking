@@ -87,6 +87,8 @@ export async function POST(request: Request) {
       client_reference_id: userId ?? undefined,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
+      automatic_tax: { enabled: true },
+      tax_id_collection: { enabled: true },
       subscription_data: {
         trial_period_days: trialDays > 0 ? trialDays : undefined,
         metadata: {

@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { ExpenseRatioCollectionTerminal } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
+import type { ExpenseRatioValues } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
 
 /* ═══════════════════════════════════════════════════════════════
    OER Intelligence Page
@@ -178,17 +181,23 @@ export default function OERIntelligencePage() {
   const projects = useProjectStore((s) => s.projects);
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentOER, oerChange, trendValues, trendLabels } = useMemo(() => {
+  /* ── Reactive state from Collection Terminal ── */
+  const [collectedValues, setCollectedValues] = useState<ExpenseRatioValues | null>(null);
+  const handleCollectionChange = useCallback((v: ExpenseRatioValues) => setCollectedValues(v), []);
+
+  const { isUsingDemoData, currentOER, oerChange, trendValues, trendLabels } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
       const vals   = sorted.map((s) => s.oer ?? 0);
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
       const last   = vals[vals.length - 1] ?? 0;
       const prev   = vals[vals.length - 2] ?? 0;
-      return { currentOER: last, oerChange: last - prev, trendValues: vals, trendLabels: labels };
+      return { isUsingDemoData: false, currentOER: last, oerChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    return { currentOER: 38.2, oerChange: -0.8, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
-  }, [snapshots, projects]);
+    // Use collected values if available, otherwise demo
+    const oer = collectedValues?.expenseRatio ?? 38.2;
+    return { isUsingDemoData: true, currentOER: oer, oerChange: -0.8, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
+  }, [snapshots, projects, collectedValues]);
 
   const zone = currentOER < 35
     ? { label: 'Excellent', color: '#2dd4bf', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
@@ -219,6 +228,8 @@ export default function OERIntelligencePage() {
           Export
         </button>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -298,6 +309,11 @@ export default function OERIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Expense Ratio Collection Terminal ── */}
+      <ExpenseRatioCollectionTerminal
+        onValuesChange={handleCollectionChange}
+      />
 
       {/* ── Bottom: Expense Breakdown ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>

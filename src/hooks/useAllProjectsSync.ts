@@ -20,6 +20,7 @@ export function useAllDealsSync() {
   // 1. Sync Deals — guest-scoped to a single invited project; owners get full org portfolio
   useEffect(() => {
     if (!activeTenantId || activeTenantId === 'org_placeholder') return;
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) return;
 
     // Guest tier: user arrived via invite link — scope to their one invited project only
     if (profile?.inviteToken && profile?.invitedToProjectId) {
@@ -56,6 +57,7 @@ export function useAllDealsSync() {
   // 2. Sync Active Deal's Ledger (Sub-collection)
   useEffect(() => {
     if (!currentProject?.id) return;
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) return;
 
     const ledgerRef = collection(db, 'projects', currentProject.id, 'ledgerItems');
     const q = query(ledgerRef, orderBy('createdAt', 'desc'));

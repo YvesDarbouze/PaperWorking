@@ -62,11 +62,11 @@ export default function PlatformOverview() {
       </div>
 
       {/* 4-Phase cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 relative">
         {PHASES.map((phase) => (
           <div
             key={phase.number}
-            className="glass-card rounded-xl p-6 group relative overflow-hidden hover:-translate-y-1 transition-transform duration-300"
+            className="glass-card rounded-xl p-4 md:p-6 group relative overflow-hidden hover:-translate-y-1 transition-transform duration-300"
           >
             {/* Watermark number */}
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

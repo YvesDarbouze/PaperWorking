@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { CashDeployedTerminal } from '@/components/intelligence/CashDeployedTerminal';
+import { CoCIntelligenceCard } from '@/components/intelligence/CoCIntelligenceCard';
 
 /* ═══════════════════════════════════════════════════════════════
    Cash-on-Cash Return Intelligence Page
@@ -133,16 +136,43 @@ export default function CoCIntelligencePage() {
   const projects = useProjectStore((s) => s.projects);
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentCoC, cocChange, trendValues, trendLabels } = useMemo(() => {
+  /* ── Interactive state for CashDeployedTerminal → CoCIntelligenceCard ── */
+  const [interactiveCashInvested, setInteractiveCashInvested] = useState(0);
+  const [interactiveCoCReturn, setInteractiveCoCReturn] = useState(0);
+
+  /* ── Derive annual cash flow from portfolio ── */
+  const portfolioAnnualCashFlow = useMemo(() => {
+    if (snapshots && snapshots.length > 0) {
+      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
+      const latestCF = sorted[sorted.length - 1]?.annualCashFlow;
+      if (latestCF && latestCF > 0) return latestCF;
+    }
+    const withCF = projects.filter(p => (p.financials?.netCashFlow ?? 0) > 0);
+    if (withCF.length > 0) {
+      return withCF.reduce((sum, p) => sum + (p.financials?.netCashFlow ?? 0), 0);
+    }
+    return 1722; // seed
+  }, [snapshots, projects]);
+
+  /* ── Derive total cash invested from portfolio ── */
+  const portfolioCashInvested = useMemo(() => {
+    const withInvested = projects.filter(p => (p.financials?.totalCashInvested ?? 0) > 0);
+    if (withInvested.length > 0) {
+      return withInvested.reduce((sum, p) => sum + (p.financials?.totalCashInvested ?? 0), 0);
+    }
+    return 60000; // seed
+  }, [projects]);
+
+  const { isUsingDemoData, currentCoC, cocChange, trendValues, trendLabels } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
       const vals   = sorted.map((s) => s.cashOnCashReturn ?? 0);
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
       const last   = vals[vals.length - 1] ?? 0;
       const prev   = vals[0] ?? 0; // vs Last Year = first in window
-      return { currentCoC: last, cocChange: last - prev, trendValues: vals, trendLabels: labels };
+      return { isUsingDemoData: false, currentCoC: last, cocChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    return { currentCoC: 8.42, cocChange: 1.2, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
+    return { isUsingDemoData: true, currentCoC: 8.42, cocChange: 1.2, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
   }, [snapshots, projects]);
 
   const trancheRows = useMemo(() => {
@@ -187,6 +217,8 @@ export default function CoCIntelligencePage() {
           Export
         </button>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -255,6 +287,27 @@ export default function CoCIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── CoCIntelligenceCard: Performance Gap Analysis ── */}
+      <CoCIntelligenceCard
+        annualCashFlow={interactiveCashInvested > 0 ? portfolioAnnualCashFlow : portfolioAnnualCashFlow}
+        totalCashInvested={interactiveCashInvested || portfolioCashInvested}
+        targetCoC={8.0}
+        marketAvgCoC={6.5}
+      />
+
+      {/* ── CashDeployedTerminal: Investment Basis Input ── */}
+      <CashDeployedTerminal
+        annualCashFlow={portfolioAnnualCashFlow}
+        defaultDownPayment={Math.round(portfolioCashInvested * 0.93)}
+        defaultClosingCosts={Math.round(portfolioCashInvested * 0.04)}
+        defaultRehabBudget={0}
+        defaultHoldingCosts={Math.round(portfolioCashInvested * 0.03)}
+        onValuesChange={(values) => {
+          setInteractiveCashInvested(values.totalCashInvested);
+          setInteractiveCoCReturn(values.cocReturn);
+        }}
+      />
 
       {/* ── Bottom: CoC by Investment Tranche ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>

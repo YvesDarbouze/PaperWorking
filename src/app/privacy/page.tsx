@@ -1,40 +1,36 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingFooter from '@/components/landing/LandingFooter';
 
-/* ═══════════════════════════════════════════════════════
-   /privacy — Privacy Policy
-   
-   Obsidian glass theme. LandingHeader + LandingFooter.
-   ═══════════════════════════════════════════════════════ */
-
 export const metadata: Metadata = {
   title: 'Privacy Policy — PaperWorking',
-  description:
-    'How PaperWorking handles, stores, and protects your data. We never sell your deal information.',
+  description: 'How PaperWorking handles, stores, and protects your data. We never sell your deal information.',
 };
 
 const SECTIONS = [
   {
     heading: '1. Information We Collect',
-    body: 'We collect account information (name, email), deal and pipeline data you enter, and usage analytics to improve the platform.',
+    body: 'We collect account details (name, email), project details (financial parameters, transaction properties, ledger transactions), uploaded documents (PDFs, images), and connection metadata (client IP address, accepted legal versions). We do not collect or log payment cards or SSNs directly; these are routed directly to PCI-compliant subprocessors.',
   },
   {
     heading: '2. How We Use Your Data',
-    body: 'Your data is used solely to provide PaperWorking\'s features. We do not sell or share your deal data with third parties.',
+    body: 'Your data is used solely to provide PaperWorking\'s features: metrics dashboard calculations, OCR automation pipelines, vendor communications, and team collaterals. We never sell your data or share it for marketing.',
   },
   {
-    heading: '3. Data Storage',
-    body: 'Data is stored securely using Firebase (Google Cloud) infrastructure with encryption at rest and in transit.',
+    heading: '3. Data Storage & Transfers',
+    body: 'All database fields and files are securely stored on Google Cloud Platform in the us-central1 region, using TLS 1.3 in transit and AES-256 at rest.',
   },
   {
-    heading: '4. Your Rights',
-    body: 'You may request deletion of your account and associated data at any time by contacting support.',
+    heading: '4. GDPR & CCPA Rights',
+    body: 'Under GDPR and CCPA, you have the right to access, rectify, or port your data. We provide self-service utilities inside the dashboard settings to download all platform data in a structured ZIP pack, or to request a full account deletion.',
   },
   {
-    heading: '5. Cookies',
-    body: 'We use HttpOnly session cookies for authentication only. No third-party advertising cookies are set.',
+    heading: '5. Account Deletion Policy',
+    body: 'Upon requesting account deletion, a 24-hour verification window is initiated. During this grace period, you can cancel the request. After 24 hours, all database documents, organization invites, and uploaded PDFs are permanently deleted from our live environments. Activity logs are moved to cold archive stores and kept for a maximum of 7 years as required for auditing.',
+  },
+  {
+    heading: '6. Cookie Preferences',
+    body: 'We use secure cookies for user sessions. Essential cookies are required to remain signed in. Optional analytics and performance cookies are disabled by default and can be configured through our consent banner.',
   },
 ];
 
@@ -44,7 +40,7 @@ export default function PrivacyPage() {
       <LandingHeader />
 
       <main className="max-w-3xl mx-auto px-6 md:px-margin-desktop pt-32 pb-24">
-        {/* ── Hero ── */}
+        {/* Hero */}
         <p className="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-4">
           Legal
         </p>
@@ -52,10 +48,10 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="font-body-sm text-body-sm text-on-surface-variant mb-16">
-          Last updated April 2026
+          Last updated May 2026
         </p>
 
-        {/* ── Content sections ── */}
+        {/* Content sections */}
         <div className="space-y-10">
           {SECTIONS.map((s) => (
             <section
@@ -90,10 +86,10 @@ export default function PrivacyPage() {
             }}
           >
             <h2 className="font-label-md text-label-md text-on-surface mb-4">
-              6. Contact
+              7. Contact
             </h2>
             <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-              For privacy inquiries, contact{' '}
+              For privacy-related questions, contact{' '}
               <a
                 href="mailto:privacy@paperworking.co"
                 className="text-primary hover:underline decoration-primary/50 transition-colors"

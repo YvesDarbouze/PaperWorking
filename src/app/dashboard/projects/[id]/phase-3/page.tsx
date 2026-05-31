@@ -20,7 +20,15 @@ import { ExitStrategyToggle } from '@/components/project/ExitStrategyToggle';
 import { RentalSetupForm } from '@/components/project/RentalSetupForm';
 import { DaysHeldClock } from '@/components/project/DaysHeldClock';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
+import { computeNOIMetric } from '@/lib/metrics/computeNOI';
+import { computeOccupancyMetric } from '@/lib/metrics/computeOccupancy';
+import { computeExpenseRatioMetric } from '@/lib/metrics/computeExpenseRatio';
+import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
+import { MetricReadout } from '@/components/metrics/MetricReadout';
+import type { MetricResult } from '@/lib/metrics/types';
 import toast from 'react-hot-toast';
+import { ProjectAtAGlanceSidebar } from '@/components/project/ProjectAtAGlanceSidebar';
+
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-3 — Hold & Rehab Workspace
@@ -114,6 +122,40 @@ export default function Phase3RehabPage() {
       project.createdAt
     );
   }, [project?.financials, project?.strategyType, project?.currentPhase, project?.createdAt]);
+
+  /* ── Structured Metric Results (MetricResult wrappers) ── */
+  const noiResult: MetricResult = useMemo(() => {
+    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeNOIMetric(project);
+  }, [project]);
+
+  const occupancyResult: MetricResult = useMemo(() => {
+    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeOccupancyMetric(project);
+  }, [project]);
+
+  const oerResult: MetricResult = useMemo(() => {
+    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeExpenseRatioMetric(project);
+  }, [project]);
+
+  const cashFlowResult: MetricResult = useMemo(() => {
+    if (!project) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeCashFlowMetric(project);
+  }, [project]);
+
+  /* ── Derived NOI formula components for footer ── */
+  const noiFormula = useMemo(() => {
+    if (!project?.financials) return { grossIncome: 0, vacancyLoss: 0, opex: 0, noi: 0 };
+    const fin = project.financials;
+    const monthlyRent = fin.monthlyGrossRent ?? fin.projectedMonthlyRent ?? fin.projectedRent ?? 0;
+    const grossIncome = monthlyRent * 12 + (fin.otherMonthlyIncome ?? 0) * 12;
+    const vacancyPct = fin.vacancyRatePercent ?? fin.vacancyRate ?? 7;
+    const vacancyLoss = (monthlyRent * 12) * (vacancyPct / 100);
+    const noi = noiResult.value ?? 0;
+    const opex = grossIncome - vacancyLoss - noi;
+    return { grossIncome, vacancyLoss, opex, noi };
+  }, [project?.financials, noiResult.value]);
 
   const handleSave = async () => {
     if (!project) return;
@@ -348,325 +390,410 @@ export default function Phase3RehabPage() {
       {/* ═══════════════════════════════════════════════════════
           Workspace Body — Luminous Glass Layout
           ═══════════════════════════════════════════════════════ */}
-      <main className="max-w-4xl mx-auto px-5 md:px-10 py-10 space-y-8">
-
-        {/* ── Phase Context Header ── */}
-        <section className="flex flex-col gap-4">
-          <div className="flex justify-between items-end">
-            <div className="space-y-1">
-              <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] uppercase" style={{ color: PHASE_COLOR }}>
-                Phase: Hold & Rehab
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5]">
-                  Equity: {ownershipPct}%
-                </span>
-                <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#57f1db]/15 text-[#57f1db]">
-                  Day {daysHeld}
-                </span>
-              </div>
-            </div>
-            <div className="text-right">
-              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em]" style={{ color: PHASE_COLOR }}>
-                {rehabPct}% Complete
-              </span>
-            </div>
-          </div>
-          {/* Progress Bar */}
-          <div className="h-1.5 w-full bg-[#2d363d] rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-700 ease-out"
-              style={{
-                width: `${rehabPct}%`,
-                background: `linear-gradient(90deg, #3cddc7 0%, ${PHASE_COLOR} 100%)`,
-                boxShadow: `0 0 20px -5px ${PHASE_GLOW}`,
-              }}
-            />
-          </div>
-        </section>
-
-        {/* ── Rehab Tier Selector (Stitch schema: 5-column grid) ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#adc6ff]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
-            Rehab Strategy & Level
-          </h2>
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
-            {REHAB_TIERS.map((tier) => {
-              const isActive = currentTier === tier.key;
-              return (
-                <button
-                  key={tier.key}
-                  onClick={() => handleTierChange(tier.key)}
-                  className={`px-3 py-4 rounded-lg text-center transition-all ${
-                    isActive
-                      ? 'bg-[#57f1db]/10 border border-[#57f1db]/50'
-                      : 'glass-card border border-white/5 hover:bg-white/10'
-                  }`}
-                  style={isActive ? { boxShadow: `0 0 20px -5px ${PHASE_GLOW}` } : {}}
-                >
-                  <p className={`text-[10px] tracking-[0.05em] font-medium uppercase ${isActive ? 'text-[#57f1db]' : 'text-[#bacac5]'}`}>
-                    LEVEL {tier.level}
+      <main className="max-w-7xl mx-auto px-5 md:px-10 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Column (Forms and Trackers) */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* ── Phase Context Header ── */}
+            <section className="flex flex-col gap-4">
+              <div className="flex justify-between items-end">
+                <div className="space-y-1">
+                  <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] uppercase" style={{ color: PHASE_COLOR }}>
+                    Phase: Hold & Rehab
                   </p>
-                  <p className={`text-[14px] leading-[16px] tracking-[0.02em] font-semibold ${isActive ? 'text-[#57f1db] font-bold' : 'text-[#dae4ec]'}`}>
-                    {tier.label}
-                  </p>
-                  <p className="text-[10px] text-[#bacac5]/60 mt-1">{tier.range}</p>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── Budget vs Actual (Stitch schema: progress bar card) ── */}
-        <section className="glass-card rounded-xl p-5 space-y-4 relative overflow-hidden">
-          <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#57f1db]/5 rounded-full blur-3xl" />
-          <div className="flex justify-between items-end">
-            <div>
-              <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">Rehab Budget vs. Actual</h3>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                  {fmtCurrency(budgetMetrics.totalSpent)}
-                </span>
-                <span className="text-[#bacac5]">/ {fmtCurrency(budgetMetrics.budget)} Budgeted</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5]">
+                      Equity: {ownershipPct}%
+                    </span>
+                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#57f1db]/15 text-[#57f1db]">
+                      Day {daysHeld}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em]" style={{ color: PHASE_COLOR }}>
+                    {rehabPct}% Complete
+                  </span>
+                </div>
               </div>
+              {/* Progress Bar */}
+              <div className="h-1.5 w-full bg-[#2d363d] rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  style={{
+                    width: `${rehabPct}%`,
+                    background: `linear-gradient(90deg, #3cddc7 0%, ${PHASE_COLOR} 100%)`,
+                    boxShadow: `0 0 20px -5px ${PHASE_GLOW}`,
+                  }}
+                />
+              </div>
+            </section>
+
+            {/* ── Rehab Tier Selector (Stitch schema: 5-column grid) ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#adc6ff]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
+                Rehab Strategy & Level
+              </h2>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
+                {REHAB_TIERS.map((tier) => {
+                  const isActive = currentTier === tier.key;
+                  return (
+                    <button
+                      key={tier.key}
+                      onClick={() => handleTierChange(tier.key)}
+                      className={`px-3 py-4 rounded-lg text-center transition-all ${
+                        isActive
+                          ? 'bg-[#57f1db]/10 border border-[#57f1db]/50'
+                          : 'glass-card border border-white/5 hover:bg-white/10'
+                      }`}
+                      style={isActive ? { boxShadow: `0 0 20px -5px ${PHASE_GLOW}` } : {}}
+                    >
+                      <p className={`text-[10px] tracking-[0.05em] font-medium uppercase ${isActive ? 'text-[#57f1db]' : 'text-[#bacac5]'}`}>
+                        LEVEL {tier.level}
+                      </p>
+                      <p className={`text-[14px] leading-[16px] tracking-[0.02em] font-semibold ${isActive ? 'text-[#57f1db] font-bold' : 'text-[#dae4ec]'}`}>
+                        {tier.label}
+                      </p>
+                      <p className="text-[10px] text-[#bacac5]/60 mt-1">{tier.range}</p>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* ── Budget vs Actual (Stitch schema: progress bar card) ── */}
+            <section className="glass-card rounded-xl p-5 space-y-4 relative overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#57f1db]/5 rounded-full blur-3xl" />
+              <div className="flex justify-between items-end">
+                <div>
+                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">Rehab Budget vs. Actual</h3>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                      {fmtCurrency(budgetMetrics.totalSpent)}
+                    </span>
+                    <span className="text-[#bacac5]">/ {fmtCurrency(budgetMetrics.budget)} Budgeted</span>
+                  </div>
+                </div>
+                {budgetMetrics.budgetLow > 0 && (
+                  <div className="text-right">
+                    <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#adc6ff]">TIER RANGE</p>
+                    <p className="text-[14px] leading-[16px] font-semibold text-[#dae4ec]">
+                      {fmtDollar(budgetMetrics.budgetLow)} – {fmtDollar(budgetMetrics.budgetHigh)}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700 luminous-glow"
+                  style={{
+                    width: `${budgetMetrics.pct}%`,
+                    background: budgetMetrics.pct > 90
+                      ? 'linear-gradient(90deg, #ffb4ab 0%, #ff6b6b 100%)'
+                      : `linear-gradient(90deg, ${PHASE_COLOR}66 0%, ${PHASE_COLOR} 100%)`,
+                  }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] font-medium tracking-[0.05em] text-[#bacac5]">
+                <span>{budgetMetrics.pct}% ALLOCATED</span>
+                <span>{fmtCurrency(budgetMetrics.remaining)} REMAINING</span>
+              </div>
+            </section>
+
+            {/* ── Days Held Clock + Burn Rate (2-up) ── */}
+            <section className="grid grid-cols-2 gap-3">
+              <DaysHeldClock daysHeld={daysHeld} acquisitionDate={project.financials?.acquisitionDate} fallbackDate={project.createdAt} />
+              <div className="glass-card rounded-xl p-4 flex flex-col justify-between">
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Daily Burn Rate</span>
+                <div className="space-y-1">
+                  <span className={`text-[24px] leading-[32px] font-semibold ${holdMetrics.dailyBurn > 100 ? 'text-[#ffb4ab]' : 'text-[#dae4ec]'}`}>
+                    {fmtCurrency(Math.round(holdMetrics.dailyBurn))}
+                  </span>
+                  <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#ffb4ab]">
+                    {holdMetrics.dailyBurn > 100 ? 'CRITICAL' : holdMetrics.dailyBurn > 50 ? 'MODERATE' : 'LOW'}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Holding Costs + Operational Income (Stitch schema: 2-up) ── */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Holding Costs (editable line items) */}
+              <div className="space-y-4">
+                <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                  Holding Costs
+                </h2>
+                <HoldingCostsTracker
+                  holdingCosts={holdingCosts}
+                  onChange={(newCosts) => {
+                    setHoldingCosts(newCosts);
+                    handleImmediateSave({ holdingCosts: newCosts });
+                  }}
+                  daysHeld={daysHeld}
+                />
+              </div>
+
+              {/* Operational Income (Rent strategy) */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                    {project.financials?.exitStrategyType === 'Rent' ? 'Rental Income' : 'Exit Strategy'}
+                  </h2>
+                  {project.financials?.exitStrategyType === 'Rent' && (
+                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#57f1db]/20 text-[#57f1db] border border-[#57f1db]/30">
+                      ACTIVE
+                    </span>
+                  )}
+                </div>
+                <ExitStrategyToggle
+                  currentStrategy={project.financials?.exitStrategyType}
+                  onChange={handleStrategyChange}
+                />
+                {project.financials?.exitStrategyType === 'Rent' && (
+                  <RentalSetupForm
+                    financials={project.financials}
+                    onChange={handleRentalSetupChange}
+                  />
+                )}
+              </div>
+            </section>
+
+            {/* ── Current Estimated Value (ARV) — Hero Card ── */}
+            <section className="glass-card rounded-xl p-5 border border-[#57f1db]/20 relative group overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#57f1db]/5 rounded-full blur-3xl group-hover:bg-[#57f1db]/10 transition-all" />
+              <div className="flex justify-between items-center relative z-10">
+                <div>
+                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] mb-1">Current Estimated Value (ARV)</h3>
+                  <p className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#dae4ec]">
+                    {fmtCurrency(arvValue)}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            {/* ── Live Project Metrics (Stitch schema: 2×2 grid + structured readouts) ── */}
+            <section className="space-y-4">
+              <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#57f1db] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#57f1db]" />
+                </span>
+                Live Project Metrics
+              </h2>
+              <div className="grid grid-cols-2 gap-3">
+                {/* NOI — Structured MetricReadout */}
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
+                  <MetricReadout
+                    label="Net Operating Income"
+                    result={noiResult}
+                    format="currency"
+                    accentColor={PHASE_COLOR}
+                    compact
+                  />
+                  {noiResult.value !== null && (
+                    <p className="text-[10px] text-[#bacac5]/60 mt-1">
+                      {fmtCurrency(Math.round((noiResult.value) / 12))}/month
+                    </p>
+                  )}
+                </div>
+
+                {/* Cash Flow — Structured MetricReadout */}
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
+                  <MetricReadout
+                    label="Cash Flow"
+                    result={cashFlowResult}
+                    format="currency"
+                    accentColor="#adc6ff"
+                    compact
+                  />
+                  {cashFlowResult.value !== null && (
+                    <p className="text-[10px] text-[#bacac5]/60 mt-1">
+                      {fmtCurrency(Math.round(cashFlowResult.value / 12))}/month
+                    </p>
+                  )}
+                </div>
+
+                {/* Cap Rate + Cash-on-Cash — from deriveAllMetrics */}
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Cap Rate</span>
+                    <span className="text-[10px] font-bold text-[#adc6ff]">STABLE</span>
+                  </div>
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {liveMetrics ? fmtPct(liveMetrics.capRate) : '—'}
+                  </span>
+                  {liveMetrics && (
+                    <p className="text-[10px] text-[#bacac5]/60 mt-1">CoC: {fmtPct(liveMetrics.cashOnCashReturn)}</p>
+                  )}
+                </div>
+
+                {/* DSCR */}
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
+                  <div className="flex justify-between items-start mb-1">
+                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">DSCR</span>
+                    <span className={`text-[10px] font-bold ${liveMetrics && liveMetrics.dscr >= 1.2 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                      {liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE' : 'AT RISK'}
+                    </span>
+                  </div>
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {liveMetrics ? liveMetrics.dscr.toFixed(2) : '—'}
+                  </span>
+                  <p className="text-[10px] text-[#57f1db] mt-1">{liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE > 1.20' : 'Target > 1.20'}</p>
+                </div>
+              </div>
+
+              {/* ── Occupancy + OER readout row ── */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="glass-card p-4 rounded-xl">
+                  <MetricReadout
+                    label="Occupancy Rate"
+                    result={occupancyResult}
+                    format="percent"
+                    accentColor={PHASE_COLOR}
+                  />
+                </div>
+                <div className="glass-card p-4 rounded-xl">
+                  <MetricReadout
+                    label="Operating Expense Ratio"
+                    result={oerResult}
+                    format="percent"
+                    accentColor="#adc6ff"
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* ── Rehab Pipeline Tracker ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Rehab Pipeline
+              </h2>
+              <RehabSequenceTracker
+                currentStage={(project.rehab?.currentStage as any) || 'Demolition'}
+                onStageChange={handleStageChange}
+              />
+            </section>
+
+            {/* ── Scope of Work ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Scope of Work
+              </h2>
+              <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
+            </section>
+
+            {/* ── Bids & Hiring ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Bids & Hiring
+              </h2>
+              <GCBidUploader
+                projectId={projectId}
+                onBidSaved={bid => setContractorBids(prev => [...prev, bid])}
+              />
+              <ContractorBids
+                bids={contractorBids}
+                baseBudget={totalBudget}
+                onChange={setContractorBids}
+              />
+            </section>
+
+            {/* ── CapEx Comparative Table ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                CapEx Tracker
+              </h2>
+              <CapExComparativeTable tasks={rehabTasks} onChange={setRehabTasks} />
+            </section>
+
+            {/* ── Contractor Draw Schedule ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Draw Schedule
+              </h2>
+              <ContractorDrawSchedule draws={drawSchedule} onChange={setDrawSchedule} totalBudget={totalBudget} />
+            </section>
+
+            {/* ── Rehab Expense Tracker ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Rehab Expenses
+              </h2>
+              <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} totalBudget={totalBudget} />
+            </section>
+
+            {/* ── Site Visit Logs ── */}
+            <section className="space-y-4">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                Site Visit Log
+              </h2>
+              <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
+            </section>
+
+            {/* ── Final Sign-off Gate ── */}
+            <section className="pt-8">
+              <RenovationsCompleteGate
+                unpaidInvoicesCount={unpaidInvoicesCount}
+                uncompletedMilestonesCount={uncompletedMilestonesCount}
+                onComplete={handleCompletePhase}
+              />
+            </section>
+          </div>
+
+          {/* Right Column (At-a-Glance Sticky Sidebar) */}
+          <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-6">
+            <ProjectAtAGlanceSidebar project={project} />
+          </div>
+        </div>
+      </main>
+
+      {/* ═══════════════════════════════════════════════════════
+          Sticky NOI Formula Footer — always visible
+          ═══════════════════════════════════════════════════════ */}
+      <div className="sticky bottom-0 z-30 w-full border-t border-white/10">
+        <div
+          className="glass-card rounded-t-xl backdrop-blur-xl"
+          style={{ background: 'rgba(11, 20, 26, 0.85)' }}
+        >
+          <div className="max-w-4xl mx-auto px-5 md:px-10 py-3 flex items-center justify-between gap-4">
+            {/* Formula breakdown */}
+            <div className="flex items-center gap-2 text-[11px] tracking-wide overflow-x-auto" style={{ fontVariantNumeric: 'tabular-nums' }}>
+              <span className="text-[#bacac5] whitespace-nowrap">Gross Income</span>
+              <span className="text-[#dae4ec] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.grossIncome))}</span>
+              <span className="text-[#bacac5]">−</span>
+              <span className="text-[#bacac5] whitespace-nowrap">Vacancy</span>
+              <span className="text-[#ffb4ab] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.vacancyLoss))}</span>
+              <span className="text-[#bacac5]">−</span>
+              <span className="text-[#bacac5] whitespace-nowrap">OpEx</span>
+              <span className="text-[#ffb4ab] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.opex))}</span>
+              <span className="text-[#bacac5]">=</span>
             </div>
-            {budgetMetrics.budgetLow > 0 && (
+
+            {/* NOI value + state pill */}
+            <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#adc6ff]">TIER RANGE</p>
-                <p className="text-[14px] leading-[16px] font-semibold text-[#dae4ec]">
-                  {fmtDollar(budgetMetrics.budgetLow)} – {fmtDollar(budgetMetrics.budgetHigh)}
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#bacac5]">NOI</p>
+                <p
+                  className="text-[20px] leading-[24px] font-bold"
+                  style={{ color: '#15803D', fontVariantNumeric: 'tabular-nums' }}
+                >
+                  {fmtCurrency(Math.round(noiFormula.noi))}
                 </p>
               </div>
-            )}
-          </div>
-          <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full transition-all duration-700 luminous-glow"
-              style={{
-                width: `${budgetMetrics.pct}%`,
-                background: budgetMetrics.pct > 90
-                  ? 'linear-gradient(90deg, #ffb4ab 0%, #ff6b6b 100%)'
-                  : `linear-gradient(90deg, ${PHASE_COLOR}66 0%, ${PHASE_COLOR} 100%)`,
-              }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] font-medium tracking-[0.05em] text-[#bacac5]">
-            <span>{budgetMetrics.pct}% ALLOCATED</span>
-            <span>{fmtCurrency(budgetMetrics.remaining)} REMAINING</span>
-          </div>
-        </section>
-
-        {/* ── Days Held Clock + Burn Rate (2-up) ── */}
-        <section className="grid grid-cols-2 gap-3">
-          <DaysHeldClock daysHeld={daysHeld} acquisitionDate={project.financials?.acquisitionDate} fallbackDate={project.createdAt} />
-          <div className="glass-card rounded-xl p-4 flex flex-col justify-between">
-            <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Daily Burn Rate</span>
-            <div className="space-y-1">
-              <span className={`text-[24px] leading-[32px] font-semibold ${holdMetrics.dailyBurn > 100 ? 'text-[#ffb4ab]' : 'text-[#dae4ec]'}`}>
-                {fmtCurrency(Math.round(holdMetrics.dailyBurn))}
-              </span>
-              <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#ffb4ab]">
-                {holdMetrics.dailyBurn > 100 ? 'CRITICAL' : holdMetrics.dailyBurn > 50 ? 'MODERATE' : 'LOW'}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Holding Costs + Operational Income (Stitch schema: 2-up) ── */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Holding Costs (editable line items) */}
-          <div className="space-y-4">
-            <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-              Holding Costs
-            </h2>
-            <HoldingCostsTracker
-              holdingCosts={holdingCosts}
-              onChange={(newCosts) => {
-                setHoldingCosts(newCosts);
-                handleImmediateSave({ holdingCosts: newCosts });
-              }}
-              daysHeld={daysHeld}
-            />
-          </div>
-
-          {/* Operational Income (Rent strategy) */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                {project.financials?.exitStrategyType === 'Rent' ? 'Rental Income' : 'Exit Strategy'}
-              </h2>
-              {project.financials?.exitStrategyType === 'Rent' && (
-                <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#57f1db]/20 text-[#57f1db] border border-[#57f1db]/30">
-                  ACTIVE
-                </span>
-              )}
-            </div>
-            <ExitStrategyToggle
-              currentStrategy={project.financials?.exitStrategyType}
-              onChange={handleStrategyChange}
-            />
-            {project.financials?.exitStrategyType === 'Rent' && (
-              <RentalSetupForm
-                financials={project.financials}
-                onChange={handleRentalSetupChange}
-              />
-            )}
-          </div>
-        </section>
-
-        {/* ── Current Estimated Value (ARV) — Hero Card ── */}
-        <section className="glass-card rounded-xl p-5 border border-[#57f1db]/20 relative group overflow-hidden">
-          <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#57f1db]/5 rounded-full blur-3xl group-hover:bg-[#57f1db]/10 transition-all" />
-          <div className="flex justify-between items-center relative z-10">
-            <div>
-              <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] mb-1">Current Estimated Value (ARV)</h3>
-              <p className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#dae4ec]">
-                {fmtCurrency(arvValue)}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Live Project Metrics (Stitch schema: 2×2 grid) ── */}
-        <section className="space-y-4">
-          <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#57f1db] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#57f1db]" />
-            </span>
-            Live Project Metrics
-          </h2>
-          <div className="grid grid-cols-2 gap-3">
-            {/* NOI */}
-            <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
-              <div className="flex justify-between items-start mb-1">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Net Operating Income</span>
-                <span className="text-[10px] font-bold text-[#57f1db]">
-                  {liveMetrics && liveMetrics.noi > 0 ? 'HEALTHY' : 'HOLDING'}
-                </span>
-              </div>
-              <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                {liveMetrics ? fmtCurrency(Math.round(liveMetrics.noi / 12)) : '—'}
-              </span>
-              <p className="text-[10px] text-[#bacac5]/60 mt-1">/month</p>
-            </div>
-
-            {/* Cash-on-Cash */}
-            <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
-              <div className="flex justify-between items-start mb-1">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Cash-on-Cash</span>
-                <span className="text-[10px] font-bold text-[#adc6ff]">TARGET: 12%</span>
-              </div>
-              <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                {liveMetrics ? fmtPct(liveMetrics.cashOnCashReturn) : '—'}
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                noiResult.state === 'live'
+                  ? 'bg-emerald-500/15 text-emerald-400'
+                  : noiResult.state === 'incomplete'
+                    ? 'bg-gray-500/15 text-gray-400'
+                    : 'bg-amber-500/15 text-amber-400'
+              }`}>
+                {noiResult.state === 'live' ? 'LIVE' : noiResult.state === 'incomplete' ? 'INCOMPLETE' : noiResult.state.toUpperCase()}
               </span>
             </div>
-
-            {/* Cap Rate */}
-            <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
-              <div className="flex justify-between items-start mb-1">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Cap Rate</span>
-                <span className="text-[10px] font-bold text-[#adc6ff]">STABLE</span>
-              </div>
-              <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                {liveMetrics ? fmtPct(liveMetrics.capRate) : '—'}
-              </span>
-            </div>
-
-            {/* DSCR */}
-            <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
-              <div className="flex justify-between items-start mb-1">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">DSCR</span>
-                <span className={`text-[10px] font-bold ${liveMetrics && liveMetrics.dscr >= 1.2 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
-                  {liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE' : 'AT RISK'}
-                </span>
-              </div>
-              <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-                {liveMetrics ? liveMetrics.dscr.toFixed(2) : '—'}
-              </span>
-              <p className="text-[10px] text-[#57f1db] mt-1">{liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE > 1.20' : 'Target > 1.20'}</p>
-            </div>
           </div>
-        </section>
-
-        {/* ── Rehab Pipeline Tracker ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Rehab Pipeline
-          </h2>
-          <RehabSequenceTracker
-            currentStage={project.rehab?.currentStage || 'Demolition'}
-            onStageChange={handleStageChange}
-          />
-        </section>
-
-        {/* ── Scope of Work ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Scope of Work
-          </h2>
-          <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
-        </section>
-
-        {/* ── Bids & Hiring ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Bids & Hiring
-          </h2>
-          <GCBidUploader
-            projectId={projectId}
-            onBidSaved={bid => setContractorBids(prev => [...prev, bid])}
-          />
-          <ContractorBids
-            bids={contractorBids}
-            baseBudget={totalBudget}
-            onChange={setContractorBids}
-          />
-        </section>
-
-        {/* ── CapEx Comparative Table ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            CapEx Tracker
-          </h2>
-          <CapExComparativeTable tasks={rehabTasks} onChange={setRehabTasks} />
-        </section>
-
-        {/* ── Contractor Draw Schedule ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Draw Schedule
-          </h2>
-          <ContractorDrawSchedule draws={drawSchedule} onChange={setDrawSchedule} totalBudget={totalBudget} />
-        </section>
-
-        {/* ── Rehab Expense Tracker ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Rehab Expenses
-          </h2>
-          <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} totalBudget={totalBudget} />
-        </section>
-
-        {/* ── Site Visit Logs ── */}
-        <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
-            Site Visit Log
-          </h2>
-          <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
-        </section>
-
-        {/* ── Final Sign-off Gate ── */}
-        <section className="pt-8">
-          <RenovationsCompleteGate
-            unpaidInvoicesCount={unpaidInvoicesCount}
-            uncompletedMilestonesCount={uncompletedMilestonesCount}
-            onComplete={handleCompletePhase}
-          />
-        </section>
-
-      </main>
+        </div>
+      </div>
     </div>
   );
 }

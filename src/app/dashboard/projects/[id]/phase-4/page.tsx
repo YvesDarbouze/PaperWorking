@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
@@ -22,6 +22,12 @@ import NetProceedsCard from '@/components/exit/NetProceedsCard';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { computeAutopsyMetrics, computeCapitalGainsTax } from '@/lib/math/calculatorUtils';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+/* ── Structured MetricResult wrappers ── */
+import { computeIRRMetric } from '@/lib/metrics/computeIRR';
+import { computeAppreciationMetric } from '@/lib/metrics/computeAppreciation';
+import { computeCoCMetric } from '@/lib/metrics/computeCoC';
+import { MetricReadout } from '@/components/metrics/MetricReadout';
+import type { MetricResult } from '@/lib/metrics/types';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-4 — Closing & Exit Workspace
@@ -119,6 +125,81 @@ export default function Phase4WorkspacePage() {
     } catch { return 0; }
   }, [localProject, project]);
 
+  /* ── Structured MetricResult computations ── */
+  const irrResult: MetricResult = useMemo(() => {
+    const srcProject = localProject || project;
+    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeIRRMetric(srcProject);
+  }, [localProject, project]);
+
+  const appreciationResult: MetricResult = useMemo(() => {
+    const srcProject = localProject || project;
+    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeAppreciationMetric(srcProject);
+  }, [localProject, project]);
+
+  const cocResult: MetricResult = useMemo(() => {
+    const srcProject = localProject || project;
+    if (!srcProject) return { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] };
+    return computeCoCMetric(srcProject);
+  }, [localProject, project]);
+
+  /* ── Realized state detection ── */
+  const isRealized = !!((project as any)?.reiStatus === 'realized' || (project?.financials as any)?.exitRealized);
+  const closedAtDate = (project as any)?.closedAt
+    ? new Date((project as any).closedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : null;
+
+  /* ── Total return (absolute $) ── */
+  const totalReturn: MetricResult = useMemo(() => {
+    if (!autopsy) return { value: null, state: 'incomplete' as const, inputsUsed: {} as Record<string, number>, inputsMissing: ['autopsy'] };
+    const state: MetricResult['state'] = isRealized ? 'realized' : (project?.currentPhase === 3 ? 'live' : 'projected');
+    return {
+      value: Math.round(autopsy.netProfit),
+      state,
+      inputsUsed: {
+        'financials.grossSalePrice': autopsy.grossSalePrice ?? 0,
+        'financials.totalCostBasis': autopsy.totalCostBasis ?? 0,
+      },
+      inputsMissing: [],
+    };
+  }, [autopsy, isRealized, project?.currentPhase]);
+
+  /* ── Confirm Sale (live → realized) handler ── */
+  const [isConfirmingSale, setIsConfirmingSale] = useState(false);
+  const handleConfirmSale = useCallback(async () => {
+    if (!project || !user || isRealized) return;
+    setIsConfirmingSale(true);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch(`/api/projects/${projectId}/exit`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          realized: true,
+          financials: {
+            actualSalePrice: localProject?.financials?.actualSalePrice
+              || localProject?.financials?.projectedSalePrice
+              || project.financials?.estimatedARV || 0,
+          },
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(err.error || 'Failed to confirm sale');
+      }
+      toast.success('Deal marked as Realized — all metrics are now final.');
+      refresh();
+    } catch (error: any) {
+      console.error('Failed to confirm sale:', error);
+      toast.error(error.message || 'Failed to confirm sale');
+    } finally {
+      setIsConfirmingSale(false);
+    }
+  }, [project, user, projectId, localProject, isRealized, refresh]);
 
   const strategy = localProject?.financials?.exitStrategyType || 'Sell';
   const ownershipPct = localProject?.financials?.ownershipPercentage ?? 100;
@@ -267,13 +348,20 @@ export default function Phase4WorkspacePage() {
         />
       </div>
 
-      {/* ── Locked State Banner ── */}
-      {project.locked && (
+      {/* ── Locked / Realized State Banner ── */}
+      {(project.locked || isRealized) && (
         <div className="sticky top-0 z-[100] bg-[#57f1db]/10 border-b border-[#57f1db]/30 py-2 px-6 flex items-center justify-center gap-3 backdrop-blur-xl">
           <span className="material-symbols-outlined text-[#57f1db] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#57f1db]">
-            Immutable Record: Project Archived & Locked
+            {project.locked
+              ? 'Immutable Record: Project Archived & Locked'
+              : `Realized · Closed ${closedAtDate || ''}`}
           </span>
+          {isRealized && !project.locked && (
+            <span className="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest bg-blue-400/15 text-blue-300">
+              REALIZED
+            </span>
+          )}
         </div>
       )}
 
@@ -333,6 +421,108 @@ export default function Phase4WorkspacePage() {
             </div>
           ))}
         </section>
+
+        {/* ── Exit Assumptions Quick-View (projected sale vs. cost basis) ── */}
+        {!isRealized && (
+          <section className="glass-card rounded-2xl p-6 space-y-4 border border-[#57f1db]/10">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#ffd1aa]" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
+                Exit Assumptions
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest bg-amber-500/15 text-amber-400">
+                PROJECTED
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <p className="text-[11px] text-[#bacac5] uppercase tracking-wider font-medium">Projected Sale Price</p>
+                <p className="text-[20px] font-semibold text-[#dae4ec] tabular-nums">
+                  {fmtCurrency(localProject?.financials?.projectedSalePrice || localProject?.financials?.estimatedARV || project.financials?.estimatedARV || 0)}
+                </p>
+                <p className="text-[9px] text-[#bacac5]/50">vs. Basis: {fmtCurrency(Math.round(metrics.basis))}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[11px] text-[#bacac5] uppercase tracking-wider font-medium">Hold Period</p>
+                <p className="text-[20px] font-semibold text-[#dae4ec] tabular-nums">
+                  {Math.round((localProject?.financials?.projectedHoldTimeMonths || project.financials?.projectedHoldTimeMonths || 60) / 12)}y
+                  <span className="text-[14px] text-[#bacac5] ml-1">
+                    ({localProject?.financials?.projectedHoldTimeMonths || project.financials?.projectedHoldTimeMonths || 60}mo)
+                  </span>
+                </p>
+              </div>
+              <div className="space-y-1">
+                <MetricReadout label="Projected IRR" result={irrResult} format="percent" accentColor="#ffd1aa" compact />
+              </div>
+            </div>
+            {/* Confirm Sale CTA */}
+            <div className="pt-4 border-t border-white/5">
+              <button
+                onClick={handleConfirmSale}
+                disabled={isConfirmingSale || project.locked}
+                className="px-8 py-3 rounded-xl bg-[#57f1db]/10 border border-[#57f1db]/30 text-[#57f1db] font-semibold text-[14px] leading-[16px] hover:bg-[#57f1db]/20 active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-40"
+              >
+                {isConfirmingSale ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin" />
+                    <span>Processing…</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-sm">verified</span>
+                    <span>Confirm Sale & Mark Realized</span>
+                  </>
+                )}
+              </button>
+              <p className="text-[10px] text-[#bacac5]/50 mt-2">This will lock all financial fields and transition metrics to Realized state.</p>
+            </div>
+          </section>
+        )}
+
+        {/* ── Realized Summary (read-only, all fields finalized) ── */}
+        {isRealized && (
+          <section className="glass-card rounded-2xl p-6 space-y-4 border border-blue-400/20" style={{ background: 'linear-gradient(90deg, rgba(96,165,250,0.05) 0%, transparent 100%)' }}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec] flex items-center gap-2">
+                <span className="material-symbols-outlined text-blue-300" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                Realized Performance Summary
+              </h3>
+              <span className="px-2 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-widest bg-blue-400/15 text-blue-300">
+                REALIZED {closedAtDate ? `· ${closedAtDate}` : ''}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: 'Acquisition Price', value: fmtCurrency(project.financials?.purchasePrice || 0) },
+                { label: 'Sale Price', value: fmtCurrency(project.financials?.actualSalePrice || project.financials?.estimatedARV || 0) },
+                { label: 'Total Cash Invested', value: fmtCurrency(autopsy?.outOfPocketCash || 0) },
+                { label: 'Total Rehab', value: fmtCurrency(autopsy?.actualRehabCost || 0) },
+              ].map((item, i) => (
+                <div key={i} className="space-y-1">
+                  <p className="text-[10px] text-[#bacac5] uppercase tracking-wider font-medium">{item.label}</p>
+                  <p className="text-[18px] font-semibold text-[#dae4ec] tabular-nums">{item.value}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-white/5">
+              {[
+                { label: 'Holding Costs', value: fmtCurrency(autopsy?.holdingCosts || 0) },
+                { label: 'Selling Costs', value: fmtCurrency(autopsy?.sellClosingCosts || 0) },
+                { label: 'Hold Period', value: autopsy?.holdDays ? `${autopsy.holdDays} days` : '—' },
+                { label: 'Net Profit', value: fmtCurrency(autopsy?.netProfit || 0), accent: true },
+              ].map((item, i) => (
+                <div key={i} className="space-y-1">
+                  <p className="text-[10px] text-[#bacac5] uppercase tracking-wider font-medium">{item.label}</p>
+                  <p className={`text-[18px] font-semibold tabular-nums ${
+                    (item as any).accent
+                      ? (autopsy && autopsy.netProfit >= 0 ? 'text-[#57f1db]' : 'text-[#ffb4ab]')
+                      : 'text-[#dae4ec]'
+                  }`}>{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Main Layout Grid: Left (Execution) + Right (Metrics) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -420,6 +610,17 @@ export default function Phase4WorkspacePage() {
 
           {/* ── Right Column: Realized Performance ── */}
           <div className="lg:col-span-5 space-y-4">
+
+            {/* Structured MetricReadout Cards */}
+            <div className="glass-card rounded-2xl p-5 space-y-4 border border-white/5">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#bacac5]">Live Metric Readouts</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <MetricReadout label="IRR" result={irrResult} format="percent" accentColor="#ffd1aa" />
+                <MetricReadout label="Cash-on-Cash" result={cocResult} format="percent" />
+                <MetricReadout label="Appreciation" result={appreciationResult} format="percent" />
+                <MetricReadout label="Total Return" result={totalReturn} format="currency" />
+              </div>
+            </div>
 
             {/* Realized Metrics Panel (Stitch: glass-card with Property/MyShare toggle) */}
             <div className="glass-card rounded-2xl p-6 space-y-6 border-[#57f1db]/20">
@@ -644,6 +845,67 @@ export default function Phase4WorkspacePage() {
         </section>
 
       </main>
+
+      {/* ═══════════════════════════════════════════════════════
+          Sticky Footer — Crown Jewel Exit Metrics
+          Glass-card bar pinned to bottom with IRR, Total Return,
+          and Appreciation Rate.
+          ═══════════════════════════════════════════════════════ */}
+      <div className="sticky bottom-0 z-50 border-t border-white/10 bg-[#0b141a]/80 backdrop-blur-xl">
+        <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-3">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Phase chip */}
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${isRealized ? 'bg-blue-400' : 'bg-[#57f1db] animate-pulse'}`} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#bacac5]">
+                {isRealized ? `Realized · ${closedAtDate || 'Closed'}` : 'Phase 4 · Exit'}
+              </span>
+            </div>
+
+            {/* Center: Key metrics trio */}
+            <div className="flex items-center gap-6">
+              {/* IRR */}
+              <div className="text-center">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">IRR</p>
+                <p className="text-[20px] font-bold text-[#ffd1aa] tabular-nums">
+                  {irrResult.value !== null ? `${irrResult.value.toFixed(1)}%` : (irr > 0 ? `${irr.toFixed(1)}%` : '—')}
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/10" />
+
+              {/* Total Return */}
+              <div className="text-center">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">Total Return</p>
+                <p className={`text-[20px] font-bold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                  {autopsy ? fmtDollar(Math.round(autopsy.netProfit * shareMultiplier)) : '—'}
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/10" />
+
+              {/* Appreciation Rate */}
+              <div className="text-center">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">Appreciation</p>
+                <p className="text-[20px] font-bold text-[#dae4ec] tabular-nums">
+                  {appreciationResult.value !== null ? `${appreciationResult.value.toFixed(1)}%` : '—'}
+                </p>
+              </div>
+            </div>
+
+            {/* Right: State pill */}
+            <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+              isRealized
+                ? 'bg-blue-400/15 text-blue-300'
+                : 'bg-amber-500/15 text-amber-400'
+            }`}>
+              {isRealized ? 'REALIZED' : 'PROJECTED'}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

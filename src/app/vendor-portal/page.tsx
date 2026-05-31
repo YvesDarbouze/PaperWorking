@@ -12,7 +12,7 @@ interface VendorRequest {
   location: string;
   dealPhase: string;
   investor: string;
-  status: 'PENDING' | 'QUOTED' | 'ACCEPTED';
+  status: 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED';
   type: string;
   message?: string;
   requestedAt: string;
@@ -25,7 +25,8 @@ export default function VendorPortalDashboard() {
   const { user, profile } = useAuth();
   const [requests, setRequests] = useState<VendorRequest[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
-  const [filter, setFilter] = useState<'All' | 'PENDING' | 'QUOTED' | 'ACCEPTED'>('All');
+  const [filter, setFilter] = useState<'All' | 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED'>('All');
+  const [isDeclining, setIsDeclining] = useState<string | null>(null);
   
   // Modal state for submitting quote
   const [submittingRequest, setSubmittingRequest] = useState<VendorRequest | null>(null);
@@ -38,6 +39,8 @@ export default function VendorPortalDashboard() {
     leadsReceived: 0,
     bidsSubmitted: 0,
     winRate: 0,
+    pendingCount: 0,
+    completedCount: 0,
   });
 
   const fetchRequests = async () => {
@@ -54,14 +57,18 @@ export default function VendorPortalDashboard() {
         
         // Calculate stats
         const total = fetchedReqs.length;
-        const submitted = fetchedReqs.filter(r => r.status === 'QUOTED' || r.status === 'ACCEPTED').length;
-        const accepted = fetchedReqs.filter(r => r.status === 'ACCEPTED').length;
+        const submitted = fetchedReqs.filter(r => r.status === 'QUOTED' || r.status === 'ACCEPTED' || r.status === 'COMPLETED').length;
+        const accepted = fetchedReqs.filter(r => r.status === 'ACCEPTED' || r.status === 'COMPLETED').length;
         const rate = submitted > 0 ? (accepted / submitted) * 100 : 0;
+        const pendingCount = fetchedReqs.filter(r => r.status === 'PENDING').length;
+        const completedCount = fetchedReqs.filter(r => r.status === 'COMPLETED').length;
         
         setStats({
           leadsReceived: total,
           bidsSubmitted: submitted,
           winRate: Number(rate.toFixed(1)),
+          pendingCount,
+          completedCount,
         });
       }
     } catch (err) {
@@ -123,6 +130,53 @@ export default function VendorPortalDashboard() {
     } finally {
       setIsSubmittingQuote(false);
     }
+  };
+
+  // Handler for declining a request
+  const handleDeclineRequest = async (req: VendorRequest) => {
+    if (!user) return;
+    try {
+      setIsDeclining(req.id);
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/vendor-portal/requests', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          requestId: req.id,
+          projectId: req.projectId,
+          status: 'DECLINED',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Request declined.');
+        fetchRequests();
+      } else {
+        toast.error(data.error || 'Failed to decline.');
+      }
+    } catch (err) {
+      console.error('Decline error:', err);
+      toast.error('Failed to decline request.');
+    } finally {
+      setIsDeclining(null);
+    }
+  };
+
+  /** Format relative time from an ISO string */
+  const formatTimeSince = (dateStr: string) => {
+    const now = Date.now();
+    const then = new Date(dateStr).getTime();
+    const diffMs = now - then;
+    const hours = Math.floor(diffMs / 3600000);
+    if (hours < 1) return 'Just now';
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return `${Math.floor(days / 7)}w ago`;
   };
 
   // Handler for completing a task
@@ -293,17 +347,22 @@ export default function VendorPortalDashboard() {
             
             {/* Header & Filter tabs */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-white/10 pb-4 gap-4">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2 uppercase tracking-widest">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2 uppercase tracking-widest">
                 <span className="material-symbols-outlined text-[#2dd4bf] text-xl select-none">inbox</span>
                 New Leads Inbox
+                {stats.pendingCount > 0 && (
+                  <span className="ml-auto px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-[10px] font-bold font-mono animate-pulse">
+                    {stats.pendingCount} NEW
+                  </span>
+                )}
               </h3>
               
-              <div className="flex bg-[#141d23] border border-white/10 p-0.5 rounded-lg text-xs">
-                {(['All', 'PENDING', 'QUOTED', 'ACCEPTED'] as const).map(f => (
+              <div className="flex bg-[#141d23] border border-white/10 p-0.5 rounded-lg text-xs overflow-x-auto">
+                {(['All', 'PENDING', 'QUOTED', 'ACCEPTED', 'COMPLETED', 'DECLINED'] as const).map(f => (
                   <button
                     key={f}
                     onClick={() => setFilter(f)}
-                    className={`px-4 py-1.5 rounded-md font-bold uppercase tracking-wider transition-all ${
+                    className={`px-3 py-1.5 rounded-md font-bold uppercase tracking-wider transition-all whitespace-nowrap ${
                       filter === f ? 'bg-[#2dd4bf] text-[#003731]' : 'text-[#bacac5] hover:text-white'
                     }`}
                   >
@@ -332,12 +391,17 @@ export default function VendorPortalDashboard() {
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
                             req.status === 'ACCEPTED' ? 'bg-[#2dd4bf]/20 border-[#2dd4bf]/40 text-[#2dd4bf]' :
+                            req.status === 'COMPLETED' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' :
                             req.status === 'QUOTED' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
+                            req.status === 'DECLINED' || req.status === 'CANCELLED' ? 'bg-red-500/10 border-red-500/30 text-red-400' :
                             'bg-amber-500/10 border-amber-500/30 text-amber-400'
                           }`}>
                             {req.status}
                           </span>
                           <span className="text-xs text-[#bacac5] font-mono">{req.type || 'General Service'}</span>
+                          {req.requestedAt && (
+                            <span className="text-[10px] text-[#bacac5]/60 font-mono ml-auto">{formatTimeSince(req.requestedAt)}</span>
+                          )}
                         </div>
 
                         <div>
@@ -366,12 +430,21 @@ export default function VendorPortalDashboard() {
                         </div>
 
                         {req.status === 'PENDING' && (
-                          <button
-                            onClick={() => handleOpenBidModal(req)}
-                            className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#2dd4bf] hover:bg-[#2dd4bf]/80 text-[#003731] font-bold text-xs uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(45,212,191,0.2)] active:scale-[0.98]"
-                          >
-                            Submit Bid
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleOpenBidModal(req)}
+                              className="flex-1 sm:flex-none px-5 py-2.5 rounded-lg bg-[#2dd4bf] hover:bg-[#2dd4bf]/80 text-[#003731] font-bold text-xs uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(45,212,191,0.2)] active:scale-[0.98]"
+                            >
+                              Submit Bid
+                            </button>
+                            <button
+                              onClick={() => handleDeclineRequest(req)}
+                              disabled={isDeclining === req.id}
+                              className="px-4 py-2.5 rounded-lg border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 text-[#bacac5] hover:text-red-400 font-bold text-xs uppercase tracking-widest transition-all disabled:opacity-50"
+                            >
+                              {isDeclining === req.id ? '...' : 'Decline'}
+                            </button>
+                          </div>
                         )}
                         {req.status === 'QUOTED' && (
                           <button
@@ -385,6 +458,17 @@ export default function VendorPortalDashboard() {
                           <span className="inline-flex items-center gap-1.5 text-xs text-[#2dd4bf] font-bold uppercase tracking-wider py-1.5 px-3 border border-[#2dd4bf]/30 bg-[#2dd4bf]/5 rounded-lg">
                             <span className="material-symbols-outlined text-sm select-none">check_circle</span>
                             Bid Accepted
+                          </span>
+                        )}
+                        {req.status === 'COMPLETED' && (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-bold uppercase tracking-wider py-1.5 px-3 border border-emerald-500/30 bg-emerald-500/5 rounded-lg">
+                            <span className="material-symbols-outlined text-sm select-none">verified</span>
+                            Completed
+                          </span>
+                        )}
+                        {(req.status === 'DECLINED' || req.status === 'CANCELLED') && (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-red-400/70 font-bold uppercase tracking-wider py-1.5 px-3 border border-red-500/20 bg-red-500/5 rounded-lg">
+                            {req.status === 'DECLINED' ? 'Declined' : 'Cancelled'}
                           </span>
                         )}
                       </div>

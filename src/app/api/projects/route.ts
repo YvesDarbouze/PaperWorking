@@ -1,0 +1,229 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { adminDb } from '@/lib/firebase/admin';
+import { z } from 'zod';
+import { canCreateProject } from '@/lib/entitlements/server';
+import { clearDashboardCache } from '@/lib/cache/dashboardCache';
+
+/* ═══════════════════════════════════════════════════════════════
+   POST /api/projects — Create a new project (Draft or Active)
+   
+   Server-side validation layer for the ProjectCreationWizard.
+   Accepts the structured payload from the wizard's handleFinalSubmit,
+   validates via Zod, verifies org membership, and writes to Firestore
+   using the Admin SDK.
+
+   Auth: Firebase ID Token (Bearer header)
+   Body: WizardSubmitPayload
+   Returns: { success: true, projectId: string }
+   ═══════════════════════════════════════════════════════════════ */
+
+// ── Zod Validation Schema for Wizard Submission ──
+
+const wizardFinancialsSchema = z.object({
+  purchasePrice: z.number().nonnegative(),
+  estimatedARV: z.number().nonnegative().optional().default(0),
+  costs: z.array(z.any()).optional().default([]),
+  raisingOutsideCapital: z.boolean().optional(),
+  isBackdated: z.boolean().optional(),
+  ownershipPercentage: z.number().min(0).max(100).optional(),
+  entryPath: z.enum(['new_acquisition', 'already_owned', 'backdated']).optional(),
+  acquisitionDate: z.any().optional(),
+  estimatedCloseDate: z.any().optional(),
+  soldDate: z.any().optional(),
+  actualSalePrice: z.number().nonnegative().optional(),
+  loanAmount: z.number().nonnegative().optional(),
+  loanInterestRate: z.number().optional(),
+  loanTermYears: z.number().positive().optional(),
+  rehabActual: z.number().nonnegative().optional(),
+  capitalRaiseTarget: z.number().nonnegative().optional(),
+  equitySplit: z.number().optional(),
+  requiredContingencies: z.array(z.string()).optional(),
+  purchaseContractDoc: z.string().optional(),
+  monthlyGrossRent: z.number().nonnegative().optional(),
+  otherMonthlyIncome: z.number().nonnegative().optional(),
+  vacancyRatePercent: z.number().optional(),
+  holdingCostTaxes: z.number().nonnegative().optional(),
+  operatingExpenseTaxes: z.number().nonnegative().optional(),
+  holdingCostInsurance: z.number().nonnegative().optional(),
+  operatingExpenseInsurance: z.number().nonnegative().optional(),
+  holdingCostUtilities: z.number().nonnegative().optional(),
+  propertyManagementFeePercent: z.number().optional(),
+  monthlyMaintenanceReserve: z.number().nonnegative().optional(),
+  maintenanceReserves: z.number().nonnegative().optional(),
+  monthlyHOA: z.number().nonnegative().optional(),
+  targetPrice: z.number().nonnegative().optional(),
+  projectedRent: z.number().nonnegative().optional(),
+  projectedSalePrice: z.number().nonnegative().optional(),
+  projectedOpex: z.number().nonnegative().optional(),
+  investorInvites: z.array(z.string()).optional(),
+  marketplaceListing: z.boolean().optional(),
+  offerStatus: z.string().optional(),
+  offerAmount: z.number().nonnegative().optional(),
+  offerDate: z.any().optional(),
+}).passthrough(); // Allow additional fields we haven't explicitly listed
+
+const wizardSubmitSchema = z.object({
+  propertyName: z.string().min(1, 'Property name is required'),
+  address: z.string().min(1, 'Address is required'),
+  street: z.string().optional().default(''),
+  city: z.string().optional().default(''),
+  state: z.string().optional().default(''),
+  zip: z.string().optional().default(''),
+  lat: z.number().nullable().optional(),
+  lng: z.number().nullable().optional(),
+  reiStatus: z.string().optional(),
+  status: z.string().optional().default('Lead'),
+  strategyType: z.string().optional(),
+  assetClass: z.string().optional(),
+  leadEmail: z.string().optional(),
+  partnerEmails: z.string().optional(),
+  vision: z.string().optional(),
+  financingIntent: z.string().optional(),
+  mlsListingKey: z.string().nullable().optional(),
+  mlsListingId: z.string().nullable().optional(),
+  mlsListPrice: z.number().nullable().optional(),
+  mlsBeds: z.number().nullable().optional(),
+  mlsBaths: z.number().nullable().optional(),
+  mlsSqft: z.number().nullable().optional(),
+  mlsThumbnailUrl: z.string().nullable().optional(),
+  mlsStandardStatus: z.string().nullable().optional(),
+  financials: wizardFinancialsSchema,
+  organizationId: z.string().min(1, 'Organization ID is required'),
+}).passthrough();
+
+// ── REI Status → Phase Mapping (mirrors deals.ts) ──
+
+function derivePhaseFromREIStatus(reiStatus?: string) {
+  switch (reiStatus) {
+    case 'Target':
+      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Lead' };
+    case 'In Contract':
+      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+    case 'Acquired':
+      return { phaseStatus: 'Phase 2: Acquisition', currentPhase: 2, status: 'Under Contract' };
+    case 'Rehabbing':
+    case 'Under Construction':
+      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Renovating' };
+    case 'Renting':
+      return { phaseStatus: 'Phase 3: Holding & Rehab', currentPhase: 3, status: 'Rented' };
+    case 'For Sale':
+      return { phaseStatus: 'Phase 4: Closing & Exit', currentPhase: 4, status: 'Listed' };
+    default:
+      return { phaseStatus: 'Phase 1: Find & Fund', currentPhase: 1, status: 'Active' };
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // 1. Authenticate
+    const auth = await requireAuth(request);
+    if (isAuthError(auth)) return auth;
+    const { uid } = auth;
+
+    // 2. Parse & validate body
+    const body = await request.json();
+    const validation = wizardSubmitSchema.safeParse(body);
+
+    if (!validation.success) {
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: validation.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    const data = validation.data;
+    const organizationId = data.organizationId;
+
+    // 3. Verify org membership securely against organization document
+    const orgSnap = await adminDb.collection('organizations').doc(organizationId).get();
+    if (!orgSnap.exists) {
+      return NextResponse.json(
+        { error: 'Organization not found' },
+        { status: 404 }
+      );
+    }
+    const orgData = orgSnap.data();
+    const isOwner = orgData?.ownerUid === uid;
+    const isTeamMember = orgData?.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
+
+    if (!isOwner && !isTeamMember) {
+      return NextResponse.json(
+        { error: 'Access denied. You are not an active member of this organization.' },
+        { status: 403 }
+      );
+    }
+
+    // 4. Entitlement check: project count limit
+    const entitlementCheck = await canCreateProject(uid);
+    if (!entitlementCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Project limit reached',
+          reason: entitlementCheck.reason,
+          limit: entitlementCheck.limit,
+          current: entitlementCheck.current,
+          planId: entitlementCheck.planId,
+          upgradeTo: entitlementCheck.upgradeTo,
+        },
+        { status: 402 }
+      );
+    }
+
+    // 5. Derive lifecycle phase from REI status
+    const { phaseStatus, currentPhase, status } = derivePhaseFromREIStatus(data.reiStatus);
+    const hasSoldDate = !!data.financials?.soldDate;
+    const finalPhaseStatus = hasSoldDate ? 'Phase 4: Closing & Exit' : phaseStatus;
+    const finalPhase = hasSoldDate ? 4 : currentPhase;
+    const finalStatus = hasSoldDate ? 'Sold' : (data.status || status);
+
+    // 5. Build Firestore document
+    const projectRef = adminDb.collection('projects').doc();
+    const now = new Date();
+
+    const projectDoc = {
+      ...data,
+      id: projectRef.id,
+      organizationId,
+      phaseStatus: finalPhaseStatus,
+      currentPhase: finalPhase,
+      status: finalStatus,
+      ownerUid: uid,
+      members: {
+        [uid]: {
+          role: 'Lead Investor',
+          addedAt: now,
+        },
+      },
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    // Remove organizationId from top level since it's already set
+    // (avoid duplication from the spread)
+
+    // 6. Write to Firestore
+    await projectRef.set(projectDoc);
+
+    // 7. Clear dashboard cache
+    clearDashboardCache(organizationId);
+
+    return NextResponse.json(
+      {
+        success: true,
+        projectId: projectRef.id,
+      },
+      { status: 201 }
+    );
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Projects POST] Error:', errMsg);
+    return NextResponse.json(
+      { error: 'Failed to create project', details: errMsg },
+      { status: 500 }
+    );
+  }
+}

@@ -155,11 +155,29 @@ function InboxNotificationCenter() {
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-2xl font-bold text-[#dae4ec]">Inbox</h3>
-              {unreadTotal > 0 && (
-                <span className="px-2 py-0.5 bg-[#57f1db]/10 text-[#57f1db] border border-[#57f1db]/20 rounded font-mono text-[10px] font-bold">
-                  {unreadTotal} UNREAD
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {unreadTotal > 0 && (
+                  <span className="px-2 py-0.5 bg-[#57f1db]/10 text-[#57f1db] border border-[#57f1db]/20 rounded font-mono text-[10px] font-bold">
+                    {unreadTotal} UNREAD
+                  </span>
+                )}
+                {unreadTotal > 0 && (
+                  <button
+                    onClick={handleMarkAllRead}
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-[#bacac5] hover:text-[#57f1db] transition-colors"
+                    title="Mark all as read"
+                  >
+                    <CheckCheck className="w-4 h-4" />
+                  </button>
+                )}
+                <button
+                  onClick={() => setComposeOpen(true)}
+                  className="p-1.5 rounded-lg hover:bg-white/5 text-[#bacac5] hover:text-[#57f1db] transition-colors"
+                  title="Compose email"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             
             <div className="relative">
@@ -173,6 +191,13 @@ function InboxNotificationCenter() {
               />
             </div>
           </div>
+
+          {/* Tab filter bar */}
+          <InboxTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            unreadCounts={unreadCounts}
+          />
 
           <div className="flex-1 overflow-y-auto no-scrollbar relative">
             <InboxFeed

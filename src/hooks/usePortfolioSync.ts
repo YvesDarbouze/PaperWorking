@@ -36,6 +36,10 @@ export function usePortfolioSync() {
       return;
     }
 
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 

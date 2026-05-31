@@ -1,9 +1,26 @@
 /* ═══════════════════════════════════════════════════════
    PaperWorking — Admin Panel Mock Data
    
-   Realistic seed data for all admin views.
-   Replace with Firestore queries when ready for production.
+   ⚠️  DEPRECATED — NOT IMPORTED ANYWHERE
+   
+   All admin pages now use live Firestore + Stripe data via
+   server actions in src/actions/admin.ts:
+     • getAdminUserStats()     → users, plans, churn
+     • getAdminRevenueStats()  → MRR, ARR, subscriptions
+     • getAdminActivityStats() → projects, activity feed
+     • getAdminAuditLogs()     → audit_logs collection
+     • getAdminTickets()       → support_tickets collection
+   
+   This file is kept as a **type reference** and **seed data
+   template** only. Do NOT import from this file in pages.
+   If you need to seed Firestore for local dev, use the
+   shapes below as a guide.
    ═══════════════════════════════════════════════════════ */
+
+/**
+ * @deprecated Use types from '@/actions/admin' instead.
+ * This file is retained only as a data-shape reference.
+ */
 
 export interface AdminUser {
   id: string;

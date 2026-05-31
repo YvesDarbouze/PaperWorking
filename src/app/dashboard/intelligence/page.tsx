@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { DealAnalyzerTerminal } from '@/components/intelligence/DealAnalyzerTerminal';
 import { ReportsTaxIntelligence } from '@/components/intelligence/ReportsTaxIntelligence';
+import PortfolioPerformancePage from './performance/page';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Tab = 'underwriting' | 'reports' | 'performance';
@@ -81,24 +82,9 @@ export default function IntelligenceHub() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
-              className="flex h-full items-center justify-center"
+              className="min-h-full"
             >
-              <div className="text-center space-y-4 max-w-md">
-                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto">
-                  <svg className="w-8 h-8 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <h2 className="text-xl font-medium text-white">Performance Metrics</h2>
-                <p className="text-sm text-white/50">
-                  Track ROI, IRR, and portfolio performance metrics. This section is currently under construction.
-                </p>
-                <div className="pt-4">
-                  <a href="/dashboard/intelligence/irr" className="text-sm text-pw-primary-400 hover:text-pw-primary-300 transition-colors">
-                    View Legacy IRR Calculator &rarr;
-                  </a>
-                </div>
-              </div>
+              <PortfolioPerformancePage />
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
+import { createProjectViaApi, commitProjectViaApi } from '@/lib/api/projectWizardApi';
 import { toast } from 'react-hot-toast';
 import {
   ChevronLeft, ChevronRight, Check, X, AlertCircle, Building2,
@@ -18,6 +19,7 @@ import {
 import { useProjectFormValidation } from '@/hooks/useProjectFormValidation';
 import AddressAutocomplete, { type ParsedAddress } from '@/components/projects/AddressAutocomplete';
 import PropertySearchInput from '@/components/shared/PropertySearchInput';
+import { DealHealthPreview } from '@/components/project/DealHealthPreview';
 import type { BridgeSearchResult } from '@/types/bridge';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -71,6 +73,16 @@ const INITIAL_FORM = {
     capitalRaiseTarget: '',
     equitySplit: '',
     costs: [],
+    // Granular NOI Fields (Rent/BRRRR)
+    grossMonthlyRent: '',
+    otherMonthlyIncome: '',
+    vacancyRatePercent: '',
+    holdingCostTaxes: '',
+    holdingCostInsurance: '',
+    holdingCostUtilities: '',
+    propertyManagementFeePercent: '',
+    monthlyMaintenanceReserve: '',
+    monthlyHOA: '',
     // P1 Acquisition Projected Fields
     targetPrice: '',
     projectedRent: '',
@@ -113,6 +125,8 @@ export default function ProjectCreationWizard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [useManualAddress, setUseManualAddress] = useState(false);
   const [explainerOpen, setExplainerOpen] = useState(false);
+  const [showDismissConfirm, setShowDismissConfirm] = useState(false);
+  const isDirtyRef = useRef(false);
 
   // Pre-populate lead email once user is loaded
   useEffect(() => {
@@ -147,6 +161,7 @@ export default function ProjectCreationWizard({
       if (path === 'address' && !copy.propertyName && copy.street) {
         copy.propertyName = `The ${copy.street} Project`;
       }
+      isDirtyRef.current = true;
       return copy;
     });
   }, []);
@@ -350,6 +365,37 @@ export default function ProjectCreationWizard({
           }),
           requiredContingencies: formData.financials.requiredContingencies || [],
           purchaseContractDoc: formData.financials.purchaseContractDoc || '',
+          // Granular NOI Fields (Rent/BRRRR)
+          ...(formData.financials.grossMonthlyRent && {
+            monthlyGrossRent: parseFloat(formData.financials.grossMonthlyRent),
+          }),
+          ...(formData.financials.otherMonthlyIncome && {
+            otherMonthlyIncome: parseFloat(formData.financials.otherMonthlyIncome),
+          }),
+          ...(formData.financials.vacancyRatePercent && {
+            vacancyRatePercent: parseFloat(formData.financials.vacancyRatePercent),
+          }),
+          ...(formData.financials.holdingCostTaxes && {
+            holdingCostTaxes: parseFloat(formData.financials.holdingCostTaxes),
+            operatingExpenseTaxes: parseFloat(formData.financials.holdingCostTaxes),
+          }),
+          ...(formData.financials.holdingCostInsurance && {
+            holdingCostInsurance: parseFloat(formData.financials.holdingCostInsurance),
+            operatingExpenseInsurance: parseFloat(formData.financials.holdingCostInsurance),
+          }),
+          ...(formData.financials.holdingCostUtilities && {
+            holdingCostUtilities: parseFloat(formData.financials.holdingCostUtilities),
+          }),
+          ...(formData.financials.propertyManagementFeePercent && {
+            propertyManagementFeePercent: parseFloat(formData.financials.propertyManagementFeePercent),
+          }),
+          ...(formData.financials.monthlyMaintenanceReserve && {
+            monthlyMaintenanceReserve: parseFloat(formData.financials.monthlyMaintenanceReserve),
+            maintenanceReserves: parseFloat(formData.financials.monthlyMaintenanceReserve),
+          }),
+          ...(formData.financials.monthlyHOA && {
+            monthlyHOA: parseFloat(formData.financials.monthlyHOA),
+          }),
           // P1 Acquisition Projected Fields
           ...(formData.financials.targetPrice && {
             targetPrice: parseFloat(formData.financials.targetPrice) * 100,
@@ -382,8 +428,32 @@ export default function ProjectCreationWizard({
         },
       };
 
-      const projectId = await projectsService.createProject(dealData, organizationId);
+      // Try server-side API first for validation, fall back to client-side service
+      let projectId: string;
+      try {
+        const apiResult = await createProjectViaApi({
+          ...dealData,
+          organizationId,
+        });
+        if (apiResult.success && apiResult.projectId) {
+          projectId = apiResult.projectId;
+          // Commit the project to active status via API
+          await commitProjectViaApi(projectId).catch(() => {
+            // Non-fatal: project was created, commit can happen later
+          });
+        } else {
+          // Server validation failed — fall back to client-side
+          console.warn('[Wizard] API creation failed, falling back to client-side:', apiResult.error);
+          projectId = await projectsService.createProject(dealData, organizationId);
+        }
+      } catch (apiErr) {
+        // API route unavailable — fall back to client-side service
+        console.warn('[Wizard] API unavailable, using client-side:', apiErr);
+        projectId = await projectsService.createProject(dealData, organizationId);
+      }
+
       toast.success('Project created and initialized successfully.');
+      isDirtyRef.current = false;
       
       try {
         const { useUIStore } = await import('@/store/uiStore');
@@ -420,7 +490,13 @@ export default function ProjectCreationWizard({
       {/* ── Top Navigation Bar (Stitch schema) ── */}
       <header className="fixed top-0 w-full z-50 bg-[#0b141a]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-5 md:px-10">
         <button
-          onClick={onClose}
+          onClick={() => {
+            if (isDirtyRef.current) {
+              setShowDismissConfirm(true);
+            } else {
+              onClose();
+            }
+          }}
           className="text-[#bacac5] hover:text-[#57f1db] transition-colors active:scale-95 duration-200 flex items-center"
           aria-label="Close"
         >
@@ -500,6 +576,9 @@ export default function ProjectCreationWizard({
                   <ReviewRow label="Offer Status" value={formData.financials.offerStatus} />
                 )}
               </div>
+
+              {/* ═══ DEAL HEALTH PREVIEW ═══ */}
+              <DealHealthPreview formData={formData} />
             </div>
           ) : (
             /* ═══ ONE QUESTION STEP ═══ */
@@ -1074,6 +1153,46 @@ export default function ProjectCreationWizard({
           </div>
         </div>
       </nav>
+      {/* ── Dismiss Confirmation Modal ── */}
+      {showDismissConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div
+            className="w-full max-w-md mx-4 rounded-2xl p-6 space-y-6 animate-in slide-in-from-bottom-4 duration-300"
+            style={{
+              background: 'rgba(20, 29, 35, 0.95)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
+            }}
+          >
+            <div className="text-center space-y-2">
+              <AlertCircle className="w-10 h-10 text-[#ffb4ab] mx-auto" />
+              <h3 className="text-[20px] font-bold text-[#dae4ec]">Discard progress?</h3>
+              <p className="text-[14px] text-[#bacac5]">
+                You have unsaved data in the wizard. Closing now will discard all entries.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDismissConfirm(false)}
+                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#bacac5] border border-white/10 hover:border-white/20 transition-all active:scale-95 duration-150"
+              >
+                Keep Editing
+              </button>
+              <button
+                onClick={() => {
+                  setShowDismissConfirm(false);
+                  isDirtyRef.current = false;
+                  onClose();
+                }}
+                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#003731] bg-[#ffb4ab] hover:bg-[#ff897a] transition-all active:scale-95 duration-150"
+              >
+                Discard & Exit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -1100,6 +1219,15 @@ function getCategoryLabel(question: WizardQuestion): string {
     ownershipPercentage: 'Ownership',
     isBackdated: 'Entry Path',
     startingPhase: 'Starting Phase',
+    grossMonthlyRent: 'Rental Income',
+    otherMonthlyIncome: 'Other Income',
+    vacancyRatePercent: 'Vacancy Rate',
+    monthlyPropertyTaxes: 'Property Taxes',
+    monthlyInsurance: 'Insurance',
+    monthlyUtilities: 'Utilities',
+    propertyManagementFeePercent: 'Property Management',
+    monthlyMaintenance: 'Maintenance Reserve',
+    monthlyHOA: 'HOA Dues',
     acquisitionDate: 'Acquisition Details',
     rehabActual: 'Rehab Costs',
     dateOfSale: 'Sale Details',

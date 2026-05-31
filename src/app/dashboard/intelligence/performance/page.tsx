@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { ArrowUpRight, Download, RefreshCw, TrendingUp } from 'lucide-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
@@ -129,12 +130,12 @@ export default function PortfolioPerformancePage() {
   const [period, setPeriod] = useState<Period>('Y');
   const { snapshots, loading } = usePortfolioMetricSnapshots(PERIOD_MAP[period]);
 
-  const { labels, values, totalValue, roiPct, hasData } = useMemo(() => {
+  const { labels, values, totalValue, roiPct, hasData, isUsingDemoData } = useMemo(() => {
     if (!snapshots || snapshots.length === 0) {
       const totalCost = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
-      if (totalCost === 0) return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: 1_240_000, roiPct: 14.2, hasData: false };
+      if (totalCost === 0) return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
       const totalArv = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? 0), 0);
-      return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: totalArv, roiPct: totalCost > 0 ? ((totalArv - totalCost) / totalCost) * 100 : 14.2, hasData: true };
+      return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: totalArv, roiPct: totalCost > 0 ? ((totalArv - totalCost) / totalCost) * 100 : 14.2, hasData: true, isUsingDemoData: true };
     }
 
     const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -145,7 +146,7 @@ export default function PortfolioPerformancePage() {
     const last = vals[vals.length - 1] ?? 0;
     const first = vals[0] ?? last;
     const roi = first > 0 ? ((last - first) / first) * 100 : 0;
-    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 1 };
+    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 1, isUsingDemoData: false };
   }, [snapshots, projects, period]);
 
   const kpis = useMemo(() => {
@@ -218,6 +219,9 @@ export default function PortfolioPerformancePage() {
       </div>
 
       {/* KPI Strip */}
+
+      <SampleDataBanner show={isUsingDemoData} />
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Total Assets',  value: fmt(kpis.assets),  sub: 'Portfolio ARV' },

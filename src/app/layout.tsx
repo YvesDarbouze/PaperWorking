@@ -7,6 +7,8 @@ import { TenantProvider } from "@/context/TenantContext";
 import { ThemeProvider } from "@/lib/utils/ThemeProvider";
 import ChatbotWidget from "@/components/shared/ChatbotWidget";
 import { CustomToaster } from "@/components/ui/CustomToaster";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import CookieConsent from "@/components/legal/CookieConsent";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
@@ -59,19 +61,20 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased bg-pw-bg text-pw-black mesh-bg relative overflow-x-hidden">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none z-[-1]" />
-        <AuthProvider>
-          <TenantProvider>
-            <ThemeProvider>
-              <PresenceHeartbeat />
-              <CustomToaster position="top-center" />
-              {children}
-              <ChatbotWidget />
-            </ThemeProvider>
-          </TenantProvider>
-        </AuthProvider>
-
+        <PostHogProvider>
+          <AuthProvider>
+            <TenantProvider>
+              <ThemeProvider>
+                <PresenceHeartbeat />
+                <CustomToaster position="top-center" />
+                {children}
+                <ChatbotWidget />
+                <CookieConsent />
+              </ThemeProvider>
+            </TenantProvider>
+          </AuthProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
 }
-

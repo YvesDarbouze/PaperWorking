@@ -1,10 +1,12 @@
-import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
-import { UploadCloud, File as FileIcon, Trash2, Loader2, Download, Folder } from 'lucide-react';
+import React, { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react';
+import { UploadCloud, File as FileIcon, Trash2, Loader2, Download, Folder, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { RoleLinkedDocument, DocumentCategory } from '@/types/schema';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '@/lib/firebase/config';
+import { storage, auth as firebaseAuth } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import toast from 'react-hot-toast';
+import { OCRReviewPanel } from '@/components/documents/OCRReviewPanel';
+import type { ExtractedFields } from '@/lib/ocr/types';
 
 interface DocumentVaultProps {
   projectId: string;
@@ -13,6 +15,13 @@ interface DocumentVaultProps {
   categories?: DocumentCategory[];
   title?: string;
   description?: string;
+}
+
+/** OCR status for a specific document */
+interface DocOcrState {
+  status: 'pending' | 'processing' | 'complete' | 'failed';
+  extractedFields: ExtractedFields;
+  overallConfidence: number;
 }
 
 interface UploadProgress {
@@ -41,6 +50,99 @@ export function DocumentVault({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedCategory, setSelectedCategory] = useState<DocumentCategory | null>(null);
   const { user } = useAuth();
+  const [ocrStates, setOcrStates] = useState<Record<string, DocOcrState>>({});
+  const [expandedOcr, setExpandedOcr] = useState<string | null>(null);
+
+  // ── OCR trigger after upload ─────────────────────────
+  const triggerOcr = useCallback(async (docId: string, projectIdParam: string) => {
+    setOcrStates(prev => ({
+      ...prev,
+      [docId]: { status: 'processing', extractedFields: {}, overallConfidence: 0 },
+    }));
+
+    try {
+      const token = await firebaseAuth.currentUser?.getIdToken();
+      if (!token) throw new Error('Not authenticated');
+
+      const res = await fetch(`/api/projects/${projectIdParam}/documents/${docId}/ocr`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+
+      if (data.ocrStatus === 'complete') {
+        setOcrStates(prev => ({
+          ...prev,
+          [docId]: {
+            status: 'complete',
+            extractedFields: data.extractedFields || {},
+            overallConfidence: data.overallConfidence || 0,
+          },
+        }));
+        setExpandedOcr(docId);
+      } else {
+        setOcrStates(prev => ({
+          ...prev,
+          [docId]: { status: 'failed', extractedFields: {}, overallConfidence: 0 },
+        }));
+      }
+    } catch (err: any) {
+      console.error('[DocumentVault] OCR trigger failed:', err?.message);
+      setOcrStates(prev => ({
+        ...prev,
+        [docId]: { status: 'failed', extractedFields: {}, overallConfidence: 0 },
+      }));
+    }
+  }, []);
+
+  const handleOcrFieldConfirm = useCallback(async (docId: string, fieldName: string, value: any) => {
+    try {
+      const token = await firebaseAuth.currentUser?.getIdToken();
+      if (!token) return;
+
+      await fetch(`/api/projects/${projectId}/documents/${docId}/confirm`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          confirmedFields: { [fieldName]: value },
+          targetPath: 'financials',
+        }),
+      });
+    } catch (err: any) {
+      toast.error(`Failed to confirm field: ${err.message}`);
+    }
+  }, [projectId]);
+
+  const handleOcrBulkConfirm = useCallback(async (docId: string, fields: Record<string, any>) => {
+    try {
+      const token = await firebaseAuth.currentUser?.getIdToken();
+      if (!token) return;
+
+      await fetch(`/api/projects/${projectId}/documents/${docId}/confirm`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          confirmedFields: fields,
+          targetPath: 'financials',
+        }),
+      });
+    } catch (err: any) {
+      toast.error(`Failed to bulk confirm: ${err.message}`);
+    }
+  }, [projectId]);
+
+  const handleOcrReprocess = useCallback((docId: string) => {
+    // The reprocess call is handled inside OCRReviewPanel.
+    // After it completes, we re-trigger OCR to get updated fields.
+    triggerOcr(docId, projectId);
+  }, [projectId, triggerOcr]);
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>, category: DocumentCategory) => {
     e.preventDefault();
@@ -139,6 +241,12 @@ export function DocumentVault({
     if (newDocs.length > 0 && onChange) {
       onChange([...documents, ...newDocs]);
       toast.success('Documents uploaded successfully');
+
+      // Auto-trigger OCR for each uploaded document
+      for (const doc of newDocs) {
+        triggerOcr(doc.id, projectId);
+      }
+
       try {
         import('@/store/uiStore').then(({ useUIStore }) => {
           useUIStore.getState().triggerSuccessfulAction('document_uploaded');
@@ -249,48 +357,101 @@ export function DocumentVault({
                   </div>
                 ))}
                 
-                {categoryDocs.map((doc) => (
-                  <div 
-                    key={doc.id}
-                    className="flex items-center justify-between p-3 rounded-md border bg-bg-default border-border-ui shadow-sm group"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-1.5 rounded-md bg-white border border-border-ui flex-shrink-0">
-                        <FileIcon className="w-4 h-4 text-blue-600" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-text-primary truncate" title={doc.fileName}>
-                          {doc.fileName}
-                        </p>
-                        <p className="text-[10px] text-text-secondary">
-                          {doc.uploadedAt ? (doc.uploadedAt instanceof Date ? doc.uploadedAt : (doc.uploadedAt as any).toDate()).toLocaleDateString() : 'Unknown date'}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                      {doc.fileUrl && (
-                        <a
-                          href={doc.fileUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
-                          aria-label="Download"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Download className="w-4 h-4" />
-                        </a>
-                      )}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.fileUrl); }}
-                        className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
-                        aria-label="Delete"
+                {categoryDocs.map((doc) => {
+                  const ocrState = ocrStates[doc.id];
+                  return (
+                    <div key={doc.id}>
+                      <div 
+                        className="flex items-center justify-between p-3 rounded-md border bg-bg-default border-border-ui shadow-sm group cursor-pointer"
+                        onClick={() => ocrState?.status === 'complete' && setExpandedOcr(expandedOcr === doc.id ? null : doc.id)}
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="p-1.5 rounded-md bg-white border border-border-ui flex-shrink-0">
+                            <FileIcon className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-medium text-text-primary truncate" title={doc.fileName}>
+                              {doc.fileName}
+                            </p>
+                            <p className="text-[10px] text-text-secondary">
+                              {doc.uploadedAt ? (doc.uploadedAt instanceof Date ? doc.uploadedAt : (doc.uploadedAt as any).toDate()).toLocaleDateString() : 'Unknown date'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          {/* OCR Status Badge */}
+                          {ocrState?.status === 'processing' && (
+                            <span className="p-1 rounded-full" title="OCR processing">
+                              <Loader2 className="w-3.5 h-3.5 text-amber-500 animate-spin" />
+                            </span>
+                          )}
+                          {ocrState?.status === 'complete' && (
+                            <span className="p-1 rounded-full" title="OCR complete — click to review">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                            </span>
+                          )}
+                          {ocrState?.status === 'failed' && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); triggerOcr(doc.id, projectId); }}
+                              className="p-1 rounded-full hover:bg-red-50 transition" 
+                              title="OCR failed — click to retry"
+                            >
+                              <XCircle className="w-3.5 h-3.5 text-red-400" />
+                            </button>
+                          )}
+                          {!ocrState && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); triggerOcr(doc.id, projectId); }}
+                              className="p-1 rounded-full hover:bg-blue-50 transition opacity-0 group-hover:opacity-100"
+                              title="Run OCR"
+                            >
+                              <RefreshCw className="w-3.5 h-3.5 text-text-secondary" />
+                            </button>
+                          )}
+                          
+                          {/* File actions */}
+                          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {doc.fileUrl && (
+                              <a
+                                href={doc.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+                                aria-label="Download"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Download className="w-4 h-4" />
+                              </a>
+                            )}
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeDocument(doc.id, doc.fileUrl); }}
+                              className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
+                              aria-label="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* OCR Review Panel (expandable) */}
+                      {ocrState?.status === 'complete' && expandedOcr === doc.id && (
+                        <OCRReviewPanel
+                          docId={doc.id}
+                          projectId={projectId}
+                          documentName={doc.fileName}
+                          extractedFields={ocrState.extractedFields}
+                          overallConfidence={ocrState.overallConfidence}
+                          ocrStatus={ocrState.status}
+                          onFieldConfirm={handleOcrFieldConfirm}
+                          onReprocess={handleOcrReprocess}
+                          onBulkConfirm={handleOcrBulkConfirm}
+                        />
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {categoryDocs.length === 0 && categoryUploads.length === 0 && (
                   <div className="p-4 border border-dashed border-border-accent rounded-md flex justify-center items-center h-full">
                     <p className="text-xs text-text-secondary italic">No documents uploaded.</p>

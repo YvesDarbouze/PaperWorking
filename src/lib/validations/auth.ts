@@ -40,7 +40,8 @@ export const registerSchema = z
       .string()
       .min(1, 'Please confirm your password'),
     acceptTerms: z
-      .literal(true, {
+      .boolean()
+      .refine((val) => val === true, {
         message: 'You must accept the Terms of Service',
       }),
   })

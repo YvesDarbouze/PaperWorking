@@ -520,7 +520,155 @@ export interface RoleLinkedDocument {
   notes: string;
 }
 
-export type PhaseStatus = 'Phase 1: Find & Fund' | 'Phase 2: Acquisition' | 'Phase 3: Holding & Rehab' | 'Phase 4: Closing & Exit';
+export type PhaseStatus =
+  | 'Phase 1: Find & Fund'
+  | 'Phase 2: Acquisition'
+  | 'Phase 3: Holding & Rehab'
+  | 'Phase 4: Closing & Exit'
+  | 'Phase 3: Rehab & Hold'
+  | 'Phase 4: Realized'
+  | 'Phase 1: Acquisition'
+  | 'Phase 2: Transaction'
+  | 'Phase 3: Rehab'
+  | 'Phase 4: Hold / Exit';
+
+
+// ── REIL v2 Types ──────────────────────────────────────────
+
+export interface TransactionVendorAssignment {
+  vendorType: 'real_estate_lawyer' | 'loan_processor';
+  vendorId: string;
+  assignedAt: any;
+  status: string;
+}
+
+export interface ProjectTransaction {
+  financingType?: 'Financed' | 'All Cash';
+  closingCosts?: number;
+  totalCashInvested?: number;
+  loanProcessorName?: string;
+  closingAttorneyName?: string;
+  inspectionCost?: number;
+  titleSearchCost?: number;
+  insuranceCost?: number;
+  hoaMonthly?: number;
+  vendorAssignments?: TransactionVendorAssignment[];
+}
+
+export interface RehabLineItem {
+  label: string;
+  amount: number;
+  tier: 'Staging' | 'Minor' | 'Rehab' | 'Gut' | 'Construction';
+  vendor: string;
+  status: string;
+  photos: string[];
+  receipts: string[];
+}
+
+export interface RehabVendorAssignment {
+  vendorType: 'general_contractor' | 'specialty_contractor';
+  vendorId: string;
+  assignedAt: any;
+  status: string;
+}
+
+export interface ProjectRehab {
+  lineItems?: RehabLineItem[];
+  vendorAssignments?: RehabVendorAssignment[];
+  tier?: 'Staging' | 'Minor' | 'Rehab' | 'Gut' | 'Construction';
+  startDate?: any;
+  completedDate?: any;
+  versionHistory?: any[];
+
+  // Legacy fields from RehabModule to prevent typescript compile errors in workspaces
+  scopeOfWork?: any[];
+  contractorBids?: any[];
+  drawSchedule?: any[];
+  currentStage?: string;
+  baseBudget?: number;
+  contingencyBufferPercentage?: number;
+  tasks?: any[];
+  permits?: any[];
+  pendingReceipts?: any[];
+  drawRequests?: any[];
+}
+
+export interface OtherHoldCost {
+  label: string;
+  amount: number;
+}
+
+export interface HoldCostPeriod {
+  period: string; // YYYY-MM
+  phaseAtPeriod: 'acquisition' | 'transaction' | 'rehab' | 'hold_exit';
+  insurance: number;
+  propertyTax: number;
+  maintenance: number;
+  housekeeping: number;
+  utilities: number;
+  hoa: number;
+  debtService: number;
+  otherCosts: OtherHoldCost[];
+  total: number;
+}
+
+export interface ProjectHoldCost {
+  periods: HoldCostPeriod[];
+}
+
+export interface SaleData {
+  salePrice: number;
+  saleDate: string;
+  sellingCosts: number;
+}
+
+export interface StabilizedRevenue {
+  period: string;
+  modality: string;
+  grossRevenue: number;
+}
+
+export interface ExitModalitySpecificFields {
+  monthlyRent?: number;
+  leaseTerm?: number | string;
+  tenantId?: string;
+  nightlyRate?: number;
+  occupiedNights?: number;
+  totalNights?: number;
+  platform?: 'airbnb' | 'vrbo' | 'both';
+  salePrice?: number;
+  saleDate?: string;
+  sellingCosts?: number;
+  monthlyLease?: number;
+  lesseeId?: string;
+}
+
+export interface ExitModalityPeriod {
+  period: string;
+  modality: 'sale' | 'long_term_rental' | 'lease' | 'short_term_rental' | 'none';
+  modalityStartDate: string;
+  modalitySpecificFields: ExitModalitySpecificFields;
+}
+
+export interface ProjectExit {
+  currentModality: 'sale' | 'long_term_rental' | 'lease' | 'short_term_rental' | 'none';
+  modalityHistory: ExitModalityPeriod[];
+  sale: SaleData | null;
+  stabilizedRevenue: StabilizedRevenue[];
+}
+
+export interface DataCompletionTask {
+  taskId: string;
+  projectId: string;
+  assignedToUserId: string;
+  fieldPath: string;
+  expectedFrequency: 'monthly' | 'one_off';
+  lastSatisfiedAt: any;
+  nextDueAt: any;
+  missedCount: number;
+  escalationLevel: 'none' | 'warning' | 'alert';
+}
+
 
 // Phase 1: Mandatory Document Checklist (Purchase Readiness)
 export type PurchaseReadinessItemType = 'Operating Agreement' | 'Proof of Funds' | 'Title Commitment' | 'Entity Documents (LLC/Inc)';
@@ -580,8 +728,12 @@ export interface Project {
   closingChecklist?: ClosingChecklistItem[]; // Phase 2: Closing Checklist
   isClearToClose?: boolean; // Milestone gate
   
-  // Phase progression (1=Acquisition, 2=Purchase, 3=Hold, 4=Exit)
   currentPhase?: number;
+  transaction?: ProjectTransaction;
+  rehab?: ProjectRehab;
+  holdCost?: ProjectHoldCost;
+  exit?: ProjectExit;
+
 
   actionItems?: any[]; // Persistent storage for ProjectTodoList tasks
 
@@ -1241,7 +1393,7 @@ declare module './schema' {
   interface Project {
     stateCode?: string; // e.g. FL, TX
     closingPortal?: ClosingPortalState;
-    rehab?: RehabModule;
+    rehab?: ProjectRehab;
     // NOTE: privateFinancials lives as a SUB-COLLECTION, not an inline field.
     // Access via: projects/{projectId}/privateFinancials/summary
     // This ensures Contractors are blocked at the Firestore Rules level.
@@ -1344,7 +1496,26 @@ export interface CommunicationThread {
 // ── Phase 11: Vendor Marketplace Types ──────────────────
 
 export type VendorType = 'Lawyer' | 'Appraiser' | 'Lender' | 'Inspector' | 'Title' | 'Insurance' | 'Contractor' | 'Property Manager' | 'Listing Agent';
-export type RequestStatus = 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED';
+export type RequestStatus = 'PENDING' | 'QUOTED' | 'ACCEPTED' | 'COMPLETED' | 'DECLINED' | 'CANCELLED';
+export type AssignmentStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED' | 'COMPLETED' | 'CANCELLED';
+
+export interface VendorAssignment {
+  id: string;
+  projectId: string;
+  vendorId: string;                // vendor's Firestore UID
+  vendorName: string;              // denormalized for display
+  vendorCompanyName: string;       // denormalized for display
+  serviceType: VendorType;         // type of service requested
+  requestedBy: string;             // investor UID who created the assignment
+  requestedByName: string;         // denormalized for display
+  status: AssignmentStatus;
+  message?: string;                // optional context from investor
+  quotedFee?: number;              // fee quoted by vendor
+  respondedAt?: Date;              // when vendor accepted/declined
+  completedAt?: Date;              // when work was completed
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface VendorProfile {
   id: string;

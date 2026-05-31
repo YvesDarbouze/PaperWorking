@@ -165,20 +165,37 @@ export function useProjectWizardMachine({ organizationId, onSuccess, onClose }: 
 
     setState('SUBMITTING');
     try {
-      const projectId = await projectsService.createProject(
-        {
-          propertyName: formData.propertyName,
-          address: formData.address,
-          status: 'Lead',
-          ownerUid: user.uid,
-          financials: {
-            purchasePrice: parseFloat(formData.purchasePrice) * 100,
-            estimatedARV: parseFloat(formData.estimatedARV) * 100,
-            costs: [],
-          },
+      const dealPayload = {
+        propertyName: formData.propertyName,
+        address: formData.address,
+        status: 'Lead' as const,
+        ownerUid: user.uid,
+        financials: {
+          purchasePrice: parseFloat(formData.purchasePrice) * 100,
+          estimatedARV: parseFloat(formData.estimatedARV) * 100,
+          costs: [] as Array<{ name: string; amount: number }>,
         },
-        organizationId,
-      );
+      };
+
+      // Try server-side API first, fall back to client-side
+      let projectId: string;
+      try {
+        const { createProjectViaApi, commitProjectViaApi } = await import('@/lib/api/projectWizardApi');
+        const apiResult = await createProjectViaApi({
+          ...dealPayload,
+          organizationId,
+        });
+        if (apiResult.success && apiResult.projectId) {
+          projectId = apiResult.projectId;
+          await commitProjectViaApi(projectId).catch(() => {});
+        } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          projectId = await projectsService.createProject(dealPayload as any, organizationId);
+        }
+      } catch {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        projectId = await projectsService.createProject(dealPayload as any, organizationId);
+      }
 
       setState('COMPLETE');
       toast.success('Project created and indexed successfully.');

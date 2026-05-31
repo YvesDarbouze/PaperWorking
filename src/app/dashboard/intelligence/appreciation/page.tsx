@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { AppreciationCollectionTerminal } from '@/components/intelligence/AppreciationCollectionTerminal';
+import type { AppreciationValues } from '@/components/intelligence/AppreciationCollectionTerminal';
 
 /* ═══════════════════════════════════════════════════════════════
    Appreciation Intelligence — Value Trajectory vs. Baseline
@@ -144,7 +147,12 @@ export default function AppreciationIntelligencePage() {
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
+  /* ── Reactive state from Collection Terminal ── */
+  const [collectedValues, setCollectedValues] = useState<AppreciationValues | null>(null);
+  const handleCollectionChange = useCallback((v: AppreciationValues) => setCollectedValues(v), []);
+
   const {
+    isUsingDemoData,
     appreciationRate,
     currentValue,
     originalBasis,
@@ -170,6 +178,7 @@ export default function AppreciationIntelligencePage() {
         return Math.round(firstVal * (1 + (0.05 / 12) * i));
       });
       return {
+        isUsingDemoData: false,
         appreciationRate: lastApp,
         currentValue: lastVal,
         originalBasis: firstVal,
@@ -181,16 +190,17 @@ export default function AppreciationIntelligencePage() {
       };
     }
     return {
-      appreciationRate: DEMO_APPRECIATION,
-      currentValue: DEMO_CURRENT_VALUE,
-      originalBasis: DEMO_ORIGINAL_BASIS,
-      unrealizedGain: DEMO_UNREALIZED_GAIN,
-      annualRate: DEMO_APPRECIATION,
+      isUsingDemoData: true,
+      appreciationRate: collectedValues?.annualizedRate ?? DEMO_APPRECIATION,
+      currentValue: collectedValues?.currentEstimate ?? DEMO_CURRENT_VALUE,
+      originalBasis: collectedValues?.totalBasis ?? DEMO_ORIGINAL_BASIS,
+      unrealizedGain: collectedValues?.totalGain ?? DEMO_UNREALIZED_GAIN,
+      annualRate: collectedValues?.annualizedRate ?? DEMO_APPRECIATION,
       chartLabels: DEMO_MONTHS_LABELS,
       portfolioSeries: DEMO_PORTFOLIO_VALUE,
       baselineSeries: DEMO_MARKET_BASELINE,
     };
-  }, [snapshots]);
+  }, [snapshots, collectedValues]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
   const fmtPct = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
@@ -242,6 +252,8 @@ export default function AppreciationIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -381,6 +393,11 @@ export default function AppreciationIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Appreciation Collection Terminal ── */}
+      <AppreciationCollectionTerminal
+        onValuesChange={handleCollectionChange}
+      />
 
       {/* ── Bottom: Value by Property Table ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>

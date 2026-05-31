@@ -7,6 +7,7 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { Search, Plus, FolderX, SlidersHorizontal, ChevronRight, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import { EmptyState } from '@/components/ui/empty-states/EmptyState';
+import { ProjectCard } from '@/components/features/project-card';
 
 /* ── Strategy Theme Mapping ── */
 function getStrategyThemeConfig(strategy?: string) {
@@ -312,6 +313,20 @@ export default function ProjectsPage() {
       data.sort((a, b) => a.propertyName.localeCompare(b.propertyName));
     } else if (sortBy === 'phase') {
       data.sort((a, b) => (a.currentPhase ?? 1) - (b.currentPhase ?? 1));
+    } else if (sortBy === 'noi') {
+      data.sort((a, b) => {
+        const mA = deriveAllMetrics(a.financials, a.financials?.estimatedCurrentValue, a.strategyType, a.currentPhase, a.createdAt);
+        const mB = deriveAllMetrics(b.financials, b.financials?.estimatedCurrentValue, b.strategyType, b.currentPhase, b.createdAt);
+        return (mB.noi ?? 0) - (mA.noi ?? 0);
+      });
+    } else if (sortBy === 'price') {
+      data.sort((a, b) => (b.financials?.purchasePrice ?? 0) - (a.financials?.purchasePrice ?? 0));
+    } else if (sortBy === 'created') {
+      data.sort((a, b) => {
+        const aDate = a.createdAt instanceof Date ? a.createdAt.getTime() : new Date(a.createdAt).getTime();
+        const bDate = b.createdAt instanceof Date ? b.createdAt.getTime() : new Date(b.createdAt).getTime();
+        return bDate - aDate;
+      });
     }
 
     return data;
@@ -405,9 +420,12 @@ export default function ProjectsPage() {
             onChange={(e) => setSortBy(e.target.value)}
             className="bg-transparent border-none text-sm font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors p-0"
           >
-            <option value="recent">Recent</option>
+            <option value="recent">Recent Activity</option>
             <option value="name">Name</option>
             <option value="phase">Phase</option>
+            <option value="noi">NOI (High → Low)</option>
+            <option value="price">Purchase Price</option>
+            <option value="created">Date Created</option>
           </select>
         </div>
       </div>
@@ -416,10 +434,11 @@ export default function ProjectsPage() {
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredProjects.map((project) => (
-            <FolderCard
+            <ProjectCard
               key={project.id}
               project={project}
-              onClick={() => handleOpenProject(project.id)}
+              variant="default"
+              showKPIs={true}
             />
           ))}
           {/* Add New Card Placeholder */}

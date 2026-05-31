@@ -35,6 +35,14 @@ interface BillingInvoice {
   hostedUrl: string | null;
 }
 
+interface PaymentMethodData {
+  brand: string;
+  last4: string;
+  expMonth: number;
+  expYear: number;
+  funding: string;
+}
+
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
   const [portalLoading, setPortalLoading] = useState(false);
@@ -43,14 +51,18 @@ export default function BillingSettingsPage() {
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<number | null>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodData | null>(null);
+  const [pmLoading, setPmLoading]         = useState(false);
+  const [pmFetched, setPmFetched]         = useState(false);
 
   useEffect(() => {
     if (!user) return;
     
     setInvoicesLoading(true);
     setSubscriptionLoading(true);
+    setPmLoading(true);
     
-    user.getIdToken().then((idToken) => {
+    user.getIdToken().then((idToken: string) => {
       fetch('/api/stripe/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,13 +82,28 @@ export default function BillingSettingsPage() {
         .then((data) => { if (data.currentPeriodEnd) setCurrentPeriodEnd(data.currentPeriodEnd); })
         .catch(() => {})
         .finally(() => setSubscriptionLoading(false));
+
+      fetch('/api/stripe/payment-method', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      })
+        .then((r) => r.json())
+        .then((data) => { if (data.paymentMethod) setPaymentMethod(data.paymentMethod); })
+        .catch(() => {})
+        .finally(() => { setPmLoading(false); setPmFetched(true); });
     });
   }, [user]);
 
   const plan    = profile?.subscriptionPlan   ?? 'None';
   const status  = profile?.subscriptionStatus ?? 'inactive';
-  const lastFour = profile?.lastFour ?? '4242';
-  const cardBrand = profile?.cardBrand ?? 'Visa';
+
+  // Prefer live Stripe data, fall back to profile, show nothing while loading
+  const lastFour  = paymentMethod?.last4  ?? (pmFetched ? null : profile?.lastFour);
+  const cardBrand = paymentMethod?.brand  ?? (pmFetched ? null : profile?.cardBrand);
+  const expMonth  = paymentMethod?.expMonth;
+  const expYear   = paymentMethod?.expYear;
+  const hasCard   = pmFetched ? !!paymentMethod : !!(profile?.stripeCustomerId || plan !== 'None');
 
   const planInfo    = PLAN_PRICING[plan]   ?? PLAN_PRICING['None'];
   const statusBadge = STATUS_BADGE[status] ?? STATUS_BADGE['inactive'];
@@ -87,6 +114,14 @@ export default function BillingSettingsPage() {
     : subscriptionLoading
       ? 'Loading...'
       : 'N/A';
+
+  // Trial & cancellation state
+  const isTrialing = status === 'trialing';
+  const trialEnd = profile?.trialEnd;
+  const trialEndStr = trialEnd
+    ? new Date(trialEnd).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null;
+  const isCanceling = profile?.cancelAtPeriodEnd ?? false;
 
   const openPortal = async () => {
     if (!user) return;
@@ -142,6 +177,39 @@ export default function BillingSettingsPage() {
               </div>
             </div>
 
+            {/* Trial Status Banner */}
+            {isTrialing && (
+              <div className="bg-pw-primary/5 border border-pw-primary/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
+                <span className="material-symbols-outlined text-pw-primary text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>hourglass_top</span>
+                <div>
+                  <p className="font-label-md text-label-md text-pw-black">Free Trial Active</p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
+                    Your trial {trialEndStr ? `ends on ${trialEndStr}` : 'is active'}. You won&apos;t be charged until your trial period ends.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Cancellation Warning */}
+            {isCanceling && !isTrialing && (
+              <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg px-5 py-4 mb-6 flex items-start gap-3">
+                <span className="material-symbols-outlined text-amber-600 text-xl mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
+                <div>
+                  <p className="font-label-md text-label-md text-pw-black">Subscription Canceling</p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">
+                    Your plan will remain active until {nextBillingStr}. After that, you&apos;ll lose access to paid features.
+                  </p>
+                  <button
+                    onClick={openPortal}
+                    disabled={portalLoading}
+                    className="mt-2 text-pw-primary font-label-md text-label-md hover:text-pw-primary/80 transition-colors cursor-pointer"
+                  >
+                    Reactivate Subscription →
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Seat Usage Meter */}
             {plan !== 'None' && (
               <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
@@ -161,9 +229,9 @@ export default function BillingSettingsPage() {
                   />
                 </div>
                 <div className="mt-6 flex justify-between items-center">
-                  <button className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
+                  <Link href="/dashboard/settings/team" className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
                     <span className="material-symbols-outlined text-[18px]">group_add</span> Manage Team
-                  </button>
+                  </Link>
                   <button
                     onClick={openPortal}
                     disabled={portalLoading}
@@ -195,21 +263,37 @@ export default function BillingSettingsPage() {
         <section className="lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between min-h-[280px]">
           <h4 className="font-headline-md text-headline-md text-pw-black mb-6">Payment Method</h4>
 
-          {(profile?.stripeCustomerId || plan !== 'None') ? (
+          {pmLoading ? (
+            /* Skeleton while loading */
+            <div className="flex-1 flex flex-col justify-between">
+              <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 animate-pulse">
+                <div className="w-12 h-8 bg-pw-glass-bg rounded shrink-0 mt-1" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-pw-glass-bg rounded w-32" />
+                  <div className="h-3 bg-pw-glass-bg rounded w-20" />
+                </div>
+              </div>
+              <div className="h-12 bg-pw-glass-bg rounded-lg animate-pulse" />
+            </div>
+          ) : hasCard && lastFour ? (
             <div className="flex-1 flex flex-col justify-between">
               {/* Card display */}
               <div className="bg-pw-glass-bg/50 rounded-lg p-5 border border-white/5 flex items-start gap-4 mb-4 relative overflow-hidden group">
                 {/* Abstract blob effect */}
                 <div className="absolute -right-8 -top-8 w-24 h-24 bg-pw-primary/20 rounded-full blur-xl group-hover:bg-pw-primary/30 transition-colors" />
                 <div className="w-12 h-8 bg-pw-glass-bg rounded flex items-center justify-center border border-white/10 shrink-0 mt-1">
-                  <span className="font-mono text-xs font-bold italic text-pw-black/80">{cardBrand.toUpperCase()}</span>
+                  <span className="font-mono text-xs font-bold italic text-pw-black/80">{(cardBrand ?? 'Card').toUpperCase()}</span>
                 </div>
                 <div className="flex-1 relative z-10">
                   <p className="font-label-md text-label-md text-pw-black flex items-center gap-2">
                     <span className="font-mono tracking-widest">•••• {lastFour}</span>
                     <span className="px-2 py-0.5 bg-pw-primary/10 text-pw-primary text-[10px] font-bold rounded-full border border-pw-primary/20">DEFAULT</span>
                   </p>
-                  <p className="font-body-sm text-body-sm text-pw-muted mt-1">Expires 12/26</p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-1">
+                    {expMonth && expYear
+                      ? `Expires ${String(expMonth).padStart(2, '0')}/${String(expYear).slice(-2)}`
+                      : 'Expiry unavailable'}
+                  </p>
                 </div>
               </div>
 

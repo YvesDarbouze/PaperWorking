@@ -2,11 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { DealTermsClosingForm } from '@/components/intelligence/DealTermsClosingForm';
+import { CapRateIntelligenceCard } from '@/components/intelligence/CapRateIntelligenceCard';
 
 /* ═══════════════════════════════════════════════════════════════
    Cap Rate Intelligence — Stitch screen: c822dbb6ed384087a6d2f5a645a61a25
@@ -147,21 +150,46 @@ export default function CapRateIntelligencePage() {
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentCapRate, capRateChange, trendValues, trendLabels } = useMemo(() => {
+  /* ── Portfolio NOI & Purchase Price (derived from store) ── */
+  const portfolioNoi = useMemo(() => {
+    if (snapshots && snapshots.length > 0) {
+      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
+      const latestNoi = sorted[sorted.length - 1]?.noi;
+      if (latestNoi && latestNoi > 0) return latestNoi;
+    }
+    const withNoi = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
+    if (withNoi.length > 0) {
+      return withNoi.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
+    }
+    return 12486; // seed
+  }, [snapshots, projects]);
+
+  const portfolioPurchasePrice = useMemo(() => {
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
+    if (withPrice.length > 0) {
+      return withPrice.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
+    }
+    return 279000; // seed
+  }, [projects]);
+
+  /* ── Interactive state for form ↔ gauge reactivity ── */
+  const [interactivePurchasePrice, setInteractivePurchasePrice] = useState(0);
+
+  const { isUsingDemoData, currentCapRate, capRateChange, trendValues, trendLabels } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-8);
       const vals   = sorted.map((s) => s.capRate ?? 0);
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
       const last   = vals[vals.length - 1] ?? 0;
       const prev   = vals[vals.length - 2] ?? 0;
-      return { currentCapRate: last, capRateChange: last - prev, trendValues: vals, trendLabels: labels };
+      return { isUsingDemoData: false, currentCapRate: last, capRateChange: last - prev, trendValues: vals, trendLabels: labels };
     }
     const hasCapRate = projects.some((p) => (p.financials?.capRate ?? 0) > 0);
     if (hasCapRate) {
       const avg = projects.reduce((s, p) => s + (p.financials?.capRate ?? 0), 0) / projects.filter((p) => (p.financials?.capRate ?? 0) > 0).length;
-      return { currentCapRate: avg, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
+      return { isUsingDemoData: true, currentCapRate: avg, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
     }
-    return { currentCapRate: 5.85, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
+    return { isUsingDemoData: true, currentCapRate: 5.85, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
   }, [snapshots, projects]);
 
   const propertyRankings = useMemo(() => {
@@ -217,6 +245,8 @@ export default function CapRateIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -299,6 +329,22 @@ export default function CapRateIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Cap Rate Intelligence Card (Gauge) ── */}
+      <CapRateIntelligenceCard
+        noi={portfolioNoi}
+        purchasePrice={interactivePurchasePrice > 0 ? interactivePurchasePrice : portfolioPurchasePrice}
+        marketAvgCapRate={5.2}
+      />
+
+      {/* ── Deal Terms & Closing Form ── */}
+      <DealTermsClosingForm
+        noi={portfolioNoi}
+        defaultPurchasePrice={portfolioPurchasePrice}
+        onValuesChange={(values) => {
+          setInteractivePurchasePrice(values.purchasePrice);
+        }}
+      />
 
     </div>
   );

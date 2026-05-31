@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
@@ -226,7 +227,7 @@ export default function LTVIntelligencePage() {
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentLtv, ltvChange, chartLabels, loanSeries, valueSeries, splitIndex } = useMemo(() => {
+  const { isUsingDemoData, currentLtv, ltvChange, chartLabels, loanSeries, valueSeries, splitIndex } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -238,6 +239,7 @@ export default function LTVIntelligencePage() {
       const last = ltvVals[ltvVals.length - 1];
       const prev = ltvVals[ltvVals.length - 2];
       return {
+        isUsingDemoData: false,
         currentLtv: last,
         ltvChange: last - prev,
         chartLabels: labels,
@@ -247,6 +249,7 @@ export default function LTVIntelligencePage() {
       };
     }
     return {
+      isUsingDemoData: true,
       currentLtv: DEMO_LTV,
       ltvChange: DEMO_LTV_CHANGE,
       chartLabels: DEMO_PROJ_LABELS,
@@ -305,6 +308,8 @@ export default function LTVIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">

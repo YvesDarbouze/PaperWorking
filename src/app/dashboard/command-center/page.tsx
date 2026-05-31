@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function CommandCenterPage() {
   return (
-    <div className="min-h-full bg-surface-container-lowest">
+    <div className="min-h-full bg-transparent">
       <CommandCenter />
     </div>
   );

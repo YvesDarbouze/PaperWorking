@@ -6,6 +6,7 @@ import type { OrgTeamMember, InternalRole, TeamInvitation, Permission, AuditLog 
 import { cookies } from 'next/headers';
 import { NotificationService } from '@/lib/services/notificationService';
 import crypto from 'crypto';
+import { assignVendorToProject } from '@/actions/vendorAssignment';
 
 function escapeHtml(unsafe: string): string {
   return (unsafe || '').replace(/[&<"'>]/g, (m) => {
@@ -571,26 +572,23 @@ export async function assignTask(projectId: string, taskId: string, assigneeEmai
       .get();
 
     if (!vendorSnap.empty) {
-      // Vendor assignment stub: deliver as Deal Marketplace lead/notification
-      console.log(`[Deal Marketplace] Stub: Task ${taskId} assigned to vendor ${targetEmail}`);
-      
-      // Notify vendor
-      await adminDb.collection('queued_emails').add({
-        recipientEmail: targetEmail,
-        status: 'pending',
-        isBatchable: false,
-        type: 'VENDOR_TASK_ASSIGNMENT',
-        actorName: userData.displayName || userData.email,
-        deepLinkUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/marketplace/tasks/${taskId}`,
-        sendEmail: true,
-        sendPush: false,
-        title: `New Task Assignment from ${escapeHtml(userData.displayName || userData.email)}`,
-        body: `You have been assigned a task: ${taskLabel}. Click to view details in the Deal Marketplace.`,
-        subject: `New Task Assignment: ${escapeHtml(taskLabel)}`,
-        html: `<p>You have been assigned a task: <strong>${escapeHtml(taskLabel)}</strong>.</p>`,
-        createdAt: FieldValue.serverTimestamp(),
-        retryCount: 0,
-      });
+      // Real vendor assignment via vendorAssignment.ts lifecycle
+      const vendorUid = vendorSnap.docs[0].id;
+      const cookieStore = await cookies();
+      const sessionToken = cookieStore.get('__session')?.value;
+      if (!sessionToken) throw new Error('Unauthorized: no session cookie.');
+
+      const result = await assignVendorToProject(
+        sessionToken,
+        projectId,
+        vendorUid,
+        taskLabel,  // serviceType — the task label describes the work
+        `Task assignment: ${taskLabel}`
+      );
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to assign vendor.');
+      }
 
     } else {
       // Assign-as-invite

@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { GRMTriageTerminal } from '@/components/intelligence/GRMTriageTerminal';
+import { GRMComparisonCard } from '@/components/intelligence/GRMComparisonCard';
 
 /* ═══════════════════════════════════════════════════════════════
    GRM Intelligence Page
@@ -105,17 +108,20 @@ export default function GRMIntelligencePage() {
   const projects = useProjectStore((s) => s.projects);
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { currentGRM, grmChange } = useMemo(() => {
+  /* ── Interactive state from GRMTriageTerminal ── */
+  const [triageGRM, setTriageGRM] = useState(0);
+
+  const { isUsingDemoData, currentGRM, grmChange } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
       const vals   = sorted.map((s) => s.grossRentMultiplier ?? 0).filter(Boolean);
       if (vals.length >= 2) {
         const last = vals[vals.length - 1];
         const prev = vals[vals.length - 2];
-        return { currentGRM: last, grmChange: last - prev };
+        return { isUsingDemoData: false, currentGRM: last, grmChange: last - prev };
       }
     }
-    return { currentGRM: 9.2, grmChange: -0.3 };
+    return { isUsingDemoData: true, currentGRM: 9.2, grmChange: -0.3 };
   }, [snapshots, projects]);
 
   const isDecreasing = grmChange < 0;
@@ -139,6 +145,41 @@ export default function GRMIntelligencePage() {
       });
     }
     return DEMO_PROPERTIES;
+  }, [projects]);
+
+  /* ── Deals for GRMComparisonCard ── */
+  const comparisonDeals = useMemo(() => {
+    const withData = projects.filter((p) => {
+      const price = p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0;
+      const rent = (p.financials?.monthlyGrossRent ?? 0) * 12;
+      return price > 0 && rent > 0;
+    });
+    if (withData.length >= 2) {
+      return withData.slice(0, 6).map((p) => ({
+        id: p.id || p.address || 'unknown',
+        address: p.address || p.propertyName || 'Unknown',
+        propertyPrice: p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0,
+        grossAnnualRent: (p.financials?.monthlyGrossRent ?? 0) * 12,
+        grm: p.financials?.grossRentMultiplier,
+      }));
+    }
+    return [
+      { id: '1', address: '421 Oak St, Brooklyn', propertyPrice: 485000, grossAnnualRent: 52800 },
+      { id: '2', address: '1248 Oakwood Ave, Queens', propertyPrice: 620000, grossAnnualRent: 59400 },
+      { id: '3', address: '77 Prospect Heights, BK', propertyPrice: 890000, grossAnnualRent: 72000 },
+      { id: '4', address: '310 Atlantic Ave, Brooklyn', propertyPrice: 340000, grossAnnualRent: 40800 },
+    ];
+  }, [projects]);
+
+  /* ── Portfolio-derived defaults for triage ── */
+  const portfolioDefaults = useMemo(() => {
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
+    if (withPrice.length > 0) {
+      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? 0), 0) / withPrice.length;
+      const avgRent = withPrice.reduce((s, p) => s + (p.financials?.monthlyGrossRent ?? 0), 0) / withPrice.length;
+      return { price: Math.round(avgPrice), rent: Math.round(avgRent) };
+    }
+    return { price: 279000, rent: 1950 }; // seed
   }, [projects]);
 
   const contextMetrics = [
@@ -166,6 +207,8 @@ export default function GRMIntelligencePage() {
           Export
         </button>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -225,6 +268,21 @@ export default function GRMIntelligencePage() {
             <p className="text-[10px] text-slate-600 mt-2">Bars below market GRM represent alpha — buying at a discount to market rent multiples.</p>
           </div>
         </div>
+      </div>
+
+      {/* ── GRM Comparison + Triage Row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Multi-Property Deal Compare */}
+        <GRMComparisonCard deals={comparisonDeals} marketGRM={10.5} />
+
+        {/* A-Phase Triage Terminal */}
+        <GRMTriageTerminal
+          defaultPropertyPrice={portfolioDefaults.price}
+          defaultMonthlyRent={portfolioDefaults.rent}
+          marketGRM={10.5}
+          maxAcceptableGRM={13}
+          onValuesChange={(values) => setTriageGRM(values.grm)}
+        />
       </div>
 
       {/* ── Bottom: GRM by Property Table ── */}

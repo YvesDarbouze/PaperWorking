@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
@@ -23,6 +23,16 @@ import { PurchaseReadinessChecklist } from '@/components/project/PurchaseReadine
 import { ContingencyCountdownWidget } from '@/components/project/ContingencyCountdownWidget';
 import { EMDVerificationWidget } from '@/components/project/EMDVerificationWidget';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+/* ── Structured metric wrappers (MetricResult) ── */
+import { computeNOIMetric } from '@/lib/metrics/computeNOI';
+import { computeCapRateMetric } from '@/lib/metrics/computeCapRate';
+import { computeGRMMetric } from '@/lib/metrics/computeGRM';
+import { computeDSCRMetric } from '@/lib/metrics/computeDSCR';
+import { computeCoCMetric } from '@/lib/metrics/computeCoC';
+
+import { MetricReadout } from '@/components/metrics/MetricReadout';
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import {
   Building2,
   MapPin,
@@ -39,6 +49,7 @@ import {
   Users,
   Target,
   Wallet,
+  Plus,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -183,7 +194,7 @@ export default function Phase1WorkspacePage() {
 
   const canLockDeal = isOfferAccepted && isFullyFunded && is100PercentReady;
 
-  /* ── Derive KPI metrics from financials ── */
+  /* ── Derive KPI metrics from financials (legacy aggregator) ── */
   const derivedMetrics = useMemo(() => {
     if (!project?.financials) return null;
     try {
@@ -198,6 +209,47 @@ export default function Phase1WorkspacePage() {
       return null;
     }
   }, [project?.financials, project?.strategyType, project?.createdAt]);
+
+  /* ── Structured metric results (MetricResult wrappers) ── */
+  const metricInput = useMemo(() => ({
+    financials: project?.financials ?? {},
+    currentPhase: 1 as const,
+    strategyType: project?.strategyType,
+  }), [project?.financials, project?.strategyType]);
+
+  const noiResult = useMemo(() => computeNOIMetric(metricInput), [metricInput]);
+  const capRateResult = useMemo(() => computeCapRateMetric(metricInput), [metricInput]);
+  const grmResult = useMemo(() => computeGRMMetric(metricInput), [metricInput]);
+  const dscrResult = useMemo(() => computeDSCRMetric(metricInput), [metricInput]);
+  const cocResult = useMemo(() => computeCoCMetric(metricInput), [metricInput]);
+
+  /* ── Deal Compare ── */
+  const [addingToCompare, setAddingToCompare] = useState(false);
+
+  const handleAddToDealCompare = useCallback(async () => {
+    if (!user?.uid || !projectId || addingToCompare) return;
+    setAddingToCompare(true);
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      const currentCompare = userSnap.data()?.dealCompare ?? [];
+
+      if (currentCompare.includes(projectId)) {
+        toast('Already in Deal Compare', { icon: 'ℹ️' });
+        return;
+      }
+
+      await updateDoc(userRef, {
+        dealCompare: arrayUnion(projectId),
+      });
+      toast.success('Added to Deal Compare!');
+    } catch (err) {
+      console.error('[DealCompare] Failed:', err);
+      toast.error('Failed to add to Deal Compare');
+    } finally {
+      setAddingToCompare(false);
+    }
+  }, [user?.uid, projectId, addingToCompare]);
 
   /* ── Task completion tracking ── */
   const taskStatuses = useMemo(() => {
@@ -731,14 +783,30 @@ export default function Phase1WorkspacePage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════
-            Core KPIs Panel (Stitch schema)
+            Core KPIs Panel — Structured MetricResult Readouts
             ═══════════════════════════════════════════════════════ */}
         <section className="glass-card rounded-2xl p-6 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
               Core KPIs
             </h2>
-            {/* PROJECTED / ACTUAL toggle */}
+            {/* Add to Deal Compare button */}
+            <button
+              onClick={handleAddToDealCompare}
+              disabled={addingToCompare}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-[#57f1db]/30 text-[#57f1db] hover:bg-[#57f1db]/10 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {addingToCompare ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Plus className="w-3 h-3" />
+              )}
+              Deal Compare
+            </button>
+          </div>
+
+          {/* PROJECTED / ACTUAL toggle */}
+          <div className="flex items-center justify-between">
             <div className="flex p-1 bg-[#060f15] rounded-lg">
               <button
                 onClick={() => setKpiMode('projected')}
@@ -761,10 +829,8 @@ export default function Phase1WorkspacePage() {
                 ACTUAL
               </button>
             </div>
-          </div>
 
-          {/* Property / My Share toggle */}
-          <div className="flex justify-center">
+            {/* Property / My Share toggle */}
             <div className="flex p-0.5 bg-[#2d363d] rounded-full w-fit">
               <button
                 onClick={() => setKpiScope('property')}
@@ -789,22 +855,25 @@ export default function Phase1WorkspacePage() {
             </div>
           </div>
 
-          {/* KPI Grid — 2×3 */}
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-            <KpiCell
+          {/* KPI Grid — Structured MetricReadout cards (2×3) */}
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+            <MetricReadout
               label="NOI (Annual)"
-              value={derivedMetrics ? fmtDollar(scaleByScope(derivedMetrics.noi / 100)) : '—'}
-              fillPct={derivedMetrics ? Math.min(100, Math.abs(derivedMetrics.noi / 100) / 2000) : 0}
+              result={noiResult}
+              format="currency"
+              accentColor={PHASE_COLOR}
             />
-            <KpiCell
+            <MetricReadout
               label="Cap Rate"
-              value={derivedMetrics ? `${derivedMetrics.capRate.toFixed(1)}%` : '—'}
-              fillPct={derivedMetrics ? Math.min(100, derivedMetrics.capRate * 10) : 0}
+              result={capRateResult}
+              format="percent"
+              accentColor={PHASE_COLOR}
             />
-            <KpiCell
+            <MetricReadout
               label="DSCR"
-              value={derivedMetrics ? `${derivedMetrics.dscr.toFixed(2)}x` : '—'}
-              fillPct={derivedMetrics ? Math.min(100, derivedMetrics.dscr * 50) : 0}
+              result={dscrResult}
+              format="ratio"
+              accentColor={PHASE_COLOR}
             />
             <KpiCell
               label="IRR (5yr)"
@@ -874,45 +943,47 @@ export default function Phase1WorkspacePage() {
               value={derivedMetrics ? `${derivedMetrics.ltv.toFixed(0)}%` : '—'}
               fillPct={derivedMetrics ? derivedMetrics.ltv : 0}
             />
-            <KpiCell
+            <MetricReadout
               label="CoC Return"
-              value={derivedMetrics ? `${derivedMetrics.cashOnCashReturn.toFixed(1)}%` : '—'}
-              fillPct={derivedMetrics ? Math.min(100, derivedMetrics.cashOnCashReturn * 7) : 0}
+              result={cocResult}
+              format="percent"
+              accentColor={PHASE_COLOR}
             />
           </div>
 
-          {/* Expandable: 5 more metrics */}
-          {showAllKpis && derivedMetrics && (
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4 animate-in fade-in slide-in-from-top-2 duration-200 pt-2 border-t border-white/5">
-              <KpiCell
+          {/* Expandable: 5 more metrics (structured where available) */}
+          {showAllKpis && (
+            <div className="grid grid-cols-2 gap-x-6 gap-y-5 animate-in fade-in slide-in-from-top-2 duration-200 pt-2 border-t border-white/5">
+              <MetricReadout
                 label="GRM"
-                value={`${derivedMetrics.grossRentMultiplier.toFixed(1)}`}
-                fillPct={Math.min(100, derivedMetrics.grossRentMultiplier * 5)}
+                result={grmResult}
+                format="multiplier"
+                accentColor={PHASE_COLOR}
               />
               <KpiCell
                 label="OER"
-                value={`${derivedMetrics.oer.toFixed(1)}%`}
-                fillPct={derivedMetrics.oer}
+                value={derivedMetrics ? `${derivedMetrics.oer.toFixed(1)}%` : '—'}
+                fillPct={derivedMetrics ? derivedMetrics.oer : 0}
               />
               <KpiCell
                 label="ARV Spread"
-                value={fmtDollar(scaleByScope(derivedMetrics.arvSpread / 100))}
-                fillPct={Math.min(100, Math.abs(derivedMetrics.arvSpreadPercent))}
+                value={derivedMetrics ? fmtDollar(scaleByScope(derivedMetrics.arvSpread / 100)) : '—'}
+                fillPct={derivedMetrics ? Math.min(100, Math.abs(derivedMetrics.arvSpreadPercent)) : 0}
               />
               <KpiCell
                 label="Break-Even Occ."
-                value={`${derivedMetrics.breakEvenOccupancyRate.toFixed(0)}%`}
-                fillPct={derivedMetrics.breakEvenOccupancyRate}
+                value={derivedMetrics ? `${derivedMetrics.breakEvenOccupancyRate.toFixed(0)}%` : '—'}
+                fillPct={derivedMetrics ? derivedMetrics.breakEvenOccupancyRate : 0}
               />
               <KpiCell
                 label="Annual Cash Flow"
-                value={fmtDollar(scaleByScope(derivedMetrics.annualCashFlow / 100))}
-                fillPct={Math.min(100, Math.abs(derivedMetrics.annualCashFlow / 100) / 1000)}
+                value={derivedMetrics ? fmtDollar(scaleByScope(derivedMetrics.annualCashFlow / 100)) : '—'}
+                fillPct={derivedMetrics ? Math.min(100, Math.abs(derivedMetrics.annualCashFlow / 100) / 1000) : 0}
               />
               <KpiCell
                 label="Vacancy Rate"
-                value={`${derivedMetrics.vacancyRate.toFixed(1)}%`}
-                fillPct={derivedMetrics.vacancyRate}
+                value={derivedMetrics ? `${derivedMetrics.vacancyRate.toFixed(1)}%` : '—'}
+                fillPct={derivedMetrics ? derivedMetrics.vacancyRate : 0}
               />
             </div>
           )}
@@ -1046,6 +1117,71 @@ export default function Phase1WorkspacePage() {
         </div>
 
       </main>
+
+      {/* ═══════════════════════════════════════════════════════
+          Sticky Footer — Primary Acquisition Metrics
+          Glass-card bar pinned to bottom with key deal metrics.
+          ═══════════════════════════════════════════════════════ */}
+      {project && (
+        <div className="sticky bottom-0 z-30 backdrop-blur-xl bg-[#0b141a]/80 border-t border-white/10">
+          <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
+            <div className="flex items-center justify-between gap-4">
+              {/* GRM — quick screen */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">GRM</p>
+                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {grmResult.value !== null ? grmResult.value.toFixed(1) : '—'}
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/10" />
+
+              {/* Cap Rate — deal terms */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">Cap Rate</p>
+                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {capRateResult.value !== null ? `${capRateResult.value.toFixed(1)}%` : '—'}
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/10" />
+
+              {/* NOI — underwriting */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">NOI</p>
+                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {noiResult.value !== null ? fmtDollar(noiResult.value) : '—'}
+                </p>
+              </div>
+
+              {/* Divider */}
+              <div className="w-px h-8 bg-white/10" />
+
+              {/* DSCR — debt serviceability */}
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">DSCR</p>
+                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {dscrResult.state === 'n/a' ? 'N/A' : dscrResult.value !== null ? `${dscrResult.value.toFixed(2)}x` : '—'}
+                </p>
+              </div>
+
+              {/* State pill for the set */}
+              <span
+                className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                  noiResult.state === 'projected' ? 'bg-amber-500/15 text-amber-400'
+                  : noiResult.state === 'live' ? 'bg-emerald-500/15 text-emerald-400'
+                  : noiResult.state === 'incomplete' ? 'bg-gray-500/15 text-gray-400'
+                  : 'bg-blue-500/15 text-blue-400'
+                }`}
+              >
+                {noiResult.state === 'incomplete' ? 'INCOMPLETE' : noiResult.state.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -54,7 +55,7 @@ const nextConfig: NextConfig = {
               // Images: self + data URIs + Google + CDN thumbnails
               "img-src 'self' data: blob: *.googleapis.com *.gstatic.com *.googleusercontent.com *.bridgedataoutput.com *.facebook.com *.fbcdn.net",
               // XHR/fetch/WebSocket: Firebase, Bridge API, Google Places, Stripe, Neon, FB OAuth
-              "connect-src 'self' apis.google.com *.googleapis.com *.firebaseio.com wss://*.firebaseio.com *.firebaseapp.com api.bridgedataoutput.com places.googleapis.com *.stripe.com *.google-analytics.com *.analytics.google.com neon.tech *.neon.tech *.facebook.com graph.facebook.com",
+              "connect-src 'self' apis.google.com *.googleapis.com *.firebaseio.com wss://*.firebaseio.com *.firebaseapp.com api.bridgedataoutput.com places.googleapis.com *.stripe.com *.google-analytics.com *.analytics.google.com neon.tech *.neon.tech *.facebook.com graph.facebook.com *.sentry.io *.ingest.sentry.io *.ingest.us.sentry.io *.posthog.com",
               // Frames: Firebase auth SDK internal iframes + Stripe + Facebook OAuth
               "frame-src 'self' *.firebaseapp.com accounts.google.com *.stripe.com js.stripe.com *.facebook.com www.facebook.com",
               // Prevent this site from being framed by others
@@ -76,8 +77,85 @@ const nextConfig: NextConfig = {
         source: '/__/auth/:path*',
         destination: 'https://paperworking-97055.firebaseapp.com/__/auth/:path*',
       },
+      // Top-level Navigation Route Rewrites
+      {
+        source: '/tos',
+        destination: '/terms',
+      },
+      {
+        source: '/data-room',
+        destination: '/dashboard/data-room',
+      },
+      {
+        source: '/data-room/:path*',
+        destination: '/dashboard/data-room/:path*',
+      },
+      {
+        source: '/insights',
+        destination: '/dashboard/insights',
+      },
+      {
+        source: '/insights/:path*',
+        destination: '/dashboard/insights/:path*',
+      },
+      {
+        source: '/tax',
+        destination: '/dashboard/tax',
+      },
+      {
+        source: '/tax/:path*',
+        destination: '/dashboard/tax/:path*',
+      },
+      {
+        source: '/account',
+        destination: '/dashboard/settings',
+      },
+      {
+        source: '/account/:path*',
+        destination: '/dashboard/settings/:path*',
+      },
+      // Per-Project Phase Route Rewrites (Named Aliases -> Numeric Paths)
+      {
+        source: '/dashboard/projects/:id/acquisition',
+        destination: '/dashboard/projects/:id/phase-1',
+      },
+      {
+        source: '/dashboard/projects/:id/acquisition/:path*',
+        destination: '/dashboard/projects/:id/phase-1/:path*',
+      },
+      {
+        source: '/dashboard/projects/:id/transaction',
+        destination: '/dashboard/projects/:id/phase-2',
+      },
+      {
+        source: '/dashboard/projects/:id/transaction/:path*',
+        destination: '/dashboard/projects/:id/phase-2/:path*',
+      },
+      {
+        source: '/dashboard/projects/:id/rehab',
+        destination: '/dashboard/projects/:id/phase-3',
+      },
+      {
+        source: '/dashboard/projects/:id/rehab/:path*',
+        destination: '/dashboard/projects/:id/phase-3/:path*',
+      },
+      {
+        source: '/dashboard/projects/:id/hold-exit',
+        destination: '/dashboard/projects/:id/phase-4',
+      },
+      {
+        source: '/dashboard/projects/:id/hold-exit/:path*',
+        destination: '/dashboard/projects/:id/phase-4/:path*',
+      },
     ];
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "paperworking",
+  project: "paperworking-nextjs",
+  silent: true,
+  widenClientFileUpload: true,
+  disableLogger: true,
+  automaticVercelMonitors: true,
+});

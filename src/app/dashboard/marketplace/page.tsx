@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Search,
   MapPin,
@@ -15,6 +16,7 @@ import { isSubscriptionActive } from '@/lib/stripe/subscription';
 import { projectsService } from '@/lib/firebase/deals';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
+import VendorSideSheet, { type VendorSideSheetData } from '@/components/marketplace/VendorSideSheet';
 import { VendorProfile } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -113,9 +115,11 @@ const CATEGORY_BADGE_STYLES: Record<string, string> = {
 function VendorCard({
   vendor,
   onRequestQuote,
+  onViewProfile,
 }: {
   vendor: typeof DEMO_VENDORS[number] & { id: string };
   onRequestQuote: (v: any) => void;
+  onViewProfile: (vendorId: string) => void;
 }) {
   const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-slate-400';
   const stars = Math.round(vendor.rating * 2) / 2;
@@ -163,6 +167,7 @@ function VendorCard({
       <div className="flex gap-2 mt-auto pt-1">
         <button
           type="button"
+          onClick={() => onViewProfile(vendor.id)}
           className="flex-1 px-3 py-2 rounded-lg border border-teal-500/40 text-teal-400 text-xs font-bold hover:border-teal-400 hover:bg-teal-400/5 transition-all"
         >
           View Profile
@@ -175,6 +180,11 @@ function VendorCard({
           Request Quote
         </button>
       </div>
+
+      {/* Vetting Disclaimer */}
+      <p className="text-[10px] text-slate-500 border-t border-white/5 pt-2 leading-relaxed">
+        PaperWorking does not vet vendors. You must verify credentials and references before engaging.
+      </p>
     </div>
   );
 }
@@ -183,6 +193,7 @@ export default function MarketplacePage() {
   /* ── Preserved Firestore / data hooks ── */
   useAllDealsSync();
 
+  const router = useRouter();
   const { profile, user } = useAuth();
   const projects = useProjectStore((state) => state.projects);
   const hasActiveSub = isSubscriptionActive(profile);
@@ -199,6 +210,10 @@ export default function MarketplacePage() {
   /* ── Quote modal state (preserved from original) ── */
   const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
+  /* ── Side sheet state ── */
+  const [sideSheetVendor, setSideSheetVendor] = useState<VendorSideSheetData | null>(null);
+  const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
   /* ── Fetch vendors from API (preserved from original) ── */
   useEffect(() => {
@@ -224,6 +239,9 @@ export default function MarketplacePage() {
 
     fetchVendors();
   }, [activeFilter, searchQuery]);
+
+  /* ── Track whether we're showing demo fallback data ── */
+  const isShowingDemoData = vendors.length === 0;
 
   /* ── Derive display list: API results → demo fallback ── */
   const displayVendors = useMemo(() => {
@@ -261,6 +279,33 @@ export default function MarketplacePage() {
   const handleRequestQuote = (vendor: any) => {
     setSelectedVendor(vendor as VendorProfile);
     setIsQuoteModalOpen(true);
+  };
+
+  const handleViewProfile = (vendorId: string) => {
+    // Try to find vendor in API results first, then demo data
+    const apiVendor = vendors.find(v => v.id === vendorId);
+    if (apiVendor) {
+      setSideSheetVendor({
+        uid: apiVendor.uid ?? apiVendor.id,
+        companyName: apiVendor.companyName,
+        type: apiVendor.type ?? 'Other',
+        bio: apiVendor.bio ?? '',
+        specialties: apiVendor.specialties ?? [],
+        licensingStates: apiVendor.licensingStates ?? [],
+        serviceAreas: apiVendor.serviceAreas,
+        avgTurnaroundDays: apiVendor.avgTurnaroundDays ?? 3,
+        overallRating: apiVendor.overallRating ?? 4.5,
+        totalReviews: apiVendor.totalReviews ?? 0,
+        availability: apiVendor.availability ?? 'Available',
+        feeRangeLabel: apiVendor.feeRangeLabel ?? 'Contact for pricing',
+        verified: apiVendor.verified ?? false,
+        insuranceVerified: apiVendor.insuranceVerified ?? false,
+      });
+      setIsSideSheetOpen(true);
+    } else {
+      // Demo vendor — navigate to profile page
+      router.push(`/dashboard/marketplace/${vendorId}`);
+    }
   };
 
   const handleFindVendors = () => {
@@ -327,9 +372,21 @@ export default function MarketplacePage() {
         <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-400/80 leading-relaxed">
           <span className="font-bold text-amber-400">Disclaimer: </span>
-          PaperWorking does not vet vendors. Investors must perform their own due diligence prior to engagement.
+          PaperWorking does not vet vendors. You must verify credentials and references before engaging.
         </p>
       </div>
+
+      {/* ── Sample Data Banner (shown when falling back to demo vendors) ── */}
+      {!loadingVendors && isShowingDemoData && displayVendors.length > 0 && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-sky-500/20 bg-sky-500/5">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-sky-400/15 border border-sky-400/30 text-sky-400">
+            Sample Data
+          </span>
+          <p className="text-xs text-sky-400/80">
+            These are example vendor profiles. Real vendors will appear once they register on the marketplace.
+          </p>
+        </div>
+      )}
 
       {/* ── Vendor Grid ── */}
       {loadingVendors ? (
@@ -356,6 +413,7 @@ export default function MarketplacePage() {
               key={vendor.id}
               vendor={vendor}
               onRequestQuote={handleRequestQuote}
+              onViewProfile={handleViewProfile}
             />
           ))}
         </div>
@@ -368,6 +426,39 @@ export default function MarketplacePage() {
         onClose={() => {
           setIsQuoteModalOpen(false);
           setSelectedVendor(null);
+        }}
+      />
+
+      {/* ── Side Sheet for quick vendor preview ── */}
+      <VendorSideSheet
+        vendor={sideSheetVendor}
+        open={isSideSheetOpen}
+        onClose={() => {
+          setIsSideSheetOpen(false);
+          setSideSheetVendor(null);
+        }}
+        onRequestQuote={(v) => {
+          setIsSideSheetOpen(false);
+          setSideSheetVendor(null);
+          // Convert VendorSideSheetData to VendorProfile shape for the modal
+          setSelectedVendor({
+            id: v.uid,
+            uid: v.uid,
+            companyName: v.companyName,
+            type: v.type as any,
+            bio: v.bio,
+            specialties: v.specialties,
+            licensingStates: v.licensingStates,
+            serviceAreas: v.serviceAreas,
+            avgTurnaroundDays: v.avgTurnaroundDays,
+            overallRating: v.overallRating,
+            totalReviews: v.totalReviews,
+            availability: v.availability as any,
+            feeRangeLabel: v.feeRangeLabel,
+            verified: v.verified,
+            insuranceVerified: v.insuranceVerified,
+          });
+          setIsQuoteModalOpen(true);
         }}
       />
     </div>

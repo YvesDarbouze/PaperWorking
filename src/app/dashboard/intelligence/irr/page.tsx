@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { IRRExitAssumptionsTerminal } from '@/components/intelligence/IRRExitAssumptionsTerminal';
+import type { IRRAssumptions } from '@/components/intelligence/IRRExitAssumptionsTerminal';
+import { IRRScenarioComparisonCard } from '@/components/intelligence/IRRScenarioComparisonCard';
 
 /* ═══════════════════════════════════════════════════════════════
    IRR Intelligence — Stitch screen: 730ea3ab98c047189ac5010c875ecffd
@@ -105,7 +109,46 @@ export default function IRRIntelligencePage() {
   const [scope, setScope] = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('annual');
 
-  const { currentIRR, projectedGain, realizedToDate, benchmarkPct } = useMemo(() => {
+  /* ── Reactive state from Exit Assumptions Terminal ── */
+  const [assumptions, setAssumptions] = useState<IRRAssumptions | null>(null);
+  const handleAssumptionsChange = useCallback((v: IRRAssumptions) => setAssumptions(v), []);
+
+  /* ── Portfolio-derived defaults ── */
+  const portfolioDefaults = useMemo(() => {
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
+    if (withPrice.length > 0) {
+      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? 0), 0) / withPrice.length;
+      const avgLoan = withPrice.reduce((s, p) => s + (p.financials?.loanAmount ?? 0), 0) / withPrice.length;
+      const avgCashInvested = withPrice.reduce((s, p) => s + (p.financials?.financingCashInvested ?? 0), 0) / withPrice.length;
+      return {
+        totalCashInvested: Math.round(avgCashInvested || 60000),
+        purchasePrice: Math.round(avgPrice),
+        loanAmount: Math.round(avgLoan || avgPrice * 0.785),
+        loanRate: (withPrice[0]?.financials?.loanInterestRate ?? 7),
+        loanTermYears: (withPrice[0]?.financials?.loanTermYears ?? 30),
+      };
+    }
+    return {
+      totalCashInvested: 60000,
+      purchasePrice: 279000,
+      loanAmount: 219000,
+      loanRate: 7,
+      loanTermYears: 30,
+    };
+  }, [projects]);
+
+  /* ── Scenario card inputs (derived from interactive or defaults) ── */
+  const scenarioInputs = useMemo(() => ({
+    totalCashInvested: assumptions?.totalCashInvested ?? portfolioDefaults.totalCashInvested,
+    annualCashFlow: assumptions?.annualCashFlow ?? 1722,
+    purchasePrice: assumptions?.purchasePrice ?? portfolioDefaults.purchasePrice,
+    loanAmount: assumptions?.loanAmount ?? portfolioDefaults.loanAmount,
+    loanRate: assumptions?.loanRate ?? portfolioDefaults.loanRate,
+    loanTermYears: assumptions?.loanTermYears ?? portfolioDefaults.loanTermYears,
+    sellingCostsPercent: assumptions?.sellingCostsPercent ?? 8,
+  }), [assumptions, portfolioDefaults]);
+
+  const { isUsingDemoData, currentIRR, projectedGain, realizedToDate, benchmarkPct } = useMemo(() => {
     const latestSnap = snapshots?.[snapshots.length - 1];
     const irr = latestSnap?.irr ?? null;
 
@@ -113,6 +156,7 @@ export default function IRRIntelligencePage() {
       const totalValue = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.estimatedARV ?? 0), 0);
       const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
       return {
+        isUsingDemoData: false,
         currentIRR: irr,
         projectedGain: totalValue - totalCost,
         realizedToDate: irr * 0.45,
@@ -120,8 +164,8 @@ export default function IRRIntelligencePage() {
       };
     }
 
-    return { currentIRR: 18.4, projectedGain: 4_200_000, realizedToDate: 8.2, benchmarkPct: 75 };
-  }, [snapshots, projects]);
+    return { isUsingDemoData: true, currentIRR: assumptions?.irr !== null ? (assumptions?.irr ?? 0.184) * 100 : 18.4, projectedGain: 4_200_000, realizedToDate: 8.2, benchmarkPct: 75 };
+  }, [snapshots, projects, assumptions]);
 
   const fmt = (v: number) => v >= 1_000_000 ? `+$${(v / 1_000_000).toFixed(1)}M` : `+$${(v / 1000).toFixed(0)}k`;
 
@@ -171,6 +215,8 @@ export default function IRRIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Bento Row 1: Hero + Scenarios Chart ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -234,6 +280,32 @@ export default function IRRIntelligencePage() {
           </div>
           <ScenariosChart scenarios={DEMO_SCENARIOS} />
         </div>
+      </div>
+
+      {/* ── IRR Exit Assumptions + Scenario Comparison Row ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Exit Assumptions Terminal */}
+        <IRRExitAssumptionsTerminal
+          defaults={{
+            totalCashInvested: portfolioDefaults.totalCashInvested,
+            annualCashFlow: 1722,
+            holdYears: 5,
+            purchasePrice: portfolioDefaults.purchasePrice,
+            appreciationPercent: 3,
+            loanAmount: portfolioDefaults.loanAmount,
+            loanRate: portfolioDefaults.loanRate,
+            loanTermYears: portfolioDefaults.loanTermYears,
+            sellingCostsPercent: 8,
+          }}
+          onValuesChange={handleAssumptionsChange}
+        />
+
+        {/* Scenario Comparison Card */}
+        <IRRScenarioComparisonCard
+          inputs={scenarioInputs}
+          holdPeriods={[3, 5, 7, 10]}
+          hurdleRate={0.12}
+        />
       </div>
 
       {/* ── Sensitivity Analysis ── */}

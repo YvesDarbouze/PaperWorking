@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Project, CostEntry, ProjectFinancials, ProjectTeamMember, FractionalInvestor, HistoricalProperty, ProspectProperty, FundingPledge, CostBasisLedger, RoleLinkedDocument, RehabExpense, HoldingCostEntry, SiteVisitLog, ClosingChecklistItem, ExitCostLineItem, SettlementDocument, LedgerItem, LOIDocument, InvestorCommitment, GuestPortalToken, Negotiation, Contingency, LoanStatus, DueDiligenceItem, RehabScheduleTask } from '@/types/schema';
+import { deriveAllProjectMetrics } from '@/lib/metrics';
+import type { ActiveProjectMetrics } from '@/lib/metrics';
+
 
 /* ═══════════════════════════════════════════════════════════════
    Deal Store — Global State Engine for the Active Deal
@@ -47,19 +50,7 @@ interface ProjectMetrics {
 // ─── Per-Deal Derived Metrics ────────────────────────────────
 // Auto-calculated whenever currentProject or its financials change.
 // Consumed by ExitPanel / NetEngine without re-deriving locally.
-interface ActiveProjectMetrics {
-  purchasePrice: number;
-  renovationCosts: number;         // Sum of all approved CostEntries + inspection actuals
-  closingCostsBuy: number;         // Capital cost (origination points)
-  closingCostsSell: number;        // Final closing costs + agent commissions
-  holdingCosts: number;            // Interest over hold period
-  salePrice: number;               // actualSalePrice or estimatedARV
-  netProfit: number;               // SalePrice - (all costs above)
-  roi: number;                     // (netProfit / totalInvestment) * 100
-  annualizedIrr: number;           // roi * (365 / holdDays)
-  holdDays: number;
-  totalInvestment: number;
-}
+
 
 // ─── Store Interface ─────────────────────────────────────────
 interface ProjectState {
@@ -76,6 +67,7 @@ interface ProjectState {
   setLedgerItems: (projectId: string, items: LedgerItem[]) => void;
   setDeal: (deal: Project) => void;
   clearDeal: () => void;
+  clearStore: () => void;
   addProject: (project: Project) => void;
   setWhatIfOffset: (months: number) => void;
 
@@ -160,104 +152,10 @@ const initialActiveProjectMetrics: ActiveProjectMetrics = {
 };
 
 // ─── Per-Deal Calculator ─────────────────────────────────────
-// Encapsulates the exact formula:
-//   NetProfit = SalePrice - (PurchasePrice + ClosingCostsBuy/Sell
-//               + RenovationCosts + HoldingCosts)
-function deriveActiveProjectMetrics(deal: Project | null, whatIfOffsetMonths: number): ActiveProjectMetrics {
+// Delegates calculation to the pure metrics engine
+function deriveActiveProjectMetrics(deal: Project | null, whatIfOffsetMonths: number, ledgerItems: LedgerItem[] = []): ActiveProjectMetrics {
   if (!deal) return initialActiveProjectMetrics;
-
-  const purchasePrice = deal.financials?.purchasePrice || 0;
-
-  // ─── Renovation Costs (sum of all approved ledger entries from sub-collection)
-  let renovationCosts = 0;
-  const items = useProjectStore.getState().ledgerItems[deal.id] || [];
-  
-  items.forEach(item => {
-    if (item.status === 'Approved') {
-      renovationCosts += item.amount;
-    }
-  });
-
-  // Fallback to legacy costs if sub-collection is empty (for transition)
-  if (items.length === 0 && deal.financials?.costs) {
-    deal.financials.costs.forEach(c => {
-      if (c.approved) renovationCosts += c.amount;
-    });
-  }
-
-  const inspectionsCost = deal.financials?.inspections?.reduce((acc, curr) => acc + (curr.actualCost || 0), 0) || 0;
-  renovationCosts += inspectionsCost;
-
-  // ─── Capital Costs (Closing Costs Buy — origination points)
-  const interestRate = (deal.financials?.loanInterestRate || 0) / 100;
-  const points = (deal.financials?.loanOriginationPoints || 0) / 100;
-  const loanAmount = deal.financials?.loanAmount || (purchasePrice + renovationCosts);
-  const closingCostsBuy = loanAmount * points;
-
-  // ─── Holding Costs (interest accruing over hold period)
-  const now = new Date();
-  const soldDate = deal.financials?.soldDate ? new Date(deal.financials.soldDate) : null;
-  const createdDate = new Date(deal.createdAt || now);
-
-  let holdDays = deal.financials?.estimatedTimelineDays || 90;
-  if (soldDate) {
-    const ms = soldDate.getTime() - createdDate.getTime();
-    holdDays = Math.max(1, ms / (1000 * 60 * 60 * 24));
-  } else {
-    const ms = now.getTime() - createdDate.getTime();
-    const elapsed = ms / (1000 * 60 * 60 * 24);
-    holdDays = Math.max(holdDays, elapsed);
-  }
-
-  // What-If simulator offsets the timeline
-  const adjustedMonths = Math.max(0, holdDays / 30 + whatIfOffsetMonths);
-  const timelineYears = adjustedMonths / 12;
-  const holdingCosts = loanAmount * interestRate * timelineYears;
-
-  // ─── Sale Price (either actual or projected ARV)
-  const salePrice = deal.financials?.actualSalePrice || deal.financials?.estimatedARV || 0;
-
-  // ─── Closing Costs Sell (agent commissions + final closing costs + exit ledger)
-  const buyerPercent = deal.financials?.buyersAgentCommission || 0;
-  const sellerPercent = deal.financials?.sellersAgentCommission || 0;
-  const agentCommissions = salePrice * ((buyerPercent + sellerPercent) / 100);
-  const finalClosingCosts = deal.financials?.finalClosingCosts || 0;
-
-  // Add ledger-based exit costs
-  let ledgerExitCosts = 0;
-  deal.exitCosts?.forEach(ec => {
-    if (ec.isPercentage && ec.percentageRate) {
-      ledgerExitCosts += (ec.percentageRate / 100) * salePrice;
-    } else {
-      ledgerExitCosts += ec.amount;
-    }
-  });
-
-  const closingCostsSell = agentCommissions + finalClosingCosts + ledgerExitCosts;
-
-
-  // ─── THE FORMULA ───────────────────────────────────────────
-  // NetProfit = SalePrice - (PurchasePrice + ClosingCostsBuy/Sell
-  //             + RenovationCosts + HoldingCosts)
-  const totalInvestment = purchasePrice + closingCostsBuy + closingCostsSell + renovationCosts + holdingCosts;
-  const netProfit = salePrice - totalInvestment;
-
-  const roi = totalInvestment > 0 ? (netProfit / totalInvestment) * 100 : 0;
-  const annualizedIrr = holdDays > 0 ? roi * (365 / holdDays) : 0;
-
-  return {
-    purchasePrice,
-    renovationCosts,
-    closingCostsBuy,
-    closingCostsSell,
-    holdingCosts,
-    salePrice,
-    netProfit,
-    roi,
-    annualizedIrr,
-    holdDays,
-    totalInvestment,
-  };
+  return deriveAllProjectMetrics(deal, whatIfOffsetMonths, ledgerItems);
 }
 
 // ─── Zustand Store with Persist Middleware ────────────────────
@@ -301,12 +199,24 @@ export const useProjectStore = create<ProjectState>()(
       setDeal: (deal) => {
         set({ currentProject: deal });
         // Immediately derive metrics for the newly selected deal
-        const { whatIfOffsetMonths } = get();
-        set({ activeProjectMetrics: deriveActiveProjectMetrics(deal, whatIfOffsetMonths) });
+        const { whatIfOffsetMonths, ledgerItems } = get();
+        const items = ledgerItems[deal.id] || [];
+        set({ activeProjectMetrics: deriveActiveProjectMetrics(deal, whatIfOffsetMonths, items) });
       },
 
       clearDeal: () => {
         set({ currentProject: null, activeProjectMetrics: initialActiveProjectMetrics });
+      },
+
+      clearStore: () => {
+        set({
+          projects: [],
+          currentProject: null,
+          ledgerItems: {},
+          metrics: initialMetrics,
+          activeProjectMetrics: initialActiveProjectMetrics,
+          whatIfOffsetMonths: 0,
+        });
       },
 
       addProject: (project) => {
@@ -890,7 +800,8 @@ export const useProjectStore = create<ProjectState>()(
         }
 
         // ─── Per-Deal Derived Metrics ────────────────────────
-        const activeProjectMetrics = deriveActiveProjectMetrics(currentProject, whatIfOffsetMonths);
+        const items = currentProject ? (ledgerItems[currentProject.id] || []) : [];
+        const activeProjectMetrics = deriveActiveProjectMetrics(currentProject, whatIfOffsetMonths, items);
 
         set({
           metrics: {
@@ -923,8 +834,38 @@ export const useProjectStore = create<ProjectState>()(
       // Dates are serialized as strings by JSON.stringify; the panels
       // already defensive-cast them via `new Date(...)`.
       partialize: (state) => ({
-        projects: state.projects,
-        currentProject: state.currentProject,
+        projects: state.projects.map(p => ({
+          id: p.id,
+          organizationId: p.organizationId,
+          propertyName: p.propertyName,
+          address: p.address,
+          status: p.status,
+          phaseStatus: p.phaseStatus,
+          strategyType: p.strategyType,
+          assetClass: p.assetClass,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          ownerUid: p.ownerUid,
+          currentPhase: p.currentPhase,
+          financials: p.financials,
+          members: p.members,
+        } as Project)),
+        currentProject: state.currentProject ? ({
+          id: state.currentProject.id,
+          organizationId: state.currentProject.organizationId,
+          propertyName: state.currentProject.propertyName,
+          address: state.currentProject.address,
+          status: state.currentProject.status,
+          phaseStatus: state.currentProject.phaseStatus,
+          strategyType: state.currentProject.strategyType,
+          assetClass: state.currentProject.assetClass,
+          createdAt: state.currentProject.createdAt,
+          updatedAt: state.currentProject.updatedAt,
+          ownerUid: state.currentProject.ownerUid,
+          currentPhase: state.currentProject.currentPhase,
+          financials: state.currentProject.financials,
+          members: state.currentProject.members,
+        } as Project) : null,
         whatIfOffsetMonths: state.whatIfOffsetMonths,
       }),
       // Hydration merge: keep version-safe defaults for newly added fields

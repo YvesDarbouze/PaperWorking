@@ -2,43 +2,106 @@
 
 import React from "react";
 
+/**
+ * MarketHeatmap — MLS Data Feed Placeholder
+ *
+ * Displays a placeholder card with a subtle grid pattern background
+ * and a CTA to connect MLS data feed. Maintains glass card aesthetic.
+ */
+
 export function MarketHeatmap() {
   return (
-    <div className="glass-card rounded-xl overflow-hidden relative group h-full min-h-[240px]">
-      <div className="absolute top-5 left-5 z-10">
-        <h3 className="font-label-md text-label-md text-white drop-shadow-md">
-          Market Heatmap: Yield Density
-        </h3>
-        <p className="font-label-sm text-label-sm text-white/70 drop-shadow-md">
-          Top 25 MSA focus areas
-        </p>
-      </div>
-
-      {/* Overlay gradient for text readability */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/40 z-0 pointer-events-none" />
-
-      {/* Action button overlay */}
-      <div className="absolute bottom-5 right-5 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <button className="bg-surface-container-high/80 backdrop-blur-md text-on-surface font-label-sm text-label-sm px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1 cursor-pointer">
-          <span 
-            className="material-symbols-outlined" 
-            style={{ fontSize: "16px" }}
-          >
-            open_in_full
-          </span>{" "}
-          Expand Map
-        </button>
-      </div>
-
-      {/* Map Image */}
-      <img
-        alt="Dark mode interactive market heatmap"
-        className="w-full h-full object-cover grayscale opacity-60 mix-blend-screen"
-        src="https://lh3.googleusercontent.com/aida-public/AB6AXuClV_E6kC-cxfEdL_aYoXwCGX0IXfvER9Khxz-UKXSIHqr2mLLBRjKNiuMqMgKzLkNfCmpsvNWZdIn37Mk7SLtzkx7LnKmky-lKkmKyZaC7mLeMzCefffGLrk_IRcaUZf8VK6_D4pIrIOEcz6bNIJJtZ84D7U1PHyW4ss61PY4-T3evmJ4ByFikCKQOyzz68ADjB8VsV9ycLjgYo_RFRpegliIJtIsNjWSoEgpEFPCibyAI9-5QkJearDQDtgbA2cwBIsefGkyjw1nb"
+    <div
+      className="rounded-2xl overflow-hidden relative h-full min-h-[280px] flex flex-col items-center justify-center"
+      style={{
+        backgroundColor: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        backdropFilter: "blur(12px)",
+      }}
+    >
+      {/* Grid pattern background decoration */}
+      <div
+        className="absolute inset-0 pointer-events-none"
         style={{
-          filter: "sepia(100%) hue-rotate(140deg) saturate(300%) contrast(150%) brightness(50%)",
+          backgroundImage: `
+            linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)
+          `,
+          backgroundSize: "32px 32px",
         }}
       />
+
+      {/* Radial gradient overlay for depth */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at center, rgba(45,212,191,0.04) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center gap-4 text-center px-6">
+        {/* Icon */}
+        <div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center"
+          style={{ backgroundColor: "rgba(45,212,191,0.08)" }}
+        >
+          <span
+            className="material-symbols-outlined text-3xl"
+            style={{ color: "rgba(45,212,191,0.6)" }}
+          >
+            map
+          </span>
+        </div>
+
+        {/* Title & Description */}
+        <div>
+          <h3
+            className="text-base font-semibold mb-1"
+            style={{ color: "rgba(218,228,236,0.7)" }}
+          >
+            Market Heatmap
+          </h3>
+          <p
+            className="text-xs max-w-[260px]"
+            style={{ color: "rgba(218,228,236,0.35)" }}
+          >
+            Connect your MLS data feed to visualize yield density across your
+            target markets.
+          </p>
+        </div>
+
+        {/* CTA Button */}
+        <button
+          className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+          style={{
+            backgroundColor: "rgba(45,212,191,0.12)",
+            color: "#2dd4bf",
+            border: "1px solid rgba(45,212,191,0.2)",
+          }}
+        >
+          <span className="material-symbols-outlined text-base">
+            add_link
+          </span>
+          Connect MLS Data Feed
+        </button>
+
+        {/* Subtle feature badges */}
+        <div className="flex flex-wrap justify-center gap-2 mt-1">
+          {["Yield Density", "Comp Analysis", "Trend Overlay"].map((feature) => (
+            <span
+              key={feature}
+              className="text-[10px] px-2 py-1 rounded-full"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.04)",
+                color: "rgba(218,228,236,0.3)",
+              }}
+            >
+              {feature}
+            </span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

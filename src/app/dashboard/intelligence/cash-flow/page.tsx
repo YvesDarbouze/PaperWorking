@@ -2,11 +2,13 @@
 
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { DebtServiceInputForm } from '@/components/intelligence/DebtServiceInputForm';
 
 /* ═══════════════════════════════════════════════════════════════
    Cash Flow Detail — Diverging Trend Page
@@ -152,7 +154,7 @@ export default function CashFlowIntelligencePage() {
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  const { netCashFlow, cfChange, chartLabels, inflowBars, outflowBars, sparkline, stats } = useMemo(() => {
+  const { isUsingDemoData, netCashFlow, cfChange, chartLabels, inflowBars, outflowBars, sparkline, stats } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -170,6 +172,7 @@ export default function CashFlowIntelligencePage() {
       const best  = Math.max(...mcfVals);
       const worst = Math.min(...mcfVals);
       return {
+        isUsingDemoData: false,
         netCashFlow: last,
         cfChange: pctChg,
         chartLabels: labels,
@@ -185,6 +188,7 @@ export default function CashFlowIntelligencePage() {
     const best  = positiveVals.length > 0 ? Math.max(...positiveVals) : 0;
     const worst = Math.min(...DEMO_NET);
     return {
+      isUsingDemoData: true,
       netCashFlow: DEMO_NET_CF,
       cfChange: DEMO_CF_CHANGE,
       chartLabels: DEMO_MONTHS_LABELS,
@@ -193,6 +197,21 @@ export default function CashFlowIntelligencePage() {
       sparkline: DEMO_SPARKLINE,
       stats: { avg, best, worst, ytd },
     };
+  }, [snapshots]);
+
+  /* ── Portfolio NOI (distinct from cash flow) ── */
+  const portfolioNoi = useMemo(() => {
+    if (snapshots && snapshots.length > 0) {
+      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
+      const latestNoi = sorted[sorted.length - 1]?.noi;
+      if (latestNoi && latestNoi > 0) return latestNoi;
+    }
+    const projects = useProjectStore.getState().projects;
+    const withNoi = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
+    if (withNoi.length > 0) {
+      return withNoi.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
+    }
+    return 12486; // seed
   }, [snapshots]);
 
   const fmt = (n: number) => `${n < 0 ? '-' : ''}$${Math.abs(n).toLocaleString()}`;
@@ -243,6 +262,8 @@ export default function CashFlowIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Hero Card (full width) ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
@@ -390,6 +411,14 @@ export default function CashFlowIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── Debt Service Calculator Form ── */}
+      <DebtServiceInputForm
+        noi={portfolioNoi}
+        defaultLoanAmount={240000}
+        defaultRate={7.25}
+        defaultTerm={30}
+      />
 
     </div>
   );

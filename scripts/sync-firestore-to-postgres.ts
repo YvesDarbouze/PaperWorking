@@ -19,7 +19,7 @@ async function main() {
 
   try {
     // 1. Fetch all deals from Firestore using Admin SDK
-    const dealsSnapshot = await adminDb.collection('deals').get();
+    const dealsSnapshot = await adminDb.collection('projects').get();
     const dealsCount = dealsSnapshot.size;
     console.log(`📦 Found ${dealsCount} deals to synchronize.`);
 

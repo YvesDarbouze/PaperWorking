@@ -152,6 +152,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                     <p className="text-xs text-pw-muted flex items-center gap-1"><Search className="w-3 h-3"/> Discovered Matches Near Property:</p>
                                     {isSearchingLawyers ? (
                                         <p className="text-sm text-pw-muted">Searching for attorneys nearby...</p>
+                                    ) : matchingLawyers.length === 0 ? (
+                                        <p className="text-sm text-pw-muted">No attorneys found in this state. Try adjusting the property address or contact support.</p>
                                     ) : (
                                         <div className="space-y-2">
                                             {matchingLawyers.map(l => (

@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { Project } from '@/types/schema';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
-import { TrendingUp, Activity, DollarSign, Percent, CheckCircle, Clock } from 'lucide-react';
 
 export type ScopeMode = 'property' | 'myShare';
 export type PeriodFilter = 'M' | 'Q' | 'Y' | 'ALL';
@@ -25,7 +24,7 @@ function formatCurrency(value: number): string {
 
 function formatPercent(value: number): string {
   if (!isFinite(value) || isNaN(value)) return '--';
-  return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+  return `${value.toFixed(1)}%`;
 }
 
 function periodCutoff(period: PeriodFilter): Date | null {
@@ -39,26 +38,11 @@ function periodCutoff(period: PeriodFilter): Date | null {
   }
 }
 
-interface LuminousCardProps {
+interface MetricCardData {
   label: string;
   value: string;
-  icon: React.ElementType;
-  bottomContent?: React.ReactNode;
-}
-
-function LuminousCard({ label, value, icon: Icon, bottomContent }: LuminousCardProps) {
-  return (
-    <div className="glass-card rounded-xl p-6 light-leak flex flex-col justify-between">
-      <div>
-        <div className="flex justify-between items-start mb-4">
-          <span className="text-on-surface-variant font-label-md uppercase tracking-wider">{label}</span>
-          <Icon className="w-5 h-5 text-primary" />
-        </div>
-        <div className="jetbrains-mono text-3xl font-bold text-on-surface">{value}</div>
-      </div>
-      {bottomContent}
-    </div>
-  );
+  isWarning: boolean;
+  visualType: 'bar' | 'line' | 'badge' | 'box';
 }
 
 export default function CommandCenterKPIStrip({ projects, scope, period }: CommandCenterKPIStripProps) {
@@ -74,48 +58,90 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
 
   const kpis = useMemo(() => {
     if (filteredProjects.length === 0) {
-      return { totalValue: '--', irr: '--', coc: '--' };
+      return {
+        noi: 0,
+        cashFlow: 0,
+        capRate: 0,
+        coc: 0,
+        grm: 0,
+        dscr: 0,
+        irr: 0,
+        occupancy: 100,
+        oer: 0,
+        appreciation: 0,
+        capitalRaised: 0,
+      };
     }
 
-    let totalPortfolioValue = 0;
-    let totalCoCWeighted = 0;
-    let totalWeight = 0;
+    let totalNOI = 0;
+    let totalCashFlow = 0;
+    let totalPurchasePrice = 0;
+    let totalCashInvested = 0;
+    let totalPropertyValue = 0;
+    let totalGrossRentalIncome = 0;
+    let totalOpEx = 0;
+    let totalAnnualDebtService = 0;
+    let totalCapitalRaised = 0;
+    
+    let totalUnits = 0;
+    let totalOccupancyWeighted = 0;
+    let totalAppreciationWeighted = 0;
+    let totalAppreciationWeight = 0;
+    
     const allIRRFlows: number[][] = [];
 
     for (const p of filteredProjects) {
-      if (!p.financials) continue;
+      const f = p.financials;
+      if (!f) continue;
 
       const metrics = deriveAllMetrics(
-        p.financials,
-        p.financials.estimatedCurrentValue,
+        f,
+        f.estimatedCurrentValue || f.estimatedARV,
         p.strategyType,
         p.currentPhase,
         p.createdAt
       );
 
-      const ownershipFactor = scope === 'myShare'
-        ? (p.financials.ownershipPercentage ?? 100) / 100
+      const factor = scope === 'myShare'
+        ? (f.ownershipPercentage ?? 100) / 100
         : 1;
 
-      const purchasePrice = p.financials.purchasePrice ?? 0;
-      const weight = purchasePrice > 0 ? purchasePrice : 1;
-      const value = (p.financials.estimatedCurrentValue || p.financials.purchasePrice || 0) * ownershipFactor;
+      const purchasePrice = f.purchasePrice ?? f.targetPrice ?? f.targetPurchasePrice ?? 0;
+      const loanAmount = f.loanAmount ?? 0;
+      const committedCapital = f.committedCapital ?? f.capitalRaiseTarget ?? (purchasePrice - loanAmount);
+      
+      const value = (f.estimatedCurrentValue || f.estimatedARV || purchasePrice || 0) * factor;
 
-      totalPortfolioValue += value;
-      totalCoCWeighted += metrics.cashOnCashReturn * weight;
-      totalWeight += weight;
+      totalNOI += metrics.noi * factor;
+      totalCashFlow += metrics.annualCashFlow * factor;
+      totalPurchasePrice += purchasePrice * factor;
+      totalCashInvested += metrics.totalCashInvested * factor;
+      totalPropertyValue += value;
+      totalGrossRentalIncome += metrics.noiComponents.grossRentalIncome * factor;
+      totalOpEx += metrics.noiComponents.totalOperatingExpenses * factor;
+      totalAnnualDebtService += metrics.annualDebtService * factor;
+      totalCapitalRaised += committedCapital * factor;
+
+      // Occupancy
+      const units = f.numberOfUnits ?? 1;
+      totalUnits += units;
+      totalOccupancyWeighted += metrics.occupancyRate * units;
+
+      // Appreciation
+      totalAppreciationWeighted += (metrics.annualizedAppreciation || 0) * purchasePrice;
+      totalAppreciationWeight += purchasePrice;
 
       // IRR cash flows
-      const holdYears = p.financials.loanTermYears ?? 5;
+      const holdYears = f.loanTermYears ?? 5;
       const flows = buildIRRCashFlows(
-        metrics.totalCashInvested * ownershipFactor,
-        metrics.annualCashFlow * ownershipFactor,
+        metrics.totalCashInvested * factor,
+        metrics.annualCashFlow * factor,
         Math.min(holdYears, 10),
-        p.financials.purchasePrice ?? 0,
+        purchasePrice,
         metrics.annualizedAppreciation || 3,
-        (p.financials.loanAmount ?? 0) * ownershipFactor,
-        p.financials.loanInterestRate ?? 0,
-        p.financials.loanTermYears ?? 30,
+        loanAmount * factor,
+        f.loanInterestRate ?? 0,
+        f.loanTermYears ?? 30,
       );
       if (flows.length >= 2) allIRRFlows.push(flows);
     }
@@ -132,50 +158,159 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
       portfolioIRR = computeIRR(merged);
     }
 
-    const w = totalWeight || 1;
+    const avgCapRate = totalPurchasePrice > 0 ? (totalNOI / totalPurchasePrice) * 100 : 0;
+    const avgCoC = totalCashInvested > 0 ? (totalCashFlow / totalCashInvested) * 100 : 0;
+    const avgGRM = totalGrossRentalIncome > 0 ? (totalPropertyValue / totalGrossRentalIncome) : 0;
+    const avgDSCR = totalAnnualDebtService > 0 ? (totalNOI / totalAnnualDebtService) : (totalNOI > 0 ? 999 : 0);
+    const avgOccupancy = totalUnits > 0 ? totalOccupancyWeighted / totalUnits : 100;
+    const avgOer = totalGrossRentalIncome > 0 ? (totalOpEx / totalGrossRentalIncome) * 100 : 0;
+    const avgAppreciation = totalAppreciationWeight > 0 ? totalAppreciationWeighted / totalAppreciationWeight : 0;
+    const computedIrr = portfolioIRR != null ? portfolioIRR * 100 : null;
 
     return {
-      totalValue: formatCurrency(totalPortfolioValue),
-      irr: portfolioIRR != null ? formatPercent(portfolioIRR * 100) : '--',
-      coc: formatPercent(totalCoCWeighted / w),
+      noi: totalNOI,
+      cashFlow: totalCashFlow,
+      capRate: avgCapRate,
+      coc: avgCoC,
+      grm: avgGRM,
+      dscr: avgDSCR,
+      irr: computedIrr ?? 0,
+      occupancy: avgOccupancy,
+      oer: avgOer,
+      appreciation: avgAppreciation,
+      capitalRaised: totalCapitalRaised,
     };
   }, [filteredProjects, scope]);
 
+  const cardsList: MetricCardData[] = useMemo(() => {
+    return [
+      {
+        label: 'NOI',
+        value: formatCurrency(kpis.noi),
+        isWarning: kpis.noi < 0,
+        visualType: 'bar',
+      },
+      {
+        label: 'Cash Flow',
+        value: formatCurrency(kpis.cashFlow),
+        isWarning: kpis.cashFlow < 0,
+        visualType: 'line',
+      },
+      {
+        label: 'Cap Rate',
+        value: formatPercent(kpis.capRate),
+        isWarning: false,
+        visualType: 'badge',
+      },
+      {
+        label: 'CoC',
+        value: formatPercent(kpis.coc),
+        isWarning: kpis.coc < 4 && kpis.coc > 0,
+        visualType: 'badge',
+      },
+      {
+        label: 'GRM',
+        value: kpis.grm > 0 ? kpis.grm.toFixed(1) : '--',
+        isWarning: false,
+        visualType: 'box',
+      },
+      {
+        label: 'DSCR',
+        value: kpis.dscr === 999 ? '999' : (kpis.dscr > 0 ? kpis.dscr.toFixed(2) : '--'),
+        isWarning: kpis.dscr < 1.15 && kpis.dscr > 0,
+        visualType: 'box',
+      },
+      {
+        label: 'IRR',
+        value: kpis.irr > 0 ? formatPercent(kpis.irr) : '--',
+        isWarning: kpis.irr < 12 && kpis.irr > 0,
+        visualType: 'box',
+      },
+      {
+        label: 'Occupancy',
+        value: formatPercent(kpis.occupancy),
+        isWarning: kpis.occupancy < 90,
+        visualType: 'box',
+      },
+      {
+        label: 'Exp Ratio',
+        value: formatPercent(kpis.oer),
+        isWarning: kpis.oer > 45,
+        visualType: 'box',
+      },
+      {
+        label: 'Appreciation',
+        value: formatPercent(kpis.appreciation),
+        isWarning: false,
+        visualType: 'box',
+      },
+      {
+        label: 'Cap Raised',
+        value: formatCurrency(kpis.capitalRaised),
+        isWarning: false,
+        visualType: 'box',
+      },
+    ];
+  }, [kpis]);
+
   return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <LuminousCard 
-          label="Total Portfolio Value" 
-          value="$12.4M" 
-          icon={DollarSign} 
-          bottomContent={
-            <div className="mt-2 flex items-center gap-2 text-primary">
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-xs font-label-sm">+12.4% vs LY</span>
+    <section className="overflow-x-auto hide-scrollbar no-scrollbar -mx-gutter-mobile px-gutter-mobile py-2">
+      <div className="flex gap-3 w-max">
+        {cardsList.map((card, idx) => {
+          const borderBottomColor = card.isWarning
+            ? 'rgba(239, 68, 68, 0.5)' // border-error/50
+            : 'rgba(45, 212, 191, 0.5)'; // border-primary/50
+
+          return (
+            <div
+              key={`${card.label}-${idx}`}
+              className="w-32 glass-card p-3 rounded-xl flex flex-col justify-between relative overflow-hidden"
+              style={{
+                borderBottom: `2px solid ${borderBottomColor}`,
+              }}
+            >
+              <div>
+                <span className="font-label-sm text-[10px] text-on-surface-variant block mb-1">
+                  {card.label}
+                </span>
+                <span className="font-headline-md text-xl text-primary font-bold">
+                  {card.value}
+                </span>
+              </div>
+              
+              {/* Visual mini-sparkline matching Stitch */}
+              {card.visualType === 'bar' && (
+                <div className="mt-4 h-4 w-full flex items-end gap-0.5 opacity-40">
+                  <div className="h-1 w-full bg-primary"></div>
+                  <div className="h-2 w-full bg-primary"></div>
+                  <div className="h-3 w-full bg-primary"></div>
+                  <div className="h-4 w-full bg-primary"></div>
+                </div>
+              )}
+
+              {card.visualType === 'line' && (
+                <div className="mt-4 h-4 w-full flex items-center opacity-40">
+                  <div className="w-full h-[1px] bg-primary"></div>
+                </div>
+              )}
+
+              {card.visualType === 'badge' && (
+                <div
+                  className={`mt-4 h-4 w-full rounded border ${
+                    card.isWarning
+                      ? 'bg-error/10 border-error/20'
+                      : 'bg-primary/5 border-primary/20'
+                  }`}
+                />
+              )}
+
+              {card.visualType === 'box' && (
+                <div className="mt-4 h-4 w-full bg-primary/5 rounded" />
+              )}
             </div>
-          }
-        />
-        <LuminousCard 
-          label="Target IRR" 
-          value="18.5%" 
-          icon={Percent} 
-          bottomContent={
-            <div className="mt-2 flex items-center gap-2 text-primary">
-              <CheckCircle className="w-4 h-4" />
-              <span className="text-xs font-label-sm">Above Target (15%)</span>
-            </div>
-          }
-        />
-        <LuminousCard 
-          label="Cash on Cash Return" 
-          value="8.2%" 
-          icon={TrendingUp} 
-          bottomContent={
-            <div className="mt-2 flex items-center gap-2 text-on-surface-variant">
-              <Clock className="w-4 h-4" />
-              <span className="text-xs font-label-sm">Updated 2h ago</span>
-            </div>
-          }
-        />
+          );
+        })}
       </div>
+    </section>
   );
 }

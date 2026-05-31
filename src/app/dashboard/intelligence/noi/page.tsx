@@ -2,8 +2,10 @@
 
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
+import { NOIWaterfallHero } from '@/components/intelligence/NOIWaterfallHero';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
@@ -161,6 +163,7 @@ export default function NOIIntelligencePage() {
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
   const {
+    isUsingDemoData,
     currentNoi,
     noiChange,
     trendValues,
@@ -182,6 +185,7 @@ export default function NOIIntelligencePage() {
       const gr  = latestSnap.grossRentalIncome ?? DEMO_GROSS_RENT;
       const oe  = latestSnap.totalOperatingExpenses ?? DEMO_OP_EXP;
       return {
+        isUsingDemoData: false,
         currentNoi: last,
         noiChange: pctChg,
         trendValues: noiVals,
@@ -192,6 +196,7 @@ export default function NOIIntelligencePage() {
       };
     }
     return {
+      isUsingDemoData: true,
       currentNoi: DEMO_NOI,
       noiChange: DEMO_NOI_CHANGE,
       trendValues: DEMO_NOI_TREND,
@@ -259,6 +264,8 @@ export default function NOIIntelligencePage() {
           </button>
         </div>
       </div>
+
+      <SampleDataBanner show={isUsingDemoData} />
 
       {/* ── Main 12-column grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -333,6 +340,23 @@ export default function NOIIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* ── NOI Waterfall Hero (Stitch Design Integration) ── */}
+      <NOIWaterfallHero
+        noiComponents={{
+          grossRentalIncome: grossRent,
+          otherIncome: otherIncome,
+          vacancyLoss: Math.round(grossRent * 0.07),
+          propertyTaxes: Math.round(opExpenses * 0.33),
+          insurance: Math.round(opExpenses * 0.12),
+          utilities: Math.round(opExpenses * 0.18),
+          propertyManagement: Math.round(opExpenses * 0.22),
+          maintenance: Math.round(opExpenses * 0.10),
+          hoa: Math.round(opExpenses * 0.05),
+          totalOperatingExpenses: opExpenses,
+          noi: currentNoi,
+        }}
+      />
 
       {/* ── Bottom: NOI Components Table ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>

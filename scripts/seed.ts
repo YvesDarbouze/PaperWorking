@@ -99,7 +99,7 @@ async function seed() {
 
   // ── 3. PropertyDeal ─────────────────────────────────────────────
   console.log('  → Creating PropertyDeal...');
-  const dealRef = db.collection('deals').doc(DEAL_ID);
+  const dealRef = db.collection('projects').doc(DEAL_ID);
   await dealRef.set({
     id: DEAL_ID,
     organizationId: ORG_ID,
@@ -140,7 +140,7 @@ async function seed() {
   const ledgerItems = [
     {
       id: 'ledger_plumbing_01',
-      dealId: DEAL_ID,
+      projectId: DEAL_ID,
       organizationId: ORG_ID,
       type: 'expense',
       category: 'Plumbing',
@@ -153,7 +153,7 @@ async function seed() {
     },
     {
       id: 'ledger_electrical_01',
-      dealId: DEAL_ID,
+      projectId: DEAL_ID,
       organizationId: ORG_ID,
       type: 'expense',
       category: 'Electrical',
@@ -166,7 +166,7 @@ async function seed() {
     },
     {
       id: 'ledger_hvac_01',
-      dealId: DEAL_ID,
+      projectId: DEAL_ID,
       organizationId: ORG_ID,
       type: 'receipt',
       category: 'HVAC',
@@ -179,7 +179,7 @@ async function seed() {
     },
     {
       id: 'ledger_budget_foundation',
-      dealId: DEAL_ID,
+      projectId: DEAL_ID,
       organizationId: ORG_ID,
       type: 'budget_line',
       category: 'Foundation',

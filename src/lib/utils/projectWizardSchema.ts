@@ -207,6 +207,115 @@ export const PROJECT_WIZARD_QUESTIONS: WizardQuestion[] = [
     condition: (answers) => answers.isBackdated === 'no',
     weight: 108,
   },
+  // ── Advanced Financials: Granular NOI Inputs (Rent/BRRRR only) ────────
+  // These questions collect the detailed operating expense breakdown needed
+  // to compute NOI via computeNOIComponents() rather than a single projectedOpex.
+  {
+    id: 'grossMonthlyRent',
+    prompt: 'What is the gross monthly rental income?',
+    subtext: 'Total rent collected across all units before vacancy or expenses.',
+    type: 'currency',
+    field: 'financials.grossMonthlyRent',
+    placeholder: '1950',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 109,
+  },
+  {
+    id: 'otherMonthlyIncome',
+    prompt: 'Any other monthly income? (laundry, parking, storage, etc.)',
+    subtext: 'Non-rent revenue streams from the property.',
+    type: 'currency',
+    field: 'financials.otherMonthlyIncome',
+    placeholder: '0',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 110,
+  },
+  {
+    id: 'vacancyRatePercent',
+    prompt: 'What vacancy rate do you estimate? (%)',
+    subtext: 'Industry standard is 5–10%. We default to 7% if left empty.',
+    type: 'number',
+    field: 'financials.vacancyRatePercent',
+    placeholder: '7',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 111,
+  },
+  {
+    id: 'monthlyPropertyTaxes',
+    prompt: 'What are the monthly property taxes?',
+    type: 'currency',
+    field: 'financials.holdingCostTaxes',
+    placeholder: '250',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 112,
+  },
+  {
+    id: 'monthlyInsurance',
+    prompt: 'What is the monthly insurance premium?',
+    type: 'currency',
+    field: 'financials.holdingCostInsurance',
+    placeholder: '125',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 113,
+  },
+  {
+    id: 'monthlyUtilities',
+    prompt: 'Monthly utilities cost? (if owner-paid)',
+    subtext: 'Skip if tenants pay their own utilities.',
+    type: 'currency',
+    field: 'financials.holdingCostUtilities',
+    placeholder: '0',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 114,
+  },
+  {
+    id: 'propertyManagementFeePercent',
+    prompt: 'Property management fee? (% of gross rent)',
+    subtext: 'Typical range is 6–10%. Enter 0 if self-managed.',
+    type: 'number',
+    field: 'financials.propertyManagementFeePercent',
+    placeholder: '8',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 115,
+  },
+  {
+    id: 'monthlyMaintenance',
+    prompt: 'Monthly maintenance reserve?',
+    subtext: 'A common rule of thumb is 1% of property value ÷ 12.',
+    type: 'currency',
+    field: 'financials.monthlyMaintenanceReserve',
+    placeholder: '150',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 116,
+  },
+  {
+    id: 'monthlyHOA',
+    prompt: 'Monthly HOA dues?',
+    subtext: 'Enter 0 if not applicable.',
+    type: 'currency',
+    field: 'financials.monthlyHOA',
+    placeholder: '0',
+    condition: (answers) =>
+      answers.isBackdated === 'no' &&
+      (answers.strategyType === 'Rent' || answers.strategyType === 'BRRRR'),
+    weight: 117,
+  },
   {
     id: 'estimatedARV',
     prompt: 'What is the estimated After-Repair Value (ARV)? ($)',

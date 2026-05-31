@@ -72,10 +72,17 @@ export async function PUT(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { requestId, projectId, quotedFee, message } = body;
+    const { requestId, projectId, quotedFee, message, status } = body;
 
-    if (!requestId || !projectId || !quotedFee) {
+    // Support DECLINED status (no quotedFee required) or QUOTED status (quotedFee required)
+    const targetStatus = status === 'DECLINED' ? 'DECLINED' : 'QUOTED';
+
+    if (!requestId || !projectId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    if (targetStatus === 'QUOTED' && !quotedFee) {
+      return NextResponse.json({ error: 'quotedFee is required when submitting a quote' }, { status: 400 });
     }
 
     const docRef = adminDb
@@ -94,12 +101,15 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized to update this request' }, { status: 403 });
     }
 
-    await docRef.update({
-      status: 'QUOTED',
-      quotedFee: Number(quotedFee),
-      message: message || '',
-      quotedAt: new Date(),
-    });
+    // Build update payload
+    const updatePayload: Record<string, any> = {
+      status: targetStatus,
+      ...(targetStatus === 'QUOTED'
+        ? { quotedFee: Number(quotedFee), message: message || '', quotedAt: new Date() }
+        : { declinedAt: new Date() }),
+    };
+
+    await docRef.update(updatePayload);
 
     // Notify investor
     const projectSnap = await adminDb.collection('projects').doc(projectId).get();
@@ -109,14 +119,14 @@ export async function PUT(request: NextRequest) {
       
       if (ownerUid) {
         await NotificationService.createNotification({
-          type: 'VENDOR_BID',
+          type: targetStatus === 'QUOTED' ? 'VENDOR_BID' : 'VENDOR_BID',
           recipientId: ownerUid,
           actor: { uid: auth.uid, name: auth.token.name || auth.token.email || 'A vendor' },
           objectReference: { 
             projectId, 
-            task: 'Quote Proposal', 
+            task: targetStatus === 'QUOTED' ? 'Quote Proposal' : 'Request Declined', 
             dealAddress: projectData?.propertyName || 'the project',
-            amount: `$${Number(quotedFee).toLocaleString()}`,
+            ...(targetStatus === 'QUOTED' ? { amount: `$${Number(quotedFee).toLocaleString()}` } : {}),
             vendor: auth.token.name || auth.token.email || 'A vendor'
           },
           deepLinkUrl: `/dashboard/projects/${projectId}/vendors`,
@@ -126,7 +136,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Failed to submit quote:', error);
+    console.error('Failed to update vendor request:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

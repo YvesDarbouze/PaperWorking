@@ -32,6 +32,9 @@ export interface UserProfile {
 
   /* ── Billing & Stripe Metadata ── */
   stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  trialEnd?: string;
+  trialEndingSoon?: boolean;
   lastFour?: string;
   cardBrand?: string;
   cancelAtPeriodEnd?: boolean;
@@ -41,6 +44,9 @@ export interface UserProfile {
   phone?: string;
   companyName?: string;
   onboardingCompleted?: boolean;
+  onboardingIntent?: 'first_investment' | 'own_properties' | 'past_deals' | 're_professional';
+  firstMetricLit?: Timestamp;
+  onboardingOverlayDismissed?: boolean;
 
   /* ── Guest / Invite fields ── */
   inviteToken?: string;
@@ -65,7 +71,29 @@ export interface UserProfile {
   /* ── Timestamps ── */
   createdAt: Timestamp;
   updatedAt: Timestamp;
+
+  /* ── GDPR / Growth / Referrals ── */
+  deletionScheduledAt?: Timestamp | null;
+  referralCode?: string;
+  referredBy?: string | null;
+  firstUtm?: Record<string, string> | null;
+  lastUtm?: Record<string, string> | null;
+  vendorTypes?: VendorType[];
 }
+
+export type VendorType =
+  | 'real_estate_lawyer'
+  | 'loan_processor'
+  | 'general_contractor'
+  | 'specialty_contractor'
+  | 'property_manager'
+  | 'insurance_agent'
+  | 'maintenance'
+  | 'cleaning_service'
+  | 'real_estate_agent'
+  | 'cpa'
+  | 'inspector';
+
 
 export type NotificationCategory = 'syndication' | 'bids' | 'tasks' | 'deadlines' | 'billing' | 'alerts';
 

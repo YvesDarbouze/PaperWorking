@@ -7,12 +7,28 @@ import { useTenant } from "@/context/TenantContext";
 import { useNotification } from "@/context/NotificationContext";
 import Logo from "@/components/brand/Logo";
 import LogoutButton from "@/components/dashboard/LogoutButton";
+import toast from "react-hot-toast";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user, profile, loading: authLoading } = useAuth();
   const { activeTenantId, switchTenant } = useTenant();
   const { unreadTotal } = useNotification();
+
+  const handleNavClick = (e: React.MouseEvent, itemHref: string, itemName: string) => {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+      if (itemHref === '/dashboard/command-center' || itemName === 'Portfolio') {
+        e.preventDefault();
+        window.location.href = '/demo';
+        return;
+      }
+      e.preventDefault();
+      toast.error(`Demo Mode: Sign up to access ${itemName} features.`, {
+        id: 'demo-sidebar-guard',
+        style: { background: '#111', color: '#fff', border: '1px solid #333' }
+      });
+    }
+  };
 
   const primaryNavItems = [
     { name: "Portfolio", href: "/dashboard/command-center", icon: "folder_shared" },
@@ -55,46 +71,106 @@ export function Sidebar() {
   const isPersonal = activeWorkspace?.type === "personal";
 
   return (
-    <aside className="hidden md:flex flex-col h-screen w-64 border-r border-white/10 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl py-stack-lg z-50 flex-shrink-0">
+    <aside
+      className="hidden md:flex flex-col h-screen w-64 z-50 flex-shrink-0"
+      style={{
+        background: 'linear-gradient(180deg, rgba(11,20,26,0.95) 0%, rgba(11,20,26,0.98) 100%)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(24px)',
+      }}
+    >
       {/* Brand Area */}
-      <div className="px-6 mb-stack-lg">
+      <div className="px-6 pt-6 pb-4">
         <Logo size="lg" href="/dashboard/command-center" />
       </div>
-      
-
 
       {/* Scrollable Navigation Area */}
-      <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto custom-scrollbar px-3 space-y-0.5">
         {/* Primary Group */}
         {primaryNavItems.map((item) => {
           const isActive = pathname.startsWith(item.href) || (item.href === "/dashboard/command-center" && pathname === "/dashboard");
-          
+
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors relative ${
-                isActive 
-                  ? "text-primary font-bold border-r-2 border-primary bg-primary/10" 
-                  : "text-on-surface-variant font-medium hover:bg-white/5 hover:text-on-surface"
-              }`}
+              onClick={(e) => handleNavClick(e, item.href, item.name)}
+              className="group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative"
+              style={{
+                background: isActive
+                  ? 'linear-gradient(90deg, rgba(45,212,191,0.12) 0%, rgba(45,212,191,0.04) 100%)'
+                  : 'transparent',
+                color: isActive
+                  ? 'var(--color-primary)'
+                  : 'rgba(218,228,236,0.55)',
+              }}
             >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+              {/* Luminous left indicator */}
+              {isActive && (
+                <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+                  style={{
+                    background: 'var(--color-primary)',
+                    boxShadow: '0 0 12px 2px rgba(45,212,191,0.4)',
+                  }}
+                />
+              )}
+
+              <span
+                className="material-symbols-outlined text-[20px] transition-all duration-200 group-hover:scale-110"
+                style={{
+                  fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
+                  color: isActive ? 'var(--color-primary)' : undefined,
+                }}
+              >
                 {item.icon}
               </span>
-              <span className="font-body-md text-body-md">{item.name}</span>
+
+              <span
+                className="text-sm transition-colors duration-200"
+                style={{
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? 'var(--color-primary)' : undefined,
+                  letterSpacing: isActive ? '-0.01em' : '0',
+                }}
+              >
+                {item.name}
+              </span>
+
+              {/* Inbox badge with pulse */}
               {item.name === "Inbox" && unreadTotal > 0 && (
-                <span className="ml-auto bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 h-5 flex items-center justify-center">
+                <span
+                  className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 h-5 flex items-center justify-center relative"
+                  style={{
+                    background: 'var(--color-primary)',
+                    color: '#0b141a',
+                  }}
+                >
                   {unreadTotal > 9 ? "9+" : unreadTotal}
+                  <span
+                    className="absolute inset-0 rounded-full animate-ping opacity-30"
+                    style={{ background: 'var(--color-primary)' }}
+                  />
                 </span>
+              )}
+
+              {/* Hover glow */}
+              {!isActive && (
+                <div
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                  style={{ background: 'rgba(255,255,255,0.03)' }}
+                />
               )}
             </Link>
           );
         })}
 
         {/* Section Divider: Account */}
-        <div className="px-4 pt-6 pb-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/40">
+        <div className="px-3 pt-6 pb-2">
+          <p
+            className="text-[10px] font-bold uppercase tracking-widest"
+            style={{ color: 'rgba(218,228,236,0.25)' }}
+          >
             Account
           </p>
         </div>
@@ -104,21 +180,55 @@ export function Sidebar() {
           const isActive = item.href === "/dashboard/settings"
             ? pathname.startsWith("/dashboard/settings") && pathname !== "/dashboard/settings/profile" && pathname !== "/dashboard/settings/billing"
             : pathname.startsWith(item.href);
-          
+
           return (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                isActive 
-                  ? "text-primary font-bold border-r-2 border-primary bg-primary/10" 
-                  : "text-on-surface-variant font-medium hover:bg-white/5 hover:text-on-surface"
-              }`}
+              onClick={(e) => handleNavClick(e, item.href, item.name)}
+              className="group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative"
+              style={{
+                background: isActive
+                  ? 'linear-gradient(90deg, rgba(45,212,191,0.12) 0%, rgba(45,212,191,0.04) 100%)'
+                  : 'transparent',
+                color: isActive
+                  ? 'var(--color-primary)'
+                  : 'rgba(218,228,236,0.55)',
+              }}
             >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+              {isActive && (
+                <div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+                  style={{
+                    background: 'var(--color-primary)',
+                    boxShadow: '0 0 12px 2px rgba(45,212,191,0.4)',
+                  }}
+                />
+              )}
+              <span
+                className="material-symbols-outlined text-[20px] transition-all duration-200 group-hover:scale-110"
+                style={{
+                  fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
+                  color: isActive ? 'var(--color-primary)' : undefined,
+                }}
+              >
                 {item.icon}
               </span>
-              <span className="font-body-md text-body-md">{item.name}</span>
+              <span
+                className="text-sm transition-colors duration-200"
+                style={{
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? 'var(--color-primary)' : undefined,
+                }}
+              >
+                {item.name}
+              </span>
+              {!isActive && (
+                <div
+                  className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                  style={{ background: 'rgba(255,255,255,0.03)' }}
+                />
+              )}
             </Link>
           );
         })}
@@ -126,23 +236,44 @@ export function Sidebar() {
 
       {/* Bottom Area: Workspace Switcher and Profile Menu */}
       {authLoading || !user || !profile ? (
-        <div className="mt-auto pt-4 border-t border-white/10 space-y-4 px-4 animate-pulse">
-          <div className="h-10 bg-white/5 rounded-md"></div>
-          <div className="h-14 bg-white/5 rounded-xl"></div>
+        <div className="mt-auto pt-4 space-y-3 px-3 pb-4 animate-pulse" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="h-10 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
+          <div className="h-14 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />
         </div>
       ) : (
-        <div className="mt-auto pt-4 border-t border-white/10 space-y-4 px-4">
+        <div className="mt-auto pt-4 space-y-3 px-3 pb-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           {/* Workspace Switcher */}
           <div className="flex flex-col gap-1.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/60">
-              acting as: <span className="text-primary font-extrabold">{isPersonal ? "Me" : activeWorkspace?.name}</span>
+            <div
+              className="text-[10px] font-bold uppercase tracking-wider"
+              style={{ color: 'rgba(218,228,236,0.4)' }}
+            >
+              acting as:{" "}
+              <span style={{ color: 'var(--color-primary)', fontWeight: 800 }}>
+                {isPersonal ? "Me" : activeWorkspace?.name}
+              </span>
             </div>
             <div className="relative">
               <select
                 value={activeTenantId || workspaces[0]?.id}
-                onChange={(e) => switchTenant(e.target.value)}
+                onChange={(e) => {
+                  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+                    toast.error("Demo Mode: Workspaces are read-only.", {
+                      id: 'demo-workspace-guard',
+                      style: { background: '#111', color: '#fff', border: '1px solid #333' }
+                    });
+                    return;
+                  }
+                  switchTenant(e.target.value);
+                }}
                 aria-label="Select Workspace"
-                className="w-full appearance-none bg-white/5 border border-white/10 text-on-surface text-xs font-bold uppercase tracking-wider py-2 pl-9 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow cursor-pointer truncate"
+                className="w-full appearance-none text-xs font-bold uppercase tracking-wider py-2 pl-9 pr-8 rounded-lg focus:outline-none transition-all cursor-pointer truncate"
+                style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  color: 'var(--color-on-surface)',
+                  boxShadow: 'none',
+                }}
               >
                 {workspaces.map((ws) => (
                   <option key={ws.id} value={ws.id} className="bg-surface-container-low text-on-surface">
@@ -150,26 +281,38 @@ export function Sidebar() {
                   </option>
                 ))}
               </select>
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(218,228,236,0.4)' }}>
                 <span className="material-symbols-outlined text-[16px]">{isPersonal ? "person" : "corporate_fare"}</span>
               </div>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(218,228,236,0.4)' }}>
                 <span className="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
               </div>
             </div>
           </div>
 
           {/* Profile Menu */}
-          <div className="flex items-center justify-between gap-3 p-2 rounded-xl bg-white/5 border border-white/5">
+          <div
+            className="flex items-center justify-between gap-3 p-2.5 rounded-xl transition-all duration-200 group cursor-pointer"
+            style={{
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(255,255,255,0.05)',
+            }}
+          >
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-9 h-9 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 text-on-primary-container font-bold text-sm">
+              <div
+                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm transition-all duration-200 group-hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
+                  color: '#0b141a',
+                }}
+              >
                 {profile?.displayName ? profile.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
               </div>
               <div className="flex flex-col overflow-hidden">
-                <span className="font-label-md text-label-md text-on-surface truncate">
+                <span className="text-sm font-semibold truncate" style={{ color: 'var(--color-on-surface)' }}>
                   {profile?.displayName || user?.displayName || "User"}
                 </span>
-                <span className="text-[10px] text-on-surface-variant truncate">
+                <span className="text-[10px] truncate" style={{ color: 'rgba(218,228,236,0.4)' }}>
                   {profile?.role || "Member"}
                 </span>
               </div>

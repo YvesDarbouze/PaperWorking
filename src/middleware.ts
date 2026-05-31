@@ -38,6 +38,16 @@ function withNoCache(response: NextResponse): NextResponse {
   return response;
 }
 
+function nextWithHeader(request: NextRequest, pathname: string): NextResponse {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', pathname);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    }
+  });
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
@@ -45,7 +55,7 @@ export function middleware(request: NextRequest) {
 
   // ── Guest Portal — always public ──────────────────────
   if (pathname.startsWith('/invest')) {
-    return withNoCache(NextResponse.next());
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Vendor Portal ──────────────────────────────────────
@@ -58,7 +68,7 @@ export function middleware(request: NextRequest) {
     if (acct === 'investor') {
       return withNoCache(NextResponse.redirect(new URL('/dashboard', request.url)));
     }
-    return withNoCache(NextResponse.next());
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Dashboard ──────────────────────────────────────────
@@ -71,7 +81,7 @@ export function middleware(request: NextRequest) {
     if (acct === 'vendor') {
       return withNoCache(NextResponse.redirect(new URL('/vendor-portal', request.url)));
     }
-    return withNoCache(NextResponse.next());
+    return withNoCache(nextWithHeader(request, pathname));
   }
 
   // ── Auth pages — server-redirect only when redirectTo is explicit ──
@@ -85,13 +95,14 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return withNoCache(NextResponse.next());
+  return withNoCache(nextWithHeader(request, pathname));
 }
 
 export const config = {
   matcher: [
     '/dashboard/:path*',
     '/vendor-portal/:path*',
+    '/onboarding/:path*',
     '/login',
     '/register',
     '/forgot-password',

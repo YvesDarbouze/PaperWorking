@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
@@ -83,6 +84,8 @@ export default function PortfolioComparisonPage() {
   useAllDealsSync();
   const projects = useProjectStore((s) => s.projects);
   const [sortKey, setSortKey] = useState<SortKey>('irr');
+
+  const isUsingDemoData = projects.length === 0;
 
   const properties: PropertyMetrics[] = useMemo(() => {
     if (projects.length === 0) return DEMO_PROPERTIES;
@@ -176,7 +179,9 @@ export default function PortfolioComparisonPage() {
         ))}
       </div>
 
-      {/* Comparison table */}
+      <SampleDataBanner show={isUsingDemoData} />
+
+      {/* ── Comparison Table ── */}
       <div className="rounded-2xl border border-white/10 overflow-x-auto" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <table className="w-full min-w-[900px] text-sm">
           <thead>

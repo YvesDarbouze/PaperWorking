@@ -214,7 +214,15 @@ async function dispatchViaResend(payload: DispatchPayload): Promise<{ id: string
   const apiKey = process.env.RESEND_API_KEY;
 
   if (!apiKey) {
-    throw new Error('RESEND_API_KEY is missing. Cannot dispatch email.');
+    const mockId = `mock_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    console.warn(
+      '[CommunicationEngine] ⚠️  RESEND_API_KEY is not set — email will be mocked.\n' +
+      `  To: ${payload.to.join(', ')}\n` +
+      `  Subject: ${payload.subject}\n` +
+      '  → Set RESEND_API_KEY in your .env.local to enable live email delivery.\n' +
+      '  → Get your API key at https://resend.com/api-keys'
+    );
+    return { id: mockId, mock: true };
   }
 
   const body = {

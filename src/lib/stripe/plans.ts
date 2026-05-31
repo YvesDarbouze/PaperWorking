@@ -50,7 +50,7 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
     canonicalName: 'Individual',
     displayName: 'Individual Investor',
     monthlyPrice: 59,
-    annualPrice: 499,
+    annualPrice: 599,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_INDIVIDUAL_MONTHLY', 'STRIPE_PRICE_INDIVIDUAL'],

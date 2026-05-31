@@ -10,31 +10,39 @@ import {
   MapPin,
   ChevronRight,
   X,
+  Settings,
+  FileDown,
+  Share2,
+  Archive,
 } from 'lucide-react';
 import {
   PhaseProgressTracker,
   PhaseProgressTrackerSkeleton,
 } from '@/components/project/PhaseProgressTracker';
 import { ProjectPipelineProvider } from '@/context/ProjectPipelineContext';
+import { usePropertyMetricSnapshots } from '@/hooks/usePropertyMetricSnapshots';
+import { MetricDrillDownSheet } from '@/components/insights/MetricDrillDownSheet';
+import {
+  computeNOIMetric,
+  computeCashFlowMetric,
+  computeCapRateMetric,
+  computeCoCMetric,
+  computeDSCRMetric,
+  computeOccupancyMetric,
+  MetricResult,
+} from '@/lib/metrics';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/layout.tsx
-   Universal Project Workspace Shell
+   Universal Project Workspace Shell (REIL v2 & Prompt 5 Enhanced)
 
    This layout wraps ALL phase routes under a single project.
    It provides:
-     • A sticky focused top-bar (address + phase + exit)
-     • Phase navigation tabs (Phase 1 → Phase 4)
-     • A shared ProjectWorkspaceContext so child pages can
-       read the project record without re-fetching
-
-   Layout architecture:
-   ┌────────────────────────────────────────────────────────────┐
-   │  WORKSPACE TOP-BAR                                         │
-   │  [← Projects]  [📁 Address]  [Phase pill]  [Phase nav]  [✕]│
-   ├────────────────────────────────────────────────────────────┤
-   │  {children}  (phase-1 / phase-2 / phase-3 / phase-4 page) │
-   └────────────────────────────────────────────────────────────┘
+     • A 96px sticky focused top-bar with strategy/ownership/time-ago
+     • A persistent 80px Project Metric Strip (6 mini KPI cards with sparklines)
+     • Right-side actions menu: settings, PDF, CPA share, archive
+     • Stepper navigation tabs
    ═══════════════════════════════════════════════════════════════ */
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -55,14 +63,17 @@ export function useWorkspaceProject() {
   return useContext(WorkspaceContext);
 }
 
-/* PHASE_TABS removed — PhaseProgressTracker owns all phase navigation */
-
 /* ─── Phase pill color ───────────────────────────────────────── */
 const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
-  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#595959' },
-  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#1D4ED8' },
-  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#C2410C' },
-  'Phase 4: Closing & Exit':    { bg: 'rgba(89,89,89,0.12)',  text: '#595959' },
+  'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
+  'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Closing & Exit':    { bg: 'rgba(16,185,129,0.10)', text: '#10B981' },
+  // v2 equivalents
+  'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
+  'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
+  'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
+  'Phase 4: Hold / Exit':       { bg: 'rgba(16,185,129,0.10)', text: '#10B981' },
 };
 
 /* ─── Phase-aware folder icon color ──────────────────────────── */
@@ -71,6 +82,11 @@ const PHASE_FOLDER_COLORS: Record<string, { bg: string; icon: string }> = {
   'Phase 2: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
   'Phase 3: Holding & Rehab':   { bg: '#CCCCCC', icon: '#595959' },
   'Phase 4: Closing & Exit':    { bg: '#595959', icon: '#FFFFFF' },
+  // v2 equivalents
+  'Phase 1: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
+  'Phase 2: Transaction':       { bg: '#2563EB', icon: '#FFFFFF' },
+  'Phase 3: Rehab':             { bg: '#EA580C', icon: '#FFFFFF' },
+  'Phase 4: Hold / Exit':       { bg: '#10B981', icon: '#FFFFFF' },
 };
 
 /* ─── Status badge ───────────────────────────────────────────── */
@@ -84,26 +100,96 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   'Rented':           { bg: '#CFFAFE', text: '#0E7490' },
 };
 
+/* ─── formatTimeAgo Helper ──────────────────────────────────── */
+function formatTimeAgo(dateInput: any): string {
+  if (!dateInput) return 'recently';
+  let date: Date;
+  if (dateInput.seconds) {
+    date = new Date(dateInput.seconds * 1000);
+  } else if (dateInput instanceof Date) {
+    date = dateInput;
+  } else {
+    date = new Date(dateInput);
+  }
+  if (isNaN(date.getTime())) return 'recently';
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+/* ─── Sparkline helper ──────────────────────────────────────── */
+function Sparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
+  if (data.length < 2) {
+    return (
+      <svg width="48" height="16" className="overflow-visible opacity-25">
+        <line x1="0" y1="8" x2="48" y2="8" stroke="rgba(255,255,255,0.4)" strokeWidth="1" strokeDasharray="2 2" />
+      </svg>
+    );
+  }
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const points = data
+    .map((val, i) => {
+      const x = (i / (data.length - 1)) * 48;
+      const y = 14 - ((val - min) / range) * 12;
+      return `${x},${y}`;
+    })
+    .join(' ');
+
+  return (
+    <svg width="48" height="16" className="overflow-visible">
+      <polyline
+        points={points}
+        fill="none"
+        stroke={isUp ? '#2dd4bf' : '#ef4444'}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/* ─── fmtValue Helper ───────────────────────────────────────── */
+function fmtValue(v: number | null, format: string): string {
+  if (v === null) return '—';
+  switch (format) {
+    case 'currency': {
+      const abs = Math.abs(v);
+      const sign = v < 0 ? '-' : '';
+      if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
+      if (abs >= 1_000) return `${sign}$${(abs / 1_000).toFixed(0)}k`;
+      return `${sign}$${abs.toFixed(0)}`;
+    }
+    case 'percent': return `${v.toFixed(1)}%`;
+    case 'ratio': return `${v.toFixed(2)}`;
+    default: return String(v);
+  }
+}
+
 /* ─── Skeleton while loading ─────────────────────────────────── */
 function WorkspaceHeaderSkeleton() {
   return (
     <div className="sticky top-0 z-40 flex flex-col" style={{ background: 'var(--bg-surface)' }}>
-      {/* Row 1: breadcrumb bar skeleton */}
       <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-2.5" style={{ borderBottom: '1px solid var(--border-ui)' }}>
         <div className="h-6 w-24 animate-shimmer" />
         <div className="flex-1" />
         <div className="h-5 w-16 animate-shimmer" />
         <div className="h-6 w-14 animate-shimmer" />
       </div>
-      {/* Row 2: identity skeleton */}
-      <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3" style={{ borderBottom: '1px solid var(--border-ui)' }}>
-        <div className="w-9 h-9 animate-shimmer shrink-0" />
+      <div className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3 h-24" style={{ borderBottom: '1px solid var(--border-ui)' }}>
+        <div className="w-10 h-10 animate-shimmer shrink-0" />
         <div className="flex-1 space-y-1.5">
           <div className="h-4 w-48 animate-shimmer" />
           <div className="h-3 w-64 animate-shimmer" />
         </div>
       </div>
-      {/* Phase tracker skeleton */}
       <PhaseProgressTrackerSkeleton />
     </div>
   );
@@ -168,8 +254,9 @@ function HighStressCounter({ acquisitionDate }: { acquisitionDate: string | Date
 }
 
 /* ─── Workspace Header (loaded state) ───────────────────────── */
-function WorkspaceHeader({ project }: { project: Project }) {
+function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMetric: (id: string, label: string, result: MetricResult, format: any) => void }) {
   const router = useRouter();
+  const { snapshots } = usePropertyMetricSnapshots(project.id, 'monthly');
 
   const phaseColor  = PHASE_BADGE_COLORS[project.phaseStatus ?? ''] ?? PHASE_BADGE_COLORS['Phase 1: Find & Fund'];
   const statusColor = STATUS_COLORS[project.status] ?? { bg: '#F3F4F6', text: '#595959' };
@@ -179,11 +266,60 @@ function WorkspaceHeader({ project }: { project: Project }) {
   const isHolding = project.financials?.acquisitionDate && 
                     !['Sold', 'Rented', 'closed_won', 'closed_lost'].includes(project.status);
 
+  // Strategy chip value
+  const strategy = project.strategyType ?? 'Rent';
+
+  // Ownership structure calculation
+  let ownershipLabel = 'Solo';
+  if (project.fractionalInvestors && project.fractionalInvestors.length > 0) {
+    ownershipLabel = 'Syndicated';
+  } else if (project.financials?.ownershipPercentage != null && project.financials.ownershipPercentage < 100) {
+    ownershipLabel = `JV (${project.financials.ownershipPercentage}%)`;
+  }
+
+  const handleArchive = async () => {
+    if (!confirm('Are you sure you want to archive this project?')) return;
+    try {
+      await projectsService.updateProject(project.id, { status: 'closed_lost' });
+      toast.success('Project archived successfully');
+      router.push('/dashboard/projects');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to archive project');
+    }
+  };
+
+  // KPIs definitions for the metric strip
+  const metricInput = {
+    financials: project.financials ?? {},
+    currentPhase: project.currentPhase,
+    strategyType: project.strategyType,
+  };
+
+  const metricResults = {
+    NOI: computeNOIMetric(metricInput),
+    CASH_FLOW: computeCashFlowMetric(metricInput),
+    CAP_RATE: computeCapRateMetric(metricInput),
+    COC: computeCoCMetric(metricInput),
+    DSCR: computeDSCRMetric(metricInput),
+    OCCUPANCY: computeOccupancyMetric(metricInput),
+  };
+
+  const METRICS_CONFIG = [
+    { id: 'NOI', label: 'NOI', format: 'currency', result: metricResults.NOI },
+    { id: 'CASH_FLOW', label: 'Cash Flow', format: 'currency', result: metricResults.CASH_FLOW },
+    { id: 'CAP_RATE', label: 'Cap Rate', format: 'percent', result: metricResults.CAP_RATE },
+    { id: 'COC', label: 'COC', format: 'percent', result: metricResults.COC },
+    { id: 'DSCR', label: 'DSCR', format: 'ratio', result: metricResults.DSCR },
+    { id: 'OCCUPANCY', label: 'Occupancy', format: 'percent', result: metricResults.OCCUPANCY },
+  ];
+
   return (
     <div
       className="sticky top-0 z-40 flex flex-col"
       style={{
         background: 'var(--bg-surface)',
+        borderBottom: '1px solid var(--border-ui)'
       }}
     >
       {/* ── High-Stress Counter ── */}
@@ -191,82 +327,110 @@ function WorkspaceHeader({ project }: { project: Project }) {
         <HighStressCounter acquisitionDate={project.financials.acquisitionDate} />
       )}
 
-      {/* ── Row 1: Breadcrumb + status pills + exit ── */}
+      {/* ── Top Header Strip (96px) ── */}
       <div
-        className="flex items-center gap-3 px-margin-mobile lg:px-margin-desktop py-2.5"
-        style={{ borderBottom: '1px solid var(--border-ui)' }}
+        className="flex items-center justify-between px-margin-mobile lg:px-margin-desktop py-3 h-24 border-b border-white/5"
+        style={{ borderColor: 'var(--border-ui)' }}
       >
-        <button
-          onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5"
-          style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
-          aria-label="Back to all projects"
-        >
-          <ArrowLeft className="w-3 h-3" strokeWidth={2.5} />
-          Projects
-        </button>
+        <div className="flex items-center gap-4 min-w-0">
+          <div
+            className="w-10 h-10 flex items-center justify-center shrink-0 rounded transition-colors duration-300"
+            style={{ background: folderColor.bg }}
+          >
+            <FolderOpen className="w-5 h-5" style={{ color: folderColor.icon }} strokeWidth={2} aria-hidden="true" />
+          </div>
 
-        <ChevronRight className="w-3 h-3 shrink-0" style={{ color: 'var(--border-ui)', opacity: 0.6 }} strokeWidth={2} />
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <h2 className="text-lg font-bold truncate leading-none text-text-primary">
+                {project.propertyName}
+              </h2>
+              <span className="text-xs font-medium truncate text-text-secondary">
+                {project.address}
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+              {/* Phase chip */}
+              <span
+                className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                style={{ background: phaseColor.bg, color: phaseColor.text }}
+              >
+                {project.phaseStatus ?? 'Phase 1: Acquisition'}
+              </span>
+              
+              {/* Strategy chip */}
+              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border bg-teal-500/10 text-teal-400 border-teal-500/20">
+                {strategy}
+              </span>
+              
+              {/* Ownership chip */}
+              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border bg-blue-500/10 text-blue-400 border-blue-500/20">
+                {ownershipLabel}
+              </span>
+              
+              {/* State pill */}
+              <span
+                className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded"
+                style={{ background: statusColor.bg, color: statusColor.text }}
+              >
+                {project.status}
+              </span>
 
-        <span
-          className="text-xs font-bold uppercase tracking-wider truncate max-w-48"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          {project.propertyName}
-        </span>
-
-        <div className="flex-1" />
-
-        {/* Phase status pill */}
-        <span
-          className="hidden sm:inline-block px-2.5 py-1 text-xs font-bold uppercase tracking-widest shrink-0"
-          style={{ background: phaseColor.bg, color: phaseColor.text }}
-        >
-          {project.phaseStatus ?? 'Phase 1: Find & Fund'}
-        </span>
-
-        {/* Deal status pill */}
-        <span
-          className="hidden sm:inline-block px-2.5 py-1 text-xs font-bold uppercase tracking-widest shrink-0"
-          style={{ background: statusColor.bg, color: statusColor.text }}
-        >
-          {project.status}
-        </span>
-
-        {/* Exit button */}
-        <button
-          onClick={() => router.push('/dashboard/projects')}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-red-50 dark:hover:bg-red-950/20 hover:border-red-200 dark:hover:border-red-900/50 group"
-          style={{ color: 'var(--text-secondary)', border: '1px solid var(--border-ui)' }}
-          aria-label="Exit project workspace"
-        >
-          <X className="w-3 h-3 group-hover:text-red-500 transition-colors" strokeWidth={2.5} />
-          <span className="hidden sm:inline group-hover:text-red-500 transition-colors">Exit</span>
-        </button>
-      </div>
-
-      {/* ── Row 2: Property identity block ── */}
-      <div
-        className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-3"
-        style={{ borderBottom: '1px solid var(--border-ui)' }}
-      >
-        <div
-          className="w-9 h-9 flex items-center justify-center shrink-0 transition-colors duration-300"
-          style={{ background: folderColor.bg }}
-        >
-          <FolderOpen className="w-4 h-4" style={{ color: folderColor.icon }} strokeWidth={2} aria-hidden="true" />
+              {/* Timestamp */}
+              <span className="text-[10px] text-text-secondary ml-1" style={{ color: 'var(--text-secondary)' }}>
+                Last updated {formatTimeAgo(project.updatedAt)}
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-bold truncate leading-tight" style={{ color: 'var(--text-primary)' }}>
-            {project.propertyName}
-          </h1>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <MapPin className="w-2.5 h-2.5 shrink-0" style={{ color: 'var(--text-secondary)' }} strokeWidth={2} />
-            <p className="text-xs font-medium truncate" style={{ color: 'var(--text-secondary)' }}>
-              {project.address}
-            </p>
-          </div>
+        {/* Right-side Action Menu */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => {
+              toast.success('Opening settings...');
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
+            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
+            aria-label="Edit project settings"
+          >
+            <Settings className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Settings</span>
+          </button>
+          
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
+            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
+            aria-label="Export project as PDF"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Export PDF</span>
+          </button>
+
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(window.location.href);
+              toast.success('CPA Share link copied to clipboard!');
+            }}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
+            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
+            aria-label="Share with CPA"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Share CPA</span>
+          </button>
+
+          <button
+            onClick={handleArchive}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 border rounded-lg text-red-500 hover:bg-red-500/10"
+            style={{ borderColor: 'rgba(239,68,68,0.2)' }}
+            aria-label="Archive project"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Archive</span>
+          </button>
         </div>
       </div>
 
@@ -275,13 +439,88 @@ function WorkspaceHeader({ project }: { project: Project }) {
         phaseStatus={project.phaseStatus}
         projectId={project.id}
       />
+
+      {/* ── Row 4: Persistent Metric Strip (~80px) ── */}
+      <div
+        className="flex items-center gap-4 px-margin-mobile lg:px-margin-desktop py-2.5 h-[80px] overflow-x-auto select-none no-scrollbar"
+        style={{
+          borderBottom: '1px solid var(--border-ui)',
+          backgroundColor: 'rgba(255,255,255,0.01)',
+        }}
+      >
+        {METRICS_CONFIG.map((cfg) => {
+          const isNa = cfg.result.state === 'n/a';
+          const isIncomplete = cfg.result.state === 'incomplete';
+          
+          // Historical values for sparkline (last 6 periods)
+          const sparklineValues = snapshots.slice(-6).map((s) => {
+            switch (cfg.id) {
+              case 'NOI': return s.noi ?? 0;
+              case 'CASH_FLOW': return s.monthlyCashFlow ?? 0;
+              case 'CAP_RATE': return s.capRate ?? 0;
+              case 'COC': return s.cashOnCashReturn ?? 0;
+              case 'DSCR': return s.dscr ?? 0;
+              case 'OCCUPANCY': return s.occupancyRate ?? 0;
+              default: return 0;
+            }
+          });
+
+          const isUp = sparklineValues.length >= 2 
+            ? sparklineValues[sparklineValues.length - 1] >= sparklineValues[sparklineValues.length - 2]
+            : true;
+
+          const displayState = isNa ? 'n/a' : isIncomplete ? 'incomplete' : cfg.result.state;
+
+          const statePillStyle: React.CSSProperties = (() => {
+            if (displayState === 'live') return { background: 'rgba(16,185,129,0.15)', color: '#10B981' };
+            if (displayState === 'projected') return { background: 'rgba(245,158,11,0.15)', color: '#F59E0B' };
+            if (displayState === 'realized') return { background: 'rgba(59,130,246,0.15)', color: '#3B82F6' };
+            return { background: 'rgba(255,255,255,0.08)', color: 'var(--text-secondary)' };
+          })();
+
+          return (
+            <button
+              key={cfg.id}
+              onClick={() => onOpenMetric(cfg.id, cfg.label, cfg.result, cfg.format)}
+              className="flex-1 min-w-[140px] max-w-[200px] h-full rounded border p-3 flex flex-col justify-between hover:bg-black/5 dark:hover:bg-white/5 transition-all text-left relative group outline-none"
+              style={{
+                borderColor: 'var(--border-ui)',
+                background: 'var(--bg-surface)'
+              }}
+            >
+              {/* Metric title & state badge */}
+              <div className="flex justify-between items-center w-full">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-text-secondary" style={{ color: 'var(--text-secondary)' }}>
+                  {cfg.label}
+                </span>
+                <span
+                  className="text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5"
+                  style={statePillStyle}
+                >
+                  {displayState}
+                </span>
+              </div>
+
+              {/* Value & Sparkline row */}
+              <div className="flex items-baseline justify-between w-full mt-1.5">
+                <span className="text-[20px] font-black leading-none text-text-primary tracking-tight font-mono tabular-nums">
+                  {fmtValue(cfg.result.value, cfg.format)}
+                </span>
+
+                {/* SVG Sparkline */}
+                <div className="shrink-0 ml-2 group-hover:scale-105 transition-transform duration-200">
+                  <Sparkline data={sparklineValues} isUp={isUp} />
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   Root Layout Export
-   ═══════════════════════════════════════════════════════════════ */
+/* ─── Root Layout Export ────────────────────────────────────── */
 export default function ProjectWorkspaceLayout({
   children,
 }: {
@@ -292,6 +531,14 @@ export default function ProjectWorkspaceLayout({
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Drill-down side sheet state
+  const [selectedMetric, setSelectedMetric] = useState<{
+    id: string;
+    label: string;
+    result: MetricResult;
+    format: 'currency' | 'percent' | 'ratio' | 'multiplier';
+  } | null>(null);
 
   const fetchProject = useCallback(async () => {
     if (!projectId) return;
@@ -309,29 +556,58 @@ export default function ProjectWorkspaceLayout({
     fetchProject();
   }, [fetchProject]);
 
+  const handleOpenMetric = (id: string, label: string, result: MetricResult, format: any) => {
+    setSelectedMetric({ id, label, result, format });
+  };
+
+  const { snapshots } = usePropertyMetricSnapshots(projectId, 'monthly');
+
   return (
     <WorkspaceContext.Provider value={{ project, loading, refresh: fetchProject }}>
-      {/* Full-screen focused workspace container */}
       <div
         className="flex flex-col min-h-full"
         style={{ background: 'var(--bg-canvas)' }}
       >
-        {/* ── Workspace Header Shell ── */}
+        {/* Workspace Header Shell */}
         {loading || !project ? (
           <WorkspaceHeaderSkeleton />
         ) : (
-          <WorkspaceHeader project={project} />
+          <WorkspaceHeader project={project} onOpenMetric={handleOpenMetric} />
         )}
 
-        {/* ── Phase Content wrapped in Pipeline Context ── */}
-        {/* ProjectPipelineProvider must be inside WorkspaceContext.Provider
-            so it can call useWorkspaceProject() to piggy-back on the
-            already-fetched project without an extra Firestore round-trip. */}
+        {/* Phase Content */}
         <div className="flex-1 min-h-0">
           <ProjectPipelineProvider>
             {children}
           </ProjectPipelineProvider>
         </div>
+
+        {/* Metric Insights Drill Down Side Sheet */}
+        {selectedMetric && (
+          <MetricDrillDownSheet
+            isOpen={!!selectedMetric}
+            onClose={() => setSelectedMetric(null)}
+            metricId={selectedMetric.id}
+            metricLabel={selectedMetric.label}
+            result={selectedMetric.result}
+            format={selectedMetric.format}
+            sparklineData={snapshots.slice(-6).map((s) => {
+              let val = 0;
+              switch (selectedMetric.id) {
+                case 'NOI': val = s.noi ?? 0; break;
+                case 'CASH_FLOW': val = s.monthlyCashFlow ?? 0; break;
+                case 'CAP_RATE': val = s.capRate ?? 0; break;
+                case 'COC': val = s.cashOnCashReturn ?? 0; break;
+                case 'DSCR': val = s.dscr ?? 0; break;
+                case 'OCCUPANCY': val = s.occupancyRate ?? 0; break;
+              }
+              return {
+                date: s.period,
+                value: val,
+              };
+            })}
+          />
+        )}
       </div>
     </WorkspaceContext.Provider>
   );

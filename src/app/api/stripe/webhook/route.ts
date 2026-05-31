@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { Resend } from 'resend';
+import { enforceProjectLimitsOnDowngrade } from '@/lib/entitlements/server';
 
 // Webhook must never be cached and may need extra time for Firestore batch writes
 export const dynamic = 'force-dynamic';
@@ -112,6 +113,78 @@ async function updateUserAndOrg(
   await batch.commit();
 }
 
+/**
+ * Applies the 'referral-one-month-free' coupon to both referee and referrer.
+ */
+async function applyReferralRewards(
+  refereeUid: string,
+  refereeStripeCustomerId: string,
+  refereeSubscriptionId: string,
+  stripe: Stripe
+): Promise<void> {
+  const refereeDocRef = adminDb.collection('users').doc(refereeUid);
+  const refereeDoc = await refereeDocRef.get();
+  const refereeData = refereeDoc.data();
+
+  if (!refereeData || refereeData.referralRewardApplied || !refereeData.referredBy) {
+    return;
+  }
+
+  const referrerCode = refereeData.referredBy;
+  console.log(`[Referrals] Applying rewards: Referee ${refereeUid} referred by code ${referrerCode}`);
+
+  // 1. Find the referrer by their referralCode
+  const referrerQuery = await adminDb
+    .collection('users')
+    .where('referralCode', '==', referrerCode)
+    .limit(1)
+    .get();
+
+  if (referrerQuery.empty) {
+    console.warn(`[Referrals] Referrer not found for code: ${referrerCode}`);
+    return;
+  }
+
+  const referrerDoc = referrerQuery.docs[0];
+  const referrerUid = referrerDoc.id;
+  const referrerData = referrerDoc.data();
+
+  // 2. Apply Coupon to Referee's active subscription
+  try {
+    await stripe.subscriptions.update(refereeSubscriptionId, {
+      discounts: [{ coupon: 'referral-one-month-free' }],
+    });
+    console.log(`[Referrals] Applied coupon to Referee subscription: ${refereeSubscriptionId}`);
+  } catch (err: any) {
+    console.error(`[Referrals] Failed to apply coupon to Referee subscription:`, err.message);
+  }
+
+  // 3. Apply Coupon to Referrer
+  if (referrerData?.stripeSubscriptionId) {
+    try {
+      await stripe.subscriptions.update(referrerData.stripeSubscriptionId, {
+        discounts: [{ coupon: 'referral-one-month-free' }],
+      });
+      console.log(`[Referrals] Applied coupon to Referrer active subscription: ${referrerData.stripeSubscriptionId}`);
+    } catch (err: any) {
+      console.error(`[Referrals] Failed to apply coupon to Referrer subscription:`, err.message);
+    }
+  }
+
+  // 4. Update Referee user document to mark reward as applied
+  await refereeDocRef.update({
+    referralRewardApplied: true,
+    referralRewardAppliedAt: FieldValue.serverTimestamp(),
+  });
+
+  // 5. Increment Referrer count
+  await adminDb.collection('users').doc(referrerUid).update({
+    referralCount: FieldValue.increment(1),
+  });
+
+  console.log(`[Referrals] Successfully recorded referral reward applications.`);
+}
+
 /* ═══════════════════════════════════════════════════════
    POST /api/stripe/webhook
    ═══════════════════════════════════════════════════════ */
@@ -198,6 +271,11 @@ export async function POST(request: Request) {
             ...(trialEnd ? { trialEnd } : {}),
           });
 
+          // Apply referral reward if immediately active
+          if (actualStatus === 'active' && session.subscription) {
+            await applyReferralRewards(userId, session.customer as string, session.subscription as string, stripe);
+          }
+
           // Send welcome/subscription created email
           const userDoc = await adminDb.collection('users').doc(userId).get();
           const email = userDoc.data()?.email;
@@ -282,12 +360,23 @@ export async function POST(request: Request) {
           await updateUserAndOrg(uid, {
             subscriptionStatus: 'past_due',
           });
+
+          // Alert the user about the failed payment
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Action Required: Payment Failed';
+            const html = '<p>We were unable to process your latest payment. Please update your payment method in billing settings to avoid service interruption.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
 
       // =========================================================
-      // SUBSCRIPTION DELETED — Full cancellation
+      // SUBSCRIPTION DELETED — Full cancellation + graceful downgrade
+      // Projects are never deleted. Excess projects beyond the
+      // new plan's limit are marked readOnly (visible + exportable).
       // =========================================================
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
@@ -300,6 +389,22 @@ export async function POST(request: Request) {
             subscriptionPlan: 'None',
             stripeSubscriptionId: null,
           });
+
+          // Graceful downgrade: mark excess projects as readOnly
+          const { markedReadOnly } = await enforceProjectLimitsOnDowngrade(uid, 'none');
+          if (markedReadOnly.length > 0) {
+            console.log(
+              `[Stripe Webhook] Downgrade: ${markedReadOnly.length} projects marked readOnly for user ${uid}`
+            );
+          }
+
+          const userDoc = await adminDb.collection('users').doc(uid).get();
+          const email = userDoc.data()?.email;
+          if (email) {
+            const subject = 'Your PaperWorking Subscription Has Been Canceled';
+            const html = '<p>Your subscription has been canceled. You can resubscribe at any time from your billing settings.</p>';
+            sendStripeEmail(email, subject, html).catch(() => {});
+          }
         }
         break;
       }
@@ -337,6 +442,11 @@ export async function POST(request: Request) {
           }
 
           await updateUserAndOrg(uid, updateData);
+
+          // Apply referral reward when subscription transitions to active
+          if (mappedStatus === 'active') {
+            await applyReferralRewards(uid, stripeCustomerId, subscription.id, stripe);
+          }
         }
         break;
       }

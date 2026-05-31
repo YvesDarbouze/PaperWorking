@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ReactECharts from 'echarts-for-react';
 import {
   Download,
@@ -13,6 +14,9 @@ import {
   ToggleLeft,
   ToggleRight,
   RefreshCw,
+  X,
+  AlertCircle,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
@@ -21,7 +25,9 @@ import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots
 import {
   calculateProjectTaxReport,
   aggregatePortfolioTaxReport,
+  TaxPLResult,
 } from '@/lib/utils/taxService';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════════════
    Reports & Tax Intelligence — Stitch Design Implementation
@@ -34,10 +40,6 @@ import {
 
 type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall';
 type ScopeTab  = 'Property' | 'My Share';
-
-/* ── Demo fallback data for NOI chart when no Firestore snapshots exist ── */
-const DEMO_NOI_BARS = [180000, 220000, 195000, 260000, 310000, 290000, 370000, 340000, 420000, 390000, 450000, 482910];
-const DEMO_LABELS   = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 /* ── NOI Trend ECharts bar chart ── */
 function NOITrendChart({ values, labels }: { values: number[]; labels: string[] }) {
@@ -92,18 +94,12 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
 
 /* ── Expense Donut ECharts ── */
 const EXPENSE_COLORS = ['#2dd4bf', '#818cf8', '#fb923c', '#64748b'];
-const EXPENSE_ITEMS  = [
-  { name: 'Maintenance', pct: 45 },
-  { name: 'Utilities',   pct: 30 },
-  { name: 'Admin',       pct: 15 },
-  { name: 'Other',       pct: 10 },
-];
 
-function ExpenseDonut({ totalOpex }: { totalOpex: number }) {
-  const data = EXPENSE_ITEMS.map((item, i) => ({
+function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: string; pct: number }[] }) {
+  const data = items.map((item, i) => ({
     name: item.name,
     value: item.pct,
-    itemStyle: { color: EXPENSE_COLORS[i] },
+    itemStyle: { color: EXPENSE_COLORS[i % EXPENSE_COLORS.length] },
   }));
 
   const option = {
@@ -131,7 +127,7 @@ function ExpenseDonut({ totalOpex }: { totalOpex: number }) {
         left: 'center',
         top: 'middle',
         style: {
-          text: `$${(totalOpex / 1000).toFixed(0)}k\nTOTAL OPEX`,
+          text: totalOpex > 0 ? `$${(totalOpex / 1000).toFixed(0)}k\nTOTAL OPEX` : '$0\nTOTAL OPEX',
           textAlign: 'center',
           fill: '#f1f5f9',
           fontSize: 15,
@@ -240,8 +236,43 @@ function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricPro
   return inner;
 }
 
+/* ── Skeleton Loader ── */
+function SkeletonMetric() {
+  return (
+    <div className="rounded-xl border border-white/[0.08] p-4 flex flex-col gap-2 animate-pulse">
+      <div className="h-3 w-16 rounded bg-white/10" />
+      <div className="h-7 w-24 rounded bg-white/10" />
+      <div className="h-2.5 w-32 rounded bg-white/5" />
+    </div>
+  );
+}
+
+/* ── Empty State Banner ── */
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
+      <AlertCircle className="w-5 h-5 text-slate-500 flex-shrink-0" />
+      <p className="text-sm text-slate-400">{message}</p>
+    </div>
+  );
+}
+
 /* ── Tax Report Row ── */
-function TaxReportRow({ title, period, rows, badge }: { title: string; period: string; rows: string; badge?: string }) {
+function TaxReportRow({
+  title,
+  period,
+  rows,
+  badge,
+  onPDF,
+  onCSV,
+}: {
+  title: string;
+  period: string;
+  rows: string;
+  badge?: string;
+  onPDF: () => void;
+  onCSV: () => void;
+}) {
   return (
     <div className="flex items-center justify-between gap-4 py-4 border-b border-white/[0.06] last:border-0">
       <div className="flex items-center gap-3 min-w-0">
@@ -259,10 +290,16 @@ function TaxReportRow({ title, period, rows, badge }: { title: string; period: s
             {badge}
           </span>
         )}
-        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 border border-white/10 hover:border-white/20 hover:text-white transition-all">
+        <button
+          onClick={onPDF}
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 border border-white/10 hover:border-white/20 hover:text-white transition-all"
+        >
           PDF
         </button>
-        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-all">
+        <button
+          onClick={onCSV}
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-all"
+        >
           CSV
         </button>
       </div>
@@ -286,22 +323,196 @@ function TaxAlert({ title, body, severity }: { title: string; body: string; seve
   );
 }
 
+/* ── Preview Modal ── */
+function PreviewModal({ csvData, onClose }: { csvData: string; onClose: () => void }) {
+  const lines = csvData.split('\n').slice(0, 25);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="w-full max-w-3xl max-h-[80vh] rounded-2xl border border-white/10 bg-[#0d1117] p-6 overflow-auto shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-sm font-bold text-white">CSV Data Preview</span>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-all">
+            <X className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
+        <div className="overflow-x-auto rounded-lg bg-white/[0.03] border border-white/[0.06] p-4">
+          <pre className="text-xs text-slate-300 font-mono whitespace-pre leading-relaxed">
+            {lines.join('\n')}
+            {csvData.split('\n').length > 25 && '\n\n... (truncated — full data will be in export)'}
+          </pre>
+        </div>
+        <p className="text-[11px] text-slate-500 mt-3">
+          Showing first {Math.min(25, csvData.split('\n').length)} of {csvData.split('\n').length} rows.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── CSV Generation Helpers ── */
+function generateTaxReportCSV(title: string, report: TaxPLResult | Omit<TaxPLResult, 'projectId' | 'propertyName'> | null): string {
+  if (!report) return 'No data available';
+  const headers = [
+    'Field', 'Amount'
+  ];
+  const rows = [
+    ['Rental Income', report.rentalIncome.toFixed(2)],
+    ['Other Income', report.otherIncome.toFixed(2)],
+    ['Sale Proceeds', report.saleProceeds.toFixed(2)],
+    ['Total Gross Income', report.totalGrossIncome.toFixed(2)],
+    ['Property Taxes', report.propertyTaxes.toFixed(2)],
+    ['Insurance', report.insurance.toFixed(2)],
+    ['Utilities', report.utilities.toFixed(2)],
+    ['Property Management', report.propertyManagement.toFixed(2)],
+    ['Repairs & Maintenance', report.repairsMaintenance.toFixed(2)],
+    ['HOA Fees', report.hoaFees.toFixed(2)],
+    ['Mortgage Interest', report.mortgageInterest.toFixed(2)],
+    ['Total Deductible Expenses', report.totalDeductibleExpenses.toFixed(2)],
+    ['Net Operating Result', report.netOperatingResult.toFixed(2)],
+    ['Net Taxable Result', report.netTaxableResult.toFixed(2)],
+    ['Mortgage Principal', report.mortgagePrincipal.toFixed(2)],
+    ['Capitalized Rehab', report.capitalizedRehab.toFixed(2)],
+    ['Depreciation Estimate', report.depreciationEstimate.toFixed(2)],
+    ['Selling Costs', report.sellingCosts.toFixed(2)],
+    ['Realized Gain/Loss', report.realizedGainLoss.toFixed(2)],
+    ['Acquisition Basis', report.acquisitionBasis.toFixed(2)],
+    ['Lifetime Capitalized Rehab', report.lifetimeCapitalizedRehab.toFixed(2)],
+  ];
+  return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+}
+
+function generatePortfolioCSV(
+  projects: any[],
+  periodStart: Date,
+  periodEnd: Date,
+): string {
+  if (projects.length === 0) return 'No projects with financial data';
+  const headers = [
+    'Property', 'Rental Income', 'Other Income', 'Sale Proceeds', 'Total Income',
+    'Taxes', 'Insurance', 'Utilities', 'Mgmt', 'Maintenance', 'HOA', 'Mortgage Interest',
+    'Total Expenses', 'Net Operating', 'Net Taxable', 'Depreciation', 'Gain/Loss',
+  ];
+  const rows = projects.map((p) => {
+    try {
+      const r = calculateProjectTaxReport(p, periodStart, periodEnd);
+      return [
+        `"${r.propertyName}"`, r.rentalIncome.toFixed(2), r.otherIncome.toFixed(2),
+        r.saleProceeds.toFixed(2), r.totalGrossIncome.toFixed(2),
+        r.propertyTaxes.toFixed(2), r.insurance.toFixed(2), r.utilities.toFixed(2),
+        r.propertyManagement.toFixed(2), r.repairsMaintenance.toFixed(2),
+        r.hoaFees.toFixed(2), r.mortgageInterest.toFixed(2),
+        r.totalDeductibleExpenses.toFixed(2), r.netOperatingResult.toFixed(2),
+        r.netTaxableResult.toFixed(2), r.depreciationEstimate.toFixed(2),
+        r.realizedGainLoss.toFixed(2),
+      ].join(',');
+    } catch {
+      return `"${p.propertyName || p.address || 'Unknown'}",Error computing report`;
+    }
+  });
+  return [headers.join(','), ...rows].join('\n');
+}
+
+function downloadCSV(content: string, filename: string) {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function downloadPDFViaPrint(title: string, csvContent: string) {
+  // Create a print-optimized view and trigger window.print()
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  if (!printWindow) {
+    toast.error('Please allow pop-ups to generate PDF');
+    return;
+  }
+  const lines = csvContent.split('\n');
+  const headers = lines[0]?.split(',') || [];
+  const rows = lines.slice(1).map(l => l.split(','));
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${title} — PaperWorking</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #1a1a1a; }
+        h1 { font-size: 20px; margin-bottom: 4px; }
+        .subtitle { font-size: 12px; color: #666; margin-bottom: 24px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th { background: #111; color: #fff; padding: 8px 12px; text-align: left; font-weight: 600; }
+        td { padding: 6px 12px; border-bottom: 1px solid #e5e5e5; }
+        tr:nth-child(even) td { background: #f9f9f9; }
+        .footer { margin-top: 24px; font-size: 10px; color: #999; }
+        @media print { body { padding: 20px; } }
+      </style>
+    </head>
+    <body>
+      <h1>PAPERWORKING — ${title}</h1>
+      <div class="subtitle">Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+      <table>
+        <thead><tr>${headers.map(h => `<th>${h.replace(/"/g, '')}</th>`).join('')}</tr></thead>
+        <tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c.replace(/"/g, '')}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+      <div class="footer">This report is for informational purposes only. Not official tax advice. Consult a CPA.</div>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  setTimeout(() => { printWindow.print(); }, 300);
+}
+
 /* ═══ Main Page ═══ */
 export default function ReportsPage() {
   useAllDealsSync();
+  const router = useRouter();
   const { profile } = useAuth();
   const projects = useProjectStore((s) => s.projects);
 
   const [period, setPeriod] = useState<PeriodTab>('Quarterly');
   const [scope, setScope]   = useState<ScopeTab>('Property');
+  const [syncing, setSyncing] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [taxYear, setTaxYear] = useState<number>(new Date().getFullYear());
+  const [capGains, setCapGains] = useState({
+    purchasePrice: '',
+    salePrice: '',
+    improvements: '',
+    depreciationRecapture: '',
+  });
 
   const apiPeriodType = period === 'Monthly' ? 'monthly' : period === 'Quarterly' ? 'quarterly' : period === 'Yearly' ? 'annual' : 'monthly';
-  const { snapshots, loading } = usePortfolioMetricSnapshots(apiPeriodType);
+  const scopeParam = scope === 'My Share' ? 'myShare' : 'property';
+
+  // Pass scope + projects into the hook so it applies ownershipPercentage scaling
+  const { snapshots, loading } = usePortfolioMetricSnapshots(apiPeriodType, projects, scopeParam as 'property' | 'myShare');
+
+  const hasProjects = projects.length > 0;
+  const projectsWithFinancials = projects.filter((p) => p.financials);
+  const hasFinancials = projectsWithFinancials.length > 0;
+
+  // Ownership scaling factor for per-project computations
+  const scopeScale = useCallback(
+    (p: any) => {
+      if (scope !== 'My Share') return 1;
+      return ((p.financials?.ownershipPercentage ?? 100) / 100);
+    },
+    [scope],
+  );
 
   /* ── Derived NOI chart data ── */
   const { noiValues, noiLabels, latestNOI, noiChange } = useMemo(() => {
     if (!snapshots || snapshots.length < 2) {
-      return { noiValues: DEMO_NOI_BARS, noiLabels: DEMO_LABELS, latestNOI: 482910, noiChange: 12.4 };
+      return { noiValues: [], noiLabels: [], latestNOI: 0, noiChange: 0 };
     }
     const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
     const vals   = sorted.map((s) => s.noi ?? 0);
@@ -312,52 +523,80 @@ export default function ReportsPage() {
     return { noiValues: vals, noiLabels: labels, latestNOI: last, noiChange: chg };
   }, [snapshots]);
 
-  /* ── Derived portfolio financials ── */
+  /* ── Derived portfolio financials (scope-aware) ── */
   const portfolioFinancials = useMemo(() => {
     let grossRevenue = 0, opExpenses = 0, debtService = 0;
     projects.forEach((p) => {
       const f = p.financials;
       if (!f) return;
-      grossRevenue += (f.monthlyGrossRent ?? 0) * 12;
-      opExpenses   += ((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12;
-      debtService  += (f.longTermMortgagePayment ?? 0) * 12;
+      const scale = scopeScale(p);
+      grossRevenue += ((f.monthlyGrossRent ?? 0) * 12) * scale;
+      opExpenses   += (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12) * scale;
+      debtService  += ((f.longTermMortgagePayment ?? 0) * 12) * scale;
     });
-    if (grossRevenue === 0) { grossRevenue = 1_200_000; opExpenses = 342_000; debtService = 189_000; }
     return { grossRevenue, opExpenses, debtService };
-  }, [projects]);
+  }, [projects, scopeScale]);
+
+  /* ── Expense distribution — computed from actual project data ── */
+  const expenseItems = useMemo(() => {
+    let totalInsurance = 0, totalTaxes = 0, totalUtilities = 0, totalOther = 0;
+    projects.forEach((p) => {
+      const f = p.financials;
+      if (!f) return;
+      const scale = scopeScale(p);
+      totalInsurance += ((f.holdingCostInsurance ?? 0) * 12) * scale;
+      totalTaxes     += ((f.holdingCostTaxes ?? 0) * 12) * scale;
+      totalUtilities += ((f.holdingCostUtilities ?? 0) * 12) * scale;
+      // Other includes management fees, maintenance, HOA
+      const otherMonthly = (f.propertyManagementFee ?? 0) + (f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) + (f.monthlyHOA ?? 0);
+      totalOther += (otherMonthly * 12) * scale;
+    });
+
+    const total = totalInsurance + totalTaxes + totalUtilities + totalOther;
+    if (total === 0) {
+      return [
+        { name: 'Insurance', pct: 25 },
+        { name: 'Taxes', pct: 25 },
+        { name: 'Utilities', pct: 25 },
+        { name: 'Other', pct: 25 },
+      ];
+    }
+    return [
+      { name: 'Insurance', pct: Math.round((totalInsurance / total) * 100) },
+      { name: 'Taxes', pct: Math.round((totalTaxes / total) * 100) },
+      { name: 'Utilities', pct: Math.round((totalUtilities / total) * 100) },
+      { name: 'Other', pct: 100 - Math.round((totalInsurance / total) * 100) - Math.round((totalTaxes / total) * 100) - Math.round((totalUtilities / total) * 100) },
+    ];
+  }, [projects, scopeScale]);
 
   /* ── Tax report aggregate ── */
-  const taxReport = useMemo(() => {
-    if (projects.length === 0) return null;
+  const { taxReport, perProjectReports } = useMemo(() => {
+    if (projects.length === 0) return { taxReport: null, perProjectReports: [] as TaxPLResult[] };
     try {
       const now = new Date();
       const yearStart = new Date(now.getFullYear(), 0, 1);
       const results = projects.map((p) => calculateProjectTaxReport(p, yearStart, now));
-      return aggregatePortfolioTaxReport(results);
-    } catch { return null; }
+      return { taxReport: aggregatePortfolioTaxReport(results), perProjectReports: results };
+    } catch { return { taxReport: null, perProjectReports: [] as TaxPLResult[] }; }
   }, [projects]);
 
   const totalOpex = portfolioFinancials.opExpenses;
 
-  /* ── IRR scenarios — computed from CoC return or demo ── */
+  /* ── IRR scenarios — computed from CoC return ── */
   const irrScenarios = useMemo(() => {
     const hasCoCReturn = projects.some((p) => (p.financials?.cashOnCashReturn ?? 0) > 0);
     if (hasCoCReturn) {
-      const baseIRR = projects.find((p) => (p.financials?.cashOnCashReturn ?? 0) > 0)?.financials?.cashOnCashReturn ?? 15.8;
+      const baseIRR = projects.find((p) => (p.financials?.cashOnCashReturn ?? 0) > 0)?.financials?.cashOnCashReturn ?? 0;
       return [
         { label: 'Conservative', irr: `${(baseIRR * 0.78).toFixed(1)}%`, holdYears: 'Hold 10y', capExit: `Cap Exit ${(baseIRR * 0.35).toFixed(1)}%`, active: false },
         { label: 'Target (Current)', irr: `${baseIRR.toFixed(1)}%`, holdYears: 'Hold 7y', capExit: `Cap Exit ${(baseIRR * 0.32).toFixed(1)}%`, active: true },
         { label: 'Aggressive', irr: `${(baseIRR * 1.22).toFixed(1)}%`, holdYears: 'Hold 3y', capExit: `Cap Exit ${(baseIRR * 0.30).toFixed(1)}%`, active: false },
       ];
     }
-    return [
-      { label: 'Conservative', irr: '12.4%', holdYears: 'Hold 10y', capExit: 'Cap Exit 5.5%', active: false },
-      { label: 'Target (Current)', irr: '15.8%', holdYears: 'Hold 7y', capExit: 'Cap Exit 5.1%', active: true },
-      { label: 'Aggressive', irr: '19.2%', holdYears: 'Hold 3y', capExit: 'Cap Exit 4.8%', active: false },
-    ];
+    return null; // No data available
   }, [projects]);
 
-  /* ── Tax alerts — derive from tax report or show demo ── */
+  /* ── Tax alerts — derive from tax report ── */
   const taxAlerts = useMemo(() => {
     const alerts = [];
     if (taxReport && (taxReport.realizedGainLoss ?? 0) > 20_000) {
@@ -366,37 +605,43 @@ export default function ReportsPage() {
         body: `Potential $${Math.round((taxReport.realizedGainLoss ?? 0) * 0.065).toLocaleString()} tax liability detected on Q4 exit scenario. Recommend cost-segregation study review.`,
         severity: 'warning' as const,
       });
-    } else {
+    } else if (taxReport && taxReport.totalGrossIncome > 0) {
       alerts.push({
-        title: 'Depreciation Recapture Warning',
-        body: 'Potential $24,500 tax liability detected on Q4 exit scenario. Recommend cost-segregation study review.',
-        severity: 'warning' as const,
+        title: 'Tax Position',
+        body: `Net taxable result: $${Math.round(taxReport.netTaxableResult).toLocaleString()}. Review depreciation strategy to optimize tax position.`,
+        severity: 'info' as const,
       });
     }
-    alerts.push({
-      title: '1031 Exchange Window',
-      body: 'Identifying 3 replacement properties in high-yield zones to defer capital gains tax.',
-      severity: 'info' as const,
-    });
+
+    if (hasProjects) {
+      const soldCount = projects.filter(p => p.status === 'Sold').length;
+      if (soldCount > 0) {
+        alerts.push({
+          title: '1031 Exchange Window',
+          body: `${soldCount} sold ${soldCount === 1 ? 'property' : 'properties'} — review replacement property options to defer capital gains tax.`,
+          severity: 'info' as const,
+        });
+      }
+    }
+
     return alerts;
-  }, [taxReport]);
+  }, [taxReport, hasProjects, projects]);
 
   const fmtLarge = (v: number) =>
     v >= 1_000_000
       ? `$${(v / 1_000_000).toFixed(3).replace(/\.?0+$/, '')}M`
       : `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  /* ── Core REI Metrics — compute from projects or fall back to demo values ── */
+  /* ── Core REI Metrics — compute from projects (scope-aware) ── */
   const [autoSync, setAutoSync] = useState(true);
 
   const reiMetrics = useMemo(() => {
-    const hasProjects = projects.length > 0 && projects.some((p) => p.financials);
-
-    if (!hasProjects) {
+    if (!hasFinancials) {
       return {
-        noi: '$42,850', irr: '14.2%', capRate: '5.85%', coc: '8.42%',
-        ltv: '62%', dscr: '1.85x', grm: '9.2', roa: '6.5%',
-        oer: '38.2%', yoc: '7.1%', appreciation: '+12.5%',
+        noi: '$0', irr: '—', capRate: '—', coc: '—',
+        ltv: '—', dscr: '—', grm: '—', roa: '—',
+        oer: '—', yoc: '—', appreciation: '—',
+        occupancy: '—', performance: '$0',
       };
     }
 
@@ -406,12 +651,13 @@ export default function ReportsPage() {
     projects.forEach((p) => {
       const f = p.financials;
       if (!f) return;
-      const arv       = f.arv ?? f.purchasePrice ?? 0;
-      const loan      = f.loanAmount ?? (arv * 0.65);
-      const annualRent= (f.monthlyGrossRent ?? 0) * 12;
-      const annualOpEx= ((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12;
-      const annualDebt= (f.longTermMortgagePayment ?? 0) * 12;
-      const cost      = (f.purchasePrice ?? 0) + (f.rehabBudget ?? 0);
+      const scale = scopeScale(p);
+      const arv       = (f.arv ?? f.purchasePrice ?? 0) * scale;
+      const loan      = (f.loanAmount ?? ((f.arv ?? f.purchasePrice ?? 0) * 0.65)) * scale;
+      const annualRent= ((f.monthlyGrossRent ?? 0) * 12) * scale;
+      const annualOpEx= (((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12) * scale;
+      const annualDebt= ((f.longTermMortgagePayment ?? 0) * 12) * scale;
+      const cost      = ((f.purchasePrice ?? 0) + (f.rehabBudget ?? 0)) * scale;
       totalValue    += arv;
       totalLoan     += loan;
       totalGrossRent += annualRent;
@@ -422,41 +668,148 @@ export default function ReportsPage() {
       totalEquity   += Math.max(0, arv - loan);
     });
 
-    const capRate   = totalValue > 0 ? (totalNOI / totalValue) * 100 : 5.85;
-    const ltv       = totalValue > 0 ? (totalLoan / totalValue) * 100 : 62;
-    const dscr      = totalDebtSvc > 0 ? totalNOI / totalDebtSvc : 1.85;
-    const grm       = totalGrossRent > 0 ? totalValue / totalGrossRent : 9.2;
-    const roa       = totalValue > 0 ? (totalNOI / totalValue) * 100 : 6.5;
-    const oer       = totalGrossRent > 0 ? (totalOpEx / totalGrossRent) * 100 : 38.2;
-    const yoc       = totalCostBasis > 0 ? (totalNOI / totalCostBasis) * 100 : 7.1;
+    const capRate   = totalValue > 0 ? (totalNOI / totalValue) * 100 : 0;
+    const ltv       = totalValue > 0 ? (totalLoan / totalValue) * 100 : 0;
+    const dscr      = totalDebtSvc > 0 ? totalNOI / totalDebtSvc : 0;
+    const grm       = totalGrossRent > 0 ? totalValue / totalGrossRent : 0;
+    const roa       = totalValue > 0 ? (totalNOI / totalValue) * 100 : 0;
+    const oer       = totalGrossRent > 0 ? (totalOpEx / totalGrossRent) * 100 : 0;
+    const yoc       = totalCostBasis > 0 ? (totalNOI / totalCostBasis) * 100 : 0;
     const netCF     = totalNOI - totalDebtSvc;
-    const coc       = totalEquity > 0 ? (netCF / totalEquity) * 100 : 8.42;
-    const baseIRR   = projects.find((p) => (p.financials?.cashOnCashReturn ?? 0) > 0)?.financials?.cashOnCashReturn ?? 14.2;
+    const coc       = totalEquity > 0 ? (netCF / totalEquity) * 100 : 0;
+    const baseIRR   = projects.find((p) => (p.financials?.cashOnCashReturn ?? 0) > 0)?.financials?.cashOnCashReturn;
+
+    // Compute occupancy from snapshots if available
+    const latestSnapshot = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
+    const occupancyVal = latestSnapshot?.occupancyRate;
+    const appreciationVal = latestSnapshot?.appreciation;
 
     const fmt1 = (n: number) => n.toFixed(1);
     const fmt2 = (n: number) => n.toFixed(2);
     const fmtNOI = (n: number) => n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n.toFixed(0)}`;
+    const fmtPerf = (n: number) => n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(2)}M` : n >= 1000 ? `$${(n / 1000).toFixed(0)}k` : `$${n.toFixed(0)}`;
 
     return {
       noi: fmtNOI(totalNOI),
-      irr: `${fmt1(baseIRR)}%`,
-      capRate: `${fmt2(capRate)}%`,
-      coc: `${fmt2(coc)}%`,
-      ltv: `${Math.round(ltv)}%`,
-      dscr: `${fmt2(dscr)}x`,
-      grm: fmt1(grm),
-      roa: `${fmt2(roa)}%`,
-      oer: `${fmt1(oer)}%`,
-      yoc: `${fmt2(yoc)}%`,
-      appreciation: '+12.5%',
+      irr: baseIRR != null ? `${fmt1(baseIRR)}%` : '—',
+      capRate: capRate > 0 ? `${fmt2(capRate)}%` : '—',
+      coc: coc !== 0 ? `${fmt2(coc)}%` : '—',
+      ltv: ltv > 0 ? `${Math.round(ltv)}%` : '—',
+      dscr: dscr > 0 ? `${fmt2(dscr)}x` : '—',
+      grm: grm > 0 ? fmt1(grm) : '—',
+      roa: roa > 0 ? `${fmt2(roa)}%` : '—',
+      oer: oer > 0 ? `${fmt1(oer)}%` : '—',
+      yoc: yoc > 0 ? `${fmt2(yoc)}%` : '—',
+      appreciation: appreciationVal != null ? `${appreciationVal >= 0 ? '+' : ''}${fmt1(appreciationVal)}%` : '—',
+      occupancy: occupancyVal != null ? `${fmt1(occupancyVal)}%` : '—',
+      performance: fmtPerf(totalValue),
     };
-  }, [projects]);
+  }, [projects, hasFinancials, scopeScale, snapshots]);
+
+  /* ── Button Handlers ── */
+
+  // Sync Now — re-trigger data sync by forcing store update
+  const handleSyncNow = useCallback(() => {
+    setSyncing(true);
+    // Force re-fetch by temporarily clearing and re-setting projects
+    const currentProjects = useProjectStore.getState().projects;
+    useProjectStore.getState().setDeals([...currentProjects]);
+    useProjectStore.getState().recalculateMetrics();
+    toast.success('Metrics refreshed', {
+      icon: '🔄',
+      style: { background: '#111', color: '#fff', border: '1px solid #333' },
+    });
+    setTimeout(() => setSyncing(false), 1000);
+  }, []);
+
+  // Tax report period bounds
+  const now = new Date();
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const q1End = new Date(now.getFullYear(), 2, 31);
+
+  // Per-row tax report handlers
+  const handleQuarterlyPDF = useCallback(() => {
+    const csv = generatePortfolioCSV(projects, yearStart, q1End);
+    downloadPDFViaPrint('Quarterly P&L — Q1 ' + now.getFullYear(), csv);
+    toast.success('PDF generated');
+  }, [projects, yearStart, q1End, now]);
+
+  const handleQuarterlyCSV = useCallback(() => {
+    const csv = generatePortfolioCSV(projects, yearStart, q1End);
+    downloadCSV(csv, `Quarterly_PL_Q1_${now.getFullYear()}.csv`);
+    toast.success('CSV downloaded');
+  }, [projects, yearStart, q1End, now]);
+
+  const handleAnnualPDF = useCallback(() => {
+    const prevYearStart = new Date(now.getFullYear() - 2, 0, 1);
+    const prevYearEnd = new Date(now.getFullYear() - 1, 11, 31);
+    const csv = generatePortfolioCSV(projects, prevYearStart, prevYearEnd);
+    downloadPDFViaPrint(`Annual Tax Summary — FY ${now.getFullYear() - 2}–${now.getFullYear() - 1}`, csv);
+    toast.success('PDF generated');
+  }, [projects, now]);
+
+  const handleAnnualCSV = useCallback(() => {
+    const prevYearStart = new Date(now.getFullYear() - 2, 0, 1);
+    const prevYearEnd = new Date(now.getFullYear() - 1, 11, 31);
+    const csv = generatePortfolioCSV(projects, prevYearStart, prevYearEnd);
+    downloadCSV(csv, `Annual_Tax_Summary_FY${now.getFullYear() - 2}-${now.getFullYear() - 1}.csv`);
+    toast.success('CSV downloaded');
+  }, [projects, now]);
+
+  const handleLifetimePDF = useCallback(() => {
+    const allTimeStart = new Date(2000, 0, 1);
+    const csv = generatePortfolioCSV(projects, allTimeStart, now);
+    downloadPDFViaPrint('Lifetime Ledger — All Time', csv);
+    toast.success('PDF generated');
+  }, [projects, now]);
+
+  const handleLifetimeCSV = useCallback(() => {
+    const allTimeStart = new Date(2000, 0, 1);
+    const csv = generatePortfolioCSV(projects, allTimeStart, now);
+    downloadCSV(csv, 'Lifetime_Ledger_All_Time.csv');
+    toast.success('CSV downloaded');
+  }, [projects, now]);
+
+  // View Detailed Tax Strategy
+  const handleViewTaxStrategy = useCallback(() => {
+    router.push('/dashboard/reports/tax-strategy');
+  }, [router]);
+
+  // Preview Data
+  const handlePreviewData = useCallback(() => {
+    setPreviewOpen(true);
+  }, []);
+
+  // Export for Filing
+  const handleExportForFiling = useCallback(() => {
+    if (!hasProjects) {
+      toast.error('No projects to export');
+      return;
+    }
+    const csv = generatePortfolioCSV(projects, yearStart, now);
+    downloadCSV(csv, `PaperWorking_Tax_Export_${now.getFullYear()}_${now.toISOString().split('T')[0]}.csv`);
+    toast.success('Tax-ready CSV exported', {
+      icon: '📄',
+      style: { background: '#111', color: '#fff', border: '1px solid #333' },
+    });
+  }, [hasProjects, projects, yearStart, now]);
+
+  // Preview CSV content for modal
+  const previewCSV = useMemo(() => {
+    if (!hasProjects) return 'No projects with financial data available.';
+    return generatePortfolioCSV(projects, yearStart, now);
+  }, [hasProjects, projects, yearStart, now]);
 
   return (
     <div
       className="min-h-full px-6 lg:px-8 py-8 space-y-6"
       style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}
     >
+      {/* Preview Modal */}
+      {previewOpen && (
+        <PreviewModal csvData={previewCSV} onClose={() => setPreviewOpen(false)} />
+      )}
+
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div>
@@ -502,6 +855,11 @@ export default function ReportsPage() {
         </div>
       </div>
 
+      {/* ── No Data Empty State ── */}
+      {!hasFinancials && !loading && (
+        <EmptyState message="No financial data yet — add financials to your projects to see reports." />
+      )}
+
       {/* ── Core REI Metrics Bento Grid ── */}
       <div
         className="rounded-2xl border border-white/10 p-5"
@@ -509,30 +867,44 @@ export default function ReportsPage() {
       >
         <div className="flex items-center justify-between mb-4">
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Core REI Metrics</span>
-          <span className="text-[10px] font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
-            Portfolio Aggregate
-          </span>
+          <div className="flex items-center gap-2">
+            {scope === 'My Share' && (
+              <span className="text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+                My Share
+              </span>
+            )}
+            <span className="text-[10px] font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+              Portfolio Aggregate
+            </span>
+          </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* Row 1 */}
-          <BentoMetric label="NOI" value={reiMetrics.noi} sub="Net Operating Income" trend="up" href="/dashboard/intelligence/noi" />
-          <BentoMetric label="IRR" value={reiMetrics.irr} sub="Internal Rate of Return" trend="up" href="/dashboard/intelligence/irr" />
-          <BentoMetric label="Cap Rate" value={reiMetrics.capRate} sub="Capitalization Rate" trend="neutral" href="/dashboard/intelligence/cap-rate" />
-          <BentoMetric label="Cash-on-Cash" value={reiMetrics.coc} sub="Cash Return on Equity" trend="up" href="/dashboard/intelligence/coc" />
-          {/* Row 2 */}
-          <BentoMetric label="LTV" value={reiMetrics.ltv} sub="Loan-to-Value" trend="neutral" href="/dashboard/intelligence/ltv" />
-          <BentoMetric label="DSCR" value={reiMetrics.dscr} sub="Debt Service Coverage" trend="up" href="/dashboard/intelligence/dscr" />
-          <BentoMetric label="GRM" value={reiMetrics.grm} sub="Gross Rent Multiplier" trend="neutral" href="/dashboard/intelligence/grm" />
-          <BentoMetric label="ROA" value={reiMetrics.roa} sub="Return on Assets" trend="up" />
-          {/* Row 3 */}
-          <BentoMetric label="OER" value={reiMetrics.oer} sub="Operating Expense Ratio" trend="down" href="/dashboard/intelligence/oer" />
-          <BentoMetric label="Yield on Cost" value={reiMetrics.yoc} sub="Dev yield on cost basis" trend="up" />
-          <BentoMetric label="Cash Flow" value={reiMetrics.noi} sub="Annual net cash flow" trend="up" href="/dashboard/intelligence/cash-flow" />
-          <BentoMetric label="Occupancy" value="94.2%" sub="Portfolio occupancy rate" trend="up" href="/dashboard/intelligence/occupancy" />
-          <BentoMetric label="Appreciation" value={reiMetrics.appreciation} sub="YTD portfolio value gain" trend="up" colSpan href="/dashboard/intelligence/appreciation" />
-          <BentoMetric label="Performance" value="$1.24M" sub="Portfolio value trajectory" trend="up" href="/dashboard/intelligence/performance" />
-          <BentoMetric label="Comparison" value={`${projects.length || 4} props`} sub="Side-by-side matrix" trend="neutral" href="/dashboard/intelligence/comparison" />
-        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {Array.from({ length: 15 }).map((_, i) => <SkeletonMetric key={i} />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Row 1 */}
+            <BentoMetric label="NOI" value={reiMetrics.noi} sub="Net Operating Income" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/noi" />
+            <BentoMetric label="IRR" value={reiMetrics.irr} sub="Internal Rate of Return" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/irr" />
+            <BentoMetric label="Cap Rate" value={reiMetrics.capRate} sub="Capitalization Rate" trend="neutral" href="/dashboard/intelligence/cap-rate" />
+            <BentoMetric label="Cash-on-Cash" value={reiMetrics.coc} sub="Cash Return on Equity" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/coc" />
+            {/* Row 2 */}
+            <BentoMetric label="LTV" value={reiMetrics.ltv} sub="Loan-to-Value" trend="neutral" href="/dashboard/intelligence/ltv" />
+            <BentoMetric label="DSCR" value={reiMetrics.dscr} sub="Debt Service Coverage" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/dscr" />
+            <BentoMetric label="GRM" value={reiMetrics.grm} sub="Gross Rent Multiplier" trend="neutral" href="/dashboard/intelligence/grm" />
+            <BentoMetric label="ROA" value={reiMetrics.roa} sub="Return on Assets" trend={hasFinancials ? 'up' : 'neutral'} />
+            {/* Row 3 */}
+            <BentoMetric label="OER" value={reiMetrics.oer} sub="Operating Expense Ratio" trend={hasFinancials ? 'down' : 'neutral'} href="/dashboard/intelligence/oer" />
+            <BentoMetric label="Yield on Cost" value={reiMetrics.yoc} sub="Dev yield on cost basis" trend={hasFinancials ? 'up' : 'neutral'} />
+            <BentoMetric label="Cash Flow" value={reiMetrics.noi} sub="Annual net cash flow" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/cash-flow" />
+            <BentoMetric label="Occupancy" value={reiMetrics.occupancy} sub="Portfolio occupancy rate" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/occupancy" />
+            <BentoMetric label="Appreciation" value={reiMetrics.appreciation} sub="YTD portfolio value gain" trend={hasFinancials ? 'up' : 'neutral'} colSpan href="/dashboard/intelligence/appreciation" />
+            <BentoMetric label="Performance" value={reiMetrics.performance} sub="Portfolio value trajectory" trend={hasFinancials ? 'up' : 'neutral'} href="/dashboard/intelligence/performance" />
+            <BentoMetric label="Comparison" value={`${projects.length} props`} sub="Side-by-side matrix" trend="neutral" href="/dashboard/intelligence/comparison" />
+          </div>
+        )}
       </div>
 
       {/* ── Row 1: NOI Trend + Cash Flow Intelligence ── */}
@@ -549,17 +921,27 @@ export default function ReportsPage() {
               <span className="w-2.5 h-2.5 rounded-full border border-teal-400 bg-teal-400/20 cursor-pointer" />
             </div>
           </div>
-          <div className="flex items-baseline gap-3 mb-5">
-            <span className="text-3xl font-bold text-teal-400 tabular-nums">{fmtLarge(latestNOI)}</span>
-            <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
-              {noiChange >= 0 ? '+' : ''}{noiChange.toFixed(1)}%
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </span>
-          </div>
-          {loading ? (
-            <div className="h-[220px] animate-pulse rounded-lg bg-white/5" />
+          {noiValues.length > 0 ? (
+            <>
+              <div className="flex items-baseline gap-3 mb-5">
+                <span className="text-3xl font-bold text-teal-400 tabular-nums">{fmtLarge(latestNOI)}</span>
+                <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                  {noiChange >= 0 ? '+' : ''}{noiChange.toFixed(1)}%
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
+              {loading ? (
+                <div className="h-[220px] animate-pulse rounded-lg bg-white/5" />
+              ) : (
+                <NOITrendChart values={noiValues} labels={noiLabels} />
+              )}
+            </>
           ) : (
-            <NOITrendChart values={noiValues} labels={noiLabels} />
+            <div className="flex items-center justify-center h-[260px]">
+              <p className="text-sm text-slate-500">
+                {loading ? 'Loading chart data...' : 'Not enough data points to display trend. Add metric snapshots to see the NOI chart.'}
+              </p>
+            </div>
           )}
         </div>
 
@@ -570,32 +952,41 @@ export default function ReportsPage() {
             <TrendingUp className="w-4 h-4 text-teal-400" />
           </div>
 
-          <div className="space-y-5 flex-1">
-            <CashFlowBar
-              label="Gross Revenue"
-              value={portfolioFinancials.grossRevenue}
-              max={portfolioFinancials.grossRevenue}
-              color="#2dd4bf"
-            />
-            <CashFlowBar
-              label="Op. Expenses"
-              value={portfolioFinancials.opExpenses}
-              max={portfolioFinancials.grossRevenue}
-              color="#818cf8"
-            />
-            <CashFlowBar
-              label="Debt Service"
-              value={portfolioFinancials.debtService}
-              max={portfolioFinancials.grossRevenue}
-              color="#fb923c"
-            />
-          </div>
-
-          <p className="text-xs text-slate-500 italic leading-relaxed border-t border-white/5 pt-4">
-            &quot;Current liquidity supports {portfolioFinancials.debtService > 0
-              ? (portfolioFinancials.grossRevenue / portfolioFinancials.debtService).toFixed(1)
-              : '3.4'}x debt coverage ratio.&quot;
-          </p>
+          {hasFinancials ? (
+            <>
+              <div className="space-y-5 flex-1">
+                <CashFlowBar
+                  label="Gross Revenue"
+                  value={portfolioFinancials.grossRevenue}
+                  max={portfolioFinancials.grossRevenue}
+                  color="#2dd4bf"
+                />
+                <CashFlowBar
+                  label="Op. Expenses"
+                  value={portfolioFinancials.opExpenses}
+                  max={portfolioFinancials.grossRevenue}
+                  color="#818cf8"
+                />
+                <CashFlowBar
+                  label="Debt Service"
+                  value={portfolioFinancials.debtService}
+                  max={portfolioFinancials.grossRevenue}
+                  color="#fb923c"
+                />
+              </div>
+              <p className="text-xs text-slate-500 italic leading-relaxed border-t border-white/5 pt-4">
+                &quot;Current liquidity supports {portfolioFinancials.debtService > 0
+                  ? (portfolioFinancials.grossRevenue / portfolioFinancials.debtService).toFixed(1)
+                  : '∞'}x debt coverage ratio.&quot;
+              </p>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-xs text-slate-500 text-center leading-relaxed">
+                Add financial data to your projects to see cash flow analysis.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -605,25 +996,43 @@ export default function ReportsPage() {
         {/* IRR Scenarios */}
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-4">IRR Scenarios</span>
-          <div className="space-y-3">
-            {irrScenarios.map((s) => (
-              <IRRScenario key={s.label} {...s} />
-            ))}
-          </div>
+          {irrScenarios ? (
+            <div className="space-y-3">
+              {irrScenarios.map((s) => (
+                <IRRScenario key={s.label} {...s} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-xs text-slate-500 text-center leading-relaxed">
+                No cash-on-cash return data available. Add financial details to project(s) to see IRR scenarios.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Expense Distribution */}
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-2">Expense Distribution</span>
-          <ExpenseDonut totalOpex={totalOpex} />
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-2">
-            {EXPENSE_ITEMS.map((item, i) => (
-              <div key={item.name} className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: EXPENSE_COLORS[i] }} />
-                <span className="text-xs text-slate-400">{item.name} ({item.pct}%)</span>
+          {hasFinancials ? (
+            <>
+              <ExpenseDonut totalOpex={totalOpex} items={expenseItems} />
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-2">
+                {expenseItems.map((item, i) => (
+                  <div key={item.name} className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: EXPENSE_COLORS[i % EXPENSE_COLORS.length] }} />
+                    <span className="text-xs text-slate-400">{item.name} ({item.pct}%)</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <p className="text-xs text-slate-500 text-center leading-relaxed">
+                No expense data available yet.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Tax Optimization Alerts */}
@@ -634,12 +1043,21 @@ export default function ReportsPage() {
           </div>
 
           <div className="flex-1 space-y-3">
-            {taxAlerts.map((alert) => (
-              <TaxAlert key={alert.title} {...alert} />
-            ))}
+            {taxAlerts.length > 0 ? (
+              taxAlerts.map((alert) => (
+                <TaxAlert key={alert.title} {...alert} />
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-4">
+                <p className="text-xs text-slate-500">No tax alerts — add projects with financial data to see optimization insights.</p>
+              </div>
+            )}
           </div>
 
-          <button className="w-full py-2.5 rounded-lg border border-teal-500/40 text-teal-400 text-xs font-bold uppercase tracking-widest hover:bg-teal-500/10 transition-all flex items-center justify-center gap-2">
+          <button
+            onClick={handleViewTaxStrategy}
+            className="w-full py-2.5 rounded-lg border border-teal-500/40 text-teal-400 text-xs font-bold uppercase tracking-widest hover:bg-teal-500/10 transition-all flex items-center justify-center gap-2"
+          >
             View Detailed Tax Strategy
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -664,19 +1082,25 @@ export default function ReportsPage() {
 
           <TaxReportRow
             title="Quarterly P&L"
-            period="Q1 2026"
-            rows="48 line items"
-            badge="New"
+            period={`Q1 ${now.getFullYear()}`}
+            rows={hasProjects ? `${projects.length} properties` : '0 properties'}
+            badge={hasProjects ? 'New' : undefined}
+            onPDF={handleQuarterlyPDF}
+            onCSV={handleQuarterlyCSV}
           />
           <TaxReportRow
             title="Annual Tax Summary"
-            period="FY 2023–2024"
-            rows="124 transactions"
+            period={`FY ${now.getFullYear() - 2}–${now.getFullYear() - 1}`}
+            rows={hasProjects ? `${projects.length} properties` : '0 properties'}
+            onPDF={handleAnnualPDF}
+            onCSV={handleAnnualCSV}
           />
           <TaxReportRow
             title="Lifetime Ledger"
             period="All time"
             rows="Portfolio-wide"
+            onPDF={handleLifetimePDF}
+            onCSV={handleLifetimeCSV}
           />
         </div>
 
@@ -712,25 +1136,374 @@ export default function ReportsPage() {
             <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Last sync</span>
-                <span className="text-slate-300 font-semibold tabular-nums">May 1, 2026</span>
+                <span className="text-slate-300 font-semibold tabular-nums">
+                  {new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Next sync</span>
-                <span className="text-teal-400 font-semibold tabular-nums">Jun 1, 2026</span>
+                <span className="text-teal-400 font-semibold tabular-nums">
+                  {new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500">Status</span>
-                <span className="text-teal-400 font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 inline-block" />
-                  Active
+                <span className={`font-semibold flex items-center gap-1 ${autoSync ? 'text-teal-400' : 'text-slate-500'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${autoSync ? 'bg-teal-400' : 'bg-slate-500'}`} />
+                  {autoSync ? 'Active' : 'Paused'}
                 </span>
               </div>
             </div>
           </div>
 
-          <button className="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center justify-center gap-2">
-            <RefreshCw className="w-3.5 h-3.5" />
-            Sync Now
+          <button
+            onClick={handleSyncNow}
+            disabled={syncing}
+            className="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {syncing ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            {syncing ? 'Syncing...' : 'Sync Now'}
+          </button>
+        </div>
+      </div>
+
+      {/* ═══ NEW TAX REPORTING HUB SECTIONS ═══ */}
+
+      {/* ── Tax Year Selector ── */}
+      <div
+        className="rounded-2xl border border-white/10 px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        style={{ background: 'var(--bg-surface)' }}
+      >
+        <div>
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Tax Reporting Hub</span>
+          <p className="text-xs text-slate-500 mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
+        </div>
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+          {[2024, 2025, 2026].map((yr) => (
+            <button
+              key={yr}
+              onClick={() => setTaxYear(yr)}
+              className={`px-4 py-1.5 rounded-md text-xs font-semibold tabular-nums transition-all ${
+                taxYear === yr
+                  ? 'border border-teal-500/60 text-teal-400 bg-teal-500/10'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              {yr}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Schedule E Preview ── */}
+      <div
+        className="rounded-2xl border border-white/10 p-6 overflow-hidden"
+        style={{ background: 'var(--bg-surface)' }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+            Schedule E Preview — {taxYear}
+          </span>
+          <span className="text-[10px] font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+            IRS Form 1040
+          </span>
+        </div>
+
+        <div className="overflow-x-auto -mx-1">
+          <table className="w-full text-xs">
+            <thead>
+              <tr style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
+                {['Property', 'Gross Rent', 'Advertising', 'Insurance', 'Repairs', 'Taxes', 'Utilities', 'Depreciation', 'Total Expenses', 'Net Income'].map((h) => (
+                  <th
+                    key={h}
+                    className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap"
+                    style={{ color: 'rgba(218, 228, 236, 0.5)', fontSize: '10px' }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {projectsWithFinancials.length > 0 ? projectsWithFinancials.map((p, i) => {
+                const f = p.financials;
+                const scale = scope === 'My Share' ? ((f.ownershipPercentage ?? 100) / 100) : 1;
+                const grossRent = ((f.monthlyGrossRent ?? 0) * 12) * scale;
+                const insurance = ((f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * 12) * scale;
+                const repairs = ((f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) * 12) * scale;
+                const taxes = ((f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * 12) * scale;
+                const utilities = ((f.holdingCostUtilities ?? 0) * 12) * scale;
+                const purchasePrice = (f.purchasePrice ?? 0) * scale;
+                const depreciation = purchasePrice > 0 ? Math.round((purchasePrice * 0.85) / 27.5) : 0;
+                const advertising = 0; // placeholder — not tracked yet
+                const totalExpenses = insurance + repairs + taxes + utilities + depreciation + advertising;
+                const netIncome = grossRent - totalExpenses;
+                const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+                return (
+                  <tr
+                    key={p.id}
+                    style={{ background: i % 2 === 1 ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
+                    className="border-b border-white/[0.04] last:border-0"
+                  >
+                    <td className="px-3 py-2.5 font-semibold text-white whitespace-nowrap truncate max-w-[180px]">{p.propertyName || p.address || 'Unnamed'}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(grossRent)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-400">{fmt(advertising)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(insurance)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(repairs)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(taxes)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(utilities)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-teal-400">{fmt(depreciation)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-slate-300 font-semibold">{fmt(totalExpenses)}</td>
+                    <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-teal-400' : 'text-red-400'}`}>{fmt(netIncome)}</td>
+                  </tr>
+                );
+              }) : (
+                <tr>
+                  <td colSpan={10} className="px-3 py-8 text-center text-slate-500 text-xs">
+                    No properties with financial data for {taxYear}.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            {/* Footer Totals */}
+            {projectsWithFinancials.length > 0 && (
+              <tfoot>
+                <tr style={{ background: 'rgba(255, 255, 255, 0.04)' }} className="border-t border-white/10">
+                  {(() => {
+                    let tGross = 0, tIns = 0, tRepairs = 0, tTaxes = 0, tUtils = 0, tDepr = 0, tTotal = 0, tNet = 0;
+                    projectsWithFinancials.forEach((p) => {
+                      const f = p.financials;
+                      const s = scope === 'My Share' ? ((f.ownershipPercentage ?? 100) / 100) : 1;
+                      const gr = ((f.monthlyGrossRent ?? 0) * 12) * s;
+                      const ins = ((f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * 12) * s;
+                      const rep = ((f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) * 12) * s;
+                      const tax = ((f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * 12) * s;
+                      const utl = ((f.holdingCostUtilities ?? 0) * 12) * s;
+                      const pp = (f.purchasePrice ?? 0) * s;
+                      const dep = pp > 0 ? Math.round((pp * 0.85) / 27.5) : 0;
+                      const tot = ins + rep + tax + utl + dep;
+                      tGross += gr; tIns += ins; tRepairs += rep; tTaxes += tax; tUtils += utl; tDepr += dep; tTotal += tot; tNet += gr - tot;
+                    });
+                    const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+                    return (
+                      <>
+                        <td className="px-3 py-2.5 font-bold text-white text-[11px] uppercase tracking-widest">Totals</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tGross)}</td>
+                        <td className="px-3 py-2.5 tabular-nums text-slate-500">$0</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tIns)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tRepairs)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTaxes)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tUtils)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-teal-400">{fmt(tDepr)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTotal)}</td>
+                        <td className={`px-3 py-2.5 tabular-nums font-bold ${tNet >= 0 ? 'text-teal-400' : 'text-red-400'}`}>{fmt(tNet)}</td>
+                      </>
+                    );
+                  })()}
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+      </div>
+
+      {/* ── Depreciation Schedule + Capital Gains Calculator ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+        {/* Depreciation Schedule — 27.5 year straight-line */}
+        <div
+          className="rounded-2xl border border-white/10 p-6"
+          style={{ background: 'var(--bg-surface)' }}
+        >
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Depreciation Schedule</span>
+          <p className="text-[11px] text-slate-500 mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
+
+          {projectsWithFinancials.length > 0 ? (() => {
+            // Use first property with purchase price as example
+            const exampleProject = projectsWithFinancials.find((p) => (p.financials.purchasePrice ?? 0) > 0);
+            if (!exampleProject) return <p className="text-xs text-slate-500">No properties with purchase price data.</p>;
+            const pp = exampleProject.financials.purchasePrice ?? 0;
+            const depreciableBasis = Math.round(pp * 0.85); // exclude 15% land
+            const annualDepreciation = Math.round(depreciableBasis / 27.5);
+            const rows: { year: number; beginVal: number; depr: number; endVal: number }[] = [];
+
+            for (let y = 1; y <= 28; y++) {
+              const beginVal = Math.max(0, depreciableBasis - annualDepreciation * (y - 1));
+              const depr = Math.min(annualDepreciation, beginVal);
+              const endVal = Math.max(0, beginVal - depr);
+              if (y <= 5 || y >= 27) {
+                rows.push({ year: y, beginVal, depr, endVal });
+              }
+            }
+
+            const fmt = (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+            return (
+              <>
+                <div className="text-[11px] text-slate-500 mb-3">
+                  Based on: <span className="text-white font-semibold">{exampleProject.propertyName || exampleProject.address}</span> — {fmt(pp)} purchase, {fmt(depreciableBasis)} depreciable basis
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
+                        {['Year', 'Beginning Value', 'Depreciation', 'Ending Value'].map((h) => (
+                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest" style={{ color: 'rgba(218, 228, 236, 0.5)', fontSize: '10px' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((r, i) => (
+                        <React.Fragment key={r.year}>
+                          {/* Insert ellipsis row between year 5 and year 27 */}
+                          {i > 0 && rows[i - 1].year === 5 && r.year === 27 && (
+                            <tr>
+                              <td colSpan={4} className="px-3 py-1.5 text-center text-slate-600 text-[11px]">⋮ Years 6–26 ⋮</td>
+                            </tr>
+                          )}
+                          <tr
+                            style={{ background: r.year % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
+                            className="border-b border-white/[0.04] last:border-0"
+                          >
+                            <td className="px-3 py-2 tabular-nums font-semibold text-white">{r.year}</td>
+                            <td className="px-3 py-2 tabular-nums text-slate-300">{fmt(r.beginVal)}</td>
+                            <td className="px-3 py-2 tabular-nums text-teal-400">{fmt(r.depr)}</td>
+                            <td className="px-3 py-2 tabular-nums text-slate-300">{fmt(r.endVal)}</td>
+                          </tr>
+                        </React.Fragment>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-3 text-[11px] text-slate-500">
+                  Annual deduction: <span className="text-teal-400 font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
+                </div>
+              </>
+            );
+          })() : (
+            <div className="flex items-center justify-center py-8">
+              <p className="text-xs text-slate-500">Add properties with purchase prices to see depreciation schedules.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Capital Gains Calculator */}
+        <div
+          className="rounded-2xl border border-white/10 p-6"
+          style={{ background: 'var(--bg-surface)' }}
+        >
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Capital Gains Calculator</span>
+          <p className="text-[11px] text-slate-500 mb-4">Estimate tax liability for sold or prospective dispositions</p>
+
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            {([
+              { label: 'Purchase Price', key: 'purchasePrice' as const, prefix: '$' },
+              { label: 'Sale Price', key: 'salePrice' as const, prefix: '$' },
+              { label: 'Improvements', key: 'improvements' as const, prefix: '$' },
+              { label: 'Depreciation Recapture', key: 'depreciationRecapture' as const, prefix: '$' },
+            ]).map((field) => (
+              <div key={field.key} className="space-y-1">
+                <label className="block text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(218, 228, 236, 0.35)' }}>
+                  {field.label}
+                </label>
+                <div
+                  className="flex items-center rounded-lg overflow-hidden"
+                  style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                >
+                  <span className="pl-2.5 text-xs font-medium" style={{ color: 'rgba(218, 228, 236, 0.4)' }}>{field.prefix}</span>
+                  <input
+                    type="text"
+                    value={capGains[field.key]}
+                    onChange={(e) => setCapGains((prev) => ({ ...prev, [field.key]: e.target.value }))}
+                    placeholder="0"
+                    className="flex-1 bg-transparent px-2 py-2 text-xs font-medium outline-none placeholder:text-slate-600 tabular-nums"
+                    style={{ color: 'rgba(218, 228, 236, 0.9)' }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Computed Results */}
+          {(() => {
+            const cp = parseFloat(capGains.purchasePrice.replace(/[^0-9.-]/g, '')) || 0;
+            const sp = parseFloat(capGains.salePrice.replace(/[^0-9.-]/g, '')) || 0;
+            const imp = parseFloat(capGains.improvements.replace(/[^0-9.-]/g, '')) || 0;
+            const dr = parseFloat(capGains.depreciationRecapture.replace(/[^0-9.-]/g, '')) || 0;
+
+            const adjustedBasis = cp + imp - dr;
+            const totalGain = sp - adjustedBasis;
+            const longTermRate = 0.15; // assumed 15% LTCG
+            const depRecaptureRate = 0.25; // 25% depreciation recapture rate
+            const depRecaptureTax = dr * depRecaptureRate;
+            const capitalGainsTax = Math.max(0, totalGain - dr) * longTermRate;
+            const totalTaxEstimate = depRecaptureTax + capitalGainsTax;
+            const hasInput = sp > 0;
+
+            const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+            return (
+              <div className="space-y-2">
+                {[
+                  { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-slate-300' },
+                  { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-teal-400' : 'text-red-400' },
+                  { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-amber-400' },
+                  { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-slate-300' },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0">
+                    <span className="text-[11px] text-slate-500">{row.label}</span>
+                    <span className={`text-xs font-semibold tabular-nums ${row.color}`}>{hasInput ? row.value : '—'}</span>
+                  </div>
+                ))}
+                <div
+                  className="flex items-center justify-between py-3 mt-2 rounded-lg px-3"
+                  style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                >
+                  <span className="text-xs font-bold uppercase tracking-widest text-white">Estimated Tax</span>
+                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-400' : 'text-teal-400') : 'text-slate-500'}`}>
+                    {hasInput ? fmt(totalTaxEstimate) : '—'}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-600 mt-1">Assumes 15% LTCG rate + 25% depreciation recapture. Consult a CPA for actual liability.</p>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+
+      {/* ── Export Buttons ── */}
+      <div
+        className="rounded-2xl border border-white/10 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+        style={{ background: 'var(--bg-surface)' }}
+      >
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Export Tax Reports</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              toast('PDF generation via browser print', { icon: '🖨️', style: { background: '#111', color: '#fff', border: '1px solid #333' } });
+              const csv = generatePortfolioCSV(projects, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
+              downloadPDFViaPrint(`Schedule E — ${taxYear}`, csv);
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/20 text-xs font-bold uppercase tracking-wider text-slate-300 hover:border-white/40 hover:text-white transition-all"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download PDF
+          </button>
+          <button
+            onClick={() => {
+              const csv = generatePortfolioCSV(projects, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
+              downloadCSV(csv, `Schedule_E_${taxYear}.csv`);
+              toast.success('CSV downloaded');
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-xs font-bold uppercase tracking-wider transition-all"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Download CSV
           </button>
         </div>
       </div>
@@ -752,14 +1525,28 @@ export default function ReportsPage() {
           </div>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          <button className="px-5 py-2.5 rounded-lg border border-white/20 text-sm font-semibold text-slate-300 hover:border-white/40 hover:text-white transition-all">
+          <button
+            onClick={handlePreviewData}
+            className="px-5 py-2.5 rounded-lg border border-white/20 text-sm font-semibold text-slate-300 hover:border-white/40 hover:text-white transition-all"
+          >
             Preview Data
           </button>
-          <button className="px-5 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2">
+          <button
+            onClick={handleExportForFiling}
+            className="px-5 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+          >
             Export for Filing
             <Download className="w-3.5 h-3.5" />
           </button>
         </div>
+      </div>
+
+      {/* ── Data Completeness Footer ── */}
+      <div className="text-center pb-2">
+        <p className="text-[11px] text-slate-500">
+          Based on {projectsWithFinancials.length} of {projects.length} project{projects.length !== 1 ? 's' : ''} with complete financial data.
+          {scope === 'My Share' && ' Metrics scaled by your ownership percentage.'}
+        </p>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { Project, LoanStatus, ClosingChecklistItem, ProjectTeamMember, CostBasis
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ClosingChecklist } from '@/components/project/ClosingChecklist';
 import { AcquisitionTeamAssembly } from '@/components/project/AcquisitionTeamAssembly';
+import { ProjectVendorsList } from '@/components/project/ProjectVendorsList';
 import { DueDiligenceChecklist } from '@/components/project/DueDiligenceChecklist';
 import { InspectionTracker } from '@/components/project/InspectionTracker';
 import { ContingencyTracker } from '@/components/project/ContingencyTracker';
@@ -19,6 +20,12 @@ import { Contingency } from '@/types/schema';
 import toast from 'react-hot-toast';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import MarketVitals from '@/components/metrics/MarketVitals';
+import { computeDSCRMetric } from '@/lib/metrics/computeDSCR';
+import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
+import { computeCoCMetric } from '@/lib/metrics/computeCoC';
+import { computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { MetricReadout } from '@/components/metrics/MetricReadout';
+import type { MetricResult } from '@/lib/metrics/types';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-2 — Purchase Workspace
@@ -58,6 +65,7 @@ export default function Phase2AcquisitionPage() {
   const [isClearToClose, setIsClearToClose] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedLender, setSelectedLender] = useState<'NEO' | 'LEGACY'>('NEO');
+  const [showManualCDForm, setShowManualCDForm] = useState(false);
 
   const selectLender = async (lender: 'NEO' | 'LEGACY') => {
     setSelectedLender(lender);
@@ -93,7 +101,7 @@ export default function Phase2AcquisitionPage() {
 
   /* ── Computed metrics for the Cost Basis metrics panel ── */
   const costMetrics = useMemo(() => {
-    if (!project?.financials) return { purchasePrice: 0, closingCosts: 0, totalCostBasis: 0, inspectionCredits: 0, lenderRate: 0, cashToClose: 0 };
+    if (!project?.financials) return { purchasePrice: 0, closingCosts: 0, totalCostBasis: 0, inspectionCredits: 0, lenderRate: 0, cashToClose: 0, monthlyPI: 0, annualDebtService: 0 };
 
     const f = project.financials;
     const purchasePrice = f.purchasePrice || 0;
@@ -121,8 +129,27 @@ export default function Phase2AcquisitionPage() {
     const loanAmount = f.loanAmount || 0;
     const cashToClose = purchasePrice - loanAmount + closingCosts;
 
-    return { purchasePrice, closingCosts, totalCostBasis, inspectionCredits, lenderRate, cashToClose };
+    // Auto-calculated debt service using reiMetrics engine
+    const loanTermYears = f.loanTermYears || 30;
+    const annualDS = computeAnnualDebtService(loanAmount, lenderRate, loanTermYears * 12);
+    const monthlyPI = annualDS > 0 ? Math.round((annualDS / 12) * 100) / 100 : 0;
+
+    return { purchasePrice, closingCosts, totalCostBasis, inspectionCredits, lenderRate, cashToClose, monthlyPI, annualDebtService: annualDS };
   }, [project?.financials, costBasisLedger, inspections]);
+
+  /* ── Live Metric Readouts (DSCR, Cash Flow, CoC) ── */
+  const dscrResult: MetricResult = useMemo(
+    () => project ? computeDSCRMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
+    [project]
+  );
+  const cashFlowResult: MetricResult = useMemo(
+    () => project ? computeCashFlowMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
+    [project]
+  );
+  const cocResult: MetricResult = useMemo(
+    () => project ? computeCoCMetric(project) : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['project'] },
+    [project]
+  );
 
   /* ── DD completion tracking ── */
   const ddProgress = useMemo(() => {
@@ -381,6 +408,28 @@ export default function Phase2AcquisitionPage() {
               </div>
             </div>
 
+            {/* Auto-Calculated Debt Service (Monthly P&I + Annual) */}
+            <div className="glass-card p-4 rounded-xl flex flex-col gap-1 col-span-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Debt Service</span>
+                <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400">AUTO-CALC</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-1">
+                <div>
+                  <p className="text-[10px] text-[#bacac5]/60 mb-0.5">Monthly P&I</p>
+                  <p className="text-[20px] leading-[28px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtDollar(costMetrics.monthlyPI)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-[#bacac5]/60 mb-0.5">Annual Debt Service</p>
+                  <p className="text-[20px] leading-[28px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtDollar(costMetrics.annualDebtService)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Total Cost Basis (full-width hero) */}
             <div className="glass-card p-4 rounded-xl flex flex-col gap-1 col-span-2 relative overflow-hidden">
               <div className="absolute right-[-10px] top-[-10px] w-24 h-24 rounded-full blur-3xl" style={{ background: `${PHASE_COLOR}10` }} />
@@ -576,6 +625,37 @@ export default function Phase2AcquisitionPage() {
               handleImmediateSave({ dueDiligenceChecklist: newItems });
             }}
           />
+
+          {/* ── Vendor Links for DD Items ── */}
+          <div className="glass-card p-4 rounded-xl space-y-2">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#bacac5]/70 mb-2">Find Service Providers</p>
+            {[
+              { label: 'Home Inspector', type: 'inspector' },
+              { label: 'Title Company', type: 'title-company' },
+              { label: 'Real Estate Attorney', type: 'attorney' },
+              { label: 'Insurance Agent', type: 'insurance-agent' },
+              { label: 'Surveyor', type: 'surveyor' },
+            ].map((vendor) => {
+              const city = (project?.address && typeof project.address === 'object'
+                ? (project.address as any)?.city
+                : typeof project?.address === 'string'
+                  ? project.address.split(',')[1]?.trim()
+                  : '') || '';
+              return (
+                <a
+                  key={vendor.type}
+                  href={city ? `/dashboard/marketplace?type=${vendor.type}&city=${encodeURIComponent(city)}` : '#'}
+                  data-todo={city ? undefined : 'marketplace'}
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 transition-all group"
+                >
+                  <span className="text-[12px] font-medium text-[#bacac5] group-hover:text-[#dae4ec] transition-colors">
+                    Find a {vendor.label}{city ? ` in ${city}` : ''}
+                  </span>
+                  <span className="text-[11px] text-[#bacac5]/50 group-hover:text-[#adc6ff] transition-colors">→</span>
+                </a>
+              );
+            })}
+          </div>
         </section>
 
         {/* ── Inspection Tracker ── */}
@@ -609,6 +689,62 @@ export default function Phase2AcquisitionPage() {
               handleImmediateSave({ roleLinkedDocuments: newDocs });
             }}
           />
+
+          {/* ── Manual Closing Disclosure Fallback ── */}
+          <div className="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-[#adc6ff]/50">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-[13px] font-semibold text-[#dae4ec]">Closing Disclosure (CD)</p>
+                <p className="text-[11px] text-[#bacac5]/70">
+                  Upload your CD above, or manually enter key values below.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowManualCDForm(!showManualCDForm)}
+                className="text-[11px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 transition-all"
+                style={{ color: PHASE_COLOR }}
+              >
+                {showManualCDForm ? 'Hide Form' : 'Manually Enter Values'}
+              </button>
+            </div>
+
+            {showManualCDForm && (
+              <div className="space-y-3 pt-3 border-t border-white/5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-amber-400/70">
+                  OCR Fallback — Enter values from your Closing Disclosure
+                </p>
+                {[
+                  { label: 'Purchase Price', field: 'purchasePrice', value: project?.financials?.purchasePrice },
+                  { label: 'Loan Amount', field: 'loanAmount', value: project?.financials?.loanAmount },
+                  { label: 'Interest Rate (%)', field: 'loanInterestRate', value: project?.financials?.loanInterestRate },
+                  { label: 'Loan Term (Years)', field: 'loanTermYears', value: project?.financials?.loanTermYears },
+                  { label: 'Total Closing Costs', field: 'closingCosts', value: project?.financials?.closingCosts },
+                ].map((item) => (
+                  <div key={item.field} className="flex items-center justify-between gap-4">
+                    <label className="text-[12px] font-medium text-[#bacac5] flex-shrink-0 w-40">{item.label}</label>
+                    <input
+                      type="number"
+                      defaultValue={item.value || ''}
+                      placeholder="—"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[13px] text-[#dae4ec] placeholder-[#bacac5]/30 focus:outline-none focus:border-[#adc6ff]/50 transition-colors text-right"
+                      style={{ fontVariantNumeric: 'tabular-nums' }}
+                      onBlur={async (e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val) && project) {
+                          const currentFinancials = project.financials || {};
+                          await handleImmediateSave({
+                            financials: { ...currentFinancials, [item.field]: val }
+                          });
+                          refresh();
+                          toast.success(`${item.label} updated`);
+                        }
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ── Contingency Tracker ── */}
@@ -652,6 +788,7 @@ export default function Phase2AcquisitionPage() {
               handleImmediateSave({ projectTeam: newTeamMembers });
             }}
           />
+          <ProjectVendorsList projectId={projectId} />
         </section>
 
         {/* ── Loan Processing Pipeline ── */}
@@ -697,6 +834,44 @@ export default function Phase2AcquisitionPage() {
         />
 
       </main>
+
+      {/* ── Sticky Metrics Footer ── */}
+      <div className="sticky bottom-0 z-30 w-full backdrop-blur-xl bg-[#0b141a]/80 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+        <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
+          <div className="grid grid-cols-3 gap-4">
+            {/* DSCR */}
+            <div className="glass-card p-3 rounded-xl">
+              <MetricReadout
+                label="DSCR"
+                result={dscrResult}
+                format="ratio"
+                accentColor={PHASE_COLOR}
+                compact
+              />
+            </div>
+            {/* Annual Cash Flow */}
+            <div className="glass-card p-3 rounded-xl">
+              <MetricReadout
+                label="Cash Flow"
+                result={cashFlowResult}
+                format="currency"
+                accentColor="#57f1db"
+                compact
+              />
+            </div>
+            {/* CoC Return */}
+            <div className="glass-card p-3 rounded-xl">
+              <MetricReadout
+                label="CoC Return"
+                result={cocResult}
+                format="percent"
+                accentColor="#ffd1aa"
+                compact
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ClosingHandoffModal
         isOpen={isModalOpen}

@@ -415,8 +415,8 @@ export default function CashFlowIntelligencePage() {
       {/* ── Debt Service Calculator Form ── */}
       <DebtServiceInputForm
         noi={portfolioNoi}
-        defaultLoanAmount={240000}
-        defaultRate={7.25}
+        defaultLoanAmount={223200}
+        defaultRate={6.5}
         defaultTerm={30}
       />
 

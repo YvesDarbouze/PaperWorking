@@ -21,13 +21,13 @@ interface KPIMetric {
 
 const SEED_METRICS: KPIMetric[] = [
   { slug: "noi", label: "NOI", value: "$12,486", icon: "account_balance", status: "healthy" },
-  { slug: "cash-flow", label: "Cash Flow", value: "$1,722/yr", icon: "payments", status: "healthy" },
+  { slug: "cash-flow", label: "Cash Flow", value: "-$4,443/yr", icon: "payments", status: "alert" },
   { slug: "cap-rate", label: "Cap Rate", value: "4.5%", icon: "percent", status: "watch" },
-  { slug: "coc-return", label: "CoC Return", value: "2.87%", icon: "savings", status: "alert" },
+  { slug: "coc-return", label: "CoC Return", value: "-7.41%", icon: "savings", status: "alert" },
   { slug: "grm", label: "GRM", value: "11.9x", icon: "calculate", status: "watch" },
-  { slug: "dscr", label: "DSCR", value: "1.16x", icon: "shield", status: "watch" },
-  { slug: "irr", label: "IRR", value: "11.24%", icon: "trending_up", status: "healthy" },
-  { slug: "occupancy", label: "Occupancy", value: "92%", icon: "apartment", status: "healthy" },
+  { slug: "dscr", label: "DSCR", value: "0.74x", icon: "shield", status: "alert" },
+  { slug: "irr", label: "IRR", value: "-7.41%", icon: "trending_up", status: "alert" },
+  { slug: "occupancy", label: "Occupancy", value: "93%", icon: "apartment", status: "healthy" },
   { slug: "oer", label: "OER", value: "39.6%", icon: "pie_chart", status: "healthy" },
   { slug: "appreciation", label: "Appreciation", value: "2.83%", icon: "show_chart", status: "healthy" },
 ];

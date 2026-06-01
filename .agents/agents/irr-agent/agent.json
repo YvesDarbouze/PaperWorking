@@ -7,11 +7,11 @@
   "solver": "Newton-Raphson (100 iterations, 1e-7 tolerance)",
   "seeds": {
     "totalCashInvested": 60000,
-    "annualCashFlow": 1722,
+    "annualCashFlow": -4443.31,
     "purchasePrice": 279000,
     "appreciationPercent": 3,
-    "loanAmount": 219000,
-    "loanRate": 7,
+    "loanAmount": 223200,
+    "loanRate": 6.5,
     "loanTermYears": 30,
     "sellingCostsPercent": 8,
     "holdPeriods": [3, 5, 7, 10]

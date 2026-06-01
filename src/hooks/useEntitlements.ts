@@ -41,7 +41,7 @@ const CANONICAL_TO_ENTITLEMENT: Record<string, EntitlementPlanId> = {
 // Project limits per plan (mirrored from server-side entitlements)
 const MAX_PROJECTS: Record<EntitlementPlanId, number> = {
   none: 1,
-  vendor: 1,
+  vendor: 5,
   individual: Infinity,
   team: Infinity,
 };

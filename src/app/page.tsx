@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
 import HeroDashboard from '@/components/landing/HeroDashboard';
@@ -40,26 +41,33 @@ function SuccessModal() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-      <div className="bg-surface-container border border-outline/20 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center relative overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="glass-panel-elevated relative max-w-md w-full mx-4 p-8 rounded-2xl border border-white/10 bg-surface/90 shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-center animate-in fade-in zoom-in duration-300">
+        {/* Luminous Glow Effect */}
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur opacity-30 -z-10" />
         
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-          <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+        <div className="mb-6 flex justify-center">
+          <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(87,241,219,0.2)]">
+            <span className="material-symbols-outlined text-primary text-4xl font-bold">check</span>
+          </div>
         </div>
         
-        <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">Welcome to PaperWorking</h2>
+        <h2 className="font-headline-lg text-on-surface mb-3">Your 14-Day Trial is Ready</h2>
         <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">
-          Your 14-day free trial is active. Check your email for login instructions and next steps.
+          Welcome to the future of real estate investing. Your workspace is provisioned and ready for your first deal.
         </p>
+        
+        <Link
+          href="/dashboard"
+          className="w-full inline-flex items-center justify-center px-8 py-4 rounded-lg font-label-md text-lg bg-primary text-on-primary hover:opacity-90 transition-all shadow-[0_0_30px_rgba(87,241,219,0.3)] hover:shadow-[0_0_40px_rgba(87,241,219,0.4)] active:scale-[0.98]"
+        >
+          Enter My Command Center
+        </Link>
         
         <button
           onClick={() => setShow(false)}
-          className="luminous-button w-full"
+          className="mt-4 text-on-surface-variant/60 hover:text-on-surface-variant font-label-sm text-label-sm transition-colors"
         >
-          <span>Get Started</span>
+          Close
         </button>
       </div>
     </div>

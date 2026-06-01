@@ -36,9 +36,9 @@ const ENTITLEMENT_TO_STRIPE: Partial<Record<EntitlementPlanId, PlanId>> = {
 // Human-readable plan names
 const PLAN_DISPLAY_NAMES: Record<EntitlementPlanId, string> = {
   none: 'Free',
-  vendor: 'Vendor Network',
-  individual: 'Individual Investor',
-  team: 'Team / Firm',
+  vendor: 'Solo',
+  individual: 'Investor',
+  team: 'Team',
 };
 
 export default function UpgradePromptModal({

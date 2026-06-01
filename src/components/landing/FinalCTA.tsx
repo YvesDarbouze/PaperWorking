@@ -26,9 +26,9 @@ export default function FinalCTA() {
           <div className="max-w-2xl relative z-10">
             {/* Headline reframe */}
             <h2 className="text-[28px] md:text-[32px] leading-tight font-bold tracking-tight text-on-surface mb-4">
-              Not a project management tool.{' '}
+              Real-estate-native project management.{' '}
               <span className="text-primary text-glow">
-                A risk mitigation platform.
+                Built for serious investors.
               </span>
             </h2>
 

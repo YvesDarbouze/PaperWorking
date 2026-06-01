@@ -66,8 +66,8 @@ const extendedFeatures: Feature[] = [
 type TierKey = 'individual' | 'team' | 'vendor';
 
 const tierColumns: { key: TierKey; label: string; price: string; cta: string; planLabel: string }[] = [
-  { key: 'individual', label: 'Individual', price: '$59/mo', cta: 'Start free trial', planLabel: 'Individual Monthly' },
-  { key: 'team', label: 'Team', price: '$99/mo', cta: 'Deploy your team', planLabel: 'Team Monthly' },
+  { key: 'individual', label: 'Investor', price: '$59/mo', cta: 'Start free trial', planLabel: 'Investor Monthly' },
+  { key: 'team', label: 'Investment Team', price: '$99/mo', cta: 'Deploy your team', planLabel: 'Investment Team Monthly' },
   { key: 'vendor', label: 'Vendor', price: '$39/mo', cta: 'Join the marketplace', planLabel: 'Vendor Marketplace Monthly' },
 ];
 

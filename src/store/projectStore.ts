@@ -878,6 +878,11 @@ export const useProjectStore = create<ProjectState>()(
           whatIfOffsetMonths: persisted.whatIfOffsetMonths ?? currentState.whatIfOffsetMonths,
         };
       },
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.recalculateMetrics();
+        }
+      },
     }
   )
 );

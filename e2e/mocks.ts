@@ -237,7 +237,17 @@ export async function setupMocks(page: Page, state: MockState) {
     const projectId = url.split('/').pop() || '';
     const method = route.request().method();
 
-    if (method === 'PATCH' || method === 'PUT') {
+    if (method === 'GET') {
+      const project = state.projects.find((p) => p.id === projectId);
+      if (project) {
+        await route.fulfill({
+          status: 200,
+          json: { success: true, project },
+        });
+      } else {
+        await route.fulfill({ status: 404, json: { error: 'Project not found' } });
+      }
+    } else if (method === 'PATCH' || method === 'PUT') {
       const body = route.request().postDataJSON() || {};
       const projIndex = state.projects.findIndex((p) => p.id === projectId);
       
@@ -279,6 +289,8 @@ export async function setupMocks(page: Page, state: MockState) {
       } else {
         await route.fulfill({ status: 404, json: { error: 'Project not found' } });
       }
+    } else {
+      await route.continue();
     }
   });
 

@@ -88,11 +88,11 @@ function GlassInput({
    ═══════════════════════════════════════════════════════════════ */
 
 export function CashDeployedTerminal({
-  annualCashFlow = 1722,
+  annualCashFlow = -4443.31,
   defaultDownPayment = 55800,
-  defaultClosingCosts = 2500,
+  defaultClosingCosts = 4200,
   defaultRehabBudget = 0,
-  defaultHoldingCosts = 1700,
+  defaultHoldingCosts = 0,
   onValuesChange,
   className = "",
 }: CashDeployedTerminalProps) {

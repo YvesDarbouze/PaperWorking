@@ -58,7 +58,7 @@ const PLAN_ENTITLEMENTS: Record<EntitlementPlanId, PlanEntitlements> = {
     features: new Set([]),
   },
   vendor: {
-    maxProjects: 1,
+    maxProjects: 5,
     features: new Set([]),
   },
   individual: {

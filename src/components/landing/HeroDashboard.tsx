@@ -124,18 +124,18 @@ function BurnRateTicker() {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-xs text-phase-2 uppercase tracking-widest">Hold started</span>
+          <span className="text-xs text-phase-2 uppercase tracking-widest">Rehab started</span>
           <div className="text-xs font-medium text-phase-3 mt-0.5">Day 47 of 60</div>
         </div>
       </div>
-      {/* Progress bar showing days into hold period */}
+      {/* Progress bar showing days into rehab period */}
       <div className="mt-3 h-1.5 w-full bg-dashboard overflow-hidden">
         <div className="h-full bg-red-400/80 transition-all" style={{ width: '78%' }} />
       </div>
       <div className="flex justify-between mt-1">
         <span className="text-xs text-phase-2">Start</span>
-        <span className="text-xs text-red-400 font-bold">78% hold elapsed</span>
-        <span className="text-xs text-phase-2">Target exit</span>
+        <span className="text-xs text-red-400 font-bold">78% rehab elapsed</span>
+        <span className="text-xs text-phase-2">Target completion</span>
       </div>
     </div>
   );
@@ -144,9 +144,9 @@ function BurnRateTicker() {
 /* ── Phase Pipeline Strip ── */
 const PHASES = [
   { label: 'Acquisition', short: '01', done: true },
-  { label: 'Purchase',    short: '02', done: true },
-  { label: 'Hold',        short: '03', done: false, active: true },
-  { label: 'Exit',        short: '04', done: false },
+  { label: 'Transaction', short: '02', done: true },
+  { label: 'Rehab',       short: '03', done: false, active: true },
+  { label: 'Hold/Exit',   short: '04', done: false },
 ];
 
 function PipelineStrip() {

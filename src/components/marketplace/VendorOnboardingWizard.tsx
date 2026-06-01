@@ -37,11 +37,8 @@ const SPECIALTIES_BY_TYPE: Record<string, string[]> = {
   Lender: ['Hard Money', 'DSCR', 'Conventional', 'Bridge', 'Construction'],
 };
 
-/** Stubbed subscription tiers */
 const PLAN_OPTIONS = [
-  { id: 'metro', name: 'Metro', price: 99, coverage: '1 metro area', leadCap: '10 leads/mo' },
-  { id: 'regional', name: 'Regional', price: 249, coverage: '3 metro areas', leadCap: '30 leads/mo' },
-  { id: 'national', name: 'National', price: 499, coverage: 'Nationwide', leadCap: 'Unlimited' },
+  { id: 'vendor', name: 'Vendor', price: 39, annualPrice: 390, coverage: 'Your service area', leadCap: 'Unlimited' },
 ] as const;
 
 export default function VendorOnboardingWizard() {
@@ -56,7 +53,7 @@ export default function VendorOnboardingWizard() {
     zipInput: '',
     eoInsurancePolicy: '',
     bio: '',
-    selectedPlan: 'metro' as string,
+    selectedPlan: 'vendor' as string,
   });
 
   const STEPS: Step[] = ['Select Specialty', 'Licensing', 'Insurance', 'Service Areas', 'Profile', 'Plan', 'Complete'];

@@ -20,17 +20,17 @@ import { computeExpenseRatioMetric } from '../computeExpenseRatio';
 import { computeAppreciationMetric } from '../computeAppreciation';
 
 /**
- * Realistic seed project fixture.
+ * Realistic seed project fixture matching PRD Option B.
  *
  * Purchase price: $279,000
  * Monthly rent: $1,950
  * Vacancy: 7%
- * OpEx: taxes $250/mo, insurance $125/mo, maintenance $100/mo, mgmt 8%, HOA $0, utilities $0
- * Loan: $223,200 (80% LTV), 7% rate, 30-year term
- * Rehab: $35,000
- * Down payment: $55,800 (via computeTotalCashInvested)
- * Acquisition costs: $5,000
- * Hold time: 12 months projected
+ * OpEx: taxes $200/mo, insurance $58/mo, utilities $125/mo, mgmt 10%, maintenance $195/mo, HOA $0
+ * Loan: $223,200 (80% LTV), 6.5% rate, 30-year term
+ * Rehab: $0
+ * Down payment: $55,800
+ * Acquisition/Closing costs: $4,200
+ * Hold time: 0 months projected (results in 1 year hold for annual metrics)
  * ARV: $350,000
  */
 const SEED_FINANCIALS = {
@@ -38,19 +38,19 @@ const SEED_FINANCIALS = {
   estimatedARV: 350000,
   monthlyGrossRent: 1950,
   vacancyRatePercent: 7,
-  holdingCostTaxes: 250,
-  holdingCostInsurance: 125,
-  holdingCostUtilities: 0,
-  propertyManagementFeePercent: 8,
-  monthlyMaintenanceReserve: 100,
+  holdingCostTaxes: 200,
+  holdingCostInsurance: 58,
+  holdingCostUtilities: 125,
+  propertyManagementFeePercent: 10,
+  monthlyMaintenanceReserve: 195,
   monthlyHOA: 0,
   loanAmount: 223200,
-  loanInterestRate: 7,
+  loanInterestRate: 6.5,
   loanTermYears: 30,
-  projectedRehabCost: 35000,
-  fixedAcquisitionCosts: 5000,
+  projectedRehabCost: 0,
+  fixedAcquisitionCosts: 4200,
   emdAmount: 0,
-  projectedHoldTimeMonths: 12,
+  projectedHoldTimeMonths: 0,
   annualAppreciationPercent: 3,
   costs: [] as any[],
 };
@@ -75,8 +75,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Match the golden NOI from deriveAllMetrics
-    expect(result.value).toBeCloseTo(golden.noi, 0);
+    // Explicitly assert NOI is exactly $12,486
+    expect(result.value).toBeCloseTo(12486, 0);
   });
 
   test('D2 Cash Flow matches deriveAllMetrics', () => {
@@ -84,7 +84,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    expect(result.value).toBeCloseTo(golden.annualCashFlow, 0);
+    // Explicitly assert annual cash flow is exactly -$4,443.31
+    expect(result.value).toBeCloseTo(-4443.31, 2);
   });
 
   test('D3 Cap Rate matches deriveAllMetrics', () => {
@@ -92,8 +93,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Cap rate to 0.01% precision
-    expect(result.value).toBeCloseTo(golden.capRate, 1);
+    // Explicitly assert cap rate is 4.48%
+    expect(result.value).toBeCloseTo(4.48, 2);
   });
 
   test('D4 Cash-on-Cash matches deriveAllMetrics', () => {
@@ -101,7 +102,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    expect(result.value).toBeCloseTo(golden.cashOnCashReturn, 1);
+    // Explicitly assert CoC return is -7.41%
+    expect(result.value).toBeCloseTo(-7.41, 2);
   });
 
   test('D5 GRM matches deriveAllMetrics', () => {
@@ -109,9 +111,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // GRM in deriveAllMetrics uses propertyValue = currentPropertyValue ?? estimatedARV ?? purchasePrice
-    // Our wrapper uses estimatedARV ?? purchasePrice, so should match
-    expect(result.value).toBeCloseTo(golden.grossRentMultiplier, 1);
+    // Explicitly assert GRM is 14.96 based on $350k ARV valuation
+    expect(result.value).toBeCloseTo(14.96, 2);
   });
 
   test('D6 DSCR matches deriveAllMetrics', () => {
@@ -119,8 +120,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // After CE-C1 fix, computeDSCR returns 999 (sentinel) for all-cash deals instead of Infinity
-    expect(result.value).toBeCloseTo(golden.dscr, 2);
+    // Explicitly assert DSCR is exactly 0.738 (approx 0.74)
+    expect(result.value).toBeCloseTo(0.738, 3);
   });
 
   test('D7 IRR produces a reasonable value for rental seed deal', () => {
@@ -141,7 +142,7 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     // For rental strategy with 7% vacancy, occupancy = 93%
-    expect(result.value).toBeCloseTo(golden.occupancyRate, 1);
+    expect(result.value).toBeCloseTo(93, 1);
   });
 
   test('D9 OER matches deriveAllMetrics', () => {
@@ -149,7 +150,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    expect(result.value).toBeCloseTo(golden.oer, 1);
+    // Explicitly assert OER is 39.64%
+    expect(result.value).toBeCloseTo(39.64, 2);
   });
 
   test('D10 Appreciation computes a positive rate for ARV > purchase', () => {
@@ -187,26 +189,24 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
 });
 
 describe('Golden Test — Sanity checks on seed values', () => {
-  test('Annual debt service for $223,200 at 7% / 30yr is ~$17,826', () => {
-    const ds = computeAnnualDebtService(223200, 7, 30 * 12);
-    expect(ds).toBeGreaterThan(17000);
-    expect(ds).toBeLessThan(19000);
+  test('Annual debt service for $223,200 at 6.5% / 30yr is ~$16,929.31', () => {
+    const ds = computeAnnualDebtService(223200, 6.5, 30 * 12);
+    expect(ds).toBeCloseTo(16929.31, 2);
   });
 
-  test('Total cash invested includes down payment + rehab + acquisition costs', () => {
+  test('Total cash invested matches standard Option B ($60,000)', () => {
     const tci = computeTotalCashInvested(SEED_FINANCIALS as any);
     // Down payment = $279k - $223.2k = $55,800
-    // + $5,000 acq costs + $35,000 rehab + ($375/mo × 12 = $4,500 holding)
-    expect(tci).toBeGreaterThan(90000);
-    expect(tci).toBeLessThan(110000);
+    // + $4,200 acquisition costs
+    expect(tci).toBe(60000);
   });
 
   test('NOI is positive (rent exceeds operating expenses)', () => {
-    expect(golden.noi).toBeGreaterThan(0);
+    expect(golden.noi).toBe(12486);
   });
 
   test('Cash flow is negative (NOI < annual debt service) for this deal', () => {
-    // At 7% rate on $223k, debt service (~$17.8k) exceeds likely NOI (~$12.5k)
-    expect(golden.annualCashFlow).toBeLessThan(0);
+    // At 6.5% rate on $223.2k, debt service ($16.9k) exceeds NOI ($12.5k)
+    expect(golden.annualCashFlow).toBeCloseTo(-4443.31, 2);
   });
 });

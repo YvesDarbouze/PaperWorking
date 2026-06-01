@@ -62,49 +62,22 @@ const VALUE_PROPS = [
 
 const TIERS = [
   {
-    name: 'Metro',
-    price: 99,
+    name: 'Vendor',
+    price: 39,
     billing: '/mo',
-    coverage: '1 metro area',
+    annualPrice: 390,
+    coverage: 'Your service area',
     features: [
       'Profile in marketplace directory',
-      'Up to 10 leads/month',
-      'Lead inbox & accept/decline',
-      'Basic profile page',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Regional',
-    price: 249,
-    billing: '/mo',
-    coverage: '3 metro areas',
-    features: [
-      'Everything in Metro',
-      'Up to 30 leads/month',
-      'Priority placement in search',
-      'Verified badge',
+      'Lead inbox with accept/decline',
+      'In-context lead delivery (phase-matched)',
       'Public SEO profile page',
-    ],
-    cta: 'Get Started',
-    highlighted: true,
-  },
-  {
-    name: 'National',
-    price: 499,
-    billing: '/mo',
-    coverage: 'Nationwide',
-    features: [
-      'Everything in Regional',
-      'Unlimited leads',
-      'Featured placement',
-      'Verified + Preferred badge',
+      'Verified badge',
       'Analytics dashboard',
       'Priority support',
     ],
-    cta: 'Get Started',
-    highlighted: false,
+    cta: 'Join the Marketplace',
+    highlighted: true,
   },
 ];
 

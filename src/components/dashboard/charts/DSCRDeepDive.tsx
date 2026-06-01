@@ -305,7 +305,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Example:</strong>{' '}
         <code className="px-1 py-0.5 rounded text-[10px]" style={{ background: 'var(--bg-surface)' }}>
-          $12,486 NOI ÷ $10,764 annual mortgage = 1.16 DSCR
+          $12,486 NOI ÷ $16,929 annual mortgage = 0.74 DSCR
         </code>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>All-Cash Guardrail:</strong>{' '}

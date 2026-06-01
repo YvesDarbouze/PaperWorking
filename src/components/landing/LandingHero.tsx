@@ -28,7 +28,7 @@ export default function LandingHero() {
       <div className="relative z-10 max-w-3xl mx-auto px-5 md:px-6 w-full flex flex-col items-center text-center">
         {/* Badge */}
         <span className="hidden md:inline-block text-xs font-semibold uppercase tracking-[0.05em] text-primary glass-card px-3 py-1 rounded-full mb-6">
-          The Real Estate Investment Operating System
+          Real-Estate-Native Project Management OS
         </span>
 
         {/* Headline */}
@@ -37,13 +37,13 @@ export default function LandingHero() {
           <span className="hidden md:inline">
             {isVariantB ? (
               <>
-                Scale your real estate portfolio{' '}
-                <span className="text-primary text-glow">without the spreadsheets.</span>
+                Real-estate-native{' '}
+                <span className="text-primary text-glow">project management.</span>
               </>
             ) : (
               <>
-                Stop bleeding margins to{' '}
-                <span className="text-primary text-glow">disorganized deals.</span>
+                The project management OS for{' '}
+                <span className="text-primary text-glow">serious investors.</span>
               </>
             )}
           </span>
@@ -51,11 +51,11 @@ export default function LandingHero() {
           <span className="inline md:hidden">
             {isVariantB ? (
               <>
-                Scale your real estate portfolio{' '}
-                <span className="text-primary text-glow">without the spreadsheets.</span>
+                Real-estate-native{' '}
+                <span className="text-primary text-glow">project management.</span>
               </>
             ) : (
-              <>Scale Your Real Estate Portfolio Without the Chaos.</>
+              <>Real-Estate-Native Project Management. Built for Serious Investors.</>
             )}
           </span>
         </h1>
@@ -65,14 +65,14 @@ export default function LandingHero() {
           {/* Desktop Sub-copy */}
           <p className="hidden md:block">
             {isVariantB
-              ? "The unified workspace to model deals, track renovation ledger items in real-time, and auto-generate tax packs for your CPA in one single click."
-              : "Every day a deal is delayed, holding costs eat your profits. PaperWorking centralizes your pipeline, tracks real-time costs, and automates closing docs so you can close faster and scale without the chaos."}
+              ? "The only project management workspace built around how real estate deals actually work. Model returns, track rehab tasks, and auto-generate tax packs—all in one place."
+              : "Every day a deal is delayed, holding costs eat your profits. PaperWorking centralizes your deal pipeline, tracks milestones, and automates closing documents so you can scale without the chaos."}
           </p>
           {/* Mobile Sub-copy */}
           <p className="block md:hidden">
             {isVariantB
-              ? "The unified workspace to model deals, track renovation ledger items in real-time, and auto-generate tax packs."
-              : "Centralize your pipeline, automate documentation, and track margins in real-time."}
+              ? "The project management workspace built around how real estate deals actually work. Model returns, track rehab tasks, and auto-generate tax packs."
+              : "Centralize your deal pipeline, automate documentation, and track milestones in real-time."}
           </p>
         </div>
 

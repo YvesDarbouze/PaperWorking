@@ -34,16 +34,16 @@ interface PlanTier {
 
 const tiers: PlanTier[] = [
   {
-    id: 'individual',
-    name: 'Individual',
-    tagline: 'Built for solo investors who want full pipeline visibility without a team subscription.',
-    monthlyPrice: 59,
-    annualPrice: 499,
-    ctaLabel: 'Start Free Trial',
+    id: 'vendor',
+    name: 'Vendor',
+    tagline: 'For professionals who want qualified investor leads in their service area.',
+    monthlyPrice: 39,
+    annualPrice: 390,
+    ctaLabel: 'Join the Marketplace',
     ctaMicrocopy: 'Cancel anytime during trial',
     isAnchored: false,
     features: [
-      { label: 'Unlimited Property Tracking', included: true },
+      { label: 'Up to 5 active project pipelines', included: true },
       { label: 'Full 4-Phase Lifecycle Kanban', included: true },
       { label: 'Engine Room Ledger', included: true },
       { label: 'Standard Financial Reports', included: true },
@@ -61,54 +61,50 @@ const tiers: PlanTier[] = [
     ],
   },
   {
-    id: 'team',
-    name: 'Team',
-    tagline: 'For investor teams who need role-based access, shared workflows, and complete financial separation.',
-    monthlyPrice: 99,
-    annualPrice: 999,
-    ctaLabel: 'Start Team Trial',
+    id: 'individual',
+    name: 'Investor',
+    tagline: 'Built for solo investors who want full pipeline visibility without a team subscription.',
+    monthlyPrice: 89,
+    annualPrice: 890,
+    ctaLabel: 'Start Investor Trial',
     ctaMicrocopy: 'Cancel anytime during trial',
     isAnchored: true,
-    anchorBadge: 'Most teams choose Team',
+    anchorBadge: 'Most Popular',
     socialProof: {
-      quote: '"We closed 3 extra projects last quarter just by putting everyone in the same workspace."',
-      author: '— J. Rivera, Valor Capital Partners',
+      quote: '"I used to underwrite on spreadsheets that broke on every new column. This gets the math right in seconds."',
+      author: '— R. Miller, Solo Operator',
     },
     features: [
-      { label: 'Everything in Individual', included: true },
+      { label: 'Unlimited active project pipelines', included: true },
+      { label: 'Full 4-Phase Lifecycle Kanban', included: true },
+      { label: 'Engine Room Ledger & reports', included: true },
+      { label: 'CPA-Ready CSV & P&L exports', included: true },
+      { label: 'Document OCR Upload (Confirm & Harden)', included: true },
+      { label: '1 partner seat (Read-only)', included: true },
+      {
+        label: 'Team Invites & RBAC',
+        included: false,
+        lossAversion: 'Role-based access and audit logs are Team-only. Your contractors will see your financials.',
+      },
+    ],
+  },
+  {
+    id: 'team',
+    name: 'Investment Team',
+    tagline: 'For investor teams who need role-based access, shared workflows, and complete financial separation.',
+    monthlyPrice: 199,
+    annualPrice: 1990,
+    ctaLabel: 'Start Team Trial',
+    ctaMicrocopy: 'Cancel anytime during trial',
+    isAnchored: false,
+    features: [
+      { label: 'Everything in Investor', included: true },
       { label: 'Team Member Invites (Agents, GCs)', included: true },
       { label: 'Granular Role-Based Data Isolation', included: true },
       { label: 'Advanced Vendor Management', included: true },
       { label: 'Google Drive Provisioning', included: true },
       { label: 'Advanced Financial Reports', included: true },
       { label: 'Escrow Integration & API Access', included: true },
-    ],
-  },
-  {
-    id: 'vendor',
-    name: 'Vendor Marketplace',
-    tagline: 'For professionals — lawyers, loan processors, contractors, appraisers — who want deal flow from active investors.',
-    monthlyPrice: 39,
-    annualPrice: 390,
-    ctaLabel: 'Join the Marketplace',
-    ctaMicrocopy: 'Cancel anytime',
-    isAnchored: false,
-    features: [
-      { label: 'Localized Deal Request Pipeline', included: true },
-      { label: 'Closing Room Document Access', included: true },
-      { label: 'Client Communication Hub', included: true },
-      { label: 'Title Search & Verification Tools', included: true },
-      { label: 'Report Upload & Verification', included: true },
-      {
-        label: 'Multi-state Licensing Hub',
-        included: false,
-        lossAversion: 'Multi-state deal routing requires a Team plan invitation.',
-      },
-      {
-        label: 'Automated Compliance Checks',
-        included: false,
-        lossAversion: 'AI compliance checks are only available as an Enterprise add-on.',
-      },
     ],
   },
 ];
@@ -308,7 +304,9 @@ export default function PricingCards({
               <div className="mt-8 flex-1">
                 <p className="text-xs font-bold uppercase tracking-widest text-phase-2 mb-5">
                   {tier.id === 'team'
-                    ? 'Everything in Individual, plus:'
+                    ? 'Everything in Investor, plus:'
+                    : tier.id === 'individual'
+                    ? 'Everything in Solo, plus:'
                     : 'Includes'}
                 </p>
                 <ul className="space-y-3">

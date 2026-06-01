@@ -164,7 +164,7 @@ function RiskStrip({ dscr, lenderMin }: { dscr: number; lenderMin: number }) {
 
 export function DSCRRiskStripTerminal({
   defaultAnnualNOI = 12486,
-  defaultMonthlyDebtService = 897,
+  defaultMonthlyDebtService = 1410.85,
   lenderMinDSCR = 1.25,
   onValuesChange,
   className = '',

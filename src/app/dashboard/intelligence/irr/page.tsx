@@ -131,8 +131,8 @@ export default function IRRIntelligencePage() {
     return {
       totalCashInvested: 60000,
       purchasePrice: 279000,
-      loanAmount: 219000,
-      loanRate: 7,
+      loanAmount: 223200,
+      loanRate: 6.5,
       loanTermYears: 30,
     };
   }, [projects]);
@@ -140,7 +140,7 @@ export default function IRRIntelligencePage() {
   /* ── Scenario card inputs (derived from interactive or defaults) ── */
   const scenarioInputs = useMemo(() => ({
     totalCashInvested: assumptions?.totalCashInvested ?? portfolioDefaults.totalCashInvested,
-    annualCashFlow: assumptions?.annualCashFlow ?? 1722,
+    annualCashFlow: assumptions?.annualCashFlow ?? -4443.31,
     purchasePrice: assumptions?.purchasePrice ?? portfolioDefaults.purchasePrice,
     loanAmount: assumptions?.loanAmount ?? portfolioDefaults.loanAmount,
     loanRate: assumptions?.loanRate ?? portfolioDefaults.loanRate,
@@ -288,7 +288,7 @@ export default function IRRIntelligencePage() {
         <IRRExitAssumptionsTerminal
           defaults={{
             totalCashInvested: portfolioDefaults.totalCashInvested,
-            annualCashFlow: 1722,
+            annualCashFlow: -4443.31,
             holdYears: 5,
             purchasePrice: portfolioDefaults.purchasePrice,
             appreciationPercent: 3,

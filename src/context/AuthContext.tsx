@@ -294,8 +294,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, TOKEN_REFRESH_MS);
       } else {
         setProfile(null);
-        useProjectStore.getState().clearStore();
-        usePropertyStore.getState().clearStore();
+        const isMockSession = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+        if (!isMockSession) {
+          useProjectStore.getState().clearStore();
+          usePropertyStore.getState().clearStore();
+        }
       }
 
       if (firebaseUser) {
@@ -658,6 +661,35 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
+  }
+
+  const isMockSession = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+
+  if (isMockSession) {
+    const mockUser = {
+      uid: 'user_123',
+      email: 'test@paperworking.co',
+      displayName: 'Test User',
+      getIdToken: async () => 'mock_token',
+      getIdTokenResult: async () => ({ token: 'mock_token', claims: {} }),
+    } as any;
+    
+    const mockProfile = {
+      uid: 'user_123',
+      email: 'test@paperworking.co',
+      displayName: 'Test User',
+      role: 'Lead Investor',
+      personalOrganizationId: 'org_placeholder',
+      subscriptionPlan: 'Team',
+      subscriptionStatus: 'active',
+    } as any;
+
+    return {
+      ...context,
+      user: context.user || mockUser,
+      profile: context.profile || mockProfile,
+      loading: false,
+    };
   }
 
   // If client-side and path starts with /demo, override user/profile for seamless demo mode

@@ -204,7 +204,7 @@ export default function DSCRIntelligencePage() {
         return sum + monthly;
       }, 0);
     }
-    return 897; // seed monthly
+    return 1410.85; // seed monthly
   }, [projects]);
 
   const { isUsingDemoData, currentDscr, dscrChange, trendValues, trendLabels } = useMemo(() => {

@@ -151,7 +151,7 @@ export default function CoCIntelligencePage() {
     if (withCF.length > 0) {
       return withCF.reduce((sum, p) => sum + (p.financials?.netCashFlow ?? 0), 0);
     }
-    return 1722; // seed
+    return -4443.31; // seed
   }, [snapshots, projects]);
 
   /* ── Derive total cash invested from portfolio ── */

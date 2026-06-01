@@ -11,9 +11,9 @@ import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
    ═══════════════════════════════════════════════════════ */
 
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
-  'Individual':      { label: 'Individual',          price: '$59',  period: '/mo' },
-  'Team':            { label: 'Investor Team',       price: '$99',  period: '/mo' },
-  'Vendor Network':  { label: 'Vendor Marketplace',  price: '$39',  period: '/mo' },
+  'Individual':      { label: 'Investor',            price: '$89',  period: '/mo' },
+  'Team':            { label: 'Investment Team',     price: '$199', period: '/mo' },
+  'Vendor Network':  { label: 'Solo',                price: '$39',  period: '/mo' },
   'None':            { label: 'No active plan',      price: '—',    period: ''    },
 };
 

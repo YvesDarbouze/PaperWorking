@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -16,25 +16,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 export default function LandingHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setDropdownOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setDropdownOpen(false);
-    }, 150);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,13 +32,13 @@ export default function LandingHeader() {
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-50 transition-all duration-300 border-b dark ${
+        className={`fixed top-0 w-full z-50 transition-all duration-300 border-b border-white/10 dark ${
           scrolled
-            ? 'bg-surface border-white/5 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] backdrop-blur-xl h-16'
-            : 'bg-surface/80 border-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] h-16 md:h-20'
+            ? 'bg-surface/95 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]'
+            : 'bg-surface/80 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]'
         }`}
       >
-        <nav className="flex justify-between items-center h-full px-6 md:px-gutter-desktop max-w-container-max mx-auto">
+        <nav className="flex justify-between items-center h-16 md:h-20 px-6 md:px-gutter-desktop max-w-container-max mx-auto">
           {/* Logo Lockup */}
           <Link href="/" className="flex items-center gap-stack-md group cursor-pointer">
             <img
@@ -72,120 +53,6 @@ export default function LandingHeader() {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center gap-8">
-            <div
-              className="relative py-2"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              <Link
-                href="/how-it-works"
-                className={`flex items-center gap-1 font-label-md text-label-md pb-1 active:scale-95 transition-all ${
-                  dropdownOpen
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-on-surface/70 hover:text-primary'
-                }`}
-              >
-                How It Works
-                <span className={`material-symbols-outlined text-[18px] transition-transform duration-300 ${
-                  dropdownOpen ? 'rotate-180' : ''
-                }`}>
-                  expand_more
-                </span>
-              </Link>
-
-              <AnimatePresence>
-                {dropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="absolute top-full left-0 mt-2 w-72 bg-surface/90 backdrop-blur-2xl border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[60]"
-                  >
-                    <div className="p-2 space-y-1">
-                      <Link
-                        href="/how-it-works#acquisition"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                          <span className="material-symbols-outlined text-primary text-xl">hub</span>
-                        </div>
-                        <div>
-                          <p className="font-label-md text-on-surface">Acquisition</p>
-                          <p className="text-[12px] text-on-surface-variant/70 leading-tight">Source &amp; secure capital.</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/how-it-works#transaction"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                          <span className="material-symbols-outlined text-primary text-xl">verified_user</span>
-                        </div>
-                        <div>
-                          <p className="font-label-md text-on-surface">Transaction</p>
-                          <p className="text-[12px] text-on-surface-variant/70 leading-tight">Diligence &amp; compliance.</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/how-it-works#rehab"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                          <span className="material-symbols-outlined text-primary text-xl">construction</span>
-                        </div>
-                        <div>
-                          <p className="font-label-md text-on-surface">Rehab</p>
-                          <p className="text-[12px] text-on-surface-variant/70 leading-tight">Budget &amp; contractor logs.</p>
-                        </div>
-                      </Link>
-
-                      <Link
-                        href="/how-it-works#hold-exit"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-start gap-4 p-3 rounded-lg hover:bg-white/5 transition-colors group/item"
-                      >
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover/item:bg-primary/20 transition-colors">
-                          <span className="material-symbols-outlined text-primary text-xl">account_balance</span>
-                        </div>
-                        <div>
-                          <p className="font-label-md text-on-surface">Hold/Exit</p>
-                          <p className="text-[12px] text-on-surface-variant/70 leading-tight">Asset carries &amp; exit sales.</p>
-                        </div>
-                      </Link>
-                    </div>
-
-                    <div className="bg-primary/5 p-3 border-t border-white/5 text-center">
-                      <Link
-                        href="/how-it-works"
-                        onClick={() => setDropdownOpen(false)}
-                        className="text-[12px] text-primary font-label-md flex items-center justify-center gap-1 hover:underline underline-offset-4"
-                      >
-                        View Full Process <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <Link
-              href="/#pricing"
-              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/#dashboard"
-              className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"
-            >
-              Dashboard
-            </Link>
             <Link
               href="/#news"
               className="text-on-surface/70 hover:text-primary transition-colors duration-300 font-label-md text-label-md"

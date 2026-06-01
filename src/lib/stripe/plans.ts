@@ -3,8 +3,8 @@
  *
  * Prices mirror the actual Stripe product catalog (confirmed 2026-06-01):
  *   Vendor          → $39/mo  / $390/yr
- *   Investor        → $89/mo  / $890/yr
- *   Investment Team → $199/mo / $1,990/yr
+ *   Investor        → $59/mo  / $499/yr
+ *   Investment Team → $99/mo  / $999/yr
  *
  * Used by:
  *   - /api/stripe/checkout      (price ID resolution)
@@ -52,14 +52,14 @@ export interface PlanConfig {
 export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   /**
    * individual → Stripe product "Investor"
-   * $89/mo / $890/yr
+   * $59/mo / $499/yr
    */
   individual: {
     id: 'individual',
     canonicalName: 'Individual',
     displayName: 'Investor',
-    monthlyPrice: 89,
-    annualPrice: 890,
+    monthlyPrice: 59,
+    annualPrice: 499,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_INDIVIDUAL_MONTHLY', 'STRIPE_PRICE_INDIVIDUAL'],
@@ -69,14 +69,14 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
 
   /**
    * team → Stripe product "Investment Team"
-   * $199/mo / $1,990/yr
+   * $99/mo / $999/yr
    */
   team: {
     id: 'team',
     canonicalName: 'Team',
     displayName: 'Investment Team',
-    monthlyPrice: 199,
-    annualPrice: 1990,
+    monthlyPrice: 99,
+    annualPrice: 999,
     trialDays: 14,
     envVars: {
       monthly: ['STRIPE_PRICE_TEAM_MONTHLY', 'STRIPE_PRICE_TEAM'],

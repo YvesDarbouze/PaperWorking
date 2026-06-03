@@ -65,18 +65,18 @@ interface PlanTier {
 
 const PLANS: PlanTier[] = [
   {
-    id: 'vendor',
-    name: 'Vendor',
-    target: 'For independent operators managing 1-5 active projects.',
-    monthlyPrice: 39,
-    annualPrice: '$390',
-    annualPriceNum: 390,
+    id: 'individual',
+    name: 'Investor',
+    target: 'Solo flippers tired of spreadsheet chaos.',
+    monthlyPrice: 59,
+    annualPrice: '$499',
+    annualPriceNum: 499,
     features: [
-      'Up to 5 active project pipelines',
+      '1 User Seat',
+      'Full REI Dashboard access',
       'Full 4-Phase Lifecycle tracking',
-      'Standard financial calculation engine',
+      'Financial Calculator (IRR, Cap Rate, CoC)',
       'CPA-Ready CSV exports',
-      '1 partner seat (Read-only)',
     ],
     ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: false,
@@ -84,18 +84,18 @@ const PLANS: PlanTier[] = [
     variant: 'standard',
   },
   {
-    id: 'individual',
-    name: 'Investor',
-    target: 'For serious investors who want full pipeline visibility without a team.',
-    monthlyPrice: 59,
-    annualPrice: '$499',
-    annualPriceNum: 499,
+    id: 'team',
+    name: 'Investment Team',
+    target: 'Scaling REI businesses managing multiple deals.',
+    monthlyPrice: 99,
+    annualPrice: '$999',
+    annualPriceNum: 999,
     features: [
-      'Unlimited active project pipelines',
-      'Full 4-Phase Lifecycle Kanban',
-      'Engine Room Ledger & reports',
-      'CPA-Ready CSV & P&L exports',
-      'Document OCR Upload (Confirm & Harden)',
+      'Up to 10 User Seats',
+      'Everything in Investor',
+      'JV & Syndication capital trackers',
+      'Pro reporting templates (PDF export)',
+      'Custom checklists & compliance workflows',
     ],
     ctaLabel: 'Start 14-Day Free Trial',
     isHighlighted: true,
@@ -104,20 +104,18 @@ const PLANS: PlanTier[] = [
     variant: 'highlighted',
   },
   {
-    id: 'team',
-    name: 'Investment Team',
-    target: 'For investor teams who need role-based access & shared workflows.',
-    monthlyPrice: 99,
-    annualPrice: '$999',
-    annualPriceNum: 999,
+    id: 'vendor',
+    name: 'Vendor',
+    target: 'Appraisers, Inspectors, GCs, and tradespeople.',
+    monthlyPrice: 39,
+    annualPrice: '$390',
+    annualPriceNum: 390,
     features: [
-      'Unlimited active pipelines & seats',
-      '5 team seats with permissions',
-      'JV & Syndication capital trackers',
-      'Pro reporting templates (PDF export)',
-      'Custom checklists & compliance workflows',
+      'Marketplace Directory Listing',
+      'Profile & contact card',
+      'Deal referral notifications',
     ],
-    ctaLabel: 'Start 14-Day Free Trial',
+    ctaLabel: 'List Your Business',
     isHighlighted: false,
     icon: Wrench,
     variant: 'vendor',
@@ -428,12 +426,12 @@ function ComparisonTable() {
               <th className="p-4 font-normal text-on-surface-variant w-2/5">
                 Feature
               </th>
-              <th className="p-4 font-medium text-center w-1/5">Individual</th>
+              <th className="p-4 font-medium text-center w-1/5">Investor</th>
               <th className="p-4 font-bold text-primary text-center w-1/5">
                 Team / Firm
               </th>
               <th className="p-4 font-medium text-center w-1/5 text-on-surface-variant">
-                Vendor
+                Vendor Marketplace
               </th>
             </tr>
           </thead>
@@ -660,7 +658,7 @@ function BottomCTA() {
             <ArrowRight className="w-5 h-5" />
           </a>
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-4 opacity-70">
-            Free for 14 days • No credit card required to sign up
+            14-day free trial • Credit card required • No charge until day 15
           </p>
         </div>
       </div>
@@ -715,7 +713,7 @@ export default function PricingSection({
             variants={fadeUp}
             className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg"
           >
-            14-day free trial on every plan. No credit card required to sign up.
+            14-day trial on every plan. Credit card required. No charge until day 15.
           </motion.p>
 
           <motion.div variants={fadeUp}>

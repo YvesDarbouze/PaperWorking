@@ -6,6 +6,7 @@ import { projectsService } from '@/lib/firebase/projects';
 import type { Project, PhaseStatus } from '@/types/schema';
 import {
   ArrowLeft,
+  Briefcase,
   FolderOpen,
   MapPin,
   ChevronRight,
@@ -421,6 +422,16 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
             <Share2 className="w-3.5 h-3.5" />
             <span className="hidden md:inline">Share CPA</span>
           </button>
+
+          <a
+            href="/dashboard/marketplace"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-150 hover:bg-black/5 dark:hover:bg-white/5 border rounded-lg text-text-secondary hover:text-text-primary"
+            style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-ui)' }}
+            aria-label="Hire a professional"
+          >
+            <Briefcase className="w-3.5 h-3.5" />
+            <span className="hidden md:inline">Hire Professional</span>
+          </a>
 
           <button
             onClick={handleArchive}

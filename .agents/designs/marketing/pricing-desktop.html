@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing - PaperWorking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "surface-variant": "#2d363d",
+                "on-tertiary-container": "#744000",
+                "error-container": "#93000a",
+                "primary": "#57f1db",
+                "outline-variant": "#3c4a46",
+                "on-background": "#dae4ec",
+                "tertiary-fixed-dim": "#ffb875",
+                "secondary-fixed-dim": "#adc6ff",
+                "on-tertiary-fixed-variant": "#6b3b00",
+                "secondary": "#adc6ff",
+                "on-tertiary": "#4b2800",
+                "on-secondary-fixed": "#001a42",
+                "surface-container-lowest": "#060f15",
+                "primary-fixed-dim": "#3cddc7",
+                "surface-container": "#182127",
+                "surface-container-low": "#141d23",
+                "secondary-fixed": "#d8e2ff",
+                "on-tertiary-fixed": "#2d1600",
+                "surface-bright": "#313a41",
+                "inverse-surface": "#dae4ec",
+                "surface-container-high": "#222b32",
+                "secondary-container": "#0566d9",
+                "on-primary-fixed": "#00201c",
+                "tertiary-container": "#ffac5a",
+                "on-primary-container": "#00574d",
+                "surface": "#0b141a",
+                "inverse-primary": "#006b5f",
+                "on-surface-variant": "#bacac5",
+                "surface-tint": "#3cddc7",
+                "surface-dim": "#0b141a",
+                "on-secondary-fixed-variant": "#004395",
+                "on-error": "#690005",
+                "primary-container": "#2dd4bf",
+                "on-secondary": "#002e6a",
+                "on-primary-fixed-variant": "#005047",
+                "tertiary": "#ffd1aa",
+                "on-surface": "#dae4ec",
+                "primary-fixed": "#62fae3",
+                "on-error-container": "#ffdad6",
+                "error": "#ffb4ab",
+                "on-secondary-container": "#e6ecff",
+                "surface-container-highest": "#2d363d",
+                "background": "#0b141a",
+                "on-primary": "#003731",
+                "tertiary-fixed": "#ffdcc0",
+                "outline": "#859490",
+                "inverse-on-surface": "#293238"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "stack-lg": "32px",
+                "gutter-mobile": "16px",
+                "unit": "8px",
+                "gutter-desktop": "24px",
+                "margin-desktop": "40px",
+                "stack-md": "16px",
+                "margin-mobile": "20px",
+                "stack-sm": "8px",
+                "container-max": "1280px"
+        },
+        "fontFamily": {
+                "body-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-md": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-lg-mobile": [
+                        "Plus Jakarta Sans"
+                ],
+                "label-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "body-sm": [
+                        "Plus Jakarta Sans"
+                ],
+                "headline-xl": [
+                        "Plus Jakarta Sans"
+                ]
+        },
+        "fontSize": {
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-md": [
+                        "14px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "label-sm": [
+                        "12px",
+                        {
+                                "lineHeight": "14px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "500"
+                        }
+                ],
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(24, 33, 39, 0.7) 0%, rgba(20, 29, 35, 0.4) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+  }
+  .glass-card {
+    background: linear-gradient(135deg, rgba(34, 43, 50, 0.6) 0%, rgba(24, 33, 39, 0.3) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .luminous-button {
+    background-color: #2dd4bf;
+    color: #003731;
+    box-shadow: 0 0 20px -5px #2dd4bf;
+    transition: all 0.3s ease;
+  }
+  .luminous-button:hover {
+    box-shadow: 0 0 25px 0px #2dd4bf;
+    transform: translateY(-1px);
+  }
+</style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col pt-20">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+<div class="flex justify-between items-center h-20 px-gutter-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<img alt="PaperWorking Logo" class="h-8 w-8" src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"/>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary tracking-tight">PaperWorking</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface/70 hover:text-on-surface transition-colors font-body-md text-body-md hover:bg-white/5 transition-all duration-300 px-3 py-2 rounded-md" href="#">How It Works</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Pricing</a>
+<a class="text-on-surface/70 hover:text-on-surface transition-colors font-body-md text-body-md hover:bg-white/5 transition-all duration-300 px-3 py-2 rounded-md" href="#">Dashboard</a>
+<a class="text-on-surface/70 hover:text-on-surface transition-colors font-body-md text-body-md hover:bg-white/5 transition-all duration-300 px-3 py-2 rounded-md" href="#">News</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="luminous-button font-label-md text-label-md px-6 py-2 rounded-lg font-bold">Sign In</button>
+</div>
+</div>
+</nav>
+<main class="flex-grow flex flex-col gap-margin-desktop py-margin-desktop">
+<!-- Header Section -->
+<section class="text-center px-gutter-desktop max-w-container-max mx-auto w-full">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-stack-md">Pick your plan. Start closing more deals.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">14-day trial on every plan. Credit card required. No charge until day 15.</p>
+</section>
+<!-- Pricing Cards -->
+<section class="px-gutter-desktop max-w-container-max mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Individual -->
+<div class="glass-card rounded-xl p-8 flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Individual Investor</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 h-10">Solo flippers tired of spreadsheet chaos.</p>
+<div class="mb-6">
+<span class="font-headline-xl text-headline-xl text-primary">$50</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-8">Billed annually at $599/yr</p>
+<button class="w-full bg-surface-bright hover:bg-surface-variant text-on-surface font-label-md text-label-md py-3 rounded-lg mb-8 transition-colors border border-outline-variant">Start 14-Day Free Trial</button>
+<div class="flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-sm">check</span> 1 User Seat</li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-sm">check</span> Full REI Dashboard access</li>
+</ul>
+</div>
+</div>
+<!-- Team -->
+<div class="glass-panel rounded-xl p-8 flex flex-col relative transform md:-translate-y-4 shadow-2xl">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full font-bold">Most Popular</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Team / Firm</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 h-10">Scaling REI businesses managing multiple deals.</p>
+<div class="mb-6">
+<span class="font-headline-xl text-headline-xl text-primary">$83</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-8">Billed annually at $999/yr</p>
+<button class="w-full luminous-button font-label-md text-label-md py-3 rounded-lg mb-8">Start 14-Day Free Trial</button>
+<div class="flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-sm">check</span> Up to 10 User Seats</li>
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-sm">check</span> Everything in Individual</li>
+</ul>
+</div>
+</div>
+<!-- Vendor -->
+<div class="glass-card rounded-xl p-8 flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Vendor Marketplace</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 h-10">Appraisers, Inspectors, GCs, and tradespeople.</p>
+<div class="mb-6">
+<span class="font-headline-xl text-headline-xl text-primary">$33</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">/mo</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-8">Billed annually at $390/yr</p>
+<button class="w-full bg-surface-bright hover:bg-surface-variant text-on-surface font-label-md text-label-md py-3 rounded-lg mb-8 transition-colors border border-outline-variant">List Your Business</button>
+<div class="flex-grow">
+<p class="font-label-md text-label-md text-on-surface mb-4">What's included</p>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-primary text-sm">check</span> Marketplace Directory Listing</li>
+</ul>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-white/10 mt-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-stack-lg px-gutter-desktop max-w-container-max mx-auto text-left">
+<div>
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">How It Works</a></li>
+<li><a class="font-body-sm text-body-sm text-primary transition-colors cursor-pointer" href="#">Pricing</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md font-bold text-on-surface mb-4">Company</h4>
+<ul class="space-y-2">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors cursor-pointer" href="#">About</a></li>
+</ul>
+</div>
+</div>
+</footer>
+</body></html>

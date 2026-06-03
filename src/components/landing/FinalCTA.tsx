@@ -1,14 +1,13 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 /**
  * FinalCTA — Stitch Obsidian Edition
  *
- * Bottom-of-page "risk mitigation" conversion section.
- * Re-anchors the value prop: "Not a project management tool. A risk mitigation platform."
+ * Bottom-of-page conversion section.
+ * Positions PaperWorking as real-estate-native project management (Amendment 1).
  * Uses glass-card aesthetic with luminous CTA button and ambient glow.
  */
 

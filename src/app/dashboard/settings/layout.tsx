@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { label: 'Notifications', href: '/dashboard/settings/notifications', iconName: 'notifications' },
   { label: 'Billing',       href: '/dashboard/settings/billing',       iconName: 'payments' },
   { label: 'Data & Privacy', href: '/dashboard/settings/data',          iconName: 'security' },
+  { label: 'Audit Logs',    href: '/dashboard/settings/audit-logs',    iconName: 'manage_history' },
 ] as const;
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

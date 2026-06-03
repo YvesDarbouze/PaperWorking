@@ -72,6 +72,12 @@ export function TopAppBar() {
   const [unreadChangelogCount, setUnreadChangelogCount] = useState(0);
   const whatsNewRef = useRef<HTMLDivElement>(null);
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Fetch changelog metadata and compute unread count
   useEffect(() => {
     async function fetchChangelogMeta() {
@@ -165,11 +171,13 @@ export function TopAppBar() {
     <header
       className="w-full flex-shrink-0 flex items-center justify-between z-40"
       style={{
-        height: '60px',
-        background: 'rgba(11,20,26,0.6)',
+        height: '64px',
+        background: 'rgba(11,20,26,0.80)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        padding: '0 20px',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.10)',
+        boxShadow: '0 0 20px -5px rgba(87,241,219,0.10)',
+        padding: '0 24px',
       }}
     >
       {/* Left: Mobile logo + Breadcrumb */}
@@ -251,10 +259,38 @@ export function TopAppBar() {
 
       {/* Right: Actions */}
       <div className="flex items-center gap-2">
+        {/* Create Project — primary persistent CTA */}
+        <button
+          onClick={(e) => {
+            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+              handleDemoGuard(e, 'project creation');
+            } else {
+              router.push('/dashboard/projects/new');
+            }
+          }}
+          className="hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 active:scale-95"
+          style={{
+            background: 'rgba(45,54,61,0.5)',
+            border: '1px solid rgba(255,255,255,0.12)',
+            color: 'rgba(218,228,236,0.9)',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(87,241,219,0.4)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(87,241,219,0.06)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(45,54,61,0.5)';
+          }}
+        >
+          <span className="material-symbols-outlined text-[16px]" style={{ color: '#57f1db' }}>add</span>
+          New Project
+        </button>
+
         {/* Mobile search */}
         <button
           className="md:hidden p-2 rounded-lg transition-colors duration-200"
-          style={{ color: 'rgba(218,228,236,0.55)' }}
+          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
         >
           <span className="material-symbols-outlined text-[20px]">search</span>
         </button>
@@ -262,7 +298,7 @@ export function TopAppBar() {
         {/* Notifications */}
         <button
           className="p-2 rounded-lg transition-all duration-200 relative group"
-          style={{ color: 'rgba(218,228,236,0.55)' }}
+          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
           onClick={(e) => {
             if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
               handleDemoGuard(e, 'notifications');
@@ -272,7 +308,7 @@ export function TopAppBar() {
           }}
         >
           <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">notifications</span>
-          {unreadTotal > 0 && (
+          {mounted && unreadTotal > 0 && (
             <span
               className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
               style={{
@@ -290,7 +326,7 @@ export function TopAppBar() {
         <div className="relative" ref={whatsNewRef}>
           <button
             className="p-2 rounded-lg transition-all duration-200 relative group"
-            style={{ color: 'rgba(218,228,236,0.55)' }}
+            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
             onClick={() => setShowWhatsNew(!showWhatsNew)}
             title="What's New"
           >
@@ -354,7 +390,7 @@ export function TopAppBar() {
         <Link
           href={`/help/${getHelpSlug(pathname)}`}
           className="p-2 rounded-lg transition-colors duration-200"
-          style={{ color: 'rgba(218,228,236,0.55)' }}
+          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
           title="Contextual Help"
         >
           <span className="material-symbols-outlined text-[20px]">help_outline</span>
@@ -372,7 +408,17 @@ export function TopAppBar() {
               background: showUserMenu ? 'rgba(255,255,255,0.06)' : 'transparent',
             }}
           >
-            {user?.photoURL ? (
+            {!mounted || (!user && !profile) ? (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
+                style={{
+                  background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
+                  color: '#0b141a',
+                }}
+              >
+                U
+              </div>
+            ) : user?.photoURL ? (
               <img
                 alt="Profile"
                 className="w-8 h-8 rounded-full object-cover transition-all duration-200 group-hover:ring-2"
@@ -392,13 +438,13 @@ export function TopAppBar() {
             )}
             <div className="hidden lg:block text-left">
               <p className="text-xs font-semibold leading-tight" style={{ color: 'var(--color-on-surface)' }}>
-                {profile?.displayName || user?.displayName || "User"}
+                {mounted && (profile?.displayName || user?.displayName) ? (profile?.displayName || user?.displayName) : "User"}
               </p>
               <p
                 className="text-[10px] uppercase tracking-widest leading-tight"
                 style={{ color: 'var(--color-primary)' }}
               >
-                {profile?.role || "Member"}
+                {mounted && profile?.role ? profile.role : "Member"}
               </p>
             </div>
             <span

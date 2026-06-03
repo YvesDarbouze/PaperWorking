@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import { Search, Building2, History, Briefcase, ArrowRight, Loader2 } from 'lucide-react';
 
@@ -32,10 +32,10 @@ const INTENT_OPTIONS: IntentOption[] = [
   {
     id: 'first_investment',
     icon: <Search className="w-6 h-6" />,
-    title: 'Looking at my first investment',
+    title: 'Evaluating my first investment property',
     description: 'Find and evaluate deals with guided analysis tools.',
     phase: 1,
-    route: '/dashboard/projects?wizard=true&phase=1',
+    route: '/onboarding/wizard',
     accentColor: '#D4A843', // gold — Acquisition
   },
   {
@@ -69,7 +69,7 @@ const INTENT_OPTIONS: IntentOption[] = [
 
 export default function OnboardingIntentPage() {
   const router = useRouter();
-  const { user, profile, loading } = useAuth();
+  const { user, loading } = useAuth();
   const [selectedIntent, setSelectedIntent] = useState<Intent | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -82,10 +82,12 @@ export default function OnboardingIntentPage() {
     try {
       // Store intent on user profile
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      await setDoc(userDocRef, {
         onboardingIntent: option.id,
+        onboardingPhase: option.phase,
+        onboardingIntentAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      });
+      }, { merge: true });
 
       // Fire the event (best-effort)
       fetch('/api/events', {
@@ -113,10 +115,20 @@ export default function OnboardingIntentPage() {
 
     try {
       const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
+      await setDoc(userDocRef, {
         onboardingIntent: 'first_investment',
         updatedAt: serverTimestamp(),
-      });
+      }, { merge: true });
+
+      // Fire the event (best-effort)
+      await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'onboarding_intent_selected',
+          properties: { intent: 'first_investment', phase: 1 },
+        }),
+      }).catch(() => {});
     } catch {
       // Non-fatal
     }
@@ -137,7 +149,7 @@ export default function OnboardingIntentPage() {
       {/* ── Header ── */}
       <div className="text-center space-y-4">
         <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] font-bold text-white tracking-tight">
-          What brings you to PaperWorking?
+          What brings you to PaperWorking today?
         </h1>
         <p className="text-[16px] leading-[24px] text-[#bacac5] max-w-md mx-auto">
           We'll tailor your workspace to match your investing journey.

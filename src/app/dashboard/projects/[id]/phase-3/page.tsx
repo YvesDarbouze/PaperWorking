@@ -583,7 +583,7 @@ export default function Phase3RehabPage() {
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {/* NOI — Structured MetricReadout */}
-                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
+                <div className="noi-value glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
                   <MetricReadout
                     label="Net Operating Income"
                     result={noiResult}

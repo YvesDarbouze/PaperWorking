@@ -2,6 +2,7 @@
 const config = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src'],
+  setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, sanitizeDbRecord } from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +11,18 @@ export async function POST(req: Request) {
     }
 
     // Default R0 tracking rules if not provided
-    const ownershipShares = data.ownershipShares || JSON.stringify({ "SYSTEM": 100 });
+    let ownershipSharesObj: any = { "SYSTEM": 100 };
+    if (data.ownershipShares) {
+      if (typeof data.ownershipShares === 'string') {
+        try {
+          ownershipSharesObj = JSON.parse(data.ownershipShares);
+        } catch {
+          ownershipSharesObj = { "SYSTEM": 100 };
+        }
+      } else {
+        ownershipSharesObj = data.ownershipShares;
+      }
+    }
     const criteriaVersion = data.criteriaVersion || "v1";
 
     const lead = await prisma.sourcingLead.create({
@@ -30,14 +41,11 @@ export async function POST(req: Request) {
         criteriaVersion,
         costPerLead: data.costPerLead ? BigInt(data.costPerLead) : null,
         estimatedMargin: data.estimatedMargin ? BigInt(data.estimatedMargin) : null,
-        ownershipShares,
+        ownershipShares: ownershipSharesObj,
       },
     });
 
-    // BigInt can't be JSON serialized directly without replacer
-    const serializedLead = JSON.parse(JSON.stringify(lead, (key, value) =>
-      typeof value === 'bigint' ? value.toString() : value
-    ));
+    const serializedLead = sanitizeDbRecord(lead);
 
     return NextResponse.json({ success: true, lead: serializedLead });
   } catch (error) {

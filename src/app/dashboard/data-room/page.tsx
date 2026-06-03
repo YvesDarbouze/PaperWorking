@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { useProjectStore } from "@/store/projectStore";
 import { deriveDualScopeMetrics } from "@/lib/metrics/reiMetrics";
+import { computeIRRMetric } from "@/lib/metrics/computeIRR";
 
 // ─── Design Tokens (Luminous Glass Theme) ────────────────────────
 const T = {
@@ -258,7 +259,8 @@ export default function DataRoomPage() {
       const loanAmount = f.loanAmount ?? 0;
       const committedCapital = f.committedCapital ?? f.capitalRaiseTarget ?? (purchasePrice - loanAmount);
       const ownershipPct = f.ownershipPercentage ?? 100;
-      const irr = assetMetrics.cashOnCashReturn * 1.35; // Proxy model
+      const irrResult = computeIRRMetric({ financials: f, currentPhase: p.currentPhase, strategyType: p.strategyType });
+      const irr = irrResult.value ?? 0;
       const appreciation = assetMetrics.annualizedAppreciation || 0;
 
       return {
@@ -317,11 +319,9 @@ export default function DataRoomPage() {
     let totalValue = 0;
     let totalRent = 0;
     let totalOpEx = 0;
-    let totalDebtService = 0;
     let totalUnits = 0;
     let totalOccupiedUnits = 0;
     let weightedCoC = 0;
-    let weightedIRR = 0;
     let weightedAppreciation = 0;
 
     activeProjects.forEach((p, idx) => {
@@ -335,28 +335,37 @@ export default function DataRoomPage() {
       totalValue += val;
       totalRent += data.grossRentalIncome;
       totalOpEx += data.totalOperatingExpenses;
-      totalDebtService += data.annualDebtService;
       totalUnits += (f.numberOfUnits ?? 1) * factor;
       totalOccupiedUnits += (f.occupiedUnits ?? (f.numberOfUnits ?? 1)) * factor;
 
       weightedCoC += metrics.asset.coc * data.capitalRaised;
-      weightedIRR += metrics.asset.irr * data.capitalRaised;
       weightedAppreciation += metrics.asset.appreciation * val;
     });
 
     const capRate = totalValue > 0 ? (totalNOI / totalValue) * 100 : 0;
     const coc = totalCapitalRaised > 0 ? weightedCoC / totalCapitalRaised : 0;
-    const grm = totalRent > 0 ? totalValue / totalRent : 0;
-    const dscr = totalDebtService > 0 ? totalNOI / totalDebtService : 0;
+
+    // DSCR: exclude all-cash properties from both numerator and denominator (PRD §4.2.3)
+    let dscrNOI = 0;
+    let dscrDebt = 0;
+    activeProjects.forEach((p, idx) => {
+      const loanAmount = p.financials?.loanAmount ?? 0;
+      if (loanAmount > 0) {
+        const data = scope === "Property" ? projectMetrics[idx].asset : projectMetrics[idx].investor;
+        dscrNOI  += data.noi;
+        dscrDebt += data.annualDebtService;
+      }
+    });
+    const dscr = dscrDebt > 0 ? dscrNOI / dscrDebt : null;
     const occupancy = totalUnits > 0 ? (totalOccupiedUnits / totalUnits) * 100 : 0;
     const oer = totalRent > 0 ? (totalOpEx / totalRent) * 100 : 0;
     const appreciation = totalValue > 0 ? weightedAppreciation / totalValue : 0;
-    const irr = totalCapitalRaised > 0 ? weightedIRR / totalCapitalRaised : 0;
+    // GRM and IRR are distribution-only — never aggregated to a scalar (PRD §4.2.3)
     const totalEquity = totalValue - activeProjects.reduce((s, p) => s + (p.financials?.loanAmount ?? 0), 0);
 
     return {
-      noi: totalNOI, cashFlow: totalCashFlow, capRate, coc, grm, dscr,
-      irr, occupancy, oer, appreciation, capitalRaised: totalCapitalRaised,
+      noi: totalNOI, cashFlow: totalCashFlow, capRate, coc, dscr,
+      occupancy, oer, appreciation, capitalRaised: totalCapitalRaised,
       totalValue, totalEquity, propertyCount: projectMetrics.length,
     };
   }, [projectMetrics, activeProjects, scope]);

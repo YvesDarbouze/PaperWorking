@@ -6,11 +6,9 @@ import { projectsService } from '@/lib/firebase/projects';
 import { createProjectViaApi, commitProjectViaApi } from '@/lib/api/projectWizardApi';
 import { toast } from 'react-hot-toast';
 import {
-  ChevronLeft, ChevronRight, Check, X, AlertCircle, Building2,
-  DollarSign, Target, Users, Key, Wrench, HardHat, Home, Tag, FileSignature, FileText, UploadCloud
+  ChevronLeft, ChevronRight, Check, X, AlertCircle, Target, Key, UploadCloud
 } from 'lucide-react';
 import {
-  PROJECT_WIZARD_QUESTIONS,
   getActiveQuestions,
   setNestedField,
   getNestedField,
@@ -148,7 +146,7 @@ export default function ProjectCreationWizard({
   }, [activeQuestions, activeIndex]);
 
   // Validation
-  const { isValid, validationError, addressErrors, isAddressComplete } = useProjectFormValidation(
+  const { isValid, validationError, isAddressComplete } = useProjectFormValidation(
     formData,
     activeQuestion
   );
@@ -707,10 +705,30 @@ export default function ProjectCreationWizard({
                   {activeQuestion.type === 'phase-selection' && (
                     <div className="space-y-4">
                       {[
-                        { id: 1, type: 'acquisition', title: 'Acquisition', desc: 'Evaluating or under contract.', icon: 'analytics', colorClass: 'text-[#57f1db]', borderClass: 'border-[#57f1db]', bgClass: 'bg-[#57f1db]', hoverBorderClass: 'group-hover:border-[#57f1db]' },
-                        { id: 2, type: 'purchase', title: 'Purchase', desc: 'Closing the transaction.', icon: 'shopping_cart', colorClass: 'text-[#adc6ff]', borderClass: 'border-[#adc6ff]', bgClass: 'bg-[#adc6ff]', hoverBorderClass: 'group-hover:border-[#adc6ff]' },
-                        { id: 3, type: 'hold', title: 'Hold', desc: 'Operating or renovating.', icon: 'warehouse', colorClass: 'text-[#ffac5a]', borderClass: 'border-[#ffac5a]', bgClass: 'bg-[#ffac5a]', hoverBorderClass: 'group-hover:border-[#ffac5a]' },
-                        { id: 4, type: 'exit', title: 'Exit', desc: 'Selling or refinancing.', icon: 'logout', colorClass: 'text-[#bacac5]', borderClass: 'border-[#bacac5]', bgClass: 'bg-[#bacac5]', hoverBorderClass: 'group-hover:border-[#bacac5]' },
+                        {
+                          id: 1, type: 'acquisition', title: 'Acquisition',
+                          desc: 'Find out if the deal is worth doing. Run the numbers before you spend a dollar.',
+                          icon: 'analytics',
+                          color: '#57f1db',
+                        },
+                        {
+                          id: 2, type: 'purchase', title: 'Purchase',
+                          desc: 'You like the deal. Now fund it. Walk through closing, financing, and every cost before the keys change hands.',
+                          icon: 'receipt_long',
+                          color: '#adc6ff',
+                        },
+                        {
+                          id: 3, type: 'hold', title: 'Hold',
+                          desc: 'You own it. Track every carrying cost and renovation dollar in real time — before they sink your return.',
+                          icon: 'construction',
+                          color: '#ffac5a',
+                        },
+                        {
+                          id: 4, type: 'exit', title: 'Exit',
+                          desc: 'Close it out or keep it producing income. This is where the whole lifecycle pays off.',
+                          icon: 'trending_up',
+                          color: '#62fae3',
+                        },
                       ].map((phase) => {
                         const isSelected = formData.startingPhase === phase.id;
                         return (
@@ -727,26 +745,46 @@ export default function ProjectCreationWizard({
                                 updateFormNested('isBackdated', 'yes'); // Always own it if selling
                               }
                             }}
-                            className={`w-full flex items-start gap-5 p-6 rounded-xl text-left focus:outline-none group transition-all duration-200
-                              ${isSelected ? `border border-white/20 bg-white/5 shadow-inner phase-selected` : `border border-white/10 glass-card hover:border-white/20 hover:bg-white/[0.02]`}
-                            `}
-                            style={isSelected ? { borderColor: 'rgba(87, 241, 219, 0.4)', background: 'rgba(87, 241, 219, 0.04)', boxShadow: 'inset 0 0 20px rgba(87, 241, 219, 0.05)' } : {}}
+                            className="w-full flex items-start gap-5 p-5 rounded-xl text-left focus:outline-none group transition-all duration-200"
+                            style={{
+                              background: isSelected
+                                ? `${phase.color}08`
+                                : 'linear-gradient(135deg, rgba(24,33,39,0.6) 0%, rgba(11,20,26,0.8) 100%)',
+                              backdropFilter: 'blur(16px)',
+                              border: `1px solid ${isSelected ? `${phase.color}45` : 'rgba(255,255,255,0.08)'}`,
+                              boxShadow: isSelected ? `0 0 24px -8px ${phase.color}30` : '0 4px 16px rgba(0,0,0,0.2)',
+                            }}
                           >
-                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 border ${phase.colorClass.replace('text-', 'bg-')}/10 ${phase.colorClass.replace('text-', 'border-')}/20`} style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
-                              <span className={`material-symbols-outlined ${phase.colorClass}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                            <div
+                              className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                              style={{ background: `${phase.color}14`, border: `1px solid ${phase.color}28` }}
+                            >
+                              <span
+                                className="material-symbols-outlined text-[22px]"
+                                style={{ color: phase.color, fontVariationSettings: "'FILL' 0" }}
+                              >
                                 {phase.icon}
                               </span>
                             </div>
                             <div className="flex-grow">
-                              <div className="flex justify-between items-center mb-1">
-                                <h3 className={`font-headline-md text-headline-md ${phase.colorClass}`}>
+                              <div className="flex justify-between items-center mb-1.5">
+                                <h3 className="text-[17px] font-semibold leading-snug" style={{ color: phase.color }}>
                                   {phase.title}
                                 </h3>
-                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? phase.borderClass : `border-[#859490] ${phase.hoverBorderClass}`}`}>
-                                  {isSelected && <div className={`w-2.5 h-2.5 rounded-full ${phase.bgClass}`}></div>}
+                                <div
+                                  className="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all"
+                                  style={{
+                                    borderColor: isSelected ? phase.color : 'rgba(133,148,144,0.5)',
+                                  }}
+                                >
+                                  {isSelected && (
+                                    <div className="w-2 h-2 rounded-full" style={{ background: phase.color }} />
+                                  )}
                                 </div>
                               </div>
-                              <p className="font-body-md text-body-md text-[#bacac5] opacity-80">{phase.desc}</p>
+                              <p className="text-sm leading-relaxed" style={{ color: 'rgba(186,202,197,0.75)' }}>
+                                {phase.desc}
+                              </p>
                             </div>
                           </button>
                         );

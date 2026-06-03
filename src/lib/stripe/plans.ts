@@ -51,7 +51,7 @@ export interface PlanConfig {
 
 export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   /**
-   * individual → Stripe product "Investor"
+   * individual → Stripe product "Investor / Monthly" & "Investor / Annual"
    * $59/mo / $499/yr
    */
   individual: {
@@ -68,7 +68,7 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   },
 
   /**
-   * team → Stripe product "Investment Team"
+   * team → Stripe product "Investment Team / Monthly" & "Investment Team / Annual"
    * $99/mo / $999/yr
    */
   team: {
@@ -85,7 +85,7 @@ export const PLAN_CATALOG: Record<PlanId, PlanConfig> = {
   },
 
   /**
-   * vendor → Stripe product "Vendor"
+   * vendor → Stripe product "Vendor / Monthly" & "Vendor (annual)"
    * $39/mo / $390/yr
    */
   vendor: {

@@ -6,11 +6,11 @@ import Link from 'next/link';
 /* ═══════════════════════════════════════════════════════
    HowItWorks — Stitch Obsidian "How It Works" Page
 
-   Four-phase bento grid matching the Stitch design token:
+   Four-phase bento grid — canonical REIL phase names:
      Phase 1 — Acquisition  (#57f1db / primary)
-     Phase 2 — Transaction  (#adc6ff / secondary)
-     Phase 3 — Rehab        (#ffd1aa / tertiary)
-     Phase 4 — Hold/Exit    (#859490 / outline)
+     Phase 2 — Purchase     (#adc6ff / secondary)
+     Phase 3 — Hold         (#ffd1aa / tertiary)
+     Phase 4 — Exit         (#859490 / outline)
 
    Uses glass-card, glass-chip, and luminous-button
    utility classes defined in globals.css.
@@ -27,7 +27,7 @@ const PHASES = [
   },
   {
     phase: 2,
-    title: 'Transaction',
+    title: 'Purchase',
     subtitle: 'Never blow a contingency deadline.',
     body: 'Track escrow deposits, title work, insurance binders, and closing deadlines in one dashboard. Get automated alerts before your earnest money deposit gets hard.',
     icon: 'gavel',
@@ -35,17 +35,17 @@ const PHASES = [
   },
   {
     phase: 3,
-    title: 'Rehab',
-    subtitle: 'Manage contractor draws by milestone.',
-    body: 'Log materials receipts, track change orders, and authorize contractor draws only when milestone checklists are verified. Keep your contingency fund green.',
+    title: 'Hold',
+    subtitle: 'Manage costs and draws by milestone.',
+    body: 'Log materials receipts, track change orders, and authorize contractor draws only when milestone checklists are verified. Watch your margin in real time as costs accumulate.',
     icon: 'hourglass_empty',
     color: 'tertiary',
   },
   {
     phase: 4,
-    title: 'Hold/Exit',
-    subtitle: 'CPA-Ready tax exports on closing.',
-    body: 'Track monthly carrying costs, property valuations, and exit closing disclosures. Generate a single, clean cost-basis export for your accountant at tax time.',
+    title: 'Exit',
+    subtitle: 'CPA-ready exports the day you close.',
+    body: 'Track carrying costs, property valuations, and closing disclosures. Generate a single clean cost-basis export for your accountant — ready at tax time.',
     icon: 'logout',
     color: 'outline',
   },

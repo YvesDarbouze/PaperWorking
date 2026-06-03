@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PaperWorking - Typography &amp; Spacing Style-Guide</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .font-jetbrains {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.01);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#2d363d",
+                        "on-primary-fixed": "#00201c",
+                        "surface-container-highest": "#2d363d",
+                        "primary-fixed-dim": "#3cddc7",
+                        "primary-container": "#2dd4bf",
+                        "surface-dim": "#0b141a",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#293238",
+                        "on-tertiary": "#4b2800",
+                        "secondary-fixed": "#d8e2ff",
+                        "surface-container-low": "#141d23",
+                        "outline": "#859490",
+                        "error": "#ffb4ab",
+                        "on-primary": "#003731",
+                        "secondary": "#adc6ff",
+                        "on-tertiary-container": "#744000",
+                        "inverse-surface": "#dae4ec",
+                        "tertiary": "#ffd1aa",
+                        "on-primary-fixed-variant": "#005047",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-error-container": "#ffdad6",
+                        "background": "#0b141a",
+                        "tertiary-fixed-dim": "#ffb875",
+                        "on-tertiary-fixed-variant": "#6b3b00",
+                        "on-tertiary-fixed": "#2d1600",
+                        "surface-container-lowest": "#060f15",
+                        "on-secondary-container": "#e6ecff",
+                        "on-secondary-fixed": "#001a42",
+                        "on-background": "#dae4ec",
+                        "surface-container": "#182127",
+                        "outline-variant": "#3c4a46",
+                        "on-surface-variant": "#bacac5",
+                        "surface-bright": "#313a41",
+                        "surface-tint": "#3cddc7",
+                        "tertiary-fixed": "#ffdcc0",
+                        "on-surface": "#dae4ec",
+                        "on-primary-container": "#00574d",
+                        "secondary-container": "#0566d9",
+                        "error-container": "#93000a",
+                        "surface": "#0b141a",
+                        "surface-container-high": "#222b32",
+                        "on-secondary": "#002e6a",
+                        "tertiary-container": "#ffac5a",
+                        "primary": "#57f1db",
+                        "primary-fixed": "#62fae3",
+                        "on-error": "#690005",
+                        "inverse-primary": "#006b5f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "gutter-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "gutter-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container/30 selection:text-primary-fixed">
+<!-- Top Navigation (Shell) -->
+<header class="fixed top-0 w-full z-40 bg-surface-container/80 backdrop-blur-xl border-b border-white/10 shadow-none flex items-center justify-between px-gutter-desktop h-20 transition-all duration-300">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary text-2xl">grid_view</span>
+<span class="font-headline-lg text-headline-lg font-bold text-primary tracking-tighter">PaperWorking</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="font-label-md text-label-md text-on-surface-variant">Design System</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer active:scale-95 duration-200">notifications</span>
+</div>
+</header>
+<!-- Navigation Drawer (Shell) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-screen w-64 z-30 pt-24 bg-surface-container-low dark:bg-surface-container-low border-r border-white/10 shadow-2xl flex-col p-stack-md gap-stack-sm transition-all duration-300 ease-in-out">
+<div class="mb-8 px-4 flex flex-col items-start">
+<div class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center mb-3">
+<span class="material-symbols-outlined text-on-surface-variant">person</span>
+</div>
+<div class="font-label-md text-label-md text-on-surface">Investment Lead</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Global Portfolio • Admin</div>
+</div>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Command Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md">Portfolio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-md text-label-md">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">monitoring</span>
+<span class="font-label-md text-label-md">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-secondary-container text-on-secondary-container rounded-lg font-bold transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/30 rounded-lg transition-colors mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 pt-28 pb-20 px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto w-full">
+<header class="mb-stack-lg border-b border-white/5 pb-8">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-2">Typography &amp; Spacing</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Canonical reference for the Obsidian Terminal design system. Ethereal, high-fidelity aesthetic optimized for dense data environments.</p>
+</header>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
+<!-- Typography Section -->
+<section class="lg:col-span-7 flex flex-col gap-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">text_fields</span>
+                    Typography System
+                </h2>
+<div class="glass-panel rounded-xl p-stack-lg">
+<h3 class="font-label-sm text-label-sm text-outline uppercase tracking-widest mb-6">Display Scale (Plus Jakarta Sans)</h3>
+<div class="space-y-8 border-b border-white/5 pb-8 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-baseline">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">headline-xl<br/><span class="text-outline">48px / 700</span></div>
+<div class="md:col-span-3 font-headline-xl text-headline-xl truncate">PaperWorking Terminal</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-baseline">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">headline-lg<br/><span class="text-outline">32px / 700</span></div>
+<div class="md:col-span-3 font-headline-lg text-headline-lg truncate">Portfolio Overview</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-baseline">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">headline-md<br/><span class="text-outline">24px / 600</span></div>
+<div class="md:col-span-3 font-headline-md text-headline-md truncate">Investment Pipeline</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-baseline">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">body-lg<br/><span class="text-outline">18px / 400</span></div>
+<div class="md:col-span-3 font-body-lg text-body-lg text-on-surface-variant">The layout philosophy follows a fluid 12-column grid that emphasizes spaciousness and breathability.</div>
+</div>
+</div>
+<h3 class="font-label-sm text-label-sm text-outline uppercase tracking-widest mb-6">Data &amp; Label Scale (JetBrains Mono &amp; Sans)</h3>
+<div class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">label-md<br/><span class="text-outline">14px / 600 / +0.02em</span></div>
+<div class="md:col-span-3 font-label-md text-label-md uppercase tracking-wider bg-surface-variant/30 inline-block px-3 py-1 rounded w-fit border border-white/5">Metadata Label</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">label-sm<br/><span class="text-outline">12px / 500 / +0.05em</span></div>
+<div class="md:col-span-3 font-label-sm text-label-sm text-primary uppercase tracking-widest">System Status Active</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+<div class="md:col-span-1 font-jetbrains text-xs text-on-surface-variant">Technical Body<br/><span class="text-outline">14px / Mono</span></div>
+<div class="md:col-span-3 font-jetbrains text-sm text-secondary">var asset_value = "$14,204,500.00";</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Spacing Section -->
+<section class="lg:col-span-5 flex flex-col gap-stack-md">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">space_dashboard</span>
+                    Spacing System
+                </h2>
+<div class="glass-panel rounded-xl p-stack-lg h-full">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-6">
+<div class="w-16 h-8 bg-surface-variant/50 border border-white/20 relative flex items-center justify-center">
+<div class="absolute inset-y-0 w-8 bg-primary/20 border-x border-primary/50 flex items-center justify-center">
+<span class="font-jetbrains text-[10px] text-primary">32px</span>
+</div>
+</div>
+<div>
+<div class="font-jetbrains text-sm text-on-surface">gutter-desktop</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Horizontal layout margins</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-surface-variant/50 border border-white/20 relative flex flex-col items-center justify-center">
+<div class="w-8 h-10 bg-secondary/20 border-y border-secondary/50 flex items-center justify-center">
+<span class="font-jetbrains text-[10px] text-secondary">40px</span>
+</div>
+</div>
+<div>
+<div class="font-jetbrains text-sm text-on-surface">stack-lg</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Major section spacing</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-16 h-12 bg-surface-variant/50 border border-white/20 relative flex flex-col items-center justify-center">
+<div class="w-8 h-6 bg-tertiary/20 border-y border-tertiary/50 flex items-center justify-center">
+<span class="font-jetbrains text-[10px] text-tertiary">24px</span>
+</div>
+</div>
+<div>
+<div class="font-jetbrains text-sm text-on-surface">stack-md</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Component grouping</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-16 h-8 bg-surface-variant/50 border border-white/20 relative flex flex-col items-center justify-center">
+<div class="w-8 h-3 bg-error/20 border-y border-error/50 flex items-center justify-center">
+<span class="font-jetbrains text-[10px] text-error">12px</span>
+</div>
+</div>
+<div>
+<div class="font-jetbrains text-sm text-on-surface">stack-sm</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-1">Internal element spacing</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Color Palette Section -->
+<section class="lg:col-span-12 flex flex-col gap-stack-md mt-4">
+<h2 class="font-headline-md text-headline-md text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">palette</span>
+                    Color Palette &amp; Materials
+                </h2>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+<!-- Core Backgrounds -->
+<div class="col-span-2 md:col-span-2 glass-panel rounded-xl overflow-hidden group">
+<div class="h-24 bg-surface-container-lowest w-full"></div>
+<div class="p-4 bg-surface-container-low/50">
+<div class="font-label-md text-label-md text-on-surface mb-1">Obsidian Black</div>
+<div class="font-jetbrains text-xs text-on-surface-variant mb-2">#060f15</div>
+<div class="font-jetbrains text-[10px] text-outline">bg-surface-container-lowest</div>
+</div>
+</div>
+<div class="col-span-2 md:col-span-2 glass-panel rounded-xl overflow-hidden">
+<div class="h-24 bg-surface-dim w-full border-b border-white/5"></div>
+<div class="p-4 bg-surface-container-low/50">
+<div class="font-label-md text-label-md text-on-surface mb-1">Obsidian Slate</div>
+<div class="font-jetbrains text-xs text-on-surface-variant mb-2">#0b141a</div>
+<div class="font-jetbrains text-[10px] text-outline">bg-surface-dim</div>
+</div>
+</div>
+<!-- Primary Accents -->
+<div class="col-span-1 md:col-span-1 glass-panel rounded-xl overflow-hidden relative">
+<div class="absolute inset-0 bg-primary opacity-10 blur-xl"></div>
+<div class="h-20 bg-primary-container w-full border-b border-white/10"></div>
+<div class="p-3 bg-surface-container-low/50 relative z-10">
+<div class="font-label-sm text-label-sm text-on-surface mb-1 truncate">Luminous Teal</div>
+<div class="font-jetbrains text-[10px] text-primary">#2dd4bf</div>
+</div>
+</div>
+<div class="col-span-1 md:col-span-1 glass-panel rounded-xl overflow-hidden relative">
+<div class="absolute inset-0 bg-secondary opacity-10 blur-xl"></div>
+<div class="h-20 bg-secondary w-full border-b border-white/10"></div>
+<div class="p-3 bg-surface-container-low/50 relative z-10">
+<div class="font-label-sm text-label-sm text-on-surface mb-1 truncate">Electric Blue</div>
+<div class="font-jetbrains text-[10px] text-secondary">#adc6ff</div>
+</div>
+</div>
+<div class="col-span-1 md:col-span-1 glass-panel rounded-xl overflow-hidden relative">
+<div class="absolute inset-0 bg-tertiary opacity-10 blur-xl"></div>
+<div class="h-20 bg-tertiary w-full border-b border-white/10"></div>
+<div class="p-3 bg-surface-container-low/50 relative z-10">
+<div class="font-label-sm text-label-sm text-on-surface mb-1 truncate">Gold / Amber</div>
+<div class="font-jetbrains text-[10px] text-tertiary">#ffd1aa</div>
+</div>
+</div>
+<div class="col-span-1 md:col-span-1 glass-panel rounded-xl overflow-hidden relative">
+<div class="absolute inset-0 bg-error opacity-10 blur-xl"></div>
+<div class="h-20 bg-error w-full border-b border-white/10"></div>
+<div class="p-3 bg-surface-container-low/50 relative z-10">
+<div class="font-label-sm text-label-sm text-on-surface mb-1 truncate">Red Alert</div>
+<div class="font-jetbrains text-[10px] text-error">#ffb4ab</div>
+</div>
+</div>
+</div>
+<!-- Glass Material Tokens -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<div class="glass-panel rounded-xl p-stack-md flex items-center justify-between border border-white/10 relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent z-0 pointer-events-none"></div>
+<div class="relative z-10">
+<div class="font-label-md text-label-md text-on-surface mb-1">Glass BG (Backdrop Blur)</div>
+<div class="font-jetbrains text-sm text-on-surface-variant">rgba(255, 255, 255, 0.03)</div>
+</div>
+<div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center relative z-10 backdrop-blur-md">
+<span class="material-symbols-outlined text-white/50">blur_on</span>
+</div>
+</div>
+<div class="glass-panel rounded-xl p-stack-md flex items-center justify-between border-t border-l border-white/20 relative overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+<div class="relative z-10">
+<div class="font-label-md text-label-md text-on-surface mb-1">Glass Border (Inner Glow)</div>
+<div class="font-jetbrains text-sm text-on-surface-variant">rgba(255, 255, 255, 0.08)</div>
+</div>
+<div class="w-12 h-12 rounded flex items-center justify-center relative z-10 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+<span class="material-symbols-outlined text-white/50">border_all</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Phase Colors Section -->
+<section class="lg:col-span-12 flex flex-col gap-stack-md mt-4">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined">timeline</span>
+                    Phase Status Indicators
+                </h2>
+<div class="glass-panel rounded-xl p-stack-lg">
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Acquisition</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/20 text-secondary">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Purchase</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-tertiary/10 border border-tertiary/20 text-tertiary">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Hold</span>
+</div>
+<div class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-variant border border-outline/30 text-on-surface-variant">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Exit</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer (Shell) -->
+<footer class="w-full py-unit-stack-lg bg-surface-container-lowest border-t border-white/5 none flex flex-col md:flex-row justify-between items-center px-gutter-desktop mt-auto md:ml-64 relative z-40">
+<div class="font-label-sm text-label-sm text-on-surface mb-4 md:mb-0">
+            © 2024 PaperWorking Obsidian Terminal
+        </div>
+<div class="flex items-center gap-6">
+<a class="font-label-sm text-label-sm text-outline hover:text-primary opacity-80 hover:opacity-100 transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-primary opacity-80 hover:opacity-100 transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-outline hover:text-primary opacity-80 hover:opacity-100 transition-colors" href="#">Support</a>
+</div>
+</footer>
+</body></html>

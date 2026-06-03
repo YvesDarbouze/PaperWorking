@@ -252,6 +252,9 @@ interface RentalInputs {
   propertyMgmtPercent: number;
   monthlyHOA: number;
   monthlyUtilities: number;
+  percentageOfOwnership: number;
+  priceOfSale: number;
+  investorExpenses: number;
 }
 
 // ── Flip Inputs Type ───────────────────────────────────
@@ -268,6 +271,8 @@ interface FlipInputs {
   monthlyUtilities: number;
   monthlyOther: number;
   costOfSalePercent: number;
+  percentageOfOwnership: number;
+  investorExpenses: number;
 }
 
 // ── Main Component ───────────────────────────────────────
@@ -298,6 +303,7 @@ export default function DealAnalyzer() {
     otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
     monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
     monthlyHOA: 0, monthlyUtilities: 0,
+    percentageOfOwnership: 100, priceOfSale: 550000, investorExpenses: 0,
   });
 
   // ── Flip Mode State ──
@@ -306,6 +312,7 @@ export default function DealAnalyzer() {
     loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
     monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
     monthlyOther: 100, costOfSalePercent: 6.0,
+    percentageOfOwnership: 100, investorExpenses: 0,
   });
 
   // ── Rental step (for stepper visual) ──
@@ -426,7 +433,16 @@ export default function DealAnalyzer() {
     const grm = grossMonthlyIncome > 0 ? r.purchasePrice / (grossMonthlyIncome * 12) : 0;
     const dscr = annualDebtService > 0 ? noi / annualDebtService : 0;
 
-    return { noi, monthlyCashFlow, capRate, coc, grm, dscr, totalCashNeeded, loanAmount, monthlyMortgage };
+    const ownershipRatio = r.percentageOfOwnership / 100;
+    const investorCashFlow = (monthlyCashFlow * ownershipRatio) - r.investorExpenses;
+    
+    // Profit on sale
+    const sellingCosts = r.priceOfSale * 0.06; // Assume 6% cost of sale
+    const remainingLoanBalance = loanAmount; // simplified logic
+    const totalProfitOnSale = r.priceOfSale - sellingCosts - remainingLoanBalance - totalCashNeeded;
+    const investorProfitOnSale = totalProfitOnSale * ownershipRatio;
+
+    return { noi, monthlyCashFlow, capRate, coc, grm, dscr, totalCashNeeded, loanAmount, monthlyMortgage, investorCashFlow, investorProfitOnSale, totalProfitOnSale };
   }, [rental]);
 
   // ═══ FLIP CALCULATIONS ═════════════════════════════════
@@ -444,7 +460,12 @@ export default function DealAnalyzer() {
     const rehabPct = totalCost > 0 ? (f.rehabCost / totalCost) * 100 : 0;
     const holdingPct = totalCost > 0 ? (totalHoldingCost / totalCost) * 100 : 0;
 
-    return { grossProfit, roi, totalCashNeeded, monthlyInterest, totalHoldingCost, purchasePct, rehabPct, holdingPct };
+    const ownershipRatio = f.percentageOfOwnership / 100;
+    const investorGrossProfit = (grossProfit * ownershipRatio) - f.investorExpenses;
+    const investorTotalCashNeeded = totalCashNeeded * ownershipRatio;
+    const investorRoi = investorTotalCashNeeded > 0 ? (investorGrossProfit / investorTotalCashNeeded) * 100 : 0;
+
+    return { grossProfit, roi, totalCashNeeded, monthlyInterest, totalHoldingCost, purchasePct, rehabPct, holdingPct, investorGrossProfit, investorRoi, investorTotalCashNeeded };
   }, [flip]);
 
   // ═══ SAVE AS PROJECT ═══════════════════════════════════
@@ -505,6 +526,7 @@ export default function DealAnalyzer() {
         otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
         monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
         monthlyHOA: 0, monthlyUtilities: 0,
+        percentageOfOwnership: 100, priceOfSale: 550000, investorExpenses: 0,
       });
     } else {
       setFlip({
@@ -512,6 +534,7 @@ export default function DealAnalyzer() {
         loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
         monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
         monthlyOther: 100, costOfSalePercent: 6.0,
+        percentageOfOwnership: 100, investorExpenses: 0,
       });
     }
   };
@@ -652,6 +675,15 @@ export default function DealAnalyzer() {
                   <GlassCurrencyInput label="Utilities /mo" value={rental.monthlyUtilities} onChange={v => setRental(p => ({ ...p, monthlyUtilities: v }))} />
                 </div>
               </AccordionSection>
+
+              {/* Equity & Exit Strategy Group */}
+              <AccordionSection icon="real_estate_agent" title="Equity & Exit Strategy" defaultOpen={false}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <GlassCurrencyInput label="Ownership %" value={rental.percentageOfOwnership} onChange={v => setRental(p => ({ ...p, percentageOfOwnership: v }))} prefix="" suffix="%" isPercentage step="1" />
+                  <GlassCurrencyInput label="Price of Sale (Exit)" value={rental.priceOfSale} onChange={v => setRental(p => ({ ...p, priceOfSale: v }))} />
+                  <GlassCurrencyInput label="Investor Expenses /mo" value={rental.investorExpenses} onChange={v => setRental(p => ({ ...p, investorExpenses: v }))} hint="E.g. Asset Mgmt Fees" />
+                </div>
+              </AccordionSection>
             </div>
           )}
 
@@ -699,6 +731,14 @@ export default function DealAnalyzer() {
                     step="0.5"
                     hint="Typically includes agent commissions and closing fees."
                   />
+                </div>
+              </AccordionSection>
+
+              {/* Equity & Exit Strategy Group */}
+              <AccordionSection icon="real_estate_agent" title="Equity & Exit Strategy" defaultOpen={true}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <GlassCurrencyInput label="Ownership %" value={flip.percentageOfOwnership} onChange={v => setFlip(p => ({ ...p, percentageOfOwnership: v }))} prefix="" suffix="%" isPercentage step="1" />
+                  <GlassCurrencyInput label="Investor Expenses" value={flip.investorExpenses} onChange={v => setFlip(p => ({ ...p, investorExpenses: v }))} hint="E.g. Capital Sourcing Fees" />
                 </div>
               </AccordionSection>
             </div>
@@ -805,6 +845,27 @@ export default function DealAnalyzer() {
                 bandPercent={60}
               />
 
+              {rental.percentageOfOwnership < 100 && (
+                <div className="pt-4 mt-4 border-t border-white/10 space-y-4">
+                  <h4 className="text-[12px] font-bold uppercase tracking-widest text-primary">Your Share ({rental.percentageOfOwnership}%)</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <MetricCard
+                      label="Your Monthly CF"
+                      value={fmtDollar(Math.round(rentalMetrics.investorCashFlow))}
+                      description="Net cash flow after investor expenses."
+                      variant={rentalMetrics.investorCashFlow > 0 ? 'positive' : 'warning'}
+                      bandPercent={Math.min(100, Math.abs(rentalMetrics.investorCashFlow) / 10)}
+                    />
+                    <MetricCard
+                      label="Your Profit on Sale"
+                      value={fmtDollar(Math.round(rentalMetrics.investorProfitOnSale))}
+                      description={`Based on ${fmtDollar(rental.priceOfSale)} exit.`}
+                      variant="positive"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="mt-8 space-y-4">
                 <button
@@ -863,6 +924,24 @@ export default function DealAnalyzer() {
                 description="Sum of monthly costs × period."
                 bandPercent={45}
               />
+
+              {flip.percentageOfOwnership < 100 && (
+                <div className="pt-4 mt-4 border-t border-white/10 space-y-4">
+                  <h4 className="text-[12px] font-bold uppercase tracking-widest text-primary">Your Share ({flip.percentageOfOwnership}%)</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <MetricCard
+                      label="Your Gross Profit"
+                      value={fmtDollar(Math.round(flipMetrics.investorGrossProfit))}
+                      variant={flipMetrics.investorGrossProfit > 0 ? 'positive' : 'warning'}
+                    />
+                    <MetricCard
+                      label="Your ROI"
+                      value={fmtPercent(flipMetrics.investorRoi)}
+                      variant="positive"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Cost Distribution Bar */}
               <div className="glass-panel p-6 rounded-2xl" style={{ border: '1px dashed rgba(60,74,70,0.5)' }}>

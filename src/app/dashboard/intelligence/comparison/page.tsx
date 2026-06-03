@@ -2,10 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
+import { computeNOIMetric } from '@/lib/metrics/computeNOI';
+import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
+import { computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Portfolio Comparison Matrix — Stitch screen b8ceb1c395c2458a979cb8feab4357e1
@@ -32,28 +34,6 @@ interface PropertyMetrics {
   grossRent: number;
 }
 
-const DEMO_PROPERTIES: PropertyMetrics[] = [
-  {
-    id: 'demo-1', name: '124 Elm Street', address: 'Memphis, TN',
-    phase: 'Hold', arv: 385000, purchasePrice: 225000, rehabCost: 65000,
-    noi: 28800, capRate: 7.48, coc: 9.2, ltv: 62, dscr: 1.62, irr: 18.4, occupancy: 100, grossRent: 38400,
-  },
-  {
-    id: 'demo-2', name: '87 Oak Avenue', address: 'Birmingham, AL',
-    phase: 'Acquisition', arv: 310000, purchasePrice: 195000, rehabCost: 42000,
-    noi: 21600, capRate: 6.97, coc: 8.1, ltv: 71, dscr: 1.38, irr: 14.2, occupancy: 94, grossRent: 30000,
-  },
-  {
-    id: 'demo-3', name: '55 Maple Drive', address: 'Kansas City, MO',
-    phase: 'Hold', arv: 275000, purchasePrice: 168000, rehabCost: 38000,
-    noi: 19200, capRate: 6.98, coc: 7.8, ltv: 68, dscr: 1.44, irr: 15.8, occupancy: 100, grossRent: 26400,
-  },
-  {
-    id: 'demo-4', name: '210 Pine Court', address: 'Indianapolis, IN',
-    phase: 'Exit', arv: 420000, purchasePrice: 258000, rehabCost: 72000,
-    noi: 33600, capRate: 8.0, coc: 11.4, ltv: 58, dscr: 1.85, irr: 22.1, occupancy: 100, grossRent: 44400,
-  },
-];
 
 const METRIC_COLS: { key: SortKey; label: string; fmt: (v: number) => string; good: 'high' | 'low' }[] = [
   { key: 'arv',       label: 'ARV',       fmt: (v) => `$${(v / 1000).toFixed(0)}k`, good: 'high' },
@@ -85,21 +65,18 @@ export default function PortfolioComparisonPage() {
   const projects = useProjectStore((s) => s.projects);
   const [sortKey, setSortKey] = useState<SortKey>('irr');
 
-  const isUsingDemoData = projects.length === 0;
-
   const properties: PropertyMetrics[] = useMemo(() => {
-    if (projects.length === 0) return DEMO_PROPERTIES;
+    if (projects.length === 0) return [];
     return projects.map((p) => {
       const f = p.financials ?? {};
       const arv       = f.arv ?? f.purchasePrice ?? 0;
       const loan      = f.loanAmount ?? arv * 0.65;
-      const annualRent= (f.monthlyGrossRent ?? 0) * 12;
-      const annualOpEx= ((f.holdingCostInsurance ?? 0) + (f.holdingCostTaxes ?? 0) + (f.holdingCostUtilities ?? 0)) * 12;
-      const noi       = Math.max(0, annualRent - annualOpEx);
-      const annualDebt= (f.longTermMortgagePayment ?? 0) * 12;
-      const cost      = (f.purchasePrice ?? 0) + (f.rehabBudget ?? 0);
-      const equity    = Math.max(0, arv - loan);
-      const netCF     = noi - annualDebt;
+      const projectShape = { financials: f, currentPhase: p.currentPhase };
+      const noi      = Math.max(0, computeNOIMetric(projectShape).value ?? 0);
+      const netCF    = computeCashFlowMetric(projectShape).value ?? 0;
+      const equity     = Math.max(0, arv - loan);
+      const annualRent = (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? f.projectedRent ?? 0) * 12;
+      const annualDebt = computeAnnualDebtService(loan, f.loanInterestRate ?? 0, (f.loanTermYears ?? 30) * 12);
 
       const phase = p.phase === 'acquisition' ? 'Acquisition'
                   : p.phase === 'exit'        ? 'Exit'
@@ -179,9 +156,28 @@ export default function PortfolioComparisonPage() {
         ))}
       </div>
 
-      <SampleDataBanner show={isUsingDemoData} />
+      {/* ── Empty state ── */}
+      {properties.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2">
+            <span className="material-symbols-outlined text-3xl text-slate-500 select-none">compare</span>
+          </div>
+          <h3 className="text-lg font-bold text-white">No projects to compare yet</h3>
+          <p className="text-sm text-slate-400 max-w-sm">
+            Add at least two properties to your pipeline to see a side-by-side comparison of key metrics across your portfolio.
+          </p>
+          <Link
+            href="/dashboard/projects/new"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
+          >
+            <span className="material-symbols-outlined text-base select-none">add</span>
+            Add Your First Project
+          </Link>
+        </div>
+      )}
 
-      {/* ── Comparison Table ── */}
+      {/* ── Comparison Table — real data only ── */}
+      {properties.length > 0 && (
       <div className="rounded-2xl border border-white/10 overflow-x-auto" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <table className="w-full min-w-[900px] text-sm">
           <thead>
@@ -267,6 +263,7 @@ export default function PortfolioComparisonPage() {
           </tfoot>
         </table>
       </div>
+      )}
 
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">

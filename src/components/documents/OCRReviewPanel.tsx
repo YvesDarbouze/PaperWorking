@@ -115,6 +115,7 @@ export function OCRReviewPanel({
     )
   );
   const [isReprocessing, setIsReprocessing] = useState(false);
+  const [hardened, setHardened] = useState(false);
 
   const fieldEntries = Object.entries(extractedFields);
   const totalFields = fieldEntries.length;
@@ -139,6 +140,17 @@ export function OCRReviewPanel({
     onBulkConfirm(docId, bulkFields);
     toast.success(`${greenFields.length} high-confidence fields confirmed`);
   }, [docId, greenFields, onBulkConfirm]);
+
+  const handleHarden = useCallback(() => {
+    const allFields: Record<string, any> = {};
+    for (const [name, field] of fieldEntries) {
+      allFields[name] = field.value;
+    }
+    setConfirmedSet(new Set(fieldEntries.map(([k]) => k)));
+    onBulkConfirm(docId, allFields);
+    setHardened(true);
+    toast.success('Project hardened — all fields confirmed');
+  }, [docId, fieldEntries, onBulkConfirm]);
 
   const handleReprocess = useCallback(async () => {
     setIsReprocessing(true);
@@ -251,18 +263,34 @@ export function OCRReviewPanel({
               {documentName}
             </p>
             <div className="flex items-center gap-2">
-              {greenFields.length > 0 && (
-                <button
-                  onClick={handleBulkConfirm}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20 transition active:scale-95"
-                >
-                  <Check className="w-3 h-3" />
-                  Confirm all high-confidence ({greenFields.length})
-                </button>
+              {hardened ? (
+                <span className="hardened-badge inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600">
+                  <CheckCircle className="w-3 h-3" />
+                  Project Hardened
+                </span>
+              ) : (
+                <>
+                  {greenFields.length > 0 && (
+                    <button
+                      onClick={handleBulkConfirm}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/20 transition active:scale-95"
+                    >
+                      <Check className="w-3 h-3" />
+                      Confirm all high-confidence ({greenFields.length})
+                    </button>
+                  )}
+                  <button
+                    onClick={handleHarden}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-semibold rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition active:scale-95"
+                  >
+                    <CheckCircle className="w-3 h-3" />
+                    Confirm &amp; Harden Project
+                  </button>
+                </>
               )}
               <button
                 onClick={handleReprocess}
-                disabled={isReprocessing}
+                disabled={isReprocessing || hardened}
                 className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-medium text-text-secondary hover:text-text-primary rounded-full border border-border-accent/40 hover:border-gray-400 transition disabled:opacity-40"
               >
                 {isReprocessing ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}

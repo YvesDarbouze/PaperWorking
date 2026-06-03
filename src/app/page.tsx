@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
 import HeroDashboard from '@/components/landing/HeroDashboard';
 import LandingFooter from '@/components/landing/LandingFooter';
+import LandingNews from '@/components/landing/LandingNews';
 import PlatformOverview from '@/components/landing/PlatformOverview';
 import TestimonialSlider from '@/components/landing/TestimonialSlider';
 import FinalCTA from '@/components/landing/FinalCTA';
@@ -50,16 +53,23 @@ function SuccessModal() {
           </svg>
         </div>
         
-        <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">Welcome to PaperWorking</h2>
+        <h2 className="text-2xl font-bold text-on-surface mb-3 tracking-tight">Your 14-Day Trial is Ready</h2>
         <p className="text-on-surface-variant mb-8 text-sm leading-relaxed">
-          Your 14-day free trial is active. Check your email for login instructions and next steps.
+          Welcome to the future of real estate investing. Your workspace is provisioned and ready for your first deal.
         </p>
-        
+
+        <Link
+          href="/dashboard"
+          className="luminous-button w-full flex items-center justify-center gap-2 py-3 rounded-lg font-label-md text-label-md"
+        >
+          <span>Enter My Command Center</span>
+          <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </Link>
         <button
           onClick={() => setShow(false)}
-          className="luminous-button w-full"
+          className="mt-3 w-full text-sm text-on-surface-variant/60 hover:text-on-surface-variant transition-colors"
         >
-          <span>Get Started</span>
+          Close
         </button>
       </div>
     </div>
@@ -67,8 +77,15 @@ function SuccessModal() {
 }
 
 export default function LandingPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const router = useRouter();
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
 
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
@@ -162,7 +179,9 @@ export default function LandingPage() {
         {/* ── Pricing ── */}
         <PricingSection onSelectPlan={handleSelectPlan} />
 
-        {/* ── How It Works link anchors / styling fallback support ── */}
+        {/* ── News / Product Updates ── */}
+        <LandingNews />
+
         <LandingFooter />
       </div>
 

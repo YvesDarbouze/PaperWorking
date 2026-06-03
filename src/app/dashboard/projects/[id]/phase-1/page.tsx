@@ -148,6 +148,53 @@ export default function Phase1WorkspacePage() {
   const [investors, setInvestors]     = useState<Investor[]>([]);
   const [postingToMarketplace, setPostingToMarketplace] = useState(false);
 
+  // ── Syndicate Invite Modal ────────────────────────────
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteForm, setInviteForm] = useState({ name: '', email: '', equityPct: '', amount: '' });
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+  const [inviteSuccess, setInviteSuccess] = useState(false);
+
+  const handleSendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!project || !user) return;
+    setInviteSending(true);
+    setInviteError(null);
+    try {
+      const res = await fetch('/api/invitations/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId:             project.id,
+          dealName:              project.name || project.address || 'Deal',
+          email:                 inviteForm.email.trim(),
+          name:                  inviteForm.name.trim(),
+          proposedEquityPercent: inviteForm.equityPct ? parseFloat(inviteForm.equityPct) : undefined,
+          proposedAmount:        inviteForm.amount    ? parseFloat(inviteForm.amount.replace(/[^0-9.]/g, '')) * 100 : undefined,
+          invitedByUid:          user.uid,
+          invitedByName:         user.displayName || user.email || 'Investor',
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to send invitation');
+      }
+      setInviteSuccess(true);
+      setInviteForm({ name: '', email: '', equityPct: '', amount: '' });
+    } catch (err: any) {
+      setInviteError(err.message);
+    } finally {
+      setInviteSending(false);
+    }
+  };
+
+  const closeInviteModal = () => {
+    setShowInviteModal(false);
+    setInviteSuccess(false);
+    setInviteError(null);
+    setInviteForm({ name: '', email: '', equityPct: '', amount: '' });
+  };
+
   const handlePostToMarketplace = async () => {
     if (!project) return;
     setPostingToMarketplace(true);
@@ -300,7 +347,10 @@ export default function Phase1WorkspacePage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const merged = { ...(project.financials ?? {}), ...toFinancials(answers) } as any;
     await projectsService.updateProject(project.id, { financials: merged });
-    refresh();
+    // Await refresh so project.financials is current before the next step merges.
+    // Without this, each step starts from stale project.financials and silently
+    // overwrites all previously-saved steps with its own partial write.
+    await refresh();
   }
 
   async function handleTargetSave(updates: any) {
@@ -394,7 +444,11 @@ export default function Phase1WorkspacePage() {
   }
 
   /* Called when the conversational form's final step is completed */
-  async function handleFormComplete(_answers: FormAnswers) {
+  async function handleFormComplete(answers: FormAnswers) {
+    // Persist the final step's answers before advancing — onStepSave fires first
+    // but this guarantees the last set of inputs is written even if that fires in
+    // a different order or is retried.
+    await handleStepSave(answers);
     await handleAdvanceToPhase2();
   }
 
@@ -467,6 +521,103 @@ export default function Phase1WorkspacePage() {
 
   return (
     <div className="min-h-screen bg-[#0b141a] relative">
+
+      {/* ── Syndicate Investor Invite Modal ── */}
+      {showInviteModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-[#0b141a] border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white">Invite Syndicate Investor</h2>
+              <button onClick={closeInviteModal} className="text-[#bacac5] hover:text-white transition-colors p-1">
+                <span className="material-symbols-outlined text-xl select-none">close</span>
+              </button>
+            </div>
+
+            {inviteSuccess ? (
+              <div className="text-center space-y-4 py-4">
+                <span className="material-symbols-outlined text-4xl text-[#57f1db] select-none">check_circle</span>
+                <p className="text-white font-semibold">Invitation sent!</p>
+                <p className="text-sm text-[#bacac5]">They'll receive an email with a link to review the deal and respond.</p>
+                <button onClick={closeInviteModal} className="w-full py-3 bg-[#57f1db] text-[#003731] font-bold rounded-lg text-sm">
+                  Done
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSendInvite} className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="col-span-2 space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Full Name *</label>
+                    <input
+                      required
+                      type="text"
+                      value={inviteForm.name}
+                      onChange={(e) => setInviteForm(p => ({ ...p, name: e.target.value }))}
+                      placeholder="Jane Smith"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                    />
+                  </div>
+                  <div className="col-span-2 space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Email Address *</label>
+                    <input
+                      required
+                      type="email"
+                      value={inviteForm.email}
+                      onChange={(e) => setInviteForm(p => ({ ...p, email: e.target.value }))}
+                      placeholder="investor@example.com"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Equity % (optional)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      value={inviteForm.equityPct}
+                      onChange={(e) => setInviteForm(p => ({ ...p, equityPct: e.target.value }))}
+                      placeholder="e.g. 15"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Amount $ (optional)</label>
+                    <input
+                      type="text"
+                      value={inviteForm.amount}
+                      onChange={(e) => setInviteForm(p => ({ ...p, amount: e.target.value }))}
+                      placeholder="e.g. 50000"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {inviteError && (
+                  <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-2">{inviteError}</p>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeInviteModal}
+                    className="flex-1 py-3 border border-white/10 text-[#bacac5] text-sm font-semibold rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={inviteSending}
+                    className="flex-1 py-3 bg-[#57f1db] text-[#003731] text-sm font-bold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {inviteSending && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {inviteSending ? 'Sending…' : 'Send Invite'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -709,7 +860,10 @@ export default function Phase1WorkspacePage() {
                     onChange={setInvestors}
                   />
                   <div className="flex flex-col gap-2">
-                    <button className="w-full py-2.5 bg-[#57f1db] text-[#003731] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg luminous-glow active:scale-[0.98] transition-all">
+                    <button
+                      onClick={() => setShowInviteModal(true)}
+                      className="w-full py-2.5 bg-[#57f1db] text-[#003731] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg luminous-glow active:scale-[0.98] transition-all"
+                    >
                       Invite Syndicate Investors
                     </button>
                     <button 

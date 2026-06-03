@@ -27,12 +27,13 @@ export function computeGRMMetric(project: GRMProjectInput): MetricResult {
   const fin = project.financials;
   const missing: string[] = [];
 
-  // GRM uses propertyValue (which deriveAllMetrics resolves as currentPropertyValue ?? ARV ?? purchasePrice)
+  // GRM = Purchase Price ÷ Gross Annual Rent (PRD §4.2.2)
+  // Uses acquisition cost, not ARV — ARV is the exit value, not the entry price.
   const propertyValue =
-    num(fin?.estimatedARV) ??
     num(fin?.purchasePrice) ??
     num(fin?.targetPrice) ??
-    num(fin?.targetPurchasePrice);
+    num(fin?.targetPurchasePrice) ??
+    num(fin?.estimatedARV);
 
   if (propertyValue === undefined || propertyValue === 0) {
     missing.push('financials.purchasePrice');

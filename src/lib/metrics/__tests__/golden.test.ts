@@ -111,8 +111,8 @@ describe('Golden Test — All 10 Metrics Against Seed Project', () => {
     expect(result.state).toBe('projected');
     expect(result.value).not.toBeNull();
     expect(result.inputsMissing).toHaveLength(0);
-    // Explicitly assert GRM is 14.96 based on $350k ARV valuation
-    expect(result.value).toBeCloseTo(14.96, 2);
+    // GRM = Purchase Price ÷ Gross Annual Rent = $279,000 ÷ $23,400 = 11.923 (PRD §4.2.2: 11.9)
+    expect(result.value).toBeCloseTo(11.923, 1);
   });
 
   test('D6 DSCR matches deriveAllMetrics', () => {

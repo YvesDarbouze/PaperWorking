@@ -90,12 +90,12 @@ export default function TaxDashboardPage() {
   // Compute previews based on selected projects & tax year
   const taxData = useMemo(() => {
     const selectedProjects = activeProjects.filter((p) => selectedProjectIds.includes(p.id));
-    
+
     const previews = selectedProjects.map((p) => {
       const ledgers = ledgerItemsMap[p.id] || [];
       return computeScheduleE(p, ledgers, taxYear);
     });
-    
+
     const plReports = selectedProjects.map((p) => {
       const ledgers = ledgerItemsMap[p.id] || [];
       return computeProjectProfitAndLoss(p, ledgers, taxYear);
@@ -104,12 +104,29 @@ export default function TaxDashboardPage() {
     const aggregatedSchedE = aggregateScheduleE(previews, taxYear);
     const aggregatedPL = aggregatePortfolioProfitAndLoss(plReports, taxYear);
 
+    // Detect projects missing data required for a complete report
+    const incompleteProjects = selectedProjects
+      .map((p, i) => {
+        const missing: string[] = [];
+        const f = p.financials ?? {};
+        if (!f.acquisitionDate) missing.push('Acquisition date');
+        if (!f.purchasePrice)   missing.push('Purchase price');
+        if (!p.address)         missing.push('Property address');
+        // activeMonths === 0 means the date range produced no overlap
+        if (previews[i]?.activeMonths === 0 && f.acquisitionDate) {
+          missing.push(`No activity in ${taxYear}`);
+        }
+        return missing.length > 0 ? { name: p.name || p.address || p.id, missing } : null;
+      })
+      .filter(Boolean) as { name: string; missing: string[] }[];
+
     return {
       previews,
       aggregatedSchedE,
       plReports,
       aggregatedPL,
-      hasData: selectedProjects.length > 0
+      hasData: selectedProjects.length > 0,
+      incompleteProjects,
     };
   }, [activeProjects, selectedProjectIds, ledgerItemsMap, taxYear]);
 
@@ -200,7 +217,7 @@ export default function TaxDashboardPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ taxYear, projectIds: selectedProjectIds }),
+        body: JSON.stringify({ taxYear, projectIds: selectedProjectIds, cpaEmail: cpaEmail.trim() || undefined }),
       });
 
       if (!response.ok) {
@@ -416,6 +433,29 @@ export default function TaxDashboardPage() {
                 <div className="py-12 text-center text-xs text-slate-500">
                   Select one or more properties in the sidebar to load the Schedule E preview.
                 </div>
+              ) : taxData.incompleteProjects.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-5 py-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <span className="material-symbols-outlined text-amber-400 text-xl shrink-0 mt-0.5 select-none">warning</span>
+                      <div>
+                        <p className="text-sm font-semibold text-amber-300">Incomplete project data — partial report only</p>
+                        <p className="text-xs text-amber-300/70 mt-0.5">
+                          The following properties are missing required fields. Fill them in on the project workspace to generate a complete Schedule E.
+                        </p>
+                      </div>
+                    </div>
+                    <ul className="space-y-2 pl-9">
+                      {taxData.incompleteProjects.map((proj) => (
+                        <li key={proj.name} className="text-xs text-amber-200/80">
+                          <span className="font-semibold">{proj.name}</span>
+                          {' — missing: '}
+                          <span className="text-amber-300">{proj.missing.join(', ')}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               ) : (
                 <div className="overflow-x-auto border border-white/5 rounded-xl">
                   <table className="w-full text-xs text-left min-w-[800px]">
@@ -617,6 +657,21 @@ export default function TaxDashboardPage() {
                     </div>
                   </div>
 
+                  <div className="space-y-1">
+                    <label htmlFor="cpaEmail" className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                      CPA Email (optional)
+                    </label>
+                    <input
+                      id="cpaEmail"
+                      name="cpaEmail"
+                      type="email"
+                      value={cpaEmail}
+                      onChange={(e) => setCpaEmail(e.target.value)}
+                      placeholder="accountant@firm.com"
+                      className="w-full text-sm text-white bg-white/5 border border-white/10 px-3 py-2 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                    />
+                  </div>
+
                   <button
                     type="submit"
                     disabled={generatingShare || selectedProjectIds.length === 0}
@@ -630,7 +685,7 @@ export default function TaxDashboardPage() {
                     ) : (
                       <>
                         <Share2 className="w-3.5 h-3.5" />
-                        Generate Share Link
+                        Generate Link
                       </>
                     )}
                   </button>

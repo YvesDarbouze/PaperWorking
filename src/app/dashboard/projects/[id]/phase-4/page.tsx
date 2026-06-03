@@ -279,8 +279,68 @@ export default function Phase4WorkspacePage() {
   };
 
   const handleGenerateTaxReport = () => {
-    if (!taxEstimate) return;
-    toast.success('Tax report generated — check your documents vault.');
+    if (!taxEstimate || !project) return;
+
+    const fin = project.financials ?? {};
+    const autopsyData = computeAutopsyMetrics(project);
+    const addr = project.address || project.name || 'Unknown Property';
+    const taxYear = fin.acquisitionDate
+      ? new Date(fin.acquisitionDate as any).getFullYear() + 1
+      : new Date().getFullYear();
+
+    // Build Schedule E — Supplemental Income and Loss (real estate disposition)
+    const rows: string[][] = [
+      ['PaperWorking — Schedule E Summary'],
+      [`Generated: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`],
+      [`Tax Year: ${taxYear}`],
+      [],
+      ['PROPERTY INFORMATION'],
+      ['Address', addr],
+      ['Project ID', project.id],
+      ['Holding Period', `${taxEstimate.holdingPeriodDays} days`],
+      ['Capital Gain Type', taxEstimate.isLongTerm ? 'Long-Term (>365 days)' : 'Short-Term (≤365 days)'],
+      [],
+      ['COST BASIS SCHEDULE'],
+      ['Purchase Price', `$${(autopsyData.purchasePrice || 0).toLocaleString()}`],
+      ['Acquisition / Closing Costs', `$${(autopsyData.acquisitionCosts || 0).toLocaleString()}`],
+      ['Rehab / Capital Improvements', `$${(autopsyData.actualRehabCost || autopsyData.projectedRehabCost || 0).toLocaleString()}`],
+      ['Holding Costs (taxes, insurance, etc.)', `$${(autopsyData.holdingCosts || 0).toLocaleString()}`],
+      ['Total Adjusted Cost Basis', `$${Math.round(taxEstimate.costBasis).toLocaleString()}`],
+      [],
+      ['DISPOSITION'],
+      ['Gross Sale Price', `$${Math.round(autopsyData.grossSalePrice || 0).toLocaleString()}`],
+      ['Selling Costs (commissions, closing)', `$${Math.round((autopsyData.grossSalePrice || 0) - (taxEstimate.netProceeds || 0)).toLocaleString()}`],
+      ['Net Proceeds', `$${Math.round(taxEstimate.netProceeds).toLocaleString()}`],
+      [],
+      ['CAPITAL GAIN / (LOSS)'],
+      ['Net Proceeds', `$${Math.round(taxEstimate.netProceeds).toLocaleString()}`],
+      ['Less: Adjusted Cost Basis', `($${Math.round(taxEstimate.costBasis).toLocaleString()})`],
+      ['Realized Capital Gain', `$${Math.round(taxEstimate.capitalGain).toLocaleString()}`],
+      [],
+      ['TAX ESTIMATE'],
+      ['Applicable Tax Rate', `${taxEstimate.estimatedTaxRate}%`],
+      ['Estimated Tax Liability', `$${Math.round(taxEstimate.estimatedTaxLiability).toLocaleString()}`],
+      ['Net After Estimated Tax', `$${Math.round(taxEstimate.netAfterTax).toLocaleString()}`],
+      [],
+      ['DISCLAIMER'],
+      ['This report is an estimate only. Consult a licensed CPA or tax advisor before filing.'],
+      ['Depreciation recapture (25%) and state taxes are not included in this estimate.'],
+    ];
+
+    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ScheduleE_${addr.replace(/[^a-zA-Z0-9]/g, '_')}_${taxYear}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      a.remove();
+      URL.revokeObjectURL(url);
+    }, 100);
+
+    toast.success('Schedule E downloaded — share with your CPA.');
   };
 
   /* ── Format helpers ── */
@@ -715,7 +775,6 @@ export default function Phase4WorkspacePage() {
               {/* Generate Tax Report CTA (Stitch: full-width button) */}
               <button
                 onClick={handleGenerateTaxReport}
-                disabled={project.locked}
                 className="w-full py-3.5 rounded-xl border border-white/20 text-[#dae4ec] font-semibold text-[16px] leading-[24px] hover:bg-white/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40"
               >
                 <span className="material-symbols-outlined">request_quote</span>

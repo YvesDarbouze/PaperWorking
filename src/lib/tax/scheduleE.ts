@@ -202,7 +202,7 @@ export function computeScheduleE(
   targetItems.forEach(item => {
     const desc = (item.description || '').toLowerCase();
     const cat = (item.category || '').toLowerCase();
-    const amount = item.amount;
+    const amount = item.amount ?? 0;
     
     // Auto-map based on keywords and categories
     if (desc.includes('advertis') || desc.includes('marketing') || desc.includes('promo')) {
@@ -266,8 +266,8 @@ export function computeScheduleE(
     
   result.netIncome = result.grossRents - result.totalExpenses;
   
-  // Format to standard 2-decimal numbers
-  const round = (val: number) => Math.round(val * 100) / 100;
+  // Format to standard 2-decimal numbers — NaN/Infinity → 0 so nulls in source data never crash callers
+  const round = (val: number) => (isNaN(val) || !isFinite(val)) ? 0 : Math.round(val * 100) / 100;
   result.grossRents = round(result.grossRents);
   result.advertising = round(result.advertising);
   result.autoTravel = round(result.autoTravel);

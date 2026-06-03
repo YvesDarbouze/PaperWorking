@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -14,6 +15,12 @@ export function Sidebar() {
   const { user, profile, loading: authLoading } = useAuth();
   const { activeTenantId, switchTenant } = useTenant();
   const { unreadTotal } = useNotification();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleNavClick = (e: React.MouseEvent, itemHref: string, itemName: string) => {
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -95,55 +102,43 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               onClick={(e) => handleNavClick(e, item.href, item.name)}
-              className="group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative"
+              className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
                 background: isActive
-                  ? 'linear-gradient(90deg, rgba(45,212,191,0.12) 0%, rgba(45,212,191,0.04) 100%)'
+                  ? 'rgba(45, 212, 191, 0.10)'
                   : 'transparent',
-                color: isActive
-                  ? 'var(--color-primary)'
-                  : 'rgba(218,228,236,0.55)',
+                color: isActive ? '#62fae3' : 'rgba(186, 202, 197, 0.7)',
+                borderRight: isActive ? '4px solid #62fae3' : '4px solid transparent',
               }}
             >
-              {/* Luminous left indicator */}
-              {isActive && (
-                <div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-                  style={{
-                    background: 'var(--color-primary)',
-                    boxShadow: '0 0 12px 2px rgba(45,212,191,0.4)',
-                  }}
-                />
-              )}
-
               <span
-                className="material-symbols-outlined text-[20px] transition-all duration-200 group-hover:scale-110"
+                className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? 'var(--color-primary)' : undefined,
+                  color: isActive ? '#62fae3' : undefined,
                 }}
               >
                 {item.icon}
               </span>
 
               <span
-                className="text-sm transition-colors duration-200"
+                className="text-sm transition-colors duration-300 group-hover:translate-x-0.5"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? 'var(--color-primary)' : undefined,
-                  letterSpacing: isActive ? '-0.01em' : '0',
+                  color: isActive ? '#62fae3' : undefined,
+                  letterSpacing: '-0.01em',
                 }}
               >
                 {item.name}
               </span>
 
               {/* Inbox badge with pulse */}
-              {item.name === "Inbox" && unreadTotal > 0 && (
+              {item.name === "Inbox" && mounted && unreadTotal > 0 && (
                 <span
                   className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 h-5 flex items-center justify-center relative"
                   style={{
                     background: 'var(--color-primary)',
-                    color: '#0b141a',
+                    color: '#003731',
                   }}
                 >
                   {unreadTotal > 9 ? "9+" : unreadTotal}
@@ -154,11 +149,11 @@ export function Sidebar() {
                 </span>
               )}
 
-              {/* Hover glow */}
+              {/* Hover bg */}
               {!isActive && (
                 <div
                   className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-                  style={{ background: 'rgba(255,255,255,0.03)' }}
+                  style={{ background: 'rgba(255,255,255,0.04)' }}
                 />
               )}
             </Link>
@@ -186,39 +181,28 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               onClick={(e) => handleNavClick(e, item.href, item.name)}
-              className="group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative"
+              className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
-                background: isActive
-                  ? 'linear-gradient(90deg, rgba(45,212,191,0.12) 0%, rgba(45,212,191,0.04) 100%)'
-                  : 'transparent',
-                color: isActive
-                  ? 'var(--color-primary)'
-                  : 'rgba(218,228,236,0.55)',
+                background: isActive ? 'rgba(45, 212, 191, 0.10)' : 'transparent',
+                color: isActive ? '#62fae3' : 'rgba(186, 202, 197, 0.7)',
+                borderRight: isActive ? '4px solid #62fae3' : '4px solid transparent',
               }}
             >
-              {isActive && (
-                <div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-                  style={{
-                    background: 'var(--color-primary)',
-                    boxShadow: '0 0 12px 2px rgba(45,212,191,0.4)',
-                  }}
-                />
-              )}
               <span
-                className="material-symbols-outlined text-[20px] transition-all duration-200 group-hover:scale-110"
+                className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? 'var(--color-primary)' : undefined,
+                  color: isActive ? '#62fae3' : undefined,
                 }}
               >
                 {item.icon}
               </span>
               <span
-                className="text-sm transition-colors duration-200"
+                className="text-sm transition-colors duration-300"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? 'var(--color-primary)' : undefined,
+                  color: isActive ? '#62fae3' : undefined,
+                  letterSpacing: '-0.01em',
                 }}
               >
                 {item.name}
@@ -226,7 +210,7 @@ export function Sidebar() {
               {!isActive && (
                 <div
                   className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-                  style={{ background: 'rgba(255,255,255,0.03)' }}
+                  style={{ background: 'rgba(255,255,255,0.04)' }}
                 />
               )}
             </Link>
@@ -235,7 +219,7 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom Area: Workspace Switcher and Profile Menu */}
-      {authLoading || !user || !profile ? (
+      {!mounted || authLoading || !user || !profile ? (
         <div className="mt-auto pt-4 space-y-3 px-3 pb-4 animate-pulse" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
           <div className="h-10 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }} />
           <div className="h-14 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }} />

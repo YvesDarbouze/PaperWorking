@@ -135,6 +135,16 @@ function LoginPageInner() {
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
   const [loginMode, setLoginMode]             = useState<'password' | 'magic-link'>('password');
   const [isSignUp, setIsSignUp]               = useState(urlMode === 'signup');
+  const signupStartedFiredRef = useRef(false);
+  useEffect(() => {
+    if (isSignUp && !signupStartedFiredRef.current) {
+      signupStartedFiredRef.current = true;
+      try {
+        const ph = (window as any).posthog;
+        if (ph?.capture) ph.capture('signup_started', { source: urlMode === 'signup' ? 'direct' : 'toggle' });
+      } catch { /* non-fatal */ }
+    }
+  }, [isSignUp, urlMode]);
   const [magicLinkSent, setMagicLinkSent]     = useState(false);
   const [magicEmail, setMagicEmail]           = useState('');
 

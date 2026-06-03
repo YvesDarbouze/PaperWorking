@@ -108,7 +108,7 @@ export function OCRConfirmField({
           </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600">
+          <span className="hardened-badge inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600">
             <Check className="w-3 h-3" />
             Confirmed from OCR
           </span>

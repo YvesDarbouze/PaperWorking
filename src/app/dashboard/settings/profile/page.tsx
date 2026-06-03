@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
+import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Profile & Security Settings (Luminous Glass Terminal)
@@ -106,6 +107,57 @@ export default function ProfileSettingsPage() {
   // ─── Active Sessions State ────────────────────────────
   const [revoking, setRevoking] = useState(false);
   const [revokeSuccess, setRevokeSuccess] = useState(false);
+
+  // ─── GDPR Deletion State ──────────────────────────────
+  const [deleting, setDeleting]           = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const deletionScheduledAt = profile?.deletionScheduledAt;
+  const deletionDate = deletionScheduledAt
+    ? (typeof (deletionScheduledAt as any).toDate === 'function'
+        ? (deletionScheduledAt as any).toDate()
+        : new Date(deletionScheduledAt as any))
+    : null;
+  const isDeletionPending = !!deletionDate;
+
+  const handleRequestErasure = async () => {
+    if (!user) return;
+    setDeleting(true);
+    const tid = toast.loading('Scheduling account deletion…');
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/account/data/delete', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to schedule deletion');
+      toast.success('Account deletion scheduled. 24-hour grace period active.', { id: tid });
+      setShowDeleteConfirm(false);
+    } catch (e: any) {
+      toast.error(`Failed: ${e.message}`, { id: tid });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleCancelDeletion = async () => {
+    if (!user) return;
+    setDeleting(true);
+    const tid = toast.loading('Cancelling deletion request…');
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/account/data/delete', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to cancel deletion');
+      toast.success('Account deletion request cancelled.', { id: tid });
+    } catch (e: any) {
+      toast.error(`Failed: ${e.message}`, { id: tid });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleRevokeSessions = async () => {
     if (!user) return;
@@ -476,6 +528,82 @@ export default function ProfileSettingsPage() {
             </p>
           )}
         </section>
+
+        {/* ════════════════════════════════════════════════
+            5 · GDPR DATA ERASURE (col-span-12)
+            ════════════════════════════════════════════════ */}
+        <section className="col-span-12 glass-card rounded-2xl p-8 border border-red-500/20 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/5 rounded-full blur-[60px] -z-10 pointer-events-none translate-x-1/2 -translate-y-1/2" />
+
+          <div className="flex items-center gap-3 mb-2">
+            <span className="material-symbols-outlined text-red-400 text-xl select-none">delete_forever</span>
+            <h4 className="text-2xl font-bold text-pw-black">Data Erasure</h4>
+          </div>
+          <p className="text-sm text-pw-muted mb-6 leading-relaxed max-w-2xl">
+            Permanently delete your PaperWorking account, projects, documents, and profile data. A 24-hour grace window is applied before the purge runs. Legal audit logs are retained for 7 years for compliance.
+          </p>
+
+          {/* Grace-period active banner */}
+          {isDeletionPending && (
+            <div className="mb-6 p-4 rounded-xl bg-amber-950/40 border border-amber-800/30 flex items-start gap-3">
+              <span className="material-symbols-outlined text-amber-400 text-xl shrink-0 mt-0.5 select-none">warning</span>
+              <div className="space-y-2 flex-1">
+                <p className="text-sm font-semibold text-amber-300">
+                  Deletion scheduled for {deletionDate?.toLocaleString() ?? '24 hours from now'}.
+                </p>
+                <p className="text-xs text-amber-300/80">All features remain active during this window. You can cancel below.</p>
+                <button
+                  onClick={handleCancelDeletion}
+                  disabled={deleting}
+                  className="mt-1 px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 text-black hover:bg-amber-400 transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                >
+                  {deleting && <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>}
+                  Cancel Deletion Request
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Two-step confirmation flow */}
+          {!isDeletionPending && !showDeleteConfirm && (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="flex items-center gap-2 px-5 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-bold hover:bg-red-500/20 transition-all cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[18px] select-none">delete_forever</span>
+              Request Data Erasure (GDPR)
+            </button>
+          )}
+
+          {!isDeletionPending && showDeleteConfirm && (
+            <div
+              data-testid="delete-confirm-panel"
+              className="p-5 rounded-xl bg-red-950/40 border border-red-500/30 space-y-4"
+            >
+              <p className="text-sm font-semibold text-red-300">
+                Are you sure? This schedules permanent deletion of your account after a 24-hour grace period.
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleRequestErasure}
+                  disabled={deleting}
+                  className="px-5 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50 cursor-pointer"
+                >
+                  {deleting && <span className="material-symbols-outlined animate-spin text-xs select-none">progress_activity</span>}
+                  Confirm Request
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={deleting}
+                  className="px-5 py-2.5 rounded-lg border border-white/10 text-pw-muted hover:text-pw-black text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
       </div>
     </div>
   );

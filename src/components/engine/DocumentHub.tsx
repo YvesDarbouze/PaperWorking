@@ -9,7 +9,8 @@ import {
   collection, query, where, onSnapshot, addDoc, updateDoc,
   doc, serverTimestamp, deleteDoc,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '@/lib/firebase/config';
 import { useAuth } from '@/context/AuthContext';
 import { useProjectStore } from '@/store/projectStore';
 import toast from 'react-hot-toast';
@@ -49,6 +50,7 @@ export default function DocumentHub() {
   const [documents, setDocuments] = useState<DealDocument[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadForm, setUploadForm] = useState({
     category: 'Offer Letter' as DealDocumentCategory,
@@ -109,15 +111,41 @@ export default function DocumentHub() {
   const handleUpload = async () => {
     if (!pendingFile || !selectedProjectId || !user) return;
     setUploading(true);
+    setUploadProgress(0);
     try {
-      // In production: upload to Firebase Storage or S3, get fileUrl
-      // For now we store metadata; fileUrl would come from the storage upload
+      // 1. Upload binary to Firebase Storage
+      const safeFileName = pendingFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const storagePath = `projects/${selectedProjectId}/documents/${Date.now()}_${safeFileName}`;
+      const storageRef = ref(storage, storagePath);
+      const uploadTask = uploadBytesResumable(storageRef, pendingFile, {
+        contentType: pendingFile.type,
+      });
+
+      // Track progress
+      await new Promise<void>((resolve, reject) => {
+        uploadTask.on(
+          'state_changed',
+          (snapshot) => {
+            const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+            setUploadProgress(pct);
+          },
+          reject,
+          resolve,
+        );
+      });
+
+      // 2. Get the permanent download URL
+      const fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+
+      // 3. Write Firestore metadata with the real fileUrl
       const docData: Omit<DealDocument, 'id'> = {
         projectId: selectedProjectId,
         category: uploadForm.category,
         fileName: pendingFile.name,
         fileSize: pendingFile.size,
         mimeType: pendingFile.type,
+        fileUrl,
+        storagePath,
         uploadedByUid: user.uid,
         uploadedByName: user.displayName || user.email || 'User',
         uploadedAt: new Date(),
@@ -128,12 +156,15 @@ export default function DocumentHub() {
         ...docData,
         uploadedAt: serverTimestamp(),
       });
+
       toast.success(`${pendingFile.name} uploaded`);
       setShowUploadForm(false);
       setPendingFile(null);
+      setUploadProgress(0);
       setUploadForm({ category: 'Offer Letter', notes: '', eSignStatus: 'Not Required' });
-    } catch {
-      toast.error('Upload failed');
+    } catch (err) {
+      console.error('[DocumentHub] Upload failed:', err);
+      toast.error('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -328,11 +359,25 @@ export default function DocumentHub() {
               <button
                 onClick={handleUpload}
                 disabled={!pendingFile || uploading}
-                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 luminous-button"
+                className="px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 luminous-button min-w-[120px]"
               >
-                {uploading ? 'Uploading…' : 'Save Document'}
+                {uploading ? `${uploadProgress}%` : 'Save Document'}
               </button>
             </div>
+
+            {/* Upload progress bar */}
+            {uploading && (
+              <div className="mt-3 h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${uploadProgress}%`,
+                    background: 'linear-gradient(90deg, #3cddc7, #57f1db)',
+                    boxShadow: '0 0 8px rgba(87,241,219,0.4)',
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -341,7 +386,7 @@ export default function DocumentHub() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className="relative min-h-[300px] rounded-xl transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg overflow-hidden group"
+        className="upload-zone relative min-h-[300px] rounded-xl transition-all bg-surface-container/30 backdrop-blur-xl border-t border-l border-white/10 shadow-lg overflow-hidden group"
       >
         {/* Inner border indicator */}
         {(filtered.length === 0 || isDragging) && (

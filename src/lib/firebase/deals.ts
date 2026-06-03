@@ -108,8 +108,11 @@ export const projectsService = {
       }
 
       // SYNC: Trigger Postgres replication for the new deal
-      // We don't await to keep the UI response immediate
-      financialsSyncService.syncProjectFinancials(deal);
+      try {
+        await financialsSyncService.syncProjectFinancials(deal);
+      } catch (err) {
+        console.error('Failed to sync project financials on creation:', err);
+      }
 
       return newDoc.id;
     } catch (error) {
@@ -136,15 +139,19 @@ export const projectsService = {
       });
 
       // SYNC: Fetch full project and update Postgres
-      this.getProject(projectId).then(fullDeal => {
-        if (fullDeal) {
-          financialsSyncService.syncProjectFinancials(fullDeal);
-          // Also reconstruct history since financial values might have changed!
-          reconstructHistoryForProject(fullDeal).catch(err => {
-            console.error('Failed to reconstruct history on update:', err);
-          });
+      const fullDeal = await this.getProject(projectId);
+      if (fullDeal) {
+        try {
+          await financialsSyncService.syncProjectFinancials(fullDeal);
+        } catch (err) {
+          console.error('Failed to sync project financials on update:', err);
         }
-      });
+        try {
+          await reconstructHistoryForProject(fullDeal);
+        } catch (err) {
+          console.error('Failed to reconstruct history on update:', err);
+        }
+      }
     } catch (error) {
        console.error(`Status Shift Error: Failed to synchronize update for deal ${projectId}`, error);
        throw error;
@@ -168,9 +175,12 @@ export const projectsService = {
       const docRef = await addDoc(ledgerRef, docData);
 
       // SYNC: Trigger batch sync for the deal's ledger
-      this.getLedgerItems(projectId).then(items => {
-        financialsSyncService.syncLedgerItems(projectId, organizationId, items);
-      });
+      const items = await this.getLedgerItems(projectId);
+      try {
+        await financialsSyncService.syncLedgerItems(projectId, organizationId, items);
+      } catch (err) {
+        console.error('Failed to sync ledger items on add:', err);
+      }
 
       return docRef.id;
     } catch (error) {
@@ -194,9 +204,12 @@ export const projectsService = {
       const snapshot = await getDoc(doc(db, 'projects', projectId));
       const orgId = snapshot.data()?.organizationId;
       if (orgId) {
-        this.getLedgerItems(projectId).then(items => {
-          financialsSyncService.syncLedgerItems(projectId, orgId, items);
-        });
+        const items = await this.getLedgerItems(projectId);
+        try {
+          await financialsSyncService.syncLedgerItems(projectId, orgId, items);
+        } catch (err) {
+          console.error('Failed to sync ledger items on update:', err);
+        }
       }
     } catch (error) {
        console.error(`Approval Failure: Failed to modify ledger item ${itemId}`, error);

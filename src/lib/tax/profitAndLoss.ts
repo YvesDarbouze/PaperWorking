@@ -168,7 +168,7 @@ export function computeProjectProfitAndLoss(
     if (c.approved) {
       const cDate = parseDateSafe(c.createdAt);
       if (cDate && cDate.getTime() >= yearRangeStart && cDate.getTime() <= yearRangeEnd) {
-        capitalizedRehab += c.amount;
+        capitalizedRehab += c.amount ?? 0;
       }
     }
   }
@@ -204,12 +204,12 @@ export function computeProjectProfitAndLoss(
     let lifetimeCapitalizedRehab = 0;
     const allApprovedLedger = ledgerItems.filter(item => item.status === 'Approved');
     allApprovedLedger.forEach(item => {
-      lifetimeCapitalizedRehab += item.amount;
+      lifetimeCapitalizedRehab += item.amount ?? 0;
     });
     // Fallback to legacy costs
     if (allApprovedLedger.length === 0) {
       costs.forEach(c => {
-        if (c.approved) lifetimeCapitalizedRehab += c.amount;
+        if (c.approved) lifetimeCapitalizedRehab += c.amount ?? 0;
       });
     }
     
@@ -217,8 +217,8 @@ export function computeProjectProfitAndLoss(
     pl.realizedGainLoss = pl.salePrice - totalBasis - pl.sellingCosts;
   }
   
-  // Round all values
-  const round = (val: number) => Math.round(val * 100) / 100;
+  // Round all values — NaN/Infinity → 0 so null source data never propagates to UI
+  const round = (val: number) => (isNaN(val) || !isFinite(val)) ? 0 : Math.round(val * 100) / 100;
   pl.rentalIncome = round(pl.rentalIncome);
   pl.otherIncome = round(pl.otherIncome);
   pl.grossRevenue = round(pl.grossRevenue);

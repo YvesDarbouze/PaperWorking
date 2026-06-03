@@ -159,6 +159,23 @@ export async function assignVendorToProject(
       createdAt: FieldValue.serverTimestamp(),
     });
 
+    // 3. Write vendorRequest on the project (for vendor portal collection group query)
+    const requestRef = adminDb
+      .collection('projects')
+      .doc(projectId)
+      .collection('vendorRequests')
+      .doc(assignmentId);
+
+    batch.set(requestRef, {
+      projectId,
+      vendorUid,
+      message: message?.trim() || null,
+      status: 'PENDING',
+      requestedAt: FieldValue.serverTimestamp(),
+      requestedBy: user.uid,
+      type: serviceType,
+    });
+
     await batch.commit();
 
     // Send notification to the vendor (non-blocking)
@@ -380,6 +397,26 @@ export async function updateAssignmentStatus(
     const inboxSnap = await inboxRef.get();
     if (inboxSnap.exists) {
       batch.update(inboxRef, { status: newStatus });
+    }
+
+    // Update vendorRequests doc if it exists
+    const requestRef = adminDb
+      .collection('projects')
+      .doc(projectId)
+      .collection('vendorRequests')
+      .doc(assignmentId);
+
+    const requestSnap = await requestRef.get();
+    if (requestSnap.exists) {
+      const requestUpdate: Record<string, any> = {
+        status: newStatus,
+        updatedAt: FieldValue.serverTimestamp(),
+      };
+      if (quotedFee !== undefined) {
+        requestUpdate.quotedFee = quotedFee;
+        requestUpdate.quotedAt = FieldValue.serverTimestamp();
+      }
+      batch.update(requestRef, requestUpdate);
     }
 
     await batch.commit();

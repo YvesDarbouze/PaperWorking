@@ -75,7 +75,7 @@ export function FirstMetricCelebration({
 
   return (
     <div
-      className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 transition-opacity duration-300 ${
+      className={`metric-lit fixed inset-0 z-[10000] flex items-center justify-center p-4 transition-opacity duration-300 ${
         isClosing ? 'opacity-0' : 'opacity-100'
       }`}
     >
@@ -86,7 +86,7 @@ export function FirstMetricCelebration({
       />
 
       {/* Confetti Layer */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="confetti-canvas absolute inset-0 pointer-events-none overflow-hidden">
         {confettiPieces.map((piece, i) => (
           <div
             key={i}

@@ -4,10 +4,9 @@ import { useState, useMemo } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useRouter } from 'next/navigation';
 import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
-import { Search, Plus, FolderX, SlidersHorizontal, ChevronRight, RotateCcw } from 'lucide-react';
+import { Plus, FolderX, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import { EmptyState } from '@/components/ui/empty-states/EmptyState';
-import { ProjectCard } from '@/components/features/project-card';
 
 /* ── Strategy Theme Mapping ── */
 function getStrategyThemeConfig(strategy?: string) {
@@ -153,16 +152,38 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
     progressGlow = "shadow-[0_0_10px_rgba(255,180,171,0.8)]";
   }
 
+  // Phase accent colors for top stripe (Stitch folder tab)
+  const phaseStripeColor = phase === 1 ? '#57f1db' : phase === 2 ? '#adc6ff' : phase === 3 ? '#ffac5a' : '#62fae3';
+
   return (
     <div
-      className="bg-surface-container-low/60 backdrop-blur-xl border border-white/10 rounded-xl p-5 hover:border-primary-container/40 transition-all group relative overflow-hidden flex flex-col gap-4 hover:shadow-[0_0_30px_-10px_rgba(45,212,191,0.15)] cursor-pointer"
+      className="backdrop-blur-xl border border-white/[0.08] flex flex-col gap-4 cursor-pointer group relative overflow-hidden transition-all duration-200"
+      style={{
+        background: 'linear-gradient(135deg, rgba(20,29,35,0.65) 0%, rgba(11,20,26,0.88) 100%)',
+        // Asymmetric folder tab: sharp top-left, rounded top-right (Stitch blueprint)
+        borderRadius: '8px 28px 16px 16px',
+        borderTop: `2px solid ${phaseStripeColor}55`,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+        padding: '20px',
+      }}
       onClick={onClick}
       role="link"
       tabIndex={0}
       aria-label={`View project: ${project.propertyName}`}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.borderTopColor = `${phaseStripeColor}99`;
+        (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 40px rgba(0,0,0,0.3), 0 0 0 1px ${phaseStripeColor}22`;
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.borderTopColor = `${phaseStripeColor}55`;
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 32px rgba(0,0,0,0.25)';
+      }}
     >
-      {/* Subtle top-left glow */}
-      <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      {/* Hover glow from phase color */}
+      <div
+        className="absolute inset-0 rounded-[inherit] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{ background: `radial-gradient(circle at 20% 0%, ${phaseStripeColor}08 0%, transparent 60%)` }}
+      />
       
       <div className="flex justify-between items-center z-10 relative">
         <div className={`p-3 ${phaseIconBg} rounded-lg ${phaseIconColor} border ${phaseIconBorder} transition-colors`}>
@@ -333,112 +354,146 @@ export default function ProjectsPage() {
   }, [storeProjects, search, phaseFilter, strategyFilter, statusFilter, sortBy]);
 
   const handleCreateProject = () => router.push('/dashboard/projects/new');
-  const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}`);
+  const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}/phase-${1}`);
 
   return (
     <div className="min-h-full pb-28 md:pb-28">
-      {/* Page Header & Actions */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+      {/* ── Page Header ── */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-5 mb-8">
         <div>
-          <h2 className="text-3xl font-bold text-on-surface tracking-tight">Projects Directory</h2>
-          <p className="text-sm text-on-surface-variant mt-1">Manage active properties and track phase progression.</p>
+          <h2
+            className="text-2xl font-bold tracking-tight"
+            style={{ color: 'rgba(218,228,236,0.95)', letterSpacing: '-0.01em' }}
+          >
+            Portfolio
+          </h2>
+          <p className="text-sm mt-1" style={{ color: 'rgba(218,228,236,0.45)' }}>
+            {storeProjects.length} project{storeProjects.length !== 1 ? 's' : ''} · track phase progression
+          </p>
         </div>
         <button
           onClick={handleCreateProject}
-          className="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:brightness-110 active:scale-95 transition-all flex items-center gap-2 shadow-[0_0_15px_-3px_rgba(45,212,191,0.4)] cursor-pointer"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
+          style={{
+            background: 'rgba(87,241,219,0.12)',
+            border: '1px solid rgba(87,241,219,0.3)',
+            color: '#57f1db',
+            boxShadow: '0 0 20px -8px rgba(87,241,219,0.4)',
+          }}
         >
-          <span className="material-symbols-outlined text-[20px]">add</span>
+          <span className="material-symbols-outlined text-[18px]">add</span>
           New Project
         </button>
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+      {/* ── Search + Filters ── */}
+      <div className="flex flex-col lg:flex-row gap-3 mb-6">
+        {/* Search */}
         <div className="relative flex-1 group">
-          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors pointer-events-none">search</span>
+          <span
+            className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200 pointer-events-none"
+            style={{ color: 'rgba(218,228,236,0.35)' }}
+          >
+            search
+          </span>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search properties by address or strategy..."
-            className="w-full bg-surface-container-low/50 backdrop-blur-md border border-white/10 rounded-xl py-3 pl-12 pr-4 text-on-surface font-body-md text-body-md focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50"
+            placeholder="Search by address or name…"
+            className="w-full py-2.5 pl-10 pr-4 text-sm rounded-xl transition-all duration-200 focus:outline-none"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              color: 'rgba(218,228,236,0.9)',
+            }}
           />
         </div>
+
+        {/* Sort */}
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="py-2.5 px-3 rounded-xl text-sm focus:outline-none cursor-pointer"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            color: 'rgba(218,228,236,0.7)',
+          }}
+        >
+          <option value="recent">Recent Activity</option>
+          <option value="name">Name</option>
+          <option value="phase">Phase</option>
+          <option value="noi">NOI ↓</option>
+          <option value="price">Purchase Price</option>
+          <option value="created">Date Created</option>
+        </select>
       </div>
 
-      {/* ── Filter Bar ── */}
-      <div className="mb-8 glass-card rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-2 text-outline px-2 border-r border-outline-variant">
-            <SlidersHorizontal className="w-4 h-4" />
-          </div>
-
-          <select
-            value={phaseFilter}
-            onChange={(e) => setPhaseFilter(e.target.value)}
-            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
+      {/* ── Phase + Strategy pill filters ── */}
+      <div className="flex flex-wrap gap-2 mb-8">
+        {/* Phase pills */}
+        {[
+          { value: '', label: 'All Phases' },
+          { value: '1', label: 'Acquisition', color: '#57f1db' },
+          { value: '2', label: 'Transaction',  color: '#adc6ff' },
+          { value: '3', label: 'Rehab',        color: '#ffac5a' },
+          { value: '4', label: 'Hold / Exit',  color: '#62fae3' },
+        ].map(({ value, label, color }) => (
+          <button
+            key={value}
+            onClick={() => setPhaseFilter(value)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-150"
+            style={{
+              background: phaseFilter === value
+                ? `${color || '#57f1db'}18`
+                : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${phaseFilter === value ? `${color || '#57f1db'}40` : 'rgba(255,255,255,0.08)'}`,
+              color: phaseFilter === value ? (color || '#57f1db') : 'rgba(218,228,236,0.5)',
+            }}
           >
-            <option value="">Phase: All</option>
-            <option value="1">Acquisition</option>
-            <option value="2">Purchase</option>
-            <option value="3">Hold</option>
-            <option value="4">Exit</option>
-          </select>
+            {label}
+          </button>
+        ))}
 
-          <select
-            value={strategyFilter}
-            onChange={(e) => setStrategyFilter(e.target.value)}
-            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
+        <div className="w-px h-5 self-center" style={{ background: 'rgba(255,255,255,0.08)' }} />
+
+        {/* Strategy pills */}
+        {[
+          { value: '', label: 'All Strategies' },
+          { value: 'flip', label: 'Flip' },
+          { value: 'rental', label: 'Rental' },
+          { value: 'brrrr', label: 'BRRRR' },
+        ].map(({ value, label }) => (
+          <button
+            key={value}
+            onClick={() => setStrategyFilter(value)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-150"
+            style={{
+              background: strategyFilter === value ? 'rgba(87,241,219,0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${strategyFilter === value ? 'rgba(87,241,219,0.3)' : 'rgba(255,255,255,0.08)'}`,
+              color: strategyFilter === value ? '#57f1db' : 'rgba(218,228,236,0.5)',
+            }}
           >
-            <option value="">Strategy: All</option>
-            <option value="flip">Flip</option>
-            <option value="rental">Rental</option>
-            <option value="brrrr">BRRRR</option>
-          </select>
+            {label}
+          </button>
+        ))}
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-surface-container-highest px-3 py-1.5 rounded-lg text-sm font-label-md border border-outline-variant hover:border-primary transition-all text-on-surface focus:ring-0"
-          >
-            <option value="active">Status: Active</option>
-            <option value="">Status: All</option>
-            <option value="closed">Closed</option>
-            <option value="pending">Pending</option>
-          </select>
-
-          <div className="h-6 w-px bg-outline-variant mx-2 hidden sm:block"></div>
-          <span className="text-outline text-xs uppercase tracking-widest font-bold">
-            {filteredProjects.length} Projects Found
+        {filteredProjects.length !== storeProjects.length && (
+          <span className="ml-auto text-xs self-center" style={{ color: 'rgba(218,228,236,0.35)' }}>
+            {filteredProjects.length} of {storeProjects.length}
           </span>
-        </div>
-
-        <div className="flex items-center gap-4 text-outline text-xs">
-          <span className="font-bold">Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent border-none text-sm font-semibold text-on-surface focus:ring-0 cursor-pointer hover:text-primary transition-colors p-0"
-          >
-            <option value="recent">Recent Activity</option>
-            <option value="name">Name</option>
-            <option value="phase">Phase</option>
-            <option value="noi">NOI (High → Low)</option>
-            <option value="price">Purchase Price</option>
-            <option value="created">Date Created</option>
-          </select>
-        </div>
+        )}
       </div>
 
       {/* ── Project Grid ── */}
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredProjects.map((project) => (
-            <ProjectCard
+            <FolderCard
               key={project.id}
               project={project}
-              variant="default"
-              showKPIs={true}
+              onClick={() => handleOpenProject(project.id)}
             />
           ))}
           {/* Add New Card Placeholder */}

@@ -238,6 +238,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Ref mirror of isAuthenticating so onAuthStateChanged (a stale closure)
   // can read the current value without being recreated on every render.
   const syncLockRef = useRef(false);
+  // Guards against wiping Zustand stores during Firebase's initial auth resolution.
+  // Firebase fires onAuthStateChanged(null) before it hydrates the persisted user
+  // from IndexedDB on hard refresh. Without this guard every hard refresh wipes
+  // in-memory store state before the real user event arrives.
+  const hasFirstAuthEventFiredRef = useRef(false);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -256,6 +261,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (firebaseUser) {
+        hasFirstAuthEventFiredRef.current = true;
+
+        // Fire email_verified once when Firebase first marks the account verified
+        if (firebaseUser.emailVerified && typeof window !== 'undefined') {
+          const verifKey = `pw_email_verified_fired_${firebaseUser.uid}`;
+          if (!window.localStorage.getItem(verifKey)) {
+            window.localStorage.setItem(verifKey, '1');
+            try { posthog.capture('email_verified', { uid: firebaseUser.uid }); } catch { /* non-fatal */ }
+          }
+        }
+
         // H-5: Proactive token refresh on auth-state fire (covers hard page loads).
         // getIdTokenResult(false) reads the cached token without a network call.
         // If <5 min remain, force-refresh NOW before syncSessionCookie runs.
@@ -294,11 +310,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }, TOKEN_REFRESH_MS);
       } else {
         setProfile(null);
-        const isMockSession = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
-        if (!isMockSession) {
+        // Only wipe stores on a genuine sign-out — not during Firebase's initial
+        // auth resolution, which fires null before the persisted user is hydrated.
+        if (hasFirstAuthEventFiredRef.current) {
           useProjectStore.getState().clearStore();
           usePropertyStore.getState().clearStore();
         }
+        hasFirstAuthEventFiredRef.current = true;
       }
 
       if (firebaseUser) {

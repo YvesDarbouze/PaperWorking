@@ -11,10 +11,21 @@ import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
    ═══════════════════════════════════════════════════════ */
 
 const PLAN_PRICING: Record<string, { label: string; price: string; period: string }> = {
-  'Individual':      { label: 'Investor',            price: '$59',  period: '/mo' },
-  'Team':            { label: 'Investment Team',     price: '$99',  period: '/mo' },
-  'Vendor Network':  { label: 'Vendor',              price: '$39',  period: '/mo' },
-  'None':            { label: 'No active plan',      price: '—',    period: ''    },
+  'Individual':      { label: 'Investor',         price: '$59', period: '/mo' },
+  'Team':            { label: 'Investment Team',  price: '$99', period: '/mo' },
+  'Vendor Network':  { label: 'Vendor',           price: '$39', period: '/mo' },
+  'None':            { label: 'No active plan',   price: '—',   period: ''    },
+};
+
+// Plans available for switching — names and prices from live Stripe catalog
+const PLAN_SWITCH_OPTIONS = [
+  { id: 'individual', displayName: 'Investor',         monthlyPrice: 59, canonicalKey: 'Individual',     description: 'Solo flippers tired of spreadsheet chaos.' },
+  { id: 'team',       displayName: 'Investment Team',  monthlyPrice: 99, canonicalKey: 'Team',           description: 'Scaling REI businesses managing multiple deals.' },
+  { id: 'vendor',     displayName: 'Vendor',           monthlyPrice: 39, canonicalKey: 'Vendor Network', description: 'Appraisers, Inspectors, GCs, and tradespeople.' },
+];
+
+const CANONICAL_PRICES: Record<string, number> = {
+  'Individual': 59, 'Team': 99, 'Vendor Network': 39, 'None': 0,
 };
 
 const STATUS_BADGE: Record<string, { label: string; cls: string; iconName: string }> = {
@@ -45,8 +56,10 @@ interface PaymentMethodData {
 
 export default function BillingSettingsPage() {
   const { user, profile } = useAuth();
-  const [portalLoading, setPortalLoading] = useState(false);
-  const [portalError, setPortalError]     = useState<string | null>(null);
+  const [portalLoading, setPortalLoading]     = useState(false);
+  const [portalError, setPortalError]         = useState<string | null>(null);
+  const [planChangeLoading, setPlanChangeLoading] = useState<string | null>(null);
+  const [planChangeError, setPlanChangeError]     = useState<string | null>(null);
   const [invoices, setInvoices]           = useState<BillingInvoice[]>([]);
   const [invoicesLoading, setInvoicesLoading] = useState(false);
   const [currentPeriodEnd, setCurrentPeriodEnd] = useState<number | null>(null);
@@ -123,6 +136,14 @@ export default function BillingSettingsPage() {
     : null;
   const isCanceling = profile?.cancelAtPeriodEnd ?? false;
 
+  const handleDownloadAll = () => {
+    const downloadable = invoices.filter((inv) => inv.pdfUrl ?? inv.hostedUrl);
+    downloadable.forEach((inv, i) => {
+      const url = (inv.pdfUrl ?? inv.hostedUrl)!;
+      setTimeout(() => window.open(url, '_blank', 'noopener,noreferrer'), i * 300);
+    });
+  };
+
   const openPortal = async () => {
     if (!user) return;
     setPortalLoading(true);
@@ -143,6 +164,34 @@ export default function BillingSettingsPage() {
       setPortalLoading(false);
     }
   };
+
+  const handleChangePlan = async (targetPlanName: string) => {
+    if (!user) return;
+    setPlanChangeLoading(targetPlanName);
+    setPlanChangeError(null);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan: targetPlanName,
+          billingInterval: 'monthly',
+          idToken,
+          userId: user.uid,
+          ...(user.email ? { userEmail: user.email } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not start plan change.');
+      window.location.href = data.url;
+    } catch (err: any) {
+      setPlanChangeError(err.message);
+      setPlanChangeLoading(null);
+    }
+  };
+
+  const currentPrice = CANONICAL_PRICES[plan] ?? 0;
 
   const teamMembers = useUserStore((s) => s.teamMembers);
   const maxSeats = useUserStore((s) => s.maxSeats) || 10;
@@ -356,12 +405,82 @@ export default function BillingSettingsPage() {
           </div>
         </section>
 
-        {/* ━━━ 4. Billing History (col-span-8) ━━━ */}
+        {/* ━━━ 4. Change Plan (col-span-12) ━━━ */}
+        <section className="lg:col-span-12 glass-card rounded-2xl p-8">
+          <h3 className="text-xl font-bold text-pw-black mb-2">Change Your Plan</h3>
+          <p className="font-body-sm text-body-sm text-pw-muted mb-6">
+            Switch plans at any time. You&apos;ll be taken to checkout — Stripe handles proration automatically.
+          </p>
+
+          {planChangeError && (
+            <p className="text-xs text-error bg-error/10 border border-error/30 rounded-lg px-4 py-3 mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm select-none">error</span>
+              {planChangeError}
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PLAN_SWITCH_OPTIONS.map((option) => {
+              const isCurrent  = plan === option.canonicalKey;
+              const isUpgrade  = option.monthlyPrice > currentPrice && !isCurrent;
+              const isLoading  = planChangeLoading === option.displayName;
+
+              const buttonLabel = isCurrent
+                ? 'Current Plan'
+                : isUpgrade
+                  ? `Upgrade to ${option.displayName}`
+                  : `Downgrade to ${option.displayName}`;
+
+              return (
+                <div
+                  key={option.id}
+                  className={`rounded-xl p-6 border transition-all ${
+                    isCurrent
+                      ? 'bg-pw-primary/5 border-pw-primary/30'
+                      : 'bg-pw-glass-bg/30 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <p className="font-label-md text-label-md text-pw-black">{option.displayName}</p>
+                      <p className="font-body-sm text-body-sm text-pw-muted mt-0.5">{option.description}</p>
+                    </div>
+                    <p className="font-headline-md text-headline-md text-pw-black tabular-nums shrink-0 ml-4">
+                      ${option.monthlyPrice}<span className="text-xs text-pw-muted font-normal">/mo</span>
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => !isCurrent && handleChangePlan(option.displayName)}
+                    disabled={isCurrent || isLoading || !!planChangeLoading}
+                    className={`w-full py-2.5 rounded-lg font-label-md text-label-md transition-all flex items-center justify-center gap-2 ${
+                      isCurrent
+                        ? 'bg-pw-primary/10 text-pw-primary border border-pw-primary/20 cursor-default'
+                        : isUpgrade
+                          ? 'luminous-button disabled:opacity-50'
+                          : 'border border-white/10 text-pw-black hover:bg-white/5 disabled:opacity-50'
+                    }`}
+                  >
+                    {isLoading && (
+                      <span className="material-symbols-outlined animate-spin text-sm select-none">progress_activity</span>
+                    )}
+                    {buttonLabel}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ━━━ 5. Billing History (col-span-8) ━━━ */}
         <section className="lg:col-span-8 glass-card rounded-2xl p-8">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-pw-black">Billing History</h3>
             {plan !== 'None' && invoices.length > 0 && (
-              <button className="font-label-md text-label-md text-pw-primary flex items-center gap-2 hover:text-pw-primary/80 transition-colors cursor-pointer">
+              <button
+                onClick={handleDownloadAll}
+                className="font-label-md text-label-md text-pw-primary flex items-center gap-2 hover:text-pw-primary/80 transition-colors cursor-pointer"
+              >
                 <span className="material-symbols-outlined text-[18px]">download</span>
                 Download All
               </button>

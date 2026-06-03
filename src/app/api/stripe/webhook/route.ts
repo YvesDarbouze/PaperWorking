@@ -443,6 +443,28 @@ export async function POST(request: Request) {
 
           await updateUserAndOrg(uid, updateData);
 
+          // Detect trialing → active conversion (the North Star event)
+          const previousStatus = (event.data.previous_attributes as any)?.status;
+          if (previousStatus === 'trialing' && mappedStatus === 'active') {
+            const phKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+            if (phKey) {
+              // PostHog server-side event via REST API
+              fetch('https://app.posthog.com/capture/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  api_key: phKey,
+                  event: 'trial_converted_to_paid',
+                  distinct_id: uid,
+                  properties: {
+                    plan: planFromMeta ?? 'unknown',
+                    subscriptionId: subscription.id,
+                  },
+                }),
+              }).catch(() => { /* non-fatal */ });
+            }
+          }
+
           // Apply referral reward when subscription transitions to active
           if (mappedStatus === 'active') {
             await applyReferralRewards(uid, stripeCustomerId, subscription.id, stripe);

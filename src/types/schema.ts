@@ -1582,6 +1582,7 @@ export interface DealDocument {
   category: DealDocumentCategory;
   fileName: string;
   fileUrl?: string;
+  storagePath?: string;    // Firebase Storage path — for re-OCR and archive
   fileSize?: number;
   mimeType?: string;
   uploadedByUid: string;

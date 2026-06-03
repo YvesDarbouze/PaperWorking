@@ -88,6 +88,21 @@ export async function POST(request: NextRequest) {
       const userRef = adminDb.collection('users').doc(uid);
 
       switch (event) {
+        case 'onboarding_intent_selected': {
+          const intent = properties?.intent;
+          const phase = properties?.phase;
+          if (intent) {
+            await userRef.set({
+              onboardingIntent: intent,
+              onboardingPhase: phase !== undefined ? phase : null,
+              onboardingIntentAt: admin.firestore.FieldValue.serverTimestamp(),
+              updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            }, { merge: true });
+            console.log(`[Events] Milestone: onboarding_intent_selected saved for user ${uid}`);
+          }
+          break;
+        }
+
         case 'first_metric_lit': {
           // Mark the first metric timestamp on the user profile
           await userRef.update({

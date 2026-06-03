@@ -631,38 +631,23 @@ function PortfolioScope({
         : { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['No appreciation data'] };
     }
 
-    // GRM = Sum(Value) / Sum(AnnualRent)
+    // GRM and IRR: distribution only — never aggregated to a scalar (PRD §4.2.3)
+    // These are shown per-project in the Compare scope; portfolio scope shows range summary.
     {
-      let valSum = 0, rentSum = 0, hasData = false;
-      for (const pp of perProject) {
-        const fin = pp.project.financials ?? {} as any;
-        const pv = fin.estimatedCurrentValue ?? fin.estimatedARV ?? fin.purchasePrice ?? 0;
-        const rent = (fin.monthlyGrossRent ?? fin.projectedMonthlyRent ?? 0) * 12;
-        if (pv > 0 && rent > 0) { valSum += pv; rentSum += rent; hasData = true; }
-      }
-      results.GRM = hasData && rentSum > 0
-        ? { value: valSum / rentSum, state: 'live', inputsUsed: { portfolioValue: valSum, portfolioRent: rentSum, weightMethod: 'Value/Rent' }, inputsMissing: [] }
-        : { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['Insufficient data'] };
+      const grmValues = perProject
+        .map(pp => pp.metrics.GRM.value)
+        .filter((v): v is number => v !== null && isFinite(v));
+      results.GRM = grmValues.length > 0
+        ? { value: null, state: 'incomplete' as const, inputsUsed: { count: grmValues.length, min: Math.min(...grmValues), max: Math.max(...grmValues) }, inputsMissing: ['Distribution — see Compare view'] }
+        : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['No GRM data'] };
     }
-
-    // IRR — weighted by total cash invested
     {
-      let weightedSum = 0, invSum = 0, hasData = false;
-      for (const pp of perProject) {
-        const r = pp.metrics.IRR;
-        const fin = pp.project.financials ?? {} as any;
-        const purchase = fin.purchasePrice ?? 0;
-        const rehab = fin.costs?.reduce((s: number, c: any) => s + (c.amount ?? 0), 0) ?? (fin.rehabBudget ?? 0);
-        const invested = purchase + rehab;
-        if (r.value !== null && invested > 0) {
-          weightedSum += r.value * invested;
-          invSum += invested;
-          hasData = true;
-        }
-      }
-      results.IRR = hasData && invSum > 0
-        ? { value: weightedSum / invSum, state: 'live', inputsUsed: { portfolioInvested: invSum, weightMethod: 'investment-weighted' }, inputsMissing: [] }
-        : { value: null, state: 'incomplete', inputsUsed: {}, inputsMissing: ['No IRR data'] };
+      const irrValues = perProject
+        .map(pp => pp.metrics.IRR.value)
+        .filter((v): v is number => v !== null && isFinite(v));
+      results.IRR = irrValues.length > 0
+        ? { value: null, state: 'incomplete' as const, inputsUsed: { count: irrValues.length, min: Math.min(...irrValues), max: Math.max(...irrValues) }, inputsMissing: ['Distribution — see Compare view'] }
+        : { value: null, state: 'incomplete' as const, inputsUsed: {}, inputsMissing: ['No IRR data'] };
     }
 
     return results;

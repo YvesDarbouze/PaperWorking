@@ -26,13 +26,15 @@ export function PaywallRedirectGuard() {
 
     if (!profile) return;
 
-    // Check subscription status
     const status = profile.subscriptionStatus;
-    const isPaid = status === 'active' || status === 'trialing' || status === 'past_due';
     const isGuest = profile.inviteToken && profile.invitedToProjectId;
 
-    // If not paid and not a guest, redirect to /pricing
-    if (!isPaid && !isGuest && !hasRedirected.current) {
+    // Only hard-block on explicit billing failure or cancellation.
+    // inactive/free/undefined = registered user on the free tier — allow through.
+    // The project-count gate (max 3) is enforced at the feature level, not here.
+    const isHardBlocked = status === 'canceled' || status === 'payment_failed';
+
+    if (isHardBlocked && !isGuest && !hasRedirected.current) {
       hasRedirected.current = true;
       router.replace('/pricing');
     }

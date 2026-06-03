@@ -109,7 +109,42 @@ export async function PUT(request: NextRequest) {
         : { declinedAt: new Date() }),
     };
 
-    await docRef.update(updatePayload);
+    const batch = adminDb.batch();
+
+    // 1. Update vendorRequest
+    batch.update(docRef, updatePayload);
+
+    // 2. Update vendorAssignment
+    const assignmentRef = adminDb
+      .collection('projects')
+      .doc(projectId)
+      .collection('vendorAssignments')
+      .doc(requestId);
+
+    const assignmentSnap = await assignmentRef.get();
+    if (assignmentSnap.exists) {
+      batch.update(assignmentRef, {
+        status: targetStatus === 'QUOTED' ? 'ACCEPTED' : 'DECLINED',
+        ...(targetStatus === 'QUOTED' ? { quotedFee: Number(quotedFee) } : {}),
+        updatedAt: new Date(),
+      });
+    }
+
+    // 3. Update vendorInbox
+    const inboxRef = adminDb
+      .collection('users')
+      .doc(auth.uid)
+      .collection('vendorInbox')
+      .doc(requestId);
+
+    const inboxSnap = await inboxRef.get();
+    if (inboxSnap.exists) {
+      batch.update(inboxRef, {
+        status: targetStatus === 'QUOTED' ? 'ACCEPTED' : 'DECLINED',
+      });
+    }
+
+    await batch.commit();
 
     // Notify investor
     const projectSnap = await adminDb.collection('projects').doc(projectId).get();

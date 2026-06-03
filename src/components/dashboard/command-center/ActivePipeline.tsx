@@ -1,255 +1,212 @@
 "use client";
 
-import React from "react";
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useProjectStore } from "@/store/projectStore";
+import type { Project } from "@/types/schema";
 
-/**
- * ActivePipeline — 4-Lane REIL Phase Pipeline
- *
- * Displays projects across 4 horizontal lanes corresponding to
- * REIL phases: Acquisition, Transaction, Rehab, Hold/Exit.
- * Uses demo data for initial empty state.
- */
+// ─── Phase config ─────────────────────────────────────────────────────────────
 
-interface PipelineProject {
-  id: string;
-  name: string;
-  address: string;
-  keyMetric: string;
-  keyMetricLabel: string;
-  daysInPhase: number;
-}
-
-interface PipelineLane {
-  phase: string;
-  phaseNumber: number;
-  color: string;
-  icon: string;
-  projects: PipelineProject[];
-}
-
-const DEMO_LANES: PipelineLane[] = [
+const LANES = [
   {
     phase: "Acquisition",
-    phaseNumber: 1,
-    color: "#3B82F6",
-    icon: "search",
-    projects: [
-      {
-        id: "acq-1",
-        name: "Skyline Lofts",
-        address: "1420 Peachtree St NE, Atlanta, GA",
-        keyMetric: "$285K",
-        keyMetricLabel: "Target Price",
-        daysInPhase: 12,
-      },
-      {
-        id: "acq-2",
-        name: "Cedar Park Duplex",
-        address: "804 S Bell Blvd, Cedar Park, TX",
-        keyMetric: "6.2%",
-        keyMetricLabel: "Cap Rate",
-        daysInPhase: 5,
-      },
-    ],
+    phaseKey: 1,
+    icon: "domain_add",
+    accentColor: "#57f1db",
+    emptyLabel: "No deals in sourcing",
   },
   {
     phase: "Transaction",
-    phaseNumber: 2,
-    color: "#8B5CF6",
+    phaseKey: 2,
     icon: "receipt_long",
-    projects: [
-      {
-        id: "txn-1",
-        name: "Vertex Logistics Center",
-        address: "2200 W Buckeye Rd, Phoenix, AZ",
-        keyMetric: "$1.2M",
-        keyMetricLabel: "Under Contract",
-        daysInPhase: 22,
-      },
-    ],
+    accentColor: "#adc6ff",
+    emptyLabel: "No deals in closing",
   },
   {
     phase: "Rehab",
-    phaseNumber: 3,
-    color: "#F59E0B",
+    phaseKey: 3,
     icon: "construction",
-    projects: [
-      {
-        id: "rehab-1",
-        name: "The Foundry Bloc",
-        address: "1850 Blake St, Denver, CO",
-        keyMetric: "42%",
-        keyMetricLabel: "Completion",
-        daysInPhase: 45,
-      },
-      {
-        id: "rehab-2",
-        name: "Magnolia Commons",
-        address: "312 Magnolia Ave, Orlando, FL",
-        keyMetric: "78%",
-        keyMetricLabel: "Completion",
-        daysInPhase: 91,
-      },
-    ],
+    accentColor: "#ffac5a",
+    emptyLabel: "No active rehabs",
   },
   {
     phase: "Hold / Exit",
-    phaseNumber: 4,
-    color: "#10B981",
+    phaseKey: 4,
     icon: "exit_to_app",
-    projects: [
-      {
-        id: "hold-1",
-        name: "Oasis Corporate",
-        address: "800 Brickell Ave, Miami, FL",
-        keyMetric: "$4,200/mo",
-        keyMetricLabel: "Cash Flow",
-        daysInPhase: 180,
-      },
-    ],
+    accentColor: "#62fae3",
+    emptyLabel: "No held properties",
   },
 ];
 
-export function ActivePipeline() {
-  return (
-    <section className="space-y-stack-md">
-      {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-2">
-        <h2
-          className="text-xl font-semibold tracking-tight"
-          style={{ color: "rgba(218,228,236,0.9)" }}
-        >
-          Active Pipeline
-        </h2>
-        <div className="flex flex-wrap gap-x-4 gap-y-1">
-          {DEMO_LANES.map((lane) => (
-            <span
-              key={lane.phase}
-              className="text-[11px] font-medium flex items-center gap-1.5 px-2"
-              style={{ color: "rgba(218,228,236,0.5)" }}
-            >
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: lane.color }}
-              />
-              {lane.phase}
-            </span>
-          ))}
-        </div>
-      </div>
+function statusLabel(p: Project): string {
+  const phase = p.currentPhase ?? 1;
+  if (phase === 1) {
+    const offer = p.financials?.offerStatus;
+    return (offer === "Accepted" || offer === "Sent" || offer === "Countered") ? "Offer Active" : "Underwriting";
+  }
+  if (phase === 2) return "Closing";
+  if (phase === 3) return "Renovation";
+  return p.financials?.exitStrategyType === "Sell" ? "For Sale" : "Rented";
+}
 
-      {/* 4-Lane Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {DEMO_LANES.map((lane) => (
-          <div key={lane.phase} className="flex flex-col gap-3">
-            {/* Lane Header */}
+function progressPct(p: Project): number {
+  const phase = p.currentPhase ?? 1;
+  if (phase === 1) return p.financials?.purchasePrice ? 60 : 25;
+  if (phase === 2) return p.financials?.loanAmount ? 75 : 40;
+  if (phase === 3) {
+    const budget = p.financials?.rehabBudget ?? p.financials?.projectedRehabCost ?? 0;
+    const actual = p.financials?.rehabActual ?? 0;
+    return budget > 0 ? Math.min(Math.round((actual / budget) * 100), 99) : 30;
+  }
+  return 80;
+}
+
+function progressLabel(p: Project): string {
+  const phase = p.currentPhase ?? 1;
+  if (phase === 1) return "Phase 1 of 4";
+  if (phase === 2) return "Finalizing docs";
+  if (phase === 3) {
+    const budget = p.financials?.rehabBudget ?? p.financials?.projectedRehabCost ?? 0;
+    const actual = p.financials?.rehabActual ?? 0;
+    if (budget > 0) return `$${(actual / 1000).toFixed(0)}k / $${(budget / 1000).toFixed(0)}k`;
+    return "In progress";
+  }
+  return "Operating";
+}
+
+function projectSubtext(p: Project): string {
+  const parts: string[] = [];
+  if (p.assetClass) parts.push(p.assetClass);
+  // address is a plain string on the Project type
+  if (p.address) parts.push(p.address);
+  return parts.join(" · ") || "—";
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function ActivePipeline() {
+  const router = useRouter();
+  const projects = useProjectStore(state => state.projects);
+
+  const lanes = useMemo(() =>
+    LANES.map(lane => ({
+      ...lane,
+      items: projects.filter(p => (p.currentPhase ?? 1) === lane.phaseKey),
+    })),
+    [projects],
+  );
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {lanes.map(lane => {
+        const primary = lane.items[0] ?? null;
+        const extra   = lane.items.length - 1;
+
+        return (
+          <div
+            key={lane.phase}
+            className="relative rounded-2xl p-5 flex flex-col cursor-pointer group transition-all duration-200"
+            style={{
+              background: "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderTop: `2px solid ${lane.accentColor}55`,
+              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+            }}
+            onClick={() => primary && router.push(`/dashboard/projects/${primary.id ?? ""}`)}
+          >
+            {/* Hover glow */}
             <div
-              className="flex items-center justify-between px-3 py-2 rounded-lg"
-              style={{ backgroundColor: "rgba(255,255,255,0.03)" }}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="material-symbols-outlined text-base"
-                  style={{ color: lane.color }}
-                >
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+              style={{ background: `radial-gradient(circle at 50% 0%, ${lane.accentColor}08 0%, transparent 70%)` }}
+            />
+
+            {/* Phase icon + status */}
+            <div className="relative flex justify-between items-start mb-6">
+              <div
+                className="p-2 rounded-xl"
+                style={{ background: `${lane.accentColor}14`, color: lane.accentColor }}
+              >
+                <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 0" }}>
                   {lane.icon}
-                </span>
-                <span
-                  className="text-xs font-semibold uppercase tracking-wider"
-                  style={{ color: "rgba(218,228,236,0.7)" }}
-                >
-                  {lane.phase}
                 </span>
               </div>
               <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg"
                 style={{
-                  backgroundColor: `${lane.color}20`,
-                  color: lane.color,
+                  background: "rgba(45,54,61,0.8)",
+                  color: primary ? lane.accentColor : "rgba(218,228,236,0.3)",
+                  letterSpacing: "0.06em",
                 }}
               >
-                {lane.projects.length}
+                {primary ? statusLabel(primary) : lane.phase}
               </span>
             </div>
 
-            {/* Project Cards */}
-            {lane.projects.length > 0 ? (
-              lane.projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="rounded-xl p-4 cursor-pointer transition-all duration-200 group"
-                  style={{
-                    backgroundColor: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.06)",
-                    borderTop: `2px solid ${lane.color}40`,
-                  }}
-                >
-                  <h4
-                    className="text-sm font-semibold truncate mb-1"
-                    style={{ color: "rgba(218,228,236,0.9)" }}
+            {/* Content */}
+            {primary ? (
+              <div className="relative flex-1 flex flex-col justify-between">
+                <div>
+                  <h3
+                    className="text-[15px] font-semibold mb-1 leading-snug"
+                    style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "0.01em" }}
                   >
-                    {project.name}
-                  </h4>
-                  <p
-                    className="text-[11px] truncate mb-3"
-                    style={{ color: "rgba(218,228,236,0.4)" }}
-                  >
-                    {project.address}
+                    {primary.propertyName || primary.address || "Unnamed Project"}
+                  </h3>
+                  <p className="text-[13px] mb-4" style={{ color: "rgba(218,228,236,0.45)" }}>
+                    {projectSubtext(primary)}
                   </p>
+                </div>
 
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <div
-                        className="text-base font-bold"
-                        style={{ color: lane.color }}
-                      >
-                        {project.keyMetric}
-                      </div>
-                      <div
-                        className="text-[10px]"
-                        style={{ color: "rgba(218,228,236,0.4)" }}
-                      >
-                        {project.keyMetricLabel}
-                      </div>
-                    </div>
+                {/* Progress bar */}
+                <div>
+                  <div
+                    className="w-full h-1.5 rounded-full overflow-hidden"
+                    style={{ background: "rgba(45,54,61,0.9)" }}
+                  >
                     <div
-                      className="text-[10px] font-mono px-2 py-1 rounded-md"
-                      style={{
-                        backgroundColor: "rgba(255,255,255,0.04)",
-                        color: "rgba(218,228,236,0.5)",
-                      }}
-                    >
-                      {project.daysInPhase}d
-                    </div>
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${progressPct(primary)}%`, background: lane.accentColor }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-2">
+                    <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+                      {progressLabel(primary)}
+                    </span>
+                    <span className="text-[11px] font-bold" style={{ color: lane.accentColor }}>
+                      {progressPct(primary)}%
+                    </span>
                   </div>
 
-                  {/* Hover overlay */}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-xl"
-                    style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
-                  />
+                  {extra > 0 && (
+                    <div
+                      className="mt-3 pt-3"
+                      style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+                    >
+                      <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.35)" }}>
+                        +{extra} more deal{extra > 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              ))
+              </div>
             ) : (
-              /* Empty lane placeholder */
               <div
-                className="rounded-xl p-6 flex items-center justify-center"
-                style={{
-                  border: "2px dashed rgba(255,255,255,0.08)",
-                  minHeight: "120px",
-                }}
+                className="relative flex-1 flex flex-col items-center justify-center rounded-xl py-6"
+                style={{ border: "1.5px dashed rgba(255,255,255,0.07)" }}
               >
-                <span
-                  className="text-xs text-center"
-                  style={{ color: "rgba(218,228,236,0.3)" }}
-                >
-                  No deals in this phase
+                <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: "rgba(218,228,236,0.15)" }}>
+                  add_circle_outline
+                </span>
+                <span className="text-[12px] text-center leading-snug" style={{ color: "rgba(218,228,236,0.25)" }}>
+                  {lane.emptyLabel}
                 </span>
               </div>
             )}
           </div>
-        ))}
-      </div>
-    </section>
+        );
+      })}
+    </div>
   );
 }

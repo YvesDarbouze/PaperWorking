@@ -19,7 +19,7 @@ export function useAllDealsSync() {
 
   // 1. Sync Deals — guest-scoped to a single invited project; owners get full org portfolio
   useEffect(() => {
-    if (!activeTenantId || activeTenantId === 'org_placeholder') return;
+    if (!activeTenantId) return;
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) return;
 
     // Guest tier: user arrived via invite link — scope to their one invited project only

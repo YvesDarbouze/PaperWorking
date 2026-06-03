@@ -387,10 +387,10 @@ html[data-theme="dark"],
   --color-text-secondary: var(--pw-muted);
 
   /* ─── Font System — Stitch Theme Fonts ─── */
-  --font-sans: var(--font-hanken);
-  --font-display: var(--font-hanken);
+  --font-sans: var(--font-plus-jakarta);
+  --font-display: var(--font-plus-jakarta);
   --font-mono: var(--font-jetbrains-mono);
-  --font-plus-jakarta: var(--font-plus-jakarta);
+  --font-jetbrains: var(--font-jetbrains-mono);
 
   /* Font Family Mappings for Stitch components */
   --font-headline-xl: var(--font-display);
@@ -515,8 +515,9 @@ html[data-theme="dark"],
 
 @layer base {
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: var(--color-surface-container-lowest, #060f15);
+    color: var(--color-on-surface, #dae4ec);
+    font-family: var(--font-plus-jakarta), system-ui, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "ss01";
     letter-spacing: -0.015em;
     -webkit-font-smoothing: antialiased;
@@ -555,19 +556,42 @@ html[data-theme="dark"],
   }
 
   .glass-card {
-    background: linear-gradient(135deg, rgba(34, 43, 50, 0.4) 0%, rgba(20, 29, 35, 0.8) 100%);
-    backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: none;
-    border-bottom: none;
+    background: linear-gradient(135deg, rgba(20, 29, 35, 0.6) 0%, rgba(11, 20, 26, 0.8) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+  .glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
   .glass-panel {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: rgba(20, 29, 35, 0.6);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-left: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .glass-panel-elevated {
+    background: rgba(45, 54, 61, 0.6);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .glass-input {
@@ -591,10 +615,21 @@ html[data-theme="dark"],
     box-shadow: 0 0 8px rgba(45, 212, 191, 0.35) !important;
   }
 
+  .glow-accent-primary {
+    box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
+  }
+
+  .scroller-no-scrollbar::-webkit-scrollbar { display: none; }
+  .scroller-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .font-jetbrains {
+    font-family: var(--font-jetbrains-mono), monospace;
+  }
+
   .luminous-button {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
-    box-shadow: 0 0 20px -5px rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 20px -5px rgba(87, 241, 219, 0.4);
     transition: all 0.3s ease;
   }
   .luminous-button:hover {
@@ -642,7 +677,7 @@ html[data-theme="dark"],
 /* Stitch Typography System Enforcement */
 @layer base {
   h1 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-display-lg-size);
     font-weight: var(--text-display-lg-weight);
     line-height: var(--text-display-lg-line-height);
@@ -650,48 +685,48 @@ html[data-theme="dark"],
     color: var(--pw-black);
   }
   h2 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-headline-lg-size);
     font-weight: var(--text-headline-lg-weight);
     line-height: var(--text-headline-lg-line-height);
     color: var(--pw-black);
   }
   h3 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-headline-lg-mobile-size);
     font-weight: var(--text-headline-lg-mobile-weight);
     line-height: var(--text-headline-lg-mobile-line-height);
     color: var(--pw-black);
   }
   h4 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-title-md-size);
     font-weight: var(--text-title-md-weight);
     line-height: var(--text-title-md-line-height);
     color: var(--pw-black);
   }
   h5 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-body-lg-size);
-    font-weight: 600; /* styled as heading */
+    font-weight: 600;
     line-height: var(--text-body-lg-line-height);
     color: var(--pw-black);
   }
   h6 {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-body-sm-size);
-    font-weight: 600; /* styled as heading */
+    font-weight: 600;
     line-height: var(--text-body-sm-line-height);
     color: var(--pw-black);
   }
   p {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-body-lg-size);
     font-weight: var(--text-body-lg-weight);
     line-height: var(--text-body-lg-line-height);
   }
   label, .ag-label, .pw-menu-label {
-    font-family: var(--font-hanken);
+    font-family: var(--font-plus-jakarta);
     font-size: var(--text-label-caps-size);
     font-weight: var(--text-label-caps-weight);
     line-height: var(--text-label-caps-line-height);

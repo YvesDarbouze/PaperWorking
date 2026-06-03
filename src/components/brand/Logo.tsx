@@ -20,28 +20,19 @@ interface LogoProps {
   className?: string;
 }
 
-/** The PaperWorking inbox-tray icon as clean inline SVG */
+import Image from 'next/image';
+
+/** The PaperWorking inbox-tray icon using the custom PNG */
 function PaperWorkingIcon({ size }: { size: number }) {
   return (
-    <svg
+    <Image
+      src="/logo-icon.png"
+      alt="PaperWorking Icon"
       width={size}
       height={size}
-      viewBox="0 0 100 100"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
       className="flex-shrink-0"
       style={{ width: size, height: size }}
-    >
-      {/* Three thick horizontal bars */}
-      <rect x="15" y="10" width="70" height="9" />
-      <rect x="15" y="27" width="70" height="9" />
-      <rect x="15" y="44" width="70" height="9" />
-      {/* Inbox tray */}
-      <path
-        d="M 3.5,69 A 8,8 0 0 1 11.5,61 H 28 C 30,61 31,63 31,65 V 73 C 31,79 35,83 41,83 H 59 C 65,83 69,79 69,73 V 65 C 69,63 70,61 72,61 H 88.5 A 8,8 0 0 1 96.5,69 V 89 A 11,11 0 0 1 85.5,100 H 14.5 A 11,11 0 0 1 3.5,89 Z"
-      />
-    </svg>
+    />
   );
 }
 

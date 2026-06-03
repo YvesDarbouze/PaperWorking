@@ -14,7 +14,7 @@ export default function OnboardingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col min-h-screen bg-[#0b141a] selection:bg-primary/30 overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[#091015] selection:bg-primary/30 overflow-hidden">
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
@@ -26,7 +26,7 @@ export default function OnboardingLayout({
       </div>
 
       {/* ── Top Brand Bar ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#0b141a]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-center px-5 md:px-10">
+      <header className="fixed top-0 w-full z-50 bg-[#091015]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-center px-5 md:px-10">
         <span className="text-[20px] font-bold text-[#57f1db] tracking-tight font-sans">
           PaperWorking
         </span>

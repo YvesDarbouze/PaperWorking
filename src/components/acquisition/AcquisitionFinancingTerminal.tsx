@@ -65,7 +65,7 @@ export default function AcquisitionFinancingTerminal() {
         
         {/* COLUMN 1: ACQUISITION */}
         <div className="space-y-6">
-          <section className="bg-[#0b141a]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <span className="p-2 bg-primary/10 rounded-lg">
                 <span className="material-symbols-outlined text-primary">payments</span>
@@ -131,7 +131,7 @@ export default function AcquisitionFinancingTerminal() {
             </div>
           </section>
 
-          <section className="bg-[#0b141a]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider">Due Diligence Timeline</h4>
               <span className="material-symbols-outlined text-on-surface-variant opacity-50">calendar_month</span>
@@ -151,7 +151,7 @@ export default function AcquisitionFinancingTerminal() {
 
         {/* COLUMN 2: DEBT SETUP */}
         <div className="space-y-6">
-          <section className="bg-[#0b141a]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <span className="p-2 bg-[#adc6ff]/10 rounded-lg">
                 <span className="material-symbols-outlined text-[#adc6ff]">account_balance</span>
@@ -261,7 +261,7 @@ export default function AcquisitionFinancingTerminal() {
 
         {/* COLUMN 3: CAPITAL STACK ANALYTICS */}
         <div className="space-y-6">
-          <section className="bg-[#0b141a]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 flex flex-col items-center">
+          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 flex flex-col items-center">
             <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider mb-8 w-full">Capital Stack Analysis</h4>
             
             {/* Donut Chart Visualization */}
@@ -296,7 +296,7 @@ export default function AcquisitionFinancingTerminal() {
             </div>
           </section>
 
-          <section className="bg-[#0b141a]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider mb-4">Leverage Metrics</h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-[#060f15] border border-white/5 rounded-lg">
@@ -322,7 +322,7 @@ export default function AcquisitionFinancingTerminal() {
       </div>
 
       {/* FOOTER ACTION BAR */}
-      <div className="mt-12 flex flex-col md:flex-row justify-between items-center p-6 bg-[#0b141a]/60 backdrop-blur-3xl rounded-xl border border-primary/20 gap-4">
+      <div className="mt-12 flex flex-col md:flex-row justify-between items-center p-6 bg-[#091015]/60 backdrop-blur-3xl rounded-xl border border-primary/20 gap-4">
         <div className="flex items-center gap-4 text-on-surface-variant">
           <span className="material-symbols-outlined text-primary">info</span>
           <p className="text-[14px]">All changes are saved to the <span className="text-on-surface font-medium">Underwriting Scratchpad</span> in real-time.</p>

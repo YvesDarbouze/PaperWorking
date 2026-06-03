@@ -68,7 +68,7 @@ export function BottomNav() {
                   className="absolute -top-1 -right-2 text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
                   style={{
                     background: 'var(--color-primary)',
-                    color: '#0b141a',
+                    color: '#091015',
                     boxShadow: '0 0 6px rgba(45,212,191,0.5)',
                   }}
                 >

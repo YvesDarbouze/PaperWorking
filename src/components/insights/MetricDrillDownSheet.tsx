@@ -329,7 +329,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
           const cx = padding + (lastI / (values.length - 1)) * innerW;
           const cy = padding + innerH - ((values[lastI] - min) / range) * innerH;
           return (
-            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#2dd4bf' : '#ef4444'} stroke="#0b141a" strokeWidth="2" />
+            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#2dd4bf' : '#ef4444'} stroke="#091015" strokeWidth="2" />
           );
         })()}
       </svg>

@@ -107,7 +107,7 @@ export default function DemoPage() {
       <div 
         className="flex flex-col items-center justify-center min-h-screen text-on-surface"
         style={{
-          background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)',
+          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
         }}
       >
         <Loader2 className="w-10 h-10 animate-spin text-pw-primary mb-4" />
@@ -121,7 +121,7 @@ export default function DemoPage() {
       <div 
         className="flex flex-col items-center justify-center min-h-screen text-on-surface p-6 text-center"
         style={{
-          background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)',
+          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
         }}
       >
         <ShieldAlert className="w-12 h-12 text-error mb-4 animate-bounce" />
@@ -139,7 +139,7 @@ export default function DemoPage() {
       <div 
         className="dashboard-context flex flex-col md:flex-row h-screen overflow-hidden text-on-surface"
         style={{
-          background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)',
+          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
         }}
       >
         {/* Sidebar (Desktop) */}

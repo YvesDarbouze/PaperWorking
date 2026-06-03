@@ -25,7 +25,7 @@ import {
      4. Trust & Friction Reduction (FAQ Accordion)
 
    Design Tokens:
-     bg: #0b141a  primary: #57f1db  on-primary: #003731
+     bg: #091015  primary: #57f1db  on-primary: #003731
      glass-panel: gradient(135deg, rgba(45,54,61,0.4), rgba(20,29,35,0.6))
      luminous-button: box-shadow 0 0 20px -5px primary/40
      Fonts: Plus Jakarta Sans + JetBrains Mono (prices)

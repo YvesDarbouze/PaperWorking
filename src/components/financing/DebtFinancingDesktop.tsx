@@ -8,9 +8,9 @@ export default function DebtFinancingDesktop() {
   const [term, setTerm] = useState("15");
 
   return (
-    <div className="flex flex-col gap-6 w-full h-full text-on-surface dark bg-[#0b141a]">
+    <div className="flex flex-col gap-6 w-full h-full text-on-surface dark bg-[#091015]">
       {/* Summary Banner */}
-      <section className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6 flex justify-between items-center relative overflow-hidden">
+      <section className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6 flex justify-between items-center relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 pointer-events-none"></div>
         <div className="relative z-10 flex items-center gap-8">
           <div>
@@ -43,7 +43,7 @@ export default function DebtFinancingDesktop() {
       <div className="flex-1 grid grid-cols-12 gap-6 overflow-hidden min-h-[500px]">
         {/* Left Pane: Primary Inputs */}
         <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 overflow-y-auto pr-2">
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-primary">account_balance</span>
               <h4 className="text-[20px] font-semibold">Primary Loan Parameters</h4>
@@ -107,7 +107,7 @@ export default function DebtFinancingDesktop() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
             <h4 className="text-[20px] font-semibold mb-4">Risk Profile</h4>
             <div className="h-32 w-full bg-[#060f15]/50 rounded-xl flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
@@ -130,7 +130,7 @@ export default function DebtFinancingDesktop() {
 
         {/* Right Pane: Advanced Leverage */}
         <div className="col-span-12 lg:col-span-7 flex flex-col gap-6 overflow-hidden">
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl flex-1 flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">tune</span>

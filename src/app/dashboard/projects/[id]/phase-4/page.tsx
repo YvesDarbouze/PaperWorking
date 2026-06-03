@@ -22,6 +22,9 @@ import NetProceedsCard from '@/components/exit/NetProceedsCard';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { computeAutopsyMetrics, computeCapitalGainsTax } from '@/lib/math/calculatorUtils';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
+import { computeScheduleE } from '@/lib/tax/scheduleE';
+import { aggregateScheduleE } from '@/lib/tax/portfolioSummary';
+import { generateScheduleEPdf } from '@/lib/tax/pdfGenerator';
 /* ── Structured MetricResult wrappers ── */
 import { computeIRRMetric } from '@/lib/metrics/computeIRR';
 import { computeAppreciationMetric } from '@/lib/metrics/computeAppreciation';
@@ -278,69 +281,45 @@ export default function Phase4WorkspacePage() {
     }
   };
 
-  const handleGenerateTaxReport = () => {
+  const handleGenerateTaxReport = async () => {
     if (!taxEstimate || !project) return;
 
     const fin = project.financials ?? {};
-    const autopsyData = computeAutopsyMetrics(project);
     const addr = project.address || project.name || 'Unknown Property';
     const taxYear = fin.acquisitionDate
       ? new Date(fin.acquisitionDate as any).getFullYear() + 1
       : new Date().getFullYear();
 
-    // Build Schedule E — Supplemental Income and Loss (real estate disposition)
-    const rows: string[][] = [
-      ['PaperWorking — Schedule E Summary'],
-      [`Generated: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`],
-      [`Tax Year: ${taxYear}`],
-      [],
-      ['PROPERTY INFORMATION'],
-      ['Address', addr],
-      ['Project ID', project.id],
-      ['Holding Period', `${taxEstimate.holdingPeriodDays} days`],
-      ['Capital Gain Type', taxEstimate.isLongTerm ? 'Long-Term (>365 days)' : 'Short-Term (≤365 days)'],
-      [],
-      ['COST BASIS SCHEDULE'],
-      ['Purchase Price', `$${(autopsyData.purchasePrice || 0).toLocaleString()}`],
-      ['Acquisition / Closing Costs', `$${(autopsyData.acquisitionCosts || 0).toLocaleString()}`],
-      ['Rehab / Capital Improvements', `$${(autopsyData.actualRehabCost || autopsyData.projectedRehabCost || 0).toLocaleString()}`],
-      ['Holding Costs (taxes, insurance, etc.)', `$${(autopsyData.holdingCosts || 0).toLocaleString()}`],
-      ['Total Adjusted Cost Basis', `$${Math.round(taxEstimate.costBasis).toLocaleString()}`],
-      [],
-      ['DISPOSITION'],
-      ['Gross Sale Price', `$${Math.round(autopsyData.grossSalePrice || 0).toLocaleString()}`],
-      ['Selling Costs (commissions, closing)', `$${Math.round((autopsyData.grossSalePrice || 0) - (taxEstimate.netProceeds || 0)).toLocaleString()}`],
-      ['Net Proceeds', `$${Math.round(taxEstimate.netProceeds).toLocaleString()}`],
-      [],
-      ['CAPITAL GAIN / (LOSS)'],
-      ['Net Proceeds', `$${Math.round(taxEstimate.netProceeds).toLocaleString()}`],
-      ['Less: Adjusted Cost Basis', `($${Math.round(taxEstimate.costBasis).toLocaleString()})`],
-      ['Realized Capital Gain', `$${Math.round(taxEstimate.capitalGain).toLocaleString()}`],
-      [],
-      ['TAX ESTIMATE'],
-      ['Applicable Tax Rate', `${taxEstimate.estimatedTaxRate}%`],
-      ['Estimated Tax Liability', `$${Math.round(taxEstimate.estimatedTaxLiability).toLocaleString()}`],
-      ['Net After Estimated Tax', `$${Math.round(taxEstimate.netAfterTax).toLocaleString()}`],
-      [],
-      ['DISCLAIMER'],
-      ['This report is an estimate only. Consult a licensed CPA or tax advisor before filing.'],
-      ['Depreciation recapture (25%) and state taxes are not included in this estimate.'],
-    ];
+    const loadToast = toast.loading('Generating real Schedule E PDF...');
+    try {
+      // 1. Fetch live ledger items
+      const ledgerItems = await projectsService.getLedgerItems(projectId);
 
-    const csv = rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ScheduleE_${addr.replace(/[^a-zA-Z0-9]/g, '_')}_${taxYear}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
+      // 2. Compute Schedule E Preview
+      const preview = computeScheduleE(project, ledgerItems, taxYear);
+
+      // 3. Compute aggregated stats
+      const aggregated = aggregateScheduleE([preview], taxYear);
+
+      // 4. Generate PDF bytes via generateScheduleEPdf
+      const pdfBytes = generateScheduleEPdf([preview], aggregated, taxYear);
+
+      // 5. Convert Uint8Array to Blob and download
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ScheduleE_${addr.replace(/[^a-zA-Z0-9]/g, '_')}_${taxYear}.pdf`;
+      document.body.appendChild(a);
+      a.click();
       a.remove();
-      URL.revokeObjectURL(url);
-    }, 100);
+      window.URL.revokeObjectURL(url);
 
-    toast.success('Schedule E downloaded — share with your CPA.');
+      toast.success('Schedule E PDF downloaded — share with your CPA.', { id: loadToast });
+    } catch (error) {
+      console.error('Failed to generate tax report PDF:', error);
+      toast.error('Failed to generate Schedule E PDF', { id: loadToast });
+    }
   };
 
   /* ── Format helpers ── */
@@ -365,7 +344,7 @@ export default function Phase4WorkspacePage() {
   /* ── Loading state ── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
@@ -381,7 +360,7 @@ export default function Phase4WorkspacePage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="text-center space-y-3">
           <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
           <button
@@ -396,7 +375,7 @@ export default function Phase4WorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b141a] relative">
+    <div className="min-h-screen bg-[#091015] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -910,7 +889,7 @@ export default function Phase4WorkspacePage() {
           Glass-card bar pinned to bottom with IRR, Total Return,
           and Appreciation Rate.
           ═══════════════════════════════════════════════════════ */}
-      <div className="sticky bottom-0 z-50 border-t border-white/10 bg-[#0b141a]/80 backdrop-blur-xl">
+      <div className="sticky bottom-0 z-50 border-t border-white/10 bg-[#091015]/80 backdrop-blur-xl">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Phase chip */}

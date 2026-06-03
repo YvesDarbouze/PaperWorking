@@ -307,6 +307,65 @@ export default function Phase3RehabPage() {
     }
   };
 
+  const handleDrawScheduleChange = async (newDraws: DrawScheduleItem[]) => {
+    if (!project) return;
+
+    // Detect newly paid draws (Paid status in newDraws but not in drawSchedule)
+    const newlyPaidDraws = newDraws.filter(newDraw => {
+      if (newDraw.status !== 'Paid') return false;
+      const oldDraw = drawSchedule.find(d => d.id === newDraw.id);
+      return !oldDraw || oldDraw.status !== 'Paid';
+    });
+
+    let updatedExpenses = [...rehabExpenses];
+
+    if (newlyPaidDraws.length > 0) {
+      newlyPaidDraws.forEach(draw => {
+        // Trigger simulated bank transfer notification toast
+        toast.success(`Bank transfer initiated: $${draw.amount.toLocaleString()} for "${draw.milestone}"`);
+
+        // Automatically append matching expense entry to rehabExpenses ledger
+        const newExpense: RehabExpense = {
+          id: crypto.randomUUID(),
+          category: 'Professional Labor',
+          description: `Contractor Draw: ${draw.milestone}`,
+          amount: draw.amount,
+          vendor: 'General Contractor',
+          paid: true,
+          paidAt: new Date(),
+          createdAt: new Date()
+        };
+        updatedExpenses.push(newExpense);
+      });
+      setRehabExpenses(updatedExpenses);
+    }
+
+    setDrawSchedule(newDraws);
+
+    // Persist updates immediately
+    try {
+      await projectsService.updateProject(projectId, {
+        rehabExpenses: updatedExpenses,
+        rehab: {
+          baseBudget: 0,
+          contingencyBufferPercentage: 0.15,
+          tasks: [],
+          permits: [],
+          pendingReceipts: [],
+          drawRequests: [],
+          ...(project.rehab || {}),
+          scopeOfWork,
+          contractorBids,
+          drawSchedule: newDraws
+        }
+      });
+      refresh();
+    } catch (error) {
+      console.error('Failed to auto-save draw schedule update:', error);
+      toast.error('Failed to save draw schedule changes');
+    }
+  };
+
   /* ── Format helpers ── */
   const fmtDollar = (value?: number) => {
     if (!value && value !== 0) return '—';
@@ -328,7 +387,7 @@ export default function Phase3RehabPage() {
   /* ── Loading state ── */
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
@@ -344,7 +403,7 @@ export default function Phase3RehabPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="text-center space-y-3">
           <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
         </div>
@@ -366,7 +425,7 @@ export default function Phase3RehabPage() {
   const rehabPct = rehabTotal > 0 ? Math.round((rehabDone / rehabTotal) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-[#0b141a] relative">
+    <div className="min-h-screen bg-[#091015] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -712,7 +771,7 @@ export default function Phase3RehabPage() {
               <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
                 Draw Schedule
               </h2>
-              <ContractorDrawSchedule draws={drawSchedule} onChange={setDrawSchedule} totalBudget={totalBudget} />
+              <ContractorDrawSchedule draws={drawSchedule} onChange={handleDrawScheduleChange} totalBudget={totalBudget} />
             </section>
 
             {/* ── Rehab Expense Tracker ── */}

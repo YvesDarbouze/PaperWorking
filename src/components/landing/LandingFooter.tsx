@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import Logo from '@/components/brand/Logo';
+
 export default function LandingFooter() {
   return (
     <footer className="bg-surface-container-lowest border-t border-white/10 w-full py-stack-lg mt-24">
@@ -10,14 +12,7 @@ export default function LandingFooter() {
         {/* ── Brand Column ── */}
         <div className="col-span-2 md:col-span-1">
           <div className="flex items-center gap-2 mb-6">
-            <img
-              alt="PaperWorking Logo"
-              className="h-6 w-6 rounded-md object-contain grayscale opacity-70"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
-            />
-            <span className="font-headline-md text-headline-md text-on-surface font-semibold">
-              Paper<span className="font-thin">Working</span>
-            </span>
+            <Logo size="sm" className="grayscale opacity-75" />
           </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 pr-4">
             Precision Deal Management. Built for serious real estate investors.

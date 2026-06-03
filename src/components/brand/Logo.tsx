@@ -26,21 +26,20 @@ function PaperWorkingIcon({ size }: { size: number }) {
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 100 100"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
       className="flex-shrink-0"
       style={{ width: size, height: size }}
     >
-      {/* Rising paper sheets */}
-      <rect x="5" y="2" width="14" height="2" rx="0.5" />
-      <rect x="5" y="6" width="14" height="2" rx="0.5" />
-      <rect x="5" y="10" width="14" height="2" rx="0.5" />
-      <rect x="5" y="14" width="14" height="2" rx="0.5" />
+      {/* Three thick horizontal bars */}
+      <rect x="15" y="10" width="70" height="9" />
+      <rect x="15" y="27" width="70" height="9" />
+      <rect x="15" y="44" width="70" height="9" />
       {/* Inbox tray */}
       <path
-        d="M2 17.2C2 16.1 2.9 15.2 4 15.2H7C7.55 15.2 8 16.2 8 16.2V17.2C8 18.3 8.9 19.2 10 19.2H14C15.1 19.2 16 18.3 16 17.2V16.2C16 15.65 16.45 15.2 17 15.2H20C21.1 15.2 22 16.1 22 17.2V20.8C22 21.9 21.1 22.8 20 22.8H4C2.9 22.8 2 21.9 2 20.8V17.2Z"
+        d="M 3.5,69 A 8,8 0 0 1 11.5,61 H 28 C 30,61 31,63 31,65 V 73 C 31,79 35,83 41,83 H 59 C 65,83 69,79 69,73 V 65 C 69,63 70,61 72,61 H 88.5 A 8,8 0 0 1 96.5,69 V 89 A 11,11 0 0 1 85.5,100 H 14.5 A 11,11 0 0 1 3.5,89 Z"
       />
     </svg>
   );
@@ -60,10 +59,10 @@ export default function Logo({ href, size = 'md', className = '' }: LogoProps) {
     <span className={`inline-flex items-center ${s.gap} ${className}`}>
       <PaperWorkingIcon size={s.iconPx} />
       <span 
-        className={`${s.text} tracking-tight font-plus-jakarta`}
-        style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif' }}
+        className={`${s.text} tracking-tight font-inter`}
+        style={{ fontFamily: 'var(--font-inter), sans-serif' }}
       >
-        <span className="font-black">Paper</span>
+        <span className="font-bold">Paper</span>
         <span className="font-thin text-[var(--pw-subtle)]">Working</span>
       </span>
     </span>

@@ -543,7 +543,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
     <div className="min-h-full py-8 w-full text-[#dae4ec]">
       
       {/* ─── Top Header & Tabs ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-6 lg:px-8 border-b border-white/10 pb-6 mb-8 bg-[#0b141a]/20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-6 lg:px-8 border-b border-white/10 pb-6 mb-8 bg-[#091015]/20">
         <div>
           <div className="flex items-center gap-2 mb-1 text-[11px] font-bold uppercase tracking-widest text-[#859490]">
             <span>Intelligence Hub</span>

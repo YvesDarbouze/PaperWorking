@@ -261,7 +261,7 @@ export default function VendorPortalDashboard() {
          style={{ backgroundImage: "radial-gradient(rgba(45, 212, 191, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
       
       {/* Top Header */}
-      <header className="sticky top-0 w-full z-40 bg-[#0b141a]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-6 md:px-12 h-16">
+      <header className="sticky top-0 w-full z-40 bg-[#091015]/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-6 md:px-12 h-16">
         <div className="flex items-center gap-3">
           <span className="material-symbols-outlined text-[#2dd4bf] font-bold text-2xl select-none">terminal</span>
           <h1 className="text-xl font-bold tracking-tighter text-[#2dd4bf] uppercase">PaperWorking</h1>
@@ -572,7 +572,7 @@ export default function VendorPortalDashboard() {
       </main>
 
       {/* Floating Bottom Navigation Pill */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#0b141a]/95 backdrop-blur-2xl border border-white/10 flex justify-around items-center h-16 w-[340px] px-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#091015]/95 backdrop-blur-2xl border border-white/10 flex justify-around items-center h-16 w-[340px] px-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         <button onClick={() => setFilter('PENDING')}
                 className={`flex flex-col items-center justify-center flex-1 h-12 rounded-full transition-all ${
                   filter === 'PENDING' ? 'text-[#2dd4bf] bg-white/5' : 'text-[#bacac5] hover:text-white'
@@ -601,7 +601,7 @@ export default function VendorPortalDashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-md rounded-2xl overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] animate-in fade-in zoom-in-95 duration-200">
             
-            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-[#0b141a]">
+            <div className="p-6 border-b border-white/5 flex justify-between items-center bg-[#091015]">
               <div>
                 <h3 className="text-lg font-bold text-white uppercase tracking-tight">Propose Service Quote</h3>
                 <p className="text-xs text-[#bacac5] mt-0.5">Project: {submittingRequest.dealName}</p>

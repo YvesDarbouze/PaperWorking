@@ -8,9 +8,6 @@ import {
   Clock,
   ArrowUpRight,
   ArrowDownRight,
-  Flame,
-  CheckCircle2,
-  Circle,
 } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
@@ -19,10 +16,9 @@ import {
    High-fidelity animated dashboard mock for the landing
    hero. Shows:
      • 4-KPI metric strip (count-up on mount)
-     • Live burn rate ticker (ticks every second)
-     • 4-phase deal pipeline strip
      • Monthly disbursements bar chart
-   Uses only PaperWorking design tokens — no arbitrary values.
+     • Active team members
+   Uses only PaperWorking design tokens.
    ═══════════════════════════════════════════════════════ */
 
 function useCountUp(target: number, duration = 1200, delay = 0) {
@@ -91,108 +87,6 @@ function MetricCard({ label, value, change, positive, icon, delay }: MetricCardP
   );
 }
 
-/* ── Live Burn Rate Ticker ── */
-function BurnRateTicker() {
-  const DAILY_RATE = 187.5; // $187.50/day for a $150K deal at 1.5% monthly hold cost
-  const [secondsElapsed, setSecondsElapsed] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => setSecondsElapsed((s) => s + 1), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const costThisSession = ((secondsElapsed / 86400) * DAILY_RATE).toFixed(4);
-
-  return (
-    <div className="px-5 py-4 border-t border-dashboard bg-black/40">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Flame className="w-3.5 h-3.5 text-red-400 animate-pulse" />
-          <span className="text-xs font-bold uppercase tracking-widest text-red-400">
-            Burn Rate — Live
-          </span>
-        </div>
-        <span className="text-xs text-phase-2 font-medium tabular-nums">
-          ${DAILY_RATE.toFixed(2)}/day
-        </span>
-      </div>
-      <div className="flex items-end justify-between">
-        <div>
-          <span className="text-xs text-phase-2 uppercase tracking-widest">This session</span>
-          <div className="text-lg font-medium tabular-nums text-red-300 mt-0.5">
-            ${costThisSession}
-          </div>
-        </div>
-        <div className="text-right">
-          <span className="text-xs text-phase-2 uppercase tracking-widest">Rehab started</span>
-          <div className="text-xs font-medium text-phase-3 mt-0.5">Day 47 of 60</div>
-        </div>
-      </div>
-      {/* Progress bar showing days into rehab period */}
-      <div className="mt-3 h-1.5 w-full bg-dashboard overflow-hidden">
-        <div className="h-full bg-red-400/80 transition-all" style={{ width: '78%' }} />
-      </div>
-      <div className="flex justify-between mt-1">
-        <span className="text-xs text-phase-2">Start</span>
-        <span className="text-xs text-red-400 font-bold">78% rehab elapsed</span>
-        <span className="text-xs text-phase-2">Target completion</span>
-      </div>
-    </div>
-  );
-}
-
-/* ── Phase Pipeline Strip ── */
-const PHASES = [
-  { label: 'Acquisition', short: '01', done: true },
-  { label: 'Transaction', short: '02', done: true },
-  { label: 'Rehab',       short: '03', done: false, active: true },
-  { label: 'Hold/Exit',   short: '04', done: false },
-];
-
-function PipelineStrip() {
-  return (
-    <div className="px-5 py-3 border-t border-dashboard">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-bold uppercase tracking-widest text-phase-2">Deal Pipeline</span>
-        <span className="text-xs text-phase-3 font-medium">421 Oak St, Brooklyn</span>
-      </div>
-      <div className="flex items-center gap-1">
-        {PHASES.map((phase, i) => (
-          <React.Fragment key={phase.label}>
-            <div
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 flex-1 transition-all ${
-                phase.done
-                  ? 'bg-phase-4/20 border border-phase-4/40'
-                  : phase.active
-                  ? 'bg-primary/20 border border-primary/60'
-                  : 'bg-dashboard border border-phase-1'
-              }`}
-            >
-              {phase.done ? (
-                <CheckCircle2 className="w-3 h-3 text-phase-4 flex-shrink-0" />
-              ) : phase.active ? (
-                <div className="w-3 h-3 rounded-full border-2 border-primary bg-primary/20 flex-shrink-0 animate-pulse" />
-              ) : (
-                <Circle className="w-3 h-3 text-phase-1 flex-shrink-0" />
-              )}
-              <span
-                className={`text-xs font-bold uppercase tracking-widest truncate ${
-                  phase.done ? 'text-phase-4' : phase.active ? 'text-primary' : 'text-phase-2'
-                }`}
-              >
-                {phase.short}
-              </span>
-            </div>
-            {i < PHASES.length - 1 && (
-              <div className={`w-2 h-px flex-shrink-0 ${phase.done ? 'bg-phase-4/40' : 'bg-phase-1'}`} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ── Main Component ── */
 export default function HeroDashboard() {
   const roiValue      = useCountUp(34,  1400, 300);
@@ -204,14 +98,14 @@ export default function HeroDashboard() {
 
   return (
     <div className="w-full bg-bg-surface overflow-hidden">
-      {/* Title Bar */}
+      {/* Window Header */}
       <div className="flex items-center justify-between px-5 py-3 border-b border-dashboard bg-dashboard">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-phase-4" />
-          <span className="text-xs font-bold uppercase tracking-widest text-phase-3">
-            Portfolio Overview
-          </span>
+        <div className="flex items-center space-x-1.5">
+          <div className="w-2 h-2 rounded-full bg-white/10" />
+          <div className="w-2 h-2 rounded-full bg-white/10" />
+          <div className="w-2 h-2 rounded-full bg-white/10" />
         </div>
+        <span className="text-[10px] uppercase tracking-widest text-phase-2 font-mono">command_center.sh</span>
         <span className="text-xs text-phase-2 font-medium tabular-nums">Live · Q2 2026</span>
       </div>
 
@@ -250,12 +144,6 @@ export default function HeroDashboard() {
           delay={400}
         />
       </div>
-
-      {/* Live Burn Rate Ticker */}
-      <BurnRateTicker />
-
-      {/* 4-Phase Pipeline Strip */}
-      <PipelineStrip />
 
       {/* Monthly Disbursements Bar Chart */}
       <div className="px-5 py-4 border-t border-dashboard">

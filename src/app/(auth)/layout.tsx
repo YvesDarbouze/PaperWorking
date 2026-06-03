@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative min-h-screen bg-[#0b141a] flex flex-col items-center overflow-x-hidden font-sans text-on-surface"
+      className="relative min-h-screen bg-[#091015] flex flex-col items-center overflow-x-hidden font-sans text-on-surface"
       style={{
         backgroundImage:
           'radial-gradient(circle at 50% 50%, rgba(87, 241, 219, 0.03) 0%, transparent 50%), ' +
@@ -25,7 +25,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <GlowEffect />
 
       {/* Simplified TopAppBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#0b141a]/40 backdrop-blur-md border-b border-white/5 h-16">
+      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#091015]/40 backdrop-blur-md border-b border-white/5 h-16">
         <div className="w-full max-w-7xl flex items-center justify-between">
           <Logo href="/" size="sm" className="text-[#57f1db]" />
           <div className="hidden md:block">

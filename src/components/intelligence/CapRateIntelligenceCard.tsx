@@ -177,7 +177,7 @@ function SemiCircleGauge({ value, maxValue, marketAvg }: GaugeProps) {
 
       {/* Center dot */}
       <circle cx={cx} cy={cy} r={6} fill={zone.color} />
-      <circle cx={cx} cy={cy} r={3} fill="var(--color-surface, #0b141a)" />
+      <circle cx={cx} cy={cy} r={3} fill="var(--color-surface, #091015)" />
 
       {/* Value text */}
       <text

@@ -22,7 +22,7 @@ const T = {
   purple: '#818cf8',
   amber: '#fbbf24',
   red: '#f87171',
-  canvas: '#0b141a',
+  canvas: '#091015',
   surface: 'rgba(24,33,39,0.7)',
   border: 'rgba(255,255,255,0.08)',
   textPrimary: '#dae4ec',

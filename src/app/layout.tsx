@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Hanken_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
 import { AuthProvider } from "@/context/AuthContext";
@@ -28,6 +28,12 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "PaperWorking — Real Estate Investment Operating System",
   description: "Track deals, manage rehab budgets, and close faster. PaperWorking is the operating system for serious real estate investors — from sourcing to exit.",
@@ -39,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${hankenGrotesk.variable} ${plusJakartaSans.variable} ${jetBrainsMono.variable} h-full dark`} data-theme="dark">
+    <html lang="en" className={`${hankenGrotesk.variable} ${plusJakartaSans.variable} ${jetBrainsMono.variable} ${inter.variable} h-full dark`} data-theme="dark">
       <head>
         <script
           dangerouslySetInnerHTML={{

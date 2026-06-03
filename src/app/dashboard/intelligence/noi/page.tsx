@@ -146,7 +146,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           data: [{ coord: [lastIdx, lastVal] }],
           symbol: 'circle',
           symbolSize: 9,
-          itemStyle: { color: '#2dd4bf', borderColor: '#0b141a', borderWidth: 2 },
+          itemStyle: { color: '#2dd4bf', borderColor: '#091015', borderWidth: 2 },
           label: { show: false },
         },
       },

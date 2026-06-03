@@ -117,14 +117,14 @@ export default function ThreadDetail({ thread, projectName, onSendReply, onBack 
   return (
     <div className="flex-1 overflow-hidden z-10 flex flex-col bg-transparent">
       {/* Header Actions */}
-      <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0b141a]/50 backdrop-blur-sm">
+      <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#091015]/50 backdrop-blur-sm">
         <div className="flex items-center gap-4">
           {onBack && (
             <button onClick={onBack} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </button>
           )}
-          <div className="h-12 w-12 rounded-xl bg-[#0b141a]/60 backdrop-blur-xl border border-[#57f1db]/30 shadow-[inset_1px_1px_0px_rgba(87,241,219,0.1),0_0_15px_rgba(87,241,219,0.15)] flex items-center justify-center text-[#57f1db] font-bold text-lg">
+          <div className="h-12 w-12 rounded-xl bg-[#091015]/60 backdrop-blur-xl border border-[#57f1db]/30 shadow-[inset_1px_1px_0px_rgba(87,241,219,0.1),0_0_15px_rgba(87,241,219,0.15)] flex items-center justify-center text-[#57f1db] font-bold text-lg">
             {(thread.lastMessage.senderName?.[0] || 'P').toUpperCase()}
           </div>
           <div>
@@ -161,7 +161,7 @@ export default function ThreadDetail({ thread, projectName, onSendReply, onBack 
       </div>
 
       {/* Reply Area */}
-      <footer className="p-6 border-t border-white/10 bg-[#0b141a]/50 backdrop-blur-sm shrink-0">
+      <footer className="p-6 border-t border-white/10 bg-[#091015]/50 backdrop-blur-sm shrink-0">
         <div className="relative max-w-4xl mx-auto">
           <textarea
             id="inbox-reply-input"

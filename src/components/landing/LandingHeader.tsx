@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
+import Logo from '@/components/brand/Logo';
 
 /* ═══════════════════════════════════════════════════════
    LandingHeader — Stitch-synchronized Public Navigation.
@@ -84,16 +85,7 @@ export default function LandingHeader() {
         <nav className="flex justify-between items-center h-16 md:h-20 px-6 md:px-10 max-w-[1280px] mx-auto">
 
           {/* ── Logo Lockup ── */}
-          <Link href="/" className="flex items-center gap-3 group cursor-pointer shrink-0">
-            <img
-              alt="PaperWorking Logo"
-              className="h-8 w-8 rounded-md object-contain"
-              src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
-            />
-            <span className="font-headline-md text-headline-md text-primary tracking-tight drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">
-              <span className="font-semibold">Paper</span><span className="font-light">Working</span>
-            </span>
-          </Link>
+          <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]" />
 
           {/* ── Desktop Center Nav ── */}
           <div className="hidden md:flex items-center gap-8">
@@ -260,20 +252,9 @@ export default function LandingHeader() {
             >
               {/* Drawer header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                <Link
-                  href="/"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3"
-                >
-                  <img
-                    alt="PaperWorking Logo"
-                    className="h-8 w-8 rounded-md object-contain"
-                    src="https://lh3.googleusercontent.com/aida/ADBb0ujudTitz8Bv66g6ir0MNl5p-kxIGB0rCFNG0a0Yv1hJGTm832QinDG-7KIjy_4vpVRrRDGEICYXp2lV-NmXet5QQMVQodBy5C41w9OSjiJXbfgySZXBESLgk_4qqRm_4N3i5OyFpwiGvnzE0nSXWJ6MTCgX1O9v1IARTpJODZbpiLqaY1PDzoU9sHdrKKJCR-uBvFejraSGiK9jx1O_odjqRi5Dp3UkDNNUY6OihAK4mmO_oaHjfYuYuG9I"
-                  />
-                  <span className="font-headline-md text-headline-md text-primary tracking-tight drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]">
-                    <span className="font-semibold">Paper</span><span className="font-light">Working</span>
-                  </span>
-                </Link>
+                <div onClick={() => setMobileOpen(false)}>
+                  <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]" />
+                </div>
                 <button
                   type="button"
                   onClick={() => setMobileOpen(false)}

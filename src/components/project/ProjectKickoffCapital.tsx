@@ -29,9 +29,9 @@ export default function ProjectKickoffCapital() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0b141a] dark relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#091015] dark relative overflow-hidden">
       {/* Background Decor */}
-      <div id="bg-mesh" className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#182127]/50 via-[#0b141a]/80 to-[#0b141a] transition-transform duration-300 ease-out"></div>
+      <div id="bg-mesh" className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#182127]/50 via-[#091015]/80 to-[#091015] transition-transform duration-300 ease-out"></div>
       
       <main className="w-full max-w-[1280px] z-10 px-6 md:px-12 py-24 flex flex-col items-center">
         {/* Hero Section */}
@@ -54,7 +54,7 @@ export default function ProjectKickoffCapital() {
         {/* The Bridge: 4-Field Input Grid */}
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Field 1: Closing Date */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">calendar_today</span>
@@ -67,7 +67,7 @@ export default function ProjectKickoffCapital() {
           </div>
 
           {/* Field 2: Purchase Price */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">payments</span>
@@ -87,7 +87,7 @@ export default function ProjectKickoffCapital() {
           </div>
 
           {/* Field 3: Initial Capital */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">account_balance</span>
@@ -110,7 +110,7 @@ export default function ProjectKickoffCapital() {
           </div>
 
           {/* Field 4: Hold Period */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">timelapse</span>

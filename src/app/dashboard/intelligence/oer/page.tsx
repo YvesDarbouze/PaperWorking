@@ -268,7 +268,7 @@ export default function OERIntelligencePage() {
               <div className="relative h-3 rounded-full overflow-hidden"
                 style={{ background: 'linear-gradient(to right, #2dd4bf 0%, #fbbf24 50%, #f87171 100%)' }}>
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#0b141a] shadow"
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow"
                   style={{ left: `${markerPct}%` }}
                 />
               </div>

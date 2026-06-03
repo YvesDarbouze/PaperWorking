@@ -21,7 +21,7 @@ const T = {
   blue: "#60a5fa",
   rose: "#fb7185",
   orange: "#fb923c",
-  canvas: "#0b141a",
+  canvas: "#091015",
   surface: "rgba(24,33,39,0.7)",
   surfaceHover: "rgba(24,33,39,0.85)",
   border: "rgba(255,255,255,0.08)",

@@ -33,7 +33,7 @@ interface InboxFeedProps {
 
 function FeedSkeleton() {
   return (
-    <div className="p-6 space-y-4 bg-[#0b141a] h-full overflow-y-auto">
+    <div className="p-6 space-y-4 bg-[#091015] h-full overflow-y-auto">
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
@@ -153,7 +153,7 @@ export default function InboxFeed({
   // Handle explicit error states
   if (error && items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px] bg-[#0b141a]">
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px] bg-[#091015]">
         <AlertCircle className="w-8 h-8 mb-3 text-red-500" />
         <h3 className="text-sm font-semibold mb-1 text-[#dae4ec]">
           Connection Error
@@ -171,11 +171,11 @@ export default function InboxFeed({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative bg-[#0b141a]">
+    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative bg-[#091015]">
       {/* Select All Action Bar */}
       {items.length > 0 && (
         <div 
-          className="flex items-center px-6 py-3 border-b border-white/10 bg-[#0b141a]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
+          className="flex items-center px-6 py-3 border-b border-white/10 bg-[#091015]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
         >
           <label className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer text-[#bacac5] hover:text-[#57f1db] transition-colors">
             <Checkbox

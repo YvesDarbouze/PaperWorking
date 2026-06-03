@@ -287,7 +287,7 @@ export function Sidebar() {
                 className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm transition-all duration-200 group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#0b141a',
+                  color: '#091015',
                 }}
               >
                 {profile?.displayName ? profile.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}

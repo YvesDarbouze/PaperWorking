@@ -184,7 +184,7 @@ export function TopAppBar() {
       <div className="flex items-center gap-3">
         {/* Mobile: compact logo */}
         <div className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-container)' }}>
-          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1", color: '#0b141a' }}>dataset</span>
+          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1", color: '#091015' }}>dataset</span>
         </div>
 
         {/* Breadcrumb (desktop) */}
@@ -313,7 +313,7 @@ export function TopAppBar() {
               className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
               style={{
                 background: 'var(--color-primary)',
-                color: '#0b141a',
+                color: '#091015',
                 boxShadow: '0 0 8px rgba(45,212,191,0.5)',
               }}
             >
@@ -413,7 +413,7 @@ export function TopAppBar() {
                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#0b141a',
+                  color: '#091015',
                 }}
               >
                 U
@@ -430,7 +430,7 @@ export function TopAppBar() {
                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-200 group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#0b141a',
+                  color: '#091015',
                 }}
               >
                 {profile?.displayName ? profile.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}

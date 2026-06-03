@@ -455,7 +455,7 @@ export default function Phase1WorkspacePage() {
   /* ── Loading state ── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
@@ -472,7 +472,7 @@ export default function Phase1WorkspacePage() {
   /* ── Not found state ── */
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="text-center space-y-3">
           <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
           <button
@@ -520,12 +520,12 @@ export default function Phase1WorkspacePage() {
   const projectData = project as any;
 
   return (
-    <div className="min-h-screen bg-[#0b141a] relative">
+    <div className="min-h-screen bg-[#091015] relative">
 
       {/* ── Syndicate Investor Invite Modal ── */}
       {showInviteModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[#0b141a] border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
+          <div className="w-full max-w-md bg-[#091015] border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-white">Invite Syndicate Investor</h2>
               <button onClick={closeInviteModal} className="text-[#bacac5] hover:text-white transition-colors p-1">
@@ -1277,7 +1277,7 @@ export default function Phase1WorkspacePage() {
           Glass-card bar pinned to bottom with key deal metrics.
           ═══════════════════════════════════════════════════════ */}
       {project && (
-        <div className="sticky bottom-0 z-30 backdrop-blur-xl bg-[#0b141a]/80 border-t border-white/10">
+        <div className="sticky bottom-0 z-30 backdrop-blur-xl bg-[#091015]/80 border-t border-white/10">
           <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
             <div className="flex items-center justify-between gap-4">
               {/* GRM — quick screen */}

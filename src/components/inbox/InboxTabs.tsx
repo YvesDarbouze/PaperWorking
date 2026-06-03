@@ -40,7 +40,7 @@ const TAB_CONFIG: {
 export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: InboxTabsProps) {
   return (
     <div
-      className="flex items-center gap-2.5 px-6 py-3 border-b border-white/10 overflow-x-auto no-scrollbar bg-[#0b141a]/50 backdrop-blur-md shrink-0"
+      className="flex items-center gap-2.5 px-6 py-3 border-b border-white/10 overflow-x-auto no-scrollbar bg-[#091015]/50 backdrop-blur-md shrink-0"
     >
       {TAB_CONFIG.map((tab) => {
         const isActive = activeTab === tab.id;

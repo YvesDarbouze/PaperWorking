@@ -16,7 +16,7 @@ export default function ProjectKickoffBaseline() {
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center p-6 lg:p-12 dark">
-      <main className="w-full max-w-[1280px] flex-1 flex flex-col border border-white/5 rounded-3xl overflow-hidden bg-[#0b141a] relative shadow-2xl">
+      <main className="w-full max-w-[1280px] flex-1 flex flex-col border border-white/5 rounded-3xl overflow-hidden bg-[#091015] relative shadow-2xl">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-tertiary"></div>
         <div className="p-8 lg:p-12 flex-1 flex flex-col h-full z-10">
           <div className="mb-12">
@@ -29,7 +29,7 @@ export default function ProjectKickoffBaseline() {
           {/* Balanced Grid Layout: 4 Critical Bridging Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {/* Target Closing Date */}
-            <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
+            <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
               <div className="space-y-1 mb-6">
                 <span className="text-primary text-[12px] uppercase tracking-widest font-semibold block">Closing Window</span>
                 <h3 className="text-[24px] font-semibold text-white">Target Closing Date</h3>
@@ -45,7 +45,7 @@ export default function ProjectKickoffBaseline() {
             </div>
 
             {/* Estimated Purchase Price */}
-            <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
+            <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
               <div className="space-y-1 mb-6">
                 <span className="text-primary text-[12px] uppercase tracking-widest font-semibold block">Valuation</span>
                 <h3 className="text-[24px] font-semibold text-white">Est. Purchase Price</h3>
@@ -61,7 +61,7 @@ export default function ProjectKickoffBaseline() {
             </div>
 
             {/* Initial Capital Ready to Deploy */}
-            <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
+            <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
               <div className="space-y-1 mb-6">
                 <span className="text-primary text-[12px] uppercase tracking-widest font-semibold block">Liquidity</span>
                 <h3 className="text-[24px] font-semibold text-white">Initial Capital</h3>
@@ -77,7 +77,7 @@ export default function ProjectKickoffBaseline() {
             </div>
 
             {/* Target Hold Period */}
-            <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
+            <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col justify-between group hover:bg-white/5 transition-all focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)]">
               <div className="space-y-1 mb-6">
                 <span className="text-primary text-[12px] uppercase tracking-widest font-semibold block">Strategy</span>
                 <h3 className="text-[24px] font-semibold text-white">Target Hold Period</h3>
@@ -96,13 +96,13 @@ export default function ProjectKickoffBaseline() {
 
           {/* Bento Preview Section */}
           <div className="grid grid-cols-12 gap-4 flex-1 min-h-0">
-            <div className="col-span-12 lg:col-span-8 bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden relative group">
+            <div className="col-span-12 lg:col-span-8 bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden relative group">
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA00unDZFTq2JpuoiaM7ivfODQhL-KVJWUl-RdU5t4GUvKqSkBp1xY2Y827X0aF6Gcr3l-syfQ7L1Bq7iUK-jsPOQrCfgx3uF-ojGta8ySGmOX07n7TrOMTzN9aeZrRe6sFRSgANKXOpRRUA7j70XzYQGPejr_7W9ePmCs51_UTTlowKFEC-T9i9QIq-3Tng39F_wtnPSj5SWn6NUWS3N3PInT9I1KUqjc3oac6NC2PDj9oVCUBL0DA1SdBAbRrYDXo_a6juf0VyJTr"
                 alt="Metropolitan development"
                 className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b141a] via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#091015] via-transparent to-transparent"></div>
               <div className="absolute bottom-0 left-0 p-8 space-y-2">
                 <div className="flex items-center gap-3">
                   <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-[12px] font-semibold border border-primary/30">LOCKED ASSET</span>
@@ -116,7 +116,7 @@ export default function ProjectKickoffBaseline() {
             </div>
 
             <div className="col-span-12 lg:col-span-4 flex flex-col gap-4">
-              <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex-1 flex flex-col justify-center items-center text-center space-y-4">
+              <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex-1 flex flex-col justify-center items-center text-center space-y-4">
                 <div className="w-16 h-16 rounded-full bg-[#adc6ff]/20 flex items-center justify-center">
                   <span className="material-symbols-outlined text-[#adc6ff] text-3xl">insights</span>
                 </div>
@@ -129,7 +129,7 @@ export default function ProjectKickoffBaseline() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-[#182127]/70 to-[#0b141a]/80 backdrop-blur-xl border border-primary/20 p-6 rounded-xl flex-1 flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-primary/20 p-6 rounded-xl flex-1 flex flex-col justify-between">
                 <div className="flex justify-between items-start">
                   <span className="text-[14px] font-semibold text-primary">Next Step</span>
                   <span className="material-symbols-outlined text-primary/40">arrow_forward_ios</span>

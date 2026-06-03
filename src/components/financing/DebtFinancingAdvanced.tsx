@@ -19,7 +19,7 @@ export default function DebtFinancingAdvanced() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b141a] text-on-surface flex flex-col dark selection:bg-primary/30 selection:text-primary pb-32">
+    <div className="min-h-screen bg-[#091015] text-on-surface flex flex-col dark selection:bg-primary/30 selection:text-primary pb-32">
       <main className="pt-24 px-4 max-w-4xl mx-auto w-full">
         {/* Dashboard Header */}
         <div className="mb-8">

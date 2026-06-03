@@ -56,7 +56,7 @@ export default function InboxEmptyState({ activeTab }: InboxEmptyStateProps) {
   const state = EMPTY_STATES[activeTab] || EMPTY_STATES.all;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 bg-[#0b141a]">
+    <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 bg-[#091015]">
       <div
         className="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-white/5 border border-white/10"
       >

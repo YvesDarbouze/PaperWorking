@@ -214,7 +214,7 @@ export default function CPASharePage() {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center text-on-surface"
-        style={{ background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
       >
         <Loader2 className="w-10 h-10 animate-spin text-teal-400 mb-4" />
         <p className="text-sm font-semibold text-slate-400">Loading secure tax data...</p>
@@ -227,7 +227,7 @@ export default function CPASharePage() {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center p-6 text-on-surface"
-        style={{ background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
       >
         <div className="w-full max-w-md border border-white/10 rounded-2xl p-8 space-y-6 text-center shadow-2xl bg-white/[0.02]" style={{ backdropFilter: 'blur(20px)' }}>
           <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto text-red-400">
@@ -250,7 +250,7 @@ export default function CPASharePage() {
   return (
     <div 
       className="min-h-screen flex flex-col text-on-surface pb-12"
-      style={{ background: 'linear-gradient(135deg, #0b141a 0%, #0f1922 40%, #0b141a 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
     >
       <Toaster position="top-right" />
       

@@ -298,7 +298,7 @@ export function ExpenseRatioCollectionTerminal({
           style={{ background: 'linear-gradient(to right, #2dd4bf 0%, #fbbf24 50%, #f87171 100%)' }}
         >
           <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#0b141a] shadow transition-all duration-500"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow transition-all duration-500"
             style={{ left: `${markerPct}%` }}
           />
         </div>

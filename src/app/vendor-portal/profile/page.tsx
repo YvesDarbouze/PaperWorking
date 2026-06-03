@@ -496,7 +496,7 @@ export default function VendorProfileEditorPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#060f15] to-transparent"></div>
                 <div className="absolute top-3 left-3 flex items-center gap-2">
-                  <div className="w-12 h-12 rounded border-2 border-[#060f15] overflow-hidden bg-[#0b141a] flex items-center justify-center">
+                  <div className="w-12 h-12 rounded border-2 border-[#060f15] overflow-hidden bg-[#091015] flex items-center justify-center">
                     {logoUrl ? (
                       <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
                     ) : (

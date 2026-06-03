@@ -248,7 +248,7 @@ export default function Phase2AcquisitionPage() {
   /* ── Loading state ── */
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
@@ -265,7 +265,7 @@ export default function Phase2AcquisitionPage() {
   /* ── Not found state ── */
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="text-center space-y-3">
           <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
         </div>
@@ -276,7 +276,7 @@ export default function Phase2AcquisitionPage() {
   const ownershipPct = project.financials?.ownershipPercentage ?? 100;
 
   return (
-    <div className="min-h-screen bg-[#0b141a] relative">
+    <div className="min-h-screen bg-[#091015] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -570,7 +570,7 @@ export default function Phase2AcquisitionPage() {
             </div>
 
             {/* Map Backdrop Widget */}
-            <div className="bg-[#0b141a]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
+            <div className="bg-[#091015]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
               {/* Mock map graphic with grid lines and marker */}
               <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
               {/* Map road lines using simple SVG */}
@@ -836,7 +836,7 @@ export default function Phase2AcquisitionPage() {
       </main>
 
       {/* ── Sticky Metrics Footer ── */}
-      <div className="sticky bottom-0 z-30 w-full backdrop-blur-xl bg-[#0b141a]/80 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+      <div className="sticky bottom-0 z-30 w-full backdrop-blur-xl bg-[#091015]/80 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
         <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
           <div className="grid grid-cols-3 gap-4">
             {/* DSCR */}

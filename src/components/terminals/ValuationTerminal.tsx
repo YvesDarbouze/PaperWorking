@@ -19,7 +19,7 @@ export default function ValuationTerminal() {
     return (
         <div className="min-h-screen bg-[radial-gradient(rgba(87,241,219,0.05)_1px,transparent_1px)] bg-[length:32px_32px] bg-[#060f15] text-[#dae4ec] antialiased pb-safe">
             {/* Top Navigation Shell */}
-            <header className="fixed top-0 w-full z-50 bg-[#0b141a]/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] flex items-center justify-between px-[20px] md:px-[40px] h-16">
+            <header className="fixed top-0 w-full z-50 bg-[#091015]/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] flex items-center justify-between px-[20px] md:px-[40px] h-16">
                 <div className="flex items-center gap-[8px]">
                     <span className="material-symbols-outlined text-[#57f1db]">terminal</span>
                     <h1 className="font-['Plus_Jakarta_Sans'] text-[24px] leading-[32px] font-bold text-[#57f1db] tracking-tighter uppercase">PaperWorking</h1>
@@ -179,7 +179,7 @@ export default function ValuationTerminal() {
             </main>
 
             {/* Sticky Bottom Action */}
-            <div className="fixed bottom-0 left-0 md:left-64 right-0 p-[16px] md:p-[32px] bg-gradient-to-t from-[#0b141a] to-transparent z-50 pointer-events-none">
+            <div className="fixed bottom-0 left-0 md:left-64 right-0 p-[16px] md:p-[32px] bg-gradient-to-t from-[#091015] to-transparent z-50 pointer-events-none">
                 <div className="w-full max-w-3xl mx-auto pointer-events-auto">
                     <button className="w-full flex items-center justify-center gap-[8px] bg-[#57f1db] text-[#003731] font-['Plus_Jakarta_Sans'] text-[24px] leading-[32px] font-bold py-[16px] rounded-xl shadow-[0_0_20px_-5px_rgba(87,241,219,0.5)] hover:scale-[1.02] active:scale-95 transition-all duration-200">
                         <span>Generate Deal Pro-Forma</span>
@@ -189,7 +189,7 @@ export default function ValuationTerminal() {
             </div>
 
             {/* Bottom Navigation Shell (Mobile) */}
-            <nav className="fixed bottom-0 w-full md:hidden z-50 bg-[#0b141a]/90 backdrop-blur-lg border-t border-white/10 shadow-[0_-10px_20px_-10px_rgba(87,241,219,0.1)] flex justify-around items-center h-20 pb-safe">
+            <nav className="fixed bottom-0 w-full md:hidden z-50 bg-[#091015]/90 backdrop-blur-lg border-t border-white/10 shadow-[0_-10px_20px_-10px_rgba(87,241,219,0.1)] flex justify-around items-center h-20 pb-safe">
                 <div className="flex flex-col items-center justify-center text-[#bacac5] opacity-60">
                     <span className="material-symbols-outlined">dashboard</span>
                     <span className="font-['Plus_Jakarta_Sans'] text-[12px] leading-[14px] font-medium tracking-[0.05em]">Center</span>

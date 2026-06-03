@@ -301,7 +301,7 @@ export default function GuestPortalPage() {
   // Loading Screen
   if (authLoading || loading || (user && !profile)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="flex flex-col items-center gap-3">
           <span className="material-symbols-outlined text-[#57f1db] text-4xl animate-spin">progress_activity</span>
           <p className="text-xs uppercase tracking-widest text-[#57f1db]/70 font-mono">Verifying Vault Link...</p>
@@ -313,7 +313,7 @@ export default function GuestPortalPage() {
   // Not logged in (handled by redirection, but acts as a fallback)
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a]">
+      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#57f1db]" />
       </div>
     );
@@ -322,7 +322,7 @@ export default function GuestPortalPage() {
   // Invalid Token Screen
   if (tokenInvalid || !dealData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a] px-4"
+      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
            style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
           <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-5 text-[#57f1db]">
@@ -340,7 +340,7 @@ export default function GuestPortalPage() {
   // Declined Screen
   if (declined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a] px-4"
+      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
            style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
           <div className="w-16 h-16 bg-red-950/20 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-5 text-red-400">
@@ -358,7 +358,7 @@ export default function GuestPortalPage() {
   // Success Committed Screen
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b141a] px-4"
+      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
            style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-md p-8 glass-card rounded-3xl border border-white/10 shadow-2xl space-y-6">
           <div className="w-20 h-20 bg-[#57f1db]/10 border border-[#57f1db]/30 rounded-full flex items-center justify-center mx-auto text-[#57f1db] shadow-[0_0_20px_rgba(87,241,219,0.2)]">
@@ -403,7 +403,7 @@ export default function GuestPortalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b141a] text-[#dae4ec] font-sans antialiased pb-24 relative overflow-hidden"
+    <div className="min-h-screen bg-[#091015] text-[#dae4ec] font-sans antialiased pb-24 relative overflow-hidden"
          style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
       
       {/* Top AppBar */}
@@ -461,7 +461,7 @@ export default function GuestPortalPage() {
                 className="w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" 
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdpxYpTQpSZyS-bVT9se97E8jC8KG1ACRvvabKdZRreVTGe9TbCA-EyNcXiMwIF5fgr4wLBcGYVP8O6G0VzI4ezRc0owWBpdoJWPXwYXXK3lffjKue6yhxtQBHnTcjaPM5LsL4wVa8DvSHkPIvuaJLffFLLIfHrLJa4rnpzWsQCXacjzaGlw76yObkHrheB2ANDh-FaARWXtQMy7sX_z3mOdlFqEur5hIQvT5LBSuOd1u3BUUujG52UVGv1hjlRImgSKFETY9UQcIR"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b141a] via-[#0b141a]/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#091015] via-[#091015]/40 to-transparent"></div>
               <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
                   <span className="bg-[#57f1db]/20 backdrop-blur-md text-[#57f1db] border border-[#57f1db]/30 px-3 py-0.5 rounded-full font-mono text-[9px] uppercase">
@@ -818,7 +818,7 @@ export default function GuestPortalPage() {
       {showInsights && (
         <div id="insights-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0b141a]">
+            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#091015]">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Secure Insights Vault</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Project: {dealData.dealName}</p>
@@ -858,7 +858,7 @@ export default function GuestPortalPage() {
               ))}
             </div>
 
-            <div className="p-5 border-t border-white/5 bg-[#0b141a]/50 flex justify-end">
+            <div className="p-5 border-t border-white/5 bg-[#091015]/50 flex justify-end">
               <button 
                 onClick={() => setShowInsights(false)}
                 className="px-5 py-2 rounded-lg bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] text-[10px] font-bold uppercase tracking-wider transition-colors"
@@ -874,7 +874,7 @@ export default function GuestPortalPage() {
       {showAskSponsor && (
         <div id="ask-sponsor-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0b141a]">
+            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#091015]">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Inquire Sponsor</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Direct Channel // {dealData.dealName}</p>

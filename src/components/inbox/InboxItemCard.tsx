@@ -209,10 +209,10 @@ export default function InboxItemCard({
       onClick={handleClick}
       className={`group relative flex flex-col gap-3 p-5 rounded-2xl border transition-all duration-300 ${
         isActive
-          ? 'bg-[#0b141a]/80 border-[#57f1db]/50 shadow-[0_0_15px_-5px_rgba(87,241,219,0.3)]'
+          ? 'bg-[#091015]/80 border-[#57f1db]/50 shadow-[0_0_15px_-5px_rgba(87,241,219,0.3)]'
           : item.read
-          ? 'glass-card border-white/5 bg-[#0b141a]/20 hover:bg-white/5'
-          : 'glass-card border-[#2dd4bf]/20 bg-[#0b141a]/40 ring-1 ring-[#2dd4bf]/10 shadow-[0_0_15px_-5px_rgba(45,212,191,0.15)] hover:border-[#2dd4bf]/30'
+          ? 'glass-card border-white/5 bg-[#091015]/20 hover:bg-white/5'
+          : 'glass-card border-[#2dd4bf]/20 bg-[#091015]/40 ring-1 ring-[#2dd4bf]/10 shadow-[0_0_15px_-5px_rgba(45,212,191,0.15)] hover:border-[#2dd4bf]/30'
       }`}
       style={{ cursor: 'pointer' }}
     >
@@ -438,7 +438,7 @@ export default function InboxItemCard({
                   // Trigger action success
                   toast.success('Approved successfully.', {
                     icon: '✓',
-                    style: { background: '#0b141a', color: '#dae4ec', border: '1px solid rgba(45,212,191,0.2)' }
+                    style: { background: '#091015', color: '#dae4ec', border: '1px solid rgba(45,212,191,0.2)' }
                   });
                   setIsExpanded(false);
                 }}

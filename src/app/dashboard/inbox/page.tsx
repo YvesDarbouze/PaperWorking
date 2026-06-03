@@ -148,7 +148,7 @@ function InboxNotificationCenter() {
 
   return (
     <>
-      <div className="flex w-full h-[calc(100vh-64px)] bg-[#0b141a] text-[#dae4ec] overflow-hidden">
+      <div className="flex w-full h-[calc(100vh-64px)] bg-[#091015] text-[#dae4ec] overflow-hidden">
         
         {/* ═══ List Pane (Left) ═══ */}
         <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#141d23]/50 shrink-0 ${ (activeThread || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
@@ -220,7 +220,7 @@ function InboxNotificationCenter() {
         </section>
 
         {/* ═══ Reading/Action Pane (Right) ═══ */}
-        <section className={`flex-1 flex flex-col bg-[#0b141a] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
+        <section className={`flex-1 flex flex-col bg-[#091015] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
           {/* Background Decorative Elements */}
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#57f1db]/5 rounded-full blur-[100px] pointer-events-none"></div>
           <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-[80px] pointer-events-none"></div>
@@ -235,12 +235,12 @@ function InboxNotificationCenter() {
           ) : selectedItem ? (
             <div className="flex-1 overflow-y-auto z-10 flex flex-col">
                {/* Header Actions */}
-                <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0b141a]/50 backdrop-blur-sm">
+                <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#091015]/50 backdrop-blur-sm">
                   <div className="flex items-center gap-4">
                     <button onClick={() => setSelectedNotificationId(null)} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
                       <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <div className="h-12 w-12 rounded-xl bg-[#0b141a]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#57f1db]">
+                    <div className="h-12 w-12 rounded-xl bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#57f1db]">
                       <CheckCheck className="w-6 h-6" />
                     </div>
                     <div>
@@ -286,7 +286,7 @@ function InboxNotificationCenter() {
                            <p className="text-sm text-[#57f1db] mb-4">{selectedItem.actor.role}</p>
                         )}
                         
-                        <div className="bg-[#0b141a]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] p-6 rounded-2xl space-y-4 mt-4">
+                        <div className="bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] p-6 rounded-2xl space-y-4 mt-4">
                           <p className="text-base leading-relaxed text-[#bacac5] whitespace-pre-wrap">
                             {selectedItem.body}
                           </p>
@@ -342,7 +342,7 @@ function InboxNotificationCenter() {
                       ) : null}
                       <button 
                          onClick={() => setComposeOpen(true)}
-                         className="px-8 py-3 bg-[#0b141a]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] text-[#dae4ec] font-bold rounded-full hover:bg-white/5 transition-all flex items-center gap-2"
+                         className="px-8 py-3 bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] text-[#dae4ec] font-bold rounded-full hover:bg-white/5 transition-all flex items-center gap-2"
                       >
                         <span className="material-symbols-outlined">reply</span>
                         REPLY
@@ -384,7 +384,7 @@ export default function InboxPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#0b141a]">
+        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#091015]">
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="w-6 h-6 animate-spin text-[#57f1db]" />
             <p className="text-sm font-medium text-[#bacac5]">

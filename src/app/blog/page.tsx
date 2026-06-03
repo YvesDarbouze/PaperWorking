@@ -77,7 +77,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
             alt={post.title}
             className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0b141a]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#091015]/60 to-transparent" />
           <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary backdrop-blur-sm border border-primary/20">
             {post.category}
           </span>

@@ -171,7 +171,7 @@ export function FirstMetricCelebration({
               className="w-full flex items-center justify-center gap-2 h-12 rounded-xl text-[14px] font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(135deg, #3cddc7 0%, #57f1db 100%)',
-                color: '#0b141a',
+                color: '#091015',
                 boxShadow: '0 4px 20px rgba(87, 241, 219, 0.3)',
               }}
             >

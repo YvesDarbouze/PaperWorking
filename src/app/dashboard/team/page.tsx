@@ -454,19 +454,19 @@ export default function TeamDirectoryPage() {
       {/* Terminal System Status Footer */}
       <footer className="mt-8 border-t border-white/5 pt-6 hidden lg:block">
         <div className="grid grid-cols-4 gap-4">
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0b141a]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Session Key</p>
             <p className="text-xs text-primary font-mono font-semibold truncate">A9-F2-B4-E1-00-PW-SEC-KEY</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0b141a]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Active Instances</p>
             <p className="text-xs text-primary font-mono font-semibold">{unifiedTeam.filter(m => m.status === 'active').length} Operators Online</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0b141a]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Data Sovereignty</p>
             <p className="text-xs text-primary font-mono font-semibold">AES-256 E2EE Enabled</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0b141a]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Last Audit</p>
             <p className="text-xs text-primary font-mono font-semibold">{new Date().toISOString().slice(0,10).replace(/-/g,'.')} {new Date().toTimeString().slice(0,8)}</p>
           </div>

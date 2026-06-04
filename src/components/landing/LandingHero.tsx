@@ -54,13 +54,13 @@ export default function LandingHero() {
           </span>
 
           {/* H1 */}
-          <h1 className="font-headline-xl text-headline-xl text-on-surface mb-5">
+          <h1 className="font-display-hero text-display-hero text-on-surface mb-6 md:text-[72px] md:leading-[80px] text-[42px] leading-[50px]">
             Scale Your Real Estate Portfolio{' '}
             <span className="text-primary luminous-text">Without the Chaos.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-10">
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-10 text-[18px] leading-[28px]">
             Centralize your pipeline, automate documentation, and track margins in real-time.
           </p>
 

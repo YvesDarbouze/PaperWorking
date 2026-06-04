@@ -128,50 +128,72 @@ html[data-theme="light"] {
   --radius-3xl: 2.5rem;
   --radius-full: 9999px;
 
-  /* Typography */
+  /* Typography — Inter Full Weight System (100–900) */
   --font-hanken: "Hanken Grotesk", system-ui, sans-serif;
   --font-plus-jakarta: "Plus Jakarta Sans", system-ui, sans-serif;
-  --text-display-lg-size: 48px;
-  --text-display-lg-weight: 600;
-  --text-display-lg-line-height: 56px;
-  --text-display-lg-letter-spacing: -0.02em;
 
-  --text-headline-lg-size: 32px;
-  --text-headline-lg-weight: 600;
-  --text-headline-lg-line-height: 40px;
+  /* Display / Hero — Inter 800 ExtraBold */
+  --text-display-hero-size: 72px;
+  --text-display-hero-weight: 800;
+  --text-display-hero-line-height: 80px;
+  --text-display-hero-letter-spacing: -0.04em;
 
+  /* Headline XL — Inter 800 (primary section heads) */
+  --text-display-lg-size: 56px;
+  --text-display-lg-weight: 800;
+  --text-display-lg-line-height: 64px;
+  --text-display-lg-letter-spacing: -0.03em;
+
+  /* Headline LG — Inter 700 Bold */
+  --text-headline-lg-size: 36px;
+  --text-headline-lg-weight: 700;
+  --text-headline-lg-line-height: 44px;
+  --text-headline-lg-letter-spacing: -0.025em;
+
+  /* Headline LG Mobile — Inter 700 */
   --text-headline-lg-mobile-size: 28px;
-  --text-headline-lg-mobile-weight: 600;
+  --text-headline-lg-mobile-weight: 700;
   --text-headline-lg-mobile-line-height: 36px;
+  --text-headline-lg-mobile-letter-spacing: -0.02em;
 
+  /* Headline MD — Inter 600 SemiBold */
   --text-headline-md-size: 24px;
   --text-headline-md-weight: 600;
   --text-headline-md-line-height: 32px;
+  --text-headline-md-letter-spacing: -0.015em;
 
+  /* Title MD — Inter 500 Medium */
   --text-title-md-size: 20px;
   --text-title-md-weight: 500;
   --text-title-md-line-height: 28px;
+  --text-title-md-letter-spacing: -0.01em;
 
-  --text-body-lg-size: 16px;
+  /* Body LG — Inter 400 Regular, looser leading */
+  --text-body-lg-size: 18px;
   --text-body-lg-weight: 400;
-  --text-body-lg-line-height: 24px;
+  --text-body-lg-line-height: 28px;
 
-  --text-body-md-size: 15px;
+  /* Body MD — Inter 400 Regular */
+  --text-body-md-size: 16px;
   --text-body-md-weight: 400;
-  --text-body-md-line-height: 22px;
+  --text-body-md-line-height: 24px;
 
+  /* Body SM — Inter 400 Regular */
   --text-body-sm-size: 14px;
   --text-body-sm-weight: 400;
   --text-body-sm-line-height: 20px;
 
-  --text-label-md-size: 14px;
+  /* Label / Nav — Inter 600 SemiBold, tracked */
+  --text-label-md-size: 13px;
   --text-label-md-weight: 600;
-  --text-label-md-line-height: 20px;
+  --text-label-md-line-height: 16px;
+  --text-label-md-letter-spacing: 0.02em;
 
-  --text-label-caps-size: 12px;
-  --text-label-caps-weight: 600;
+  /* Caption / Badge — Inter 500 Medium, wide tracked */
+  --text-label-caps-size: 11px;
+  --text-label-caps-weight: 500;
   --text-label-caps-line-height: 16px;
-  --text-label-caps-letter-spacing: 0.05em;
+  --text-label-caps-letter-spacing: 0.06em;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -385,26 +407,29 @@ html[data-theme="dark"],
   --color-text-primary: var(--pw-black);
   --color-text-secondary: var(--pw-muted);
 
-  /* ─── Font System — Stitch Theme Fonts ─── */
-  --font-sans: var(--font-plus-jakarta);
-  --font-display: var(--font-plus-jakarta);
-  --font-mono: var(--font-jetbrains-mono);
-  --font-jetbrains: var(--font-jetbrains-mono);
-  --font-inter: var(--font-inter), sans-serif;
+  /* ─── Font System — Inter Primary, JetBrains Mono terminal ─── */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-jetbrains: var(--font-jetbrains-mono), monospace;
 
-  /* Font Family Mappings for Stitch components */
-  --font-headline-xl: var(--font-display);
-  --font-headline-lg: var(--font-display);
-  --font-headline-md: var(--font-display);
-  --font-headline-sm: var(--font-display);
-  --font-headline-lg-mobile: var(--font-display);
-  --font-body-lg: var(--font-sans);
-  --font-body-md: var(--font-sans);
-  --font-body-sm: var(--font-sans);
-  --font-label-md: var(--font-sans);
-  --font-label-sm: var(--font-sans);
+  /* Font Family Mappings — all headings and body use Inter */
+  --font-display-hero: var(--font-inter), system-ui, sans-serif;
+  --font-headline-xl: var(--font-inter), system-ui, sans-serif;
+  --font-headline-lg: var(--font-inter), system-ui, sans-serif;
+  --font-headline-md: var(--font-inter), system-ui, sans-serif;
+  --font-headline-sm: var(--font-inter), system-ui, sans-serif;
+  --font-headline-lg-mobile: var(--font-inter), system-ui, sans-serif;
+  --font-body-lg: var(--font-inter), system-ui, sans-serif;
+  --font-body-md: var(--font-inter), system-ui, sans-serif;
+  --font-body-sm: var(--font-inter), system-ui, sans-serif;
+  --font-label-md: var(--font-inter), system-ui, sans-serif;
+  --font-label-sm: var(--font-inter), system-ui, sans-serif;
 
   /* Font Sizes & Coupled Line Heights */
+  --font-size-display-hero: var(--text-display-hero-size);
+  --font-size-display-hero--line-height: var(--text-display-hero-line-height);
+
   --font-size-headline-xl: var(--text-display-lg-size);
   --font-size-headline-xl--line-height: var(--text-display-lg-line-height);
 
@@ -436,6 +461,7 @@ html[data-theme="dark"],
   --font-size-label-sm--line-height: var(--text-label-caps-line-height);
 
   /* Line Heights (Legacy compatibility) */
+  --line-height-display-hero: var(--text-display-hero-line-height);
   --line-height-headline-xl: var(--text-display-lg-line-height);
   --line-height-headline-lg: var(--text-headline-lg-line-height);
   --line-height-headline-md: var(--text-headline-md-line-height);
@@ -471,6 +497,7 @@ html[data-theme="dark"],
   --spacing-margin-desktop: var(--spacing-margin-desktop);
   --spacing-container-max: var(--spacing-container-max);
 
+  --font-weight-display-hero: var(--text-display-hero-weight);
   --font-weight-display-lg: var(--text-display-lg-weight);
   --font-weight-headline-lg: var(--text-headline-lg-weight);
   --font-weight-headline-lg-mobile: var(--text-headline-lg-mobile-weight);
@@ -517,9 +544,10 @@ html[data-theme="dark"],
   body {
     background-color: var(--color-surface-container-lowest, #060f15);
     color: var(--color-on-surface, #dae4ec);
-    font-family: var(--font-plus-jakarta), system-ui, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
-    letter-spacing: -0.015em;
+    font-family: var(--font-inter), system-ui, sans-serif;
+    /* Inter OpenType features: ss01=alt digit-1, zero=slashed zero, tnum=tabular nums */
+    font-feature-settings: "ss01", "zero", "tnum", "liga", "calt";
+    letter-spacing: -0.011em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.5;
@@ -624,6 +652,23 @@ html[data-theme="dark"],
 
   .font-jetbrains {
     font-family: var(--font-jetbrains-mono), monospace;
+  }
+
+  /* ─── Display Hero — Inter 800, maximum impact ─── */
+  .font-display-hero {
+    font-family: var(--font-inter), system-ui, sans-serif;
+    font-weight: 800;
+  }
+  .text-display-hero {
+    font-size: var(--text-display-hero-size);
+    line-height: var(--text-display-hero-line-height);
+    letter-spacing: var(--text-display-hero-letter-spacing);
+  }
+
+  /* ─── Inter tabular-nums shorthand for data/stats ─── */
+  .font-tabular {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum", "zero";
   }
 
   .luminous-button {

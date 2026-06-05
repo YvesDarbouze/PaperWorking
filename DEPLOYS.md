@@ -42,3 +42,17 @@ The application is deployed using **Google Cloud Build** and **Google Cloud Run*
      - `FIREBASE_PRIVATE_KEY`
    - These are automatically updated on the Cloud Run container at deploy time via the `--update-secrets` flag.
    - Ensure other runtime environment variables (e.g. `DATABASE_URL`, `STRIPE_SECRET_KEY`) are set on the Cloud Run service.
+   - **Do NOT use `--update-secrets` for variables already configured as plain env vars** on Cloud Run — this causes a type-mismatch error. The service retains existing env vars automatically on re-deploy.
+
+---
+
+### Live URLs (last verified 2026-06-05)
+- **Cloud Run URL**: https://paperworker-779101817926.us-east4.run.app
+- **Custom Domain**: https://paperworking.co/
+- Both return `HTTP/2 200 OK` with Next.js response headers.
+
+---
+
+### Known Deployment Notes
+- Always export `NODE_OPTIONS="--max-old-space-size=8192"` before `npm run build` locally or in CI (see CLAUDE.md §1).
+- `TURBOPACK=0` if the build hangs >120s (see CLAUDE.md §3).

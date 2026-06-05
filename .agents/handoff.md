@@ -1,3 +1,46 @@
+# Agent Handoff — v3 Design System + Cloud Run Deployment (2026-06-05)
+
+## ✅ LIVE — Both URLs serving HTTP/2 200
+- **Cloud Run**: https://paperworker-779101817926.us-east4.run.app
+- **Custom Domain**: https://paperworking.co/
+- **Deploy command**: `gcloud builds submit --config cloudbuild.yaml`
+- **Hosting**: Google Cloud Run ONLY (Vercel banned — see DEPLOYS.md)
+
+## Design System v3 — Completed 2026-06-05 (225 files, tsc exit 0)
+
+### Color Token Contract (ALL agents must follow — see `src/app/globals.css`)
+| Token | Value | Usage |
+|---|---|---|
+| Primary | `#454955` | Buttons, active states, branding |
+| Secondary | `#7A9EAA` | Borders, secondary elements, highlights |
+| Dark BG | `#0d0a0b` | Background (dark mode) |
+| Light BG | `#FDFFFC` | Background (light mode) |
+| Text dark | `rgba(253,255,252,0.95)` | Primary text on dark |
+| Text muted | `#9E9DA0` | Secondary/muted text on dark |
+| Semantic up | `#3f7d20` | Positive performance, market up |
+| Semantic down | `#F06543` | Negative, cancel, market down |
+
+### Phase Palette (charts, legends, pipeline — consistent everywhere)
+- Phase 1 Acquisition: `#454955`
+- Phase 2 Transaction: `#7A9EAA`
+- Phase 3 Rehab: `#ffac5a`
+- Phase 4 Hold/Exit: `#5aaa3f`
+
+### BANNED colors (never reintroduce)
+- Any teal/cyan: `#57f1db`, `#20B2AA`, `#62fae3`, `#3cddc7`
+- Any rgba teal: `rgba(32,178,170,...)`, `rgba(87,241,219,...)`
+- Any blue-grey text: `rgba(218,228,236,...)`, `#bacac5`
+- Tailwind `teal-*`, `cyan-*` classes
+- Purple / violet / magenta hues
+
+### Docker fix (2026-06-05)
+`COPY prisma ./prisma/` must appear **before** `npm install` in Dockerfile — ensures `prisma generate` postinstall hook succeeds.
+
+### Cloud Build fix (2026-06-05)
+Remove `--update-secrets` for vars already set as plain env vars — causes type-mismatch error in Cloud Run.
+
+---
+
 # Agent Handoff — Portfolio Dashboard Redesign (R-13 closed)
 
 **Last Updated**: 2026-06-05  

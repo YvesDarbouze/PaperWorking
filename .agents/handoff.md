@@ -1,7 +1,12 @@
 # Agent Handoff — Portfolio Dashboard Redesign (R-13 closed)
 
-**Last Updated**: 2026-06-04  
-**Agent**: Claude Code (UX-Design + Logic Lens discipline)
+**Last Updated**: 2026-06-05  
+**Agent**: Antigravity (UI/UX & Deployment Optimization)
+
+## ⚠️ MANDATORY HOSTING POLICY
+- **Target**: **Google Cloud Run ONLY**.
+- **Vercel Banned**: Vercel is strictly banned for cost efficiency reasons. All agents must ignore references to deploying on Vercel and must NOT create or configure Vercel deployment workflows.
+- **Deployment Command**: Use `gcloud builds submit --config cloudbuild.yaml`. See [DEPLOYS.md](file:///Users/yvesdarbouze/Documents/PaperWorking/DEPLOYS.md) in the root directory for details.
 
 ## Status: P1 R-13 Closed — Portfolio Dashboard 5-Zone Redesign
 

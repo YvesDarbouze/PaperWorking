@@ -8,6 +8,7 @@ WORKDIR /app
 
 # Install dependencies
 COPY package.json package-lock.json* .npmrc* ./
+COPY prisma ./prisma/
 # Use npm install (not npm ci) to correctly resolve platform-specific
 # optional native binaries (lightningcss, @tailwindcss/oxide) on Alpine (musl).
 # Delete lockfile so npm resolves optional deps for the target platform (npm #4828).

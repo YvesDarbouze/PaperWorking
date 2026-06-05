@@ -79,8 +79,8 @@ export default function OnboardingWizardPage() {
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 border ${
                 step >= s
-                  ? 'bg-primary border-primary text-black shadow-[0_0_15px_rgba(87,241,219,0.3)]'
-                  : 'bg-white/5 border-white/10 text-[#bacac5]'
+                  ? 'bg-primary border-primary text-black shadow-[0_0_15px_rgba(69,73,85,0.3)]'
+                  : 'bg-white/5 border-white/10 text-[#9E9DA0]'
               }`}
             >
               {step > s ? <Check className="w-4 h-4" /> : s}
@@ -106,14 +106,14 @@ export default function OnboardingWizardPage() {
               <div className="space-y-4 animate-in fade-in duration-300">
                 <div className="flex items-center gap-2 mb-1">
                   <MapPin className="w-4 h-4 text-primary" />
-                  <h3 className="text-lg font-semibold text-[#dae4ec]">Step 1: Property Address</h3>
+                  <h3 className="text-lg font-semibold text-[#9E9DA0]">Step 1: Property Address</h3>
                 </div>
                 <input
                   type="text"
                   placeholder="Street address *"
                   value={data.address}
                   onChange={set('address')}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 focus:border-primary/40 text-sm"
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 focus:border-primary/40 text-sm"
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <input
@@ -121,14 +121,14 @@ export default function OnboardingWizardPage() {
                     placeholder="City"
                     value={data.city}
                     onChange={set('city')}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
                   />
                   <input
                     type="text"
                     placeholder="State"
                     value={data.state}
                     onChange={set('state')}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
+                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
                   />
                 </div>
               </div>
@@ -139,22 +139,22 @@ export default function OnboardingWizardPage() {
               <div className="space-y-4 animate-in fade-in duration-300">
                 <div className="flex items-center gap-2 mb-1">
                   <DollarSign className="w-4 h-4 text-primary" />
-                  <h3 className="text-lg font-semibold text-[#dae4ec]">Step 2: Initial Numbers</h3>
+                  <h3 className="text-lg font-semibold text-[#9E9DA0]">Step 2: Initial Numbers</h3>
                 </div>
-                <p className="text-sm text-[#bacac5]/70">Optional — you can fill these in later inside the project workspace.</p>
+                <p className="text-sm text-[#9E9DA0]/70">Optional — you can fill these in later inside the project workspace.</p>
                 <input
                   type="text"
                   placeholder="Estimated purchase price (e.g. 320000)"
                   value={data.purchasePrice}
                   onChange={set('purchasePrice')}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
                 />
                 <input
                   type="text"
                   placeholder="Estimated rehab budget (e.g. 45000)"
                   value={data.rehabBudget}
                   onChange={set('rehabBudget')}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
+                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/50 focus:outline-none focus:ring-1 focus:ring-primary/60 text-sm"
                 />
               </div>
             )}
@@ -164,29 +164,29 @@ export default function OnboardingWizardPage() {
               <div className="space-y-3 animate-in fade-in duration-300">
                 <div className="flex items-center gap-2 mb-1">
                   <ClipboardCheck className="w-4 h-4 text-primary" />
-                  <h3 className="text-lg font-semibold text-[#dae4ec]">Step 3: Review</h3>
+                  <h3 className="text-lg font-semibold text-[#9E9DA0]">Step 3: Review</h3>
                 </div>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-5 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-[#bacac5]">Address</span>
+                    <span className="text-[#9E9DA0]">Address</span>
                     <span className="text-white font-medium text-right max-w-[60%] truncate">
                       {[data.address, data.city, data.state].filter(Boolean).join(', ') || '—'}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#bacac5]">Purchase Price</span>
+                    <span className="text-[#9E9DA0]">Purchase Price</span>
                     <span className="text-white font-medium">{data.purchasePrice ? `$${Number(data.purchasePrice.replace(/[^0-9.]/g, '')).toLocaleString()}` : '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#bacac5]">Rehab Budget</span>
+                    <span className="text-[#9E9DA0]">Rehab Budget</span>
                     <span className="text-white font-medium">{data.rehabBudget ? `$${Number(data.rehabBudget.replace(/[^0-9.]/g, '')).toLocaleString()}` : '—'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-[#bacac5]">Starting Phase</span>
+                    <span className="text-[#9E9DA0]">Starting Phase</span>
                     <span className="text-primary font-medium">Acquisition</span>
                   </div>
                 </div>
-                <p className="text-xs text-[#bacac5]/60">Clicking Finish creates your project and opens the Acquisition workspace.</p>
+                <p className="text-xs text-[#9E9DA0]/60">Clicking Finish creates your project and opens the Acquisition workspace.</p>
               </div>
             )}
           </div>
@@ -204,7 +204,7 @@ export default function OnboardingWizardPage() {
               type="button"
               onClick={() => step > 1 && setStep(step - 1)}
               disabled={step === 1 || isFinishing}
-              className="px-4 py-2 text-sm text-[#bacac5] hover:text-white transition-colors disabled:opacity-40 disabled:pointer-events-none"
+              className="px-4 py-2 text-sm text-[#9E9DA0] hover:text-white transition-colors disabled:opacity-40 disabled:pointer-events-none"
             >
               Back
             </button>

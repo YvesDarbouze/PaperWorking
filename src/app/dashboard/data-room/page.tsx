@@ -13,28 +13,28 @@ import { computeIRRMetric } from "@/lib/metrics/computeIRR";
 
 // ─── Design Tokens (Luminous Glass Theme) ────────────────────────
 const T = {
-  teal: "#20B2AA",
+  teal: "#454955",
   brandPrimary: "#454955",
   amber: "#fbbf24",
   red: "#F06543",
   green: "#3f7d20",
   blue: "#60a5fa",
-  rose: "#20B2AA",
+  rose: "#454955",
   orange: "#fb923c",
-  canvas: "#091015",
+  canvas: "#0d0a0b",
   surface: "rgba(24,33,39,0.7)",
   surfaceHover: "rgba(24,33,39,0.85)",
   border: "rgba(255,255,255,0.08)",
-  borderHover: "rgba(32,178,170,0.2)",
-  textPrimary: "rgba(218,228,236,0.95)",
-  textSecondary: "rgba(218,228,236,0.6)",
-  textMuted: "rgba(218,228,236,0.35)",
+  borderHover: "rgba(69,73,85,0.2)",
+  textPrimary: "rgba(253,255,252,0.95)",
+  textSecondary: "rgba(253,255,252,0.6)",
+  textMuted: "rgba(253,255,252,0.35)",
   tooltipBg: "rgba(24,33,39,0.95)",
-  tooltipBorder: "rgba(32,178,170,0.2)",
+  tooltipBorder: "rgba(69,73,85,0.2)",
 } as const;
 
 // Chart palette for multi-property stacking
-const PROPERTY_COLORS = [T.teal, T.brandPrimary, T.amber, T.blue, T.orange, T.rose, "#20B2AA", "#38bdf8", "#facc15", "#454955"];
+const PROPERTY_COLORS = [T.teal, T.brandPrimary, T.amber, T.blue, T.orange, T.rose, "#454955", "#38bdf8", "#facc15", "#454955"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 type Scope = "Property" | "My Share";
@@ -82,13 +82,13 @@ function EmptyState() {
     >
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-        style={{ background: "rgba(32,178,170,0.08)", border: "1px solid rgba(32,178,170,0.15)" }}
+        style={{ background: "rgba(69,73,85,0.08)", border: "1px solid rgba(69,73,85,0.15)" }}
       >
         <span className="material-symbols-outlined text-3xl" style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}>
           folder_open
         </span>
       </div>
-      <h2 className="text-xl font-light tracking-tight mb-2" style={{ color: "rgba(218,228,236,0.95)" }}>
+      <h2 className="text-xl font-light tracking-tight mb-2" style={{ color: "rgba(253,255,252,0.95)" }}>
         Your Data Room is empty
       </h2>
       <p className="text-sm max-w-md mb-8" style={{ color: T.textMuted }}>
@@ -101,7 +101,7 @@ function EmptyState() {
         style={{
           background: T.teal,
           color: "#000",
-          boxShadow: "0 8px 24px rgba(32,178,170,0.2)",
+          boxShadow: "0 8px 24px rgba(69,73,85,0.2)",
         }}
       >
         <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
@@ -144,7 +144,7 @@ function KPICard({ icon, label, value, trend, trendUp }: {
         backdropFilter: "blur(16px)",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(32,178,170,0.2)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(69,73,85,0.2)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = T.border;
@@ -153,7 +153,7 @@ function KPICard({ icon, label, value, trend, trendUp }: {
       {/* Ambient glow */}
       <div
         className="absolute -top-12 -right-12 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: "rgba(32,178,170,0.06)" }}
+        style={{ background: "rgba(69,73,85,0.06)" }}
       />
       <div className="flex items-center gap-2 mb-3">
         <span
@@ -530,7 +530,7 @@ export default function DataRoomPage() {
             <span>›</span>
             <span style={{ color: T.teal }}>Data Room</span>
           </div>
-          <h1 className="text-4xl font-light tracking-tight leading-none" style={{ color: "rgba(218,228,236,0.95)" }}>
+          <h1 className="text-4xl font-light tracking-tight leading-none" style={{ color: "rgba(253,255,252,0.95)" }}>
             Data Room
           </h1>
           <p className="text-xs mt-2" style={{ color: T.textMuted }}>
@@ -550,7 +550,7 @@ export default function DataRoomPage() {
                   style={{
                     background: scope === s ? T.teal : "transparent",
                     color: scope === s ? "#000" : T.textSecondary,
-                    boxShadow: scope === s ? "0 4px 12px rgba(32,178,170,0.2)" : "none",
+                    boxShadow: scope === s ? "0 4px 12px rgba(69,73,85,0.2)" : "none",
                   }}
                 >
                   {s}
@@ -569,7 +569,7 @@ export default function DataRoomPage() {
                 color: T.textSecondary,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(32,178,170,0.3)";
+                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(69,73,85,0.3)";
                 (e.currentTarget as HTMLButtonElement).style.color = T.teal;
               }}
               onMouseLeave={(e) => {
@@ -988,7 +988,7 @@ export default function DataRoomPage() {
                   color: T.textSecondary,
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(32, 178, 170,0.3)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(69, 73, 85,0.3)";
                   (e.currentTarget as HTMLButtonElement).style.color = T.teal;
                 }}
                 onMouseLeave={(e) => {
@@ -1009,7 +1009,7 @@ export default function DataRoomPage() {
                   style={{
                     background: T.teal,
                     color: "#000",
-                    boxShadow: "0 4px 16px rgba(32,178,170,0.2)",
+                    boxShadow: "0 4px 16px rgba(69,73,85,0.2)",
                   }}
                 >
                   <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>

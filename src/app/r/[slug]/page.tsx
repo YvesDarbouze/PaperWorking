@@ -23,7 +23,7 @@ export default function ReferralRedirectPage() {
     <div 
       className="flex flex-col items-center justify-center min-h-screen text-on-surface"
       style={{
-        background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
+        background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)',
       }}
     >
       <Loader2 className="w-8 h-8 animate-spin text-pw-primary mb-4" />

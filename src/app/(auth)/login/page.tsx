@@ -238,8 +238,8 @@ function LoginPageInner() {
 
   return (
     <div className="auth-card-container auth-glass-card p-6 md:p-10 relative overflow-hidden animate-in fade-in duration-500">
-      <div className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }} />
-      <div className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }} />
+      <div className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }} />
+      <div className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }} />
 
       <div className="flex flex-col items-center w-full relative z-10">
         {/* ── Heading ── */}
@@ -324,7 +324,7 @@ function LoginPageInner() {
         </div>
 
         {/* ── Mode toggle ── */}
-        <div className="w-full flex border border-white/5 rounded-xl p-1 mb-5" style={{ backgroundColor: 'rgba(11, 20, 26, 0.6)' }}>
+        <div className="w-full flex border border-white/5 rounded-xl p-1 mb-5" style={{ backgroundColor: 'rgba(13, 10, 11, 0.6)' }}>
           <button
             type="button"
             onClick={() => setLoginMode('password')}
@@ -333,7 +333,7 @@ function LoginPageInner() {
             }`}
             style={
               loginMode === 'password'
-                ? { backgroundColor: 'rgba(24, 33, 39, 0.8)', color: 'var(--color-primary, #57f1db)', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }
+                ? { backgroundColor: 'rgba(30, 27, 32, 0.8)', color: 'var(--color-primary, #454955)', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }
                 : { color: 'var(--pw-muted, #859490)' }
             }
           >
@@ -347,7 +347,7 @@ function LoginPageInner() {
             }`}
             style={
               loginMode === 'magic-link'
-                ? { backgroundColor: 'rgba(24, 33, 39, 0.8)', color: 'var(--color-primary, #57f1db)', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }
+                ? { backgroundColor: 'rgba(30, 27, 32, 0.8)', color: 'var(--color-primary, #454955)', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }
                 : { color: 'var(--pw-muted, #859490)' }
             }
           >
@@ -581,7 +581,7 @@ function LoginPageInner() {
               {magicLinkSent ? (
                 <div className="text-center py-6">
                   <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-950/40 border border-green-800/30 mx-auto">
-                    <CheckCircle2 className="w-7 h-7 text-[#57f1db]" />
+                    <CheckCircle2 className="w-7 h-7 text-[#454955]" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2 font-headline-md">Check your inbox</h3>
                   <p className="text-xs text-pw-muted leading-relaxed mx-auto font-body-sm mb-6" style={{ maxWidth: '280px' }}>

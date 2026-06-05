@@ -42,7 +42,7 @@ function getSignal(grm: number, maxGRM: number): 'Pass' | 'Review' | 'Reject' {
 }
 
 const SIGNAL_CONFIG = {
-  Pass:   { color: '#14B8A6', icon: CheckCircle2, label: 'PASS — Strong Buy Signal',     bgClass: 'bg-teal-400/10 border-teal-400/20' },
+  Pass:   { color: '#14B8A6', icon: CheckCircle2, label: 'PASS — Strong Buy Signal',     bgClass: 'bg-[#6E7480]/10 border-[#6E7480]/20' },
   Review: { color: '#EAB308', icon: AlertTriangle, label: 'REVIEW — Needs Analysis',      bgClass: 'bg-amber-400/10 border-amber-400/20' },
   Reject: { color: '#F06543', icon: XCircle,       label: 'REJECT — Overpriced',          bgClass: 'bg-red-400/10 border-red-400/20' },
 } as const;
@@ -75,21 +75,21 @@ function TriageInput({
 }) {
   return (
     <div className="group">
-      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
+      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">
         <Icon className="w-3 h-3" />
         {label}
       </label>
       <p className="text-[9px] text-slate-600 mb-1.5">{sublabel}</p>
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium pointer-events-none">$</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6B6870] font-medium pointer-events-none">$</span>
         <input
           type="number"
           value={value}
           onChange={(e) => onChange(Number(e.target.value) || 0)}
           step={step}
           className="w-full rounded-lg border border-white/10 bg-white/[0.03] text-slate-200 text-sm
-                     font-mono tabular-nums py-2.5 pl-7 pr-3 focus:outline-none focus:border-teal-500/40
-                     focus:ring-1 focus:ring-teal-500/20 transition-all placeholder:text-slate-600"
+                     font-mono tabular-nums py-2.5 pl-7 pr-3 focus:outline-none focus:border-[#454955]/40
+                     focus:ring-1 focus:ring-[#454955]/20 transition-all placeholder:text-slate-600"
         />
       </div>
     </div>
@@ -159,7 +159,7 @@ export function GRMTriageTerminal({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Quick Screen</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">A-Phase Triage Terminal</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">A-Phase Triage Terminal</p>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@ export function GRMTriageTerminal({
           <SignalIcon className="w-6 h-6 flex-shrink-0" style={{ color: signalConfig.color }} />
           <div>
             <p className="text-xs font-bold" style={{ color: signalConfig.color }}>{signalConfig.label}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
+            <p className="text-[10px] text-[#6B6870] mt-0.5">
               GRM {computed.grm.toFixed(1)}x · {isBelowMarket ? 'below' : 'above'} market ({marketGRM}x)
             </p>
           </div>
@@ -204,9 +204,9 @@ export function GRMTriageTerminal({
 
       {/* ── vs Market Bar ── */}
       <div className="space-y-1.5">
-        <div className="flex justify-between text-[9px] text-slate-500 font-bold uppercase tracking-wider">
+        <div className="flex justify-between text-[9px] text-[#6B6870] font-bold uppercase tracking-wider">
           <span>vs Market ({marketGRM}x)</span>
-          <span className={isBelowMarket ? 'text-teal-400' : 'text-red-400'}>
+          <span className={isBelowMarket ? 'text-[#6E7480]' : 'text-red-400'}>
             {isBelowMarket ? '' : '+'}{vsMarket.toFixed(1)}x
           </span>
         </div>
@@ -239,7 +239,7 @@ export function GRMTriageTerminal({
       <div className="grid grid-cols-2 gap-3">
         {comparisons.map((c) => (
           <div key={c.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">{c.label}</p>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">{c.label}</p>
             <p className="text-sm font-bold text-white tabular-nums">{c.value}</p>
             <p className="text-[9px] text-slate-600 mt-0.5">{c.sublabel}</p>
           </div>
@@ -248,8 +248,8 @@ export function GRMTriageTerminal({
 
       {/* ── Formula reference ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           GRM = {fmtCompact(propertyPrice)} ÷ {fmtCompact(computed.grossAnnualRent)}/yr = {computed.grm.toFixed(1)}x
         </p>
       </div>

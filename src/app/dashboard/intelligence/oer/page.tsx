@@ -22,7 +22,7 @@ const DEMO_TREND = [42.1, 41.5, 40.8, 39.9, 39.2, 38.8, 38.5, 38.2];
 const DEMO_MONTHS = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 const EXPENSE_CATEGORIES = [
-  { name: 'Property Taxes', pct: 12, color: '#20B2AA' },
+  { name: 'Property Taxes', pct: 12, color: '#454955' },
   { name: 'Maintenance',    pct: 9,  color: '#38bdf8' },
   { name: 'Insurance',      pct: 8,  color: '#818cf8' },
   { name: 'Management',     pct: 7,  color: '#fb923c' },
@@ -34,12 +34,12 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) =>
         params[0].axisValue + '<br/>' +
-        `<span style="color:#20B2AA">─</span> OER: <b>${params[0].value}%</b>`,
+        `<span style="color:#454955">─</span> OER: <b>${params[0].value}%</b>`,
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -65,7 +65,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
         data: labels.map(() => 35),
         lineStyle: { opacity: 0 },
         areaStyle: {
-          color: 'rgba(32, 178, 170,0.08)',
+          color: 'rgba(69, 73, 85,0.08)',
           origin: 'start',
         },
         showSymbol: false,
@@ -78,13 +78,13 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2.5, color: '#454955' },
+        itemStyle: { color: '#454955' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32, 178, 170,0.18)' },
+              { offset: 0, color: 'rgba(69, 73, 85,0.18)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -97,8 +97,8 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
           data: [
             {
               yAxis: 35,
-              lineStyle: { color: '#20B2AA', type: 'dashed', width: 1, opacity: 0.5 },
-              label: { formatter: 'Excellent <35%', color: '#20B2AA', fontSize: 9 },
+              lineStyle: { color: '#454955', type: 'dashed', width: 1, opacity: 0.5 },
+              label: { formatter: 'Excellent <35%', color: '#454955', fontSize: 9 },
             },
             {
               yAxis: 45,
@@ -111,7 +111,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
           silent: true,
           data: [
             [
-              { yAxis: 30, itemStyle: { color: 'rgba(32, 178, 170,0.04)' } },
+              { yAxis: 30, itemStyle: { color: 'rgba(69, 73, 85,0.04)' } },
               { yAxis: 35 },
             ],
             [
@@ -136,9 +136,9 @@ function ExpenseChart() {
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) => `${params[0].name}: <b>${params[0].value}%</b> of Gross Income`,
     },
     grid: { top: 8, right: 48, bottom: 8, left: 0, containLabel: true },
@@ -200,9 +200,9 @@ export default function OERIntelligencePage() {
   }, [snapshots, projects, collectedValues]);
 
   const zone = currentOER < 35
-    ? { label: 'Excellent', color: '#20B2AA', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
+    ? { label: 'Excellent', color: '#454955', bg: 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]' }
     : currentOER <= 45
-    ? { label: 'Efficient', color: '#20B2AA', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
+    ? { label: 'Efficient', color: '#454955', bg: 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]' }
     : { label: 'Review', color: '#F06543', bg: 'bg-red-400/10 border-red-400/20 text-red-400' };
 
   // Position marker on gradient bar (0% = left = good, 100% = right = bad)
@@ -216,14 +216,14 @@ export default function OERIntelligencePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">OER Intelligence</span>
+            <span className="text-[#6E7480]">OER Intelligence</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Operating Expense Ratio</h1>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2 self-start md:self-auto">
+        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
           <Download className="w-4 h-4" />
           Export
         </button>
@@ -240,7 +240,7 @@ export default function OERIntelligencePage() {
 
             {/* Label */}
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Current OER</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Current OER</span>
               <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${zone.bg}`}>
                 {zone.label}
               </span>
@@ -248,31 +248,31 @@ export default function OERIntelligencePage() {
 
             {/* Big number */}
             <div className="flex items-end gap-3">
-              <span className="text-5xl font-bold text-teal-400 tabular-nums tracking-tighter">
+              <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
                 {currentOER.toFixed(1)}%
               </span>
             </div>
 
             {/* Change indicator */}
-            <div className={`flex items-center gap-1.5 text-sm font-bold ${isDecreasing ? 'text-teal-400' : 'text-red-400'}`}>
+            <div className={`flex items-center gap-1.5 text-sm font-bold ${isDecreasing ? 'text-[#6E7480]' : 'text-red-400'}`}>
               {isDecreasing
                 ? <ArrowDownRight className="w-4 h-4" />
                 : <ArrowUpRight className="w-4 h-4" />
               }
               {isDecreasing ? '' : '+'}{oerChange.toFixed(1)}% vs Last Period
-              <span className="text-[10px] font-normal text-slate-500 ml-1">(lower is better)</span>
+              <span className="text-[10px] font-normal text-[#6B6870] ml-1">(lower is better)</span>
             </div>
 
             {/* Gradient bar */}
             <div className="space-y-2 pt-2">
               <div className="relative h-3 rounded-full overflow-hidden"
-                style={{ background: 'linear-gradient(to right, #20B2AA 0%, #fbbf24 50%, #F06543 100%)' }}>
+                style={{ background: 'linear-gradient(to right, #454955 0%, #fbbf24 50%, #F06543 100%)' }}>
                 <div
-                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow"
+                  className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#0d0a0b] shadow"
                   style={{ left: `${markerPct}%` }}
                 />
               </div>
-              <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-500">
+              <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-[#6B6870]">
                 <span>Excellent &lt;35%</span>
                 <span>Efficient 35–45%</span>
                 <span>Review &gt;45%</span>
@@ -282,7 +282,7 @@ export default function OERIntelligencePage() {
             {/* Zone legend */}
             <div className="grid grid-cols-3 gap-1 pt-2 border-t border-white/[0.06]">
               {[
-                { label: 'Excellent', range: '<35%', color: '#20B2AA' },
+                { label: 'Excellent', range: '<35%', color: '#454955' },
                 { label: 'Efficient', range: '35–45%', color: '#fbbf24' },
                 { label: 'Review', range: '>45%', color: '#F06543' },
               ].map((z) => (
@@ -299,10 +299,10 @@ export default function OERIntelligencePage() {
         <div className="md:col-span-8">
           <div className="rounded-xl border border-white/10 p-6 h-full" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">OER Historical Trend</span>
-              <div className="flex items-center gap-4 text-[10px] text-slate-500">
-                <span className="flex items-center gap-1"><span className="w-4 h-0.5 bg-teal-400 inline-block" /> Portfolio OER</span>
-                <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-teal-400/30 inline-block border-t border-dashed border-teal-400/50" /> 35% Target</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">OER Historical Trend</span>
+              <div className="flex items-center gap-4 text-[10px] text-[#6B6870]">
+                <span className="flex items-center gap-1"><span className="w-4 h-0.5 bg-[#6E7480] inline-block" /> Portfolio OER</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#6E7480]/30 inline-block border-t border-dashed border-[#6E7480]/50" /> 35% Target</span>
               </div>
             </div>
             <TrendChart values={trendValues} labels={trendLabels} />
@@ -318,7 +318,7 @@ export default function OERIntelligencePage() {
       {/* ── Bottom: Expense Breakdown ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Expense Breakdown</span>
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Expense Breakdown</span>
           <span className="text-[10px] text-slate-600">% of Gross Rental Income</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -328,14 +328,14 @@ export default function OERIntelligencePage() {
               <div key={cat.name} className="flex items-center justify-between py-2 border-b border-white/[0.04]">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: cat.color }} />
-                  <span className="text-sm text-slate-300">{cat.name}</span>
+                  <span className="text-sm text-[#C0BEC2]">{cat.name}</span>
                 </div>
                 <span className="text-sm font-bold tabular-nums" style={{ color: cat.color }}>{cat.pct}%</span>
               </div>
             ))}
             <div className="flex items-center justify-between py-2 mt-1 border-t border-white/10">
               <span className="text-sm font-bold text-white">Total Operating Expenses</span>
-              <span className="text-sm font-bold text-teal-400 tabular-nums">
+              <span className="text-sm font-bold text-[#6E7480] tabular-nums">
                 {EXPENSE_CATEGORIES.reduce((s, c) => s + c.pct, 0)}%
               </span>
             </div>

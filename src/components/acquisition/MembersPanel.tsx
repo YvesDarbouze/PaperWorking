@@ -108,16 +108,16 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
             onClick={() => setExpanded(v => !v)}
             className="flex items-center gap-2 text-left"
           >
-            <span className="material-symbols-outlined text-[14px]" style={{ color: "rgba(218,228,236,0.3)", fontVariationSettings: "'FILL' 0" }}>
+            <span className="material-symbols-outlined text-[14px]" style={{ color: "rgba(253,255,252,0.3)", fontVariationSettings: "'FILL' 0" }}>
               group
             </span>
-            <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.3)", letterSpacing: "0.07em" }}>
+            <span className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.3)", letterSpacing: "0.07em" }}>
               Team
             </span>
             {collaborators.length > 0 && (
               <span
                 className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                style={{ background: "rgba(87,241,219,0.1)", color: "#57f1db" }}
+                style={{ background: "rgba(69,73,85,0.1)", color: "#454955" }}
               >
                 {collaborators.length}
               </span>
@@ -135,10 +135,10 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
           <button
             onClick={() => setInviteOpen(true)}
             className="w-6 h-6 rounded-lg flex items-center justify-center transition-opacity hover:opacity-70"
-            style={{ background: "rgba(87,241,219,0.1)", border: "1px solid rgba(87,241,219,0.2)" }}
+            style={{ background: "rgba(69,73,85,0.1)", border: "1px solid rgba(69,73,85,0.2)" }}
             title="Invite teammate"
           >
-            <span className="material-symbols-outlined text-[13px]" style={{ color: "#57f1db" }}>add</span>
+            <span className="material-symbols-outlined text-[13px]" style={{ color: "#454955" }}>add</span>
           </button>
         </div>
 
@@ -146,7 +146,7 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
         {expanded && (
           <div className="space-y-2">
             {collaborators.length === 0 && (
-              <p className="text-[11px] text-center py-2" style={{ color: "rgba(218,228,236,0.2)" }}>
+              <p className="text-[11px] text-center py-2" style={{ color: "rgba(253,255,252,0.2)" }}>
                 No teammates yet.
               </p>
             )}
@@ -158,15 +158,15 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
                   <div className="flex items-center gap-2">
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[9px] font-bold"
-                      style={{ background: "rgba(87,241,219,0.12)", color: "#57f1db" }}
+                      style={{ background: "rgba(69,73,85,0.12)", color: "#454955" }}
                     >
                       {initials(c.user.email, c.user.name)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[11px] truncate font-medium" style={{ color: "rgba(218,228,236,0.75)" }}>
+                      <p className="text-[11px] truncate font-medium" style={{ color: "rgba(253,255,252,0.75)" }}>
                         {displayName(c.user)}
                       </p>
-                      <p className="text-[10px]" style={{ color: "rgba(218,228,236,0.25)" }}>
+                      <p className="text-[10px]" style={{ color: "rgba(253,255,252,0.25)" }}>
                         {c.role.charAt(0) + c.role.slice(1).toLowerCase()} · {c.acceptedAt ? "Active" : "Invited"}
                       </p>
                     </div>
@@ -180,7 +180,7 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
                       style={{ background: "rgba(255,209,170,0.07)", border: "1px solid rgba(255,209,170,0.12)" }}
                     >
                       <span className="material-symbols-outlined text-[11px]" style={{ color: "#ffd1aa" }}>pending</span>
-                      <span style={{ color: "rgba(218,228,236,0.45)" }}>{fieldLabel(a.fieldKey)}</span>
+                      <span style={{ color: "rgba(253,255,252,0.45)" }}>{fieldLabel(a.fieldKey)}</span>
                     </div>
                   ))}
                 </div>
@@ -192,7 +192,7 @@ export function MembersPanel({ projectId, projectName }: MembersPanelProps) {
               <button
                 onClick={() => setInviteOpen(true)}
                 className="w-full py-2 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-1.5"
-                style={{ background: "rgba(87,241,219,0.06)", border: "1px dashed rgba(87,241,219,0.15)", color: "#57f1db" }}
+                style={{ background: "rgba(69,73,85,0.06)", border: "1px dashed rgba(69,73,85,0.15)", color: "#454955" }}
               >
                 <span className="material-symbols-outlined text-[14px]">person_add</span>
                 Invite a teammate

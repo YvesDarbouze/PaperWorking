@@ -18,12 +18,12 @@ export function SampleDataBanner({ show }: { show: boolean }) {
       style={{ background: 'rgba(245,158,11,0.06)' }}
     >
       <Info className="w-4 h-4 text-amber-400 flex-shrink-0" />
-      <p className="text-xs text-slate-400 leading-relaxed">
+      <p className="text-xs text-[#9E9DA0] leading-relaxed">
         <span className="font-semibold text-amber-400/90">Showing sample data</span>
         {' — '}
         <Link
           href="/dashboard/projects/new"
-          className="text-teal-400 hover:text-teal-300 underline underline-offset-2 transition-colors"
+          className="text-[#6E7480] hover:text-[#8a8e9a] underline underline-offset-2 transition-colors"
         >
           add projects
         </Link>

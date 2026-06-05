@@ -59,14 +59,14 @@ function GlassInput({
 }) {
   return (
     <div className="group">
-      <label className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
+      <label className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">
         <Icon className="w-3 h-3" />
         {label}
       </label>
       {sublabel && <p className="text-[9px] text-slate-600 mb-1">{sublabel}</p>}
       <div className="relative">
         {!suffix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium pointer-events-none">$</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6B6870] font-medium pointer-events-none">$</span>
         )}
         <input
           type="number"
@@ -80,7 +80,7 @@ function GlassInput({
           style={!suffix ? { paddingLeft: '1.75rem' } : undefined}
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold pointer-events-none">{suffix}</span>
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#6B6870] font-bold pointer-events-none">{suffix}</span>
         )}
       </div>
     </div>
@@ -92,7 +92,7 @@ function HoldPeriodSelector({ value, onChange }: { value: number; onChange: (v: 
   const options = [3, 5, 7, 10, 15, 20];
   return (
     <div>
-      <label className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+      <label className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1.5">
         <Calendar className="w-3 h-3" />
         Hold Period
       </label>
@@ -104,7 +104,7 @@ function HoldPeriodSelector({ value, onChange }: { value: number; onChange: (v: 
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               value === yr
                 ? 'bg-pw-ocean/20 border border-pw-ocean/40 text-pw-ocean'
-                : 'bg-white/[0.03] border border-white/[0.06] text-slate-500 hover:text-slate-300 hover:border-white/10'
+                : 'bg-white/[0.03] border border-white/[0.06] text-[#6B6870] hover:text-[#C0BEC2] hover:border-white/10'
             }`}
           >
             {yr}yr
@@ -122,7 +122,7 @@ function CashFlowTimeline({ flows }: { flows: number[] }) {
 
   return (
     <div className="space-y-1.5">
-      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1">
         <BarChart3 className="w-3 h-3" />
         Cash Flow Timeline
       </p>
@@ -136,14 +136,14 @@ function CashFlowTimeline({ flows }: { flows: number[] }) {
                 className="w-full rounded-t transition-all duration-300"
                 style={{
                   height: `${Math.max(heightPct, 4)}%`,
-                  backgroundColor: isNeg ? 'rgba(240,101,67,0.5)' : 'rgba(32,178,170,0.5)',
+                  backgroundColor: isNeg ? 'rgba(240,101,67,0.5)' : 'rgba(69,73,85,0.5)',
                   minHeight: '2px',
                 }}
               />
               <span className="text-[7px] text-slate-600 mt-0.5 tabular-nums">t{i}</span>
 
               {/* Tooltip */}
-              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 border border-white/10 rounded px-1.5 py-0.5
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1e1b20] border border-white/10 rounded px-1.5 py-0.5
                               text-[8px] text-white font-mono tabular-nums opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-10">
                 {cf < 0 ? '-' : '+'}${Math.abs(cf).toLocaleString('en-US', { maximumFractionDigits: 0 })}
               </div>
@@ -233,7 +233,7 @@ export function IRRExitAssumptionsTerminal({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Exit Assumptions</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">IRR Analysis Terminal</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">IRR Analysis Terminal</p>
           </div>
         </div>
       </div>
@@ -255,7 +255,7 @@ export function IRRExitAssumptionsTerminal({
 
       {/* ── Loan Terms (collapsible feel) ── */}
       <div className="rounded-lg bg-white/[0.02] border border-white/[0.06] p-3 space-y-3">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Financing</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Financing</p>
         <div className="grid grid-cols-3 gap-2">
           <GlassInput label="Loan" icon={DollarSign} value={loanAmount} onChange={setLoanAmount} step={5000} />
           <GlassInput label="Rate" icon={Percent} value={loanRate} onChange={setLoanRate} suffix="%" step={0.25} />
@@ -271,7 +271,7 @@ export function IRRExitAssumptionsTerminal({
           <Calculator className="w-6 h-6 flex-shrink-0" style={{ color: irrColor }} />
           <div>
             <p className="text-xs font-bold" style={{ color: irrColor }}>{irrSignal}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">{holdYears}-year hold scenario</p>
+            <p className="text-[10px] text-[#6B6870] mt-0.5">{holdYears}-year hold scenario</p>
           </div>
         </div>
         <div className="text-right">
@@ -287,10 +287,10 @@ export function IRRExitAssumptionsTerminal({
         {[
           { label: 'Future Value', value: fmtUSD(exitMetrics.futureValue), color: '#64748b' },
           { label: 'Total Return', value: `${exitMetrics.totalReturn >= 0 ? '+' : '-'}${fmtUSD(exitMetrics.totalReturn)}`, color: exitMetrics.totalReturn >= 0 ? '#3f7d20' : '#F06543' },
-          { label: 'Equity Multiple', value: `${exitMetrics.equityMultiple.toFixed(2)}x`, color: '#20B2AA' },
+          { label: 'Equity Multiple', value: `${exitMetrics.equityMultiple.toFixed(2)}x`, color: '#454955' },
         ].map((m) => (
           <div key={m.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">{m.label}</p>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">{m.label}</p>
             <p className="text-sm font-bold tabular-nums" style={{ color: m.color }}>{m.value}</p>
           </div>
         ))}
@@ -301,8 +301,8 @@ export function IRRExitAssumptionsTerminal({
 
       {/* ── Formula ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Newton-Raphson Solver</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Newton-Raphson Solver</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           IRR where NPV = Σ CF(t) / (1+r)^t = 0 → {irrLabel}
         </p>
       </div>

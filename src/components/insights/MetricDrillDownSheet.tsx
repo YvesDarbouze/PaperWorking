@@ -154,7 +154,7 @@ export function MetricDrillDownSheet({
           ${isOpen ? 'translate-x-0' : 'translate-x-full'}
         `}
         style={{
-          background: 'linear-gradient(135deg, rgba(24,33,39,0.97) 0%, rgba(11,20,26,0.99) 100%)',
+          background: 'linear-gradient(135deg, rgba(24,33,39,0.97) 0%, rgba(13,10,11,0.99) 100%)',
           backdropFilter: 'blur(24px)',
           borderLeft: '1px solid rgba(255,255,255,0.1)',
         }}
@@ -162,14 +162,14 @@ export function MetricDrillDownSheet({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.08]">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">
               Metric Detail
             </p>
             <h2 className="text-xl font-bold text-white tracking-tight">{metricLabel}</h2>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors text-slate-400 hover:text-white"
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors text-[#9E9DA0] hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -191,7 +191,7 @@ export function MetricDrillDownSheet({
           {/* Sparkline chart (simple SVG) */}
           {sparklineData && sparklineData.length >= 2 && (
             <div className="rounded-xl border border-white/10 p-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-3">
                 Historical Trend
               </p>
               <MiniSparkline data={sparklineData} />
@@ -201,13 +201,13 @@ export function MetricDrillDownSheet({
           {/* Formula display */}
           {config && (
             <div className="rounded-xl border border-white/10 p-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-2">
                 Formula
               </p>
-              <p className="text-sm text-teal-400 font-mono leading-relaxed">
+              <p className="text-sm text-[#6E7480] font-mono leading-relaxed">
                 {config.formula}
               </p>
-              <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+              <p className="text-xs text-[#9E9DA0] mt-2 leading-relaxed">
                 {config.description}
               </p>
             </div>
@@ -216,7 +216,7 @@ export function MetricDrillDownSheet({
           {/* Inputs used */}
           {inputEntries.length > 0 && (
             <div className="rounded-xl border border-white/10 p-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-3">
                 Inputs Used
               </p>
               <div className="space-y-2">
@@ -225,7 +225,7 @@ export function MetricDrillDownSheet({
                     key={path}
                     className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0"
                   >
-                    <span className="text-xs text-slate-400">{humanizeFieldPath(path)}</span>
+                    <span className="text-xs text-[#9E9DA0]">{humanizeFieldPath(path)}</span>
                     <span className="text-xs font-mono font-semibold text-white tabular-nums">
                       {formatInputValue(value)}
                     </span>
@@ -258,8 +258,8 @@ export function MetricDrillDownSheet({
           <div className="px-6 py-4 border-t border-white/[0.08]">
             <a
               href={config.sourceRoute}
-              className="w-full py-3 rounded-xl border border-teal-500/30 bg-teal-500/10 hover:bg-teal-500/20
-                transition-all font-semibold text-sm text-teal-400 flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-xl border border-[#454955]/30 bg-[#454955]/10 hover:bg-[#454955]/20
+                transition-all font-semibold text-sm text-[#6E7480] flex items-center justify-center gap-2"
             >
               <ExternalLink className="w-4 h-4" />
               Open {config.sourceLabel}
@@ -310,7 +310,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
       <svg width="100%" viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
         <defs>
           <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isUp ? 'rgba(32, 178, 170,0.3)' : 'rgba(239,68,68,0.3)'} />
+            <stop offset="0%" stopColor={isUp ? 'rgba(69, 73, 85,0.3)' : 'rgba(239,68,68,0.3)'} />
             <stop offset="100%" stopColor="transparent" />
           </linearGradient>
         </defs>
@@ -318,7 +318,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
         <polyline
           points={points}
           fill="none"
-          stroke={isUp ? '#20B2AA' : '#F06543'}
+          stroke={isUp ? '#454955' : '#F06543'}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -329,13 +329,13 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
           const cx = padding + (lastI / (values.length - 1)) * innerW;
           const cy = padding + innerH - ((values[lastI] - min) / range) * innerH;
           return (
-            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#20B2AA' : '#F06543'} stroke="#091015" strokeWidth="2" />
+            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#454955' : '#F06543'} stroke="#0d0a0b" strokeWidth="2" />
           );
         })()}
       </svg>
       <div className="flex justify-between mt-1">
-        <span className="text-[9px] text-slate-500 font-mono">{data[0]?.date}</span>
-        <span className="text-[9px] text-slate-500 font-mono">{data[data.length - 1]?.date}</span>
+        <span className="text-[9px] text-[#6B6870] font-mono">{data[0]?.date}</span>
+        <span className="text-[9px] text-[#6B6870] font-mono">{data[data.length - 1]?.date}</span>
       </div>
     </div>
   );

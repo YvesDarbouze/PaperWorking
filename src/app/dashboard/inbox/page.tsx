@@ -148,23 +148,23 @@ function InboxNotificationCenter() {
 
   return (
     <>
-      <div className="flex w-full h-[calc(100vh-64px)] bg-[#091015] text-[#dae4ec] overflow-hidden">
+      <div className="flex w-full h-[calc(100vh-64px)] bg-[#0d0a0b] text-[#9E9DA0] overflow-hidden">
         
         {/* ═══ List Pane (Left) ═══ */}
-        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#141d23]/50 shrink-0 ${ (activeThread || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
+        <section className={`w-full md:w-[420px] border-r border-white/10 flex flex-col bg-[#161318]/50 shrink-0 ${ (activeThread || selectedItem) ? 'hidden md:flex' : 'flex' }`}>
           <div className="p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-[#dae4ec]">Inbox</h3>
+              <h3 className="text-2xl font-bold text-[#9E9DA0]">Inbox</h3>
               <div className="flex items-center gap-2">
                 {unreadTotal > 0 && (
-                  <span className="px-2 py-0.5 bg-[#57f1db]/10 text-[#57f1db] border border-[#57f1db]/20 rounded font-mono text-[10px] font-bold">
+                  <span className="px-2 py-0.5 bg-[#454955]/10 text-[#454955] border border-[#454955]/20 rounded font-mono text-[10px] font-bold">
                     {unreadTotal} UNREAD
                   </span>
                 )}
                 {unreadTotal > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="p-1.5 rounded-lg hover:bg-white/5 text-[#bacac5] hover:text-[#57f1db] transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-white/5 text-[#9E9DA0] hover:text-[#454955] transition-colors"
                     title="Mark all as read"
                   >
                     <CheckCheck className="w-4 h-4" />
@@ -172,7 +172,7 @@ function InboxNotificationCenter() {
                 )}
                 <button
                   onClick={() => setComposeOpen(true)}
-                  className="p-1.5 rounded-lg hover:bg-white/5 text-[#bacac5] hover:text-[#57f1db] transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-white/5 text-[#9E9DA0] hover:text-[#454955] transition-colors"
                   title="Compose email"
                 >
                   <Plus className="w-4 h-4" />
@@ -181,13 +181,13 @@ function InboxNotificationCenter() {
             </div>
             
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#bacac5] w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9E9DA0] w-4 h-4" />
               <input 
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search logs..." 
-                className="w-full bg-[#060f15] border border-[#3c4a46] rounded-lg py-2 pl-10 pr-4 text-sm focus:border-[#57f1db] focus:ring-1 focus:ring-[#57f1db] outline-none transition-all placeholder:text-[#bacac5]/40 text-[#dae4ec]"
+                className="w-full bg-[#0d0a0b] border border-[#3c4a46] rounded-lg py-2 pl-10 pr-4 text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] outline-none transition-all placeholder:text-[#9E9DA0]/40 text-[#9E9DA0]"
               />
             </div>
           </div>
@@ -220,10 +220,10 @@ function InboxNotificationCenter() {
         </section>
 
         {/* ═══ Reading/Action Pane (Right) ═══ */}
-        <section className={`flex-1 flex flex-col bg-[#091015] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
+        <section className={`flex-1 flex flex-col bg-[#0d0a0b] relative overflow-hidden ${ (activeThread || selectedItem) ? 'flex' : 'hidden md:flex' }`}>
           {/* Background Decorative Elements */}
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#57f1db]/5 rounded-full blur-[100px] pointer-events-none"></div>
-          <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#adc6ff]/5 rounded-full blur-[80px] pointer-events-none"></div>
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#454955]/5 rounded-full blur-[100px] pointer-events-none"></div>
+          <div className="absolute bottom-20 left-20 w-64 h-64 bg-[#7A9EAA]/5 rounded-full blur-[80px] pointer-events-none"></div>
 
           {activeThread ? (
             <ThreadDetail
@@ -235,29 +235,29 @@ function InboxNotificationCenter() {
           ) : selectedItem ? (
             <div className="flex-1 overflow-y-auto z-10 flex flex-col">
                {/* Header Actions */}
-                <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#091015]/50 backdrop-blur-sm">
+                <div className="px-8 py-6 flex items-center justify-between border-b border-white/10 shrink-0 bg-[#0d0a0b]/50 backdrop-blur-sm">
                   <div className="flex items-center gap-4">
-                    <button onClick={() => setSelectedNotificationId(null)} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+                    <button onClick={() => setSelectedNotificationId(null)} className="md:hidden p-2 -ml-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
                       <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <div className="h-12 w-12 rounded-xl bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#57f1db]">
+                    <div className="h-12 w-12 rounded-xl bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] flex items-center justify-center text-[#454955]">
                       <CheckCheck className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold text-[#dae4ec]">{selectedItem.title}</h3>
-                      <p className="text-[10px] font-mono text-[#57f1db] uppercase">
+                      <h3 className="text-2xl font-bold text-[#9E9DA0]">{selectedItem.title}</h3>
+                      <p className="text-[10px] font-mono text-[#454955] uppercase">
                         ID: {selectedItem.id.slice(0, 8)} • STATUS: {selectedItem.read ? 'READ' : 'UNREAD'}
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button onClick={() => archiveItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+                    <button onClick={() => archiveItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
                     </button>
-                    <button onClick={() => deleteItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+                    <button onClick={() => deleteItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
                     </button>
-                    <button className="p-2 rounded-lg hover:bg-white/5 text-[#bacac5] transition-colors">
+                    <button className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
                     </button>
                   </div>
@@ -268,59 +268,59 @@ function InboxNotificationCenter() {
                   <div className="max-w-3xl mx-auto space-y-8">
                     <div className="flex items-start gap-4">
                       {selectedItem.actor.avatarUrl ? (
-                         <img className="h-12 w-12 rounded-full border-2 border-[#57f1db]/20 object-cover" src={selectedItem.actor.avatarUrl} alt={selectedItem.actor.name} />
+                         <img className="h-12 w-12 rounded-full border-2 border-[#454955]/20 object-cover" src={selectedItem.actor.avatarUrl} alt={selectedItem.actor.name} />
                       ) : (
-                         <div className="h-12 w-12 rounded-full border-2 border-[#57f1db]/20 bg-[#141d23] flex items-center justify-center text-[#57f1db] font-bold">
+                         <div className="h-12 w-12 rounded-full border-2 border-[#454955]/20 bg-[#161318] flex items-center justify-center text-[#454955] font-bold">
                            {selectedItem.actor.name[0]}
                          </div>
                       )}
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-[#dae4ec]">{selectedItem.actor.name}</span>
-                          <span className="text-[10px] font-mono text-[#bacac5] uppercase">
+                          <span className="font-bold text-[#9E9DA0]">{selectedItem.actor.name}</span>
+                          <span className="text-[10px] font-mono text-[#9E9DA0] uppercase">
                             {new Date(selectedItem.createdAt).toLocaleString()} UTC
                           </span>
                         </div>
                         {selectedItem.actor.role && (
-                           <p className="text-sm text-[#57f1db] mb-4">{selectedItem.actor.role}</p>
+                           <p className="text-sm text-[#454955] mb-4">{selectedItem.actor.role}</p>
                         )}
                         
-                        <div className="bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] p-6 rounded-2xl space-y-4 mt-4">
-                          <p className="text-base leading-relaxed text-[#bacac5] whitespace-pre-wrap">
+                        <div className="bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] p-6 rounded-2xl space-y-4 mt-4">
+                          <p className="text-base leading-relaxed text-[#9E9DA0] whitespace-pre-wrap">
                             {selectedItem.body}
                           </p>
                                                    {/* Render Document details if it's a specific type of notification */}
                           {['DOCUMENT_SIGNED', 'RECEIPT_APPROVAL'].includes(selectedItem.type) && (
-                            <div className="p-4 bg-[#060f15] rounded-xl border border-[#3c4a46] flex items-center justify-between mt-6">
+                            <div className="p-4 bg-[#0d0a0b] rounded-xl border border-[#3c4a46] flex items-center justify-between mt-6">
                               <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[#57f1db]">description</span>
+                                <span className="material-symbols-outlined text-[#454955]">description</span>
                                 <div>
-                                  <p className="text-xs font-bold text-[#dae4ec]">Attached_Document.pdf</p>
-                                  <p className="text-[10px] font-mono text-[#bacac5]">SECURE // PDF-DOCUMENT</p>
+                                  <p className="text-xs font-bold text-[#9E9DA0]">Attached_Document.pdf</p>
+                                  <p className="text-[10px] font-mono text-[#9E9DA0]">SECURE // PDF-DOCUMENT</p>
                                 </div>
                               </div>
-                              <button className="material-symbols-outlined text-[#bacac5] hover:text-[#57f1db] transition-colors">download</button>
+                              <button className="material-symbols-outlined text-[#9E9DA0] hover:text-[#454955] transition-colors">download</button>
                             </div>
                           )}
 
                           {selectedItem.type === 'VENDOR_BID' && (
-                            <div className="p-4 bg-[#060f15] rounded-xl border border-[#3c4a46] flex flex-col gap-2 mt-6">
+                            <div className="p-4 bg-[#0d0a0b] rounded-xl border border-[#3c4a46] flex flex-col gap-2 mt-6">
                               <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-[#57f1db]">engineering</span>
+                                <span className="material-symbols-outlined text-[#454955]">engineering</span>
                                 <div>
-                                  <p className="text-xs font-bold text-[#dae4ec]">ABC Inspections Bid Summary</p>
-                                  <p className="text-[10px] font-mono text-[#bacac5]">PROPOSAL // ELECTRICAL & GENERAL</p>
+                                  <p className="text-xs font-bold text-[#9E9DA0]">ABC Inspections Bid Summary</p>
+                                  <p className="text-[10px] font-mono text-[#9E9DA0]">PROPOSAL // ELECTRICAL & GENERAL</p>
                                 </div>
                               </div>
-                              <div className="grid grid-cols-2 gap-4 mt-2 pt-2 border-t border-white/5 text-xs text-[#bacac5]">
+                              <div className="grid grid-cols-2 gap-4 mt-2 pt-2 border-t border-white/5 text-xs text-[#9E9DA0]">
                                 <div>
-                                  <p className="text-[10px] uppercase text-[#bacac5]/60 font-semibold">Proposed Service Date</p>
-                                  <p className="font-medium text-[#dae4ec]">Oct 30, 2023</p>
+                                  <p className="text-[10px] uppercase text-[#9E9DA0]/60 font-semibold">Proposed Service Date</p>
+                                  <p className="font-medium text-[#9E9DA0]">Oct 30, 2023</p>
                                 </div>
                                 <div>
-                                  <p className="text-[10px] uppercase text-[#bacac5]/60 font-semibold">Payment Terms</p>
-                                  <p className="font-medium text-[#dae4ec]">Net 15 upon completion</p>
+                                  <p className="text-[10px] uppercase text-[#9E9DA0]/60 font-semibold">Payment Terms</p>
+                                  <p className="font-medium text-[#9E9DA0]">Net 15 upon completion</p>
                                 </div>
                               </div>
                             </div>
@@ -334,7 +334,7 @@ function InboxNotificationCenter() {
                       {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE'].includes(selectedItem.type) ? (
                         <button 
                           onClick={() => toast.success('Action executed.')}
-                          className="px-8 py-3 bg-[#57f1db] text-[#003731] font-bold rounded-full luminous-glow flex items-center gap-2 hover:brightness-110 transition-all"
+                          className="px-8 py-3 bg-[#454955] text-[#0d0a0b] font-bold rounded-full luminous-glow flex items-center gap-2 hover:brightness-110 transition-all"
                         >
                           <span className="material-symbols-outlined">edit_square</span>
                           EXECUTE ACTION
@@ -342,7 +342,7 @@ function InboxNotificationCenter() {
                       ) : null}
                       <button 
                          onClick={() => setComposeOpen(true)}
-                         className="px-8 py-3 bg-[#091015]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] text-[#dae4ec] font-bold rounded-full hover:bg-white/5 transition-all flex items-center gap-2"
+                         className="px-8 py-3 bg-[#0d0a0b]/60 backdrop-blur-xl border border-white/10 shadow-[inset_1px_1px_0px_rgba(255,255,255,0.05)] text-[#9E9DA0] font-bold rounded-full hover:bg-white/5 transition-all flex items-center gap-2"
                       >
                         <span className="material-symbols-outlined">reply</span>
                         REPLY
@@ -352,16 +352,16 @@ function InboxNotificationCenter() {
                 </div>
 
                 {/* Terminal Overlay (Footer Style) */}
-                <div className="bg-[#060f15]/80 backdrop-blur px-8 py-2 border-t border-white/10 flex items-center justify-between shrink-0">
+                <div className="bg-[#0d0a0b]/80 backdrop-blur px-8 py-2 border-t border-white/10 flex items-center justify-between shrink-0">
                   <div className="flex gap-4">
-                    <p className="text-[10px] font-mono text-[#bacac5]"><span className="text-[#57f1db]">RUNNING:</span> inbox_handler.sh</p>
-                    <p className="text-[10px] font-mono text-[#bacac5]"><span className="text-[#57f1db]">ENCRYPTION:</span> AES-256-GCM</p>
+                    <p className="text-[10px] font-mono text-[#9E9DA0]"><span className="text-[#454955]">RUNNING:</span> inbox_handler.sh</p>
+                    <p className="text-[10px] font-mono text-[#9E9DA0]"><span className="text-[#454955]">ENCRYPTION:</span> AES-256-GCM</p>
                   </div>
-                  <p className="text-[10px] font-mono text-[#bacac5]">LAST_SYNC: 0.2s AGO</p>
+                  <p className="text-[10px] font-mono text-[#9E9DA0]">LAST_SYNC: 0.2s AGO</p>
                 </div>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-[#bacac5] z-10">
+            <div className="flex-1 flex flex-col items-center justify-center text-[#9E9DA0] z-10">
               <span className="material-symbols-outlined text-6xl mb-4 opacity-20" style={{ fontVariationSettings: "'FILL' 0, 'wght' 200" }}>inbox</span>
               <p className="text-lg font-medium">Select an item to read</p>
               <p className="text-sm opacity-60">Your messages and notifications will appear here.</p>
@@ -384,10 +384,10 @@ export default function InboxPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#091015]">
+        <div className="flex w-full h-[calc(100vh-64px)] items-center justify-center bg-[#0d0a0b]">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-6 h-6 animate-spin text-[#57f1db]" />
-            <p className="text-sm font-medium text-[#bacac5]">
+            <Loader2 className="w-6 h-6 animate-spin text-[#454955]" />
+            <p className="text-sm font-medium text-[#9E9DA0]">
               Loading Notifications...
             </p>
           </div>

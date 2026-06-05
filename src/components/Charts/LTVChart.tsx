@@ -25,10 +25,10 @@ export default function LTVChart({ data, height = 300 }: LTVChartProps) {
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -41,10 +41,10 @@ export default function LTVChart({ data, height = 300 }: LTVChartProps) {
 
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${d.period}</strong>
-            <span style="color: #bacac5">LTV Ratio:</span> <strong style="color: #57f1db">${d.ltv.toFixed(1)}%</strong><br/>
-            <span style="color: #bacac5">Loan Balance:</span> <strong style="color: #dae4ec">${fmtUSD(d.loanBalance)}</strong><br/>
-            <span style="color: #bacac5">Property Value:</span> <strong style="color: #dae4ec">${fmtUSD(d.propertyValue)}</strong>
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${d.period}</strong>
+            <span style="color: #9E9DA0">LTV Ratio:</span> <strong style="color: #454955">${d.ltv.toFixed(1)}%</strong><br/>
+            <span style="color: #9E9DA0">Loan Balance:</span> <strong style="color: #9E9DA0">${fmtUSD(d.loanBalance)}</strong><br/>
+            <span style="color: #9E9DA0">Property Value:</span> <strong style="color: #9E9DA0">${fmtUSD(d.propertyValue)}</strong>
           </div>
         `;
       }
@@ -65,7 +65,7 @@ export default function LTVChart({ data, height = 300 }: LTVChartProps) {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5', // var(--color-on-surface-variant)
+        color: '#9E9DA0', // var(--color-on-surface-variant)
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       }
@@ -83,7 +83,7 @@ export default function LTVChart({ data, height = 300 }: LTVChartProps) {
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5', // var(--color-on-surface-variant)
+        color: '#9E9DA0', // var(--color-on-surface-variant)
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: '{value}%'
@@ -96,14 +96,14 @@ export default function LTVChart({ data, height = 300 }: LTVChartProps) {
         data: data.map((d) => ({
           value: d.ltv,
           itemStyle: {
-            color: '#57f1db' // var(--color-primary)
+            color: '#454955' // var(--color-primary)
           }
         })),
         symbol: 'circle',
         symbolSize: 6,
         showSymbol: true,
         lineStyle: {
-          color: '#57f1db',
+          color: '#454955',
           width: 2.5
         },
         areaStyle: {

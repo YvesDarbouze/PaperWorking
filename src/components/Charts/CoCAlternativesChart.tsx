@@ -21,10 +21,10 @@ export default function CoCAlternativesChart({ data, height = 240 }: CoCAlternat
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -33,8 +33,8 @@ export default function CoCAlternativesChart({ data, height = 240 }: CoCAlternat
         if (!item) return '';
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${item.name}</strong>
-            <span style="color: #bacac5">Return Rate:</span> <strong style="color: ${item.color}">${item.value.toFixed(2)}%</strong>
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${item.name}</strong>
+            <span style="color: #9E9DA0">Return Rate:</span> <strong style="color: ${item.color}">${item.value.toFixed(2)}%</strong>
           </div>
         `;
       }
@@ -57,7 +57,7 @@ export default function CoCAlternativesChart({ data, height = 240 }: CoCAlternat
         }
       },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: '{value}%'
@@ -69,7 +69,7 @@ export default function CoCAlternativesChart({ data, height = 240 }: CoCAlternat
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#dae4ec',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       }

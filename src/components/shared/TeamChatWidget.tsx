@@ -40,12 +40,12 @@ export default function TeamChatWidget({ projectId }: TeamChatWidgetProps) {
        </div>
 
        <form onSubmit={sendMsg} className="p-2 bg-bg-surface border-t border-border-accent flex items-center gap-2">
-          <button type="button" className="p-2 text-text-secondary hover:text-[#20B2AA] transition"><AtSign className="w-4 h-4" /></button>
+          <button type="button" className="p-2 text-text-secondary hover:text-[#454955] transition"><AtSign className="w-4 h-4" /></button>
           <input 
              value={input}
              onChange={e => setInput(e.target.value)}
              placeholder="Type a message or @mention..."
-             className="flex-1 bg-bg-primary border-transparent focus:bg-bg-surface focus:border-[#20B2AA] focus:ring-0 rounded-lg text-sm px-3 py-2 outline-none transition"
+             className="flex-1 bg-bg-primary border-transparent focus:bg-bg-surface focus:border-[#454955] focus:ring-0 rounded-lg text-sm px-3 py-2 outline-none transition"
           />
           <button type="submit" className="p-2 bg-[#454955] text-white rounded-lg hover:bg-[#454955]/90 transition">
              <Send className="w-4 h-4" />

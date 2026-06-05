@@ -360,7 +360,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
               label: 'ARV Cap Rate',
               value: fmtPct(aggregate.arvCapRate),
               sublabel: `NOI ÷ ARV ${fmtUSD(aggregate.totalARV)}`,
-              color: '#20B2AA',
+              color: '#454955',
             },
             {
               icon: Gauge,

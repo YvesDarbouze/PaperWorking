@@ -89,7 +89,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 member
                   ? 'border-border-accent bg-bg-primary/50'
                   : isEditing
-                  ? 'border-[#20B2AA]/30 bg-[#20B2AA]/5'
+                  ? 'border-[#454955]/30 bg-[#454955]/5'
                   : 'border-dashed border-border-accent hover:border-border-accent'
               }`}
             >
@@ -97,7 +97,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      member ? 'bg-[#20B2AA]/10 text-[#20B2AA]' : 'bg-bg-primary text-text-secondary'
+                      member ? 'bg-[#454955]/10 text-[#454955]' : 'bg-bg-primary text-text-secondary'
                     }`}
                   >
                     {icon}
@@ -126,7 +126,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 ) : !isEditing ? (
                   <button
                     onClick={() => setEditingRole(role)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-[#20B2AA] bg-[#20B2AA]/10 rounded-md hover:bg-[#20B2AA]/20 transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-[#454955] bg-[#454955]/10 rounded-md hover:bg-[#454955]/20 transition"
                   >
                     <UserPlus className="w-3 h-3" /> Invite
                   </button>
@@ -141,14 +141,14 @@ export default function ProjectTeamManager({ projectId }: Props) {
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
                     placeholder="Name"
-                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#20B2AA] focus:ring-1 focus:ring-[#20B2AA] transition"
+                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="email@company.com"
-                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#20B2AA] focus:ring-1 focus:ring-[#20B2AA] transition"
+                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                   <button
                     onClick={() => handleAssign(role)}

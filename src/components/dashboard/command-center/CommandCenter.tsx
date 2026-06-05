@@ -182,7 +182,7 @@ function KPICard({
       className="relative rounded-2xl p-5 flex flex-col justify-between overflow-hidden group"
       style={{
         background:
-          "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+          "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -207,7 +207,7 @@ function KPICard({
       <div className="relative flex justify-between items-start mb-4">
         <span
           className="text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: "rgba(218,228,236,0.45)", letterSpacing: "0.08em" }}
+          style={{ color: "rgba(253,255,252,0.45)", letterSpacing: "0.08em" }}
         >
           {label}
         </span>
@@ -224,7 +224,7 @@ function KPICard({
         <div className="flex items-baseline gap-1 mb-1.5">
           <span
             className="text-[2.25rem] font-bold leading-none tracking-tight tabular-nums"
-            style={{ color: "rgba(218,228,236,0.95)" }}
+            style={{ color: "rgba(253,255,252,0.95)" }}
           >
             {value}
           </span>
@@ -249,7 +249,7 @@ function KPICard({
               </span>
             )}
             {subLabel && (
-              <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.35)" }}>
+              <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.35)" }}>
                 {subLabel}
               </span>
             )}
@@ -263,10 +263,10 @@ function KPICard({
 // ─── Phase Legend ─────────────────────────────────────────────────────────────
 
 const PHASE_LEGEND = [
-  { label: "Acquisition", color: "#57f1db" },
-  { label: "Transaction", color: "#adc6ff" },
+  { label: "Acquisition", color: "#454955" },
+  { label: "Transaction", color: "#7A9EAA" },
   { label: "Rehab",       color: "#ffac5a" },
-  { label: "Hold / Exit", color: "#62fae3" },
+  { label: "Hold / Exit", color: "#5aaa3f" },
 ];
 
 // ─── Inbox preview strip ──────────────────────────────────────────────────────
@@ -277,7 +277,7 @@ function InboxStrip() {
       className="rounded-2xl overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+          "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -291,13 +291,13 @@ function InboxStrip() {
         <div className="flex items-center gap-2">
           <span
             className="material-symbols-outlined text-[18px]"
-            style={{ color: "#adc6ff", fontVariationSettings: "'FILL' 0" }}
+            style={{ color: "#7A9EAA", fontVariationSettings: "'FILL' 0" }}
           >
             inbox
           </span>
           <span
             className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(218,228,236,0.5)", letterSpacing: "0.08em" }}
+            style={{ color: "rgba(253,255,252,0.5)", letterSpacing: "0.08em" }}
           >
             Inbox
           </span>
@@ -305,7 +305,7 @@ function InboxStrip() {
         <Link
           href="/dashboard/inbox"
           className="text-[11px] font-semibold transition-opacity duration-150 hover:opacity-70"
-          style={{ color: "#adc6ff" }}
+          style={{ color: "#7A9EAA" }}
         >
           Open →
         </Link>
@@ -315,17 +315,17 @@ function InboxStrip() {
       <div className="px-5 py-4 flex flex-col items-center justify-center gap-1 text-center min-h-[80px]">
         <span
           className="material-symbols-outlined text-2xl"
-          style={{ color: "rgba(218,228,236,0.12)" }}
+          style={{ color: "rgba(253,255,252,0.12)" }}
         >
           mark_email_unread
         </span>
-        <p className="text-[11px]" style={{ color: "rgba(218,228,236,0.25)" }}>
+        <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.25)" }}>
           Messages and deal invites appear here.
         </p>
         <Link
           href="/dashboard/inbox"
           className="text-[11px] font-semibold mt-1 hover:opacity-70"
-          style={{ color: "#adc6ff" }}
+          style={{ color: "#7A9EAA" }}
         >
           Go to Inbox
         </Link>
@@ -359,11 +359,11 @@ export function CommandCenter() {
           <div>
             <h1
               className="text-3xl font-bold tracking-tight"
-              style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}
+              style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}
             >
               Portfolio
             </h1>
-            <p className="text-sm mt-1" style={{ color: "rgba(218,228,236,0.4)" }}>
+            <p className="text-sm mt-1" style={{ color: "rgba(253,255,252,0.4)" }}>
               {kpis.activeCount > 0
                 ? `${kpis.activeCount} active deal${kpis.activeCount !== 1 ? "s" : ""} · updated just now`
                 : "Start by adding your first deal."}
@@ -372,16 +372,16 @@ export function CommandCenter() {
           {/* Live pulse */}
           <span
             className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.08em" }}
+            style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}
           >
             <span className="relative flex h-2 w-2">
               <span
                 className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: "#57f1db" }}
+                style={{ backgroundColor: "#454955" }}
               />
               <span
                 className="relative inline-flex h-2 w-2 rounded-full"
-                style={{ backgroundColor: "#57f1db" }}
+                style={{ backgroundColor: "#454955" }}
               />
             </span>
             Live
@@ -396,9 +396,9 @@ export function CommandCenter() {
               icon="trending_up"
               value={irrVal}
               suffix={kpis.irr !== null ? "%" : ""}
-              accentColor="#57f1db"
+              accentColor="#454955"
               badge={kpis.irr !== null && kpis.irr > 0 ? "↑ On Track" : undefined}
-              badgeColor="#57f1db"
+              badgeColor="#454955"
               subLabel={kpis.irr !== null ? "annualized" : "No projects yet"}
             />
             <KPICard
@@ -406,13 +406,13 @@ export function CommandCenter() {
               icon="layers"
               value={emVal}
               suffix={kpis.equityMultiple !== null ? "x" : ""}
-              accentColor="#adc6ff"
+              accentColor="#7A9EAA"
               badge={
                 kpis.equityMultiple !== null && kpis.equityMultiple >= 1
                   ? "On Track"
                   : undefined
               }
-              badgeColor="#adc6ff"
+              badgeColor="#7A9EAA"
               subLabel={kpis.equityMultiple !== null ? "vs. 2.5× target" : "No projects yet"}
             />
             <KPICard
@@ -429,9 +429,9 @@ export function CommandCenter() {
               icon="home_work"
               value={noiVal}
               suffix={kpis.totalNOI !== null ? "/yr" : ""}
-              accentColor="#62fae3"
+              accentColor="#5aaa3f"
               badge={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "Rentals" : undefined}
-              badgeColor="#62fae3"
+              badgeColor="#5aaa3f"
               subLabel={kpis.totalNOI !== null ? "hold-phase only" : "Rentals only"}
             />
             <KPICard
@@ -439,7 +439,7 @@ export function CommandCenter() {
               icon="waterfall_chart"
               value={cfVal}
               suffix={kpis.portfolioCashFlow !== null ? "/mo" : ""}
-              accentColor="#20B2AA"
+              accentColor="#454955"
               badge={
                 kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow > 0
                   ? "Positive"
@@ -450,7 +450,7 @@ export function CommandCenter() {
               badgeColor={
                 kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0
                   ? "#F06543"
-                  : "#20B2AA"
+                  : "#454955"
               }
               subLabel={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
             />
@@ -468,7 +468,7 @@ export function CommandCenter() {
             <div className="flex justify-between items-end">
               <h2
                 className="text-lg font-bold tracking-tight"
-                style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.01em" }}
+                style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.01em" }}
               >
                 Active Pipeline
               </h2>
@@ -477,7 +477,7 @@ export function CommandCenter() {
                   <span
                     key={label}
                     className="flex items-center gap-1.5 text-xs"
-                    style={{ color: "rgba(218,228,236,0.4)" }}
+                    style={{ color: "rgba(253,255,252,0.4)" }}
                   >
                     <span
                       className="w-2 h-2 rounded-full flex-shrink-0"

@@ -41,7 +41,7 @@ interface AppreciationCollectionTerminalProps {
 
 /* ── Zone config ── */
 const ZONE_CFG = {
-  strong:   { label: 'Strong Growth',   color: '#20B2AA', range: '>5%',   icon: TrendingUp },
+  strong:   { label: 'Strong Growth',   color: '#454955', range: '>5%',   icon: TrendingUp },
   moderate: { label: 'Moderate',        color: '#fbbf24', range: '2–5%',  icon: Target },
   flat:     { label: 'Flat / Decline',  color: '#F06543', range: '<2%',   icon: TrendingDown },
 } as const;
@@ -138,12 +138,12 @@ export function AppreciationCollectionTerminal({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-teal-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#454955]/10 flex items-center justify-center">
+            <TrendingUp className="w-4 h-4 text-[#6E7480]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Appreciation</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">
               Valuation Collection
             </p>
           </div>
@@ -171,7 +171,7 @@ export function AppreciationCollectionTerminal({
             <p className="text-xs font-bold" style={{ color: zoneCfg.color }}>
               Annualized CAGR
             </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
+            <p className="text-[10px] text-[#6B6870] mt-0.5">
               {computed.holdYears.toFixed(1)} year hold period
             </p>
           </div>
@@ -194,13 +194,13 @@ export function AppreciationCollectionTerminal({
 
         {/* Gain summary */}
         <div className="flex justify-between mt-2 text-[10px]">
-          <span className="text-slate-500">
-            Total Gain: <span className="font-bold" style={{ color: gainIsPositive ? '#20B2AA' : '#F06543' }}>
+          <span className="text-[#6B6870]">
+            Total Gain: <span className="font-bold" style={{ color: gainIsPositive ? '#454955' : '#F06543' }}>
               {gainIsPositive ? '+' : ''}${Math.abs(computed.totalGain).toLocaleString()}
             </span>
           </span>
-          <span className="text-slate-500">
-            Total Return: <span className="font-bold" style={{ color: gainIsPositive ? '#20B2AA' : '#F06543' }}>
+          <span className="text-[#6B6870]">
+            Total Return: <span className="font-bold" style={{ color: gainIsPositive ? '#454955' : '#F06543' }}>
               {gainIsPositive ? '+' : ''}{computed.totalGainPct.toFixed(1)}%
             </span>
           </span>
@@ -211,7 +211,7 @@ export function AppreciationCollectionTerminal({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Purchase Price */}
         <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1 mb-1">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1 mb-1">
             <Building2 className="w-3 h-3" /> Acquisition Price
           </label>
           <div className="flex items-center gap-1">
@@ -222,14 +222,14 @@ export function AppreciationCollectionTerminal({
               onChange={(e) => setPurchasePrice(Math.max(0, Number(e.target.value) || 0))}
               min={0}
               className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                         font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                         font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
             />
           </div>
         </div>
 
         {/* Acquisition Costs */}
         <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1 mb-1">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1 mb-1">
             <DollarSign className="w-3 h-3" /> Closing / Acq. Costs
           </label>
           <div className="flex items-center gap-1">
@@ -240,7 +240,7 @@ export function AppreciationCollectionTerminal({
               onChange={(e) => setAcquisitionCosts(Math.max(0, Number(e.target.value) || 0))}
               min={0}
               className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                         font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                         font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
             />
           </div>
           <p className="text-[9px] text-slate-600 mt-1">
@@ -250,7 +250,7 @@ export function AppreciationCollectionTerminal({
 
         {/* Current Estimated Value */}
         <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1 mb-1">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1 mb-1">
             <Target className="w-3 h-3" /> Current Estimate
           </label>
           <div className="flex items-center gap-1">
@@ -261,14 +261,14 @@ export function AppreciationCollectionTerminal({
               onChange={(e) => setCurrentEstimate(Math.max(0, Number(e.target.value) || 0))}
               min={0}
               className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                         font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                         font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
             />
           </div>
         </div>
 
         {/* Hold Period */}
         <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1 mb-1">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1 mb-1">
             <Calendar className="w-3 h-3" /> Hold Period (Years)
           </label>
           <input
@@ -278,15 +278,15 @@ export function AppreciationCollectionTerminal({
             min={0.1}
             step={0.5}
             className="w-full bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                       font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                       font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
           />
         </div>
       </div>
 
       {/* ── Formula ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula (CAGR)</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula (CAGR)</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           ({currentEstimate.toLocaleString()} / {computed.totalBasis.toLocaleString()})^(1/{holdYears}) − 1 = {computed.annualizedRate >= 0 ? '+' : ''}{computed.annualizedRate.toFixed(2)}%
         </p>
       </div>

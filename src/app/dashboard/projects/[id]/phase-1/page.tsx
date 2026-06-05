@@ -66,7 +66,7 @@ import {
    Project data is sourced from WorkspaceContext (no re-fetch).
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_COLOR = '#57f1db';
+const PHASE_COLOR = '#454955';
 
 /* ── Phase 1 Question Schema ──────────────────────────────────────────────────
    Each item drives one "slide" in the ConversationalForm engine.
@@ -455,13 +455,13 @@ export default function Phase1WorkspacePage() {
   /* ── Loading state ── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
             style={{ borderColor: PHASE_COLOR, borderTopColor: 'transparent' }}
           />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#bacac5]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9E9DA0]">
             Loading Workspace…
           </p>
         </div>
@@ -472,12 +472,12 @@ export default function Phase1WorkspacePage() {
   /* ── Not found state ── */
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="text-center space-y-3">
-          <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
+          <p className="text-sm font-bold text-[#9E9DA0]">Project not found.</p>
           <button
             onClick={() => router.push('/dashboard/projects')}
-            className="text-xs font-bold uppercase tracking-[0.12em] underline text-[#bacac5] hover:text-[#57f1db] transition-colors"
+            className="text-xs font-bold uppercase tracking-[0.12em] underline text-[#9E9DA0] hover:text-[#454955] transition-colors"
           >
             Back to Projects
           </button>
@@ -520,25 +520,25 @@ export default function Phase1WorkspacePage() {
   const projectData = project as any;
 
   return (
-    <div className="min-h-screen bg-[#091015] relative">
+    <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Syndicate Investor Invite Modal ── */}
       {showInviteModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[#091015] border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
+          <div className="w-full max-w-md bg-[#0d0a0b] border border-white/10 rounded-2xl shadow-2xl p-8 space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-white">Invite Syndicate Investor</h2>
-              <button onClick={closeInviteModal} className="text-[#bacac5] hover:text-white transition-colors p-1">
+              <button onClick={closeInviteModal} className="text-[#9E9DA0] hover:text-white transition-colors p-1">
                 <span className="material-symbols-outlined text-xl select-none">close</span>
               </button>
             </div>
 
             {inviteSuccess ? (
               <div className="text-center space-y-4 py-4">
-                <span className="material-symbols-outlined text-4xl text-[#57f1db] select-none">check_circle</span>
+                <span className="material-symbols-outlined text-4xl text-[#454955] select-none">check_circle</span>
                 <p className="text-white font-semibold">Invitation sent!</p>
-                <p className="text-sm text-[#bacac5]">They'll receive an email with a link to review the deal and respond.</p>
-                <button onClick={closeInviteModal} className="w-full py-3 bg-[#57f1db] text-[#003731] font-bold rounded-lg text-sm">
+                <p className="text-sm text-[#9E9DA0]">They'll receive an email with a link to review the deal and respond.</p>
+                <button onClick={closeInviteModal} className="w-full py-3 bg-[#454955] text-[#0d0a0b] font-bold rounded-lg text-sm">
                   Done
                 </button>
               </div>
@@ -546,29 +546,29 @@ export default function Phase1WorkspacePage() {
               <form onSubmit={handleSendInvite} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2 space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Full Name *</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Full Name *</label>
                     <input
                       required
                       type="text"
                       value={inviteForm.name}
                       onChange={(e) => setInviteForm(p => ({ ...p, name: e.target.value }))}
                       placeholder="Jane Smith"
-                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/40 focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
                     />
                   </div>
                   <div className="col-span-2 space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Email Address *</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Email Address *</label>
                     <input
                       required
                       type="email"
                       value={inviteForm.email}
                       onChange={(e) => setInviteForm(p => ({ ...p, email: e.target.value }))}
                       placeholder="investor@example.com"
-                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/40 focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Equity % (optional)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Equity % (optional)</label>
                     <input
                       type="number"
                       min="0"
@@ -577,17 +577,17 @@ export default function Phase1WorkspacePage() {
                       value={inviteForm.equityPct}
                       onChange={(e) => setInviteForm(p => ({ ...p, equityPct: e.target.value }))}
                       placeholder="e.g. 15"
-                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/40 focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#bacac5]">Amount $ (optional)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">Amount $ (optional)</label>
                     <input
                       type="text"
                       value={inviteForm.amount}
                       onChange={(e) => setInviteForm(p => ({ ...p, amount: e.target.value }))}
                       placeholder="e.g. 50000"
-                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#bacac5]/40 focus:outline-none focus:ring-1 focus:ring-[#57f1db]/60 text-sm"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-[#9E9DA0]/40 focus:outline-none focus:ring-1 focus:ring-[#454955]/60 text-sm"
                     />
                   </div>
                 </div>
@@ -600,14 +600,14 @@ export default function Phase1WorkspacePage() {
                   <button
                     type="button"
                     onClick={closeInviteModal}
-                    className="flex-1 py-3 border border-white/10 text-[#bacac5] text-sm font-semibold rounded-lg hover:bg-white/5 transition-colors"
+                    className="flex-1 py-3 border border-white/10 text-[#9E9DA0] text-sm font-semibold rounded-lg hover:bg-white/5 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={inviteSending}
-                    className="flex-1 py-3 bg-[#57f1db] text-[#003731] text-sm font-bold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 py-3 bg-[#454955] text-[#0d0a0b] text-sm font-bold rounded-lg disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {inviteSending && <Loader2 className="w-4 h-4 animate-spin" />}
                     {inviteSending ? 'Sending…' : 'Send Invite'}
@@ -621,8 +621,8 @@ export default function Phase1WorkspacePage() {
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#57f1db]/5 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#0566d9]/5 blur-[100px] rounded-full" />
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#454955]/5 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#7A9EAA]/5 blur-[100px] rounded-full" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
@@ -647,28 +647,28 @@ export default function Phase1WorkspacePage() {
         <section className="flex flex-col gap-4">
           <div className="flex justify-between items-end">
             <div className="space-y-1">
-              <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase">
+              <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#454955] uppercase">
                 Phase: Acquisition
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5]">
+                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0]">
                   Equity: {ownershipPct}%
                 </span>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#57f1db]">
+              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#454955]">
                 {Math.round(progressPercent)}% Complete
               </span>
             </div>
           </div>
           {/* Progress Bar (Stitch schema) */}
-          <div className="h-1.5 w-full bg-[#2d363d] rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-[#262328] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700 ease-out luminous-glow"
               style={{
                 width: `${progressPercent}%`,
-                background: 'linear-gradient(90deg, #3cddc7 0%, #57f1db 100%)',
+                background: 'linear-gradient(90deg, #454955 0%, #454955 100%)',
               }}
             />
           </div>
@@ -688,7 +688,7 @@ export default function Phase1WorkspacePage() {
             ═══════════════════════════════════════════════════════ */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+            <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
               Acquisition Tasks
             </h2>
           </div>
@@ -698,22 +698,22 @@ export default function Phase1WorkspacePage() {
             {/* ── Task 1: Property Details & Strategy (Completed/Pending) ── */}
             <div
               className={`glass-card rounded-xl p-4 flex flex-col gap-3 transition-all duration-300 cursor-pointer
-                ${taskStatuses.details ? 'border-l-4 border-[#57f1db]/40' : 'border-l-4 border-[#57f1db]'}`}
+                ${taskStatuses.details ? 'border-l-4 border-[#454955]/40' : 'border-l-4 border-[#454955]'}`}
               onClick={() => setExpandedTask(expandedTask === 'details' ? null : 'details')}
             >
               <div className="flex justify-between items-start">
-                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] flex items-center gap-2">
+                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] flex items-center gap-2">
                   {taskStatuses.details ? (
-                    <CheckCircle2 className="w-[18px] h-[18px] text-[#57f1db]" fill="currentColor" strokeWidth={0} />
+                    <CheckCircle2 className="w-[18px] h-[18px] text-[#454955]" fill="currentColor" strokeWidth={0} />
                   ) : (
-                    <Target className="w-[18px] h-[18px] text-[#57f1db]" />
+                    <Target className="w-[18px] h-[18px] text-[#454955]" />
                   )}
                   Property Details &amp; Strategy
                 </h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
                   ${taskStatuses.details
-                    ? 'bg-[#57f1db]/20 text-[#57f1db]'
-                    : 'bg-[#2d363d] text-[#bacac5]'}`}>
+                    ? 'bg-[#454955]/20 text-[#454955]'
+                    : 'bg-[#262328] text-[#9E9DA0]'}`}>
                   {taskStatuses.details ? 'Completed' : 'Pending'}
                 </span>
               </div>
@@ -738,7 +738,7 @@ export default function Phase1WorkspacePage() {
               )}
               {!expandedTask?.includes('details') && taskStatuses.details && (
                 <div className="flex items-center justify-between">
-                  <span className="text-[#bacac5] text-[12px] leading-[14px] font-medium tracking-[0.05em]">
+                  <span className="text-[#9E9DA0] text-[12px] leading-[14px] font-medium tracking-[0.05em]">
                     {project.strategyType} • {project.assetClass ?? 'Residential'}
                   </span>
                 </div>
@@ -748,39 +748,39 @@ export default function Phase1WorkspacePage() {
             {/* ── Task 2: Financial Projections (Active) ── */}
             <div
               className={`glass-card rounded-xl p-4 flex flex-col gap-4 transition-all duration-300
-                ${taskStatuses.financials ? 'border-l-4 border-[#57f1db]/40' : 'border-l-4 border-[#57f1db]'}`}
+                ${taskStatuses.financials ? 'border-l-4 border-[#454955]/40' : 'border-l-4 border-[#454955]'}`}
             >
               <div
                 className="flex justify-between items-start cursor-pointer"
                 onClick={() => setExpandedTask(expandedTask === 'financials' ? null : 'financials')}
               >
-                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] flex items-center gap-2">
+                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] flex items-center gap-2">
                   {taskStatuses.financials ? (
-                    <CheckCircle2 className="w-[18px] h-[18px] text-[#57f1db]" fill="currentColor" strokeWidth={0} />
+                    <CheckCircle2 className="w-[18px] h-[18px] text-[#454955]" fill="currentColor" strokeWidth={0} />
                   ) : (
-                    <Clock className="w-[18px] h-[18px] text-[#57f1db]" />
+                    <Clock className="w-[18px] h-[18px] text-[#454955]" />
                   )}
                   Financial Projections
                 </h3>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
                   ${taskStatuses.financials
-                    ? 'bg-[#57f1db]/20 text-[#57f1db]'
-                    : 'bg-[#2d363d] text-[#bacac5]'}`}>
+                    ? 'bg-[#454955]/20 text-[#454955]'
+                    : 'bg-[#262328] text-[#9E9DA0]'}`}>
                   {taskStatuses.financials ? 'Completed' : 'In Progress'}
                 </span>
               </div>
 
               {/* Inline Mini-KPI strip (Stitch schema) */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#060f15]/50 p-2 rounded-lg">
-                  <p className="text-[10px] text-[#bacac5] uppercase">Target Price</p>
-                  <p className="text-[14px] leading-[16px] font-bold text-[#dae4ec]">
+                <div className="bg-[#0d0a0b]/50 p-2 rounded-lg">
+                  <p className="text-[10px] text-[#9E9DA0] uppercase">Target Price</p>
+                  <p className="text-[14px] leading-[16px] font-bold text-[#9E9DA0]">
                     {fmtCurrency(phase1Live.purchasePrice || project.financials?.targetPrice)}
                   </p>
                 </div>
-                <div className="bg-[#060f15]/50 p-2 rounded-lg">
-                  <p className="text-[10px] text-[#bacac5] uppercase">Est. ARV</p>
-                  <p className="text-[14px] leading-[16px] font-bold text-[#dae4ec]">
+                <div className="bg-[#0d0a0b]/50 p-2 rounded-lg">
+                  <p className="text-[10px] text-[#9E9DA0] uppercase">Est. ARV</p>
+                  <p className="text-[14px] leading-[16px] font-bold text-[#9E9DA0]">
                     {fmtCurrency(phase1Live.estimatedARV)}
                   </p>
                 </div>
@@ -810,7 +810,7 @@ export default function Phase1WorkspacePage() {
                       />
 
                       {advancing && (
-                        <div className="flex items-center justify-center gap-2.5 p-4 text-[#bacac5] text-[12px] font-bold">
+                        <div className="flex items-center justify-center gap-2.5 p-4 text-[#9E9DA0] text-[12px] font-bold">
                           <Loader2 size={14} strokeWidth={2} className="animate-spin" />
                           Locking Phase 1 and advancing…
                         </div>
@@ -822,16 +822,16 @@ export default function Phase1WorkspacePage() {
             </div>
 
             {/* ── Task 3: Capital Raising ── */}
-            <div className="glass-card rounded-xl p-4 space-y-4 border-l-4 border-[#57f1db]">
+            <div className="glass-card rounded-xl p-4 space-y-4 border-l-4 border-[#454955]">
               <div
                 className="flex justify-between items-center cursor-pointer"
                 onClick={() => setExpandedTask(expandedTask === 'capital' ? null : 'capital')}
               >
-                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] flex items-center gap-2">
-                  <Wallet className="w-[18px] h-[18px] text-[#57f1db]" />
+                <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] flex items-center gap-2">
+                  <Wallet className="w-[18px] h-[18px] text-[#454955]" />
                   Capital Raising
                 </h3>
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db]">
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#454955]">
                   {targetRaiseCents > 0
                     ? `${Math.min(100, Math.round((totalRaisedCents / targetRaiseCents) * 100))}% Funded`
                     : 'Not Required'}
@@ -840,13 +840,13 @@ export default function Phase1WorkspacePage() {
               {/* Funding progress bar */}
               {targetRaiseCents > 0 && (
                 <div className="space-y-2">
-                  <div className="flex justify-between text-[11px] text-[#bacac5]">
+                  <div className="flex justify-between text-[11px] text-[#9E9DA0]">
                     <span>{fmtCurrency(totalRaisedCents)} Raised</span>
                     <span>{fmtCurrency(targetRaiseCents)} Target</span>
                   </div>
-                  <div className="h-2 w-full bg-[#2d363d] rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-[#262328] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#57f1db] luminous-glow rounded-full transition-all duration-500"
+                      className="h-full bg-[#454955] luminous-glow rounded-full transition-all duration-500"
                       style={{ width: `${Math.min(100, (totalRaisedCents / targetRaiseCents) * 100)}%` }}
                     />
                   </div>
@@ -862,14 +862,14 @@ export default function Phase1WorkspacePage() {
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={() => setShowInviteModal(true)}
-                      className="w-full py-2.5 bg-[#57f1db] text-[#003731] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg luminous-glow active:scale-[0.98] transition-all"
+                      className="w-full py-2.5 bg-[#454955] text-[#0d0a0b] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg luminous-glow active:scale-[0.98] transition-all"
                     >
                       Invite Syndicate Investors
                     </button>
                     <button 
                       onClick={handlePostToMarketplace}
                       disabled={postingToMarketplace || project?.financials?.marketplaceListing}
-                      className="w-full py-2.5 border border-[#57f1db]/30 text-[#57f1db] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg hover:bg-[#57f1db]/5 active:scale-[0.98] transition-all disabled:opacity-50"
+                      className="w-full py-2.5 border border-[#454955]/30 text-[#454955] text-[14px] leading-[16px] font-semibold tracking-[0.02em] rounded-lg hover:bg-[#454955]/5 active:scale-[0.98] transition-all disabled:opacity-50"
                     >
                       {postingToMarketplace ? (
                         <span className="flex items-center justify-center gap-2">
@@ -890,27 +890,27 @@ export default function Phase1WorkspacePage() {
             {/* ── Task 4: Financing & Debt Structure (Locked/Active) ── */}
             <div
               className={`glass-card rounded-xl p-4 flex justify-between items-center cursor-pointer transition-all duration-300
-                ${!taskStatuses.financials ? 'opacity-60 border-l-4 border-transparent' : 'border-l-4 border-[#57f1db]'}`}
+                ${!taskStatuses.financials ? 'opacity-60 border-l-4 border-transparent' : 'border-l-4 border-[#454955]'}`}
               onClick={() => {
                 if (taskStatuses.financials) {
                   setExpandedTask(expandedTask === 'financing' ? null : 'financing');
                 }
               }}
             >
-              <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5] flex items-center gap-2">
+              <h3 className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] flex items-center gap-2">
                 {!taskStatuses.financials ? (
                   <Lock className="w-[18px] h-[18px]" />
                 ) : taskStatuses.financing ? (
-                  <CheckCircle2 className="w-[18px] h-[18px] text-[#57f1db]" fill="currentColor" strokeWidth={0} />
+                  <CheckCircle2 className="w-[18px] h-[18px] text-[#454955]" fill="currentColor" strokeWidth={0} />
                 ) : (
-                  <DollarSign className="w-[18px] h-[18px] text-[#57f1db]" />
+                  <DollarSign className="w-[18px] h-[18px] text-[#454955]" />
                 )}
                 Financing &amp; Debt Structure
               </h3>
               {!taskStatuses.financials ? (
-                <span className="text-[#bacac5]/50 text-[12px]">Complete financials first</span>
+                <span className="text-[#9E9DA0]/50 text-[12px]">Complete financials first</span>
               ) : (
-                <ChevronDown className="w-5 h-5 text-[#bacac5]" />
+                <ChevronDown className="w-5 h-5 text-[#9E9DA0]" />
               )}
             </div>
             {expandedTask === 'financing' && taskStatuses.financials && (
@@ -941,14 +941,14 @@ export default function Phase1WorkspacePage() {
             ═══════════════════════════════════════════════════════ */}
         <section className="glass-card rounded-2xl p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+            <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
               Core KPIs
             </h2>
             {/* Add to Deal Compare button */}
             <button
               onClick={handleAddToDealCompare}
               disabled={addingToCompare}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-[#57f1db]/30 text-[#57f1db] hover:bg-[#57f1db]/10 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-[#454955]/30 text-[#454955] hover:bg-[#454955]/10 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {addingToCompare ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -961,13 +961,13 @@ export default function Phase1WorkspacePage() {
 
           {/* PROJECTED / ACTUAL toggle */}
           <div className="flex items-center justify-between">
-            <div className="flex p-1 bg-[#060f15] rounded-lg">
+            <div className="flex p-1 bg-[#0d0a0b] rounded-lg">
               <button
                 onClick={() => setKpiMode('projected')}
                 className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${
                   kpiMode === 'projected'
-                    ? 'bg-[#2d363d] text-[#57f1db] shadow-sm'
-                    : 'text-[#bacac5]/50'
+                    ? 'bg-[#262328] text-[#454955] shadow-sm'
+                    : 'text-[#9E9DA0]/50'
                 }`}
               >
                 PROJECTED
@@ -976,8 +976,8 @@ export default function Phase1WorkspacePage() {
                 onClick={() => setKpiMode('actual')}
                 className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${
                   kpiMode === 'actual'
-                    ? 'bg-[#2d363d] text-[#57f1db] shadow-sm'
-                    : 'text-[#bacac5]/50'
+                    ? 'bg-[#262328] text-[#454955] shadow-sm'
+                    : 'text-[#9E9DA0]/50'
                 }`}
               >
                 ACTUAL
@@ -985,13 +985,13 @@ export default function Phase1WorkspacePage() {
             </div>
 
             {/* Property / My Share toggle */}
-            <div className="flex p-0.5 bg-[#2d363d] rounded-full w-fit">
+            <div className="flex p-0.5 bg-[#262328] rounded-full w-fit">
               <button
                 onClick={() => setKpiScope('property')}
                 className={`px-4 py-1 text-[11px] font-bold rounded-full transition-all ${
                   kpiScope === 'property'
-                    ? 'bg-[#57f1db] text-[#003731]'
-                    : 'text-[#bacac5]'
+                    ? 'bg-[#454955] text-[#0d0a0b]'
+                    : 'text-[#9E9DA0]'
                 }`}
               >
                 Property
@@ -1000,8 +1000,8 @@ export default function Phase1WorkspacePage() {
                 onClick={() => setKpiScope('myShare')}
                 className={`px-4 py-1 text-[11px] font-bold rounded-full transition-all ${
                   kpiScope === 'myShare'
-                    ? 'bg-[#57f1db] text-[#003731]'
-                    : 'text-[#bacac5]'
+                    ? 'bg-[#454955] text-[#0d0a0b]'
+                    : 'text-[#9E9DA0]'
                 }`}
               >
                 My Share
@@ -1144,7 +1144,7 @@ export default function Phase1WorkspacePage() {
 
           <button
             onClick={() => setShowAllKpis(!showAllKpis)}
-            className="w-full text-center py-2 text-[#bacac5] text-[12px] leading-[14px] font-medium tracking-[0.05em] border-t border-white/5 mt-2 hover:text-[#57f1db] transition-colors flex items-center justify-center gap-1"
+            className="w-full text-center py-2 text-[#9E9DA0] text-[12px] leading-[14px] font-medium tracking-[0.05em] border-t border-white/5 mt-2 hover:text-[#454955] transition-colors flex items-center justify-center gap-1"
           >
             {showAllKpis ? (
               <>
@@ -1173,10 +1173,10 @@ export default function Phase1WorkspacePage() {
             ═══════════════════════════════════════════════════════ */}
         <section className="glass-card rounded-xl overflow-hidden">
           <div className="px-6 py-4 flex items-center gap-3 border-b border-white/10"
-            style={{ background: 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)' }}
+            style={{ background: 'linear-gradient(135deg, rgba(69, 73, 85, 0.15) 0%, rgba(69, 73, 85, 0.05) 100%)' }}
           >
-            <DollarSign className="w-4 h-4 text-[#57f1db]" />
-            <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase">
+            <DollarSign className="w-4 h-4 text-[#454955]" />
+            <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#454955] uppercase">
               Offer Generation Pipeline
             </h2>
           </div>
@@ -1211,13 +1211,13 @@ export default function Phase1WorkspacePage() {
             ═══════════════════════════════════════════════════════ */}
         <section className="glass-card rounded-xl overflow-hidden">
           <div className="px-6 py-4 flex items-center gap-3 border-b border-white/10"
-            style={{ background: 'linear-gradient(135deg, rgba(87, 241, 219, 0.10) 0%, rgba(87, 241, 219, 0.03) 100%)' }}
+            style={{ background: 'linear-gradient(135deg, rgba(69, 73, 85, 0.10) 0%, rgba(69, 73, 85, 0.03) 100%)' }}
           >
-            <FileText className="w-4 h-4 text-[#57f1db]" />
-            <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase">
+            <FileText className="w-4 h-4 text-[#454955]" />
+            <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#454955] uppercase">
               Purchase Readiness Checklist
             </h2>
-            <span className="ml-auto text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">
+            <span className="ml-auto text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">
               {completedReadinessCount}/{readinessItems.length || 4} Complete
             </span>
           </div>
@@ -1235,10 +1235,10 @@ export default function Phase1WorkspacePage() {
             ═══════════════════════════════════════════════════════ */}
         <div className="glass-card rounded-xl flex flex-col items-center gap-5 py-10 px-6">
           <div className="text-center space-y-2">
-            <h3 className="text-[18px] leading-[28px] font-bold text-[#dae4ec]">
+            <h3 className="text-[18px] leading-[28px] font-bold text-[#9E9DA0]">
               Ready for Acquisition
             </h3>
-            <p className="text-[14px] leading-[20px] text-[#bacac5] max-w-md">
+            <p className="text-[14px] leading-[20px] text-[#9E9DA0] max-w-md">
               Unlock Phase 2 when your offer is accepted and capital is fully raised.
             </p>
           </div>
@@ -1248,8 +1248,8 @@ export default function Phase1WorkspacePage() {
             onClick={handleAdvanceToPhase2}
             className={`flex items-center gap-2 px-10 py-4 rounded-xl text-[14px] leading-[16px] font-semibold tracking-[0.02em] transition-all duration-200 active:scale-95 disabled:cursor-not-allowed
               ${canLockDeal && !phase1Locked
-                ? 'bg-[#57f1db] text-[#003731] luminous-glow hover:scale-[1.02]'
-                : 'bg-white/5 text-[#bacac5]/50 border border-white/10'}`}
+                ? 'bg-[#454955] text-[#0d0a0b] luminous-glow hover:scale-[1.02]'
+                : 'bg-white/5 text-[#9E9DA0]/50 border border-white/10'}`}
           >
             {advancing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
             {phase1Locked ? 'Deal Locked' : 'Lock Deal & Proceed to Purchase'}
@@ -1257,13 +1257,13 @@ export default function Phase1WorkspacePage() {
           
           {!phase1Locked && (
             <div className="flex flex-wrap justify-center gap-4 text-[10px] font-bold uppercase tracking-[0.1em] mt-1">
-              <span className={isOfferAccepted ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}>
+              <span className={isOfferAccepted ? 'text-[#454955]' : 'text-[#ffb4ab]'}>
                 {isOfferAccepted ? '✓ Offer Accepted' : '✗ Offer Not Accepted'}
               </span>
-              <span className={isFullyFunded ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}>
+              <span className={isFullyFunded ? 'text-[#454955]' : 'text-[#ffb4ab]'}>
                 {isFullyFunded ? '✓ 100% Funded' : '✗ Not Fully Funded'}
               </span>
-              <span className={is100PercentReady ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}>
+              <span className={is100PercentReady ? 'text-[#454955]' : 'text-[#ffb4ab]'}>
                 {is100PercentReady ? '✓ Documents Ready' : '✗ Missing Documents'}
               </span>
             </div>
@@ -1277,13 +1277,13 @@ export default function Phase1WorkspacePage() {
           Glass-card bar pinned to bottom with key deal metrics.
           ═══════════════════════════════════════════════════════ */}
       {project && (
-        <div className="sticky bottom-0 z-30 backdrop-blur-xl bg-[#091015]/80 border-t border-white/10">
+        <div className="sticky bottom-0 z-30 backdrop-blur-xl bg-[#0d0a0b]/80 border-t border-white/10">
           <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
             <div className="flex items-center justify-between gap-4">
               {/* GRM — quick screen */}
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">GRM</p>
-                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0]/60">GRM</p>
+                <p className="text-[16px] font-bold text-[#9E9DA0] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
                   {grmResult.value !== null ? grmResult.value.toFixed(1) : '—'}
                 </p>
               </div>
@@ -1293,8 +1293,8 @@ export default function Phase1WorkspacePage() {
 
               {/* Cap Rate — deal terms */}
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">Cap Rate</p>
-                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0]/60">Cap Rate</p>
+                <p className="text-[16px] font-bold text-[#9E9DA0] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
                   {capRateResult.value !== null ? `${capRateResult.value.toFixed(1)}%` : '—'}
                 </p>
               </div>
@@ -1304,8 +1304,8 @@ export default function Phase1WorkspacePage() {
 
               {/* NOI — underwriting */}
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">NOI</p>
-                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0]/60">NOI</p>
+                <p className="text-[16px] font-bold text-[#9E9DA0] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
                   {noiResult.value !== null ? fmtDollar(noiResult.value) : '—'}
                 </p>
               </div>
@@ -1315,8 +1315,8 @@ export default function Phase1WorkspacePage() {
 
               {/* DSCR — debt serviceability */}
               <div className="flex-1 min-w-0">
-                <p className="text-[9px] font-bold uppercase tracking-wider text-[#bacac5]/60">DSCR</p>
-                <p className="text-[16px] font-bold text-[#dae4ec] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#9E9DA0]/60">DSCR</p>
+                <p className="text-[16px] font-bold text-[#9E9DA0] truncate" style={{ fontVariantNumeric: 'tabular-nums' }}>
                   {dscrResult.state === 'n/a' ? 'N/A' : dscrResult.value !== null ? `${dscrResult.value.toFixed(2)}x` : '—'}
                 </p>
               </div>
@@ -1347,11 +1347,11 @@ export default function Phase1WorkspacePage() {
 function KpiCell({ label, value, fillPct }: { label: string; value: string; fillPct: number }) {
   return (
     <div className="space-y-1">
-      <p className="text-[11px] text-[#bacac5] uppercase tracking-wider">{label}</p>
-      <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">{value}</p>
-      <div className="h-0.5 w-full bg-[#57f1db]/20 rounded-full overflow-hidden">
+      <p className="text-[11px] text-[#9E9DA0] uppercase tracking-wider">{label}</p>
+      <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">{value}</p>
+      <div className="h-0.5 w-full bg-[#454955]/20 rounded-full overflow-hidden">
         <div
-          className="h-full bg-[#57f1db] transition-all duration-500"
+          className="h-full bg-[#454955] transition-all duration-500"
           style={{ width: `${Math.min(100, Math.max(0, fillPct))}%` }}
         />
       </div>

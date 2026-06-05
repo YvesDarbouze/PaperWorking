@@ -192,7 +192,7 @@ export function NeedsAttentionFeed() {
       aria-label="Needs attention"
       className="rounded-2xl overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+        background: "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -208,7 +208,7 @@ export function NeedsAttentionFeed() {
           <span
             className="material-symbols-outlined text-[18px]"
             style={{
-              color: items.length > 0 ? "#F06543" : "#57f1db",
+              color: items.length > 0 ? "#F06543" : "#454955",
               fontVariationSettings: "'FILL' 1",
             }}
           >
@@ -216,7 +216,7 @@ export function NeedsAttentionFeed() {
           </span>
           <span
             className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(218,228,236,0.6)", letterSpacing: "0.08em" }}
+            style={{ color: "rgba(253,255,252,0.6)", letterSpacing: "0.08em" }}
           >
             Needs Attention
           </span>
@@ -230,7 +230,7 @@ export function NeedsAttentionFeed() {
           )}
         </div>
         {items.length > 0 && (
-          <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+          <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.3)" }}>
             {items.length} require{items.length === 1 ? "s" : ""} action
           </span>
         )}
@@ -241,16 +241,16 @@ export function NeedsAttentionFeed() {
         <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
           <span
             className="material-symbols-outlined text-4xl mb-3"
-            style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}
+            style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>
-          <p className="text-[14px] font-semibold mb-1" style={{ color: "rgba(218,228,236,0.85)" }}>
+          <p className="text-[14px] font-semibold mb-1" style={{ color: "rgba(253,255,252,0.85)" }}>
             You&apos;re all clear.
           </p>
           <p
             className="text-[12px] max-w-xs leading-relaxed"
-            style={{ color: "rgba(218,228,236,0.35)" }}
+            style={{ color: "rgba(253,255,252,0.35)" }}
           >
             No tasks, deadlines, or blockers need your attention right now.
           </p>
@@ -307,13 +307,13 @@ export function NeedsAttentionFeed() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="text-[13px] font-medium leading-snug mb-1"
-                      style={{ color: "rgba(218,228,236,0.9)" }}
+                      style={{ color: "rgba(253,255,252,0.9)" }}
                     >
                       {item.description}
                     </p>
                     <p
                       className="text-[11px] truncate"
-                      style={{ color: "rgba(218,228,236,0.4)" }}
+                      style={{ color: "rgba(253,255,252,0.4)" }}
                     >
                       {item.metadata}
                     </p>
@@ -346,7 +346,7 @@ export function NeedsAttentionFeed() {
               onClick={() => setExpanded(true)}
               className="w-full py-3 text-[12px] font-medium transition-colors duration-150 hover:opacity-70"
               style={{
-                color: "rgba(218,228,236,0.4)",
+                color: "rgba(253,255,252,0.4)",
                 borderTop: "1px solid rgba(255,255,255,0.04)",
               }}
             >
@@ -358,7 +358,7 @@ export function NeedsAttentionFeed() {
               onClick={() => setExpanded(false)}
               className="w-full py-3 text-[12px] font-medium hover:opacity-70"
               style={{
-                color: "rgba(218,228,236,0.3)",
+                color: "rgba(253,255,252,0.3)",
                 borderTop: "1px solid rgba(255,255,255,0.04)",
               }}
             >

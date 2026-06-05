@@ -46,9 +46,9 @@ function DivergingBarChart({
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) => {
         const label = params[0].axisValue;
         const lines = params
@@ -65,7 +65,7 @@ function DivergingBarChart({
     legend: {
       top: 0,
       right: 0,
-      textStyle: { color: '#bacac5', fontSize: 10 },
+      textStyle: { color: '#9E9DA0', fontSize: 10 },
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -92,7 +92,7 @@ function DivergingBarChart({
         stack: 'cf',
         data: inflow,
         barMaxWidth: 32,
-        itemStyle: { color: '#20B2AA', borderRadius: [3, 3, 0, 0] },
+        itemStyle: { color: '#454955', borderRadius: [3, 3, 0, 0] },
       },
       {
         name: 'Outflow',
@@ -113,9 +113,9 @@ function CategoryDonut() {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any) =>
         `${params.name}<br/><b>${params.percent}%</b> · $${Number(params.value).toLocaleString()}`,
     },
@@ -136,8 +136,8 @@ function CategoryDonut() {
         label: { show: false },
         labelLine: { show: false },
         data: [
-          { value: 12100, name: 'Rent Income',    itemStyle: { color: '#20B2AA' } },
-          { value: 3300,  name: 'Other Income',   itemStyle: { color: '#57f1db' } },
+          { value: 12100, name: 'Rent Income',    itemStyle: { color: '#454955' } },
+          { value: 3300,  name: 'Other Income',   itemStyle: { color: '#454955' } },
           { value: -6600, name: 'Expenses',       itemStyle: { color: 'rgba(239,68,68,0.55)' } },
           { value: -3300, name: 'Debt Interest',  itemStyle: { color: 'rgba(245,158,11,0.55)' } },
         ].map((d) => ({ ...d, value: Math.abs(d.value) })),
@@ -225,13 +225,13 @@ export default function CashFlowIntelligencePage() {
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">Cash Flow Detail</span>
+            <span className="text-[#6E7480]">Cash Flow Detail</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Cash Flow Detail</h1>
-          <p className="text-sm text-slate-500 mt-1">Diverging inflow / outflow trend analysis</p>
+          <p className="text-sm text-[#6B6870] mt-1">Diverging inflow / outflow trend analysis</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
@@ -240,7 +240,7 @@ export default function CashFlowIntelligencePage() {
                 key={s}
                 onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
-                  scope === s ? 'bg-teal-500 text-black' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >{s}</button>
             ))}
@@ -251,12 +251,12 @@ export default function CashFlowIntelligencePage() {
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
-                  period === p ? 'bg-white/10 text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                  period === p ? 'bg-white/10 text-[#6E7480] font-bold' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >{p}</button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -272,17 +272,17 @@ export default function CashFlowIntelligencePage() {
           <div className="flex items-center gap-5">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Net Cash Flow</span>
-                <div className="px-2 py-0.5 rounded border border-teal-400/20 bg-teal-400/10 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                  <span className="text-[9px] font-extrabold tracking-widest text-teal-400">LIVE</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Net Cash Flow</span>
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
                 </div>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold text-teal-400 tabular-nums tracking-tighter">
+                <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
                   {fmt(netCashFlow)}
                 </span>
-                <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${cfChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${cfChange >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                   {cfChange >= 0 ? '+' : ''}{cfChange.toFixed(1)}%
                   <ArrowUpRight className={`w-4 h-4 ${cfChange < 0 ? 'rotate-180' : ''}`} />
                 </div>
@@ -308,7 +308,7 @@ export default function CashFlowIntelligencePage() {
                       width={8}
                       height={barH}
                       rx={2}
-                      fill={isFull ? '#20B2AA' : 'rgba(32, 178, 170,0.25)'}
+                      fill={isFull ? '#454955' : 'rgba(69, 73, 85,0.25)'}
                     />
                   );
                 })}
@@ -318,14 +318,14 @@ export default function CashFlowIntelligencePage() {
 
           {/* Right: fill bar */}
           <div className="flex-1 max-w-xs">
-            <div className="flex justify-between text-[10px] text-slate-500 font-semibold mb-1.5">
+            <div className="flex justify-between text-[10px] text-[#6B6870] font-semibold mb-1.5">
               <span>Monthly Progress</span>
               <span>{fillPct.toFixed(0)}%</span>
             </div>
             <div className="h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${fillPct}%`, background: '#20B2AA' }}
+                style={{ width: `${fillPct}%`, background: '#454955' }}
               />
             </div>
           </div>
@@ -335,12 +335,12 @@ export default function CashFlowIntelligencePage() {
       {/* ── Main Diverging Bar Chart (full width) ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
             Monthly Cash Flow — Inflow vs Outflow
           </span>
-          <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
+          <div className="flex items-center gap-3 text-[10px] text-[#6B6870] font-semibold">
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#20B2AA' }} />
+              <span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#454955' }} />
               Inflow
             </span>
             <span className="flex items-center gap-1.5">
@@ -357,20 +357,20 @@ export default function CashFlowIntelligencePage() {
 
         {/* Category Donut */}
         <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-3">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-3">
             Cash Flow by Category
           </span>
           <CategoryDonut />
           <div className="grid grid-cols-2 gap-2 mt-2">
             {[
-              { label: 'Rent Income',   pct: '55%', color: '#20B2AA' },
-              { label: 'Other Income',  pct: '15%', color: '#57f1db' },
+              { label: 'Rent Income',   pct: '55%', color: '#454955' },
+              { label: 'Other Income',  pct: '15%', color: '#454955' },
               { label: 'Expenses',      pct: '30%', color: 'rgba(239,68,68,0.7)' },
               { label: 'Debt Interest', pct: '15%', color: 'rgba(245,158,11,0.7)' },
             ].map((item) => (
               <div key={item.label} className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: item.color }} />
-                <span className="text-xs text-slate-400">{item.label}</span>
+                <span className="text-xs text-[#9E9DA0]">{item.label}</span>
                 <span className="text-xs font-bold text-white ml-auto tabular-nums">{item.pct}</span>
               </div>
             ))}
@@ -379,21 +379,21 @@ export default function CashFlowIntelligencePage() {
 
         {/* Stats Table */}
         <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">
             Cash Flow Trend Stats
           </span>
           <div className="space-y-3">
             {[
               { label: 'Monthly Average', value: fmt(stats.avg), highlight: false },
-              { label: 'Best Month',      value: fmt(stats.best), highlight: true, color: '#20B2AA' },
+              { label: 'Best Month',      value: fmt(stats.best), highlight: true, color: '#454955' },
               { label: 'Worst Month',     value: fmt(stats.worst), highlight: true, color: '#F06543' },
-              { label: 'YTD Total',       value: fmt(stats.ytd), highlight: true, color: '#57f1db' },
+              { label: 'YTD Total',       value: fmt(stats.ytd), highlight: true, color: '#454955' },
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between py-3 border-b border-white/[0.05]">
-                <span className="text-sm text-slate-400">{row.label}</span>
+                <span className="text-sm text-[#9E9DA0]">{row.label}</span>
                 <span
                   className="text-base font-bold tabular-nums"
-                  style={{ color: row.highlight ? row.color : '#dae4ec' }}
+                  style={{ color: row.highlight ? row.color : '#9E9DA0' }}
                 >
                   {row.value}
                 </span>
@@ -402,8 +402,8 @@ export default function CashFlowIntelligencePage() {
           </div>
           <div className="mt-4 pt-3 border-t border-white/[0.06]">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500">Trend Direction</span>
-              <div className="flex items-center gap-1 text-teal-400 text-xs font-bold">
+              <span className="text-xs text-[#6B6870]">Trend Direction</span>
+              <div className="flex items-center gap-1 text-[#6E7480] text-xs font-bold">
                 <ArrowUpRight className="w-3.5 h-3.5" />
                 Net Positive
               </div>

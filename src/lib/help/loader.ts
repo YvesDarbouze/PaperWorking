@@ -34,10 +34,10 @@ export function compileMarkdown(markdown: string): string {
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
   // 4. Code Blocks
-  html = html.replace(/```([\s\S]*?)```/g, '<pre class="bg-black/40 text-teal-400 p-4 rounded-lg my-4 font-mono text-xs overflow-x-auto">$1</pre>');
+  html = html.replace(/```([\s\S]*?)```/g, '<pre class="bg-black/40 text-[#6E7480] p-4 rounded-lg my-4 font-mono text-xs overflow-x-auto">$1</pre>');
 
   // 5. Inline Code
-  html = html.replace(/`(.*?)`/g, '<code class="bg-black/30 text-teal-300 px-1 py-0.5 rounded font-mono text-xs">$1</code>');
+  html = html.replace(/`(.*?)`/g, '<code class="bg-black/30 text-[#8a8e9a] px-1 py-0.5 rounded font-mono text-xs">$1</code>');
 
   // 6. Lists (unordered)
   const lines = html.split('\n');

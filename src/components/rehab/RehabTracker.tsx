@@ -457,7 +457,7 @@ export default function RehabTracker() {
                               <div className="flex items-center gap-2 justify-end">
                                 <button
                                   onClick={() => setActiveActualRow(activeActualRow === line.id ? null : line.id)}
-                                  className="text-xs text-[#20B2AA] hover:text-[#20B2AA]/80 transition whitespace-nowrap"
+                                  className="text-xs text-[#454955] hover:text-[#454955]/80 transition whitespace-nowrap"
                                 >
                                   + Log
                                 </button>
@@ -506,14 +506,14 @@ export default function RehabTracker() {
                                       value={actualVendor}
                                       onChange={e => setActualVendor(e.target.value)}
                                       placeholder="Vendor / Contractor *"
-                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#20B2AA] outline-none"
+                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#454955] outline-none"
                                     />
                                     <input
                                       type="text"
                                       value={actualDesc}
                                       onChange={e => setActualDesc(e.target.value)}
                                       placeholder="Description (optional)"
-                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#20B2AA] outline-none"
+                                      className="text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#454955] outline-none"
                                     />
                                     <div className="flex items-center gap-1">
                                       <span className="text-text-secondary text-xs">$</span>
@@ -522,7 +522,7 @@ export default function RehabTracker() {
                                         value={actualAmt}
                                         onChange={e => setActualAmt(e.target.value)}
                                         placeholder="Amount *"
-                                        className="flex-1 text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#20B2AA] outline-none"
+                                        className="flex-1 text-xs border border-border-accent rounded px-2 py-1.5 focus:ring-1 focus:ring-[#454955] outline-none"
                                       />
                                     </div>
                                   </div>
@@ -719,7 +719,7 @@ export default function RehabTracker() {
         >
           <div className="flex items-center gap-2">
             {open.contractors ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
-            <Users className="w-4 h-4 text-[#20B2AA]" />
+            <Users className="w-4 h-4 text-[#454955]" />
             <span className="text-sm font-semibold text-text-primary">Contractor Payables & 109 Prep</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
@@ -827,7 +827,7 @@ export default function RehabTracker() {
         >
           <div className="flex items-center gap-2">
             {open.draws ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
-            <Banknote className="w-4 h-4 text-[#20B2AA]" />
+            <Banknote className="w-4 h-4 text-[#454955]" />
             <span className="text-sm font-semibold text-text-primary">Lender Draw Schedule</span>
           </div>
           <span className="text-xs text-text-secondary">{fmt(totalDrawn)} drawn of {fmt(totalLoanAmount)}</span>
@@ -990,7 +990,7 @@ export default function RehabTracker() {
         >
           <div className="flex items-center gap-2">
             {open.permits ? <ChevronDown className="w-4 h-4 text-text-secondary" /> : <ChevronRight className="w-4 h-4 text-text-secondary" />}
-            <FileCheck className="w-4 h-4 text-[#20B2AA]" />
+            <FileCheck className="w-4 h-4 text-[#454955]" />
             <span className="text-sm font-semibold text-text-primary">Permit Status</span>
             <span className="text-xs text-text-secondary ml-1">{permitEntries.length} permits</span>
           </div>
@@ -1041,7 +1041,7 @@ export default function RehabTracker() {
                             {p.status !== 'Final Sign-Off' && p.status !== 'Denied' && (
                               <button
                                 onClick={() => advancePermit(p.id)}
-                                className="text-xs text-[#20B2AA] hover:text-[#20B2AA]/80 transition whitespace-nowrap"
+                                className="text-xs text-[#454955] hover:text-[#454955]/80 transition whitespace-nowrap"
                               >
                                 Advance →
                               </button>

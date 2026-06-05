@@ -58,13 +58,13 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     >
       <p
         className="text-sm font-bold"
-        style={{ color: "rgba(218,228,236,0.95)" }}
+        style={{ color: "rgba(253,255,252,0.95)" }}
       >
         ${payload[0].value.toLocaleString()}
       </p>
       <p
         className="text-[10px] font-mono"
-        style={{ color: "rgba(218,228,236,0.5)" }}
+        style={{ color: "rgba(253,255,252,0.5)" }}
       >
         {label} · Portfolio Equity
       </p>
@@ -92,13 +92,13 @@ export function EquityPerformanceChart() {
         <div>
           <h3
             className="text-lg font-semibold tracking-tight"
-            style={{ color: "rgba(218,228,236,0.9)" }}
+            style={{ color: "rgba(253,255,252,0.9)" }}
           >
             Equity Growth
           </h3>
           <p
             className="text-xs mt-0.5"
-            style={{ color: "rgba(218,228,236,0.4)" }}
+            style={{ color: "rgba(253,255,252,0.4)" }}
           >
             12-month portfolio performance
           </p>
@@ -106,13 +106,13 @@ export function EquityPerformanceChart() {
         <div className="flex items-center gap-1.5">
           <span
             className="material-symbols-outlined text-sm"
-            style={{ color: "#20B2AA" }}
+            style={{ color: "#454955" }}
           >
             arrow_upward
           </span>
           <span
             className="text-sm font-bold"
-            style={{ color: "#20B2AA" }}
+            style={{ color: "#454955" }}
           >
             +{growthPercent}%
           </span>
@@ -128,8 +128,8 @@ export function EquityPerformanceChart() {
           >
             <defs>
               <linearGradient id="equityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(32, 178, 170,0.25)" />
-                <stop offset="100%" stopColor="rgba(32, 178, 170,0)" />
+                <stop offset="0%" stopColor="rgba(69, 73, 85,0.25)" />
+                <stop offset="100%" stopColor="rgba(69, 73, 85,0)" />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -142,7 +142,7 @@ export function EquityPerformanceChart() {
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: "rgba(218,228,236,0.3)",
+                fill: "rgba(253,255,252,0.3)",
                 fontSize: 10,
                 fontFamily: "monospace",
               }}
@@ -152,7 +152,7 @@ export function EquityPerformanceChart() {
               axisLine={false}
               tickLine={false}
               tick={{
-                fill: "rgba(218,228,236,0.3)",
+                fill: "rgba(253,255,252,0.3)",
                 fontSize: 10,
                 fontFamily: "monospace",
               }}
@@ -162,20 +162,20 @@ export function EquityPerformanceChart() {
             <Tooltip
               content={<CustomTooltip />}
               cursor={{
-                stroke: "rgba(32, 178, 170,0.3)",
+                stroke: "rgba(69, 73, 85,0.3)",
                 strokeDasharray: "3 3",
               }}
             />
             <Area
               type="monotone"
               dataKey="equity"
-              stroke="#20B2AA"
+              stroke="#454955"
               strokeWidth={2.5}
               fill="url(#equityGradient)"
               dot={false}
               activeDot={{
                 r: 5,
-                fill: "#20B2AA",
+                fill: "#454955",
                 stroke: "rgba(15,20,25,0.8)",
                 strokeWidth: 2,
               }}

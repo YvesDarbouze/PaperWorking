@@ -69,11 +69,11 @@ function MagicLinkFinishInner() {
     <div className="auth-card-container auth-glass-card rounded-xl p-6 md:p-10 relative overflow-hidden animate-in fade-in duration-500">
       <div 
         className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" 
-        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+        style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
       <div 
         className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" 
-        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+        style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
 
       <div className="flex flex-col items-center w-full relative z-10">

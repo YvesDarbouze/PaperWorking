@@ -105,8 +105,8 @@ const DEMO_VENDORS = [
 
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
   Inspector:        'bg-sky-400/10 border-sky-400/20 text-sky-400',
-  Lender:           'bg-teal-400/10 border-teal-400/20 text-teal-400',
-  Attorney:         'bg-slate-400/10 border-slate-400/20 text-slate-400',
+  Lender:           'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
+  Attorney:         'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
   Contractor:       'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
   Agent:            'bg-pink-400/10 border-pink-400/20 text-pink-400',
@@ -121,12 +121,12 @@ function VendorCard({
   onRequestQuote: (v: any) => void;
   onViewProfile: (vendorId: string) => void;
 }) {
-  const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-slate-400';
+  const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]';
   const stars = Math.round(vendor.rating * 2) / 2;
 
   return (
     <div
-      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#20B2AA]/30 hover:shadow-[0_0_24px_rgba(32,178,170,0.06)]"
+      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#454955]/30 hover:shadow-[0_0_24px_rgba(69,73,85,0.06)]"
     >
       {/* Top row: category badge */}
       <div className="flex items-center justify-between">
@@ -142,21 +142,21 @@ function VendorCard({
       {/* Name */}
       <div>
         <h3 className="text-base font-bold text-white leading-snug">{vendor.companyName}</h3>
-        <p className="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+        <p className="flex items-center gap-1 text-xs text-[#6B6870] mt-0.5">
           <MapPin className="w-3 h-3 flex-shrink-0" />
           {vendor.location}
         </p>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-slate-400 leading-relaxed line-clamp-2 flex-1">{vendor.bio}</p>
+      <p className="text-sm text-[#9E9DA0] leading-relaxed line-clamp-2 flex-1">{vendor.bio}</p>
 
       {/* Specialty tags */}
       <div className="flex flex-wrap gap-1.5">
         {(vendor.specialties ?? []).slice(0, 3).map((tag) => (
           <span
             key={tag}
-            className="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-400 border border-white/[0.06] bg-white/[0.03]"
+            className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#9E9DA0] border border-white/[0.06] bg-white/[0.03]"
           >
             {tag}
           </span>
@@ -168,21 +168,21 @@ function VendorCard({
         <button
           type="button"
           onClick={() => onViewProfile(vendor.id)}
-          className="flex-1 px-3 py-2 rounded-lg border border-[#20B2AA]/40 text-[#20B2AA] text-xs font-bold hover:border-[#20B2AA] hover:bg-[#20B2AA]/5 transition-all"
+          className="flex-1 px-3 py-2 rounded-lg border border-[#454955]/40 text-[#454955] text-xs font-bold hover:border-[#454955] hover:bg-[#454955]/5 transition-all"
         >
           View Profile
         </button>
         <button
           type="button"
           onClick={() => onRequestQuote(vendor)}
-          className="flex-1 px-3 py-2 rounded-lg bg-[#20B2AA] text-black text-xs font-bold hover:bg-[#20B2AA]/90 transition-all"
+          className="flex-1 px-3 py-2 rounded-lg bg-[#454955] text-black text-xs font-bold hover:bg-[#454955]/90 transition-all"
         >
           Request Quote
         </button>
       </div>
 
       {/* Vetting Disclaimer */}
-      <p className="text-[10px] text-slate-500 border-t border-white/5 pt-2 leading-relaxed">
+      <p className="text-[10px] text-[#6B6870] border-t border-white/5 pt-2 leading-relaxed">
         PaperWorking does not vet vendors. You must verify credentials and references before engaging.
       </p>
     </div>
@@ -317,7 +317,7 @@ export default function MarketplacePage() {
       {/* ── Page Header ── */}
       <div className="space-y-1">
         <h1 className="text-4xl font-bold text-white tracking-tight">Vendor Marketplace</h1>
-        <p className="text-slate-400 text-sm">
+        <p className="text-[#9E9DA0] text-sm">
           Find trusted service providers for your real estate portfolio
         </p>
       </div>
@@ -325,21 +325,21 @@ export default function MarketplacePage() {
       {/* ── Search Bar ── */}
       <div className="flex gap-0">
         <div className="relative flex-1">
-          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6870] pointer-events-none" />
           <input
             type="text"
             placeholder="Search by City or Zip Code..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
-            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#20B2AA]/55 transition-colors"
+            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#454955]/55 transition-colors"
             style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
           />
         </div>
         <button
           type="button"
           onClick={handleFindVendors}
-          className="pw-interactive px-6 py-3.5 bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-colors"
+          className="pw-interactive px-6 py-3.5 bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
           Find Vendors
@@ -357,8 +357,8 @@ export default function MarketplacePage() {
               onClick={() => setActiveFilter(pill)}
               className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
                 isActive
-                  ? 'bg-[#20B2AA]/10 border-[#20B2AA] text-[#20B2AA]'
-                  : 'border-white/10 text-slate-400 hover:border-[#20B2AA]/40 hover:text-[#20B2AA] bg-transparent'
+                  ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
+                  : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
               }`}
             >
               {pill}
@@ -390,18 +390,18 @@ export default function MarketplacePage() {
 
       {/* ── Vendor Grid ── */}
       {loadingVendors ? (
-        <div className="flex justify-center items-center py-24 gap-3 text-slate-500">
+        <div className="flex justify-center items-center py-24 gap-3 text-[#6B6870]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading vendors...</span>
         </div>
       ) : displayVendors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-slate-500">
+        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
           <Search className="w-8 h-8 opacity-30" />
           <p className="text-sm">No vendors found for the selected filters.</p>
           <button
             type="button"
             onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
-            className="text-xs text-[#20B2AA] hover:underline"
+            className="text-xs text-[#454955] hover:underline"
           >
             Clear filters
           </button>

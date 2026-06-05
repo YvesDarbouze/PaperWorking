@@ -20,9 +20,9 @@ function classifyLTV(ltv: number, isAllCash: boolean) {
       status: 'SAFE',
       label: 'All-Cash (No Debt)',
       description: '100% equity — zero leverage risk.',
-      color: '#57f1db',
-      bgColor: 'rgba(87, 241, 219, 0.05)',
-      borderColor: 'rgba(87, 241, 219, 0.2)'
+      color: '#454955',
+      bgColor: 'rgba(69, 73, 85, 0.05)',
+      borderColor: 'rgba(69, 73, 85, 0.2)'
     };
   }
   if (ltv < 65) {
@@ -30,9 +30,9 @@ function classifyLTV(ltv: number, isAllCash: boolean) {
       status: 'SAFE',
       label: 'Safe (< 65%)',
       description: 'Excellent equity cushion — low risk.',
-      color: '#57f1db',
-      bgColor: 'rgba(87, 241, 219, 0.05)',
-      borderColor: 'rgba(87, 241, 219, 0.2)'
+      color: '#454955',
+      bgColor: 'rgba(69, 73, 85, 0.05)',
+      borderColor: 'rgba(69, 73, 85, 0.2)'
     };
   }
   if (ltv <= 75) {
@@ -211,7 +211,7 @@ export default function LTVDeepDive({ projects: propProjects }: Props) {
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary mb-4">LTV Class &amp; Thresholds</h4>
           {isAllCash ? (
             <div className="flex-grow flex flex-col items-center justify-center text-center">
-              <Shield className="w-8 h-8 opacity-30 mb-2" style={{ color: '#57f1db' }} />
+              <Shield className="w-8 h-8 opacity-30 mb-2" style={{ color: '#454955' }} />
               <p className="text-xs font-bold text-text-primary">100% Equity</p>
               <p className="text-[10px] text-text-secondary opacity-60 max-w-xs mt-1">
                 There are no mortgage loans or leverage on this property.
@@ -230,13 +230,13 @@ export default function LTVDeepDive({ projects: propProjects }: Props) {
                   >
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 bg-white" />
                   </div>
-                  <div style={{ width: '65%', background: 'rgba(87, 241, 219, 0.2)' }} title="Safe: <65%" />
+                  <div style={{ width: '65%', background: 'rgba(69, 73, 85, 0.2)' }} title="Safe: <65%" />
                   <div style={{ width: '15%', background: 'rgba(255, 209, 170, 0.2)' }} title="Target: 65-80%" />
                   <div style={{ width: '20%', background: 'rgba(255, 180, 171, 0.2)' }} title="Danger: >80%" />
                 </div>
                 <div className="flex justify-between text-[9px] font-bold text-text-secondary">
                   <span>0%</span>
-                  <span style={{ color: '#57f1db' }}>Safe (&lt;65%)</span>
+                  <span style={{ color: '#454955' }}>Safe (&lt;65%)</span>
                   <span style={{ color: '#ffd1aa' }}>Target (65-80%)</span>
                   <span style={{ color: '#ffb4ab' }}>High (&gt;80%)</span>
                 </div>
@@ -301,7 +301,7 @@ export default function LTVDeepDive({ projects: propProjects }: Props) {
               <h3 className="text-on-surface font-headline-md text-headline-md">Target: {refySimulation.targetLTV.toFixed(1)}% LTV</h3>
               <p className="text-xs text-text-secondary mt-1">Requires {fmtUSD(refySimulation.reductionNeeded)} principal reduction or appraisal increase</p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center luminous-teal-glow group-hover:scale-110 transition-transform duration-300">
+            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center luminous-primary-glow group-hover:scale-110 transition-transform duration-300">
               <ArrowRight className="w-5 h-5 text-on-primary font-bold" />
             </div>
           </div>

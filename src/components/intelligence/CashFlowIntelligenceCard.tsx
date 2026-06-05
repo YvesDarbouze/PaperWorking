@@ -265,7 +265,7 @@ export function CashFlowIntelligenceCard({
             </span>
             <span
               className="text-lg font-bold font-mono tabular-nums"
-              style={{ color: '#57f1db' }}
+              style={{ color: '#454955' }}
             >
               {fmtCompact(noi)}
             </span>

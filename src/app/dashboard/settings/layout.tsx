@@ -81,7 +81,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                       className={`
                         flex items-center gap-4 px-4 py-3 mx-2 rounded-lg font-label-md text-label-md transition-all
                         ${isActive
-                          ? 'bg-pw-primary/20 border border-pw-primary/30 text-pw-primary font-bold shadow-[0_0_15px_rgba(87,241,219,0.15)]'
+                          ? 'bg-pw-primary/20 border border-pw-primary/30 text-pw-primary font-bold shadow-[0_0_15px_rgba(69,73,85,0.15)]'
                           : 'bg-transparent border border-transparent text-pw-muted hover:text-pw-black hover:bg-white/5'
                         }
                       `}

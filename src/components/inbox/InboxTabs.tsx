@@ -40,7 +40,7 @@ const TAB_CONFIG: {
 export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: InboxTabsProps) {
   return (
     <div
-      className="flex items-center gap-2.5 px-6 py-3 border-b border-white/10 overflow-x-auto no-scrollbar bg-[#091015]/50 backdrop-blur-md shrink-0"
+      className="flex items-center gap-2.5 px-6 py-3 border-b border-white/10 overflow-x-auto no-scrollbar bg-[#0d0a0b]/50 backdrop-blur-md shrink-0"
     >
       {TAB_CONFIG.map((tab) => {
         const isActive = activeTab === tab.id;
@@ -53,12 +53,12 @@ export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: Inbo
             onClick={() => onTabChange(tab.id)}
             className={`relative flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 rounded-xl whitespace-nowrap border ${
               isActive
-                ? 'bg-primary/20 border-primary/30 text-primary luminous-glow shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
+                ? 'bg-primary/20 border-primary/30 text-primary luminous-glow shadow-[0_0_15px_-3px_rgba(69, 73, 85,0.25)]'
                 : 'glass-card hover:bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
             }`}
           >
-            <tab.Icon className={`w-3.5 h-3.5 ${isActive ? 'text-primary' : 'text-[#bacac5]'}`} />
-            <span className={isActive ? 'text-primary' : 'text-[#dae4ec]'}>{tab.label}</span>
+            <tab.Icon className={`w-3.5 h-3.5 ${isActive ? 'text-primary' : 'text-[#9E9DA0]'}`} />
+            <span className={isActive ? 'text-primary' : 'text-[#9E9DA0]'}>{tab.label}</span>
 
             {/* Unread badge */}
             {count > 0 && (
@@ -66,7 +66,7 @@ export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: Inbo
                 className={`inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold rounded-full transition-colors ${
                   isActive
                     ? 'bg-primary text-on-primary'
-                    : 'bg-white/10 text-[#dae4ec]'
+                    : 'bg-white/10 text-[#9E9DA0]'
                 }`}
                 style={{
                   minWidth: 16,

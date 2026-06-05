@@ -113,7 +113,7 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
           onChange={(e) => { setSearchQuery(e.target.value); setShowResults(true); }}
           onFocus={() => setShowResults(true)}
           placeholder="Search MLS by address, city, or zip..."
-          className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition placeholder:text-text-secondary"
+          className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition placeholder:text-text-secondary"
         />
 
         {/* Dropdown Results */}
@@ -123,9 +123,9 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
               <button
                 key={p.id}
                 onClick={() => handleSelect(p)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-teal-50 transition text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F0F1F4] transition text-left"
               >
-                <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
+                <MapPin className="w-4 h-4 text-[#3a3e4a] shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-text-primary truncate">{p.address}</p>
                   <p className="text-xs text-text-secondary">{p.city}, {p.state} {p.zip} · {p.beds}bd/{p.baths}ba · {p.sqft.toLocaleString()} sqft</p>
@@ -142,8 +142,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
       {selectedProperty && (
         <div className="bg-bg-surface border border-border-accent rounded-2xl overflow-hidden">
           {/* Property Header */}
-          <div className="relative h-32 bg-gradient-to-br from-teal-100 to-cyan-50 flex items-center justify-center">
-            <Home className="w-12 h-12 text-teal-300" />
+          <div className="relative h-32 bg-gradient-to-br from-[#E8E9ED] to-[#F0F1F4] flex items-center justify-center">
+            <Home className="w-12 h-12 text-[#8a8e9a]" />
             <button
               onClick={handleClear}
               className="absolute top-3 right-3 p-1.5 bg-bg-surface/80 rounded-full hover:bg-bg-surface transition"
@@ -185,38 +185,38 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
               <div>
                 <label className="ag-label mb-1.5 block">Target Price (MAO)</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-teal-500" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#454955]" />
                   <input
                     type="number"
                     value={targetPrice}
                     onChange={(e) => setTargetPrice(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                 </div>
               </div>
               <div>
                 <label className="ag-label mb-1.5 block">Rehab Budget</label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-teal-500" />
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#454955]" />
                   <input
                     type="number"
                     value={rehabBudget}
                     onChange={(e) => setRehabBudget(e.target.value)}
                     placeholder="0"
-                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                    className="w-full pl-8 pr-3 py-2.5 bg-bg-surface border border-border-accent rounded-lg text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                   />
                 </div>
               </div>
             </div>
 
             {/* Summary */}
-            <div className="flex items-center justify-between bg-teal-50 rounded-xl px-4 py-3">
+            <div className="flex items-center justify-between bg-[#F0F1F4] rounded-xl px-4 py-3">
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-teal-600" />
-                <span className="text-sm font-medium text-teal-800">Total Capital Needed</span>
+                <TrendingUp className="w-4 h-4 text-[#3a3e4a]" />
+                <span className="text-sm font-medium text-[#2E3140]">Total Capital Needed</span>
               </div>
-              <span className="text-lg font-bold text-teal-900">${totalCapitalNeeded.toLocaleString()}</span>
+              <span className="text-lg font-bold text-[#FDFFFC]">${totalCapitalNeeded.toLocaleString()}</span>
             </div>
 
             {/* Apply Button */}
@@ -234,8 +234,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
       {/* Empty State */}
       {!selectedProperty && (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3">
-            <MapPin className="w-6 h-6 text-teal-400" />
+          <div className="w-14 h-14 bg-[#F0F1F4] rounded-2xl flex items-center justify-center mb-3">
+            <MapPin className="w-6 h-6 text-[#6E7480]" />
           </div>
           <p className="text-sm font-medium text-text-secondary mb-1">No property selected</p>
           <p className="text-xs text-text-secondary">Search the MLS to find your next deal</p>

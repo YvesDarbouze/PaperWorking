@@ -162,7 +162,7 @@ export default function TeamDirectoryPage() {
         <div>
           <div className="flex items-center gap-3">
             <h2 className="text-3xl font-bold text-on-surface tracking-tight">Team Management</h2>
-            <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-primary font-mono shadow-[0_0_10px_rgba(87,241,219,0.15)] uppercase">
+            <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-primary font-mono shadow-[0_0_10px_rgba(69,73,85,0.15)] uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
               Node: US-EAST-01 • Stable
             </div>
@@ -176,7 +176,7 @@ export default function TeamDirectoryPage() {
           {isAdmin && (
             <Link 
               href="/dashboard/settings/team"
-              className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.4)] cursor-pointer"
+              className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_-3px_rgba(69, 73, 85,0.4)] cursor-pointer"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
               Provision Access
@@ -249,7 +249,7 @@ export default function TeamDirectoryPage() {
                         <div 
                           className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold border flex-shrink-0 transition-transform ${
                             isInternal
-                              ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_10px_rgba(87,241,219,0.1)]'
+                              ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_10px_rgba(69,73,85,0.1)]'
                               : 'bg-white/5 border-white/10 text-on-surface-variant'
                           }`}
                         >
@@ -282,7 +282,7 @@ export default function TeamDirectoryPage() {
                           <div className={`w-1.5 h-1.5 rounded-full ${
                             isSuspended 
                               ? 'bg-error shadow-[0_0_5px_rgba(255,180,171,0.8)] animate-pulse' 
-                              : 'bg-primary shadow-[0_0_5px_rgba(87,241,219,0.8)]'
+                              : 'bg-primary shadow-[0_0_5px_rgba(69,73,85,0.8)]'
                           }`} />
                           <span className="text-xs text-on-surface">{isSuspended ? 'Suspended' : 'Active'}</span>
                         </div>
@@ -454,19 +454,19 @@ export default function TeamDirectoryPage() {
       {/* Terminal System Status Footer */}
       <footer className="mt-8 border-t border-white/5 pt-6 hidden lg:block">
         <div className="grid grid-cols-4 gap-4">
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Session Key</p>
             <p className="text-xs text-primary font-mono font-semibold truncate">A9-F2-B4-E1-00-PW-SEC-KEY</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Active Instances</p>
             <p className="text-xs text-primary font-mono font-semibold">{unifiedTeam.filter(m => m.status === 'active').length} Operators Online</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Data Sovereignty</p>
             <p className="text-xs text-primary font-mono font-semibold">AES-256 E2EE Enabled</p>
           </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#091015]/40">
+          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
             <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Last Audit</p>
             <p className="text-xs text-primary font-mono font-semibold">{new Date().toISOString().slice(0,10).replace(/-/g,'.')} {new Date().toTimeString().slice(0,8)}</p>
           </div>

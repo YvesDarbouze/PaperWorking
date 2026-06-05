@@ -53,7 +53,7 @@ export default function LenderVault() {
           {docs.map((docUrl, idx) => (
             <li key={idx} className="flex items-center justify-between p-3 bg-bg-primary rounded-lg border border-border-accent">
               <div className="flex items-center space-x-3 text-sm text-text-primary">
-                <FileText className="w-4 h-4 text-[#20B2AA]" />
+                <FileText className="w-4 h-4 text-[#454955]" />
                 <span className="truncate max-w-[200px]">
                   {docUrl.split('/').pop()}
                 </span>
@@ -81,7 +81,7 @@ export default function LenderVault() {
             
             <div className="border border-border-accent rounded-xl p-4 bg-bg-primary flex flex-col justify-between space-y-4">
                 <div>
-                   <h4 className="text-sm font-semibold flex items-center text-text-primary mb-1"><Sliders className="w-4 h-4 mr-2 text-[#20B2AA]"/> Fee Spreading Logistics</h4>
+                   <h4 className="text-sm font-semibold flex items-center text-text-primary mb-1"><Sliders className="w-4 h-4 mr-2 text-[#454955]"/> Fee Spreading Logistics</h4>
                    <p className="text-xs text-text-secondary">Structurally modify capital stack configurations prior to closing.</p>
                 </div>
                 
@@ -103,8 +103,8 @@ export default function LenderVault() {
                     </label>
                 </div>
                 { (rollPoints || sellerConcessions) && (
-                   <div className="flex items-start text-xs text-text-secondary bg-[#20B2AA]/10 p-2 rounded border border-[#20B2AA]/20">
-                      <Info className="w-3 h-3 mr-1.5 flex-shrink-0 mt-px text-[#20B2AA]" />
+                   <div className="flex items-start text-xs text-text-secondary bg-[#454955]/10 p-2 rounded border border-[#454955]/20">
+                      <Info className="w-3 h-3 mr-1.5 flex-shrink-0 mt-px text-[#454955]" />
                       Math has been internally adjusted. Check the Engine Room for final Cash-to-Close figures.
                    </div>
                 )}

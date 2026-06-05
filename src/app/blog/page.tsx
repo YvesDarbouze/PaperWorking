@@ -63,7 +63,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
         className="group block rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.01]"
         style={{
           background:
-            'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+            'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           borderTop: '1px solid rgba(255,255,255,0.12)',
@@ -77,7 +77,7 @@ function BlogCard({ post, index }: { post: BlogPost; index: number }) {
             alt={post.title}
             className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#091015]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0b]/60 to-transparent" />
           <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-primary/20 text-primary backdrop-blur-sm border border-primary/20">
             {post.category}
           </span>

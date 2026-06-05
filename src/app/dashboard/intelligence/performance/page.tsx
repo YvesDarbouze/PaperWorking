@@ -31,14 +31,14 @@ function PerformanceChart({ labels, values }: { labels: string[]; values: number
     tooltip: {
       trigger: 'axis',
       backgroundColor: 'rgba(6,15,21,0.92)',
-      borderColor: '#20B2AA',
+      borderColor: '#454955',
       borderWidth: 1,
-      textStyle: { color: '#dae4ec', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' },
+      textStyle: { color: '#9E9DA0', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' },
       formatter: (params: any[]) => {
         const p = params[0];
-        return `${p.name}<br/><b style="color:#20B2AA">$${(p.value / 1000).toFixed(0)}k</b>`;
+        return `${p.name}<br/><b style="color:#454955">$${(p.value / 1000).toFixed(0)}k</b>`;
       },
-      extraCssText: 'box-shadow: 0 0 20px rgba(32, 178, 170,0.2); backdrop-filter: blur(12px);',
+      extraCssText: 'box-shadow: 0 0 20px rgba(69, 73, 85,0.2); backdrop-filter: blur(12px);',
     },
     grid: { top: 20, right: 16, bottom: 28, left: 0, containLabel: true },
     xAxis: {
@@ -64,15 +64,15 @@ function PerformanceChart({ labels, values }: { labels: string[]; values: number
         smooth: 0.4,
         symbol: 'circle',
         symbolSize: 5,
-        lineStyle: { color: '#20B2AA', width: 2.5 },
-        itemStyle: { color: '#20B2AA', borderColor: '#060f15', borderWidth: 2 },
-        emphasis: { itemStyle: { color: '#57f1db', borderColor: '#060f15', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(32, 178, 170,0.5)' } },
+        lineStyle: { color: '#454955', width: 2.5 },
+        itemStyle: { color: '#454955', borderColor: '#0d0a0b', borderWidth: 2 },
+        emphasis: { itemStyle: { color: '#454955', borderColor: '#0d0a0b', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(69, 73, 85,0.5)' } },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32, 178, 170,0.35)' },
-              { offset: 1, color: 'rgba(32, 178, 170,0)' },
+              { offset: 0, color: 'rgba(69, 73, 85,0.35)' },
+              { offset: 1, color: 'rgba(69, 73, 85,0)' },
             ],
           },
         },
@@ -85,8 +85,8 @@ function PerformanceChart({ labels, values }: { labels: string[]; values: number
 
 function LoadingSkeleton() {
   return (
-    <div className="rounded-2xl border border-white/10 p-6 space-y-4" style={{ background: 'rgba(20,29,35,0.4)' }}>
-      <div className="flex items-center gap-2 text-slate-500">
+    <div className="rounded-2xl border border-white/10 p-6 space-y-4" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex items-center gap-2 text-[#6B6870]">
         <RefreshCw className="w-4 h-4 animate-spin" />
         <span className="text-xs font-semibold uppercase tracking-widest">Loading Intelligence…</span>
       </div>
@@ -103,18 +103,18 @@ function LoadingSkeleton() {
 
 function EmptyState() {
   return (
-    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(20,29,35,0.4)' }}>
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
       <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
         <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
         <div>
-          <p className="text-sm font-semibold text-slate-300 mb-1">Awaiting Portfolio Data</p>
-          <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
             Import deal data or complete Purchase phase tasks to generate performance analytics.
           </p>
         </div>
         <Link
           href="/dashboard/projects/new"
-          className="mt-2 px-5 py-2 rounded-full border border-teal-500/30 text-teal-400 text-xs font-semibold hover:bg-teal-500/10 transition-all"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
         >
           Add First Deal
         </Link>
@@ -174,13 +174,13 @@ export default function PortfolioPerformancePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">Portfolio Performance</span>
+            <span className="text-[#6E7480]">Portfolio Performance</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Portfolio Performance</h1>
-          <p className="text-sm text-slate-400 mt-1">Total portfolio value trajectory and ROI analytics</p>
+          <p className="text-sm text-[#9E9DA0] mt-1">Total portfolio value trajectory and ROI analytics</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {/* Scope toggle */}
@@ -190,7 +190,7 @@ export default function PortfolioPerformancePage() {
                 key={s}
                 onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all font-mono ${
-                  scope === s ? 'bg-teal-500 text-black shadow-[0_0_15px_rgba(32, 178, 170,0.3)]' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-[#454955] text-black shadow-[0_0_15px_rgba(69, 73, 85,0.3)]' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {s}
@@ -204,14 +204,14 @@ export default function PortfolioPerformancePage() {
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all font-mono ${
-                  period === p ? 'border border-teal-500/60 text-teal-400 bg-teal-500/10' : 'text-slate-400 hover:text-slate-200'
+                  period === p ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {p}
               </button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -234,9 +234,9 @@ export default function PortfolioPerformancePage() {
             className="rounded-xl border border-white/10 p-4"
             style={{ background: 'rgba(24,33,39,0.7)' }}
           >
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">{k.label}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#6B6870] mb-1">{k.label}</p>
             <p className="text-2xl font-bold text-white tabular-nums font-mono">{k.value}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">{k.sub}</p>
+            <p className="text-[11px] text-[#6B6870] mt-0.5">{k.sub}</p>
           </div>
         ))}
       </div>
@@ -249,25 +249,25 @@ export default function PortfolioPerformancePage() {
       ) : (
         <div
           className="rounded-2xl border border-white/10 p-6"
-          style={{ background: 'rgba(20,29,35,0.4)', backdropFilter: 'blur(24px)' }}
+          style={{ background: 'rgba(22,19,24,0.4)', backdropFilter: 'blur(24px)' }}
         >
           {/* Chart header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
             <div>
-              <p className="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-1">Total Portfolio Value</p>
+              <p className="text-xs text-[#6B6870] font-semibold uppercase tracking-widest mb-1">Total Portfolio Value</p>
               <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-teal-400 tabular-nums font-mono">
+                <span className="text-4xl font-bold text-[#6E7480] tabular-nums font-mono">
                   {fmt(totalValue)}
                 </span>
-                <span className={`flex items-center gap-1 text-sm font-bold font-mono ${roiPct >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                <span className={`flex items-center gap-1 text-sm font-bold font-mono ${roiPct >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                   {roiPct >= 0 ? '+' : ''}{roiPct.toFixed(1)}%
                   <ArrowUpRight className={`w-4 h-4 ${roiPct < 0 ? 'rotate-90' : ''}`} />
                 </span>
               </div>
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-500">
+            <div className="flex items-center gap-3 text-xs text-[#6B6870]">
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-0.5 bg-teal-400 inline-block rounded-full" />
+                <span className="w-3 h-0.5 bg-[#6E7480] inline-block rounded-full" />
                 Portfolio Value
               </span>
             </div>
@@ -282,7 +282,7 @@ export default function PortfolioPerformancePage() {
         className="rounded-2xl border border-white/10 p-6"
         style={{ background: 'rgba(24,33,39,0.7)' }}
       >
-        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Performance Milestones</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-4">Performance Milestones</p>
         <div className="relative pl-4 space-y-4 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-white/10">
           {[
             { date: 'Oct 2024', event: 'Portfolio crosses $1M ARV threshold', delta: '+8.2%', type: 'milestone' },
@@ -291,13 +291,13 @@ export default function PortfolioPerformancePage() {
             { date: 'Mar 2024', event: 'New acquisition — 87 Oak Ave added', delta: '$310k', type: 'acq' },
           ].map((m) => (
             <div key={m.date} className="flex items-start gap-4">
-              <div className="w-2 h-2 rounded-full bg-teal-500 mt-1.5 flex-shrink-0 -ml-[5px]" />
+              <div className="w-2 h-2 rounded-full bg-[#454955] mt-1.5 flex-shrink-0 -ml-[5px]" />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm text-slate-200 font-medium">{m.event}</p>
-                  <span className="text-xs font-bold text-teal-400 font-mono flex-shrink-0">{m.delta}</span>
+                  <span className="text-xs font-bold text-[#6E7480] font-mono flex-shrink-0">{m.delta}</span>
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">{m.date}</p>
+                <p className="text-xs text-[#6B6870] mt-0.5">{m.date}</p>
               </div>
             </div>
           ))}

@@ -312,7 +312,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
       variants={fadeUp}
       className={`glass-panel rounded-xl p-7 flex flex-col relative transition-all duration-300 h-full
         ${plan.highlighted
-          ? 'border-primary/35 shadow-[0_0_60px_-15px_rgba(87,241,219,0.25)] md:scale-[1.03] z-10'
+          ? 'border-primary/35 shadow-[0_0_60px_-15px_rgba(69,73,85,0.25)] md:scale-[1.03] z-10'
           : 'border-white/8 hover:border-white/16'
         }`}
     >
@@ -323,7 +323,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
 
       {/* Badge */}
       {plan.badge && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap shadow-[0_0_20px_rgba(87,241,219,0.4)]">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap shadow-[0_0_20px_rgba(69,73,85,0.4)]">
           {plan.badge}
         </div>
       )}

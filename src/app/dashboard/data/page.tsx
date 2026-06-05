@@ -18,18 +18,18 @@ import type { Project } from '@/types/schema';
 
 // ─── Design tokens ────────────────────────────────────────────
 const T = {
-  teal: '#20B2AA',
+  teal: '#454955',
   brandPrimary: '#454955',
   amber: '#fbbf24',
   red: '#F06543',
-  canvas: '#091015',
+  canvas: '#0d0a0b',
   surface: 'rgba(24,33,39,0.7)',
   border: 'rgba(255,255,255,0.08)',
-  textPrimary: '#dae4ec',
+  textPrimary: '#9E9DA0',
   textMuted: '#64748b',
-  textVariant: '#bacac5',
-  tooltipBg: '#182127',
-  tooltipBorder: 'rgba(32,178,170,0.2)',
+  textVariant: '#9E9DA0',
+  tooltipBg: '#1e1b20',
+  tooltipBorder: 'rgba(69,73,85,0.2)',
 } as const;
 
 // ─── Demo / fallback data ─────────────────────────────────────
@@ -120,7 +120,7 @@ function CardHeader({
   return (
     <div className="flex items-center justify-between px-5 py-4 border-b border-white/8">
       <div className="flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(32,178,170,0.12)' }}>
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(69,73,85,0.12)' }}>
           {icon}
         </div>
         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: T.textVariant }}>
@@ -191,14 +191,14 @@ function RoiTrendChart({
         data: values,
         smooth: 0.35,
         symbol: 'none',
-        lineStyle: { color: T.teal, width: 2.5, shadowColor: 'rgba(32,178,170,0.5)', shadowBlur: 8 },
+        lineStyle: { color: T.teal, width: 2.5, shadowColor: 'rgba(69,73,85,0.5)', shadowBlur: 8 },
         areaStyle: {
           color: {
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32,178,170,0.28)' },
-              { offset: 1, color: 'rgba(32,178,170,0.01)' },
+              { offset: 0, color: 'rgba(69,73,85,0.28)' },
+              { offset: 1, color: 'rgba(69,73,85,0.01)' },
             ],
           },
         },
@@ -212,7 +212,7 @@ function RoiTrendChart({
         icon={<TrendingUp className="w-3.5 h-3.5" style={{ color: T.teal }} />}
         title="Portfolio Value Trend"
         badge={
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(32,178,170,0.15)', color: T.teal }}>
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(69,73,85,0.15)', color: T.teal }}>
             +14.2% YTD
           </span>
         }
@@ -239,7 +239,7 @@ function AllocationChart({
       const type = (p as { dealType?: string }).dealType ?? 'Other';
       counts[type] = (counts[type] ?? 0) + 1;
     }
-    const palette = [T.teal, T.brandPrimary, T.amber, '#fb923c', '#20B2AA'];
+    const palette = [T.teal, T.brandPrimary, T.amber, '#fb923c', '#454955'];
     const entries = Object.entries(counts).map(([name, value], i) => ({
       name,
       value,
@@ -320,7 +320,7 @@ function CapRateChart({ loading }: { loading: boolean }) {
             type: 'linear',
             x: 0, y: 0, x2: 1, y2: 0,
             colorStops: [
-              { offset: 0, color: 'rgba(32,178,170,0.6)' },
+              { offset: 0, color: 'rgba(69,73,85,0.6)' },
               { offset: 1, color: T.teal },
             ],
           },
@@ -503,7 +503,7 @@ function WaterfallChart({
 
     const vals = [grossRent, opEx, debtSvc, netCf];
     const colors = vals.map((v, i) =>
-      i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(32,178,170,0.7)' : T.red
+      i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(69,73,85,0.7)' : T.red
     );
 
     return { labels: DEMO_WATERFALL_LABELS, barValues: vals, barColors: colors };
@@ -615,7 +615,7 @@ export default function DataPage() {
                 onClick={() => setScope(s)}
                 className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors"
                 style={{
-                  background: scope === s ? 'rgba(32,178,170,0.15)' : 'transparent',
+                  background: scope === s ? 'rgba(69,73,85,0.15)' : 'transparent',
                   color: scope === s ? T.teal : T.textMuted,
                 }}
               >
@@ -632,7 +632,7 @@ export default function DataPage() {
                 onClick={() => setPeriod(tab.id)}
                 className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors"
                 style={{
-                  background: period === tab.id ? 'rgba(32,178,170,0.15)' : 'transparent',
+                  background: period === tab.id ? 'rgba(69,73,85,0.15)' : 'transparent',
                   color: period === tab.id ? T.teal : T.textMuted,
                 }}
               >

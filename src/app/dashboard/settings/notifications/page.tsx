@@ -295,9 +295,9 @@ export default function NotificationsSettingsPage() {
                 }}
                 className="glass-input w-full px-4 py-2.5 text-sm text-pw-black rounded-lg"
               >
-                <option value="30" className="bg-[#141d23] text-pw-black">30 Days (Default)</option>
-                <option value="60" className="bg-[#141d23] text-pw-black">60 Days</option>
-                <option value="90" className="bg-[#141d23] text-pw-black">90 Days</option>
+                <option value="30" className="bg-[#161318] text-pw-black">30 Days (Default)</option>
+                <option value="60" className="bg-[#161318] text-pw-black">60 Days</option>
+                <option value="90" className="bg-[#161318] text-pw-black">90 Days</option>
               </select>
             </div>
           </div>

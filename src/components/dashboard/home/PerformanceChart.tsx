@@ -149,18 +149,18 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
 
   if (loading) {
     return (
-      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] items-center justify-center p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#57f1db]"></div>
+      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] items-center justify-center p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(69,73,85,0.15)] luminous-glow">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#454955]"></div>
       </section>
     );
   }
 
   if (data.length === 0) {
     return (
-      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] justify-between p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
+      <section className="glass-card rounded-xl overflow-hidden flex flex-col h-[450px] justify-between p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(69,73,85,0.15)] luminous-glow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-[#57f1db]" />
+            <TrendingUp className="w-4 h-4 text-[#454955]" />
             <span className="text-[12px] font-bold text-on-surface uppercase tracking-wider">
               Portfolio Performance
             </span>
@@ -176,12 +176,12 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
   }
 
   return (
-    <section className="glass-card rounded-xl overflow-hidden flex flex-col justify-between h-[450px] p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(87,241,219,0.15)] luminous-glow">
+    <section className="glass-card rounded-xl overflow-hidden flex flex-col justify-between h-[450px] p-6 relative border border-white/10 bg-gradient-to-br from-white/3 to-white/1 backdrop-blur-[20px] shadow-[0_0_20px_-5px_rgba(69,73,85,0.15)] luminous-glow">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-3.5 h-3.5 text-[#57f1db]" />
+            <TrendingUp className="w-3.5 h-3.5 text-[#454955]" />
             <span className="text-[12px] font-bold text-on-surface uppercase tracking-wider">
               Portfolio Performance
             </span>
@@ -191,7 +191,7 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
           </p>
         </div>
         {hasData && (
-          <span className="text-[10px] font-bold text-[#57f1db] bg-[#57f1db]/10 px-2 py-0.5 rounded-full">
+          <span className="text-[10px] font-bold text-[#454955] bg-[#454955]/10 px-2 py-0.5 rounded-full">
             {periodChange >= 0 ? '+' : ''}{periodChange}% Period
           </span>
         )}
@@ -203,8 +203,8 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#57f1db" stopOpacity={0.3} />
-                <stop offset="100%" stopColor="#57f1db" stopOpacity={0} />
+                <stop offset="0%" stopColor="#454955" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#454955" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
@@ -223,14 +223,14 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
                 boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                 padding: '8px 12px',
               }}
-              itemStyle={{ color: '#57f1db', fontSize: '11px', fontWeight: 700 }}
+              itemStyle={{ color: '#454955', fontSize: '11px', fontWeight: 700 }}
               labelStyle={{ color: '#a1a1aa', fontSize: '9px', marginBottom: '4px' }}
               formatter={(value: any) => [formatCurrency(value as number), 'Cumulative Return']}
             />
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#57f1db"
+              stroke="#454955"
               strokeWidth={3}
               fill="url(#chartGradient)"
               dot={(props: any) => {
@@ -238,14 +238,14 @@ export default function PerformanceChart({ projects, scope, period = 'ALL' }: Pe
                 if (index === data.length - 1) {
                   return (
                     <g key={`dot-${index}`}>
-                      <circle cx={cx} cy={cy} r={12} fill="#57f1db" opacity={0.2} />
-                      <circle cx={cx} cy={cy} r={6} fill="#57f1db" />
+                      <circle cx={cx} cy={cy} r={12} fill="#454955" opacity={0.2} />
+                      <circle cx={cx} cy={cy} r={6} fill="#454955" />
                     </g>
                   );
                 }
                 return null;
               }}
-              activeDot={{ r: 4, fill: '#57f1db', stroke: '#0f0f0f', strokeWidth: 2 }}
+              activeDot={{ r: 4, fill: '#454955', stroke: '#0f0f0f', strokeWidth: 2 }}
               animationDuration={1200}
             />
           </AreaChart>

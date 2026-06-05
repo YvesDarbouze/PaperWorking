@@ -61,7 +61,7 @@ export function CloudStorageMeter() {
           style={{ 
             width: `${usagePercent}%`, 
             backgroundColor: fillColor,
-            boxShadow: isNearLimit ? '0 0 10px rgba(186, 26, 26, 0.4)' : '0 0 10px rgba(87, 241, 219, 0.3)'
+            boxShadow: isNearLimit ? '0 0 10px rgba(186, 26, 26, 0.4)' : '0 0 10px rgba(69, 73, 85, 0.3)'
           }}
         />
       </div>

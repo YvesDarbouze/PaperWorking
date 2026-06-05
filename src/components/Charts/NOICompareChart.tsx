@@ -23,10 +23,10 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -37,9 +37,9 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
 
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${name}</strong>
-            ${item1 ? `<span style="color: #bacac5">${item1.seriesName}:</span> <strong style="color: #57f1db">${fmtUSD(item1.value)}</strong><br/>` : ''}
-            ${item2 ? `<span style="color: #bacac5">${item2.seriesName}:</span> <strong style="color: #bacac5">${fmtUSD(item2.value)}</strong>` : ''}
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${name}</strong>
+            ${item1 ? `<span style="color: #9E9DA0">${item1.seriesName}:</span> <strong style="color: #454955">${fmtUSD(item1.value)}</strong><br/>` : ''}
+            ${item2 ? `<span style="color: #9E9DA0">${item2.seriesName}:</span> <strong style="color: #9E9DA0">${fmtUSD(item2.value)}</strong>` : ''}
           </div>
         `;
       }
@@ -51,7 +51,7 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
       itemWidth: 8,
       itemHeight: 8,
       textStyle: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       }
@@ -69,7 +69,7 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 9,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         interval: 0,
@@ -87,7 +87,7 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 9,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: (v: number) => {
@@ -102,7 +102,7 @@ export default function NOICompareChart({ data, height = 260 }: NOICompareChartP
         type: 'bar',
         data: data.map(d => d.actualNOI),
         itemStyle: {
-          color: '#57f1db',
+          color: '#454955',
           borderRadius: [4, 4, 0, 0]
         },
         barMaxWidth: 16

@@ -19,17 +19,17 @@ export default function EquityGrowthChart() {
         <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1000 300">
           <defs>
             <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#57f1db" stopOpacity="0.3"></stop>
-              <stop offset="100%" stopColor="#57f1db" stopOpacity="0"></stop>
+              <stop offset="0%" stopColor="#454955" stopOpacity="0.3"></stop>
+              <stop offset="100%" stopColor="#454955" stopOpacity="0"></stop>
             </linearGradient>
           </defs>
           <path d="M0,250 Q150,230 250,180 T500,140 T750,100 T1000,40 V300 H0 Z" fill="url(#chartGradient)"></path>
-          <path d="M0,250 Q150,230 250,180 T500,140 T750,100 T1000,40" fill="none" stroke="#57f1db" strokeLinecap="round" strokeWidth="4"></path>
+          <path d="M0,250 Q150,230 250,180 T500,140 T750,100 T1000,40" fill="none" stroke="#454955" strokeLinecap="round" strokeWidth="4"></path>
           {/* Simulated Data Points */}
-          <circle className="animate-pulse" cx="250" cy="180" fill="#060f15" r="6" stroke="#57f1db" strokeWidth="2"></circle>
-          <circle cx="500" cy="140" fill="#060f15" r="6" stroke="#57f1db" strokeWidth="2"></circle>
-          <circle cx="750" cy="100" fill="#060f15" r="6" stroke="#57f1db" strokeWidth="2"></circle>
-          <circle className="luminous-glow" cx="1000" cy="40" fill="#57f1db" r="8"></circle>
+          <circle className="animate-pulse" cx="250" cy="180" fill="#0d0a0b" r="6" stroke="#454955" strokeWidth="2"></circle>
+          <circle cx="500" cy="140" fill="#0d0a0b" r="6" stroke="#454955" strokeWidth="2"></circle>
+          <circle cx="750" cy="100" fill="#0d0a0b" r="6" stroke="#454955" strokeWidth="2"></circle>
+          <circle className="luminous-glow" cx="1000" cy="40" fill="#454955" r="8"></circle>
         </svg>
         {/* Tooltip Simulation */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 glass-card rounded-lg p-3 luminous-glow border border-primary">

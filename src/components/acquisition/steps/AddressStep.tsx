@@ -106,38 +106,38 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       <div>
         <h2
           className="text-2xl font-bold tracking-tight mb-2"
-          style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}
+          style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}
         >
           Where is the property?
         </h2>
-        <p className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>
+        <p className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>
           Search by address. The address becomes the deal name — you can rename it below.
         </p>
       </div>
 
       {/* Address search */}
       <div className="space-y-2">
-        <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)" }}>
+        <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)" }}>
           Property Address *
         </label>
         <div ref={containerRef} className="relative">
           <div
             className="flex items-center gap-3 rounded-xl px-4 py-3.5"
             style={{
-              background: "rgba(20,29,35,0.8)",
-              border: `1px solid ${selected ? "#57f1db40" : "rgba(255,255,255,0.1)"}`,
-              boxShadow: selected ? "0 0 0 3px rgba(87,241,219,0.06)" : "none",
+              background: "rgba(22,19,24,0.8)",
+              border: `1px solid ${selected ? "#45495540" : "rgba(255,255,255,0.1)"}`,
+              boxShadow: selected ? "0 0 0 3px rgba(69,73,85,0.06)" : "none",
             }}
           >
             <span
               className="material-symbols-outlined text-[20px] flex-shrink-0"
-              style={{ color: selected ? "#57f1db" : "rgba(218,228,236,0.3)", fontVariationSettings: "'FILL' 0" }}
+              style={{ color: selected ? "#454955" : "rgba(253,255,252,0.3)", fontVariationSettings: "'FILL' 0" }}
             >
               location_on
             </span>
             <input
-              className="flex-1 bg-transparent outline-none text-sm placeholder:text-[rgba(218,228,236,0.3)]"
-              style={{ color: "rgba(218,228,236,0.95)" }}
+              className="flex-1 bg-transparent outline-none text-sm placeholder:text-[rgba(253,255,252,0.3)]"
+              style={{ color: "rgba(253,255,252,0.95)" }}
               placeholder="123 Main St, City, State"
               value={query}
               onChange={(e) => {
@@ -151,12 +151,12 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
             {loading && (
               <span
                 className="w-4 h-4 border-2 rounded-full animate-spin flex-shrink-0"
-                style={{ borderColor: "rgba(218,228,236,0.2)", borderTopColor: "#57f1db" }}
+                style={{ borderColor: "rgba(253,255,252,0.2)", borderTopColor: "#454955" }}
               />
             )}
             {selected && (
               <button onClick={handleClear} className="flex-shrink-0 hover:opacity-70">
-                <span className="material-symbols-outlined text-[18px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+                <span className="material-symbols-outlined text-[18px]" style={{ color: "rgba(253,255,252,0.4)" }}>
                   close
                 </span>
               </button>
@@ -179,17 +179,17 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
                   key={s.placeId}
                   className="w-full flex items-start gap-3 px-4 py-3 text-left transition-colors duration-100"
                   style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(87,241,219,0.06)")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(69,73,85,0.06)")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   onClick={() => handleSelect(s)}
                 >
                   <span
                     className="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0"
-                    style={{ color: "#57f1db", fontVariationSettings: "'FILL' 0" }}
+                    style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}
                   >
                     location_on
                   </span>
-                  <span className="text-[13px]" style={{ color: "rgba(218,228,236,0.85)" }}>
+                  <span className="text-[13px]" style={{ color: "rgba(253,255,252,0.85)" }}>
                     {s.formattedAddress}
                   </span>
                 </button>
@@ -199,7 +199,7 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
 
           {/* No results */}
           {!loading && !open && query.trim().length >= 2 && !selected && suggestions.length === 0 && (
-            <p className="mt-2 text-[12px]" style={{ color: "rgba(218,228,236,0.35)" }}>
+            <p className="mt-2 text-[12px]" style={{ color: "rgba(253,255,252,0.35)" }}>
               No addresses found. Try a different search.
             </p>
           )}
@@ -216,18 +216,18 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       {/* Deal name override */}
       {selected && (
         <div className="space-y-2">
-          <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)" }}>
+          <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)" }}>
             Deal Name
           </label>
-          <p className="text-[12px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+          <p className="text-[12px]" style={{ color: "rgba(253,255,252,0.3)" }}>
             Defaults to the address — rename it to something memorable.
           </p>
           <input
             className="w-full rounded-xl px-4 py-3.5 text-sm bg-transparent outline-none"
             style={{
-              background: "rgba(20,29,35,0.8)",
+              background: "rgba(22,19,24,0.8)",
               border: "1px solid rgba(255,255,255,0.1)",
-              color: "rgba(218,228,236,0.95)",
+              color: "rgba(253,255,252,0.95)",
             }}
             value={displayName}
             onChange={(e) => handleDisplayNameChange(e.target.value)}
@@ -240,16 +240,16 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
       {selected && (
         <div
           className="flex items-center gap-3 rounded-xl px-4 py-3"
-          style={{ background: "rgba(87,241,219,0.06)", border: "1px solid rgba(87,241,219,0.15)" }}
+          style={{ background: "rgba(69,73,85,0.06)", border: "1px solid rgba(69,73,85,0.15)" }}
         >
-          <span className="material-symbols-outlined text-[18px]" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}>
+          <span className="material-symbols-outlined text-[18px]" style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}>
             check_circle
           </span>
           <div>
-            <p className="text-[13px] font-medium" style={{ color: "rgba(218,228,236,0.9)" }}>
+            <p className="text-[13px] font-medium" style={{ color: "rgba(253,255,252,0.9)" }}>
               {selected.formattedAddress}
             </p>
-            <p className="text-[11px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+            <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.4)" }}>
               {selected.lat.toFixed(4)}, {selected.lng.toFixed(4)}
             </p>
           </div>
@@ -263,8 +263,8 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
           onClick={onNext}
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-150"
           style={{
-            background: canAdvance ? "#57f1db" : "rgba(255,255,255,0.06)",
-            color: canAdvance ? "#0b141a" : "rgba(218,228,236,0.25)",
+            background: canAdvance ? "#454955" : "rgba(255,255,255,0.06)",
+            color: canAdvance ? "#0d0a0b" : "rgba(253,255,252,0.25)",
             cursor: canAdvance ? "pointer" : "not-allowed",
           }}
         >

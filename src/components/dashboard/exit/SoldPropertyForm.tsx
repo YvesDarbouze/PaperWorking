@@ -182,7 +182,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         soldDate: new Date(),
       } as any);
       toast.success('Sale data saved.', {
-        style: { background: '#182127', color: '#dae4ec' },
+        style: { background: '#1e1b20', color: '#9E9DA0' },
       });
     } else {
       onSave({
@@ -195,7 +195,7 @@ export default function SoldPropertyForm({ project, strategy, onSave }: SoldProp
         annualInsurance: Number(annualInsurance),
       } as any);
       toast.success('Rental data saved.', {
-        style: { background: '#182127', color: '#dae4ec' },
+        style: { background: '#1e1b20', color: '#9E9DA0' },
       });
     }
   }

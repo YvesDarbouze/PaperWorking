@@ -27,8 +27,8 @@ const DEMO_PROPERTIES = [
 ];
 
 const SIGNAL_STYLES: Record<string, string> = {
-  Buy:    'bg-teal-400/10 border-teal-400/20 text-teal-400',
-  Hold:   'bg-slate-400/10 border-slate-400/20 text-slate-400',
+  Buy:    'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
+  Hold:   'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
   Review: 'bg-amber-400/10 border-amber-400/20 text-amber-400',
 };
 
@@ -39,14 +39,14 @@ function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES })
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
     },
     legend: {
       top: 0,
       right: 0,
-      textStyle: { color: '#bacac5', fontSize: 10 },
+      textStyle: { color: '#9E9DA0', fontSize: 10 },
       data: ['Portfolio GRM', 'Market GRM'],
     },
     grid: { top: 36, right: 16, bottom: 32, left: 0, containLabel: true },
@@ -69,7 +69,7 @@ function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES })
         name: 'Portfolio GRM',
         type: 'bar',
         data: properties.map((p) => p.grm),
-        itemStyle: { color: '#20B2AA', borderRadius: [3, 3, 0, 0] },
+        itemStyle: { color: '#454955', borderRadius: [3, 3, 0, 0] },
         barMaxWidth: 28,
         label: {
           show: true,
@@ -195,14 +195,14 @@ export default function GRMIntelligencePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">GRM Intelligence</span>
+            <span className="text-[#6E7480]">GRM Intelligence</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Gross Rent Multiplier</h1>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2 self-start md:self-auto">
+        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
           <Download className="w-4 h-4" />
           Export
         </button>
@@ -217,40 +217,40 @@ export default function GRMIntelligencePage() {
         <div className="md:col-span-4 space-y-4">
           <div className="rounded-xl border border-white/10 p-6 space-y-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
 
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Current GRM</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Current GRM</span>
 
             {/* Big number */}
             <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-teal-400 tabular-nums tracking-tighter">
+              <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
                 {currentGRM.toFixed(1)}
               </span>
-              <span className="text-slate-500 text-sm">x</span>
+              <span className="text-[#6B6870] text-sm">x</span>
             </div>
 
             {/* Change indicator */}
-            <div className={`flex items-center gap-1.5 text-sm font-bold ${isDecreasing ? 'text-teal-400' : 'text-red-400'}`}>
+            <div className={`flex items-center gap-1.5 text-sm font-bold ${isDecreasing ? 'text-[#6E7480]' : 'text-red-400'}`}>
               {isDecreasing
                 ? <ArrowDownRight className="w-4 h-4" />
                 : <ArrowUpRight className="w-4 h-4" />
               }
               {isDecreasing ? '' : '+'}{grmChange.toFixed(1)} vs Last Period
-              <span className="text-[10px] font-normal text-slate-500 ml-1">(lower is better)</span>
+              <span className="text-[10px] font-normal text-[#6B6870] ml-1">(lower is better)</span>
             </div>
 
             {/* Formula */}
             <div className="px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Formula</p>
-              <p className="text-xs text-slate-300 font-mono">Property Value ÷ Annual Gross Rent</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Formula</p>
+              <p className="text-xs text-[#C0BEC2] font-mono">Property Value ÷ Annual Gross Rent</p>
             </div>
           </div>
 
           {/* Context metrics */}
           <div className="rounded-xl border border-white/10 p-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-3">Context</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-3">Context</span>
             <div className="grid grid-cols-2 gap-3">
               {contextMetrics.map((m) => (
                 <div key={m.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3">
-                  <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">{m.label}</p>
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-[#6B6870] mb-1">{m.label}</p>
                   <p className="text-base font-bold text-white tabular-nums">{m.value}</p>
                 </div>
               ))}
@@ -262,7 +262,7 @@ export default function GRMIntelligencePage() {
         <div className="md:col-span-8">
           <div className="rounded-xl border border-white/10 p-6 h-full" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Portfolio vs Market GRM</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Portfolio vs Market GRM</span>
             </div>
             <GroupedBarChart properties={propertyRows} />
             <p className="text-[10px] text-slate-600 mt-2">Bars below market GRM represent alpha — buying at a discount to market rent multiples.</p>
@@ -287,13 +287,13 @@ export default function GRMIntelligencePage() {
 
       {/* ── Bottom: GRM by Property Table ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">GRM by Property</span>
+        <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">GRM by Property</span>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06]">
                 {['Address', 'Value', 'Annual Rent', 'GRM', 'vs Market', 'Signal'].map((h) => (
-                  <th key={h} className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">{h}</th>
+                  <th key={h} className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -302,15 +302,15 @@ export default function GRMIntelligencePage() {
                 const diff = row.grm - row.marketGRM;
                 return (
                   <tr key={row.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-3 text-slate-300 font-medium">{row.address}</td>
-                    <td className="py-3 px-3 text-slate-400 tabular-nums">
+                    <td className="py-3 px-3 text-[#C0BEC2] font-medium">{row.address}</td>
+                    <td className="py-3 px-3 text-[#9E9DA0] tabular-nums">
                       {row.value >= 1_000_000 ? `$${(row.value / 1_000_000).toFixed(2)}M` : `$${(row.value / 1000).toFixed(0)}k`}
                     </td>
-                    <td className="py-3 px-3 text-slate-400 tabular-nums">
+                    <td className="py-3 px-3 text-[#9E9DA0] tabular-nums">
                       ${(row.annualRent / 1000).toFixed(1)}k
                     </td>
-                    <td className="py-3 px-3 text-teal-400 font-bold tabular-nums">{row.grm.toFixed(1)}x</td>
-                    <td className={`py-3 px-3 font-bold tabular-nums ${diff <= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                    <td className="py-3 px-3 text-[#6E7480] font-bold tabular-nums">{row.grm.toFixed(1)}x</td>
+                    <td className={`py-3 px-3 font-bold tabular-nums ${diff <= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                       {diff > 0 ? '+' : ''}{diff.toFixed(1)}x
                     </td>
                     <td className="py-3 px-3">

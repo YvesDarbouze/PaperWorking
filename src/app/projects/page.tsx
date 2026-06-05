@@ -18,7 +18,7 @@ export default function ProjectsPage() {
       phaseDetails: "Due Diligence",
       progress: 60,
       color: "primary-container",
-      hex: "#20B2AA", // Used for shadow
+      hex: "#454955", // Used for shadow
     },
     {
       id: 2,
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
       phaseDetails: "Closing",
       progress: 90,
       color: "secondary",
-      hex: "#adc6ff",
+      hex: "#7A9EAA",
     },
     {
       id: 3,

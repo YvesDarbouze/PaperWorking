@@ -39,7 +39,7 @@ export function RecentProjects() {
       <section className="space-y-stack-md">
         <h2
           className="text-xl font-semibold tracking-tight"
-          style={{ color: 'rgba(218,228,236,0.9)' }}
+          style={{ color: 'rgba(253,255,252,0.9)' }}
         >
           Your Portfolio
         </h2>
@@ -66,13 +66,13 @@ export function RecentProjects() {
         <div>
           <h2
             className="text-xl font-semibold tracking-tight"
-            style={{ color: 'rgba(218,228,236,0.9)' }}
+            style={{ color: 'rgba(253,255,252,0.9)' }}
           >
             Recent Projects
           </h2>
           <p
             className="text-xs mt-0.5"
-            style={{ color: 'rgba(218,228,236,0.4)' }}
+            style={{ color: 'rgba(253,255,252,0.4)' }}
           >
             {projects.length} project{projects.length !== 1 ? 's' : ''} in portfolio
           </p>
@@ -85,9 +85,9 @@ export function RecentProjects() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all cursor-pointer
               hover:brightness-110 active:scale-95"
             style={{
-              backgroundColor: 'rgba(32, 178, 170,0.1)',
-              color: '#20B2AA',
-              border: '1px solid rgba(32, 178, 170,0.2)',
+              backgroundColor: 'rgba(69, 73, 85,0.1)',
+              color: '#454955',
+              border: '1px solid rgba(69, 73, 85,0.2)',
             }}
           >
             <Plus className="w-3.5 h-3.5" />
@@ -98,8 +98,8 @@ export function RecentProjects() {
           {projects.length > MAX_RECENT && (
             <Link
               href="/dashboard/projects"
-              className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:text-[#20B2AA]"
-              style={{ color: 'rgba(218,228,236,0.5)' }}
+              className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:text-[#454955]"
+              style={{ color: 'rgba(253,255,252,0.5)' }}
             >
               View All
               <ChevronRight className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export function RecentProjects() {
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all hover:brightness-110"
             style={{
               backgroundColor: 'rgba(255,255,255,0.04)',
-              color: 'rgba(218,228,236,0.6)',
+              color: 'rgba(253,255,252,0.6)',
               border: '1px solid rgba(255,255,255,0.06)',
             }}
           >

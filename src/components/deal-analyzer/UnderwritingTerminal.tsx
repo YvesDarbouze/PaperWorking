@@ -38,7 +38,7 @@ const DEFAULT_INPUTS: UnderwritingInputs = {
 
 // ─── Health band color mapping ───────────────────────────
 const HEALTH_COLORS: Record<HealthBand, string> = {
-  good: 'bg-primary',                  // teal #57f1db
+  good: 'bg-primary',                  // teal #454955
   fair: 'bg-tertiary-container',       // amber #ffac5a
   poor: 'bg-error',                    // red  #ffb4ab
 };

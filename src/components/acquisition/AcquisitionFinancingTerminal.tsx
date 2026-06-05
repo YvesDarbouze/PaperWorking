@@ -65,7 +65,7 @@ export default function AcquisitionFinancingTerminal() {
         
         {/* COLUMN 1: ACQUISITION */}
         <div className="space-y-6">
-          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#0d0a0b]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <span className="p-2 bg-primary/10 rounded-lg">
                 <span className="material-symbols-outlined text-primary">payments</span>
@@ -80,7 +80,7 @@ export default function AcquisitionFinancingTerminal() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
                   <input 
                     type="number"
-                    className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 pl-8 pr-4 text-on-surface font-bold text-lg transition-all outline-none" 
+                    className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 pl-8 pr-4 text-on-surface font-bold text-lg transition-all outline-none" 
                     value={purchasePrice} 
                     onChange={(e) => setPurchasePrice(Number(e.target.value))}
                   />
@@ -93,7 +93,7 @@ export default function AcquisitionFinancingTerminal() {
                   <input 
                     type="number"
                     step="0.1"
-                    className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
+                    className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
                     value={closingCostPct}
                     onChange={(e) => setClosingCostPct(Number(e.target.value))}
                   />
@@ -102,7 +102,7 @@ export default function AcquisitionFinancingTerminal() {
                   <label className="text-[14px] font-medium text-on-surface-variant block">Closing Est. ($)</label>
                   <input 
                     type="text"
-                    className="w-full bg-[#2d363d]/20 border border-white/5 rounded-lg py-3 px-4 text-on-surface-variant cursor-not-allowed" 
+                    className="w-full bg-[#262328]/20 border border-white/5 rounded-lg py-3 px-4 text-on-surface-variant cursor-not-allowed" 
                     disabled 
                     value={formatCurrency(closingCostAmt)} 
                   />
@@ -115,7 +115,7 @@ export default function AcquisitionFinancingTerminal() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
                   <input 
                     type="number"
-                    className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 pl-8 pr-4 text-on-surface transition-all outline-none" 
+                    className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 pl-8 pr-4 text-on-surface transition-all outline-none" 
                     value={capexReserves}
                     onChange={(e) => setCapexReserves(Number(e.target.value))}
                   />
@@ -131,17 +131,17 @@ export default function AcquisitionFinancingTerminal() {
             </div>
           </section>
 
-          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#0d0a0b]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider">Due Diligence Timeline</h4>
               <span className="material-symbols-outlined text-on-surface-variant opacity-50">calendar_month</span>
             </div>
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-lg bg-[#060f15] border border-white/5">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[#0d0a0b] border border-white/5">
                 <span className="text-[14px] text-on-surface-variant">Inspection Period Ends</span>
                 <span className="text-[14px] font-medium text-on-surface">Oct 24, 2024</span>
               </div>
-              <div className="flex items-center justify-between p-3 rounded-lg bg-[#060f15] border border-white/5">
+              <div className="flex items-center justify-between p-3 rounded-lg bg-[#0d0a0b] border border-white/5">
                 <span className="text-[14px] text-on-surface-variant">Hard Money Deposit</span>
                 <span className="text-[14px] font-medium text-on-surface">Oct 28, 2024</span>
               </div>
@@ -151,10 +151,10 @@ export default function AcquisitionFinancingTerminal() {
 
         {/* COLUMN 2: DEBT SETUP */}
         <div className="space-y-6">
-          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#0d0a0b]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <div className="flex items-center gap-3 mb-6">
-              <span className="p-2 bg-[#adc6ff]/10 rounded-lg">
-                <span className="material-symbols-outlined text-[#adc6ff]">account_balance</span>
+              <span className="p-2 bg-[#7A9EAA]/10 rounded-lg">
+                <span className="material-symbols-outlined text-[#7A9EAA]">account_balance</span>
               </span>
               <h3 className="text-[20px] font-semibold text-on-surface">Debt Structure</h3>
             </div>
@@ -167,7 +167,7 @@ export default function AcquisitionFinancingTerminal() {
                     <input 
                       type="number"
                       step="0.1"
-                      className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface font-bold transition-all outline-none" 
+                      className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface font-bold transition-all outline-none" 
                       value={ltv}
                       onChange={(e) => setLtv(Number(e.target.value))}
                     />
@@ -180,7 +180,7 @@ export default function AcquisitionFinancingTerminal() {
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
                     <input 
                       type="text"
-                      className="w-full bg-[#2d363d]/20 border border-white/5 rounded-lg py-3 pl-8 pr-4 text-on-surface-variant cursor-not-allowed" 
+                      className="w-full bg-[#262328]/20 border border-white/5 rounded-lg py-3 pl-8 pr-4 text-on-surface-variant cursor-not-allowed" 
                       value={formatCurrency(loanAmount)}
                       disabled
                     />
@@ -195,7 +195,7 @@ export default function AcquisitionFinancingTerminal() {
                     <input 
                       type="number"
                       step="0.1"
-                      className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
+                      className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
                       value={interestRate}
                       onChange={(e) => setInterestRate(Number(e.target.value))}
                     />
@@ -206,7 +206,7 @@ export default function AcquisitionFinancingTerminal() {
                   <label className="text-[14px] font-medium text-on-surface-variant block">Loan Term (Years)</label>
                   <input 
                     type="number"
-                    className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
+                    className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
                     value={loanTerm}
                     onChange={(e) => setLoanTerm(Number(e.target.value))}
                   />
@@ -216,7 +216,7 @@ export default function AcquisitionFinancingTerminal() {
               <div className="space-y-2">
                 <label className="text-[14px] font-medium text-on-surface-variant block">Amortization Period</label>
                 <select 
-                  className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface appearance-none transition-all outline-none"
+                  className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface appearance-none transition-all outline-none"
                   value={amortization}
                   onChange={(e) => setAmortization(e.target.value)}
                 >
@@ -233,7 +233,7 @@ export default function AcquisitionFinancingTerminal() {
                   <input 
                     type="number"
                     step="0.1"
-                    className="w-full bg-[#060f15]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
+                    className="w-full bg-[#0d0a0b]/80 border border-[#859490]/30 focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.15)] rounded-lg py-3 px-4 text-on-surface transition-all outline-none" 
                     value={originationFeePct}
                     onChange={(e) => setOriginationFeePct(Number(e.target.value))}
                   />
@@ -242,7 +242,7 @@ export default function AcquisitionFinancingTerminal() {
                   <label className="text-[14px] font-medium text-on-surface-variant block">Origination Fee ($)</label>
                   <input 
                     type="text"
-                    className="w-full bg-[#2d363d]/20 border border-white/5 rounded-lg py-3 px-4 text-on-surface-variant cursor-not-allowed" 
+                    className="w-full bg-[#262328]/20 border border-white/5 rounded-lg py-3 px-4 text-on-surface-variant cursor-not-allowed" 
                     disabled 
                     value={formatCurrency(originationFeeAmt)} 
                   />
@@ -252,7 +252,7 @@ export default function AcquisitionFinancingTerminal() {
               <div className="pt-4 border-t border-white/5 mt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-[14px] font-medium text-on-surface-variant">Debt Service (Annual)</span>
-                  <span className="text-[20px] font-bold text-[#adc6ff]">${formatCurrency(annualDebtService)}</span>
+                  <span className="text-[20px] font-bold text-[#7A9EAA]">${formatCurrency(annualDebtService)}</span>
                 </div>
               </div>
             </div>
@@ -261,16 +261,16 @@ export default function AcquisitionFinancingTerminal() {
 
         {/* COLUMN 3: CAPITAL STACK ANALYTICS */}
         <div className="space-y-6">
-          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 flex flex-col items-center">
+          <section className="bg-[#0d0a0b]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 flex flex-col items-center">
             <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider mb-8 w-full">Capital Stack Analysis</h4>
             
             {/* Donut Chart Visualization */}
             <div className="relative w-48 h-48 mb-8">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                 {/* Debt Section */}
-                <circle cx="50" cy="50" fill="transparent" r="40" stroke="#adc6ff" strokeDasharray={debtStrokeDasharray} strokeWidth="12"></circle>
+                <circle cx="50" cy="50" fill="transparent" r="40" stroke="#7A9EAA" strokeDasharray={debtStrokeDasharray} strokeWidth="12"></circle>
                 {/* Equity Section */}
-                <circle cx="50" cy="50" fill="transparent" r="40" stroke="#57f1db" strokeDasharray={equityStrokeDasharray} strokeDashoffset={equityStrokeDashoffset} strokeWidth="12"></circle>
+                <circle cx="50" cy="50" fill="transparent" r="40" stroke="#454955" strokeDasharray={equityStrokeDasharray} strokeDashoffset={equityStrokeDashoffset} strokeWidth="12"></circle>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-[12px] font-medium text-on-surface-variant uppercase">Total Basis</span>
@@ -281,14 +281,14 @@ export default function AcquisitionFinancingTerminal() {
             <div className="w-full space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#adc6ff]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#7A9EAA]"></div>
                   <span className="text-[14px] text-on-surface-variant">Senior Debt</span>
                 </div>
                 <span className="text-[14px] font-medium text-on-surface">${(loanAmount / 1000000).toFixed(3)}M ({Math.round(ltv)}%)</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#57f1db]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#454955]"></div>
                   <span className="text-[14px] text-on-surface-variant">Equity Required</span>
                 </div>
                 <span className="text-[14px] font-medium text-on-surface">${(equityRequired / 1000000).toFixed(3)}M ({100 - Math.round(ltv)}%)</span>
@@ -296,14 +296,14 @@ export default function AcquisitionFinancingTerminal() {
             </div>
           </section>
 
-          <section className="bg-[#091015]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
+          <section className="bg-[#0d0a0b]/60 backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6">
             <h4 className="text-[14px] font-medium text-on-surface-variant uppercase tracking-wider mb-4">Leverage Metrics</h4>
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-[#060f15] border border-white/5 rounded-lg">
+              <div className="p-4 bg-[#0d0a0b] border border-white/5 rounded-lg">
                 <p className="text-[12px] text-on-surface-variant opacity-60 mb-1">DSCR (Est.)</p>
                 <p className="text-[20px] font-bold text-on-surface">1.45x</p>
               </div>
-              <div className="p-4 bg-[#060f15] border border-white/5 rounded-lg">
+              <div className="p-4 bg-[#0d0a0b] border border-white/5 rounded-lg">
                 <p className="text-[12px] text-on-surface-variant opacity-60 mb-1">Debt Yield</p>
                 <p className="text-[20px] font-bold text-on-surface">11.3%</p>
               </div>
@@ -322,7 +322,7 @@ export default function AcquisitionFinancingTerminal() {
       </div>
 
       {/* FOOTER ACTION BAR */}
-      <div className="mt-12 flex flex-col md:flex-row justify-between items-center p-6 bg-[#091015]/60 backdrop-blur-3xl rounded-xl border border-primary/20 gap-4">
+      <div className="mt-12 flex flex-col md:flex-row justify-between items-center p-6 bg-[#0d0a0b]/60 backdrop-blur-3xl rounded-xl border border-primary/20 gap-4">
         <div className="flex items-center gap-4 text-on-surface-variant">
           <span className="material-symbols-outlined text-primary">info</span>
           <p className="text-[14px]">All changes are saved to the <span className="text-on-surface font-medium">Underwriting Scratchpad</span> in real-time.</p>
@@ -331,7 +331,7 @@ export default function AcquisitionFinancingTerminal() {
           <button className="px-6 py-3 rounded-xl border border-white/10 text-on-surface text-[14px] font-medium hover:bg-white/5 transition-colors w-full sm:w-auto">
             Discard Changes
           </button>
-          <button className="bg-primary hover:brightness-110 text-[#00574d] shadow-[0_0_20px_-5px_rgba(87,241,219,0.5)] px-10 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all w-full sm:w-auto">
+          <button className="bg-primary hover:brightness-110 text-[#454955] shadow-[0_0_20px_-5px_rgba(69,73,85,0.5)] px-10 py-3 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all w-full sm:w-auto">
             Save Acquisition Data &amp; Continue
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>

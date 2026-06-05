@@ -67,7 +67,7 @@ function getHealthScore(
   if (capRate >= 6 && cashFlow > 200) {
     return {
       label: 'Strong Deal',
-      color: '#57f1db',
+      color: '#454955',
       icon: <CheckCircle2 className="w-4 h-4" />,
     };
   }
@@ -170,8 +170,8 @@ export function DealHealthPreview({ formData }: DealHealthPreviewProps) {
     <div className="mt-6">
       {/* Section Header */}
       <div className="flex items-center gap-3 mb-4">
-        <Activity className="w-5 h-5 text-[#57f1db]" />
-        <h3 className="text-[14px] font-semibold tracking-widest text-[#57f1db] uppercase">
+        <Activity className="w-5 h-5 text-[#454955]" />
+        <h3 className="text-[14px] font-semibold tracking-widest text-[#454955] uppercase">
           Deal Health Preview
         </h3>
       </div>
@@ -250,7 +250,7 @@ function MetricCard({
   icon: React.ReactNode;
   isPositive: boolean;
 }) {
-  const accent = isPositive ? '#57f1db' : '#ffb4ab';
+  const accent = isPositive ? '#454955' : '#ffb4ab';
 
   return (
     <div
@@ -263,7 +263,7 @@ function MetricCard({
     >
       <div className="flex items-center gap-2 mb-2">
         <span style={{ color: accent }}>{icon}</span>
-        <span className="text-[11px] font-medium tracking-widest text-[#bacac5] uppercase">
+        <span className="text-[11px] font-medium tracking-widest text-[#9E9DA0] uppercase">
           {label}
         </span>
       </div>
@@ -275,7 +275,7 @@ function MetricCard({
           {value}
         </span>
         {sublabel && (
-          <span className="text-[12px] text-[#bacac5] font-medium">
+          <span className="text-[12px] text-[#9E9DA0] font-medium">
             {sublabel}
           </span>
         )}

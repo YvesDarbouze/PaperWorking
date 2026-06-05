@@ -34,12 +34,12 @@ export default function GlowEffect() {
     <>
       <div
         ref={glow1Ref}
-        className="absolute w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(87,241,219,0.05)_0%,transparent_70%)] pointer-events-none z-0 transition-transform duration-300 ease-out"
+        className="absolute w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(69,73,85,0.05)_0%,transparent_70%)] pointer-events-none z-0 transition-transform duration-300 ease-out"
         style={{ top: '-100px', left: '-100px' }}
       />
       <div
         ref={glow2Ref}
-        className="absolute w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(87,241,219,0.05)_0%,transparent_70%)] pointer-events-none z-0 transition-transform duration-300 ease-out"
+        className="absolute w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle,rgba(69,73,85,0.05)_0%,transparent_70%)] pointer-events-none z-0 transition-transform duration-300 ease-out"
         style={{ bottom: '-100px', right: '-100px' }}
       />
     </>

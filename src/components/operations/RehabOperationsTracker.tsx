@@ -578,7 +578,7 @@ export default function RehabOperationsTracker() {
                   className="bg-primary h-full transition-all duration-500" 
                   style={{ 
                     width: `${totalEstimated > 0 ? Math.min((totalActual / totalEstimated) * 100, 100) : 0}%`,
-                    boxShadow: '0 0 10px rgba(87, 241, 219, 0.4)' 
+                    boxShadow: '0 0 10px rgba(69, 73, 85, 0.4)' 
                   }}
                 ></div>
               </div>

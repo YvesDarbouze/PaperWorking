@@ -162,7 +162,7 @@ export function PhaseDistributionChart({ deals, onPhaseClick, isLoading, classNa
                     <Cell
                       key={i}
                       fill={s.color}
-                      stroke={activePhase === s.phase ? '#1A73E8' : 'transparent'}
+                      stroke={activePhase === s.phase ? '#454955' : 'transparent'}
                       strokeWidth={activePhase === s.phase ? 3 : 0}
                       opacity={activePhase == null || activePhase === s.phase ? 1 : 0.35}
                     />
@@ -180,8 +180,8 @@ export function PhaseDistributionChart({ deals, onPhaseClick, isLoading, classNa
                 onClick={() => handleClick(s)}
                 className="flex items-center gap-3 w-full text-left rounded-xl px-3 py-2 border transition-all"
                 style={{
-                  borderColor: activePhase === s.phase ? '#1A73E8' : '#CCCCCC',
-                  backgroundColor: activePhase === s.phase ? '#1A73E810' : 'transparent',
+                  borderColor: activePhase === s.phase ? '#454955' : '#CCCCCC',
+                  backgroundColor: activePhase === s.phase ? '#45495510' : 'transparent',
                   opacity: activePhase == null || activePhase === s.phase ? 1 : 0.5,
                 }}
                 aria-pressed={activePhase === s.phase}

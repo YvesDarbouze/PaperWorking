@@ -218,18 +218,18 @@ export function AcquisitionWizard({ initialProjectId }: AcquisitionWizardProps) 
               className="md:hidden flex items-center justify-center w-8 h-8 rounded-lg"
               style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.09)" }}
             >
-              <span className="material-symbols-outlined text-[18px]" style={{ color: "rgba(218,228,236,0.6)" }}>menu</span>
+              <span className="material-symbols-outlined text-[18px]" style={{ color: "rgba(253,255,252,0.6)" }}>menu</span>
             </button>
 
-            <span className="text-[13px] font-semibold" style={{ color: "rgba(218,228,236,0.5)" }}>
+            <span className="text-[13px] font-semibold" style={{ color: "rgba(253,255,252,0.5)" }}>
               {/* Mobile: show current step name; desktop: show deal name */}
-              <span className="md:hidden" style={{ color: "rgba(218,228,236,0.8)" }}>
+              <span className="md:hidden" style={{ color: "rgba(253,255,252,0.8)" }}>
                 {currentStepDef?.label}
               </span>
               <span className="hidden md:inline">
                 Acquisition
                 {address.displayName && (
-                  <span style={{ color: "rgba(218,228,236,0.9)" }}>
+                  <span style={{ color: "rgba(253,255,252,0.9)" }}>
                     {" "}· {address.displayName}
                   </span>
                 )}
@@ -244,9 +244,9 @@ export function AcquisitionWizard({ initialProjectId }: AcquisitionWizardProps) 
                 onClick={() => setInviteOpen(true)}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-opacity duration-150 hover:opacity-70"
                 style={{
-                  background: "rgba(87,241,219,0.08)",
-                  border:     "1px solid rgba(87,241,219,0.18)",
-                  color:      "#57f1db",
+                  background: "rgba(69,73,85,0.08)",
+                  border:     "1px solid rgba(69,73,85,0.18)",
+                  color:      "#454955",
                 }}
               >
                 <span className="material-symbols-outlined text-[16px]">person_add</span>
@@ -259,7 +259,7 @@ export function AcquisitionWizard({ initialProjectId }: AcquisitionWizardProps) 
               style={{
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(255,255,255,0.1)",
-                color: "rgba(218,228,236,0.6)",
+                color: "rgba(253,255,252,0.6)",
               }}
             >
               <span className="material-symbols-outlined text-[16px]">save</span>

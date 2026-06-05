@@ -122,8 +122,8 @@ function UnitRow({
             value={unit.tenantName}
             onChange={(e) => onChange({ ...unit, tenantName: e.target.value })}
             placeholder="Vacant"
-            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-slate-300
-                       focus:outline-none focus:border-teal-500/30 transition-all"
+            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-[#C0BEC2]
+                       focus:outline-none focus:border-[#454955]/30 transition-all"
           />
         </div>
         <div>
@@ -134,8 +134,8 @@ function UnitRow({
             type="date"
             value={unit.leaseStart}
             onChange={(e) => onChange({ ...unit, leaseStart: e.target.value })}
-            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-slate-300
-                       focus:outline-none focus:border-teal-500/30 transition-all"
+            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-[#C0BEC2]
+                       focus:outline-none focus:border-[#454955]/30 transition-all"
           />
         </div>
         <div>
@@ -146,8 +146,8 @@ function UnitRow({
             type="date"
             value={unit.leaseEnd}
             onChange={(e) => onChange({ ...unit, leaseEnd: e.target.value })}
-            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-slate-300
-                       focus:outline-none focus:border-teal-500/30 transition-all"
+            className="w-full bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-[#C0BEC2]
+                       focus:outline-none focus:border-[#454955]/30 transition-all"
           />
         </div>
       </div>
@@ -163,8 +163,8 @@ function UnitRow({
           onChange={(e) => onChange({ ...unit, vacantDays: Math.max(0, Number(e.target.value) || 0) })}
           min={0}
           max={365}
-          className="w-16 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-slate-300
-                     font-mono tabular-nums focus:outline-none focus:border-teal-500/30 transition-all"
+          className="w-16 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-[11px] text-[#C0BEC2]
+                     font-mono tabular-nums focus:outline-none focus:border-[#454955]/30 transition-all"
         />
         {unit.vacantDays > 0 && (
           <span className="text-[9px] font-bold tabular-nums" style={{ color: unit.vacantDays > 30 ? '#F06543' : '#F59E0B' }}>
@@ -267,7 +267,7 @@ export function OccupancyCollectionTerminal({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Tenants & Leases</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Occupancy Collection</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">Occupancy Collection</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -275,8 +275,8 @@ export function OccupancyCollectionTerminal({
           <select
             value={totalDays}
             onChange={(e) => setTotalDays(Number(e.target.value))}
-            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-2 py-1 text-xs text-slate-300
-                       focus:outline-none focus:border-teal-500/30 transition-all cursor-pointer"
+            className="bg-white/[0.03] border border-white/[0.06] rounded-lg px-2 py-1 text-xs text-[#C0BEC2]
+                       focus:outline-none focus:border-[#454955]/30 transition-all cursor-pointer"
           >
             <option value={365}>Trailing 12M</option>
             <option value={90}>Quarter</option>
@@ -294,7 +294,7 @@ export function OccupancyCollectionTerminal({
           <Home className="w-6 h-6 flex-shrink-0" style={{ color: rateColor }} />
           <div>
             <p className="text-xs font-bold" style={{ color: rateColor }}>{rateLabel} Occupancy</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
+            <p className="text-[10px] text-[#6B6870] mt-0.5">
               {computed.totalVacantDays} vacant day{computed.totalVacantDays !== 1 ? 's' : ''} across {units.length} unit{units.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -352,8 +352,8 @@ export function OccupancyCollectionTerminal({
       {/* ── Add Unit Button ── */}
       <button
         onClick={handleAddUnit}
-        className="w-full py-2.5 rounded-lg border border-dashed border-white/10 text-xs font-bold text-slate-500
-                   hover:border-teal-500/30 hover:text-teal-400 transition-all flex items-center justify-center gap-1"
+        className="w-full py-2.5 rounded-lg border border-dashed border-white/10 text-xs font-bold text-[#6B6870]
+                   hover:border-[#454955]/30 hover:text-[#6E7480] transition-all flex items-center justify-center gap-1"
       >
         <Plus className="w-3 h-3" />
         Add Unit
@@ -361,8 +361,8 @@ export function OccupancyCollectionTerminal({
 
       {/* ── Formula ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           Occupancy = ({totalDays - Math.round(computed.totalVacantDays / units.length)} ÷ {totalDays}) × 100 = {seedRate.toFixed(1)}%
         </p>
       </div>

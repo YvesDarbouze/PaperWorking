@@ -19,7 +19,7 @@ export default function CashFlowDeepDive({
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
 
   return (
-    <section className="glass-card rounded-xl p-6 relative overflow-hidden flex flex-col justify-center h-full" style={{ background: "rgba(11, 20, 26, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+    <section className="glass-card rounded-xl p-6 relative overflow-hidden flex flex-col justify-center h-full" style={{ background: "rgba(13, 10, 11, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
       <div className="space-y-8">
         <div className="flex justify-between items-end border-b border-white/5 pb-4">
           <div>
@@ -62,8 +62,8 @@ export default function CashFlowDeepDive({
              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
              {/* Sparkline pseudo-svg */}
              <svg className="absolute bottom-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-               <path d="M0,100 L0,50 Q25,30 50,60 T100,20 L100,100 Z" fill="rgba(32, 178, 170, 0.2)" />
-               <path d="M0,50 Q25,30 50,60 T100,20" fill="none" stroke="#20B2AA" strokeWidth="2" />
+               <path d="M0,100 L0,50 Q25,30 50,60 T100,20 L100,100 Z" fill="rgba(69, 73, 85, 0.2)" />
+               <path d="M0,50 Q25,30 50,60 T100,20" fill="none" stroke="#454955" strokeWidth="2" />
              </svg>
            </div>
         </div>

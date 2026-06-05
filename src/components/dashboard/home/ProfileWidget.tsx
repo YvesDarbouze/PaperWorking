@@ -49,7 +49,7 @@ export default function ProfileWidget({
           </div>
           {/* Circular progress representation (simplified with border for wireframe parity) */}
           <svg className="absolute top-0 left-0 w-24 h-24 -rotate-90 pointer-events-none" viewBox="0 0 100 100">
-             <circle cx="50" cy="50" r="48" fill="none" stroke="#57f1db" strokeWidth="4" strokeDasharray="150 300" strokeLinecap="round" />
+             <circle cx="50" cy="50" r="48" fill="none" stroke="#454955" strokeWidth="4" strokeDasharray="150 300" strokeLinecap="round" />
           </svg>
           <div className="absolute bottom-0 right-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center border-2 border-surface">
             <span className="text-on-primary text-[10px] leading-none text-center">★</span>

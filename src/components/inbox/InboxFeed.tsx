@@ -33,7 +33,7 @@ interface InboxFeedProps {
 
 function FeedSkeleton() {
   return (
-    <div className="p-6 space-y-4 bg-[#091015] h-full overflow-y-auto">
+    <div className="p-6 space-y-4 bg-[#0d0a0b] h-full overflow-y-auto">
       {Array.from({ length: 4 }).map((_, i) => (
         <div
           key={i}
@@ -153,12 +153,12 @@ export default function InboxFeed({
   // Handle explicit error states
   if (error && items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px] bg-[#091015]">
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[200px] bg-[#0d0a0b]">
         <AlertCircle className="w-8 h-8 mb-3 text-red-500" />
-        <h3 className="text-sm font-semibold mb-1 text-[#dae4ec]">
+        <h3 className="text-sm font-semibold mb-1 text-[#9E9DA0]">
           Connection Error
         </h3>
-        <p className="text-xs max-w-xs mb-3 text-[#bacac5]">
+        <p className="text-xs max-w-xs mb-3 text-[#9E9DA0]">
           {error}
         </p>
       </div>
@@ -171,13 +171,13 @@ export default function InboxFeed({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative bg-[#091015]">
+    <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col relative bg-[#0d0a0b]">
       {/* Select All Action Bar */}
       {items.length > 0 && (
         <div 
-          className="flex items-center px-6 py-3 border-b border-white/10 bg-[#091015]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
+          className="flex items-center px-6 py-3 border-b border-white/10 bg-[#0d0a0b]/80 backdrop-blur-sm sticky top-0 z-10 shrink-0"
         >
-          <label className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer text-[#bacac5] hover:text-[#57f1db] transition-colors">
+          <label className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-wider cursor-pointer text-[#9E9DA0] hover:text-[#454955] transition-colors">
             <Checkbox
               checked={allSelected}
               onChange={toggleSelectAll}
@@ -214,7 +214,7 @@ export default function InboxFeed({
             initial={{ opacity: 0, y: 20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 20, x: '-50%' }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3.5 glass-card rounded-2xl border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(32, 178, 170,0.15)] text-[#dae4ec]"
+            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3.5 glass-card rounded-2xl border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(69, 73, 85,0.15)] text-[#9E9DA0]"
             style={{
               width: 'calc(100% - 48px)',
               maxWidth: '520px',
@@ -227,7 +227,7 @@ export default function InboxFeed({
             <div className="flex items-center gap-2.5">
               <button
                 onClick={handleBulkMarkRead}
-                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 transition-all active:scale-95 text-[#dae4ec]"
+                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 transition-all active:scale-95 text-[#9E9DA0]"
               >
                 Mark Read
               </button>
@@ -239,7 +239,7 @@ export default function InboxFeed({
               </button>
               <button
                 onClick={() => setSelectedIds([])}
-                className="text-[10px] font-bold uppercase tracking-wider text-[#bacac5] hover:text-[#dae4ec] transition-colors px-2 py-1"
+                className="text-[10px] font-bold uppercase tracking-wider text-[#9E9DA0] hover:text-[#9E9DA0] transition-colors px-2 py-1"
               >
                 Cancel
               </button>
@@ -255,7 +255,7 @@ export default function InboxFeed({
           className="flex items-center justify-center p-6 min-h-[48px]"
         >
           {loadingMore && (
-            <div className="flex items-center gap-2 text-xs text-[#bacac5]">
+            <div className="flex items-center gap-2 text-xs text-[#9E9DA0]">
               <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
               Loading more...
             </div>

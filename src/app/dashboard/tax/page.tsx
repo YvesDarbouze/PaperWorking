@@ -277,12 +277,12 @@ export default function TaxDashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">Tax Center</h1>
-          <p className="text-sm text-slate-400 mt-1">Generate Schedule E, P&Ls, year-end Tax Packs, and share secure access with your accountant.</p>
+          <p className="text-sm text-[#9E9DA0] mt-1">Generate Schedule E, P&Ls, year-end Tax Packs, and share secure access with your accountant.</p>
         </div>
         <button
           onClick={handleGenerateTaxPack}
           disabled={exporting || !taxData.hasData}
-          className="flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-black px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-200 shadow-lg shadow-teal-500/10 disabled:opacity-50"
+          className="flex items-center justify-center gap-2 bg-[#454955] hover:bg-[#6E7480] text-black px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-200 shadow-lg shadow-[#454955]/10 disabled:opacity-50"
         >
           {exporting ? (
             <>
@@ -311,9 +311,9 @@ export default function TaxDashboardPage() {
         {/* ── Left Sidebar Filter Control ── */}
         <div className="lg:col-span-1 space-y-6">
           {/* Year selector */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-              <Calendar className="w-3.5 h-3.5 text-teal-400" />
+          <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 text-[#6E7480]" />
               Tax Calendar Year
             </h2>
             <div className="grid grid-cols-3 gap-2">
@@ -323,8 +323,8 @@ export default function TaxDashboardPage() {
                   onClick={() => setTaxYear(yr)}
                   className={`py-2 rounded-lg text-xs font-bold tabular-nums transition-all border ${
                     taxYear === yr
-                      ? 'border-teal-500 bg-teal-500/10 text-teal-400 shadow-inner'
-                      : 'border-white/5 bg-white/5 text-slate-400 hover:text-slate-200'
+                      ? 'border-[#454955] bg-[#454955]/10 text-[#6E7480] shadow-inner'
+                      : 'border-white/5 bg-white/5 text-[#9E9DA0] hover:text-slate-200'
                   }`}
                 >
                   {yr}
@@ -334,12 +334,12 @@ export default function TaxDashboardPage() {
           </div>
 
           {/* Properties multi-select */}
-          <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
+          <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-slate-400">Included Properties</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Included Properties</h2>
               <button
                 onClick={handleToggleAll}
-                className="text-[10px] font-bold uppercase tracking-widest text-teal-400 hover:text-teal-300 transition-colors"
+                className="text-[10px] font-bold uppercase tracking-widest text-[#6E7480] hover:text-[#8a8e9a] transition-colors"
               >
                 {selectedProjectIds.length === activeProjects.length ? 'Deselect All' : 'Select All'}
               </button>
@@ -360,21 +360,21 @@ export default function TaxDashboardPage() {
                     >
                       <span className="mt-0.5">
                         {isChecked ? (
-                          <CheckSquare className="w-4 h-4 text-teal-400" />
+                          <CheckSquare className="w-4 h-4 text-[#6E7480]" />
                         ) : (
-                          <Square className="w-4 h-4 text-slate-500" />
+                          <Square className="w-4 h-4 text-[#6B6870]" />
                         )}
                       </span>
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-white truncate">{p.propertyName || p.address}</p>
-                        <p className="text-[10px] text-slate-400 truncate mt-0.5">{p.address || 'No Address'}</p>
+                        <p className="text-[10px] text-[#9E9DA0] truncate mt-0.5">{p.address || 'No Address'}</p>
                       </div>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <p className="text-xs text-slate-500">No properties available. Create one to see tax reports.</p>
+              <p className="text-xs text-[#6B6870]">No properties available. Create one to see tax reports.</p>
             )}
           </div>
         </div>
@@ -387,8 +387,8 @@ export default function TaxDashboardPage() {
               onClick={() => setActiveTab('schedE')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                 activeTab === 'schedE'
-                  ? 'bg-teal-500 text-black'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#454955] text-black'
+                  : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -398,8 +398,8 @@ export default function TaxDashboardPage() {
               onClick={() => setActiveTab('pl')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                 activeTab === 'pl'
-                  ? 'bg-teal-500 text-black'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#454955] text-black'
+                  : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               <Percent className="w-3.5 h-3.5" />
@@ -409,8 +409,8 @@ export default function TaxDashboardPage() {
               onClick={() => setActiveTab('share')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
                 activeTab === 'share'
-                  ? 'bg-teal-500 text-black'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#454955] text-black'
+                  : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -420,17 +420,17 @@ export default function TaxDashboardPage() {
 
           {/* Tab 1: Schedule E Preview */}
           {activeTab === 'schedE' && (
-            <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
+            <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-bold text-white">Schedule E (Form 1040) Preview</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Aggregated portfolio and property-by-property IRS-ready mapping for {taxYear}.</p>
+                  <p className="text-xs text-[#9E9DA0] mt-0.5">Aggregated portfolio and property-by-property IRS-ready mapping for {taxYear}.</p>
                 </div>
-                <span className="text-[10px] font-bold text-teal-400 border border-teal-500/20 bg-teal-500/5 px-2 py-0.5 rounded-full uppercase tracking-wider">IRS Form 1040</span>
+                <span className="text-[10px] font-bold text-[#6E7480] border border-[#454955]/20 bg-[#454955]/5 px-2 py-0.5 rounded-full uppercase tracking-wider">IRS Form 1040</span>
               </div>
 
               {!taxData.hasData ? (
-                <div className="py-12 text-center text-xs text-slate-500">
+                <div className="py-12 text-center text-xs text-[#6B6870]">
                   Select one or more properties in the sidebar to load the Schedule E preview.
                 </div>
               ) : taxData.incompleteProjects.length > 0 ? (
@@ -461,10 +461,10 @@ export default function TaxDashboardPage() {
                   <table className="w-full text-xs text-left min-w-[800px]">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
-                        <th className="px-4 py-3 font-bold text-slate-400 uppercase tracking-widest text-[9px]">Schedule E Item</th>
-                        <th className="px-4 py-3 font-bold text-teal-400 uppercase tracking-widest text-[9px] bg-teal-500/5">Portfolio Total</th>
+                        <th className="px-4 py-3 font-bold text-[#9E9DA0] uppercase tracking-widest text-[9px]">Schedule E Item</th>
+                        <th className="px-4 py-3 font-bold text-[#6E7480] uppercase tracking-widest text-[9px] bg-[#454955]/5">Portfolio Total</th>
                         {taxData.previews.map((p, idx) => (
-                          <th key={p.projectId} className="px-4 py-3 font-bold text-slate-300 uppercase tracking-widest text-[9px] max-w-[150px] truncate">
+                          <th key={p.projectId} className="px-4 py-3 font-bold text-[#C0BEC2] uppercase tracking-widest text-[9px] max-w-[150px] truncate">
                             {String.fromCharCode(65 + idx)}) {p.propertyName}
                           </th>
                         ))}
@@ -497,8 +497,8 @@ export default function TaxDashboardPage() {
                             key={row.key} 
                             className={`${row.isBold ? 'bg-white/[0.02] font-semibold' : ''} ${isNet ? 'bg-white/[0.04]' : ''}`}
                           >
-                            <td className="px-4 py-2.5 font-medium text-slate-300">{row.label}</td>
-                            <td className={`px-4 py-2.5 tabular-nums bg-teal-500/5 font-bold ${isNet ? (taxData.aggregatedSchedE.netIncome >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-teal-300'}`}>
+                            <td className="px-4 py-2.5 font-medium text-[#C0BEC2]">{row.label}</td>
+                            <td className={`px-4 py-2.5 tabular-nums bg-[#454955]/5 font-bold ${isNet ? (taxData.aggregatedSchedE.netIncome >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#8a8e9a]'}`}>
                               {fmtCurrency((taxData.aggregatedSchedE as any)[row.key])}
                             </td>
                             {taxData.previews.map((p) => {
@@ -506,7 +506,7 @@ export default function TaxDashboardPage() {
                               return (
                                 <td 
                                   key={p.projectId} 
-                                  className={`px-4 py-2.5 tabular-nums ${isNet ? (val >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-slate-400'}`}
+                                  className={`px-4 py-2.5 tabular-nums ${isNet ? (val >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#9E9DA0]'}`}
                                 >
                                   {fmtCurrency(val)}
                                 </td>
@@ -524,14 +524,14 @@ export default function TaxDashboardPage() {
 
           {/* Tab 2: Profit & Loss Summary */}
           {activeTab === 'pl' && (
-            <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
+            <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
               <div>
                 <h3 className="text-base font-bold text-white">Profit & Loss Statements</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Operating and capital financials breakdown for {taxYear}.</p>
+                <p className="text-xs text-[#9E9DA0] mt-0.5">Operating and capital financials breakdown for {taxYear}.</p>
               </div>
 
               {!taxData.hasData ? (
-                <div className="py-12 text-center text-xs text-slate-500">
+                <div className="py-12 text-center text-xs text-[#6B6870]">
                   Select one or more properties in the sidebar to load P&L reports.
                 </div>
               ) : (
@@ -539,10 +539,10 @@ export default function TaxDashboardPage() {
                   <table className="w-full text-xs text-left min-w-[800px]">
                     <thead>
                       <tr className="bg-white/5 border-b border-white/10">
-                        <th className="px-4 py-3 font-bold text-slate-400 uppercase tracking-widest text-[9px]">Financial Metric</th>
-                        <th className="px-4 py-3 font-bold text-teal-400 uppercase tracking-widest text-[9px] bg-teal-500/5">Portfolio Total</th>
+                        <th className="px-4 py-3 font-bold text-[#9E9DA0] uppercase tracking-widest text-[9px]">Financial Metric</th>
+                        <th className="px-4 py-3 font-bold text-[#6E7480] uppercase tracking-widest text-[9px] bg-[#454955]/5">Portfolio Total</th>
                         {taxData.plReports.map((p, idx) => (
-                          <th key={p.projectId} className="px-4 py-3 font-bold text-slate-300 uppercase tracking-widest text-[9px] max-w-[150px] truncate">
+                          <th key={p.projectId} className="px-4 py-3 font-bold text-[#C0BEC2] uppercase tracking-widest text-[9px] max-w-[150px] truncate">
                             {String.fromCharCode(65 + idx)}) {p.propertyName}
                           </th>
                         ))}
@@ -584,7 +584,7 @@ export default function TaxDashboardPage() {
                         if (row.isSection) {
                           return (
                             <tr key={row.label} className="bg-white/[0.02]">
-                              <td colSpan={2 + taxData.plReports.length} className="px-4 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-500">
+                              <td colSpan={2 + taxData.plReports.length} className="px-4 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-[#6B6870]">
                                 {row.label}
                               </td>
                             </tr>
@@ -594,13 +594,13 @@ export default function TaxDashboardPage() {
                         const isSub = row.isSubtotal;
                         const isTot = row.isTotal;
                         const isHighlight = row.isHighlight;
-                        const fontClass = isTot ? 'font-bold text-white' : isSub ? 'font-semibold text-slate-200' : 'text-slate-300';
+                        const fontClass = isTot ? 'font-bold text-white' : isSub ? 'font-semibold text-slate-200' : 'text-[#C0BEC2]';
                         const bgClass = isTot ? 'bg-white/[0.03]' : isSub ? 'bg-white/[0.01]' : '';
 
                         return (
                           <tr key={row.key} className={`${fontClass} ${bgClass}`}>
                             <td className="px-4 py-2.5 pl-6 font-medium">{row.label}</td>
-                            <td className={`px-4 py-2.5 tabular-nums bg-teal-500/5 font-bold ${isHighlight ? ((taxData.aggregatedPL as any)[row.key!] >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-teal-300'}`}>
+                            <td className={`px-4 py-2.5 tabular-nums bg-[#454955]/5 font-bold ${isHighlight ? ((taxData.aggregatedPL as any)[row.key!] >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#8a8e9a]'}`}>
                               {fmtCurrency((taxData.aggregatedPL as any)[row.key!])}
                             </td>
                             {taxData.plReports.map((p) => {
@@ -608,7 +608,7 @@ export default function TaxDashboardPage() {
                               return (
                                 <td 
                                   key={p.projectId} 
-                                  className={`px-4 py-2.5 tabular-nums ${isHighlight ? (val >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-slate-400'}`}
+                                  className={`px-4 py-2.5 tabular-nums ${isHighlight ? (val >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#9E9DA0]'}`}
                                 >
                                   {fmtCurrency(val)}
                                 </td>
@@ -628,19 +628,19 @@ export default function TaxDashboardPage() {
           {activeTab === 'share' && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Form to generate new link */}
-              <div className="lg:col-span-1 rounded-2xl border border-white/10 p-6 space-y-4 h-fit" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
+              <div className="lg:col-span-1 rounded-2xl border border-white/10 p-6 space-y-4 h-fit" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
                 <div className="flex items-center gap-2 pb-2 border-b border-white/5">
-                  <Share2 className="w-4 h-4 text-teal-400" />
+                  <Share2 className="w-4 h-4 text-[#6E7480]" />
                   <h3 className="text-sm font-bold text-white">Share with Accountant</h3>
                 </div>
                 
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-[#9E9DA0] leading-relaxed">
                   Generates a secure, read-only dashboard link for your CPA. The link includes live tax previews and downloads for this tax year and the selected properties.
                 </p>
 
                 <form onSubmit={handleCreateShareLink} className="space-y-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">
                       Tax Year
                     </label>
                     <div className="text-sm font-bold text-white bg-white/5 border border-white/10 px-3 py-2 rounded-lg">
@@ -649,16 +649,16 @@ export default function TaxDashboardPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <label className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">
                       Properties Shared
                     </label>
-                    <div className="text-xs font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 px-3 py-2 rounded-lg">
+                    <div className="text-xs font-semibold text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 px-3 py-2 rounded-lg">
                       {selectedProjectIds.length} properties selected
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label htmlFor="cpaEmail" className="block text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <label htmlFor="cpaEmail" className="block text-[10px] font-bold uppercase tracking-widest text-[#9E9DA0]">
                       CPA Email (optional)
                     </label>
                     <input
@@ -668,14 +668,14 @@ export default function TaxDashboardPage() {
                       value={cpaEmail}
                       onChange={(e) => setCpaEmail(e.target.value)}
                       placeholder="accountant@firm.com"
-                      className="w-full text-sm text-white bg-white/5 border border-white/10 px-3 py-2 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500"
+                      className="w-full text-sm text-white bg-white/5 border border-white/10 px-3 py-2 rounded-lg placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-[#454955] focus:border-[#454955]"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={generatingShare || selectedProjectIds.length === 0}
-                    className="w-full py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-xs font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-2.5 rounded-lg bg-[#454955] hover:bg-[#6E7480] text-black text-xs font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {generatingShare ? (
                       <>
@@ -693,15 +693,15 @@ export default function TaxDashboardPage() {
               </div>
 
               {/* Share links list */}
-              <div className="lg:col-span-2 rounded-2xl border border-white/10 p-6 space-y-4" style={{ background: 'rgba(11,20,26,0.4)', backdropFilter: 'blur(20px)' }}>
+              <div className="lg:col-span-2 rounded-2xl border border-white/10 p-6 space-y-4" style={{ background: 'rgba(13,10,11,0.4)', backdropFilter: 'blur(20px)' }}>
                 <div className="flex items-center gap-2 pb-2 border-b border-white/5">
-                  <Clock className="w-4 h-4 text-teal-400" />
+                  <Clock className="w-4 h-4 text-[#6E7480]" />
                   <h3 className="text-sm font-bold text-white">Active Share Links</h3>
                 </div>
 
                 {fetchingShares ? (
                   <div className="py-8 flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-teal-400" />
+                    <Loader2 className="w-6 h-6 animate-spin text-[#6E7480]" />
                   </div>
                 ) : shares.length > 0 ? (
                   <div className="space-y-3">
@@ -719,9 +719,9 @@ export default function TaxDashboardPage() {
                           <div className="space-y-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-xs font-bold text-white tabular-nums">FY {share.taxYear}</span>
-                              <span className="text-[10px] font-semibold text-slate-400">• {share.projectIds.length} properties</span>
+                              <span className="text-[10px] font-semibold text-[#9E9DA0]">• {share.projectIds.length} properties</span>
                               <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${
-                                isActive ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                isActive ? 'bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'
                               }`}>
                                 {isRevoked ? 'Revoked' : isExpired ? 'Expired' : 'Active'}
                               </span>
@@ -733,14 +733,14 @@ export default function TaxDashboardPage() {
                                   navigator.clipboard.writeText(linkUrl);
                                   toast.success('Link copied!');
                                 }}
-                                className="flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-teal-400 transition-colors w-full text-left font-mono truncate"
+                                className="flex items-center gap-1.5 text-[11px] text-[#9E9DA0] hover:text-[#6E7480] transition-colors w-full text-left font-mono truncate"
                               >
                                 <Copy className="w-3 h-3 flex-shrink-0" />
                                 <span className="truncate">{linkUrl}</span>
                               </button>
                             )}
 
-                            <div className="text-[10px] text-slate-500">
+                            <div className="text-[10px] text-[#6B6870]">
                               Created: {new Date(share.createdAt).toLocaleDateString()} · Expires: {new Date(share.expiresAt).toLocaleDateString()}
                             </div>
                           </div>
@@ -759,7 +759,7 @@ export default function TaxDashboardPage() {
                     })}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-500 py-8 text-center">No share links created yet. Use the form on the left to generate one.</p>
+                  <p className="text-xs text-[#6B6870] py-8 text-center">No share links created yet. Use the form on the left to generate one.</p>
                 )}
               </div>
             </div>

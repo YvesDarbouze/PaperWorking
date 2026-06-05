@@ -125,8 +125,8 @@ const DEMO_VENDORS: Record<
 
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
   Inspector:          'bg-sky-400/10 border-sky-400/20 text-sky-400',
-  Lender:             'bg-teal-400/10 border-teal-400/20 text-teal-400',
-  Attorney:           'bg-slate-400/10 border-slate-400/20 text-slate-400',
+  Lender:             'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
+  Attorney:           'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
   Contractor:         'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
   Agent:              'bg-pink-400/10 border-pink-400/20 text-pink-400',
@@ -209,13 +209,13 @@ export default function VendorDetailPage() {
   }, [vendorId]);
 
   const badgeClass = vendor
-    ? (CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-slate-400')
+    ? (CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]')
     : '';
 
   if (loading) {
     return (
       <div className="min-h-full px-6 lg:px-8 py-8 flex justify-center items-center">
-        <div className="flex items-center gap-3 text-slate-500">
+        <div className="flex items-center gap-3 text-[#6B6870]">
           <Loader2 className="w-5 h-5 animate-spin" />
           <span className="text-sm">Loading vendor profile...</span>
         </div>
@@ -229,17 +229,17 @@ export default function VendorDetailPage() {
         <button
           type="button"
           onClick={() => router.push('/dashboard/marketplace')}
-          className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#20B2AA] transition-colors"
+          className="flex items-center gap-2 text-sm text-[#9E9DA0] hover:text-[#454955] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Marketplace
         </button>
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-slate-500">
+        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
           <p className="text-sm">Vendor not found.</p>
           <button
             type="button"
             onClick={() => router.push('/dashboard/marketplace')}
-            className="text-xs text-[#20B2AA] hover:underline"
+            className="text-xs text-[#454955] hover:underline"
           >
             Return to Marketplace
           </button>
@@ -254,7 +254,7 @@ export default function VendorDetailPage() {
       <button
         type="button"
         onClick={() => router.push('/dashboard/marketplace')}
-        className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#20B2AA] transition-colors"
+        className="flex items-center gap-2 text-sm text-[#9E9DA0] hover:text-[#454955] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Marketplace
@@ -280,7 +280,7 @@ export default function VendorDetailPage() {
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-bold text-white">{vendor.companyName}</h1>
               {vendor.verified && (
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-[#20B2AA]/30 bg-[#20B2AA]/10 text-[10px] font-bold text-[#20B2AA]">
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-[#454955]/30 bg-[#454955]/10 text-[10px] font-bold text-[#454955]">
                   <Shield className="w-3 h-3" />
                   Verified
                 </span>
@@ -290,7 +290,7 @@ export default function VendorDetailPage() {
               <span className={`px-2.5 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${badgeClass}`}>
                 {vendor.category}
               </span>
-              <span className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="flex items-center gap-1 text-xs text-[#6B6870]">
                 <MapPin className="w-3 h-3 flex-shrink-0" />
                 {vendor.location}
               </span>
@@ -304,12 +304,12 @@ export default function VendorDetailPage() {
                 <Star className="w-4 h-4 fill-amber-400 stroke-none" />
                 <span className="text-lg font-bold text-white">{vendor.rating.toFixed(1)}</span>
               </div>
-              <p className="text-[10px] text-slate-500">{vendor.totalReviews} review{vendor.totalReviews !== 1 ? 's' : ''}</p>
+              <p className="text-[10px] text-[#6B6870]">{vendor.totalReviews} review{vendor.totalReviews !== 1 ? 's' : ''}</p>
             </div>
             <button
               type="button"
               onClick={() => setIsQuoteModalOpen(true)}
-              className="px-5 py-2.5 rounded-lg bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-all"
+              className="px-5 py-2.5 rounded-lg bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-all"
             >
               Request Quote
             </button>
@@ -318,30 +318,30 @@ export default function VendorDetailPage() {
 
         {/* Bio */}
         <div className="space-y-1.5">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">About</h2>
-          <p className="text-sm text-slate-300 leading-relaxed">{vendor.bio}</p>
+          <h2 className="text-xs font-bold text-[#6B6870] uppercase tracking-wider">About</h2>
+          <p className="text-sm text-[#C0BEC2] leading-relaxed">{vendor.bio}</p>
         </div>
 
         {/* Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-            <Clock className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Clock className="w-4 h-4 text-[#6B6870] flex-shrink-0" />
             <div>
-              <p className="text-xs text-slate-500">Avg. Turnaround</p>
+              <p className="text-xs text-[#6B6870]">Avg. Turnaround</p>
               <p className="text-sm font-bold text-white">{vendor.avgTurnaroundDays} day{vendor.avgTurnaroundDays !== 1 ? 's' : ''}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-            <CheckCircle2 className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-[#6B6870] flex-shrink-0" />
             <div>
-              <p className="text-xs text-slate-500">Availability</p>
+              <p className="text-xs text-[#6B6870]">Availability</p>
               <p className="text-sm font-bold text-white">{vendor.availability}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-white/[0.06] bg-white/[0.02]">
-            <Star className="w-4 h-4 text-slate-500 flex-shrink-0" />
+            <Star className="w-4 h-4 text-[#6B6870] flex-shrink-0" />
             <div>
-              <p className="text-xs text-slate-500">Fee Range</p>
+              <p className="text-xs text-[#6B6870]">Fee Range</p>
               <p className="text-sm font-bold text-white">{vendor.feeRangeLabel}</p>
             </div>
           </div>
@@ -349,12 +349,12 @@ export default function VendorDetailPage() {
 
         {/* Specialties */}
         <div className="space-y-2">
-          <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Specialties</h2>
+          <h2 className="text-xs font-bold text-[#6B6870] uppercase tracking-wider">Specialties</h2>
           <div className="flex flex-wrap gap-2">
             {vendor.specialties.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded text-xs font-semibold text-slate-300 border border-white/[0.08] bg-white/[0.04]"
+                className="px-3 py-1 rounded text-xs font-semibold text-[#C0BEC2] border border-white/[0.08] bg-white/[0.04]"
               >
                 {tag}
               </span>

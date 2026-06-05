@@ -40,7 +40,7 @@ const ZONES = [
   { min: 1.0, max: 1.25, label: 'Marginal',  color: '#F59E0B', description: 'Meets bare minimum — no safety margin' },
   { min: 1.25, max: 1.5, label: 'Adequate',  color: '#14B8A6', description: 'Above lender minimum — acceptable' },
   { min: 1.5, max: 2.0, label: 'Strong',    color: '#3B82F6', description: 'Robust coverage — favorable terms' },
-  { min: 2.0, max: 3.0, label: 'Excellent',  color: '#20B2AA', description: 'Best-in-class debt coverage' },
+  { min: 2.0, max: 3.0, label: 'Excellent',  color: '#454955', description: 'Best-in-class debt coverage' },
 ] as const;
 
 function getZone(dscr: number) {
@@ -92,7 +92,7 @@ function ZoneBar({ dscr, lenderMin, target }: { dscr: number; lenderMin: number;
         <div className="absolute top-0 bottom-0 w-px border-l border-dashed border-amber-400/70 z-10" style={{ left: `${lenderPct}%` }} />
 
         {/* Target marker */}
-        <div className="absolute top-0 bottom-0 w-px border-l border-dashed border-teal-400/70 z-10" style={{ left: `${targetPct}%` }} />
+        <div className="absolute top-0 bottom-0 w-px border-l border-dashed border-[#6E7480]/70 z-10" style={{ left: `${targetPct}%` }} />
 
         {/* Value needle */}
         <div
@@ -102,10 +102,10 @@ function ZoneBar({ dscr, lenderMin, target }: { dscr: number; lenderMin: number;
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[9px] text-slate-500 font-medium">
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[9px] text-[#6B6870] font-medium">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-white" /> Current</span>
         <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-amber-400/60 inline-block" /> Lender Min ({lenderMin}x)</span>
-        <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-teal-400/60 inline-block" /> Target ({target}x)</span>
+        <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-[#6E7480]/60 inline-block" /> Target ({target}x)</span>
       </div>
     </div>
   );
@@ -186,7 +186,7 @@ export function DSCRThresholdCard({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">DSCR Threshold Analysis</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Intelligence Card</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">Intelligence Card</p>
           </div>
         </div>
         <span className="px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider"
@@ -212,25 +212,25 @@ export function DSCRThresholdCard({
       {/* ── Formula Breakdown ── */}
       <div className="flex items-center gap-2 flex-wrap">
         <div className="px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center min-w-0 flex-1">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">NOI</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">NOI</p>
           <p className="text-sm font-bold text-white tabular-nums">{fmtCompact(noi)}</p>
         </div>
         <div className="text-slate-600 text-lg font-bold flex-shrink-0">÷</div>
         <div className="px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-center min-w-0 flex-1">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Debt Service</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Debt Service</p>
           <p className="text-sm font-bold text-white tabular-nums">{fmtCompact(annualDebtService)}/yr</p>
         </div>
         <div className="text-slate-600 text-lg font-bold flex-shrink-0">=</div>
         <div className="px-3 py-2 rounded-lg border text-center min-w-0 flex-1"
           style={{ background: `${zone.color}08`, borderColor: `${zone.color}30` }}>
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">DSCR</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">DSCR</p>
           <p className="text-sm font-bold tabular-nums" style={{ color: zone.color }}>{dscr >= 100 ? '∞' : dscr.toFixed(2)}x</p>
         </div>
       </div>
 
       {/* ── Threshold Distance Table ── */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-2 flex items-center gap-1">
           <Target className="w-3 h-3" />
           Threshold Distance
         </p>
@@ -243,12 +243,12 @@ export function DSCRThresholdCard({
                 ) : (
                   <XCircle className="w-3.5 h-3.5 text-slate-600 flex-shrink-0" />
                 )}
-                <span className="text-xs text-slate-400">{t.label}</span>
+                <span className="text-xs text-[#9E9DA0]">{t.label}</span>
               </div>
               <div className="flex items-center gap-3 text-xs tabular-nums">
-                <span className="text-slate-500">NOI needed: {fmtCompact(t.noiRequired)}</span>
+                <span className="text-[#6B6870]">NOI needed: {fmtCompact(t.noiRequired)}</span>
                 {t.met ? (
-                  <span className="text-teal-400 font-bold">✓ Met</span>
+                  <span className="text-[#6E7480] font-bold">✓ Met</span>
                 ) : (
                   <span className="text-red-400 font-bold">+{fmtCompact(t.noiGap)} gap</span>
                 )}
@@ -261,7 +261,7 @@ export function DSCRThresholdCard({
       {/* ── Max Affordable Debt ── */}
       <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 flex items-center justify-between">
         <div>
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Max Debt Service at {targetDSCR}x Target</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Max Debt Service at {targetDSCR}x Target</p>
           <p className="text-[10px] text-slate-600">Maximum affordable annual debt to maintain target DSCR</p>
         </div>
         <p className="text-lg font-bold text-white tabular-nums">{fmtCompact(maxDebtService)}/yr</p>

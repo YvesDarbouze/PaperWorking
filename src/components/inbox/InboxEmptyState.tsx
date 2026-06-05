@@ -56,12 +56,12 @@ export default function InboxEmptyState({ activeTab }: InboxEmptyStateProps) {
   const state = EMPTY_STATES[activeTab] || EMPTY_STATES.all;
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 bg-[#091015]">
+    <div className="flex-1 flex flex-col items-center justify-center py-20 px-8 bg-[#0d0a0b]">
       <div
         className="w-16 h-16 rounded-full flex items-center justify-center mb-5 bg-white/5 border border-white/10"
       >
         <state.Icon
-          className="w-6 h-6 text-[#bacac5] opacity-50"
+          className="w-6 h-6 text-[#9E9DA0] opacity-50"
         />
       </div>
       <p
@@ -69,7 +69,7 @@ export default function InboxEmptyState({ activeTab }: InboxEmptyStateProps) {
       >
         {state.title}
       </p>
-      <p className="text-xs text-center max-w-xs text-[#bacac5]">
+      <p className="text-xs text-center max-w-xs text-[#9E9DA0]">
         {state.description}
       </p>
     </div>

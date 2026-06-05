@@ -103,12 +103,12 @@ export default function VendorSideSheet({
       >
         {/* Header */}
         <div className="sticky top-0 z-10 bg-[#0a1a23]/90 backdrop-blur-xl border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-[#9E9DA0]">
             Vendor Profile
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg border border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-white hover:border-white/10 transition-all"
+            className="w-8 h-8 rounded-lg border border-white/[0.06] flex items-center justify-center text-[#9E9DA0] hover:text-white hover:border-white/10 transition-all"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -118,20 +118,20 @@ export default function VendorSideSheet({
         <div className="px-6 py-6 space-y-6">
           {/* Company Header */}
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center text-[#20B2AA] font-bold text-xl flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center text-[#454955] font-bold text-xl flex-shrink-0">
               {vendor.companyName.charAt(0)}
             </div>
             <div className="min-w-0">
               <h3 className="text-lg font-bold leading-tight truncate">
                 {vendor.companyName}
               </h3>
-              <p className="text-sm text-[#20B2AA] font-medium">
+              <p className="text-sm text-[#454955] font-medium">
                 {vendor.type}
               </p>
               {/* Badges */}
               <div className="flex gap-1.5 mt-2">
                 {vendor.verified && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 text-[#20B2AA] text-[9px] font-bold uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#454955]/10 border border-[#454955]/20 text-[#454955] text-[9px] font-bold uppercase">
                     <BadgeCheck className="w-3 h-3" /> Verified
                   </span>
                 )}
@@ -161,7 +161,7 @@ export default function VendorSideSheet({
             <span className="text-sm font-bold font-mono">
               {vendor.overallRating}
             </span>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-[#9E9DA0]">
               ({vendor.totalReviews} reviews)
             </span>
           </div>
@@ -169,18 +169,18 @@ export default function VendorSideSheet({
           {/* Quick Metrics */}
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-lg font-bold font-mono text-[#20B2AA]">
+              <p className="text-lg font-bold font-mono text-[#454955]">
                 {vendor.avgTurnaroundDays}d
               </p>
-              <p className="text-[9px] text-slate-400 uppercase tracking-wider mt-1">
+              <p className="text-[9px] text-[#9E9DA0] uppercase tracking-wider mt-1">
                 Turnaround
               </p>
             </div>
             <div className="text-center p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-lg font-bold font-mono text-[#20B2AA]">
+              <p className="text-lg font-bold font-mono text-[#454955]">
                 {vendor.feeRangeLabel.split('-')[0]?.trim() ?? '—'}
               </p>
-              <p className="text-[9px] text-slate-400 uppercase tracking-wider mt-1">
+              <p className="text-[9px] text-[#9E9DA0] uppercase tracking-wider mt-1">
                 Starting Fee
               </p>
             </div>
@@ -203,7 +203,7 @@ export default function VendorSideSheet({
                       : '1 Wk'}
                 </span>
               </div>
-              <p className="text-[9px] text-slate-400 uppercase tracking-wider mt-1">
+              <p className="text-[9px] text-[#9E9DA0] uppercase tracking-wider mt-1">
                 Availability
               </p>
             </div>
@@ -211,24 +211,24 @@ export default function VendorSideSheet({
 
           {/* Bio */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-2">
               About
             </h4>
-            <p className="text-sm text-slate-300 leading-relaxed line-clamp-4">
+            <p className="text-sm text-[#C0BEC2] leading-relaxed line-clamp-4">
               {vendor.bio}
             </p>
           </div>
 
           {/* Specialties */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-2">
               Specialties
             </h4>
             <div className="flex flex-wrap gap-1.5">
               {vendor.specialties.map((s) => (
                 <span
                   key={s}
-                  className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-slate-300"
+                  className="px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-[#C0BEC2]"
                 >
                   {s}
                 </span>
@@ -238,14 +238,14 @@ export default function VendorSideSheet({
 
           {/* Service Info */}
           <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-2 text-slate-300">
-              <MapPin className="w-4 h-4 text-[#20B2AA]" />
+            <div className="flex items-center gap-2 text-[#C0BEC2]">
+              <MapPin className="w-4 h-4 text-[#454955]" />
               <span>
                 Licensed: {vendor.licensingStates.join(', ')}
               </span>
             </div>
-            <div className="flex items-center gap-2 text-slate-300">
-              <Clock className="w-4 h-4 text-[#20B2AA]" />
+            <div className="flex items-center gap-2 text-[#C0BEC2]">
+              <Clock className="w-4 h-4 text-[#454955]" />
               <span>{vendor.availability}</span>
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function VendorSideSheet({
             {onRequestQuote && (
               <button
                 onClick={() => onRequestQuote(vendor)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#20B2AA] text-[#003731] text-sm font-bold hover:bg-[#20B2AA]/90 transition-all shadow-[0_0_20px_rgba(32, 178, 170,0.15)]"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#454955] text-[#0d0a0b] text-sm font-bold hover:bg-[#454955]/90 transition-all shadow-[0_0_20px_rgba(69, 73, 85,0.15)]"
               >
                 <MessageSquare className="w-4 h-4" />
                 Request Quote
@@ -264,7 +264,7 @@ export default function VendorSideSheet({
             <Link
               href={`/pros/${slug}`}
               target="_blank"
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/[0.08] text-sm font-bold text-slate-300 hover:text-white hover:border-[#20B2AA]/30 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/[0.08] text-sm font-bold text-[#C0BEC2] hover:text-white hover:border-[#454955]/30 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
               Full Profile
@@ -272,7 +272,7 @@ export default function VendorSideSheet({
           </div>
 
           {/* Disclosure */}
-          <p className="text-[9px] text-slate-500 leading-relaxed text-center pt-2">
+          <p className="text-[9px] text-[#6B6870] leading-relaxed text-center pt-2">
             PaperWorking does not vet vendors. You must verify credentials and references before engaging. All ratings reflect investor feedback.
           </p>
         </div>

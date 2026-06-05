@@ -153,7 +153,7 @@ interface ThemeProviderProps {
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
   // Enforce dark mode globally
-  const bg = '#091015';
+  const bg = '#0d0a0b';
 
   useEffect(() => {
     const root = document.documentElement;

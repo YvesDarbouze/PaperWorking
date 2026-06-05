@@ -14,7 +14,7 @@ import Link from 'next/link';
    6. Final CTA
 
    Typography: Inter full-weight system.
-   Palette: midnight #091015, teal primary, glass panels.
+   Palette: midnight #0d0a0b, teal primary, glass panels.
    ═══════════════════════════════════════════════════════ */
 
 /* ─────────────────── Data ─────────────────────────────── */
@@ -51,7 +51,7 @@ const PHASES = [
       text: 'text-primary',
       badge: 'text-primary border-primary/25 bg-primary/8',
       icon: 'text-primary',
-      glow: 'shadow-[0_0_80px_-20px_rgba(87,241,219,0.25)]',
+      glow: 'shadow-[0_0_80px_-20px_rgba(69,73,85,0.25)]',
       bar: 'bg-primary',
     },
     headline: 'Know the numbers before you make an offer.',

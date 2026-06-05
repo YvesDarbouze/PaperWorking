@@ -81,8 +81,8 @@ export function Sidebar() {
     <aside
       className="hidden md:flex flex-col h-screen w-64 z-50 flex-shrink-0"
       style={{
-        background: 'linear-gradient(180deg, rgba(11,20,26,0.95) 0%, rgba(11,20,26,0.98) 100%)',
-        borderRight: '1px solid rgba(255,255,255,0.06)',
+        background: 'linear-gradient(180deg, rgba(13,10,11,0.97) 0%, rgba(8,6,8,0.99) 100%)',
+        borderRight: '1px solid rgba(253,255,252,0.07)',
         backdropFilter: 'blur(24px)',
       }}
     >
@@ -105,17 +105,17 @@ export function Sidebar() {
               className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
                 background: isActive
-                  ? 'rgba(32, 178, 170, 0.10)'
+                  ? 'rgba(69, 73, 85, 0.10)'
                   : 'transparent',
-                color: isActive ? '#20B2AA' : 'rgba(186, 202, 197, 0.7)',
-                borderRight: isActive ? '4px solid #20B2AA' : '4px solid transparent',
+                color: isActive ? '#454955' : 'rgba(253, 255, 252, 0.5)',
+                borderRight: isActive ? '4px solid #454955' : '4px solid transparent',
               }}
             >
               <span
                 className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? '#20B2AA' : undefined,
+                  color: isActive ? '#454955' : undefined,
                 }}
               >
                 {item.icon}
@@ -125,7 +125,7 @@ export function Sidebar() {
                 className="text-sm transition-colors duration-300 group-hover:translate-x-0.5"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#20B2AA' : undefined,
+                  color: isActive ? '#454955' : undefined,
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -138,7 +138,7 @@ export function Sidebar() {
                   className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-5 h-5 flex items-center justify-center relative"
                   style={{
                     background: 'var(--color-primary)',
-                    color: '#003731',
+                    color: 'var(--color-on-primary)',
                   }}
                 >
                   {unreadTotal > 9 ? "9+" : unreadTotal}
@@ -164,7 +164,7 @@ export function Sidebar() {
         <div className="px-3 pt-6 pb-2">
           <p
             className="text-[10px] font-bold uppercase tracking-widest"
-            style={{ color: 'rgba(218,228,236,0.25)' }}
+            style={{ color: 'rgba(253, 255, 252, 0.3)' }}
           >
             Account
           </p>
@@ -183,16 +183,16 @@ export function Sidebar() {
               onClick={(e) => handleNavClick(e, item.href, item.name)}
               className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
-                background: isActive ? 'rgba(32, 178, 170, 0.10)' : 'transparent',
-                color: isActive ? '#20B2AA' : 'rgba(186, 202, 197, 0.7)',
-                borderRight: isActive ? '4px solid #20B2AA' : '4px solid transparent',
+                background: isActive ? 'rgba(69, 73, 85, 0.10)' : 'transparent',
+                color: isActive ? '#454955' : 'rgba(253, 255, 252, 0.5)',
+                borderRight: isActive ? '4px solid #454955' : '4px solid transparent',
               }}
             >
               <span
                 className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? '#20B2AA' : undefined,
+                  color: isActive ? '#454955' : undefined,
                 }}
               >
                 {item.icon}
@@ -201,7 +201,7 @@ export function Sidebar() {
                 className="text-sm transition-colors duration-300"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#20B2AA' : undefined,
+                  color: isActive ? '#454955' : undefined,
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -230,7 +230,7 @@ export function Sidebar() {
           <div className="flex flex-col gap-1.5">
             <div
               className="text-[10px] font-bold uppercase tracking-wider"
-              style={{ color: 'rgba(218,228,236,0.4)' }}
+              style={{ color: 'rgba(253, 255, 252, 0.4)' }}
             >
               acting as:{" "}
               <span style={{ color: 'var(--color-primary)', fontWeight: 800 }}>
@@ -265,10 +265,10 @@ export function Sidebar() {
                   </option>
                 ))}
               </select>
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(218,228,236,0.4)' }}>
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>
                 <span className="material-symbols-outlined text-[16px]">{isPersonal ? "person" : "corporate_fare"}</span>
               </div>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(218,228,236,0.4)' }}>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>
                 <span className="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
               </div>
             </div>
@@ -287,7 +287,7 @@ export function Sidebar() {
                 className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm transition-all duration-200 group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#091015',
+                  color: '#FDFFFC',
                 }}
               >
                 {profile?.displayName ? profile.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
@@ -296,7 +296,7 @@ export function Sidebar() {
                 <span className="text-sm font-semibold truncate" style={{ color: 'var(--color-on-surface)' }}>
                   {profile?.displayName || user?.displayName || "User"}
                 </span>
-                <span className="text-[10px] truncate" style={{ color: 'rgba(218,228,236,0.4)' }}>
+                <span className="text-[10px] truncate" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>
                   {profile?.role || "Member"}
                 </span>
               </div>

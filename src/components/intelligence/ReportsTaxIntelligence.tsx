@@ -22,25 +22,25 @@ export function ReportsTaxIntelligence() {
         <div 
           className="rounded-xl p-6 lg:col-span-2 flex flex-col relative overflow-hidden"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(20, 29, 35, 0.4) 100%)',
+            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(22, 19, 24, 0.4) 100%)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
           }}
         >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#454955]/5 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none"></div>
           <div className="flex justify-between items-start mb-6 z-10">
             <div>
               <h3 className="text-2xl font-bold tracking-tight text-white">Net Operating Income (NOI) Waterfall</h3>
-              <p className="text-sm text-slate-400 mt-1">Q3 2023 vs Q4 2023 Variance Analysis</p>
+              <p className="text-sm text-[#9E9DA0] mt-1">Q3 2023 vs Q4 2023 Variance Analysis</p>
             </div>
-            <button className="text-slate-400 hover:text-white p-1 rounded-md hover:bg-white/5 transition-colors">
+            <button className="text-[#9E9DA0] hover:text-white p-1 rounded-md hover:bg-white/5 transition-colors">
               <MoreHorizontal className="w-5 h-5" />
             </button>
           </div>
           
           <div className="flex-1 min-h-[300px] flex items-end justify-between gap-2 z-10 pt-8 pb-4 border-b border-white/5 relative">
             {/* Y Axis Labels */}
-            <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-slate-500/80 text-[10px] pb-4 font-bold tracking-wider uppercase">
+            <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[#6B6870]/80 text-[10px] pb-4 font-bold tracking-wider uppercase">
               <span>$1.5M</span>
               <span>$1.0M</span>
               <span>$0.5M</span>
@@ -51,34 +51,34 @@ export function ReportsTaxIntelligence() {
             {/* Waterfall Bars (CSS Simulation) */}
             <div className="w-full flex justify-between items-end h-full gap-1">
               <div className="flex flex-col items-center w-1/6 group">
-                <div className="w-full bg-slate-700/80 border border-white/10 rounded-t-sm h-[60%] relative group-hover:bg-slate-600 transition-colors">
+                <div className="w-full bg-[#262328]/80 border border-white/10 rounded-t-sm h-[60%] relative group-hover:bg-slate-600 transition-colors">
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">$1.2M</div>
                 </div>
-                <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Starting<br/>NOI</span>
+                <span className="text-[10px] text-[#9E9DA0] mt-2 text-center font-bold tracking-wider uppercase leading-tight">Starting<br/>NOI</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group self-start mt-[40%]">
-                <div className="w-full bg-teal-500/80 border border-teal-400/50 rounded-sm h-[15%] relative shadow-[0_0_10px_rgba(32, 178, 170,0.2)]">
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">+$300k</div>
+                <div className="w-full bg-[#454955]/80 border border-[#6E7480]/50 rounded-sm h-[15%] relative shadow-[0_0_10px_rgba(69, 73, 85,0.2)]">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-[#6E7480] opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">+$300k</div>
                 </div>
-                <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Rental<br/>Income</span>
+                <span className="text-[10px] text-[#9E9DA0] mt-2 text-center font-bold tracking-wider uppercase leading-tight">Rental<br/>Income</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group self-start mt-[25%]">
                 <div className="w-full bg-red-400/80 border border-red-400/50 rounded-sm h-[5%] relative">
                   <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-red-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">-$100k</div>
                 </div>
-                <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">OpEx<br/>Increase</span>
+                <span className="text-[10px] text-[#9E9DA0] mt-2 text-center font-bold tracking-wider uppercase leading-tight">OpEx<br/>Increase</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group self-start mt-[30%]">
                 <div className="w-full bg-red-400/80 border border-red-400/50 rounded-sm h-[8%] relative">
                   <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-red-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">-$150k</div>
                 </div>
-                <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Tax<br/>Adjustment</span>
+                <span className="text-[10px] text-[#9E9DA0] mt-2 text-center font-bold tracking-wider uppercase leading-tight">Tax<br/>Adjustment</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group">
-                <div className="w-full bg-teal-400 border border-teal-300/50 rounded-t-sm h-[62%] relative shadow-[0_0_15px_rgba(32, 178, 170,0.3)]">
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-teal-300 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">$1.25M</div>
+                <div className="w-full bg-[#6E7480] border border-[#8a8e9a]/50 rounded-t-sm h-[62%] relative shadow-[0_0_15px_rgba(69, 73, 85,0.3)]">
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-[#8a8e9a] opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">$1.25M</div>
                 </div>
-                <span className="text-[10px] text-teal-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Ending<br/>NOI</span>
+                <span className="text-[10px] text-[#6E7480] mt-2 text-center font-bold tracking-wider uppercase leading-tight">Ending<br/>NOI</span>
               </div>
             </div>
           </div>
@@ -88,7 +88,7 @@ export function ReportsTaxIntelligence() {
         <div 
           className="rounded-xl p-6 flex flex-col relative overflow-hidden"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(20, 29, 35, 0.4) 100%)',
+            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(22, 19, 24, 0.4) 100%)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
           }}
@@ -97,8 +97,8 @@ export function ReportsTaxIntelligence() {
             <div>
               <h3 className="text-2xl font-bold tracking-tight text-white">Implied Cap Rate</h3>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-bold text-teal-400 tabular-nums">5.24%</span>
-                <span className="text-sm font-bold text-teal-500 flex items-center">
+                <span className="text-3xl font-bold text-[#6E7480] tabular-nums">5.24%</span>
+                <span className="text-sm font-bold text-[#454955] flex items-center">
                   <ArrowDown className="w-3 h-3 mr-1" /> 12bps
                 </span>
               </div>
@@ -109,17 +109,17 @@ export function ReportsTaxIntelligence() {
             <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
               <defs>
                 <linearGradient id="capRateGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="rgba(32, 178, 170, 0.3)"></stop>
-                  <stop offset="100%" stopColor="rgba(32, 178, 170, 0)"></stop>
+                  <stop offset="0%" stopColor="rgba(69, 73, 85, 0.3)"></stop>
+                  <stop offset="100%" stopColor="rgba(69, 73, 85, 0)"></stop>
                 </linearGradient>
               </defs>
               <path d="M0,50 L0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5 L100,50 Z" fill="url(#capRateGradient)"></path>
-              <path d="M0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5" fill="none" stroke="#20B2AA" strokeLinecap="round" strokeWidth="1.5"></path>
+              <path d="M0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5" fill="none" stroke="#454955" strokeLinecap="round" strokeWidth="1.5"></path>
               {/* Data Point */}
-              <circle cx="100" cy="5" fill="#091015" r="2" stroke="#62fae3" strokeWidth="1.5"></circle>
+              <circle cx="100" cy="5" fill="#0d0a0b" r="2" stroke="#5aaa3f" strokeWidth="1.5"></circle>
             </svg>
           </div>
-          <div className="flex justify-between mt-2 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+          <div className="flex justify-between mt-2 text-[10px] text-[#6B6870] font-bold uppercase tracking-wider">
             <span>Jan</span>
             <span>Apr</span>
             <span>Jul</span>
@@ -135,7 +135,7 @@ export function ReportsTaxIntelligence() {
         <div 
           className="rounded-xl p-6 lg:col-span-5 flex flex-col"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(20, 29, 35, 0.4) 100%)',
+            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(22, 19, 24, 0.4) 100%)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
           }}
@@ -143,44 +143,44 @@ export function ReportsTaxIntelligence() {
           <div className="flex justify-between items-start mb-6">
             <div>
               <h3 className="text-2xl font-bold tracking-tight text-white">Cash Flow Analysis</h3>
-              <p className="text-sm text-slate-400 mt-1">Inflows vs Outflows (TTM)</p>
+              <p className="text-sm text-[#9E9DA0] mt-1">Inflows vs Outflows (TTM)</p>
             </div>
           </div>
           
           <div className="flex-1 flex flex-col justify-center gap-6 py-4">
             {/* Bar 1: Operations */}
             <div className="flex items-center gap-3 w-full">
-              <span className="w-20 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">Operations</span>
-              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-slate-800 border border-white/5">
+              <span className="w-20 text-xs font-bold uppercase tracking-wider text-[#9E9DA0] text-right">Operations</span>
+              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-[#1e1b20] border border-white/5">
                 <div className="w-1/2 flex justify-end">
                   <div className="h-full bg-red-400/60 w-[30%]"></div>
                 </div>
                 <div className="w-1/2 flex justify-start border-l border-white/10">
-                  <div className="h-full bg-teal-500/80 w-[80%]"></div>
+                  <div className="h-full bg-[#454955]/80 w-[80%]"></div>
                 </div>
               </div>
             </div>
             {/* Bar 2: Financing */}
             <div className="flex items-center gap-3 w-full">
-              <span className="w-20 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">Financing</span>
-              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-slate-800 border border-white/5">
+              <span className="w-20 text-xs font-bold uppercase tracking-wider text-[#9E9DA0] text-right">Financing</span>
+              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-[#1e1b20] border border-white/5">
                 <div className="w-1/2 flex justify-end">
                   <div className="h-full bg-red-400/60 w-[70%]"></div>
                 </div>
                 <div className="w-1/2 flex justify-start border-l border-white/10">
-                  <div className="h-full bg-teal-500/80 w-[20%]"></div>
+                  <div className="h-full bg-[#454955]/80 w-[20%]"></div>
                 </div>
               </div>
             </div>
             {/* Bar 3: CapEx */}
             <div className="flex items-center gap-3 w-full">
-              <span className="w-20 text-xs font-bold uppercase tracking-wider text-slate-400 text-right">CapEx</span>
-              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-slate-800 border border-white/5">
+              <span className="w-20 text-xs font-bold uppercase tracking-wider text-[#9E9DA0] text-right">CapEx</span>
+              <div className="flex-1 flex h-4 rounded-full overflow-hidden bg-[#1e1b20] border border-white/5">
                 <div className="w-1/2 flex justify-end">
                   <div className="h-full bg-red-400/60 w-[90%]"></div>
                 </div>
                 <div className="w-1/2 flex justify-start border-l border-white/10">
-                  <div className="h-full bg-teal-500/80 w-[0%]"></div>
+                  <div className="h-full bg-[#454955]/80 w-[0%]"></div>
                 </div>
               </div>
             </div>
@@ -189,11 +189,11 @@ export function ReportsTaxIntelligence() {
           <div className="flex justify-center gap-6 mt-4 pt-4 border-t border-white/5">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-red-400/60"></div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Outflows</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">Outflows</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-teal-500/80"></div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Inflows</span>
+              <div className="w-2 h-2 rounded-full bg-[#454955]/80"></div>
+              <span className="text-xs font-bold uppercase tracking-wider text-[#9E9DA0]">Inflows</span>
             </div>
           </div>
         </div>
@@ -202,24 +202,24 @@ export function ReportsTaxIntelligence() {
         <div 
           className="rounded-xl p-0 lg:col-span-7 flex flex-col overflow-hidden"
           style={{ 
-            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(20, 29, 35, 0.4) 100%)',
+            background: 'linear-gradient(135deg, rgba(34, 43, 50, 0.7) 0%, rgba(22, 19, 24, 0.4) 100%)',
             border: '1px solid rgba(255, 255, 255, 0.15)',
             boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3)'
           }}
         >
           <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
+              <div className="p-2 rounded-lg bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20">
                 <Receipt className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-2xl font-bold tracking-tight text-white">Tax-Ready Export</h3>
-                <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                  <Verified className="w-3 h-3 text-teal-400" /> Data pre-organized for CPA processing
+                <p className="text-xs text-[#9E9DA0] mt-1 flex items-center gap-1">
+                  <Verified className="w-3 h-3 text-[#6E7480]" /> Data pre-organized for CPA processing
                 </p>
               </div>
             </div>
-            <button className="px-4 py-2 rounded-lg font-bold text-sm bg-teal-500 text-teal-950 flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_20px_-5px_rgba(32, 178, 170,0.5)]">
+            <button className="px-4 py-2 rounded-lg font-bold text-sm bg-[#454955] text-[#FDFFFC] flex items-center gap-2 hover:bg-[#6E7480] transition-colors shadow-[0_0_20px_-5px_rgba(69, 73, 85,0.5)]">
               <Download className="w-4 h-4" />
               Export CSV
             </button>
@@ -228,7 +228,7 @@ export function ReportsTaxIntelligence() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-800/30 text-slate-400 text-[11px] font-bold uppercase tracking-widest border-b border-white/10">
+                <tr className="bg-[#1e1b20]/30 text-[#9E9DA0] text-[11px] font-bold uppercase tracking-widest border-b border-white/10">
                   <th className="px-6 py-4">Schedule Category</th>
                   <th className="px-6 py-4">Entity</th>
                   <th className="px-6 py-4 text-right">Amount (YTD)</th>
@@ -238,26 +238,26 @@ export function ReportsTaxIntelligence() {
               <tbody className="divide-y divide-white/5 text-sm">
                 <tr className="hover:bg-white/[0.02] transition-colors group">
                   <td className="px-6 py-4 text-white font-medium">Sch. E - Depreciation</td>
-                  <td className="px-6 py-4 text-slate-400">Alpha Fund II, LLC</td>
+                  <td className="px-6 py-4 text-[#9E9DA0]">Alpha Fund II, LLC</td>
                   <td className="px-6 py-4 text-white text-right font-mono text-xs tabular-nums">$452,100.00</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/10 text-teal-400 border border-teal-500/20">Reconciled</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20">Reconciled</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-white/[0.02] transition-colors group">
                   <td className="px-6 py-4 text-white font-medium">Sch. K-1 - Ordinary Income</td>
-                  <td className="px-6 py-4 text-slate-400">Beta Properties LP</td>
+                  <td className="px-6 py-4 text-[#9E9DA0]">Beta Properties LP</td>
                   <td className="px-6 py-4 text-white text-right font-mono text-xs tabular-nums">$1,204,550.00</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500/10 text-teal-400 border border-teal-500/20">Reconciled</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20">Reconciled</span>
                   </td>
                 </tr>
                 <tr className="hover:bg-white/[0.02] transition-colors group">
                   <td className="px-6 py-4 text-white font-medium">1099-INT - Interest Inc.</td>
-                  <td className="px-6 py-4 text-slate-400">Alpha Fund II, LLC</td>
+                  <td className="px-6 py-4 text-[#9E9DA0]">Alpha Fund II, LLC</td>
                   <td className="px-6 py-4 text-white text-right font-mono text-xs tabular-nums">$34,220.00</td>
                   <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-white/10">Pending Doc</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1e1b20] text-[#9E9DA0] border border-white/10">Pending Doc</span>
                   </td>
                 </tr>
               </tbody>

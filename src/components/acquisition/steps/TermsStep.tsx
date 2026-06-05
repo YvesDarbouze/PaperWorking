@@ -35,8 +35,8 @@ type TermsForm = z.infer<typeof termsSchema>;
 // ─── Seller response options ──────────────────────────────────────────────────
 
 const SELLER_RESPONSES = [
-  { value: "PENDING",   label: "Pending",   icon: "hourglass_empty",  color: "rgba(218,228,236,0.4)"  },
-  { value: "ACCEPTED",  label: "Accepted",  icon: "check_circle",     color: "#57f1db"                 },
+  { value: "PENDING",   label: "Pending",   icon: "hourglass_empty",  color: "rgba(253,255,252,0.4)"  },
+  { value: "ACCEPTED",  label: "Accepted",  icon: "check_circle",     color: "#454955"                 },
   { value: "COUNTERED", label: "Countered", icon: "swap_horiz",       color: "#ffd1aa"                 },
   { value: "REJECTED",  label: "Rejected",  icon: "cancel",           color: "#F06543"                 },
 ] as const;
@@ -72,8 +72,8 @@ function deltaPct(a: number | null | undefined, b: number | null | undefined): s
 }
 
 function deltaColor(cents: number | null | undefined, base: number | null | undefined): string {
-  if (!cents || !base) return "rgba(218,228,236,0.4)";
-  return cents <= base ? "#57f1db" : "#F06543";
+  if (!cents || !base) return "rgba(253,255,252,0.4)";
+  return cents <= base ? "#454955" : "#F06543";
 }
 
 // ─── Currency input ───────────────────────────────────────────────────────────
@@ -112,18 +112,18 @@ function CurrencyInput({ label, valueCents, onChange, error, required, placehold
 
   return (
     <div className="space-y-1.5">
-      <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
+      <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.07em" }}>
         {label}{required && <span style={{ color: "#F06543" }}> *</span>}
       </label>
       <div
         className="flex items-center gap-2 rounded-xl px-4 py-3 transition-all duration-150"
         style={{
-          background: "rgba(20,29,35,0.8)",
-          border:     `1px solid ${error ? "#F0654340" : focused ? "rgba(87,241,219,0.3)" : "rgba(255,255,255,0.09)"}`,
-          boxShadow:  focused ? "0 0 0 3px rgba(87,241,219,0.05)" : "none",
+          background: "rgba(22,19,24,0.8)",
+          border:     `1px solid ${error ? "#F0654340" : focused ? "rgba(69,73,85,0.3)" : "rgba(255,255,255,0.09)"}`,
+          boxShadow:  focused ? "0 0 0 3px rgba(69,73,85,0.05)" : "none",
         }}
       >
-        <span className="text-sm flex-shrink-0" style={{ color: "rgba(218,228,236,0.35)" }}>$</span>
+        <span className="text-sm flex-shrink-0" style={{ color: "rgba(253,255,252,0.35)" }}>$</span>
         <input
           type="text"
           inputMode="decimal"
@@ -133,7 +133,7 @@ function CurrencyInput({ label, valueCents, onChange, error, required, placehold
           onBlur={handleBlur}
           placeholder={placeholder ?? "0"}
           className="flex-1 bg-transparent outline-none text-sm tabular-nums"
-          style={{ color: "rgba(218,228,236,0.9)" }}
+          style={{ color: "rgba(253,255,252,0.9)" }}
         />
       </div>
       {error && <p className="text-[11px]" style={{ color: "#F06543" }}>{error}</p>}
@@ -208,7 +208,7 @@ function ContextSummary({ form, listPriceCents, comps }: ContextSummaryProps) {
       className="rounded-2xl p-5 space-y-3"
       style={{ background: "rgba(14,22,28,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
     >
-      <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.3)", letterSpacing: "0.08em" }}>
+      <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.3)", letterSpacing: "0.08em" }}>
         Context — read only, no underwriting math
       </p>
       {rows.map(row => {
@@ -222,12 +222,12 @@ function ContextSummary({ form, listPriceCents, comps }: ContextSummaryProps) {
         );
         return (
           <div key={row.label} className="flex items-center justify-between">
-            <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.45)" }}>
+            <span className="text-[12px]" style={{ color: "rgba(253,255,252,0.45)" }}>
               {row.label}
             </span>
             <div className="flex items-center gap-2">
               {row.baseLabel && (
-                <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.25)" }}>
+                <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.25)" }}>
                   {row.baseLabel}
                 </span>
               )}
@@ -348,17 +348,17 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
 
       {/* Heading */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}>
+        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}>
           Purchase Terms
         </h2>
-        <p className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>
+        <p className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>
           All fields optional — fill in what you know. Stored as integer cents.
         </p>
       </div>
 
       {/* ── Offer section ── */}
       <section className="space-y-5">
-        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.08em" }}>
+        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}>
           Offer
         </p>
 
@@ -376,7 +376,7 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
             />
           </AssignableField>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
+            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.07em" }}>
               Offer Date
             </label>
             <input
@@ -384,7 +384,7 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
               value={form.offerDate ?? ""}
               onChange={e => updateForm({ offerDate: e.target.value || null })}
               className="w-full rounded-xl px-4 py-3 text-sm bg-transparent outline-none"
-              style={{ background: "rgba(20,29,35,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(218,228,236,0.85)", colorScheme: "dark" }}
+              style={{ background: "rgba(22,19,24,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(253,255,252,0.85)", colorScheme: "dark" }}
             />
           </div>
         </div>
@@ -392,7 +392,7 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
 
       {/* ── Seller response ── */}
       <section className="space-y-4">
-        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.08em" }}>
+        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}>
           Seller Response
         </p>
 
@@ -405,14 +405,14 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
                 onClick={() => updateForm({ sellerResponse: opt.value })}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-150"
                 style={{
-                  background: active ? `${opt.color}12` : "rgba(20,29,35,0.65)",
+                  background: active ? `${opt.color}12` : "rgba(22,19,24,0.65)",
                   border:     `1px solid ${active ? `${opt.color}35` : "rgba(255,255,255,0.08)"}`,
                 }}
               >
-                <span className="material-symbols-outlined text-[18px] flex-shrink-0" style={{ color: active ? opt.color : "rgba(218,228,236,0.3)", fontVariationSettings: "'FILL' 0" }}>
+                <span className="material-symbols-outlined text-[18px] flex-shrink-0" style={{ color: active ? opt.color : "rgba(253,255,252,0.3)", fontVariationSettings: "'FILL' 0" }}>
                   {opt.icon}
                 </span>
-                <span className="text-[13px] font-medium" style={{ color: active ? "rgba(218,228,236,0.95)" : "rgba(218,228,236,0.55)" }}>
+                <span className="text-[13px] font-medium" style={{ color: active ? "rgba(253,255,252,0.95)" : "rgba(253,255,252,0.55)" }}>
                   {opt.label}
                 </span>
                 {active && (
@@ -442,7 +442,7 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
 
       {/* ── Negotiated + paid ── */}
       <section className="space-y-4">
-        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.08em" }}>
+        <p className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}>
           Agreed & Paid
         </p>
 
@@ -489,13 +489,13 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
       {saveError && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
           <span className="material-symbols-outlined text-[16px]" style={{ color: "#F06543" }}>error</span>
-          <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.7)" }}>{saveError}</span>
+          <span className="text-[12px]" style={{ color: "rgba(253,255,252,0.7)" }}>{saveError}</span>
         </div>
       )}
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-2">
-        <button onClick={onNext} className="text-[12px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+        <button onClick={onNext} className="text-[12px]" style={{ color: "rgba(253,255,252,0.3)" }}>
           Skip for now →
         </button>
         <button
@@ -503,8 +503,8 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
           disabled={saveMutation.isPending}
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all"
           style={{
-            background: saveMutation.isPending ? "rgba(87,241,219,0.1)" : "#57f1db",
-            color:      saveMutation.isPending ? "#57f1db" : "#0b141a",
+            background: saveMutation.isPending ? "rgba(69,73,85,0.1)" : "#454955",
+            color:      saveMutation.isPending ? "#454955" : "#0d0a0b",
           }}
         >
           {saveMutation.isPending ? "Saving…" : !projectId ? "Save address first" : "Save & Continue"}

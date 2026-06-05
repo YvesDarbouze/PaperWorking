@@ -38,13 +38,13 @@ function toDisplay(fieldPath: string, newValue: unknown, source: string): Pick<F
   const val = String(newValue ?? "");
 
   if (fp.includes("phase") || fp.includes("status"))
-    return { icon: "swap_horiz",      iconColor: "#adc6ff", action: "Phase transition", target: val || "updated" };
+    return { icon: "swap_horiz",      iconColor: "#7A9EAA", action: "Phase transition", target: val || "updated" };
   if (fp.includes("purchaseprice") || fp.includes("price"))
-    return { icon: "payments",        iconColor: "#57f1db", action: "Price updated",    target: val ? `$${Number(newValue).toLocaleString()}` : "" };
+    return { icon: "payments",        iconColor: "#454955", action: "Price updated",    target: val ? `$${Number(newValue).toLocaleString()}` : "" };
   if (fp.includes("document"))
     return { icon: "upload_file",     iconColor: "#818cf8", action: "Document added",   target: val };
   if (fp.includes("noi") || fp.includes("cashflow") || fp.includes("caprate"))
-    return { icon: "analytics",       iconColor: "#57f1db", action: "Metric updated",   target: fp.split(".").pop() ?? fp };
+    return { icon: "analytics",       iconColor: "#454955", action: "Metric updated",   target: fp.split(".").pop() ?? fp };
   if (fp.includes("rehab") || fp.includes("lineitem") || fp.includes("renovation"))
     return { icon: "construction",    iconColor: "#ffac5a", action: "Rehab update",     target: fp.split(".").pop() ?? fp };
   if (fp.includes("team") || fp.includes("member") || fp.includes("vendor"))
@@ -52,9 +52,9 @@ function toDisplay(fieldPath: string, newValue: unknown, source: string): Pick<F
   if (fp.includes("offer") || fp.includes("bid"))
     return { icon: "gavel",           iconColor: "#fbbf24", action: "Offer updated",    target: val };
   if (fp.includes("loanamount") || fp.includes("interest"))
-    return { icon: "account_balance", iconColor: "#adc6ff", action: "Financing updated", target: val };
+    return { icon: "account_balance", iconColor: "#7A9EAA", action: "Financing updated", target: val };
   if (source === "ocr")
-    return { icon: "document_scanner", iconColor: "#20B2AA", action: "OCR extraction", target: fp.split(".").pop() ?? fp };
+    return { icon: "document_scanner", iconColor: "#454955", action: "OCR extraction", target: fp.split(".").pop() ?? fp };
   return { icon: "edit_note", iconColor: "rgba(186,202,197,0.6)", action: "Updated", target: fp.split(".").pop() ?? fp };
 }
 
@@ -140,7 +140,7 @@ export function TerminalAuditFeed() {
     <div
       className="rounded-2xl overflow-hidden h-full flex flex-col"
       style={{
-        background: "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+        background: "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
         backdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,0.07)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
@@ -152,15 +152,15 @@ export function TerminalAuditFeed() {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-2.5">
-          <span className="material-symbols-outlined text-base" style={{ color: "#57f1db" }}>
+          <span className="material-symbols-outlined text-base" style={{ color: "#454955" }}>
             notifications_active
           </span>
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.5)" }}>
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.5)" }}>
             System Activity
           </span>
         </div>
         {!loading && (
-          <span className="text-[10px] font-mono" style={{ color: "rgba(218,228,236,0.2)" }}>
+          <span className="text-[10px] font-mono" style={{ color: "rgba(253,255,252,0.2)" }}>
             {entries.length} events
           </span>
         )}
@@ -187,10 +187,10 @@ export function TerminalAuditFeed() {
 
         {isEmpty && (
           <div className="flex flex-col items-center justify-center h-full py-8 text-center">
-            <span className="material-symbols-outlined text-3xl mb-2" style={{ color: "rgba(218,228,236,0.15)" }}>
+            <span className="material-symbols-outlined text-3xl mb-2" style={{ color: "rgba(253,255,252,0.15)" }}>
               history
             </span>
-            <p className="text-xs" style={{ color: "rgba(218,228,236,0.25)" }}>
+            <p className="text-xs" style={{ color: "rgba(253,255,252,0.25)" }}>
               Activity appears here as you update your projects.
             </p>
           </div>
@@ -216,20 +216,20 @@ export function TerminalAuditFeed() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-[12px] font-semibold" style={{ color: "rgba(218,228,236,0.8)" }}>
+                <span className="text-[12px] font-semibold" style={{ color: "rgba(253,255,252,0.8)" }}>
                   {item.actor}
                 </span>
-                <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+                <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.4)" }}>
                   {item.action}
                 </span>
               </div>
-              <p className="text-[11px] truncate" style={{ color: "rgba(218,228,236,0.3)" }}>
+              <p className="text-[11px] truncate" style={{ color: "rgba(253,255,252,0.3)" }}>
                 {item.projectName}{item.target ? ` · ${item.target}` : ""}
               </p>
             </div>
 
             {/* Timestamp */}
-            <span className="text-[10px] font-mono flex-shrink-0 pt-1" style={{ color: "rgba(218,228,236,0.2)" }}>
+            <span className="text-[10px] font-mono flex-shrink-0 pt-1" style={{ color: "rgba(253,255,252,0.2)" }}>
               {timeAgo(item.ts)}
             </span>
           </Link>

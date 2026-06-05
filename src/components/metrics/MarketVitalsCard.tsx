@@ -262,8 +262,8 @@ export default function MarketVitalsCard({
         growthPct: demographics.populationGrowth5yr,
         growthLabel: '5-yr growth',
         trend: pop,
-        trendColor: demographics.populationGrowth5yr >= 0 ? '#1a73e8' : '#dc2626',
-        icon: <Users className="w-3.5 h-3.5" style={{ color: '#1a73e8' }} />,
+        trendColor: demographics.populationGrowth5yr >= 0 ? '#454955' : '#dc2626',
+        icon: <Users className="w-3.5 h-3.5" style={{ color: '#454955' }} />,
       },
       {
         label: 'Median HH Income',

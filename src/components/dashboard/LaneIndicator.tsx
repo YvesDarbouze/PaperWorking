@@ -30,7 +30,7 @@ export default function LaneIndicator() {
             flex items-center gap-1 text-xs font-bold uppercase tracking-wider
             px-2.5 py-1 rounded-md transition-all
             ${viewMode === 'minimized'
-              ? 'bg-primary text-on-primary shadow-[0_0_8px_rgba(32, 178, 170,0.3)]'
+              ? 'bg-primary text-on-primary shadow-[0_0_8px_rgba(69, 73, 85,0.3)]'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-white/5'
             }
           `}
@@ -59,7 +59,7 @@ export default function LaneIndicator() {
                     className={`
                       rounded-full transition-all duration-300
                       ${isActive
-                        ? 'w-6 h-2 bg-primary shadow-[0_0_8px_rgba(32, 178, 170,0.6)]'
+                        ? 'w-6 h-2 bg-primary shadow-[0_0_8px_rgba(69, 73, 85,0.6)]'
                         : isPast && !isLocked
                           ? 'w-2 h-2 bg-primary/60'
                           : isLocked

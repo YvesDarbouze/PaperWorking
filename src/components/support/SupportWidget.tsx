@@ -147,7 +147,7 @@ export default function SupportWidget() {
         <div
           className="w-80 sm:w-96 h-[480px] rounded-2xl border border-[var(--pw-border)] bg-surface-container/95 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300"
           style={{
-            background: 'linear-gradient(180deg, rgba(11,20,26,0.98) 0%, rgba(11,20,26,0.99) 100%)',
+            background: 'linear-gradient(180deg, rgba(13,10,11,0.98) 0%, rgba(13,10,11,0.99) 100%)',
           }}
         >
           {/* Header */}

@@ -31,7 +31,7 @@ const EXPENSE_COLORS: Record<string, string> = {
   'Utilities': '#A5A5A5',
   'Property Mgmt': '#595959',
   'Maintenance': '#F06543',
-  'HOA': '#20B2AA',
+  'HOA': '#454955',
 };
 
 // Tooltips removed since ECharts components handle their own Tooltip formatters
@@ -251,7 +251,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
       {/* Rent-Tier Comparison */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <DollarSign className="w-4 h-4" style={{ color: '#20B2AA' }} />
+          <DollarSign className="w-4 h-4" style={{ color: '#454955' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;Rent Level Effect&rdquo; — Same Costs, Different Rents</h4>
         </div>
         <p className="text-[10px] text-text-secondary mb-4">

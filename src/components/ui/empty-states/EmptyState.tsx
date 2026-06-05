@@ -95,7 +95,7 @@ export function EmptyState({
       {action && (
         <button
           onClick={action.onClick}
-          className="pw-btn pw-btn--primary flex items-center gap-2 px-6 py-3 font-bold text-sm tracking-wider uppercase shadow-[0_0_20px_-5px_rgba(32, 178, 170,0.4)]"
+          className="pw-btn pw-btn--primary flex items-center gap-2 px-6 py-3 font-bold text-sm tracking-wider uppercase shadow-[0_0_20px_-5px_rgba(69, 73, 85,0.4)]"
         >
           {action.icon && <action.icon className="w-5 h-5" />}
           {action.label}

@@ -8,9 +8,9 @@ export default function DebtFinancingDesktop() {
   const [term, setTerm] = useState("15");
 
   return (
-    <div className="flex flex-col gap-6 w-full h-full text-on-surface dark bg-[#091015]">
+    <div className="flex flex-col gap-6 w-full h-full text-on-surface dark bg-[#0d0a0b]">
       {/* Summary Banner */}
-      <section className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6 flex justify-between items-center relative overflow-hidden">
+      <section className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6 flex justify-between items-center relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 pointer-events-none"></div>
         <div className="relative z-10 flex items-center gap-8">
           <div>
@@ -33,7 +33,7 @@ export default function DebtFinancingDesktop() {
           <button className="px-6 py-2 rounded-lg border border-primary/30 text-primary hover:bg-primary/10 transition-colors text-[14px] font-semibold">
             Export PDF
           </button>
-          <button className="px-6 py-2 rounded-lg bg-primary text-[#00574d] font-bold shadow-[0_0_20px_-5px_rgba(87,241,219,0.3)] hover:opacity-90 transition-all text-[14px]">
+          <button className="px-6 py-2 rounded-lg bg-primary text-[#454955] font-bold shadow-[0_0_20px_-5px_rgba(69,73,85,0.3)] hover:opacity-90 transition-all text-[14px]">
             Finalize Term Sheet
           </button>
         </div>
@@ -43,7 +43,7 @@ export default function DebtFinancingDesktop() {
       <div className="flex-1 grid grid-cols-12 gap-6 overflow-hidden min-h-[500px]">
         {/* Left Pane: Primary Inputs */}
         <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 overflow-y-auto pr-2">
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-primary">account_balance</span>
               <h4 className="text-[20px] font-semibold">Primary Loan Parameters</h4>
@@ -60,7 +60,7 @@ export default function DebtFinancingDesktop() {
                     type="text"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(e.target.value)}
-                    className="w-full bg-[#060f15]/80 border border-white/10 rounded-xl py-4 pl-8 pr-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.1)] outline-none transition-all"
+                    className="w-full bg-[#0d0a0b]/80 border border-white/10 rounded-xl py-4 pl-8 pr-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.1)] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -72,7 +72,7 @@ export default function DebtFinancingDesktop() {
                       type="text"
                       value={annualRate}
                       onChange={(e) => setAnnualRate(e.target.value)}
-                      className="w-full bg-[#060f15]/80 border border-white/10 rounded-xl py-4 px-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.1)] outline-none transition-all"
+                      className="w-full bg-[#0d0a0b]/80 border border-white/10 rounded-xl py-4 px-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.1)] outline-none transition-all"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-mono">%</span>
                   </div>
@@ -82,7 +82,7 @@ export default function DebtFinancingDesktop() {
                   <select
                     value={term}
                     onChange={(e) => setTerm(e.target.value)}
-                    className="w-full bg-[#060f15]/80 border border-white/10 rounded-xl py-4 px-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(87,241,219,0.1)] outline-none transition-all appearance-none cursor-pointer"
+                    className="w-full bg-[#0d0a0b]/80 border border-white/10 rounded-xl py-4 px-4 font-mono text-primary text-xl focus:border-primary focus:shadow-[inset_0_0_8px_rgba(69,73,85,0.1)] outline-none transition-all appearance-none cursor-pointer"
                   >
                     <option value="30">30</option>
                     <option value="15">15</option>
@@ -94,7 +94,7 @@ export default function DebtFinancingDesktop() {
 
               <div className="pt-6 border-t border-white/5 space-y-4">
                 <label className="flex items-center gap-3 cursor-pointer group">
-                  <div className="w-6 h-6 rounded-md border-2 border-primary/30 flex items-center justify-center group-hover:border-primary transition-colors bg-[#182127]">
+                  <div className="w-6 h-6 rounded-md border-2 border-primary/30 flex items-center justify-center group-hover:border-primary transition-colors bg-[#1e1b20]">
                     <span className="material-symbols-outlined text-sm text-primary">check</span>
                   </div>
                   <span className="text-on-surface-variant text-[14px] font-semibold">Amortized Structure</span>
@@ -107,9 +107,9 @@ export default function DebtFinancingDesktop() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl p-6">
             <h4 className="text-[20px] font-semibold mb-4">Risk Profile</h4>
-            <div className="h-32 w-full bg-[#060f15]/50 rounded-xl flex items-center justify-center relative overflow-hidden">
+            <div className="h-32 w-full bg-[#0d0a0b]/50 rounded-xl flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-primary to-transparent"></div>
               </div>
@@ -130,7 +130,7 @@ export default function DebtFinancingDesktop() {
 
         {/* Right Pane: Advanced Leverage */}
         <div className="col-span-12 lg:col-span-7 flex flex-col gap-6 overflow-hidden">
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl flex-1 flex flex-col overflow-hidden">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.03)] rounded-2xl flex-1 flex flex-col overflow-hidden">
             <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">tune</span>
@@ -155,11 +155,11 @@ export default function DebtFinancingDesktop() {
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-xs text-on-surface-variant">Origination Points (%)</label>
-                      <input type="text" defaultValue="1.50" className="w-full bg-[#060f15]/60 border border-white/5 rounded-lg py-3 px-4 font-mono text-on-surface focus:border-primary outline-none transition-all" />
+                      <input type="text" defaultValue="1.50" className="w-full bg-[#0d0a0b]/60 border border-white/5 rounded-lg py-3 px-4 font-mono text-on-surface focus:border-primary outline-none transition-all" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-xs text-on-surface-variant">Processing Fee ($)</label>
-                      <input type="text" defaultValue="1,500.00" className="w-full bg-[#060f15]/60 border border-white/5 rounded-lg py-3 px-4 font-mono text-on-surface focus:border-primary outline-none transition-all" />
+                      <input type="text" defaultValue="1,500.00" className="w-full bg-[#0d0a0b]/60 border border-white/5 rounded-lg py-3 px-4 font-mono text-on-surface focus:border-primary outline-none transition-all" />
                     </div>
                   </div>
                 </div>
@@ -178,14 +178,14 @@ export default function DebtFinancingDesktop() {
 
               {/* Leverage Optimization Bento */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#060f15]/40 p-4 rounded-xl border border-white/5">
+                <div className="bg-[#0d0a0b]/40 p-4 rounded-xl border border-white/5">
                   <p className="text-xs text-on-surface-variant mb-2">Lender Credit Allocation</p>
                   <div className="flex items-center gap-4">
                     <input type="range" className="flex-1 accent-primary" />
                     <span className="font-mono text-primary">-$1,200</span>
                   </div>
                 </div>
-                <div className="bg-[#060f15]/40 p-4 rounded-xl border border-white/5">
+                <div className="bg-[#0d0a0b]/40 p-4 rounded-xl border border-white/5">
                   <p className="text-xs text-on-surface-variant mb-2">Interest Rate Buydown</p>
                   <div className="flex items-center gap-4">
                     <input type="range" className="flex-1 accent-primary" />
@@ -195,7 +195,7 @@ export default function DebtFinancingDesktop() {
               </div>
 
               {/* Scenario Benchmark */}
-              <div className="bg-[#060f15]/20 rounded-xl p-4 border border-white/5">
+              <div className="bg-[#0d0a0b]/20 rounded-xl p-4 border border-white/5">
                 <h5 className="text-xs font-bold text-primary mb-4 tracking-widest uppercase">Scenario Benchmark</h5>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -217,7 +217,7 @@ export default function DebtFinancingDesktop() {
             </div>
 
             {/* Financial Footer Stats */}
-            <div className="p-6 bg-[#141d23]/40 grid grid-cols-3 gap-4 border-t border-white/10">
+            <div className="p-6 bg-[#161318]/40 grid grid-cols-3 gap-4 border-t border-white/10">
               <div>
                 <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-widest">Net Loan Proceeds</p>
                 <p className="font-mono text-lg text-on-surface">$1,176,000</p>

@@ -29,15 +29,15 @@ export default function ProjectKickoffCapital() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#091015] dark relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0d0a0b] dark relative overflow-hidden">
       {/* Background Decor */}
-      <div id="bg-mesh" className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#182127]/50 via-[#091015]/80 to-[#091015] transition-transform duration-300 ease-out"></div>
+      <div id="bg-mesh" className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1e1b20]/50 via-[#0d0a0b]/80 to-[#0d0a0b] transition-transform duration-300 ease-out"></div>
       
       <main className="w-full max-w-[1280px] z-10 px-6 md:px-12 py-24 flex flex-col items-center">
         {/* Hero Section */}
         <div className="w-full max-w-3xl text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(87,241,219,0.8)]"></span>
+            <span className="flex h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_rgba(69,73,85,0.8)]"></span>
             <span className="text-[12px] uppercase tracking-widest text-primary font-semibold">Step 6 of 6</span>
             <span className="w-[1px] h-3 bg-white/20 mx-1"></span>
             <span className="text-[12px] text-on-surface-variant font-semibold">Workspace Unlocked</span>
@@ -54,27 +54,27 @@ export default function ProjectKickoffCapital() {
         {/* The Bridge: 4-Field Input Grid */}
         <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Field 1: Closing Date */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">calendar_today</span>
                 Target Closing Date
               </label>
             </div>
-            <div className="bg-[#141d23] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)] transition-all">
+            <div className="bg-[#161318] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(69,73,85,0.2)] transition-all">
               <input type="date" defaultValue="2024-11-15" className="bg-transparent border-none outline-none w-full font-mono text-primary p-0" />
             </div>
           </div>
 
           {/* Field 2: Purchase Price */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">payments</span>
                 Estimated Purchase Price
               </label>
             </div>
-            <div className="bg-[#141d23] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)] transition-all">
+            <div className="bg-[#161318] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(69,73,85,0.2)] transition-all">
               <span className="text-on-surface-variant font-mono">$</span>
               <input
                 type="text"
@@ -87,7 +87,7 @@ export default function ProjectKickoffCapital() {
           </div>
 
           {/* Field 3: Initial Capital */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">account_balance</span>
@@ -97,7 +97,7 @@ export default function ProjectKickoffCapital() {
                 <span className="text-[10px] text-primary font-bold uppercase tracking-tighter">Liquid Asset</span>
               </div>
             </div>
-            <div className="bg-[#141d23] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)] transition-all">
+            <div className="bg-[#161318] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(69,73,85,0.2)] transition-all">
               <span className="text-on-surface-variant font-mono">$</span>
               <input
                 type="text"
@@ -110,7 +110,7 @@ export default function ProjectKickoffCapital() {
           </div>
 
           {/* Field 4: Hold Period */}
-          <div className="bg-gradient-to-br from-[#182127]/70 to-[#091015]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
+          <div className="bg-gradient-to-br from-[#1e1b20]/70 to-[#0d0a0b]/80 backdrop-blur-xl border border-white/10 p-6 rounded-xl flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <label className="text-[14px] font-semibold text-on-surface-variant flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">timelapse</span>
@@ -118,12 +118,12 @@ export default function ProjectKickoffCapital() {
               </label>
               <span className="material-symbols-outlined text-on-surface-variant/40 text-[20px]">expand_more</span>
             </div>
-            <div className="bg-[#141d23] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(87,241,219,0.2)] transition-all">
+            <div className="bg-[#161318] rounded-lg px-4 py-3 flex items-center gap-3 border border-outline-variant/30 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_-5px_rgba(69,73,85,0.2)] transition-all">
               <select className="bg-transparent border-none outline-none w-full font-mono text-primary p-0 appearance-none">
-                <option className="bg-[#141d23]" value="short">&lt; 6 Months</option>
-                <option className="bg-[#141d23]" value="mid" selected>1-3 Years</option>
-                <option className="bg-[#141d23]" value="long">5+ Years</option>
-                <option className="bg-[#141d23]" value="forever">Forever</option>
+                <option className="bg-[#161318]" value="short">&lt; 6 Months</option>
+                <option className="bg-[#161318]" value="mid" selected>1-3 Years</option>
+                <option className="bg-[#161318]" value="long">5+ Years</option>
+                <option className="bg-[#161318]" value="forever">Forever</option>
               </select>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function ProjectKickoffCapital() {
       </main>
 
       {/* Bottom Action Bar */}
-      <footer className="fixed bottom-0 w-full z-50 bg-[#141d23]/90 backdrop-blur-2xl border-t border-white/5 shadow-[0_-8px_32px_0_rgba(0,0,0,0.8)] rounded-t-xl">
+      <footer className="fixed bottom-0 w-full z-50 bg-[#161318]/90 backdrop-blur-2xl border-t border-white/5 shadow-[0_-8px_32px_0_rgba(0,0,0,0.8)] rounded-t-xl">
         <div className="flex justify-between items-center h-24 pb-4 px-6 md:px-12 max-w-[1280px] mx-auto">
           <div className="hidden sm:flex flex-col">
             <span className="text-[12px] text-on-surface-variant uppercase tracking-wider font-semibold">Project Name</span>
@@ -141,7 +141,7 @@ export default function ProjectKickoffCapital() {
             <button className="flex-1 sm:flex-none px-6 py-3 rounded-lg border border-white/10 text-[14px] font-semibold text-on-surface-variant hover:bg-white/5 transition-all active:scale-95">
               Save Progress
             </button>
-            <button className="flex-[2] sm:flex-none px-8 py-3 rounded-lg bg-primary text-[#00574d] text-[14px] font-bold flex items-center justify-center gap-2 group shadow-[0_0_20px_-5px_rgba(87,241,219,0.5)] hover:brightness-110 active:scale-95 transition-all">
+            <button className="flex-[2] sm:flex-none px-8 py-3 rounded-lg bg-primary text-[#454955] text-[14px] font-bold flex items-center justify-center gap-2 group shadow-[0_0_20px_-5px_rgba(69,73,85,0.5)] hover:brightness-110 active:scale-95 transition-all">
               Enter Workspace &amp; Setup NOI
               <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
             </button>

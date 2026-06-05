@@ -37,7 +37,7 @@ export function BottomNav() {
       className="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-2 pb-safe"
       style={{
         height: '72px',
-        background: 'rgba(11,20,26,0.92)',
+        background: 'rgba(13,10,11,0.92)',
         backdropFilter: 'blur(24px)',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         borderRadius: '16px 16px 0 0',
@@ -52,7 +52,7 @@ export function BottomNav() {
             onClick={(e) => handleNavClick(e, item.href, item.name)}
             className="flex flex-col items-center justify-center relative py-2 px-3 transition-all duration-200"
             style={{
-              color: isActive ? 'var(--color-primary)' : 'rgba(218,228,236,0.4)',
+              color: isActive ? 'var(--color-primary)' : 'rgba(253,255,252,0.4)',
               transform: isActive ? 'scale(0.95)' : 'scale(1)',
             }}
           >
@@ -68,8 +68,8 @@ export function BottomNav() {
                   className="absolute -top-1 -right-2 text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
                   style={{
                     background: 'var(--color-primary)',
-                    color: '#091015',
-                    boxShadow: '0 0 6px rgba(32, 178, 170,0.5)',
+                    color: '#0d0a0b',
+                    boxShadow: '0 0 6px rgba(69, 73, 85,0.5)',
                   }}
                 >
                   {unreadTotal > 9 ? '9+' : unreadTotal}
@@ -92,7 +92,7 @@ export function BottomNav() {
                 className="absolute -bottom-0.5 w-1 h-1 rounded-full"
                 style={{
                   background: 'var(--color-primary)',
-                  boxShadow: '0 0 10px 2px rgba(32, 178, 170,0.5)',
+                  boxShadow: '0 0 10px 2px rgba(69, 73, 85,0.5)',
                 }}
               />
             )}

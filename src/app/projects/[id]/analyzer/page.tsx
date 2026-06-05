@@ -46,7 +46,7 @@ export default async function ProjectAnalyzerPage({ params }: { params: Promise<
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#091015]">
+    <div className="flex flex-col w-full min-h-screen bg-[#0d0a0b]">
       <DealAnalyzerTerminal data={hydratedData} />
     </div>
   );

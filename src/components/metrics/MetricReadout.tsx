@@ -33,7 +33,7 @@ export interface MetricReadoutProps {
   result: MetricResult;
   /** How to format the numeric value */
   format: MetricFormat;
-  /** Optional phase accent color (default: teal #57f1db) */
+  /** Optional phase accent color (default: teal #454955) */
   accentColor?: string;
   /** Whether to show a compact layout (no fill bar) */
   compact?: boolean;
@@ -76,7 +76,7 @@ export function MetricReadout({
   label,
   result,
   format,
-  accentColor = '#57f1db',
+  accentColor = '#454955',
   compact = false,
 }: MetricReadoutProps) {
   const pillStyle = STATE_PILL_STYLES[result.state];
@@ -87,7 +87,7 @@ export function MetricReadout({
     <div className="space-y-1.5">
       {/* Label + State Pill row */}
       <div className="flex items-center justify-between gap-2">
-        <p className="text-[11px] text-[#bacac5] uppercase tracking-wider font-medium">
+        <p className="text-[11px] text-[#9E9DA0] uppercase tracking-wider font-medium">
           {label}
         </p>
         <span
@@ -100,7 +100,7 @@ export function MetricReadout({
       {/* Value display */}
       <p
         className={`text-[24px] leading-[32px] font-semibold ${
-          isIncomplete || isNA ? 'text-[#bacac5]/40' : 'text-[#dae4ec]'
+          isIncomplete || isNA ? 'text-[#9E9DA0]/40' : 'text-[#9E9DA0]'
         }`}
         style={{ fontVariantNumeric: 'tabular-nums' }}
       >
@@ -128,7 +128,7 @@ export function MetricReadout({
           </p>
           <ul className="space-y-0">
             {result.inputsMissing.map((field) => (
-              <li key={field} className="text-[10px] text-[#bacac5]/60 flex items-center gap-1">
+              <li key={field} className="text-[10px] text-[#9E9DA0]/60 flex items-center gap-1">
                 <span className="w-1 h-1 rounded-full bg-amber-400/50 shrink-0" />
                 {humanizeFieldPath(field)}
               </li>

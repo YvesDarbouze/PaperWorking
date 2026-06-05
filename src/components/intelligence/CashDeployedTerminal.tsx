@@ -51,13 +51,13 @@ function GlassInput({
 }) {
   return (
     <div className="group relative">
-      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1.5">
         <Icon className="w-3 h-3" />
         {label}
       </label>
       <div className="relative">
         {prefix && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium pointer-events-none">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6B6870] font-medium pointer-events-none">
             {prefix}
           </span>
         )}
@@ -67,12 +67,12 @@ function GlassInput({
           onChange={(e) => onChange(Number(e.target.value) || 0)}
           step={step}
           className="w-full rounded-lg border border-white/10 bg-white/[0.03] text-slate-200 text-sm
-                     font-mono tabular-nums py-2.5 focus:outline-none focus:border-teal-500/40
-                     focus:ring-1 focus:ring-teal-500/20 transition-all placeholder:text-slate-600"
+                     font-mono tabular-nums py-2.5 focus:outline-none focus:border-[#454955]/40
+                     focus:ring-1 focus:ring-[#454955]/20 transition-all placeholder:text-slate-600"
           style={{ paddingLeft: prefix ? "1.75rem" : "0.75rem", paddingRight: suffix ? "2.5rem" : "0.75rem" }}
         />
         {suffix && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium pointer-events-none">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#6B6870] font-medium pointer-events-none">
             {suffix}
           </span>
         )}
@@ -129,7 +129,7 @@ export function CashDeployedTerminal({
   const cocBadge = computed.cocReturn >= 8
     ? { label: "Excellent", className: "bg-blue-400/10 border-blue-400/20 text-blue-400" }
     : computed.cocReturn >= 6
-    ? { label: "Good", className: "bg-teal-400/10 border-teal-400/20 text-teal-400" }
+    ? { label: "Good", className: "bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]" }
     : computed.cocReturn >= 3
     ? { label: "Fair", className: "bg-amber-400/10 border-amber-400/20 text-amber-400" }
     : { label: "Poor", className: "bg-red-400/10 border-red-400/20 text-red-400" };
@@ -151,12 +151,12 @@ export function CashDeployedTerminal({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-400/10 flex items-center justify-center">
-            <Wallet className="w-4 h-4 text-teal-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#6E7480]/10 flex items-center justify-center">
+            <Wallet className="w-4 h-4 text-[#6E7480]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Investment Basis</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Cash Deployed Terminal</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">Cash Deployed Terminal</p>
           </div>
         </div>
       </div>
@@ -182,10 +182,10 @@ export function CashDeployedTerminal({
         </div>
         <div className="grid grid-cols-2 gap-1">
           {breakdown.map((b) => (
-            <div key={b.label} className="flex items-center gap-1.5 text-[10px] text-slate-500">
+            <div key={b.label} className="flex items-center gap-1.5 text-[10px] text-[#6B6870]">
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: b.color }} />
               <span>{b.label}</span>
-              <span className="text-slate-400 font-mono ml-auto">{b.pct.toFixed(0)}%</span>
+              <span className="text-[#9E9DA0] font-mono ml-auto">{b.pct.toFixed(0)}%</span>
             </div>
           ))}
         </div>
@@ -198,15 +198,15 @@ export function CashDeployedTerminal({
       <div className="grid grid-cols-2 gap-3">
         {/* Total Cash Invested */}
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Total Cash Invested</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Total Cash Invested</p>
           <p className="text-lg font-bold text-white tabular-nums">{fmtUSD(computed.totalCashInvested)}</p>
         </div>
 
         {/* CoC Return */}
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">CoC Return</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">CoC Return</p>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-teal-400 tabular-nums">{computed.cocReturn.toFixed(2)}%</span>
+            <span className="text-lg font-bold text-[#6E7480] tabular-nums">{computed.cocReturn.toFixed(2)}%</span>
             <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border ${cocBadge.className}`}>
               {cocBadge.label}
             </span>
@@ -216,8 +216,8 @@ export function CashDeployedTerminal({
 
       {/* ── Formula reference ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           CoC = {fmtUSD(annualCashFlow)} ÷ {fmtUSD(computed.totalCashInvested)} = {computed.cocReturn.toFixed(2)}%
         </p>
       </div>

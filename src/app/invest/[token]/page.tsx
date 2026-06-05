@@ -195,7 +195,7 @@ export default function GuestPortalPage() {
     }
 
     ctx.lineTo(clientX - rect.left, clientY - rect.top);
-    ctx.strokeStyle = '#003731'; // dark green accent stroke
+    ctx.strokeStyle = '#0d0a0b'; // dark green accent stroke
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.stroke();
@@ -301,10 +301,10 @@ export default function GuestPortalPage() {
   // Loading Screen
   if (authLoading || loading || (user && !profile)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-3">
-          <span className="material-symbols-outlined text-[#57f1db] text-4xl animate-spin">progress_activity</span>
-          <p className="text-xs uppercase tracking-widest text-[#57f1db]/70 font-mono">Verifying Vault Link...</p>
+          <span className="material-symbols-outlined text-[#454955] text-4xl animate-spin">progress_activity</span>
+          <p className="text-xs uppercase tracking-widest text-[#454955]/70 font-mono">Verifying Vault Link...</p>
         </div>
       </div>
     );
@@ -313,8 +313,8 @@ export default function GuestPortalPage() {
   // Not logged in (handled by redirection, but acts as a fallback)
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#57f1db]" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#454955]" />
       </div>
     );
   }
@@ -322,10 +322,10 @@ export default function GuestPortalPage() {
   // Invalid Token Screen
   if (tokenInvalid || !dealData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
-           style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
+           style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
-          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-5 text-[#57f1db]">
+          <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center mx-auto mb-5 text-[#454955]">
             <Shield className="w-8 h-8" />
           </div>
           <h1 className="text-xl font-bold text-white uppercase tracking-tight mb-2">Invalid or Expired Link</h1>
@@ -340,8 +340,8 @@ export default function GuestPortalPage() {
   // Declined Screen
   if (declined) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
-           style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
+           style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-sm p-8 glass-card rounded-2xl border border-white/10 shadow-xl">
           <div className="w-16 h-16 bg-red-950/20 border border-red-500/20 rounded-full flex items-center justify-center mx-auto mb-5 text-red-400">
             <XCircle className="w-8 h-8" />
@@ -358,10 +358,10 @@ export default function GuestPortalPage() {
   // Success Committed Screen
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015] px-4"
-           style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b] px-4"
+           style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
         <div className="text-center max-w-md p-8 glass-card rounded-3xl border border-white/10 shadow-2xl space-y-6">
-          <div className="w-20 h-20 bg-[#57f1db]/10 border border-[#57f1db]/30 rounded-full flex items-center justify-center mx-auto text-[#57f1db] shadow-[0_0_20px_rgba(87,241,219,0.2)]">
+          <div className="w-20 h-20 bg-[#454955]/10 border border-[#454955]/30 rounded-full flex items-center justify-center mx-auto text-[#454955] shadow-[0_0_20px_rgba(69,73,85,0.2)]">
             <CheckCircle2 className="w-10 h-10" />
           </div>
           <div className="space-y-2">
@@ -377,7 +377,7 @@ export default function GuestPortalPage() {
             </div>
             <div className="flex justify-between border-b border-white/5 pb-2">
               <span className="text-[#8a9b9b]">ALLOCATION:</span>
-              <span className="font-bold text-[#57f1db]">${investmentAmount.toLocaleString()}</span>
+              <span className="font-bold text-[#454955]">${investmentAmount.toLocaleString()}</span>
             </div>
             <div className="flex justify-between border-b border-white/5 pb-2">
               <span className="text-[#8a9b9b]">EQUITY SHARE:</span>
@@ -385,8 +385,8 @@ export default function GuestPortalPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-[#8a9b9b]">STATUS:</span>
-              <span className="font-bold text-[#57f1db] flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#57f1db] animate-pulse"></span>
+              <span className="font-bold text-[#454955] flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#454955] animate-pulse"></span>
                 COMMITTED
               </span>
             </div>
@@ -403,8 +403,8 @@ export default function GuestPortalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#091015] text-[#dae4ec] font-sans antialiased pb-24 relative overflow-hidden"
-         style={{ backgroundImage: "radial-gradient(rgba(87, 241, 219, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+    <div className="min-h-screen bg-[#0d0a0b] text-[#9E9DA0] font-sans antialiased pb-24 relative overflow-hidden"
+         style={{ backgroundImage: "radial-gradient(rgba(69, 73, 85, 0.04) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
       
       {/* Top AppBar */}
       <header className="bg-surface/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center px-6 md:px-12 h-16 w-full fixed top-0 z-[60]">
@@ -412,15 +412,15 @@ export default function GuestPortalPage() {
           <Link href="/dashboard" className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-colors select-none">
             close
           </Link>
-          <h1 className="font-headline-md text-base font-bold tracking-tighter text-[#57f1db] uppercase">PaperWorking</h1>
+          <h1 className="font-headline-md text-base font-bold tracking-tighter text-[#454955] uppercase">PaperWorking</h1>
         </div>
         <div className="flex items-center gap-6">
           <nav className="hidden md:flex gap-8 font-mono text-[10px] uppercase tracking-wider">
-            <span className="text-[#57f1db]">Deal Review</span>
-            <Link href="/dashboard/projects" className="text-on-surface-variant hover:text-[#57f1db] transition-colors">Portfolio</Link>
-            <Link href="/dashboard/inbox" className="text-on-surface-variant hover:text-[#57f1db] transition-colors">Activity</Link>
+            <span className="text-[#454955]">Deal Review</span>
+            <Link href="/dashboard/projects" className="text-on-surface-variant hover:text-[#454955] transition-colors">Portfolio</Link>
+            <Link href="/dashboard/inbox" className="text-on-surface-variant hover:text-[#454955] transition-colors">Activity</Link>
           </nav>
-          <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-[#57f1db] transition-colors select-none">help</span>
+          <span className="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-[#454955] transition-colors select-none">help</span>
         </div>
       </header>
 
@@ -429,9 +429,9 @@ export default function GuestPortalPage() {
         
         {/* Account Validation Prompt Banner */}
         {!isEligible && (
-          <div className="mb-8 p-4 border-2 border-dashed border-[#57f1db]/30 bg-[#57f1db]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse">
+          <div className="mb-8 p-4 border-2 border-dashed border-[#454955]/30 bg-[#454955]/5 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 animate-pulse">
             <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-[#57f1db] select-none">verified_user</span>
+              <span className="material-symbols-outlined text-[#454955] select-none">verified_user</span>
               <p className="text-xs text-white">
                 {isVendor 
                   ? "Standard Investor account required for final closing. Upgrade your vendor account to lock in allocations."
@@ -441,7 +441,7 @@ export default function GuestPortalPage() {
             <Link
               id="btn-upgrade-account"
               href="/pricing"
-              className="bg-[#57f1db]/10 hover:bg-[#57f1db]/20 text-[#57f1db] px-6 py-2 rounded-lg font-mono text-[10px] uppercase font-bold transition-all border border-[#57f1db]/20"
+              className="bg-[#454955]/10 hover:bg-[#454955]/20 text-[#454955] px-6 py-2 rounded-lg font-mono text-[10px] uppercase font-bold transition-all border border-[#454955]/20"
             >
               Upgrade Now
             </Link>
@@ -461,10 +461,10 @@ export default function GuestPortalPage() {
                 className="w-full h-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" 
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdpxYpTQpSZyS-bVT9se97E8jC8KG1ACRvvabKdZRreVTGe9TbCA-EyNcXiMwIF5fgr4wLBcGYVP8O6G0VzI4ezRc0owWBpdoJWPXwYXXK3lffjKue6yhxtQBHnTcjaPM5LsL4wVa8DvSHkPIvuaJLffFLLIfHrLJa4rnpzWsQCXacjzaGlw76yObkHrheB2ANDh-FaARWXtQMy7sX_z3mOdlFqEur5hIQvT5LBSuOd1u3BUUujG52UVGv1hjlRImgSKFETY9UQcIR"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#091015] via-[#091015]/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0b] via-[#0d0a0b]/40 to-transparent"></div>
               <div className="absolute bottom-6 left-6 right-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div className="space-y-1">
-                  <span className="bg-[#57f1db]/20 backdrop-blur-md text-[#57f1db] border border-[#57f1db]/30 px-3 py-0.5 rounded-full font-mono text-[9px] uppercase">
+                  <span className="bg-[#454955]/20 backdrop-blur-md text-[#454955] border border-[#454955]/30 px-3 py-0.5 rounded-full font-mono text-[9px] uppercase">
                     {dealData.raisePercentage ?? 70}% Raised
                   </span>
                   <h2 className="text-2xl font-light text-white tracking-tight uppercase">{dealData.dealName}</h2>
@@ -479,14 +479,14 @@ export default function GuestPortalPage() {
                     onClick={() => setShowInsights(true)}
                     className="bg-surface/60 backdrop-blur-md border border-white/10 hover:bg-surface/80 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all group font-mono text-[10px] uppercase"
                   >
-                    <span className="material-symbols-outlined text-sm select-none group-hover:text-[#57f1db]">folder_open</span>
+                    <span className="material-symbols-outlined text-sm select-none group-hover:text-[#454955]">folder_open</span>
                     Insights
                   </button>
                   <button 
                     onClick={() => setShowAskSponsor(true)}
                     className="bg-surface/60 backdrop-blur-md border border-white/10 hover:bg-surface/80 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all group font-mono text-[10px] uppercase"
                   >
-                    <span className="material-symbols-outlined text-sm select-none group-hover:text-[#57f1db]">mail</span>
+                    <span className="material-symbols-outlined text-sm select-none group-hover:text-[#454955]">mail</span>
                     Ask Sponsor
                   </button>
                 </div>
@@ -495,7 +495,7 @@ export default function GuestPortalPage() {
 
             {/* Opportunity Thesis Summary */}
             <section className="glass-card p-6 md:p-8 rounded-2xl space-y-3">
-              <h3 className="font-mono text-[10px] font-bold text-[#57f1db] uppercase tracking-[0.2em]">Investment Thesis</h3>
+              <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Investment Thesis</h3>
               <p className="text-sm text-on-surface-variant leading-relaxed">
                 {dealData.opportunitySummary || 'Value-add multifamily redevelopment in a high-growth corridor. 123 Skyline Tower represents a unique opportunity to acquire an under-managed Class B asset in an institutional-grade submarket. Our strategy focuses on modernization of common areas and interior unit upgrades to capture a 25% rent premium, leveraging the influx of technology firms moving to the surrounding three-block radius.'}
               </p>
@@ -505,19 +505,19 @@ export default function GuestPortalPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
                 <span className="text-on-surface-variant font-mono text-[9px] uppercase tracking-wider">Projected IRR</span>
-                <span className="text-[#57f1db] text-xl font-bold text-glow">{dealData.expectedROI}%</span>
+                <span className="text-[#454955] text-xl font-bold text-glow">{dealData.expectedROI}%</span>
               </div>
               <div className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
                 <span className="text-on-surface-variant font-mono text-[9px] uppercase tracking-wider">Target Multiple</span>
-                <span className="text-[#57f1db] text-xl font-bold text-glow">1.8x</span>
+                <span className="text-[#454955] text-xl font-bold text-glow">1.8x</span>
               </div>
               <div className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
                 <span className="text-on-surface-variant font-mono text-[9px] uppercase tracking-wider">Min. Commit</span>
-                <span className="text-[#57f1db] text-xl font-bold text-glow">$25,000</span>
+                <span className="text-[#454955] text-xl font-bold text-glow">$25,000</span>
               </div>
               <div className="glass-card p-5 rounded-2xl flex flex-col items-center justify-center text-center space-y-1">
                 <span className="text-on-surface-variant font-mono text-[9px] uppercase tracking-wider">Hold Period</span>
-                <span className="text-[#57f1db] text-xl font-bold text-glow">
+                <span className="text-[#454955] text-xl font-bold text-glow">
                   {dealData.termMonths ? Math.round(dealData.termMonths / 12 * 10) / 10 + ' Yrs' : '3-5 Yrs'}
                 </span>
               </div>
@@ -525,9 +525,9 @@ export default function GuestPortalPage() {
 
             {/* Collapsible Underwriting Charts Block */}
             <section className="glass-card p-6 rounded-2xl space-y-4">
-              <h3 className="font-mono text-[10px] font-bold text-[#57f1db] uppercase tracking-[0.2em]">Financial Projections</h3>
+              <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Financial Projections</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#060f15]/80 border border-white/5 p-4 rounded-xl">
+                <div className="bg-[#0d0a0b]/80 border border-white/5 p-4 rounded-xl">
                   <MetricChart
                     title="Net Operating Income"
                     unit="currency"
@@ -536,7 +536,7 @@ export default function GuestPortalPage() {
                     series={dealData.noiHistory}
                   />
                 </div>
-                <div className="bg-[#060f15]/80 border border-white/5 p-4 rounded-xl">
+                <div className="bg-[#0d0a0b]/80 border border-white/5 p-4 rounded-xl">
                   <MetricChart
                     title="Cap Rate"
                     unit="%"
@@ -545,7 +545,7 @@ export default function GuestPortalPage() {
                     series={dealData.capRateHistory}
                   />
                 </div>
-                <div className="bg-[#060f15]/80 border border-white/5 p-4 rounded-xl">
+                <div className="bg-[#0d0a0b]/80 border border-white/5 p-4 rounded-xl">
                   <MetricChart
                     title="Cash Flow"
                     unit="currency"
@@ -554,7 +554,7 @@ export default function GuestPortalPage() {
                     series={dealData.cashFlowHistory}
                   />
                 </div>
-                <div className="bg-[#060f15]/80 border border-white/5 p-4 rounded-xl">
+                <div className="bg-[#0d0a0b]/80 border border-white/5 p-4 rounded-xl">
                   <MetricChart
                     title="Daily Burn Rate"
                     unit="currency"
@@ -569,7 +569,7 @@ export default function GuestPortalPage() {
             {/* Investment Terms List */}
             <section className="glass-card rounded-2xl overflow-hidden border border-white/10">
               <div className="px-6 py-4 border-b border-white/5 bg-white/5">
-                <h3 className="font-mono text-[10px] font-bold text-[#57f1db] uppercase tracking-[0.2em]">Investment Structure</h3>
+                <h3 className="font-mono text-[10px] font-bold text-[#454955] uppercase tracking-[0.2em]">Investment Structure</h3>
               </div>
               <div className="divide-y divide-white/5">
                 <div className="px-6 py-3.5 flex justify-between text-xs">
@@ -594,7 +594,7 @@ export default function GuestPortalPage() {
             {/* LOI Preview & Signature Box */}
             <section ref={signatureSectionRef} className="glass-card p-6 md:p-8 rounded-2xl space-y-6">
               <div className="flex items-center gap-2 border-b border-white/5 pb-3">
-                <FileText className="w-4 h-4 text-[#57f1db]" />
+                <FileText className="w-4 h-4 text-[#454955]" />
                 <h3 className="font-mono text-[10px] font-bold text-white uppercase tracking-[0.2em]">Letter of Intent — Execution</h3>
               </div>
 
@@ -605,7 +605,7 @@ export default function GuestPortalPage() {
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-white/5">
                   <span className="text-[#8a9b9b]">Commitment Amount</span>
-                  <span className="text-[#57f1db] font-bold">${investmentAmount.toLocaleString()}</span>
+                  <span className="text-[#454955] font-bold">${investmentAmount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-white/5">
                   <span className="text-[#8a9b9b]">Equity Split</span>
@@ -656,7 +656,7 @@ export default function GuestPortalPage() {
                   />
                   {!hasSigned && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                      <p className="text-xs text-slate-400 font-mono">DRAW SIGNATURE HERE</p>
+                      <p className="text-xs text-[#9E9DA0] font-mono">DRAW SIGNATURE HERE</p>
                     </div>
                   )}
                 </div>
@@ -676,7 +676,7 @@ export default function GuestPortalPage() {
                   id="btn-commit-capital"
                   onClick={handleSign}
                   disabled={!isEligible || !hasSigned || submitting}
-                  className="flex-1 py-4 rounded-xl bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(87,241,219,0.3)] active:scale-98"
+                  className="flex-1 py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.3)] active:scale-98"
                 >
                   {submitting ? (
                     <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>
@@ -719,14 +719,14 @@ export default function GuestPortalPage() {
                   <div className="relative">
                     <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-[#57f1db] rounded-full transition-all duration-1000 shadow-[0_0_8px_#57f1db]" 
+                        className="h-full bg-[#454955] rounded-full transition-all duration-1000 shadow-[0_0_8px_#454955]" 
                         style={{ width: `${dealData.raisePercentage ?? 70}%` }}
                       ></div>
                     </div>
                   </div>
 
                   <div className="flex justify-between text-[11px] font-mono">
-                    <span className="text-[#57f1db] font-bold">{dealData.raisePercentage ?? 70}% Allocated</span>
+                    <span className="text-[#454955] font-bold">{dealData.raisePercentage ?? 70}% Allocated</span>
                     <span className="text-[#8a9b9b]">
                       ${((dealData.raiseTarget ?? 1200000) - (dealData.raiseRaised ?? 850000)).toLocaleString()} Remaining
                     </span>
@@ -744,7 +744,7 @@ export default function GuestPortalPage() {
                       value={investmentAmountInput}
                       onChange={(e) => handleAmountChange(e.target.value)}
                       placeholder="25,000"
-                      className="w-full pl-8 pr-4 py-3.5 bg-[#060f15]/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-[#57f1db] focus:ring-1 focus:ring-[#57f1db]/20 transition-all"
+                      className="w-full pl-8 pr-4 py-3.5 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-white font-mono text-sm focus:outline-none focus:border-[#454955] focus:ring-1 focus:ring-[#454955]/20 transition-all"
                     />
                   </div>
                   {inputError ? (
@@ -757,7 +757,7 @@ export default function GuestPortalPage() {
                 {/* Submit Commit CTA */}
                 <button
                   onClick={handleCommitCTA}
-                  className="w-full py-4 rounded-xl bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(87,241,219,0.2)] active:scale-98"
+                  className="w-full py-4 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-98"
                 >
                   <span className="material-symbols-outlined text-sm select-none">payments</span>
                   COMMIT CAPITAL
@@ -765,7 +765,7 @@ export default function GuestPortalPage() {
 
                 {/* Timer Countdown */}
                 <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/5 text-xs text-[#8a9b9b] font-mono">
-                  <Clock className="w-4 h-4 text-[#57f1db]" />
+                  <Clock className="w-4 h-4 text-[#454955]" />
                   <span>
                     Deal closing in: <strong className="text-white font-bold">{dealData.daysLeft ?? 4}d {dealData.hoursLeft ?? 12}h</strong>
                   </span>
@@ -775,7 +775,7 @@ export default function GuestPortalPage() {
 
               {/* Encryption & Security Info */}
               <div className="px-2 flex items-start gap-3 text-xs text-[#8a9b9b] leading-normal">
-                <Lock className="w-4 h-4 text-[#57f1db] shrink-0 mt-0.5" />
+                <Lock className="w-4 h-4 text-[#454955] shrink-0 mt-0.5" />
                 <div>
                   <h5 className="font-bold text-white">Encrypted Digital Vault</h5>
                   <p className="text-[10px] mt-0.5">All transmissions, credentials, and digital signatures are encrypted using bank-grade AES-256 protocols.</p>
@@ -807,7 +807,7 @@ export default function GuestPortalPage() {
         </button>
         <button 
           onClick={handleCommitCTA}
-          className="bg-[#57f1db] text-[#003731] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(87,241,219,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5"
+          className="bg-[#454955] text-[#0d0a0b] rounded-xl px-5 py-2.5 shadow-[0_0_15px_rgba(69,73,85,0.2)] active:scale-95 transition-all font-mono text-[10px] uppercase font-bold flex items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-sm select-none">payments</span>
           Commit
@@ -818,7 +818,7 @@ export default function GuestPortalPage() {
       {showInsights && (
         <div id="insights-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#091015]">
+            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0d0a0b]">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Secure Insights Vault</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Project: {dealData.dealName}</p>
@@ -839,9 +839,9 @@ export default function GuestPortalPage() {
                 { name: 'phase_i_environmental_report.pdf', size: '12.6 MB', type: 'PDF' },
                 { name: 'title_commitment_draft.pdf', size: '890 KB', type: 'PDF' }
               ].map((doc) => (
-                <div key={doc.name} className="flex justify-between items-center p-3 border border-white/5 bg-black/20 rounded-xl hover:border-[#57f1db]/30 transition-all">
+                <div key={doc.name} className="flex justify-between items-center p-3 border border-white/5 bg-black/20 rounded-xl hover:border-[#454955]/30 transition-all">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-[#57f1db] text-xl select-none">description</span>
+                    <span className="material-symbols-outlined text-[#454955] text-xl select-none">description</span>
                     <div>
                       <p className="text-xs font-semibold text-white font-mono">{doc.name}</p>
                       <p className="text-[9px] text-[#8a9b9b] font-mono">{doc.type} · {doc.size}</p>
@@ -849,7 +849,7 @@ export default function GuestPortalPage() {
                   </div>
                   <button 
                     onClick={() => triggerDownload(doc.name)}
-                    className="p-2 rounded-lg bg-white/5 hover:bg-[#57f1db]/10 hover:text-[#57f1db] text-[#8a9b9b] transition-colors"
+                    className="p-2 rounded-lg bg-white/5 hover:bg-[#454955]/10 hover:text-[#454955] text-[#8a9b9b] transition-colors"
                     title="Download Document"
                   >
                     <FileDown className="w-4 h-4" />
@@ -858,10 +858,10 @@ export default function GuestPortalPage() {
               ))}
             </div>
 
-            <div className="p-5 border-t border-white/5 bg-[#091015]/50 flex justify-end">
+            <div className="p-5 border-t border-white/5 bg-[#0d0a0b]/50 flex justify-end">
               <button 
                 onClick={() => setShowInsights(false)}
-                className="px-5 py-2 rounded-lg bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] text-[10px] font-bold uppercase tracking-wider transition-colors"
+                className="px-5 py-2 rounded-lg bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] text-[10px] font-bold uppercase tracking-wider transition-colors"
               >
                 Close Vault
               </button>
@@ -874,7 +874,7 @@ export default function GuestPortalPage() {
       {showAskSponsor && (
         <div id="ask-sponsor-modal" className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
           <div className="glass-card w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#091015]">
+            <div className="p-5 border-b border-white/5 flex justify-between items-center bg-[#0d0a0b]">
               <div>
                 <h3 className="text-sm font-bold text-white uppercase tracking-wider font-mono">Inquire Sponsor</h3>
                 <p className="text-[10px] text-[#8a9b9b] mt-0.5">Direct Channel // {dealData.dealName}</p>
@@ -897,7 +897,7 @@ export default function GuestPortalPage() {
                   placeholder="Ask a question about the capital stack, construction timelines, zoning approvals, or underwriting models..."
                   rows={4}
                   required
-                  className="w-full p-4 bg-[#060f15]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#57f1db] transition-all"
+                  className="w-full p-4 bg-[#0d0a0b]/80 border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-[#454955] transition-all"
                 />
               </div>
 
@@ -913,7 +913,7 @@ export default function GuestPortalPage() {
                   id="ask-sponsor-submit-btn"
                   type="submit"
                   disabled={sendingSponsorMsg}
-                  className="flex-1 py-3 rounded-xl bg-[#57f1db] hover:bg-[#57f1db]/90 text-[#003731] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(87,241,219,0.2)]"
+                  className="flex-1 py-3 rounded-xl bg-[#454955] hover:bg-[#454955]/90 text-[#0d0a0b] font-bold text-xs uppercase tracking-wider transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(69,73,85,0.2)]"
                 >
                   {sendingSponsorMsg ? (
                     <span className="material-symbols-outlined text-sm animate-spin select-none">progress_activity</span>

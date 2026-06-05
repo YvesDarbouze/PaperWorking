@@ -46,8 +46,8 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-teal-50 rounded-xl flex items-center justify-center">
-            <Users className="w-4.5 h-4.5 text-teal-600" />
+          <div className="w-9 h-9 bg-[#F0F1F4] rounded-xl flex items-center justify-center">
+            <Users className="w-4.5 h-4.5 text-[#3a3e4a]" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-text-primary">Investor Syndication</h3>
@@ -89,8 +89,8 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
               >
                 {/* Name + Returning Badge */}
                 <div className="col-span-3 flex items-center gap-2 min-w-0">
-                  <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center shrink-0">
-                    <span className="text-xs font-semibold text-teal-700">
+                  <div className="w-8 h-8 bg-[#E8E9ED] rounded-full flex items-center justify-center shrink-0">
+                    <span className="text-xs font-semibold text-[#454955]">
                       {inv.investorName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                     </span>
                   </div>
@@ -130,7 +130,7 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
                   {inv.loiStatus === 'Drafted' && (
                     <button
                       onClick={() => onSendLOI(inv.id)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-teal-600 text-white text-xs font-medium rounded-lg hover:bg-teal-700 transition"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#3a3e4a] text-white text-xs font-medium rounded-lg hover:bg-[#454955] transition"
                     >
                       <FileSignature className="w-3 h-3" />
                       Send LOI
@@ -158,8 +158,8 @@ export default function SyndicationEngine({ investors, onInviteClick, onSendLOI,
       ) : (
         /* Empty State */
         <div className="flex flex-col items-center justify-center py-12 text-center bg-bg-surface border border-dashed border-border-accent rounded-2xl">
-          <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-3">
-            <Users className="w-6 h-6 text-teal-400" />
+          <div className="w-14 h-14 bg-[#F0F1F4] rounded-2xl flex items-center justify-center mb-3">
+            <Users className="w-6 h-6 text-[#6E7480]" />
           </div>
           <p className="text-sm font-medium text-text-secondary mb-1">No investors yet</p>
           <p className="text-xs text-text-secondary mb-4">Start building your investor syndicate</p>

@@ -77,8 +77,8 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
         {/* Header */}
         <div className="px-6 py-5 border-b border-border-accent flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center">
-              <UserPlus className="w-5 h-5 text-teal-600" />
+            <div className="w-10 h-10 bg-[#F0F1F4] rounded-full flex items-center justify-center">
+              <UserPlus className="w-5 h-5 text-[#3a3e4a]" />
             </div>
             <div>
               <h2 className="text-base font-semibold text-text-primary">Invite Investor</h2>
@@ -100,7 +100,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Smith"
-              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
             />
           </div>
 
@@ -114,7 +114,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="investor@email.com"
-                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
               />
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
                   value={pledgeAmount}
                   onChange={(e) => setPledgeAmount(e.target.value)}
                   placeholder="50,000"
-                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                 />
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
                   placeholder="25"
                   min="0"
                   max="100"
-                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                  className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
                 />
               </div>
             </div>
@@ -162,7 +162,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
                 onChange={(e) => setInterestRate(e.target.value)}
                 placeholder="8"
                 step="0.5"
-                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+                className="w-full pl-10 pr-4 py-3 border border-border-accent rounded-xl text-sm focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
               />
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function InvestorInviteDrawer({ isOpen, onClose, onInvite, dealNa
               onChange={(e) => setCustomTerms(e.target.value)}
               placeholder="Any additional terms, conditions, or notes for this investor..."
               rows={4}
-              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm resize-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition"
+              className="w-full border border-border-accent rounded-xl px-4 py-3 text-sm resize-none focus:border-[#454955] focus:ring-1 focus:ring-[#454955] transition"
             />
           </div>
 

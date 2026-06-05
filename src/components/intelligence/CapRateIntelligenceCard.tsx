@@ -177,7 +177,7 @@ function SemiCircleGauge({ value, maxValue, marketAvg }: GaugeProps) {
 
       {/* Center dot */}
       <circle cx={cx} cy={cy} r={6} fill={zone.color} />
-      <circle cx={cx} cy={cy} r={3} fill="var(--color-surface, #091015)" />
+      <circle cx={cx} cy={cy} r={3} fill="var(--color-surface, #0d0a0b)" />
 
       {/* Value text */}
       <text
@@ -196,7 +196,7 @@ function SemiCircleGauge({ value, maxValue, marketAvg }: GaugeProps) {
         x={cx}
         y={cy - 8}
         textAnchor="middle"
-        fill="var(--color-on-surface-variant, #bacac5)"
+        fill="var(--color-on-surface-variant, #9E9DA0)"
         fontSize="10"
         fontWeight="600"
         letterSpacing="0.1em"
@@ -209,7 +209,7 @@ function SemiCircleGauge({ value, maxValue, marketAvg }: GaugeProps) {
         x={cx - radius - 4}
         y={cy + 16}
         textAnchor="middle"
-        fill="var(--color-on-surface-variant, #bacac5)"
+        fill="var(--color-on-surface-variant, #9E9DA0)"
         fontSize="9"
         fontWeight="500"
       >
@@ -219,7 +219,7 @@ function SemiCircleGauge({ value, maxValue, marketAvg }: GaugeProps) {
         x={cx + radius + 4}
         y={cy + 16}
         textAnchor="middle"
-        fill="var(--color-on-surface-variant, #bacac5)"
+        fill="var(--color-on-surface-variant, #9E9DA0)"
         fontSize="9"
         fontWeight="500"
       >
@@ -362,7 +362,7 @@ export function CapRateIntelligenceCard({
             </span>
             <span
               className="text-base font-bold font-mono tabular-nums"
-              style={{ color: '#57f1db' }}
+              style={{ color: '#454955' }}
             >
               {fmtCompact(noi)}
             </span>

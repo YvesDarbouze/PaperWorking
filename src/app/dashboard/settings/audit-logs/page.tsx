@@ -44,7 +44,7 @@ export default function AuditLogsSettingsPage() {
                   <div className={`absolute left-[-26px] top-1.5 w-2 h-2 rounded-full border ${
                     isAlert
                       ? 'border-error bg-error/20 shadow-[0_0_8px_rgba(255,100,100,0.6)]'
-                      : 'border-pw-primary bg-pw-primary/20 shadow-[0_0_8px_rgba(87,241,219,0.6)]'
+                      : 'border-pw-primary bg-pw-primary/20 shadow-[0_0_8px_rgba(69,73,85,0.6)]'
                   }`} />
                   <p className="text-xs text-pw-black leading-relaxed">
                     <span className="font-bold text-pw-primary">{log.actorName}</span>{' '}

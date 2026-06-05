@@ -150,18 +150,18 @@ export default async function VendorProfilePage({
   const reviews = getDemoReviews();
 
   return (
-    <div className="min-h-screen bg-[#060f15] text-white font-sans antialiased">
+    <div className="min-h-screen bg-[#0d0a0b] text-white font-sans antialiased">
       {/* ── Nav ── */}
-      <nav className="sticky top-0 z-40 bg-[#060f15]/90 backdrop-blur-xl border-b border-white/5">
+      <nav className="sticky top-0 z-40 bg-[#0d0a0b]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-[#20B2AA] font-bold text-xl tracking-tighter">
+            <span className="text-[#454955] font-bold text-xl tracking-tighter">
               PaperWorking
             </span>
           </Link>
           <Link
             href="/dashboard/marketplace"
-            className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1"
+            className="text-sm text-[#9E9DA0] hover:text-white transition-colors flex items-center gap-1"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Marketplace
           </Link>
@@ -175,14 +175,14 @@ export default async function VendorProfilePage({
             {/* Profile Header */}
             <div className="glass-card rounded-xl border border-white/[0.06] p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center text-[#20B2AA] font-bold text-2xl">
+                <div className="w-16 h-16 rounded-xl bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center text-[#454955] font-bold text-2xl">
                   {vendor.companyName.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-xl font-bold leading-tight truncate">
                     {vendor.companyName}
                   </h1>
-                  <p className="text-sm text-[#20B2AA] font-medium">
+                  <p className="text-sm text-[#454955] font-medium">
                     {vendor.type}
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export default async function VendorProfilePage({
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {vendor.verified && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 text-[#20B2AA] text-[10px] font-bold uppercase">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#454955]/10 border border-[#454955]/20 text-[#454955] text-[10px] font-bold uppercase">
                     <BadgeCheck className="w-3 h-3" /> Verified
                   </span>
                 )}
@@ -219,7 +219,7 @@ export default async function VendorProfilePage({
                 <span className="text-sm font-bold font-mono">
                   {vendor.overallRating}
                 </span>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-[#9E9DA0]">
                   ({vendor.totalReviews} reviews)
                 </span>
               </div>
@@ -227,18 +227,18 @@ export default async function VendorProfilePage({
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                  <p className="text-xl font-bold font-mono text-[#20B2AA]">
+                  <p className="text-xl font-bold font-mono text-[#454955]">
                     {vendor.avgTurnaroundDays}d
                   </p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+                  <p className="text-[10px] text-[#9E9DA0] uppercase tracking-wider">
                     Avg. Turnaround
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                  <p className="text-xl font-bold font-mono text-[#20B2AA]">
+                  <p className="text-xl font-bold font-mono text-[#454955]">
                     {vendor.completedJobs ?? '—'}
                   </p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+                  <p className="text-[10px] text-[#9E9DA0] uppercase tracking-wider">
                     Completed Jobs
                   </p>
                 </div>
@@ -247,32 +247,32 @@ export default async function VendorProfilePage({
 
             {/* Contact & Details */}
             <div className="glass-card rounded-xl border border-white/[0.06] p-6 space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] mb-3">
                 Details
               </h3>
               <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3 text-slate-300">
-                  <MapPin className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
+                <div className="flex items-center gap-3 text-[#C0BEC2]">
+                  <MapPin className="w-4 h-4 text-[#454955] flex-shrink-0" />
                   <span>{vendor.licensingStates.join(', ')}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300">
-                  <Clock className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
+                <div className="flex items-center gap-3 text-[#C0BEC2]">
+                  <Clock className="w-4 h-4 text-[#454955] flex-shrink-0" />
                   <span>{vendor.availability}</span>
                 </div>
                 {vendor.phone && (
-                  <div className="flex items-center gap-3 text-slate-300">
-                    <Phone className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
+                  <div className="flex items-center gap-3 text-[#C0BEC2]">
+                    <Phone className="w-4 h-4 text-[#454955] flex-shrink-0" />
                     <span>{vendor.phone}</span>
                   </div>
                 )}
                 {vendor.website && (
-                  <div className="flex items-center gap-3 text-slate-300">
-                    <Globe className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
+                  <div className="flex items-center gap-3 text-[#C0BEC2]">
+                    <Globe className="w-4 h-4 text-[#454955] flex-shrink-0" />
                     <a
                       href={vendor.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-[#20B2AA] transition-colors truncate"
+                      className="hover:text-[#454955] transition-colors truncate"
                     >
                       {vendor.website.replace(/^https?:\/\//, '')}
                     </a>
@@ -280,7 +280,7 @@ export default async function VendorProfilePage({
                 )}
               </div>
               <div className="pt-3 border-t border-white/[0.04]">
-                <p className="text-xs text-slate-400 mb-1">Fee Range</p>
+                <p className="text-xs text-[#9E9DA0] mb-1">Fee Range</p>
                 <p className="text-lg font-bold font-mono">
                   {vendor.feeRangeLabel}
                 </p>
@@ -290,13 +290,13 @@ export default async function VendorProfilePage({
             {/* CTA */}
             <Link
               href="/login"
-              className="flex items-center justify-center w-full py-3.5 rounded-xl bg-[#20B2AA] text-[#003731] text-sm font-bold hover:bg-[#20B2AA]/90 transition-all shadow-[0_0_20px_rgba(32, 178, 170,0.2)]"
+              className="flex items-center justify-center w-full py-3.5 rounded-xl bg-[#454955] text-[#0d0a0b] text-sm font-bold hover:bg-[#454955]/90 transition-all shadow-[0_0_20px_rgba(69, 73, 85,0.2)]"
             >
               Request Quote
             </Link>
 
             {/* Disclosure */}
-            <p className="text-[10px] text-slate-500 leading-relaxed text-center">
+            <p className="text-[10px] text-[#6B6870] leading-relaxed text-center">
               PaperWorking does not vet vendors. You must verify credentials and references before engaging. All ratings reflect investor feedback.
             </p>
           </div>
@@ -306,11 +306,11 @@ export default async function VendorProfilePage({
             {/* Bio */}
             <div className="glass-card rounded-xl border border-white/[0.06] p-8">
               <h2 className="text-lg font-bold mb-4">About</h2>
-              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              <p className="text-sm text-[#C0BEC2] leading-relaxed whitespace-pre-line">
                 {vendor.bio}
               </p>
               {vendor.yearsExperience && (
-                <p className="text-sm text-slate-400 mt-3">
+                <p className="text-sm text-[#9E9DA0] mt-3">
                   <strong className="text-white">
                     {vendor.yearsExperience}+ years
                   </strong>{' '}
@@ -326,7 +326,7 @@ export default async function VendorProfilePage({
                 {vendor.specialties.map((s) => (
                   <span
                     key={s}
-                    className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-slate-300"
+                    className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-sm text-[#C0BEC2]"
                   >
                     {s}
                   </span>
@@ -342,7 +342,7 @@ export default async function VendorProfilePage({
                   {vendor.serviceAreas.map((zip) => (
                     <span
                       key={zip}
-                      className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-slate-400 font-mono"
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-[#9E9DA0] font-mono"
                     >
                       {zip}
                     </span>
@@ -364,14 +364,14 @@ export default async function VendorProfilePage({
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center text-xs font-bold text-slate-300">
+                        <div className="w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center text-xs font-bold text-[#C0BEC2]">
                           {review.investorName.charAt(0)}
                         </div>
                         <div>
                           <p className="text-sm font-bold">
                             {review.investorName}
                           </p>
-                          <p className="text-[10px] text-slate-500">
+                          <p className="text-[10px] text-[#6B6870]">
                             {review.createdAt}
                           </p>
                         </div>
@@ -385,19 +385,19 @@ export default async function VendorProfilePage({
                         ))}
                       </div>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">
+                    <p className="text-sm text-[#C0BEC2] leading-relaxed">
                       {review.feedback}
                     </p>
                     <div className="flex gap-4 mt-3">
-                      <span className="text-[10px] text-slate-500 uppercase">
+                      <span className="text-[10px] text-[#6B6870] uppercase">
                         Speed:{' '}
-                        <strong className="text-slate-300">
+                        <strong className="text-[#C0BEC2]">
                           {review.speedRating}/5
                         </strong>
                       </span>
-                      <span className="text-[10px] text-slate-500 uppercase">
+                      <span className="text-[10px] text-[#6B6870] uppercase">
                         Accuracy:{' '}
-                        <strong className="text-slate-300">
+                        <strong className="text-[#C0BEC2]">
                           {review.accuracyRating}/5
                         </strong>
                       </span>

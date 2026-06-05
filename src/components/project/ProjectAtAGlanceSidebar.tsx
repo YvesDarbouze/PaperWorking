@@ -326,7 +326,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-3 text-center transition-colors border-b-2 outline-none ${
               activeTab === tab
-                ? 'border-[#57f1db] text-[#57f1db]'
+                ? 'border-[#454955] text-[#454955]'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             }`}
           >
@@ -435,7 +435,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                   <div key={act.id} className="relative group text-xs">
                     {/* Timeline Node */}
                     <div 
-                      className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full border bg-zinc-950 transition-colors group-hover:bg-[#57f1db]"
+                      className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full border bg-zinc-950 transition-colors group-hover:bg-[#454955]"
                       style={{ borderColor: 'var(--border-ui)' }}
                     />
                     
@@ -454,7 +454,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                         {formatValueForLog(act.oldValue, act.fieldPath)}
                       </span>{' '}
                       to{' '}
-                      <span className="font-mono text-[#57f1db]">
+                      <span className="font-mono text-[#454955]">
                         {formatValueForLog(act.newValue, act.fieldPath)}
                       </span>
                     </p>
@@ -523,8 +523,8 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
                       style={{ borderColor: 'var(--border-ui)' }}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-[#57f1db]/10 border border-[#57f1db]/20 flex items-center justify-center shrink-0">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#57f1db]" />
+                        <div className="w-7 h-7 rounded-full bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center shrink-0">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#454955]" />
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-text-primary truncate">
@@ -560,7 +560,7 @@ export function ProjectAtAGlanceSidebar({ project }: ProjectAtAGlanceSidebarProp
             )}
             
             {/* Vetting Disclaimer */}
-            <p className="text-[9px] text-slate-500 leading-relaxed pt-2 border-t border-white/5 mt-4">
+            <p className="text-[9px] text-[#6B6870] leading-relaxed pt-2 border-t border-white/5 mt-4">
               PaperWorking does not vet vendors. You must verify credentials and references before engaging.
             </p>
           </div>

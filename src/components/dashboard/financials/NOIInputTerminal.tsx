@@ -33,7 +33,7 @@ export default function NOIInputTerminal({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Income Panel */}
-        <section className="glass-card rounded-xl overflow-hidden relative" style={{ background: "rgba(11, 20, 26, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+        <section className="glass-card rounded-xl overflow-hidden relative" style={{ background: "rgba(13, 10, 11, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
           <div className="p-6 border-b border-white/5 flex justify-between items-center bg-gradient-to-b from-primary/5 to-transparent">
             <h3 className="font-headline-md text-headline-md text-primary flex items-center gap-2">INCOME</h3>
           </div>
@@ -67,7 +67,7 @@ export default function NOIInputTerminal({
 
         {/* Expenses & Vacancy Panel */}
         <div className="space-y-6">
-          <section className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(11, 20, 26, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+          <section className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(13, 10, 11, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <h3 className="font-headline-md text-primary">Vacancy Assumption</h3>
@@ -89,7 +89,7 @@ export default function NOIInputTerminal({
             </div>
           </section>
 
-          <section className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(11, 20, 26, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+          <section className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(13, 10, 11, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
             <div className="flex flex-col gap-4">
               <div className="flex justify-between items-start">
                 <h3 className="font-headline-md text-primary">Operating Expenses</h3>

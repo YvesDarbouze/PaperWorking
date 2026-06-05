@@ -40,7 +40,7 @@ function grmColor(grm: number, marketGRM: number): string {
 }
 
 function grmSignal(grm: number, marketGRM: number): { label: string; className: string } {
-  if (grm <= marketGRM * 0.8) return { label: 'Strong Buy', className: 'bg-teal-400/10 border-teal-400/20 text-teal-400' };
+  if (grm <= marketGRM * 0.8) return { label: 'Strong Buy', className: 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]' };
   if (grm <= marketGRM) return { label: 'Buy', className: 'bg-blue-400/10 border-blue-400/20 text-blue-400' };
   if (grm <= marketGRM * 1.2) return { label: 'Hold', className: 'bg-amber-400/10 border-amber-400/20 text-amber-400' };
   return { label: 'Avoid', className: 'bg-red-400/10 border-red-400/20 text-red-400' };
@@ -114,7 +114,7 @@ export function GRMComparisonCard({
   if (deals.length === 0) {
     return (
       <div className={`rounded-xl border border-white/10 p-6 ${className}`} style={{ background: 'rgba(24,33,39,0.7)' }}>
-        <p className="text-sm text-slate-500 text-center py-8">Add deals to compare GRM across properties.</p>
+        <p className="text-sm text-[#6B6870] text-center py-8">Add deals to compare GRM across properties.</p>
       </div>
     );
   }
@@ -132,10 +132,10 @@ export function GRMComparisonCard({
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Deal Comparison</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Multi-Property GRM</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">Multi-Property GRM</p>
           </div>
         </div>
-        <span className="text-[10px] text-slate-500 font-mono">
+        <span className="text-[10px] text-[#6B6870] font-mono">
           {rankedDeals.length} deals · Mkt {marketGRM}x
         </span>
       </div>
@@ -143,18 +143,18 @@ export function GRMComparisonCard({
       {/* ── Summary Row ── */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">Avg GRM</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Avg GRM</p>
           <p className="text-lg font-bold text-white tabular-nums">{stats.avgGRM.toFixed(1)}x</p>
         </div>
-        <div className="rounded-lg bg-teal-400/[0.04] border border-teal-400/10 p-3 text-center">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1 flex items-center justify-center gap-1">
-            <Trophy className="w-3 h-3 text-teal-400" /> Best
+        <div className="rounded-lg bg-[#6E7480]/[0.04] border border-[#6E7480]/10 p-3 text-center">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-1 flex items-center justify-center gap-1">
+            <Trophy className="w-3 h-3 text-[#6E7480]" /> Best
           </p>
-          <p className="text-lg font-bold text-teal-400 tabular-nums">{stats.bestDeal?.grm.toFixed(1) ?? '—'}x</p>
+          <p className="text-lg font-bold text-[#6E7480] tabular-nums">{stats.bestDeal?.grm.toFixed(1) ?? '—'}x</p>
         </div>
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">Market</p>
-          <p className="text-lg font-bold text-slate-300 tabular-nums">{marketGRM}x</p>
+          <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Market</p>
+          <p className="text-lg font-bold text-[#C0BEC2] tabular-nums">{marketGRM}x</p>
         </div>
       </div>
 
@@ -168,8 +168,8 @@ export function GRMComparisonCard({
               {/* Row header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  {isBest && <Trophy className="w-3 h-3 text-teal-400 flex-shrink-0" />}
-                  <span className="text-xs text-slate-300 font-medium truncate">{deal.address}</span>
+                  {isBest && <Trophy className="w-3 h-3 text-[#6E7480] flex-shrink-0" />}
+                  <span className="text-xs text-[#C0BEC2] font-medium truncate">{deal.address}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className="text-xs font-bold tabular-nums" style={{ color: grmColor(deal.grm, marketGRM) }}>
@@ -190,7 +190,7 @@ export function GRMComparisonCard({
                 <span className="text-slate-700">÷</span>
                 <span>{fmtCompact(deal.grossAnnualRent)}/yr</span>
                 <span className="text-slate-700">·</span>
-                <span className={deal.vsMarket < 0 ? 'text-teal-400/70' : 'text-red-400/70'}>
+                <span className={deal.vsMarket < 0 ? 'text-[#6E7480]/70' : 'text-red-400/70'}>
                   {deal.vsMarket < 0 ? '' : '+'}{deal.vsMarket.toFixed(1)}x vs market
                 </span>
               </div>

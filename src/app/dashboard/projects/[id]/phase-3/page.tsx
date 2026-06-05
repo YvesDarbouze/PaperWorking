@@ -36,12 +36,12 @@ import { ProjectAtAGlanceSidebar } from '@/components/project/ProjectAtAGlanceSi
    Stitch Schemas: b795e973 (Hold Phase) + df9efa99 (Operations)
    "Luminous Glass" dark design — single-column mobile-first stack.
 
-   Phase 3 color accent: #57f1db (primary / teal) — Hold = active phase
+   Phase 3 color accent: #454955 (primary / teal) — Hold = active phase
    All save logic 100% preserved from original.
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_COLOR = '#57f1db';
-const PHASE_GLOW  = 'rgba(87, 241, 219, 0.4)';
+const PHASE_COLOR = '#454955';
+const PHASE_GLOW  = 'rgba(69, 73, 85, 0.4)';
 
 /* ── Rehab Tier Definitions ── */
 const REHAB_TIERS: { key: RehabTier; level: number; label: string; range: string }[] = [
@@ -387,13 +387,13 @@ export default function Phase3RehabPage() {
   /* ── Loading state ── */
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
             style={{ borderColor: PHASE_COLOR, borderTopColor: 'transparent' }}
           />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#bacac5]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9E9DA0]">
             Loading Workspace…
           </p>
         </div>
@@ -403,9 +403,9 @@ export default function Phase3RehabPage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="text-center space-y-3">
-          <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
+          <p className="text-sm font-bold text-[#9E9DA0]">Project not found.</p>
         </div>
       </div>
     );
@@ -425,12 +425,12 @@ export default function Phase3RehabPage() {
   const rehabPct = rehabTotal > 0 ? Math.round((rehabDone / rehabTotal) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-[#091015] relative">
+    <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#57f1db]/5 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#adc6ff]/5 blur-[100px] rounded-full" />
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#454955]/5 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#7A9EAA]/5 blur-[100px] rounded-full" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
@@ -461,10 +461,10 @@ export default function Phase3RehabPage() {
                     Phase: Hold & Rehab
                   </p>
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5]">
+                    <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0]">
                       Equity: {ownershipPct}%
                     </span>
-                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#57f1db]/15 text-[#57f1db]">
+                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#454955]/15 text-[#454955]">
                       Day {daysHeld}
                     </span>
                   </div>
@@ -476,12 +476,12 @@ export default function Phase3RehabPage() {
                 </div>
               </div>
               {/* Progress Bar */}
-              <div className="h-1.5 w-full bg-[#2d363d] rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-[#262328] rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
                     width: `${rehabPct}%`,
-                    background: `linear-gradient(90deg, #3cddc7 0%, ${PHASE_COLOR} 100%)`,
+                    background: `linear-gradient(90deg, #454955 0%, ${PHASE_COLOR} 100%)`,
                     boxShadow: `0 0 20px -5px ${PHASE_GLOW}`,
                   }}
                 />
@@ -490,8 +490,8 @@ export default function Phase3RehabPage() {
 
             {/* ── Rehab Tier Selector (Stitch schema: 5-column grid) ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#adc6ff]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] flex items-center gap-2">
+                <span className="material-symbols-outlined text-[#7A9EAA]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>architecture</span>
                 Rehab Strategy & Level
               </h2>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-2">
@@ -503,18 +503,18 @@ export default function Phase3RehabPage() {
                       onClick={() => handleTierChange(tier.key)}
                       className={`px-3 py-4 rounded-lg text-center transition-all ${
                         isActive
-                          ? 'bg-[#57f1db]/10 border border-[#57f1db]/50'
+                          ? 'bg-[#454955]/10 border border-[#454955]/50'
                           : 'glass-card border border-white/5 hover:bg-white/10'
                       }`}
                       style={isActive ? { boxShadow: `0 0 20px -5px ${PHASE_GLOW}` } : {}}
                     >
-                      <p className={`text-[10px] tracking-[0.05em] font-medium uppercase ${isActive ? 'text-[#57f1db]' : 'text-[#bacac5]'}`}>
+                      <p className={`text-[10px] tracking-[0.05em] font-medium uppercase ${isActive ? 'text-[#454955]' : 'text-[#9E9DA0]'}`}>
                         LEVEL {tier.level}
                       </p>
-                      <p className={`text-[14px] leading-[16px] tracking-[0.02em] font-semibold ${isActive ? 'text-[#57f1db] font-bold' : 'text-[#dae4ec]'}`}>
+                      <p className={`text-[14px] leading-[16px] tracking-[0.02em] font-semibold ${isActive ? 'text-[#454955] font-bold' : 'text-[#9E9DA0]'}`}>
                         {tier.label}
                       </p>
-                      <p className="text-[10px] text-[#bacac5]/60 mt-1">{tier.range}</p>
+                      <p className="text-[10px] text-[#9E9DA0]/60 mt-1">{tier.range}</p>
                     </button>
                   );
                 })}
@@ -523,21 +523,21 @@ export default function Phase3RehabPage() {
 
             {/* ── Budget vs Actual (Stitch schema: progress bar card) ── */}
             <section className="glass-card rounded-xl p-5 space-y-4 relative overflow-hidden">
-              <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#57f1db]/5 rounded-full blur-3xl" />
+              <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#454955]/5 rounded-full blur-3xl" />
               <div className="flex justify-between items-end">
                 <div>
-                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">Rehab Budget vs. Actual</h3>
+                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase">Rehab Budget vs. Actual</h3>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                    <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                       {fmtCurrency(budgetMetrics.totalSpent)}
                     </span>
-                    <span className="text-[#bacac5]">/ {fmtCurrency(budgetMetrics.budget)} Budgeted</span>
+                    <span className="text-[#9E9DA0]">/ {fmtCurrency(budgetMetrics.budget)} Budgeted</span>
                   </div>
                 </div>
                 {budgetMetrics.budgetLow > 0 && (
                   <div className="text-right">
-                    <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#adc6ff]">TIER RANGE</p>
-                    <p className="text-[14px] leading-[16px] font-semibold text-[#dae4ec]">
+                    <p className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#7A9EAA]">TIER RANGE</p>
+                    <p className="text-[14px] leading-[16px] font-semibold text-[#9E9DA0]">
                       {fmtDollar(budgetMetrics.budgetLow)} – {fmtDollar(budgetMetrics.budgetHigh)}
                     </p>
                   </div>
@@ -554,7 +554,7 @@ export default function Phase3RehabPage() {
                   }}
                 />
               </div>
-              <div className="flex justify-between text-[10px] font-medium tracking-[0.05em] text-[#bacac5]">
+              <div className="flex justify-between text-[10px] font-medium tracking-[0.05em] text-[#9E9DA0]">
                 <span>{budgetMetrics.pct}% ALLOCATED</span>
                 <span>{fmtCurrency(budgetMetrics.remaining)} REMAINING</span>
               </div>
@@ -564,9 +564,9 @@ export default function Phase3RehabPage() {
             <section className="grid grid-cols-2 gap-3">
               <DaysHeldClock daysHeld={daysHeld} acquisitionDate={project.financials?.acquisitionDate} fallbackDate={project.createdAt} />
               <div className="glass-card rounded-xl p-4 flex flex-col justify-between">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Daily Burn Rate</span>
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Daily Burn Rate</span>
                 <div className="space-y-1">
-                  <span className={`text-[24px] leading-[32px] font-semibold ${holdMetrics.dailyBurn > 100 ? 'text-[#ffb4ab]' : 'text-[#dae4ec]'}`}>
+                  <span className={`text-[24px] leading-[32px] font-semibold ${holdMetrics.dailyBurn > 100 ? 'text-[#ffb4ab]' : 'text-[#9E9DA0]'}`}>
                     {fmtCurrency(Math.round(holdMetrics.dailyBurn))}
                   </span>
                   <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#ffb4ab]">
@@ -580,7 +580,7 @@ export default function Phase3RehabPage() {
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Holding Costs (editable line items) */}
               <div className="space-y-4">
-                <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                   Holding Costs
                 </h2>
                 <HoldingCostsTracker
@@ -596,11 +596,11 @@ export default function Phase3RehabPage() {
               {/* Operational Income (Rent strategy) */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                  <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                     {project.financials?.exitStrategyType === 'Rent' ? 'Rental Income' : 'Exit Strategy'}
                   </h2>
                   {project.financials?.exitStrategyType === 'Rent' && (
-                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#57f1db]/20 text-[#57f1db] border border-[#57f1db]/30">
+                    <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[#454955]/20 text-[#454955] border border-[#454955]/30">
                       ACTIVE
                     </span>
                   )}
@@ -619,12 +619,12 @@ export default function Phase3RehabPage() {
             </section>
 
             {/* ── Current Estimated Value (ARV) — Hero Card ── */}
-            <section className="glass-card rounded-xl p-5 border border-[#57f1db]/20 relative group overflow-hidden">
-              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#57f1db]/5 rounded-full blur-3xl group-hover:bg-[#57f1db]/10 transition-all" />
+            <section className="glass-card rounded-xl p-5 border border-[#454955]/20 relative group overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#454955]/5 rounded-full blur-3xl group-hover:bg-[#454955]/10 transition-all" />
               <div className="flex justify-between items-center relative z-10">
                 <div>
-                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] mb-1">Current Estimated Value (ARV)</h3>
-                  <p className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#dae4ec]">
+                  <h3 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] mb-1">Current Estimated Value (ARV)</h3>
+                  <p className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#9E9DA0]">
                     {fmtCurrency(arvValue)}
                   </p>
                 </div>
@@ -633,16 +633,16 @@ export default function Phase3RehabPage() {
 
             {/* ── Live Project Metrics (Stitch schema: 2×2 grid + structured readouts) ── */}
             <section className="space-y-4">
-              <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#57f1db] uppercase flex items-center gap-2">
+              <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#454955] uppercase flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#57f1db] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#57f1db]" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#454955] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#454955]" />
                 </span>
                 Live Project Metrics
               </h2>
               <div className="grid grid-cols-2 gap-3">
                 {/* NOI — Structured MetricReadout */}
-                <div className="noi-value glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
+                <div className="noi-value glass-card p-4 rounded-xl border-l-4 border-l-[#454955]">
                   <MetricReadout
                     label="Net Operating Income"
                     result={noiResult}
@@ -651,54 +651,54 @@ export default function Phase3RehabPage() {
                     compact
                   />
                   {noiResult.value !== null && (
-                    <p className="text-[10px] text-[#bacac5]/60 mt-1">
+                    <p className="text-[10px] text-[#9E9DA0]/60 mt-1">
                       {fmtCurrency(Math.round((noiResult.value) / 12))}/month
                     </p>
                   )}
                 </div>
 
                 {/* Cash Flow — Structured MetricReadout */}
-                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#7A9EAA]">
                   <MetricReadout
                     label="Cash Flow"
                     result={cashFlowResult}
                     format="currency"
-                    accentColor="#adc6ff"
+                    accentColor="#7A9EAA"
                     compact
                   />
                   {cashFlowResult.value !== null && (
-                    <p className="text-[10px] text-[#bacac5]/60 mt-1">
+                    <p className="text-[10px] text-[#9E9DA0]/60 mt-1">
                       {fmtCurrency(Math.round(cashFlowResult.value / 12))}/month
                     </p>
                   )}
                 </div>
 
                 {/* Cap Rate + Cash-on-Cash — from deriveAllMetrics */}
-                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#adc6ff]">
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#7A9EAA]">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Cap Rate</span>
-                    <span className="text-[10px] font-bold text-[#adc6ff]">STABLE</span>
+                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Cap Rate</span>
+                    <span className="text-[10px] font-bold text-[#7A9EAA]">STABLE</span>
                   </div>
-                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     {liveMetrics ? fmtPct(liveMetrics.capRate) : '—'}
                   </span>
                   {liveMetrics && (
-                    <p className="text-[10px] text-[#bacac5]/60 mt-1">CoC: {fmtPct(liveMetrics.cashOnCashReturn)}</p>
+                    <p className="text-[10px] text-[#9E9DA0]/60 mt-1">CoC: {fmtPct(liveMetrics.cashOnCashReturn)}</p>
                   )}
                 </div>
 
                 {/* DSCR */}
-                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#57f1db]">
+                <div className="glass-card p-4 rounded-xl border-l-4 border-l-[#454955]">
                   <div className="flex justify-between items-start mb-1">
-                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">DSCR</span>
-                    <span className={`text-[10px] font-bold ${liveMetrics && liveMetrics.dscr >= 1.2 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                    <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">DSCR</span>
+                    <span className={`text-[10px] font-bold ${liveMetrics && liveMetrics.dscr >= 1.2 ? 'text-[#454955]' : 'text-[#ffb4ab]'}`}>
                       {liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE' : 'AT RISK'}
                     </span>
                   </div>
-                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     {liveMetrics ? liveMetrics.dscr.toFixed(2) : '—'}
                   </span>
-                  <p className="text-[10px] text-[#57f1db] mt-1">{liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE > 1.20' : 'Target > 1.20'}</p>
+                  <p className="text-[10px] text-[#454955] mt-1">{liveMetrics && liveMetrics.dscr >= 1.2 ? 'SAFE > 1.20' : 'Target > 1.20'}</p>
                 </div>
               </div>
 
@@ -717,7 +717,7 @@ export default function Phase3RehabPage() {
                     label="Operating Expense Ratio"
                     result={oerResult}
                     format="percent"
-                    accentColor="#adc6ff"
+                    accentColor="#7A9EAA"
                   />
                 </div>
               </div>
@@ -725,7 +725,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Rehab Pipeline Tracker ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Rehab Pipeline
               </h2>
               <RehabSequenceTracker
@@ -736,7 +736,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Scope of Work ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Scope of Work
               </h2>
               <ScopeOfWorkForm items={scopeOfWork} onChange={setScopeOfWork} />
@@ -744,7 +744,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Bids & Hiring ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Bids & Hiring
               </h2>
               <GCBidUploader
@@ -760,7 +760,7 @@ export default function Phase3RehabPage() {
 
             {/* ── CapEx Comparative Table ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 CapEx Tracker
               </h2>
               <CapExComparativeTable tasks={rehabTasks} onChange={setRehabTasks} />
@@ -768,7 +768,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Contractor Draw Schedule ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Draw Schedule
               </h2>
               <ContractorDrawSchedule draws={drawSchedule} onChange={handleDrawScheduleChange} totalBudget={totalBudget} />
@@ -776,7 +776,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Rehab Expense Tracker ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Rehab Expenses
               </h2>
               <RehabExpenseTracker expenses={rehabExpenses} onChange={setRehabExpenses} totalBudget={totalBudget} />
@@ -784,7 +784,7 @@ export default function Phase3RehabPage() {
 
             {/* ── Site Visit Logs ── */}
             <section className="space-y-4">
-              <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 Site Visit Log
               </h2>
               <SiteVisitLogTracker logs={siteVisitLogs} onChange={setSiteVisitLogs} />
@@ -813,26 +813,26 @@ export default function Phase3RehabPage() {
       <div className="sticky bottom-0 z-30 w-full border-t border-white/10">
         <div
           className="glass-card rounded-t-xl backdrop-blur-xl"
-          style={{ background: 'rgba(11, 20, 26, 0.85)' }}
+          style={{ background: 'rgba(13, 10, 11, 0.85)' }}
         >
           <div className="max-w-4xl mx-auto px-5 md:px-10 py-3 flex items-center justify-between gap-4">
             {/* Formula breakdown */}
             <div className="flex items-center gap-2 text-[11px] tracking-wide overflow-x-auto" style={{ fontVariantNumeric: 'tabular-nums' }}>
-              <span className="text-[#bacac5] whitespace-nowrap">Gross Income</span>
-              <span className="text-[#dae4ec] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.grossIncome))}</span>
-              <span className="text-[#bacac5]">−</span>
-              <span className="text-[#bacac5] whitespace-nowrap">Vacancy</span>
+              <span className="text-[#9E9DA0] whitespace-nowrap">Gross Income</span>
+              <span className="text-[#9E9DA0] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.grossIncome))}</span>
+              <span className="text-[#9E9DA0]">−</span>
+              <span className="text-[#9E9DA0] whitespace-nowrap">Vacancy</span>
               <span className="text-[#ffb4ab] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.vacancyLoss))}</span>
-              <span className="text-[#bacac5]">−</span>
-              <span className="text-[#bacac5] whitespace-nowrap">OpEx</span>
+              <span className="text-[#9E9DA0]">−</span>
+              <span className="text-[#9E9DA0] whitespace-nowrap">OpEx</span>
               <span className="text-[#ffb4ab] font-semibold whitespace-nowrap">{fmtCurrency(Math.round(noiFormula.opex))}</span>
-              <span className="text-[#bacac5]">=</span>
+              <span className="text-[#9E9DA0]">=</span>
             </div>
 
             {/* NOI value + state pill */}
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#bacac5]">NOI</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#9E9DA0]">NOI</p>
                 <p
                   className="text-[20px] leading-[24px] font-bold"
                   style={{ color: '#15803D', fontVariantNumeric: 'tabular-nums' }}

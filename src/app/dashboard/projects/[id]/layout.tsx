@@ -148,7 +148,7 @@ function Sparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
       <polyline
         points={points}
         fill="none"
-        stroke={isUp ? '#20B2AA' : '#F06543'}
+        stroke={isUp ? '#454955' : '#F06543'}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -361,7 +361,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
               </span>
               
               {/* Strategy chip */}
-              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border bg-teal-500/10 text-teal-400 border-teal-500/20">
+              <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border bg-[#454955]/10 text-[#6E7480] border-[#454955]/20">
                 {strategy}
               </span>
               

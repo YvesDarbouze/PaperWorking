@@ -473,11 +473,11 @@ export default function ProjectCreationWizard({
   const progressPercent = ((isReviewStep ? activeQuestions.length : activeIndex) / activeQuestions.length) * 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col min-h-screen bg-[#091015] selection:bg-primary/30 overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col min-h-screen bg-[#0d0a0b] selection:bg-primary/30 overflow-hidden">
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#0566d9]/5 blur-[100px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#7A9EAA]/5 blur-[100px] rounded-full" />
         {/* Obsidian dot pattern */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -486,7 +486,7 @@ export default function ProjectCreationWizard({
       </div>
 
       {/* ── Top Navigation Bar (Stitch schema) ── */}
-      <header className="fixed top-0 w-full z-50 bg-[#091015]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-5 md:px-10">
+      <header className="fixed top-0 w-full z-50 bg-[#0d0a0b]/80 backdrop-blur-xl border-b border-white/10 h-16 flex items-center justify-between px-5 md:px-10">
         <button
           onClick={() => {
             if (isDirtyRef.current) {
@@ -495,12 +495,12 @@ export default function ProjectCreationWizard({
               onClose();
             }
           }}
-          className="text-[#bacac5] hover:text-[#57f1db] transition-colors active:scale-95 duration-200 flex items-center"
+          className="text-[#9E9DA0] hover:text-[#454955] transition-colors active:scale-95 duration-200 flex items-center"
           aria-label="Close"
         >
           <X className="w-5 h-5" />
         </button>
-        <h1 className="text-[24px] leading-[32px] font-bold text-[#57f1db] tracking-tight">
+        <h1 className="text-[24px] leading-[32px] font-bold text-[#454955] tracking-tight">
           New Project
         </h1>
         <div className="w-10" /> {/* Spacer for centering */}
@@ -514,13 +514,13 @@ export default function ProjectCreationWizard({
           <div className="space-y-4">
             <div className="flex justify-between items-end">
               <div className="flex flex-col gap-1">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase">
                   {isReviewStep
                     ? `Review — ${activeQuestions.length} questions complete`
                     : `Step ${activeIndex + 1} of ${activeQuestions.length}`}
                 </span>
                 {!isReviewStep && activeQuestion && (
-                  <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                  <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                     {getCategoryLabel(activeQuestion)}
                   </span>
                 )}
@@ -531,8 +531,8 @@ export default function ProjectCreationWizard({
                 className="h-full rounded-full transition-all duration-700 ease-out"
                 style={{
                   width: `${progressPercent}%`,
-                  background: 'linear-gradient(90deg, #3cddc7 0%, #57f1db 100%)',
-                  boxShadow: '0 0 10px rgba(87, 241, 219, 0.5)',
+                  background: 'linear-gradient(90deg, #454955 0%, #454955 100%)',
+                  boxShadow: '0 0 10px rgba(69, 73, 85, 0.5)',
                 }}
               />
             </div>
@@ -543,10 +543,10 @@ export default function ProjectCreationWizard({
             /* ═══ REVIEW STEP ═══ */
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <div className="text-center max-w-2xl mx-auto">
-                <h2 className="text-[32px] leading-[40px] font-bold tracking-tight text-[#dae4ec] mb-4">
+                <h2 className="text-[32px] leading-[40px] font-bold tracking-tight text-[#9E9DA0] mb-4">
                   Review &amp; Confirm
                 </h2>
-                <p className="text-[16px] leading-[24px] text-[#bacac5]">
+                <p className="text-[16px] leading-[24px] text-[#9E9DA0]">
                   Verify the inputs before creating the Project folder.
                 </p>
               </div>
@@ -588,7 +588,7 @@ export default function ProjectCreationWizard({
                     {activeQuestion.prompt}
                   </h2>
                   {activeQuestion.subtext && (
-                    <p className="text-[16px] leading-[24px] text-[#bacac5]">
+                    <p className="text-[16px] leading-[24px] text-[#9E9DA0]">
                       {activeQuestion.subtext}
                     </p>
                   )}
@@ -604,15 +604,15 @@ export default function ProjectCreationWizard({
                         value={getNestedField(formData, activeQuestion.field) || ''}
                         onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
                         placeholder={activeQuestion.placeholder}
-                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none transition-all duration-300"
+                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#9E9DA0]/50 focus:outline-none transition-all duration-300"
                         style={{
-                          background: 'rgba(24, 33, 39, 0.6)',
+                          background: 'rgba(30, 27, 32, 0.6)',
                           backdropFilter: 'blur(12px)',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#57f1db';
-                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                          e.currentTarget.style.borderColor = '#454955';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(69, 73, 85, 0.2)';
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -630,15 +630,15 @@ export default function ProjectCreationWizard({
                         value={getNestedField(formData, activeQuestion.field) || ''}
                         onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
                         placeholder={activeQuestion.placeholder}
-                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none font-mono transition-all duration-300"
+                        className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#9E9DA0]/50 focus:outline-none font-mono transition-all duration-300"
                         style={{
-                          background: 'rgba(24, 33, 39, 0.6)',
+                          background: 'rgba(30, 27, 32, 0.6)',
                           backdropFilter: 'blur(12px)',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#57f1db';
-                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                          e.currentTarget.style.borderColor = '#454955';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(69, 73, 85, 0.2)';
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -651,21 +651,21 @@ export default function ProjectCreationWizard({
                   {/* CURRENCY */}
                   {activeQuestion.type === 'currency' && (
                     <div className="relative group">
-                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[#bacac5] text-[18px] font-bold font-mono z-10">$</span>
+                      <span className="absolute left-6 top-1/2 -translate-y-1/2 text-[#9E9DA0] text-[18px] font-bold font-mono z-10">$</span>
                       <input
                         type="number"
                         value={getNestedField(formData, activeQuestion.field) || ''}
                         onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
                         placeholder={activeQuestion.placeholder || '0.00'}
-                        className="w-full h-[72px] pl-12 pr-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#bacac5]/50 focus:outline-none font-mono transition-all duration-300"
+                        className="w-full h-[72px] pl-12 pr-6 rounded-xl text-[18px] leading-[28px] text-white placeholder:text-[#9E9DA0]/50 focus:outline-none font-mono transition-all duration-300"
                         style={{
-                          background: 'rgba(24, 33, 39, 0.6)',
+                          background: 'rgba(30, 27, 32, 0.6)',
                           backdropFilter: 'blur(12px)',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#57f1db';
-                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                          e.currentTarget.style.borderColor = '#454955';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(69, 73, 85, 0.2)';
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -684,14 +684,14 @@ export default function ProjectCreationWizard({
                         onChange={(e) => updateFormNested(activeQuestion.field, e.target.value)}
                         className="w-full h-[72px] px-6 rounded-xl text-[18px] leading-[28px] text-white focus:outline-none font-mono transition-all duration-300"
                         style={{
-                          background: 'rgba(24, 33, 39, 0.6)',
+                          background: 'rgba(30, 27, 32, 0.6)',
                           backdropFilter: 'blur(12px)',
                           border: '1px solid rgba(255, 255, 255, 0.08)',
                           colorScheme: 'dark',
                         }}
                         onFocus={(e) => {
-                          e.currentTarget.style.borderColor = '#57f1db';
-                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(87, 241, 219, 0.2)';
+                          e.currentTarget.style.borderColor = '#454955';
+                          e.currentTarget.style.boxShadow = '0 0 0 1px rgba(69, 73, 85, 0.2)';
                         }}
                         onBlur={(e) => {
                           e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -709,13 +709,13 @@ export default function ProjectCreationWizard({
                           id: 1, type: 'acquisition', title: 'Acquisition',
                           desc: 'Find out if the deal is worth doing. Run the numbers before you spend a dollar.',
                           icon: 'analytics',
-                          color: '#57f1db',
+                          color: '#454955',
                         },
                         {
                           id: 2, type: 'purchase', title: 'Purchase',
                           desc: 'You like the deal. Now fund it. Walk through closing, financing, and every cost before the keys change hands.',
                           icon: 'receipt_long',
-                          color: '#adc6ff',
+                          color: '#7A9EAA',
                         },
                         {
                           id: 3, type: 'hold', title: 'Hold',
@@ -727,7 +727,7 @@ export default function ProjectCreationWizard({
                           id: 4, type: 'exit', title: 'Exit',
                           desc: 'Close it out or keep it producing income. This is where the whole lifecycle pays off.',
                           icon: 'trending_up',
-                          color: '#62fae3',
+                          color: '#5aaa3f',
                         },
                       ].map((phase) => {
                         const isSelected = formData.startingPhase === phase.id;
@@ -749,7 +749,7 @@ export default function ProjectCreationWizard({
                             style={{
                               background: isSelected
                                 ? `${phase.color}08`
-                                : 'linear-gradient(135deg, rgba(24,33,39,0.6) 0%, rgba(11,20,26,0.8) 100%)',
+                                : 'linear-gradient(135deg, rgba(24,33,39,0.6) 0%, rgba(13,10,11,0.8) 100%)',
                               backdropFilter: 'blur(16px)',
                               border: `1px solid ${isSelected ? `${phase.color}45` : 'rgba(255,255,255,0.08)'}`,
                               boxShadow: isSelected ? `0 0 24px -8px ${phase.color}30` : '0 4px 16px rgba(0,0,0,0.2)',
@@ -795,8 +795,8 @@ export default function ProjectCreationWizard({
                         ${formData.startingPhase === 4 ? 'opacity-100 translate-y-0 mt-6' : 'opacity-0 translate-y-2 pointer-events-none mt-0 h-0 p-0 overflow-hidden border-0'}`}
                       >
                         <div className="flex flex-col">
-                          <span className="text-[14px] leading-[16px] font-semibold text-[#dae4ec] tracking-wide">Retroactive entry</span>
-                          <span className="text-[12px] text-[#bacac5] mt-1">I'm entering a deal I've already completed</span>
+                          <span className="text-[14px] leading-[16px] font-semibold text-[#9E9DA0] tracking-wide">Retroactive entry</span>
+                          <span className="text-[12px] text-[#9E9DA0] mt-1">I'm entering a deal I've already completed</span>
                         </div>
                         <label className="relative inline-flex items-center cursor-pointer">
                           <input 
@@ -805,7 +805,7 @@ export default function ProjectCreationWizard({
                             checked={formData.isCompleted === true}
                             onChange={(e) => updateFormNested('isCompleted', e.target.checked)}
                           />
-                          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#57f1db]"></div>
+                          <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#454955]"></div>
                         </label>
                       </div>
                     </div>
@@ -829,26 +829,26 @@ export default function ProjectCreationWizard({
                               type="button"
                               onClick={() => updateFormNested(activeQuestion.field, opt.value)}
                               className={`w-full rounded-xl p-4 flex items-center cursor-pointer group transition-all duration-300 border text-left
-                                ${selected ? 'border-[#57f1db] shadow-[0_0_20px_-10px_#57f1db]' : 'border-white/10 hover:border-[#57f1db]/40'}
+                                ${selected ? 'border-[#454955] shadow-[0_0_20px_-10px_#454955]' : 'border-white/10 hover:border-[#454955]/40'}
                               `}
                               style={{
                                 background: selected
-                                  ? 'rgba(87, 241, 219, 0.05)'
+                                  ? 'rgba(69, 73, 85, 0.05)'
                                   : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)',
                                 backdropFilter: 'blur(20px)',
                               }}
                             >
-                              <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#57f1db] mr-4 shrink-0 group-hover:scale-110 transition-transform">
+                              <div className="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[#454955] mr-4 shrink-0 group-hover:scale-110 transition-transform">
                                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
                                   {config.icon}
                                 </span>
                               </div>
                               <div className="flex-grow">
-                                <h3 className="text-[18px] leading-[24px] font-semibold text-[#dae4ec]">{config.label}</h3>
-                                <p className="text-[14px] leading-[20px] text-[#bacac5] opacity-80">{config.description}</p>
+                                <h3 className="text-[18px] leading-[24px] font-semibold text-[#9E9DA0]">{config.label}</h3>
+                                <p className="text-[14px] leading-[20px] text-[#9E9DA0] opacity-80">{config.description}</p>
                               </div>
-                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${selected ? 'border-[#57f1db]' : 'border-[#859490]'}`}>
-                                <div className={`w-3 h-3 rounded-full bg-[#57f1db] transition-all ${selected ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
+                              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${selected ? 'border-[#454955]' : 'border-[#859490]'}`}>
+                                <div className={`w-3 h-3 rounded-full bg-[#454955] transition-all ${selected ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} />
                               </div>
                             </button>
                           );
@@ -858,7 +858,7 @@ export default function ProjectCreationWizard({
                         <div className="mt-8 border-t border-white/5 pt-6 w-full">
                           <button
                             type="button"
-                            className="flex items-center text-[#57f1db] hover:underline decoration-[#57f1db]/30 transition-all font-medium text-[14px]"
+                            className="flex items-center text-[#454955] hover:underline decoration-[#454955]/30 transition-all font-medium text-[14px]"
                             onClick={() => {
                               setExplainerOpen(prev => {
                                 const next = !prev;
@@ -887,15 +887,15 @@ export default function ProjectCreationWizard({
                             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
                               <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
                                 <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">RENTAL</div>
-                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">Ideal for stable, passive income. We'll set up ongoing maintenance schedules and lease tracking.</p>
+                                <p className="text-[12px] leading-relaxed text-[#9E9DA0] opacity-80">Ideal for stable, passive income. We'll set up ongoing maintenance schedules and lease tracking.</p>
                               </div>
                               <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
                                 <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">FLIP</div>
-                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">High-velocity projects. We'll focus on renovation budgets, contractor timelines, and resale math.</p>
+                                <p className="text-[12px] leading-relaxed text-[#9E9DA0] opacity-80">High-velocity projects. We'll focus on renovation budgets, contractor timelines, and resale math.</p>
                               </div>
                               <div className="rounded-lg p-4 bg-white/5 border border-white/10" style={{ background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%)', backdropFilter: 'blur(20px)' }}>
                                 <div className="text-[#ffb875] font-semibold text-[12px] tracking-wide mb-2 uppercase">BRRRR</div>
-                                <p className="text-[12px] leading-relaxed text-[#bacac5] opacity-80">A multi-phase cycle. We track the conversion from short-term hard money to long-term refinance.</p>
+                                <p className="text-[12px] leading-relaxed text-[#9E9DA0] opacity-80">A multi-phase cycle. We track the conversion from short-term hard money to long-term refinance.</p>
                               </div>
                             </div>
                           )}
@@ -912,25 +912,25 @@ export default function ProjectCreationWizard({
                               onClick={() => updateFormNested(activeQuestion.field, opt.value)}
                               className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
                                 ${selected
-                                  ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
-                                  : 'border border-white/[0.12] hover:border-[#57f1db]/30'
+                                  ? 'border border-[#454955] shadow-[0_0_20px_-10px_rgba(69,73,85,0.5)]'
+                                  : 'border border-white/[0.12] hover:border-[#454955]/30'
                                 }`}
                               style={{
                                 background: selected
-                                  ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
+                                  ? 'linear-gradient(135deg, rgba(69, 73, 85, 0.15) 0%, rgba(69, 73, 85, 0.05) 100%)'
                                   : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
                                 backdropFilter: 'blur(24px)',
                               }}
                             >
-                              <div className={`p-3 rounded-lg transition-transform group-hover:scale-110 ${selected ? 'bg-[#57f1db]/20 text-[#57f1db]' : 'bg-white/5 text-[#bacac5]'}`}>
+                              <div className={`p-3 rounded-lg transition-transform group-hover:scale-110 ${selected ? 'bg-[#454955]/20 text-[#454955]' : 'bg-white/5 text-[#9E9DA0]'}`}>
                                 {selected ? <Check className="w-5 h-5" /> : <Target className="w-5 h-5" />}
                               </div>
                               <div className="flex flex-col">
-                                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
+                                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] mb-1">
                                   {opt.label}
                                 </span>
                                 {opt.description && (
-                                  <span className="text-[14px] leading-[20px] text-[#bacac5]">
+                                  <span className="text-[14px] leading-[20px] text-[#9E9DA0]">
                                     {opt.description}
                                   </span>
                                 )}
@@ -957,21 +957,21 @@ export default function ProjectCreationWizard({
                           <button
                             type="button"
                             onClick={() => setUseManualAddress(true)}
-                            className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] transition-colors uppercase underline underline-offset-2"
+                            className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] hover:text-[#454955] transition-colors uppercase underline underline-offset-2"
                           >
                             Enter address manually instead
                           </button>
                         </>
                       ) : formData.mlsListingKey ? (
                         <div className="glass-card rounded-xl overflow-hidden">
-                          <div className="flex items-center justify-between px-5 py-3 bg-[#57f1db]/10 border-b border-white/10">
-                            <span className="text-[12px] font-medium tracking-[0.05em] text-[#57f1db] uppercase">
+                          <div className="flex items-center justify-between px-5 py-3 bg-[#454955]/10 border-b border-white/10">
+                            <span className="text-[12px] font-medium tracking-[0.05em] text-[#454955] uppercase">
                               MLS Listing Selected
                             </span>
                             <button
                               type="button"
                               onClick={clearAddress}
-                              className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] flex items-center gap-1 uppercase transition-colors"
+                              className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] hover:text-[#454955] flex items-center gap-1 uppercase transition-colors"
                             >
                               <X className="w-3 h-3" /> Clear
                             </button>
@@ -985,10 +985,10 @@ export default function ProjectCreationWizard({
                               />
                             )}
                             <div className="space-y-1">
-                              <p className="text-[14px] font-semibold text-[#dae4ec]">{formData.address}</p>
-                              <div className="flex gap-3 text-[12px] text-[#bacac5] font-mono">
+                              <p className="text-[14px] font-semibold text-[#9E9DA0]">{formData.address}</p>
+                              <div className="flex gap-3 text-[12px] text-[#9E9DA0] font-mono">
                                 {formData.mlsListPrice && (
-                                  <span className="font-bold text-[#57f1db]">
+                                  <span className="font-bold text-[#454955]">
                                     ${formData.mlsListPrice.toLocaleString()}
                                   </span>
                                 )}
@@ -1015,7 +1015,7 @@ export default function ProjectCreationWizard({
                           />
                           {isAddressComplete ? (
                             <div className="glass-card rounded-xl p-4 text-[12px] font-mono flex items-center justify-between">
-                              <span className="text-[#dae4ec]">
+                              <span className="text-[#9E9DA0]">
                                 {formData.street}, {formData.city}, {formData.state} {formData.zip}
                               </span>
                               <button
@@ -1034,7 +1034,7 @@ export default function ProjectCreationWizard({
                           <button
                             type="button"
                             onClick={() => setUseManualAddress(false)}
-                            className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] hover:text-[#57f1db] transition-colors uppercase underline underline-offset-2"
+                            className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] hover:text-[#454955] transition-colors uppercase underline underline-offset-2"
                           >
                             Search MLS instead
                           </button>
@@ -1061,25 +1061,25 @@ export default function ProjectCreationWizard({
                             }}
                             className={`p-5 rounded-xl cursor-pointer transition-all duration-300 group flex items-start gap-4 text-left
                               ${isSelected
-                                ? 'border border-[#57f1db] shadow-[0_0_20px_-10px_rgba(87,241,219,0.5)]'
-                                : 'border border-white/[0.12] hover:border-[#57f1db]/30'
+                                ? 'border border-[#454955] shadow-[0_0_20px_-10px_rgba(69,73,85,0.5)]'
+                                : 'border border-white/[0.12] hover:border-[#454955]/30'
                               }`}
                             style={{
                               background: isSelected
-                                ? 'linear-gradient(135deg, rgba(87, 241, 219, 0.15) 0%, rgba(87, 241, 219, 0.05) 100%)'
+                                ? 'linear-gradient(135deg, rgba(69, 73, 85, 0.15) 0%, rgba(69, 73, 85, 0.05) 100%)'
                                 : 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
                               backdropFilter: 'blur(24px)',
                             }}
                           >
-                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? 'border-[#57f1db] bg-[#57f1db]' : 'border-[#bacac5]/50'}`}>
-                              {isSelected && <Check className="w-3 h-3 text-[#003731]" />}
+                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? 'border-[#454955] bg-[#454955]' : 'border-[#9E9DA0]/50'}`}>
+                              {isSelected && <Check className="w-3 h-3 text-[#0d0a0b]" />}
                             </div>
                             <div className="flex flex-col">
-                              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#dae4ec] mb-1">
+                              <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0] mb-1">
                                 {opt.label}
                               </span>
                               {opt.description && (
-                                <span className="text-[14px] leading-[20px] text-[#bacac5]">
+                                <span className="text-[14px] leading-[20px] text-[#9E9DA0]">
                                   {opt.description}
                                 </span>
                               )}
@@ -1093,7 +1093,7 @@ export default function ProjectCreationWizard({
                   {/* FILE UPLOAD — Glass dropzone */}
                   {activeQuestion.type === 'file-upload' && (
                     <div
-                      className="rounded-xl p-8 flex flex-col items-center justify-center text-center relative group transition-all duration-300 cursor-pointer hover:border-[#57f1db]/30"
+                      className="rounded-xl p-8 flex flex-col items-center justify-center text-center relative group transition-all duration-300 cursor-pointer hover:border-[#454955]/30"
                       style={{
                         background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%)',
                         backdropFilter: 'blur(24px)',
@@ -1105,14 +1105,14 @@ export default function ProjectCreationWizard({
                         onChange={handleFileChange}
                         className="absolute inset-0 opacity-0 cursor-pointer"
                       />
-                      <UploadCloud className="w-10 h-10 text-[#bacac5] mb-3 group-hover:text-[#57f1db] transition-colors" />
-                      <span className="text-[14px] font-semibold text-[#dae4ec] tracking-[0.02em] uppercase">
+                      <UploadCloud className="w-10 h-10 text-[#9E9DA0] mb-3 group-hover:text-[#454955] transition-colors" />
+                      <span className="text-[14px] font-semibold text-[#9E9DA0] tracking-[0.02em] uppercase">
                         {getNestedField(formData, activeQuestion.field)
                           ? 'Replace file'
                           : 'Choose file or drag here'}
                       </span>
                       {getNestedField(formData, activeQuestion.field) && (
-                        <span className="text-[12px] font-mono text-[#bacac5] mt-2 max-w-[280px] truncate">
+                        <span className="text-[12px] font-mono text-[#9E9DA0] mt-2 max-w-[280px] truncate">
                           Uploaded: {getNestedField(formData, activeQuestion.field)}
                         </span>
                       )}
@@ -1134,7 +1134,7 @@ export default function ProjectCreationWizard({
           {/* Subtle security indicator (Stitch schema) */}
           {!isReviewStep && (
             <div className="pt-4 opacity-20 pointer-events-none select-none hidden md:block">
-              <div className="flex items-center gap-3 text-[#bacac5]">
+              <div className="flex items-center gap-3 text-[#9E9DA0]">
                 <Key className="w-4 h-4" />
                 <span className="text-[12px] font-medium tracking-[0.2em] uppercase">
                   Secure Data Synchronization Active
@@ -1146,12 +1146,12 @@ export default function ProjectCreationWizard({
       </main>
 
       {/* ── Bottom Navigation Bar (Stitch schema) ── */}
-      <nav className="fixed bottom-0 left-0 w-full z-50 bg-[#141d23]/60 backdrop-blur-2xl border-t border-white/[0.12] rounded-t-xl">
+      <nav className="fixed bottom-0 left-0 w-full z-50 bg-[#161318]/60 backdrop-blur-2xl border-t border-white/[0.12] rounded-t-xl">
         <div className="max-w-[640px] mx-auto px-8 py-5 flex justify-between items-center">
           {/* Back */}
           <button
             onClick={handleBack}
-            className="flex items-center gap-2 text-[#bacac5] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#57f1db] transition-all active:scale-95 duration-150"
+            className="flex items-center gap-2 text-[#9E9DA0] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#454955] transition-all active:scale-95 duration-150"
           >
             <ChevronLeft className="w-5 h-5" />
             {activeIndex === 0 ? 'Exit' : 'Back'}
@@ -1162,7 +1162,7 @@ export default function ProjectCreationWizard({
             {!isReviewStep && activeQuestion && !activeQuestion.required && (
               <button
                 onClick={handleSkip}
-                className="hidden md:flex items-center gap-2 text-[#bacac5] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#57f1db] transition-all active:scale-95 duration-150"
+                className="hidden md:flex items-center gap-2 text-[#9E9DA0] text-[14px] leading-[16px] font-semibold tracking-[0.02em] hover:text-[#454955] transition-all active:scale-95 duration-150"
               >
                 Skip
               </button>
@@ -1173,7 +1173,7 @@ export default function ProjectCreationWizard({
               <button
                 onClick={handleFinalSubmit}
                 disabled={isSubmitting}
-                className="flex items-center gap-3 bg-[#57f1db] text-[#003731] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-3 bg-[#454955] text-[#0d0a0b] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Creating...' : 'Confirm & Create'}
                 {!isSubmitting && <Check className="w-5 h-5" />}
@@ -1182,7 +1182,7 @@ export default function ProjectCreationWizard({
               <button
                 onClick={handleNext}
                 disabled={!isValid}
-                className="flex items-center gap-3 bg-[#57f1db] text-[#003731] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none"
+                className="flex items-center gap-3 bg-[#454955] text-[#0d0a0b] rounded-xl px-10 py-4 text-[14px] leading-[16px] font-semibold tracking-[0.02em] luminous-glow transition-all hover:scale-[1.02] active:scale-95 duration-200 disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none"
               >
                 Next
                 <ChevronRight className="w-5 h-5" />
@@ -1197,7 +1197,7 @@ export default function ProjectCreationWizard({
           <div
             className="w-full max-w-md mx-4 rounded-2xl p-6 space-y-6 animate-in slide-in-from-bottom-4 duration-300"
             style={{
-              background: 'rgba(20, 29, 35, 0.95)',
+              background: 'rgba(22, 19, 24, 0.95)',
               backdropFilter: 'blur(24px)',
               border: '1px solid rgba(255, 255, 255, 0.12)',
               boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
@@ -1205,15 +1205,15 @@ export default function ProjectCreationWizard({
           >
             <div className="text-center space-y-2">
               <AlertCircle className="w-10 h-10 text-[#ffb4ab] mx-auto" />
-              <h3 className="text-[20px] font-bold text-[#dae4ec]">Discard progress?</h3>
-              <p className="text-[14px] text-[#bacac5]">
+              <h3 className="text-[20px] font-bold text-[#9E9DA0]">Discard progress?</h3>
+              <p className="text-[14px] text-[#9E9DA0]">
                 You have unsaved data in the wizard. Closing now will discard all entries.
               </p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDismissConfirm(false)}
-                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#bacac5] border border-white/10 hover:border-white/20 transition-all active:scale-95 duration-150"
+                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#9E9DA0] border border-white/10 hover:border-white/20 transition-all active:scale-95 duration-150"
               >
                 Keep Editing
               </button>
@@ -1223,7 +1223,7 @@ export default function ProjectCreationWizard({
                   isDirtyRef.current = false;
                   onClose();
                 }}
-                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#003731] bg-[#ffb4ab] hover:bg-[#ff897a] transition-all active:scale-95 duration-150"
+                className="flex-1 rounded-xl px-5 py-3 text-[14px] font-semibold text-[#0d0a0b] bg-[#ffb4ab] hover:bg-[#ff897a] transition-all active:scale-95 duration-150"
               >
                 Discard & Exit
               </button>
@@ -1239,8 +1239,8 @@ export default function ProjectCreationWizard({
 function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="py-3 flex justify-between items-center">
-      <span className="text-[12px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">{label}</span>
-      <span className="text-[14px] font-semibold text-[#dae4ec] truncate max-w-[320px]">{value}</span>
+      <span className="text-[12px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase">{label}</span>
+      <span className="text-[14px] font-semibold text-[#9E9DA0] truncate max-w-[320px]">{value}</span>
     </div>
   );
 }

@@ -116,14 +116,14 @@ export function ProjectVendorsList({ projectId }: ProjectVendorsListProps) {
       <div className="p-6">
         {assignments.length === 0 ? (
           <div className="text-center py-8 border border-dashed rounded-xl" style={{ borderColor: 'var(--border-ui)' }}>
-            <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-slate-500" />
+            <AlertTriangle className="w-8 h-8 mx-auto mb-2 text-[#6B6870]" />
             <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>No active requests yet</p>
             <p className="text-xs mt-1 mb-4" style={{ color: 'var(--text-secondary)' }}>
               Find title attorneys, inspectors, contractors, and appraisers in the marketplace.
             </p>
             <Link
               href="/dashboard/marketplace"
-              className="inline-flex items-center justify-center px-4 py-2 text-xs font-bold uppercase tracking-wider bg-teal-500 hover:bg-teal-400 text-black rounded transition-all"
+              className="inline-flex items-center justify-center px-4 py-2 text-xs font-bold uppercase tracking-wider bg-[#454955] hover:bg-[#6E7480] text-black rounded transition-all"
             >
               Browse Vendors
             </Link>
@@ -185,7 +185,7 @@ export function ProjectVendorsList({ projectId }: ProjectVendorsListProps) {
                         <button
                           onClick={() => handleUpdateStatus(asg.id, 'COMPLETED')}
                           disabled={updatingId === asg.id}
-                          className="px-4 py-2 bg-teal-500 hover:bg-teal-400 text-black font-semibold rounded text-xs transition-colors"
+                          className="px-4 py-2 bg-[#454955] hover:bg-[#6E7480] text-black font-semibold rounded text-xs transition-colors"
                         >
                           {updatingId === asg.id ? '...' : 'Complete Work'}
                         </button>

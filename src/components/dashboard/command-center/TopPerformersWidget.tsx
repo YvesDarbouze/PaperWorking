@@ -22,10 +22,10 @@ interface PerformerRow {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PHASE_COLORS: Record<number, string> = {
-  1: "#57f1db",
-  2: "#adc6ff",
+  1: "#454955",
+  2: "#7A9EAA",
   3: "#ffac5a",
-  4: "#62fae3",
+  4: "#5aaa3f",
 };
 
 const PHASE_LABELS: Record<number, string> = {
@@ -64,7 +64,7 @@ function derivePerformers(projects: Project[]): PerformerRow[] {
         phase,
         coc,
         assetClass: p.assetClass,
-        accentColor: PHASE_COLORS[phase] ?? "#57f1db",
+        accentColor: PHASE_COLORS[phase] ?? "#454955",
       };
     });
 }
@@ -99,7 +99,7 @@ export function TopPerformersWidget() {
       className="rounded-2xl overflow-hidden"
       style={{
         background:
-          "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+          "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -114,13 +114,13 @@ export function TopPerformersWidget() {
         <div className="flex items-center gap-2">
           <span
             className="material-symbols-outlined text-[18px]"
-            style={{ color: "#57f1db", fontVariationSettings: "'FILL' 0" }}
+            style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}
           >
             emoji_events
           </span>
           <span
             className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(218,228,236,0.5)", letterSpacing: "0.08em" }}
+            style={{ color: "rgba(253,255,252,0.5)", letterSpacing: "0.08em" }}
           >
             Top Performers
           </span>
@@ -138,9 +138,9 @@ export function TopPerformersWidget() {
               className="px-2.5 py-1 transition-colors duration-150"
               style={{
                 background:
-                  sortKey === k ? "rgba(87,241,219,0.12)" : "transparent",
+                  sortKey === k ? "rgba(69,73,85,0.12)" : "transparent",
                 color:
-                  sortKey === k ? "#57f1db" : "rgba(218,228,236,0.35)",
+                  sortKey === k ? "#454955" : "rgba(253,255,252,0.35)",
               }}
             >
               {k === "coc" ? "CoC" : "IRR"}
@@ -154,19 +154,19 @@ export function TopPerformersWidget() {
         <div className="flex flex-col items-center justify-center py-8 px-5 text-center">
           <span
             className="material-symbols-outlined text-3xl mb-2"
-            style={{ color: "rgba(218,228,236,0.15)" }}
+            style={{ color: "rgba(253,255,252,0.15)" }}
           >
             bar_chart
           </span>
           <p
             className="text-[12px] font-medium mb-1"
-            style={{ color: "rgba(218,228,236,0.5)" }}
+            style={{ color: "rgba(253,255,252,0.5)" }}
           >
             No performance data yet.
           </p>
           <p
             className="text-[11px] leading-relaxed"
-            style={{ color: "rgba(218,228,236,0.25)" }}
+            style={{ color: "rgba(253,255,252,0.25)" }}
           >
             Rankings appear once projects have financial data.
           </p>
@@ -204,8 +204,8 @@ export function TopPerformersWidget() {
                   style={{
                     color:
                       idx === 0
-                        ? "#57f1db"
-                        : "rgba(218,228,236,0.25)",
+                        ? "#454955"
+                        : "rgba(253,255,252,0.25)",
                   }}
                 >
                   #{idx + 1}
@@ -221,13 +221,13 @@ export function TopPerformersWidget() {
                 <div className="flex-1 min-w-0">
                   <p
                     className="text-[12px] font-semibold truncate"
-                    style={{ color: "rgba(218,228,236,0.85)" }}
+                    style={{ color: "rgba(253,255,252,0.85)" }}
                   >
                     {row.name}
                   </p>
                   <p
                     className="text-[10px] truncate"
-                    style={{ color: "rgba(218,228,236,0.3)" }}
+                    style={{ color: "rgba(253,255,252,0.3)" }}
                   >
                     {PHASE_LABELS[row.phase] ?? "Active"}
                     {row.assetClass ? ` · ${row.assetClass}` : ""}
@@ -240,9 +240,9 @@ export function TopPerformersWidget() {
                   style={{
                     color:
                       value === null
-                        ? "rgba(218,228,236,0.25)"
+                        ? "rgba(253,255,252,0.25)"
                         : isPositive
-                        ? "#57f1db"
+                        ? "#454955"
                         : "#F06543",
                   }}
                 >

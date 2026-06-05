@@ -129,7 +129,7 @@ export default function LTVGauge({
               y1={benchmarkInner.y}
               x2={benchmarkOuter.x}
               y2={benchmarkOuter.y}
-              stroke="#1A73E8"
+              stroke="#454955"
               strokeWidth={2}
               strokeDasharray="3 2"
             />
@@ -137,7 +137,7 @@ export default function LTVGauge({
               x={benchmarkOuter.x}
               y={benchmarkOuter.y - 4}
               textAnchor="middle"
-              fill="#1A73E8"
+              fill="#454955"
               fontSize={7}
               fontWeight={800}
               fontFamily="monospace"

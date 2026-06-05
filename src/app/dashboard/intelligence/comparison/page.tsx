@@ -48,9 +48,9 @@ const METRIC_COLS: { key: SortKey; label: string; fmt: (v: number) => string; go
 
 const PHASE_COLORS: Record<string, string> = {
   Acquisition: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
-  Hold:        'text-teal-400 bg-teal-500/10 border-teal-500/20',
+  Hold:        'text-[#6E7480] bg-[#454955]/10 border-[#454955]/20',
   Exit:        'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  Rehab:       'text-slate-400 bg-slate-500/10 border-slate-500/20',
+  Rehab:       'text-[#9E9DA0] bg-slate-500/10 border-slate-500/20',
 };
 
 function metricScore(col: typeof METRIC_COLS[number], values: number[], v: number): 'best' | 'worst' | 'mid' {
@@ -122,16 +122,16 @@ export default function PortfolioComparisonPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-[#20B2AA] transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#454955] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-[#20B2AA]">Comparison Matrix</span>
+            <span className="text-[#454955]">Comparison Matrix</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Portfolio Comparison</h1>
-          <p className="text-sm text-slate-400 mt-1">Side-by-side performance metrics across all properties</p>
+          <p className="text-sm text-[#9E9DA0] mt-1">Side-by-side performance metrics across all properties</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-[#20B2AA]/40 hover:text-[#20B2AA] transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#454955] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -140,15 +140,15 @@ export default function PortfolioComparisonPage() {
 
       {/* Sort controls */}
       <div className="flex flex-wrap gap-2">
-        <span className="text-xs font-semibold uppercase tracking-widest text-slate-500 self-center mr-1">Sort by:</span>
+        <span className="text-xs font-semibold uppercase tracking-widest text-[#6B6870] self-center mr-1">Sort by:</span>
         {METRIC_COLS.map((col) => (
           <button
             key={col.key}
             onClick={() => setSortKey(col.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
               sortKey === col.key
-                ? 'bg-[#20B2AA] text-black'
-                : 'bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:border-white/20'
+                ? 'bg-[#454955] text-black'
+                : 'bg-white/5 border border-white/10 text-[#9E9DA0] hover:text-slate-200 hover:border-white/20'
             }`}
           >
             {col.label}
@@ -160,15 +160,15 @@ export default function PortfolioComparisonPage() {
       {properties.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
           <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2">
-            <span className="material-symbols-outlined text-3xl text-slate-500 select-none">compare</span>
+            <span className="material-symbols-outlined text-3xl text-[#6B6870] select-none">compare</span>
           </div>
           <h3 className="text-lg font-bold text-white">No projects to compare yet</h3>
-          <p className="text-sm text-slate-400 max-w-sm">
+          <p className="text-sm text-[#9E9DA0] max-w-sm">
             Add at least two properties to your pipeline to see a side-by-side comparison of key metrics across your portfolio.
           </p>
           <Link
             href="/dashboard/projects/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
           >
             <span className="material-symbols-outlined text-base select-none">add</span>
             Add Your First Project
@@ -182,17 +182,17 @@ export default function PortfolioComparisonPage() {
         <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr className="border-b border-white/[0.06]">
-              <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-slate-500 w-56">Property</th>
+              <th className="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-[#6B6870] w-56">Property</th>
               {METRIC_COLS.map((col) => (
                 <th
                   key={col.key}
                   onClick={() => setSortKey(col.key)}
                   className={`text-right px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer transition-colors ${
-                    sortKey === col.key ? 'text-[#20B2AA]' : 'text-slate-500 hover:text-slate-300'
+                    sortKey === col.key ? 'text-[#454955]' : 'text-[#6B6870] hover:text-[#C0BEC2]'
                   }`}
                 >
                   {col.label}
-                  {sortKey === col.key && <span className="ml-1 text-[#20B2AA]">↓</span>}
+                  {sortKey === col.key && <span className="ml-1 text-[#454955]">↓</span>}
                 </th>
               ))}
             </tr>
@@ -207,16 +207,16 @@ export default function PortfolioComparisonPage() {
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-[#20B2AA] flex-shrink-0"
-                      style={{ background: 'rgba(32,178,170,0.1)' }}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-[#454955] flex-shrink-0"
+                      style={{ background: 'rgba(69,73,85,0.1)' }}
                     >
                       #{idx + 1}
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-white text-sm truncate">{prop.name}</p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-slate-500 truncate">{prop.address}</span>
-                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${PHASE_COLORS[prop.phase] ?? 'text-slate-400 bg-white/5 border-white/10'}`}>
+                        <span className="text-[10px] text-[#6B6870] truncate">{prop.address}</span>
+                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${PHASE_COLORS[prop.phase] ?? 'text-[#9E9DA0] bg-white/5 border-white/10'}`}>
                           {prop.phase}
                         </span>
                       </div>
@@ -232,9 +232,9 @@ export default function PortfolioComparisonPage() {
                     <td key={col.key} className="px-4 py-4 text-right">
                       <span
                         className={`inline-block font-mono font-semibold tabular-nums text-sm px-2 py-0.5 rounded ${
-                          score === 'best'  ? 'text-[#20B2AA] bg-[#20B2AA]/10' :
+                          score === 'best'  ? 'text-[#454955] bg-[#454955]/10' :
                           score === 'worst' ? 'text-[#F06543] bg-[#F06543]/[0.08]' :
-                          'text-slate-300'
+                          'text-[#C0BEC2]'
                         }`}
                       >
                         {v > 0 ? col.fmt(v) : '—'}
@@ -247,13 +247,13 @@ export default function PortfolioComparisonPage() {
           </tbody>
           <tfoot>
             <tr className="border-t border-white/[0.08] bg-white/[0.02]">
-              <td className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-slate-500">Portfolio Avg</td>
+              <td className="px-5 py-3 text-xs font-bold uppercase tracking-widest text-[#6B6870]">Portfolio Avg</td>
               {METRIC_COLS.map((col) => {
                 const vals = colValues[col.key].filter((v) => v > 0);
                 const avg  = vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
                 return (
                   <td key={col.key} className="px-4 py-3 text-right">
-                    <span className="font-mono text-xs font-bold text-slate-400 tabular-nums">
+                    <span className="font-mono text-xs font-bold text-[#9E9DA0] tabular-nums">
                       {avg > 0 ? col.fmt(avg) : '—'}
                     </span>
                   </td>
@@ -266,9 +266,9 @@ export default function PortfolioComparisonPage() {
       )}
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+      <div className="flex flex-wrap items-center gap-4 text-xs text-[#6B6870]">
         <span className="font-semibold uppercase tracking-widest">Legend:</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#20B2AA]/20 border border-[#20B2AA]/30" /> Best in portfolio</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#454955]/20 border border-[#454955]/30" /> Best in portfolio</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#F06543]/15 border border-[#F06543]/20" /> Lowest performer</span>
         <span className="flex items-center gap-1.5"><ArrowUpRight className="w-3 h-3" /> Click column header to sort</span>
       </div>

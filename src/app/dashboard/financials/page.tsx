@@ -216,7 +216,7 @@ export default function FinancialsTerminal() {
         <p className="text-on-surface-variant text-center max-w-md">
           Create your first investment project to start tracking financials.
         </p>
-        <a href="/dashboard/projects/new" className="bg-primary text-on-primary px-6 py-3 rounded-lg font-bold hover:shadow-[0_0_20px_rgba(87,241,219,0.4)] transition-all">
+        <a href="/dashboard/projects/new" className="bg-primary text-on-primary px-6 py-3 rounded-lg font-bold hover:shadow-[0_0_20px_rgba(69,73,85,0.4)] transition-all">
           Create Project
         </a>
       </div>
@@ -266,7 +266,7 @@ export default function FinancialsTerminal() {
       {loadStatus === "loading" ? (
         <main className="w-full max-w-5xl mx-auto px-4 md:px-6 py-10 space-y-8">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="glass-card rounded-xl p-8 animate-pulse" style={{ background: "rgba(11, 20, 26, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+            <div key={i} className="glass-card rounded-xl p-8 animate-pulse" style={{ background: "rgba(13, 10, 11, 0.6)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
               <div className="h-4 bg-white/10 rounded w-1/3 mb-6" />
               <div className="grid grid-cols-2 gap-4">
                 <div className="h-10 bg-white/5 rounded" />
@@ -294,7 +294,7 @@ export default function FinancialsTerminal() {
 
             <div className="pt-4">
               <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">NOI Analysis</h3>
-              <div className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(11, 20, 26, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
+              <div className="glass-card rounded-xl p-6 relative overflow-hidden" style={{ background: "rgba(13, 10, 11, 0.6)", backdropFilter: "blur(20px)", border: "1px solid rgba(255, 255, 255, 0.08)" }}>
                 <NOIWaterfallChart 
                   grossIncome={grossIncome}
                   vacancyLoss={vacancyLoss}
@@ -331,7 +331,7 @@ export default function FinancialsTerminal() {
       )}
 
       {/* Sticky Footer */}
-      <footer className="fixed bottom-0 w-full h-20 bg-surface-container-highest/90 backdrop-blur-2xl border-t border-primary/20 shadow-[0_-4px_20px_rgba(87,241,219,0.15)] z-[60]">
+      <footer className="fixed bottom-0 w-full h-20 bg-surface-container-highest/90 backdrop-blur-2xl border-t border-primary/20 shadow-[0_-4px_20px_rgba(69,73,85,0.15)] z-[60]">
         <div className="h-full max-w-5xl mx-auto px-4 md:px-gutter-desktop flex items-center justify-between">
           <div className="flex-1 flex items-center gap-2 overflow-hidden">
             <div className="hidden lg:flex items-center gap-1 font-mono text-[10px] text-on-surface-variant font-bold uppercase truncate">
@@ -350,7 +350,7 @@ export default function FinancialsTerminal() {
           <button
             onClick={handleSave}
             disabled={saveStatus === "saving" || loadStatus === "loading" || !selectedProjectId}
-            className="bg-primary text-on-primary px-6 h-10 md:h-12 rounded-lg font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(87,241,219,0.4)] active:scale-95 transition-all duration-150 whitespace-nowrap ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-primary text-on-primary px-6 h-10 md:h-12 rounded-lg font-bold flex items-center gap-2 hover:shadow-[0_0_20px_rgba(69,73,85,0.4)] active:scale-95 transition-all duration-150 whitespace-nowrap ml-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {saveStatus === "saving" ? (
               <><span className="material-symbols-outlined animate-spin text-lg">progress_activity</span> Saving…</>

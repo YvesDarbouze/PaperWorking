@@ -53,7 +53,7 @@ export default function VirtualInspection() {
   return (
     <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-text-primary">
-         <ClipboardCheck className="w-5 h-5 text-[#20B2AA]" />
+         <ClipboardCheck className="w-5 h-5 text-[#454955]" />
          <h3 className="text-lg font-semibold">Virtual Inspection Log</h3>
       </div>
       
@@ -106,7 +106,7 @@ export default function VirtualInspection() {
             <input 
                type="text" 
                placeholder="e.g. Roof" 
-               className="w-full text-sm border-border-accent rounded-md focus:border-[#20B2AA] focus:ring-[#20B2AA] border p-2 h-9"
+               className="w-full text-sm border-border-accent rounded-md focus:border-[#454955] focus:ring-[#454955] border p-2 h-9"
                value={category}
                onChange={e => setCategory(e.target.value)}
             />
@@ -115,7 +115,7 @@ export default function VirtualInspection() {
             <label className="block text-xs font-medium text-text-primary mb-1">Est ($)</label>
             <input 
                type="number" 
-               className="w-full text-sm border-border-accent rounded-md focus:border-[#20B2AA] focus:ring-[#20B2AA] border p-2 h-9"
+               className="w-full text-sm border-border-accent rounded-md focus:border-[#454955] focus:ring-[#454955] border p-2 h-9"
                value={estimated}
                onChange={e => setEstimated(e.target.value)}
             />
@@ -124,7 +124,7 @@ export default function VirtualInspection() {
             <label className="block text-xs font-medium text-text-primary mb-1">Act ($)</label>
             <input 
                type="number" 
-               className="w-full text-sm border-border-accent rounded-md focus:border-[#20B2AA] focus:ring-[#20B2AA] border p-2 h-9"
+               className="w-full text-sm border-border-accent rounded-md focus:border-[#454955] focus:ring-[#454955] border p-2 h-9"
                value={actual}
                onChange={e => setActual(e.target.value)}
             />

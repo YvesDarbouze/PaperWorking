@@ -43,9 +43,9 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 12 },
+      textStyle: { color: '#9E9DA0', fontSize: 12 },
       formatter: (params: any[]) =>
         `${params[0].name}<br/>` +
         params.map((p: any) => `<span style="color:${p.color}">■</span> ${p.seriesName}: <b>${p.value}%</b>`).join('<br/>'),
@@ -53,7 +53,7 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
     legend: {
       top: 0,
       right: 0,
-      textStyle: { color: '#bacac5', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       icon: 'roundRect',
       itemWidth: 12,
       itemHeight: 6,
@@ -77,7 +77,7 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
         type: 'bar',
         data: scenarios.map((s) => ({
           value: s.actual || null,
-          itemStyle: { color: '#20B2AA' },
+          itemStyle: { color: '#454955' },
         })),
         barMaxWidth: 32,
         barGap: '20%',
@@ -89,7 +89,7 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
           value: s.projected,
           itemStyle: {
             color: 'transparent',
-            borderColor: '#20B2AA',
+            borderColor: '#454955',
             borderWidth: 1.5,
             borderType: 'dashed',
           },
@@ -175,10 +175,10 @@ export default function IRRIntelligencePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">IRR Intelligence</span>
+            <span className="text-[#6E7480]">IRR Intelligence</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">IRR Intelligence</h1>
         </div>
@@ -189,7 +189,7 @@ export default function IRRIntelligencePage() {
                 key={s}
                 onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-                  scope === s ? 'bg-teal-500 text-black' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {s}
@@ -202,14 +202,14 @@ export default function IRRIntelligencePage() {
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
-                  period === p ? 'border border-teal-500/60 text-teal-400 bg-teal-500/10' : 'text-slate-400 hover:text-slate-200'
+                  period === p ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {p}
               </button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -224,35 +224,35 @@ export default function IRRIntelligencePage() {
         {/* Hero Metric Card */}
         <div className="lg:col-span-5 rounded-3xl border border-white/10 p-8 relative overflow-hidden" style={{ background: 'rgba(24,33,39,0.7)' }}>
           <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-            <TrendingUp className="w-24 h-24 text-teal-400" />
+            <TrendingUp className="w-24 h-24 text-[#6E7480]" />
           </div>
 
-          <p className="text-xs text-slate-500 font-semibold uppercase tracking-widest mb-1">Scenario: 5-Year Hold</p>
-          <p className="text-sm text-slate-400 mb-4">Projected Internal Rate of Return</p>
+          <p className="text-xs text-[#6B6870] font-semibold uppercase tracking-widest mb-1">Scenario: 5-Year Hold</p>
+          <p className="text-sm text-[#9E9DA0] mb-4">Projected Internal Rate of Return</p>
 
           <div className="flex items-baseline gap-2 mb-6">
-            <span className="text-[64px] font-bold text-teal-400 tabular-nums leading-none tracking-tighter">
+            <span className="text-[64px] font-bold text-[#6E7480] tabular-nums leading-none tracking-tighter">
               {currentIRR.toFixed(1)}
             </span>
-            <span className="text-2xl font-medium text-teal-400">%</span>
+            <span className="text-2xl font-medium text-[#6E7480]">%</span>
           </div>
 
           <div className="flex items-center gap-6 mb-8">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest">Projected Gain</p>
+              <p className="text-xs text-[#6B6870] uppercase tracking-widest">Projected Gain</p>
               <p className="text-xl font-bold text-white tabular-nums">{fmt(projectedGain)}</p>
             </div>
             <div className="w-px h-10 bg-white/10" />
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-widest">Realized to Date</p>
+              <p className="text-xs text-[#6B6870] uppercase tracking-widest">Realized to Date</p>
               <p className="text-xl font-bold text-white tabular-nums">{realizedToDate.toFixed(1)}%</p>
             </div>
           </div>
 
           <div className="border-t border-white/[0.06] pt-6">
             <div className="flex justify-between items-end mb-2">
-              <span className="text-xs text-slate-500 uppercase tracking-widest">Benchmark Comparison</span>
-              <span className="text-xs font-bold text-teal-400 flex items-center gap-0.5">
+              <span className="text-xs text-[#6B6870] uppercase tracking-widest">Benchmark Comparison</span>
+              <span className="text-xs font-bold text-[#6E7480] flex items-center gap-0.5">
                 +3.2% vs Portfolio Avg
                 <ArrowUpRight className="w-3 h-3" />
               </span>
@@ -262,8 +262,8 @@ export default function IRRIntelligencePage() {
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${benchmarkPct}%`,
-                  background: 'linear-gradient(90deg, #0d9488, #20B2AA)',
-                  boxShadow: '0 0 12px rgba(32, 178, 170,0.3)',
+                  background: 'linear-gradient(90deg, #0d9488, #454955)',
+                  boxShadow: '0 0 12px rgba(69, 73, 85,0.3)',
                 }}
               />
             </div>
@@ -275,7 +275,7 @@ export default function IRRIntelligencePage() {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-lg font-bold text-white">IRR Scenarios</h3>
-              <p className="text-xs text-slate-500 mt-1">Comparing projected hold horizons vs. actual performance</p>
+              <p className="text-xs text-[#6B6870] mt-1">Comparing projected hold horizons vs. actual performance</p>
             </div>
           </div>
           <ScenariosChart scenarios={DEMO_SCENARIOS} />
@@ -311,8 +311,8 @@ export default function IRRIntelligencePage() {
       {/* ── Sensitivity Analysis ── */}
       <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Sensitivity Analysis</span>
-          <span className="text-[10px] text-slate-500">Impact on IRR per variable shift</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Sensitivity Analysis</span>
+          <span className="text-[10px] text-[#6B6870]">Impact on IRR per variable shift</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -320,7 +320,7 @@ export default function IRRIntelligencePage() {
             <thead>
               <tr className="border-b border-white/[0.06]">
                 {['Variable', 'Base Case', 'Bear Case', 'Bull Case', 'IRR Impact'].map((h) => (
-                  <th key={h} className="text-left pb-3 text-[11px] font-bold uppercase tracking-widest text-slate-500 pr-6">{h}</th>
+                  <th key={h} className="text-left pb-3 text-[11px] font-bold uppercase tracking-widest text-[#6B6870] pr-6">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -328,9 +328,9 @@ export default function IRRIntelligencePage() {
               {DEMO_SENSITIVITY.map((row, i) => (
                 <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                   <td className="py-3 pr-6 font-semibold text-white">{row.variable}</td>
-                  <td className="py-3 pr-6 font-mono text-slate-300 tabular-nums">{row.base}</td>
+                  <td className="py-3 pr-6 font-mono text-[#C0BEC2] tabular-nums">{row.base}</td>
                   <td className="py-3 pr-6 font-mono text-red-400 tabular-nums">{row.bear}</td>
-                  <td className="py-3 pr-6 font-mono text-teal-400 tabular-nums">{row.bull}</td>
+                  <td className="py-3 pr-6 font-mono text-[#6E7480] tabular-nums">{row.bull}</td>
                   <td className="py-3 pr-6">
                     <span className="text-xs font-bold text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded px-2 py-0.5 font-mono tabular-nums">
                       {row.irrImpact}

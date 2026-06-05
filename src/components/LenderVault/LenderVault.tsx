@@ -36,7 +36,7 @@ export default function LenderVault() {
     <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
       <div className="flex justify-between items-center mb-6">
          <div className="flex items-center space-x-2">
-            <Lock className="w-5 h-5 text-[#20B2AA]" />
+            <Lock className="w-5 h-5 text-[#454955]" />
             <h3 className="text-lg font-medium tracking-tight text-text-primary">Secure Lender Vault</h3>
          </div>
          {/* Toggle switch strictly for demoing the UX difference between roles */}
@@ -65,8 +65,8 @@ export default function LenderVault() {
          )}
 
          {userRole === 'Lender' && (
-            <div className="bg-[#20B2AA]/10 border border-[#20B2AA]/20 p-4 rounded-lg flex items-start space-x-3">
-               <Eye className="w-5 h-5 text-[#20B2AA] mt-0.5" />
+            <div className="bg-[#454955]/10 border border-[#454955]/20 p-4 rounded-lg flex items-start space-x-3">
+               <Eye className="w-5 h-5 text-[#454955] mt-0.5" />
                <div>
                   <p className="text-sm font-medium text-text-primary">Lender Access Granted</p>
                   <p className="text-xs text-text-secondary">You are in Read-Only mode. You may review and verify borrower financials.</p>
@@ -88,7 +88,7 @@ export default function LenderVault() {
                     <button 
                       onClick={() => handleVerify(idx)}
                       disabled={doc.status === 'verified'}
-                      className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-full ${doc.status === 'verified' ? 'bg-[#3f7d20]/15 text-[#3f7d20]' : 'bg-[#20B2AA]/10 text-[#20B2AA] hover:bg-[#20B2AA]/20'}`}
+                      className={`flex items-center text-xs font-medium px-3 py-1.5 rounded-full ${doc.status === 'verified' ? 'bg-[#3f7d20]/15 text-[#3f7d20]' : 'bg-[#454955]/10 text-[#454955] hover:bg-[#454955]/20'}`}
                     >
                       {doc.status === 'verified' ? <><CheckCircle className="w-3 h-3 mr-1"/> Verified</> : 'Verify Document'}
                     </button>

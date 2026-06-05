@@ -34,11 +34,11 @@ export default function ForgotPasswordPage() {
       <div className="auth-card-container auth-glass-card rounded-xl p-6 md:p-10 relative overflow-hidden animate-in fade-in duration-500">
         <div 
           className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" 
-          style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+          style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
         />
         <div 
           className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" 
-          style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+          style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
         />
 
         <div className="flex flex-col items-center text-center w-full relative z-10">
@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
             className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border"
             style={{ backgroundColor: 'rgba(5, 46, 22, 0.4)', borderColor: 'rgba(22, 101, 52, 0.3)' }}
           >
-            <CheckCircle2 className="h-7 w-7" style={{ color: '#57f1db' }} />
+            <CheckCircle2 className="h-7 w-7" style={{ color: '#454955' }} />
           </div>
           <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-2 font-headline-md">
             Check your inbox
@@ -86,11 +86,11 @@ export default function ForgotPasswordPage() {
     <div className="auth-card-container auth-glass-card rounded-xl p-6 md:p-10 relative overflow-hidden animate-in fade-in duration-500">
       <div 
         className="absolute top-0 right-0 w-16 h-16 border-t border-r rounded-tr-xl pointer-events-none" 
-        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+        style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
       <div 
         className="absolute bottom-0 left-0 w-16 h-16 border-b border-l rounded-bl-xl pointer-events-none" 
-        style={{ borderColor: 'rgba(87, 241, 219, 0.2)' }}
+        style={{ borderColor: 'rgba(69, 73, 85, 0.2)' }}
       />
 
       <div className="flex flex-col items-center w-full relative z-10">

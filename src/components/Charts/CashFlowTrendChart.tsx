@@ -25,10 +25,10 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -39,13 +39,13 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
         const d = data[idx];
         if (!d) return '';
 
-        const cfColor = d.cashFlow < 0 ? '#ffb4ab' : '#57f1db';
+        const cfColor = d.cashFlow < 0 ? '#ffb4ab' : '#454955';
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${d.month}</strong>
-            <span style="color: #bacac5">NOI:</span> <strong style="color: #dae4ec">${fmtUSD(d.noi)}</strong><br/>
-            <span style="color: #bacac5">Debt Service:</span> <strong style="color: #ffb4ab">(${fmtUSD(d.debtService)})</strong><br/>
-            <span style="color: #bacac5">Cash Flow:</span> <strong style="color: ${cfColor}">${d.cashFlow >= 0 ? '+' : ''}${fmtUSD(d.cashFlow)}</strong>
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${d.month}</strong>
+            <span style="color: #9E9DA0">NOI:</span> <strong style="color: #9E9DA0">${fmtUSD(d.noi)}</strong><br/>
+            <span style="color: #9E9DA0">Debt Service:</span> <strong style="color: #ffb4ab">(${fmtUSD(d.debtService)})</strong><br/>
+            <span style="color: #9E9DA0">Cash Flow:</span> <strong style="color: ${cfColor}">${d.cashFlow >= 0 ? '+' : ''}${fmtUSD(d.cashFlow)}</strong>
           </div>
         `;
       }
@@ -63,7 +63,7 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       }
@@ -79,7 +79,7 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: (v: number) => {
@@ -98,7 +98,7 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
             color: d.cashFlow < 0
               ? '#ffb4ab' // negative
               : d.isAnnual
-                ? '#57f1db' // annual total
+                ? '#454955' // annual total
                 : '#7f7f7f', // monthly positive
             borderRadius: d.cashFlow < 0 ? [0, 0, 4, 4] : [4, 4, 0, 0]
           }
@@ -119,7 +119,7 @@ export default function CashFlowTrendChart({ data, height = 300 }: CashFlowTrend
                 formatter: 'Break-even',
                 position: 'end',
                 fontSize: 9,
-                color: '#bacac5',
+                color: '#9E9DA0',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
                 fontWeight: '600'
               }

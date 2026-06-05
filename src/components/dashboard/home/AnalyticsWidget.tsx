@@ -148,7 +148,7 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
       </div>
 
       <div className="absolute bottom-6 right-6 text-right z-10 pointer-events-none">
-        <p className="font-display-sm text-display-sm text-primary tracking-tight glow-text-cyan">{formattedValue}</p>
+        <p className="font-display-sm text-display-sm text-primary tracking-tight glow-text-primary">{formattedValue}</p>
         <p className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mt-1">Avg. {selectedMetric}</p>
       </div>
     </div>

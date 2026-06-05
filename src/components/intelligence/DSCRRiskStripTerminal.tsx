@@ -51,7 +51,7 @@ const RISK_CONFIG = {
     sublabel: 'Strong debt coverage — above optimal',
     color: '#14B8A6',
     icon: CheckCircle2,
-    bgClass: 'bg-teal-400/10 border-teal-400/20',
+    bgClass: 'bg-[#6E7480]/10 border-[#6E7480]/20',
     stripGradient: 'linear-gradient(90deg, #14B8A6 0%, #14B8A640 100%)',
   },
 } as const;
@@ -84,21 +84,21 @@ function TerminalInput({
 }) {
   return (
     <div className="group">
-      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
+      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">
         <Icon className="w-3 h-3" />
         {label}
       </label>
       <p className="text-[9px] text-slate-600 mb-1.5">{sublabel}</p>
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium pointer-events-none">$</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#6B6870] font-medium pointer-events-none">$</span>
         <input
           type="number"
           value={value}
           onChange={(e) => onChange(Number(e.target.value) || 0)}
           step={step}
           className="w-full rounded-lg border border-white/10 bg-white/[0.03] text-slate-200 text-sm
-                     font-mono tabular-nums py-2.5 pl-7 pr-3 focus:outline-none focus:border-teal-500/40
-                     focus:ring-1 focus:ring-teal-500/20 transition-all placeholder:text-slate-600"
+                     font-mono tabular-nums py-2.5 pl-7 pr-3 focus:outline-none focus:border-[#454955]/40
+                     focus:ring-1 focus:ring-[#454955]/20 transition-all placeholder:text-slate-600"
         />
       </div>
     </div>
@@ -152,7 +152,7 @@ function RiskStrip({ dscr, lenderMin }: { dscr: number; lenderMin: number }) {
         <span className="text-red-400">0.0x</span>
         <span className="text-red-400">1.0x Risk</span>
         <span className="text-amber-400">{lenderMin}x Min</span>
-        <span className="text-teal-400">2.5x+</span>
+        <span className="text-[#6E7480]">2.5x+</span>
       </div>
     </div>
   );
@@ -212,12 +212,12 @@ export function DSCRRiskStripTerminal({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-400/10 flex items-center justify-center">
-            <Shield className="w-4 h-4 text-teal-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#6E7480]/10 flex items-center justify-center">
+            <Shield className="w-4 h-4 text-[#6E7480]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Financing Terminal</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">DSCR Risk Strip</p>
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">DSCR Risk Strip</p>
           </div>
         </div>
       </div>
@@ -251,7 +251,7 @@ export function DSCRRiskStripTerminal({
           <RiskIcon className="w-6 h-6 flex-shrink-0" style={{ color: config.color }} />
           <div>
             <p className="text-xs font-bold" style={{ color: config.color }}>{config.label}</p>
-            <p className="text-[10px] text-slate-500 mt-0.5">{config.sublabel}</p>
+            <p className="text-[10px] text-[#6B6870] mt-0.5">{config.sublabel}</p>
           </div>
         </div>
         <div className="text-right">
@@ -266,7 +266,7 @@ export function DSCRRiskStripTerminal({
 
       {/* ── Stress Test Cards ── */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 flex items-center gap-1">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-2 flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
           Stress Scenarios
         </p>
@@ -276,7 +276,7 @@ export function DSCRRiskStripTerminal({
             const stColor = RISK_CONFIG[stRisk].color;
             return (
               <div key={st.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">{st.label}</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">{st.label}</p>
                 <p className="text-sm font-bold tabular-nums" style={{ color: stColor }}>
                   {st.dscr.toFixed(2)}x
                 </p>
@@ -291,8 +291,8 @@ export function DSCRRiskStripTerminal({
 
       {/* ── Formula ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           DSCR = {fmtUSD(annualNOI)} ÷ {fmtUSD(computed.annualDebtService)} = {computed.dscr >= 100 ? '∞' : computed.dscr.toFixed(2)}x
         </p>
       </div>

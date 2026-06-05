@@ -113,11 +113,11 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
         <div>
           <h2
             className="text-2xl font-bold tracking-tight mb-1"
-            style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}
+            style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}
           >
             Property Details
           </h2>
-          <p className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>
+          <p className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>
             {address.formattedAddress ?? "Selected property"}
           </p>
         </div>
@@ -126,9 +126,9 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           disabled={enrichMutation.isPending}
           className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150"
           style={{
-            background: "rgba(87,241,219,0.08)",
-            border: "1px solid rgba(87,241,219,0.18)",
-            color: "#57f1db",
+            background: "rgba(69,73,85,0.08)",
+            border: "1px solid rgba(69,73,85,0.18)",
+            color: "#454955",
             opacity: enrichMutation.isPending ? 0.5 : 1,
           }}
         >
@@ -147,11 +147,11 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
         >
           <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0" style={{ color: "#F06543" }}>error</span>
           <div className="flex-1 min-w-0">
-            <p className="text-[13px]" style={{ color: "rgba(218,228,236,0.7)" }}>
+            <p className="text-[13px]" style={{ color: "rgba(253,255,252,0.7)" }}>
               {(enrichMutation.error as Error)?.message ?? (error as Error)?.message ?? "Failed to load property data."}
             </p>
             {failureCount > 0 && (
-              <p className="text-[11px] mt-0.5" style={{ color: "rgba(218,228,236,0.35)" }}>
+              <p className="text-[11px] mt-0.5" style={{ color: "rgba(253,255,252,0.35)" }}>
                 Retried {failureCount} time{failureCount !== 1 ? "s" : ""}. Check your connection.
               </p>
             )}
@@ -159,7 +159,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           <button
             onClick={() => enrichMutation.mutate()}
             className="flex-shrink-0 text-[12px] font-semibold hover:opacity-70"
-            style={{ color: "#57f1db" }}
+            style={{ color: "#454955" }}
           >
             Try again
           </button>
@@ -169,7 +169,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
       {/* Photo */}
       <div
         className="w-full rounded-2xl overflow-hidden"
-        style={{ height: "220px", background: "rgba(20,29,35,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
+        style={{ height: "220px", background: "rgba(22,19,24,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
       >
         {loading ? (
           <div className="w-full h-full animate-pulse" style={{ background: "rgba(255,255,255,0.05)" }} />
@@ -181,7 +181,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="material-symbols-outlined text-4xl" style={{ color: "rgba(218,228,236,0.15)" }}>
+            <span className="material-symbols-outlined text-4xl" style={{ color: "rgba(253,255,252,0.15)" }}>
               home
             </span>
           </div>
@@ -190,7 +190,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
 
       {/* Facts grid */}
       <div>
-        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.08em" }}>
+        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.08em" }}>
           Property Facts
         </h3>
         <div className="grid grid-cols-3 gap-3">
@@ -210,7 +210,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
               key={label}
               className="rounded-xl p-4 flex flex-col gap-2"
               style={{
-                background: "rgba(20,29,35,0.6)",
+                background: "rgba(22,19,24,0.6)",
                 border: "1px solid rgba(255,255,255,0.07)",
               }}
             >
@@ -223,11 +223,11 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
                 <>
                   <span
                     className="text-[10px] font-bold uppercase tracking-widest"
-                    style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.07em" }}
+                    style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.07em" }}
                   >
                     {label}
                   </span>
-                  <span className="text-[15px] font-semibold" style={{ color: value ? "rgba(218,228,236,0.9)" : "rgba(218,228,236,0.2)" }}>
+                  <span className="text-[15px] font-semibold" style={{ color: value ? "rgba(253,255,252,0.9)" : "rgba(253,255,252,0.2)" }}>
                     {value ?? "—"}
                   </span>
                 </>
@@ -239,7 +239,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
 
       {/* Comps */}
       <div>
-        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.08em" }}>
+        <h3 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.08em" }}>
           Sold Comparables
         </h3>
         <div
@@ -249,7 +249,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           {/* Table header */}
           <div
             className="grid grid-cols-6 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest"
-            style={{ color: "rgba(218,228,236,0.3)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+            style={{ color: "rgba(253,255,252,0.3)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
           >
             <span className="col-span-2">Address</span>
             <span className="text-right">Price</span>
@@ -268,7 +268,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
             : comps.length === 0
             ? (
                 <div className="py-8 text-center">
-                  <p className="text-[12px]" style={{ color: "rgba(218,228,236,0.25)" }}>No comps available.</p>
+                  <p className="text-[12px]" style={{ color: "rgba(253,255,252,0.25)" }}>No comps available.</p>
                 </div>
               )
             : comps.map((c: any, i: number) => (
@@ -277,11 +277,11 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
                   className="grid grid-cols-6 px-4 py-3 text-[13px]"
                   style={{
                     borderBottom: i < comps.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                    color: "rgba(218,228,236,0.7)",
+                    color: "rgba(253,255,252,0.7)",
                   }}
                 >
                   <span className="col-span-2 truncate">{c.addressLine}</span>
-                  <span className="text-right font-semibold" style={{ color: "rgba(218,228,236,0.9)" }}>
+                  <span className="text-right font-semibold" style={{ color: "rgba(253,255,252,0.9)" }}>
                     {fmtCents(c.soldPriceCents)}
                   </span>
                   <span className="text-right">{fmtDate(c.soldDate)}</span>
@@ -292,7 +292,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           }
         </div>
         {facts?.sourceProvider && (
-          <p className="text-[10px] mt-2 text-right" style={{ color: "rgba(218,228,236,0.2)" }}>
+          <p className="text-[10px] mt-2 text-right" style={{ color: "rgba(253,255,252,0.2)" }}>
             Source: {facts.sourceProvider} · {fmtDate(facts.fetchedAt)}
           </p>
         )}
@@ -303,7 +303,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
         <button
           onClick={() => { setStepDone("property"); onNext(); }}
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold"
-          style={{ background: "#57f1db", color: "#0b141a" }}
+          style={{ background: "#454955", color: "#0d0a0b" }}
         >
           Continue
           <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

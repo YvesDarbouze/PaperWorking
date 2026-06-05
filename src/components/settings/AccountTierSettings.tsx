@@ -63,7 +63,7 @@ export default function AccountTierSettings() {
             onClick={() => setAccountTier('Individual')}
             className={`relative p-4 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
               accountTier === 'Individual'
-                ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(87,241,219,0.15)]'
+                ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(69,73,85,0.15)]'
                 : 'border-pw-border bg-pw-glass-bg/50 text-pw-muted hover:border-pw-muted/40'
             }`}
           >
@@ -84,7 +84,7 @@ export default function AccountTierSettings() {
             onClick={() => setAccountTier('Team')}
             className={`relative p-4 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
               accountTier === 'Team'
-                ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(87,241,219,0.15)]'
+                ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(69,73,85,0.15)]'
                 : 'border-pw-border bg-pw-glass-bg/50 text-pw-muted hover:border-pw-muted/40'
             }`}
           >
@@ -117,7 +117,7 @@ export default function AccountTierSettings() {
               <div className="w-full h-2 bg-pw-glass-bg border border-pw-border rounded-full overflow-hidden mb-4">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${
-                    seatsUsed >= maxSeats ? 'bg-error shadow-[0_0_10px_rgba(239,68,68,0.4)]' : 'bg-pw-primary shadow-[0_0_10px_rgba(87,241,219,0.3)]'
+                    seatsUsed >= maxSeats ? 'bg-error shadow-[0_0_10px_rgba(239,68,68,0.4)]' : 'bg-pw-primary shadow-[0_0_10px_rgba(69,73,85,0.3)]'
                   }`}
                   style={{ width: `${(seatsUsed / maxSeats) * 100}%` }}
                 />
@@ -132,7 +132,7 @@ export default function AccountTierSettings() {
                   className="flex items-center justify-between p-3 bg-pw-glass-bg/40 rounded-xl border border-pw-border"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-pw-primary/10 border border-pw-primary/20 text-pw-primary flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(87,241,219,0.05)]">
+                    <div className="w-8 h-8 rounded-full bg-pw-primary/10 border border-pw-primary/20 text-pw-primary flex items-center justify-center text-xs font-bold shadow-[0_0_10px_rgba(69,73,85,0.05)]">
                       {member.displayName.charAt(0).toUpperCase()}
                     </div>
                     <div>

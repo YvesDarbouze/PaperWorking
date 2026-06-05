@@ -57,7 +57,7 @@ export default function AupPage() {
               key={section.category}
               className="rounded-2xl p-8 sm:p-10"
               style={{
-                background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+                background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 borderTop: '1px solid rgba(255,255,255,0.12)',

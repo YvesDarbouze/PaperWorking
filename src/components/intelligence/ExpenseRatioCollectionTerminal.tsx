@@ -44,7 +44,7 @@ interface ExpenseRatioCollectionTerminalProps {
 
 /* ── Seed expense breakdown matching $9,276 annual ── */
 const SEED_ITEMS: ExpenseItem[] = [
-  { id: '1', label: 'Property Taxes',    monthlyAmount: 279, color: '#20B2AA' },
+  { id: '1', label: 'Property Taxes',    monthlyAmount: 279, color: '#454955' },
   { id: '2', label: 'Insurance',         monthlyAmount: 155, color: '#38bdf8' },
   { id: '3', label: 'Utilities',         monthlyAmount: 95,  color: '#64748b' },
   { id: '4', label: 'Property Mgmt',     monthlyAmount: 195, color: '#fb923c' },
@@ -52,7 +52,7 @@ const SEED_ITEMS: ExpenseItem[] = [
 ];
 // Total: 773/mo × 12 = $9,276
 
-const COLORS = ['#20B2AA', '#38bdf8', '#64748b', '#fb923c', '#fbbf24', '#3f7d20', '#F06543', '#94a3b8'];
+const COLORS = ['#454955', '#38bdf8', '#64748b', '#fb923c', '#fbbf24', '#3f7d20', '#F06543', '#94a3b8'];
 
 /* ── Zone configuration ── */
 const ZONE_CFG = {
@@ -97,7 +97,7 @@ function ExpenseRow({
         type="text"
         value={item.label}
         onChange={(e) => onChange({ ...item, label: e.target.value })}
-        className="flex-1 bg-transparent text-sm text-slate-300 font-medium focus:outline-none
+        className="flex-1 bg-transparent text-sm text-[#C0BEC2] font-medium focus:outline-none
                    border-b border-transparent focus:border-white/20 transition-all"
         placeholder="Expense category"
       />
@@ -110,8 +110,8 @@ function ExpenseRow({
           value={item.monthlyAmount}
           onChange={(e) => onChange({ ...item, monthlyAmount: Math.max(0, Number(e.target.value) || 0) })}
           min={0}
-          className="w-16 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-xs text-slate-300
-                     font-mono tabular-nums text-right focus:outline-none focus:border-[#20B2AA]/30 transition-all"
+          className="w-16 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-xs text-[#C0BEC2]
+                     font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
         />
         <span className="text-[9px] text-slate-600">/mo</span>
       </div>
@@ -243,12 +243,12 @@ export function ExpenseRatioCollectionTerminal({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-[#20B2AA]/10 flex items-center justify-center">
-            <PieChart className="w-4 h-4 text-[#20B2AA]" />
+          <div className="w-8 h-8 rounded-lg bg-[#454955]/10 flex items-center justify-center">
+            <PieChart className="w-4 h-4 text-[#454955]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Expense Ratio</h3>
-            <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+            <p className="text-[10px] text-[#6B6870] uppercase tracking-widest font-bold">
               Operating Costs Collection
             </p>
           </div>
@@ -277,7 +277,7 @@ export function ExpenseRatioCollectionTerminal({
             <p className="text-xs font-bold" style={{ color: zoneCfg.color }}>
               {computed.expenseRatio < 40 ? 'Below' : 'At'} the 40% threshold
             </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
+            <p className="text-[10px] text-[#6B6870] mt-0.5">
               ${computed.totalAnnualExpenses.toLocaleString()} of ${computed.grossAnnualRent.toLocaleString()} gross income
             </p>
           </div>
@@ -298,7 +298,7 @@ export function ExpenseRatioCollectionTerminal({
           style={{ background: 'linear-gradient(to right, #3f7d20 0%, #fbbf24 50%, #F06543 100%)' }}
         >
           <div
-            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow transition-all duration-500"
+            className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#0d0a0b] shadow transition-all duration-500"
             style={{ left: `${markerPct}%` }}
           />
         </div>
@@ -312,7 +312,7 @@ export function ExpenseRatioCollectionTerminal({
       {/* ── Gross Rental Income input ── */}
       <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
         <div className="flex items-center justify-between">
-          <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+          <label className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] flex items-center gap-1">
             <DollarSign className="w-3 h-3" /> Gross Monthly Rent
           </label>
           <div className="flex items-center gap-1">
@@ -323,7 +323,7 @@ export function ExpenseRatioCollectionTerminal({
               onChange={(e) => setGrossMonthlyRent(Math.max(0, Number(e.target.value) || 0))}
               min={0}
               className="w-24 bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                         font-mono tabular-nums text-right focus:outline-none focus:border-[#20B2AA]/30 transition-all"
+                         font-mono tabular-nums text-right focus:outline-none focus:border-[#454955]/30 transition-all"
             />
             <span className="text-[9px] text-slate-600">/mo</span>
           </div>
@@ -336,10 +336,10 @@ export function ExpenseRatioCollectionTerminal({
       {/* ── Expense line items ── */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">
             Operating Expenses
           </span>
-          <span className="text-[10px] font-bold tabular-nums text-slate-400">
+          <span className="text-[10px] font-bold tabular-nums text-[#9E9DA0]">
             ${computed.totalMonthlyExpenses.toLocaleString()}/mo
           </span>
         </div>
@@ -367,8 +367,8 @@ export function ExpenseRatioCollectionTerminal({
         {/* Add expense */}
         <button
           onClick={handleAddItem}
-          className="w-full py-2 mt-1 rounded-lg border border-dashed border-white/10 text-[10px] font-bold text-slate-500
-                     hover:border-[#20B2AA]/30 hover:text-[#20B2AA] transition-all flex items-center justify-center gap-1"
+          className="w-full py-2 mt-1 rounded-lg border border-dashed border-white/10 text-[10px] font-bold text-[#6B6870]
+                     hover:border-[#454955]/30 hover:text-[#454955] transition-all flex items-center justify-center gap-1"
         >
           + Add Expense
         </button>
@@ -376,8 +376,8 @@ export function ExpenseRatioCollectionTerminal({
 
       {/* ── Formula ── */}
       <div className="px-3 py-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Formula</p>
-        <p className="text-[11px] text-slate-400 font-mono">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-0.5">Formula</p>
+        <p className="text-[11px] text-[#9E9DA0] font-mono">
           Expense Ratio = (${computed.totalAnnualExpenses.toLocaleString()} ÷ ${computed.grossAnnualRent.toLocaleString()}) × 100 = {computed.expenseRatio.toFixed(1)}%
         </p>
       </div>

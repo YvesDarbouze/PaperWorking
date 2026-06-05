@@ -98,7 +98,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       { name: 'Rehab', value: rehabCost, color: '#A5A5A5' },
       { name: 'Holding', value: totalHolding, color: '#F06543' },
       { name: 'Financing', value: financingCosts + loanPoints, color: '#EC4899' },
-      { name: 'Selling', value: sellingCosts, color: '#20B2AA' },
+      { name: 'Selling', value: sellingCosts, color: '#454955' },
     ].filter(c => c.value > 0);
 
     // MAO scenarios
@@ -300,7 +300,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       {analysis.comps.length > 0 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Building className="w-4 h-4" style={{ color: '#20B2AA' }} />
+            <Building className="w-4 h-4" style={{ color: '#454955' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Comparable Sales — ARV Validation</h4>
           </div>
           <div className="overflow-x-auto">

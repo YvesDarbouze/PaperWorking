@@ -25,10 +25,10 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -42,10 +42,10 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
         const diff = d.noi - d.benchmark;
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${d.month}</strong>
-            <span style="color: #bacac5">NOI:</span> <strong style="color: ${d.noi >= 0 ? '#57f1db' : '#ffb4ab'}">${fmtUSD(d.noi)}</strong><br/>
-            <span style="color: #bacac5">50% Rule Benchmark:</span> <strong style="color: #dae4ec">${fmtUSD(d.benchmark)}</strong><br/>
-            <span style="color: ${diff >= 0 ? '#57f1db' : '#ffb4ab'}; font-size: 10px;">
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${d.month}</strong>
+            <span style="color: #9E9DA0">NOI:</span> <strong style="color: ${d.noi >= 0 ? '#454955' : '#ffb4ab'}">${fmtUSD(d.noi)}</strong><br/>
+            <span style="color: #9E9DA0">50% Rule Benchmark:</span> <strong style="color: #9E9DA0">${fmtUSD(d.benchmark)}</strong><br/>
+            <span style="color: ${diff >= 0 ? '#454955' : '#ffb4ab'}; font-size: 10px;">
               ${diff >= 0 ? '+' : ''}${fmtUSD(diff)} vs benchmark
             </span>
           </div>
@@ -65,7 +65,7 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       }
@@ -81,7 +81,7 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 10,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: (v: number) => {
@@ -100,10 +100,10 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
         symbolSize: 6,
         showSymbol: true,
         itemStyle: {
-          color: '#57f1db'
+          color: '#454955'
         },
         lineStyle: {
-          color: '#57f1db',
+          color: '#454955',
           width: 2.5
         },
         areaStyle: {
@@ -114,8 +114,8 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(87, 241, 219, 0.25)' },
-              { offset: 1, color: 'rgba(87, 241, 219, 0.02)' }
+              { offset: 0, color: 'rgba(69, 73, 85, 0.25)' },
+              { offset: 1, color: 'rgba(69, 73, 85, 0.02)' }
             ]
           }
         },
@@ -134,7 +134,7 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
             {
               yAxis: benchmarkVal,
               lineStyle: {
-                color: '#bacac5',
+                color: '#9E9DA0',
                 type: 'dashed',
                 width: 1.5
               },
@@ -142,7 +142,7 @@ export default function NOITrendChart({ data, height = 260 }: NOITrendChartProps
                 formatter: '50% Rule',
                 position: 'end',
                 fontSize: 9,
-                color: '#bacac5',
+                color: '#9E9DA0',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
                 fontWeight: '600'
               }

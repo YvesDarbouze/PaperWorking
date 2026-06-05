@@ -152,13 +152,13 @@ export default function ARVSpreadChart({
               <Bar dataKey="otherCosts" stackId="costs" fill="#A5A5A5" radius={[0, 4, 4, 0]} maxBarSize={32} />
               <ReferenceLine
                 x={estimatedARV}
-                stroke="#1A73E8"
+                stroke="#454955"
                 strokeWidth={2}
                 strokeDasharray="6 3"
                 label={{
                   value: `ARV ${formatCurrency(estimatedARV)}`,
                   position: 'right',
-                  fill: '#1A73E8',
+                  fill: '#454955',
                   fontSize: 9,
                   fontWeight: 800,
                   fontFamily: 'monospace',

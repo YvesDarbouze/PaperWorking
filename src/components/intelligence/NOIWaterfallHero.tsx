@@ -54,7 +54,7 @@ const fmtCompact = (v: number): string => {
 const EXPENSE_COLORS: Record<string, string> = {
   Taxes: '#F06543',
   Insurance: '#F97316',
-  Utilities: '#20B2AA',
+  Utilities: '#454955',
   Management: '#EC4899',
   Maintenance: '#14B8A6',
   HOA: '#A855F7',
@@ -74,7 +74,7 @@ function buildWaterfallData(c: NOIComponents) {
       name: 'Other Income',
       value: c.otherIncome,
       base: c.grossRentalIncome,
-      fill: '#20B2AA',
+      fill: '#454955',
       type: 'income' as const,
     },
     {
@@ -95,7 +95,7 @@ function buildWaterfallData(c: NOIComponents) {
       name: 'NOI',
       value: c.noi,
       base: 0,
-      fill: c.noi >= 0 ? '#57f1db' : '#F06543',
+      fill: c.noi >= 0 ? '#454955' : '#F06543',
       type: 'result' as const,
     },
   ];
@@ -197,7 +197,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
         className="p-6 pb-4"
         style={{
           borderBottom: '1px solid var(--color-glass-border)',
-          background: 'linear-gradient(135deg, rgba(87, 241, 219, 0.04) 0%, transparent 60%)',
+          background: 'linear-gradient(135deg, rgba(69, 73, 85, 0.04) 0%, transparent 60%)',
         }}
       >
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -206,13 +206,13 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
             <div
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
               style={{
-                background: noiPositive ? 'rgba(87, 241, 219, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                border: `1px solid ${noiPositive ? 'rgba(87, 241, 219, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                background: noiPositive ? 'rgba(69, 73, 85, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                border: `1px solid ${noiPositive ? 'rgba(69, 73, 85, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
               }}
             >
               <DollarSign
                 className="h-6 w-6"
-                style={{ color: noiPositive ? '#57f1db' : '#F06543' }}
+                style={{ color: noiPositive ? '#454955' : '#F06543' }}
               />
             </div>
             <div>
@@ -225,7 +225,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
               <div className="flex items-baseline gap-3">
                 <span
                   className="text-3xl font-bold tabular-nums tracking-tight"
-                  style={{ color: noiPositive ? '#57f1db' : '#F06543' }}
+                  style={{ color: noiPositive ? '#454955' : '#F06543' }}
                 >
                   {fmtUSD(displayNOI)}
                 </span>
@@ -238,8 +238,8 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
                 <span
                   className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold"
                   style={{
-                    background: noiPositive ? 'rgba(87, 241, 219, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                    color: noiPositive ? '#57f1db' : '#F06543',
+                    background: noiPositive ? 'rgba(69, 73, 85, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                    color: noiPositive ? '#454955' : '#F06543',
                   }}
                 >
                   {noiPositive ? (
@@ -271,7 +271,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
             type="button"
           >
             {isAnnual ? (
-              <ToggleRight className="h-4 w-4" style={{ color: '#57f1db' }} />
+              <ToggleRight className="h-4 w-4" style={{ color: '#454955' }} />
             ) : (
               <ToggleLeft className="h-4 w-4" style={{ color: 'var(--color-on-surface-variant)' }} />
             )}

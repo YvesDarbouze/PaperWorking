@@ -162,7 +162,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
   /* ── Capital breakdown donut ── */
   const capitalPieces = [
     { name: 'Down Payment', value: aggregate.totalDown, color: '#7F7F7F' },
-    { name: 'Closing Costs', value: aggregate.totalClosing, color: '#20B2AA' },
+    { name: 'Closing Costs', value: aggregate.totalClosing, color: '#454955' },
     { name: 'Rehab Budget', value: aggregate.totalRehab, color: '#A5A5A5' },
   ].filter(p => p.value > 0);
 
@@ -171,7 +171,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
     { name: 'This Property', rate: aggregate.cocReturn, color: classification.color },
     { name: 'Target (8-12%)', rate: 10, color: '#595959' },
     { name: 'S&P 500 Avg', rate: 10.5, color: '#595959' },
-    { name: 'REIT Index', rate: 7.5, color: '#20B2AA' },
+    { name: 'REIT Index', rate: 7.5, color: '#454955' },
     { name: '10-Year Treasury', rate: 4.25, color: '#94A3B8' },
     { name: 'HYSA', rate: 4.5, color: '#64748B' },
   ];
@@ -235,7 +235,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
               label: 'Total Cash Invested',
               value: fmtUSD(aggregate.totalInvested),
               sublabel: `Down payment + closing costs + rehab`,
-              color: '#20B2AA',
+              color: '#454955',
             },
             {
               icon: Target,

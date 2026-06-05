@@ -82,8 +82,8 @@ export default function LOIWizardModal({
         {/* Header */}
         <div className="px-6 pt-5 pb-4 border-b border-pw-border flex items-center justify-between shrink-0 text-pw-black">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-teal-500/10 border border-teal-500/30 rounded-full flex items-center justify-center">
-              <FileText className="w-5 h-5 text-teal-500" />
+            <div className="w-10 h-10 bg-[#454955]/10 border border-[#454955]/30 rounded-full flex items-center justify-center">
+              <FileText className="w-5 h-5 text-[#454955]" />
             </div>
             <div>
               <h2 className="text-base font-semibold">Letter of Intent</h2>
@@ -106,14 +106,14 @@ export default function LOIWizardModal({
               const isComplete = step > stepNum || dispatched;
               return (
                 <React.Fragment key={label}>
-                  {i > 0 && <div className={`flex-1 h-px ${isComplete ? 'bg-teal-500/50' : 'bg-pw-border'}`} />}
+                  {i > 0 && <div className={`flex-1 h-px ${isComplete ? 'bg-[#454955]/50' : 'bg-pw-border'}`} />}
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition ${
                         isComplete
-                          ? 'bg-teal-600 text-white'
+                          ? 'bg-[#3a3e4a] text-white'
                           : isActive
-                            ? 'bg-teal-500/10 text-teal-500 ring-1 ring-teal-500/30'
+                            ? 'bg-[#454955]/10 text-[#454955] ring-1 ring-[#454955]/30'
                             : 'bg-pw-glass-bg/50 text-pw-muted'
                       }`}
                     >
@@ -270,8 +270,8 @@ export default function LOIWizardModal({
           {/* Step 3: Dispatch */}
           {step === 3 && !dispatched && (
             <div className="text-center py-6">
-              <div className="w-16 h-16 bg-teal-500/10 border border-teal-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Send className="w-7 h-7 text-teal-500" />
+              <div className="w-16 h-16 bg-[#454955]/10 border border-[#454955]/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Send className="w-7 h-7 text-[#454955]" />
               </div>
               <h3 className="text-lg font-semibold text-pw-black mb-2">Ready to Send</h3>
               <p className="text-sm text-pw-muted mb-6 max-w-sm mx-auto">
@@ -295,7 +295,7 @@ export default function LOIWizardModal({
 
               <button
                 onClick={handleDispatch}
-                className="pw-btn pw-btn--primary pw-btn--pill inline-flex items-center gap-2 px-8 py-3.5 text-sm font-medium transition shadow-lg shadow-teal-600/20"
+                className="pw-btn pw-btn--primary pw-btn--pill inline-flex items-center gap-2 px-8 py-3.5 text-sm font-medium transition shadow-lg shadow-[#3a3e4a]/20"
               >
                 <Send className="w-4 h-4" />
                 Send for Digital Signature

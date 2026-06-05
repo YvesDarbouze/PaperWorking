@@ -28,12 +28,12 @@ import type { RehabExpense, RehabExpenseCategory } from '@/types/schema';
 
 const CATEGORY_META: Record<RehabExpenseCategory, { icon: React.ReactNode; color: string }> = {
   Demo: { icon: <Hammer className="w-4 h-4" />, color: 'text-red-600' },
-  Systems: { icon: <Settings className="w-4 h-4" />, color: 'text-cyan-600' },
+  Systems: { icon: <Settings className="w-4 h-4" />, color: 'text-[#3a3e4a]' },
   Interior: { icon: <Home className="w-4 h-4" />, color: 'text-green-600' },
   Exterior: { icon: <Trees className="w-4 h-4" />, color: 'text-emerald-600' },
   Material: { icon: <Package className="w-4 h-4" />, color: 'text-blue-600' },
   'Professional Labor': { icon: <HardHat className="w-4 h-4" />, color: 'text-amber-600' },
-  Permits: { icon: <Receipt className="w-4 h-4" />, color: 'text-[#20B2AA]' },
+  Permits: { icon: <Receipt className="w-4 h-4" />, color: 'text-[#454955]' },
   'Dumpster Rental': { icon: <TrashIcon className="w-4 h-4" />, color: 'text-text-secondary' },
   Other: { icon: <Wrench className="w-4 h-4" />, color: 'text-text-secondary' },
 };

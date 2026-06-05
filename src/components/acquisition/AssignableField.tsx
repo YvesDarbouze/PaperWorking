@@ -166,10 +166,10 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
           <span className="material-symbols-outlined text-[22px] mb-1" style={{ color: "#ffd1aa" }}>
             pending
           </span>
-          <p className="text-[12px] font-semibold" style={{ color: "rgba(218,228,236,0.7)" }}>
+          <p className="text-[12px] font-semibold" style={{ color: "rgba(253,255,252,0.7)" }}>
             Waiting on {assigneeName}
           </p>
-          <p className="text-[10px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+          <p className="text-[10px]" style={{ color: "rgba(253,255,252,0.3)" }}>
             {label}
           </p>
         </div>
@@ -187,12 +187,12 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
             onClick={() => setShowPicker(v => !v)}
             className="w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150"
             style={{
-              background: "rgba(87,241,219,0.12)",
-              border:     "1px solid rgba(87,241,219,0.25)",
+              background: "rgba(69,73,85,0.12)",
+              border:     "1px solid rgba(69,73,85,0.25)",
             }}
             title={`Ask a teammate to fill in "${label}"`}
           >
-            <span className="material-symbols-outlined text-[11px]" style={{ color: "#57f1db" }}>
+            <span className="material-symbols-outlined text-[11px]" style={{ color: "#454955" }}>
               person_add
             </span>
           </button>
@@ -211,14 +211,14 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
           }}
         >
           <div className="px-3 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.3)" }}>
+            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.3)" }}>
               Assign "{label}"
             </p>
           </div>
 
           {collaborators.length === 0 ? (
             <div className="px-3 py-3 text-center">
-              <p className="text-[11px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+              <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.3)" }}>
                 No teammates yet. Invite from the Team panel.
               </p>
             </div>
@@ -229,20 +229,20 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
                 onClick={() => assignMutation.mutate(c.userId)}
                 disabled={assignMutation.isPending}
                 className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors"
-                onMouseEnter={e => (e.currentTarget.style.background = "rgba(87,241,219,0.06)")}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(69,73,85,0.06)")}
                 onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
               >
                 <div
                   className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[9px] font-bold"
-                  style={{ background: "rgba(87,241,219,0.12)", color: "#57f1db" }}
+                  style={{ background: "rgba(69,73,85,0.12)", color: "#454955" }}
                 >
                   {displayName(c.user).slice(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[12px] font-medium truncate" style={{ color: "rgba(218,228,236,0.85)" }}>
+                  <p className="text-[12px] font-medium truncate" style={{ color: "rgba(253,255,252,0.85)" }}>
                     {displayName(c.user)}
                   </p>
-                  <p className="text-[10px] truncate" style={{ color: "rgba(218,228,236,0.3)" }}>
+                  <p className="text-[10px] truncate" style={{ color: "rgba(253,255,252,0.3)" }}>
                     {c.role.charAt(0) + c.role.slice(1).toLowerCase()}
                   </p>
                 </div>
@@ -253,7 +253,7 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
           <button
             onClick={() => setShowPicker(false)}
             className="w-full py-2 text-[11px]"
-            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", color: "rgba(218,228,236,0.25)" }}
+            style={{ borderTop: "1px solid rgba(255,255,255,0.05)", color: "rgba(253,255,252,0.25)" }}
           >
             Cancel
           </button>

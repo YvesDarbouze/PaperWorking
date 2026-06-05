@@ -33,7 +33,7 @@ import type { MetricResult } from '@/lib/metrics/types';
    Stitch Schema: 5a320feb + ca708b12 (Purchase Phase)
    "Luminous Glass" dark design — single-column mobile-first stack.
 
-   Phase 2 color accent: #adc6ff (secondary / blue)
+   Phase 2 color accent: #7A9EAA (secondary / blue)
    All save logic 100% preserved from original.
 
    Header chrome (breadcrumb, address, phase stepper) is provided
@@ -41,7 +41,7 @@ import type { MetricResult } from '@/lib/metrics/types';
    Project data is sourced from WorkspaceContext (no re-fetch).
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_COLOR = '#adc6ff';    // Purchase = blue/secondary
+const PHASE_COLOR = '#7A9EAA';    // Purchase = blue/secondary
 const PHASE_GLOW  = 'rgba(173, 198, 255, 0.3)';
 
 export default function Phase2AcquisitionPage() {
@@ -248,13 +248,13 @@ export default function Phase2AcquisitionPage() {
   /* ── Loading state ── */
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
             style={{ borderColor: PHASE_COLOR, borderTopColor: 'transparent' }}
           />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#bacac5]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9E9DA0]">
             Loading Workspace…
           </p>
         </div>
@@ -265,9 +265,9 @@ export default function Phase2AcquisitionPage() {
   /* ── Not found state ── */
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="text-center space-y-3">
-          <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
+          <p className="text-sm font-bold text-[#9E9DA0]">Project not found.</p>
         </div>
       </div>
     );
@@ -276,13 +276,13 @@ export default function Phase2AcquisitionPage() {
   const ownershipPct = project.financials?.ownershipPercentage ?? 100;
 
   return (
-    <div className="min-h-screen bg-[#091015] relative">
+    <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         {/* Purchase phase: teal-tinted ambient glow */}
-        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#20B2AA]/5 blur-[120px] rounded-full" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#0566d9]/8 blur-[100px] rounded-full" />
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#454955]/5 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#7A9EAA]/8 blur-[100px] rounded-full" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
@@ -314,11 +314,11 @@ export default function Phase2AcquisitionPage() {
                 Phase: Purchase
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#bacac5]">
+                <span className="text-[14px] leading-[16px] font-semibold tracking-[0.02em] text-[#9E9DA0]">
                   Equity: {ownershipPct}%
                 </span>
                 {isClearToClose && (
-                  <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#57f1db]/15 text-[#57f1db]">
+                  <span className="text-[10px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded-full bg-[#454955]/15 text-[#454955]">
                     Clear to Close
                   </span>
                 )}
@@ -334,7 +334,7 @@ export default function Phase2AcquisitionPage() {
             </div>
           </div>
           {/* Progress Bar (Stitch schema pattern) */}
-          <div className="h-1.5 w-full bg-[#2d363d] rounded-full overflow-hidden">
+          <div className="h-1.5 w-full bg-[#262328] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
@@ -349,10 +349,10 @@ export default function Phase2AcquisitionPage() {
         {/* ── Cost Basis Metrics Panel (Stitch schema: 2×2 grid) ── */}
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+            <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
               Cost Basis
             </h2>
-            <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] flex items-center gap-1.5">
+            <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] flex items-center gap-1.5">
               <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>visibility</span>
               Property View
             </span>
@@ -361,24 +361,24 @@ export default function Phase2AcquisitionPage() {
           <div className="grid grid-cols-2 gap-3">
             {/* Purchase Price */}
             <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32 relative overflow-hidden">
-              <div className="absolute -right-2 -top-2 w-16 h-16 bg-[#adc6ff]/5 rounded-full blur-xl" />
+              <div className="absolute -right-2 -top-2 w-16 h-16 bg-[#7A9EAA]/5 rounded-full blur-xl" />
               <div className="flex justify-between items-start">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Purchase Price</span>
-                <span className="text-[10px] font-bold tracking-tighter" style={{ color: '#57f1db' }}>ACTUAL</span>
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Purchase Price</span>
+                <span className="text-[10px] font-bold tracking-tighter" style={{ color: '#454955' }}>ACTUAL</span>
               </div>
-              <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+              <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                 {fmtDollar(costMetrics.purchasePrice)}
               </p>
             </div>
 
             {/* Lender Terms */}
             <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32">
-              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Lender Terms</span>
+              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Lender Terms</span>
               <div className="space-y-1">
                 <span className="text-[24px] leading-[32px] font-semibold" style={{ color: PHASE_COLOR }}>
                   {fmtPct(costMetrics.lenderRate)}
                 </span>
-                <p className="text-[12px] leading-[14px] font-medium text-[#bacac5]/60">
+                <p className="text-[12px] leading-[14px] font-medium text-[#9E9DA0]/60">
                   {costMetrics.lenderRate > 0 ? 'Fixed Rate' : 'Not Set'}
                 </p>
               </div>
@@ -386,12 +386,12 @@ export default function Phase2AcquisitionPage() {
 
             {/* Closing Costs */}
             <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32">
-              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Closing Costs</span>
+              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Closing Costs</span>
               <div className="space-y-1">
-                <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+                <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
                   {fmtDollar(costMetrics.closingCosts)}
                 </span>
-                <p className="text-[12px] leading-[14px] font-medium text-[#bacac5]/60">
+                <p className="text-[12px] leading-[14px] font-medium text-[#9E9DA0]/60">
                   {isClearToClose ? 'Reconciled' : 'Estimated'}
                 </p>
               </div>
@@ -399,31 +399,31 @@ export default function Phase2AcquisitionPage() {
 
             {/* Cash to Close */}
             <div className="glass-card p-4 rounded-xl flex flex-col justify-between h-32">
-              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Cash to Close</span>
+              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Cash to Close</span>
               <div className="space-y-1">
                 <span className="text-[24px] leading-[32px] font-semibold text-[#ffd1aa]">
                   {fmtDollar(costMetrics.cashToClose)}
                 </span>
-                <p className="text-[12px] leading-[14px] font-medium text-[#bacac5]/60">Estimated</p>
+                <p className="text-[12px] leading-[14px] font-medium text-[#9E9DA0]/60">Estimated</p>
               </div>
             </div>
 
             {/* Auto-Calculated Debt Service (Monthly P&I + Annual) */}
             <div className="glass-card p-4 rounded-xl flex flex-col gap-1 col-span-2">
               <div className="flex items-center justify-between">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Debt Service</span>
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Debt Service</span>
                 <span className="text-[9px] font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400">AUTO-CALC</span>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-1">
                 <div>
-                  <p className="text-[10px] text-[#bacac5]/60 mb-0.5">Monthly P&I</p>
-                  <p className="text-[20px] leading-[28px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <p className="text-[10px] text-[#9E9DA0]/60 mb-0.5">Monthly P&I</p>
+                  <p className="text-[20px] leading-[28px] font-semibold text-[#9E9DA0]" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     {fmtDollar(costMetrics.monthlyPI)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] text-[#bacac5]/60 mb-0.5">Annual Debt Service</p>
-                  <p className="text-[20px] leading-[28px] font-semibold text-[#dae4ec]" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  <p className="text-[10px] text-[#9E9DA0]/60 mb-0.5">Annual Debt Service</p>
+                  <p className="text-[20px] leading-[28px] font-semibold text-[#9E9DA0]" style={{ fontVariantNumeric: 'tabular-nums' }}>
                     {fmtDollar(costMetrics.annualDebtService)}
                   </p>
                 </div>
@@ -433,11 +433,11 @@ export default function Phase2AcquisitionPage() {
             {/* Total Cost Basis (full-width hero) */}
             <div className="glass-card p-4 rounded-xl flex flex-col gap-1 col-span-2 relative overflow-hidden">
               <div className="absolute right-[-10px] top-[-10px] w-24 h-24 rounded-full blur-3xl" style={{ background: `${PHASE_COLOR}10` }} />
-              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Total Cost Basis</span>
+              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Total Cost Basis</span>
               <p className="text-[24px] leading-[32px] font-semibold" style={{ color: PHASE_COLOR }}>
                 {fmtDollar(costMetrics.totalCostBasis)}
               </p>
-              <div className="flex items-center gap-1 text-[10px]" style={{ color: '#57f1db' }}>
+              <div className="flex items-center gap-1 text-[10px]" style={{ color: '#454955' }}>
                 <span className="material-symbols-outlined text-[12px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>trending_up</span>
                 Live
               </div>
@@ -446,7 +446,7 @@ export default function Phase2AcquisitionPage() {
             {/* Inspection Credits (if any) */}
             {costMetrics.inspectionCredits > 0 && (
               <div className="glass-card p-4 rounded-xl flex flex-col gap-1 col-span-2 border-l-4 border-l-[#ffd1aa]">
-                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">Inspection Credits</span>
+                <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">Inspection Credits</span>
                 <p className="text-[24px] leading-[32px] font-semibold text-[#ffd1aa]">
                   -{fmtDollar(costMetrics.inspectionCredits)}
                 </p>
@@ -506,7 +506,7 @@ export default function Phase2AcquisitionPage() {
                 onClick={() => selectLender('NEO')}
                 className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
                   selectedLender === 'NEO'
-                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(69, 73, 85,0.25)]'
                     : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
                 }`}
               >
@@ -516,7 +516,7 @@ export default function Phase2AcquisitionPage() {
                 onClick={() => selectLender('LEGACY')}
                 className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
                   selectedLender === 'LEGACY'
-                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(69, 73, 85,0.25)]'
                     : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
                 }`}
               >
@@ -536,25 +536,25 @@ export default function Phase2AcquisitionPage() {
                 </h3>
                 
                 <div className="space-y-2.5 text-xs">
-                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#9E9DA0]">
                     <span>Property Price</span>
-                    <span className="font-mono text-[#dae4ec]">{fmtDollar(costMetrics.purchasePrice)}</span>
+                    <span className="font-mono text-[#9E9DA0]">{fmtDollar(costMetrics.purchasePrice)}</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#9E9DA0]">
                     <span>Origination Fees</span>
-                    <span className="font-mono text-[#dae4ec]">$2,450</span>
+                    <span className="font-mono text-[#9E9DA0]">$2,450</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#9E9DA0]">
                     <span>Recording Tax</span>
-                    <span className="font-mono text-[#dae4ec]">$1,800</span>
+                    <span className="font-mono text-[#9E9DA0]">$1,800</span>
                   </div>
-                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#bacac5]">
+                  <div className="flex justify-between border-b border-white/5 pb-2 text-[#9E9DA0]">
                     <span>Prepaids</span>
-                    <span className="font-mono text-[#dae4ec]">$950</span>
+                    <span className="font-mono text-[#9E9DA0]">$950</span>
                   </div>
                   <div className="flex justify-between font-bold text-sm text-white pt-1">
                     <span>Total Closing Costs</span>
-                    <span className="font-mono text-[#57f1db]">{fmtDollar(costMetrics.closingCosts)}</span>
+                    <span className="font-mono text-[#454955]">{fmtDollar(costMetrics.closingCosts)}</span>
                   </div>
                 </div>
               </div>
@@ -570,7 +570,7 @@ export default function Phase2AcquisitionPage() {
             </div>
 
             {/* Map Backdrop Widget */}
-            <div className="bg-[#091015]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
+            <div className="bg-[#0d0a0b]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
               {/* Mock map graphic with grid lines and marker */}
               <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
               {/* Map road lines using simple SVG */}
@@ -592,7 +592,7 @@ export default function Phase2AcquisitionPage() {
               <div className="absolute bottom-3 left-4 flex flex-col gap-0.5">
                 <span className="text-[10px] font-mono text-on-surface-variant/80 uppercase tracking-widest">Property Location</span>
                 <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(87,241,219,0.8)]"></span>
+                  <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(69,73,85,0.8)]"></span>
                   In Final Diligence
                 </span>
               </div>
@@ -609,10 +609,10 @@ export default function Phase2AcquisitionPage() {
         {/* ── Due Diligence Sequence ── */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+            <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
               Due Diligence
             </h2>
-            <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5]">
+            <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0]">
               {ddProgress.total} Tasks
             </span>
           </div>
@@ -628,7 +628,7 @@ export default function Phase2AcquisitionPage() {
 
           {/* ── Vendor Links for DD Items ── */}
           <div className="glass-card p-4 rounded-xl space-y-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#bacac5]/70 mb-2">Find Service Providers</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#9E9DA0]/70 mb-2">Find Service Providers</p>
             {[
               { label: 'Home Inspector', type: 'inspector' },
               { label: 'Title Company', type: 'title-company' },
@@ -648,10 +648,10 @@ export default function Phase2AcquisitionPage() {
                   data-todo={city ? undefined : 'marketplace'}
                   className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 transition-all group"
                 >
-                  <span className="text-[12px] font-medium text-[#bacac5] group-hover:text-[#dae4ec] transition-colors">
+                  <span className="text-[12px] font-medium text-[#9E9DA0] group-hover:text-[#9E9DA0] transition-colors">
                     Find a {vendor.label}{city ? ` in ${city}` : ''}
                   </span>
-                  <span className="text-[11px] text-[#bacac5]/50 group-hover:text-[#adc6ff] transition-colors">→</span>
+                  <span className="text-[11px] text-[#9E9DA0]/50 group-hover:text-[#7A9EAA] transition-colors">→</span>
                 </a>
               );
             })}
@@ -660,7 +660,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Inspection Tracker ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Property Inspections
           </h2>
           <InspectionTracker
@@ -678,7 +678,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Document Vault ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Documents
           </h2>
           <DocumentVault
@@ -691,11 +691,11 @@ export default function Phase2AcquisitionPage() {
           />
 
           {/* ── Manual Closing Disclosure Fallback ── */}
-          <div className="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-[#adc6ff]/50">
+          <div className="glass-card p-5 rounded-xl space-y-3 border-l-4 border-l-[#7A9EAA]/50">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <p className="text-[13px] font-semibold text-[#dae4ec]">Closing Disclosure (CD)</p>
-                <p className="text-[11px] text-[#bacac5]/70">
+                <p className="text-[13px] font-semibold text-[#9E9DA0]">Closing Disclosure (CD)</p>
+                <p className="text-[11px] text-[#9E9DA0]/70">
                   Upload your CD above, or manually enter key values below.
                 </p>
               </div>
@@ -721,12 +721,12 @@ export default function Phase2AcquisitionPage() {
                   { label: 'Total Closing Costs', field: 'closingCosts', value: project?.financials?.closingCosts },
                 ].map((item) => (
                   <div key={item.field} className="flex items-center justify-between gap-4">
-                    <label className="text-[12px] font-medium text-[#bacac5] flex-shrink-0 w-40">{item.label}</label>
+                    <label className="text-[12px] font-medium text-[#9E9DA0] flex-shrink-0 w-40">{item.label}</label>
                     <input
                       type="number"
                       defaultValue={item.value || ''}
                       placeholder="—"
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[13px] text-[#dae4ec] placeholder-[#bacac5]/30 focus:outline-none focus:border-[#adc6ff]/50 transition-colors text-right"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-[13px] text-[#9E9DA0] placeholder-[#9E9DA0]/30 focus:outline-none focus:border-[#7A9EAA]/50 transition-colors text-right"
                       style={{ fontVariantNumeric: 'tabular-nums' }}
                       onBlur={async (e) => {
                         const val = parseFloat(e.target.value);
@@ -749,7 +749,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Contingency Tracker ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Contingencies
           </h2>
           <ContingencyTracker
@@ -763,7 +763,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Closing Costs Ledger (locks on CTC) ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Closing Costs
           </h2>
           <ClosingCostsLedger
@@ -778,7 +778,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Team & Process Tracking ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Team & Vendors
           </h2>
           <AcquisitionTeamAssembly
@@ -793,7 +793,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Loan Processing Pipeline ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Loan Processing
           </h2>
           <LoanProcessingPipeline
@@ -807,7 +807,7 @@ export default function Phase2AcquisitionPage() {
 
         {/* ── Closing Checklist ── */}
         <section className="space-y-4">
-          <h2 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
             Closing Checklist
           </h2>
           <ClosingChecklist
@@ -836,7 +836,7 @@ export default function Phase2AcquisitionPage() {
       </main>
 
       {/* ── Sticky Metrics Footer ── */}
-      <div className="sticky bottom-0 z-30 w-full backdrop-blur-xl bg-[#091015]/80 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
+      <div className="sticky bottom-0 z-30 w-full backdrop-blur-xl bg-[#0d0a0b]/80 border-t border-white/10 shadow-[0_-4px_20px_rgba(0,0,0,0.3)]">
         <div className="max-w-4xl mx-auto px-5 md:px-10 py-3">
           <div className="grid grid-cols-3 gap-4">
             {/* DSCR */}
@@ -855,7 +855,7 @@ export default function Phase2AcquisitionPage() {
                 label="Cash Flow"
                 result={cashFlowResult}
                 format="currency"
-                accentColor="#57f1db"
+                accentColor="#454955"
                 compact
               />
             </div>

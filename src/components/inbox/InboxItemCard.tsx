@@ -59,21 +59,21 @@ function getCategoryInfo(type: NotificationType) {
         label: 'Billing Charged',
         icon: 'credit_card',
         theme: 'finance',
-        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+        iconClass: 'bg-[#7A9EAA]/10 border-[#7A9EAA]/20 text-[#7A9EAA]',
       };
     case 'RECEIPT_APPROVAL':
       return {
         label: 'Receipt Approval',
         icon: 'receipt_long',
         theme: 'finance',
-        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+        iconClass: 'bg-[#7A9EAA]/10 border-[#7A9EAA]/20 text-[#7A9EAA]',
       };
     case 'INVEST_INVITE':
       return {
         label: 'Investment Invite',
         icon: 'account_balance',
         theme: 'finance',
-        iconClass: 'bg-[#adc6ff]/10 border-[#adc6ff]/20 text-[#adc6ff]',
+        iconClass: 'bg-[#7A9EAA]/10 border-[#7A9EAA]/20 text-[#7A9EAA]',
       };
     case 'VENDOR_BID':
       return {
@@ -94,42 +94,42 @@ function getCategoryInfo(type: NotificationType) {
         label: 'Team Invite',
         icon: 'group_add',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
     case 'TEAM_INVITE_REMINDER':
       return {
         label: 'Invite Reminder',
         icon: 'notifications_active',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
     case 'TASK_COMPLETE':
       return {
         label: 'Task Complete',
         icon: 'check_circle',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
     case 'TASK_ASSIGNED':
       return {
         label: 'Task Assigned',
         icon: 'assignment_ind',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
     case 'DOCUMENT_SIGNED':
       return {
         label: 'Document Signed',
         icon: 'description',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
     default:
       return {
         label: 'System Notification',
         icon: 'notifications',
         theme: 'team',
-        iconClass: 'bg-white/5 border border-white/10 text-[#bacac5]',
+        iconClass: 'bg-white/5 border border-white/10 text-[#9E9DA0]',
       };
   }
 }
@@ -209,10 +209,10 @@ export default function InboxItemCard({
       onClick={handleClick}
       className={`group relative flex flex-col gap-3 p-5 rounded-2xl border transition-all duration-300 ${
         isActive
-          ? 'bg-[#091015]/80 border-[#57f1db]/50 shadow-[0_0_15px_-5px_rgba(87,241,219,0.3)]'
+          ? 'bg-[#0d0a0b]/80 border-[#454955]/50 shadow-[0_0_15px_-5px_rgba(69,73,85,0.3)]'
           : item.read
-          ? 'glass-card border-white/5 bg-[#091015]/20 hover:bg-white/5'
-          : 'glass-card border-[#20B2AA]/20 bg-[#091015]/40 ring-1 ring-[#20B2AA]/10 shadow-[0_0_15px_-5px_rgba(32, 178, 170,0.15)] hover:border-[#20B2AA]/30'
+          ? 'glass-card border-white/5 bg-[#0d0a0b]/20 hover:bg-white/5'
+          : 'glass-card border-[#454955]/20 bg-[#0d0a0b]/40 ring-1 ring-[#454955]/10 shadow-[0_0_15px_-5px_rgba(69, 73, 85,0.15)] hover:border-[#454955]/30'
       }`}
       style={{ cursor: 'pointer' }}
     >
@@ -237,7 +237,7 @@ export default function InboxItemCard({
         {/* Unread indicator dot */}
         {!item.read && (
           <span
-            className="absolute left-2 top-7 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(32, 178, 170,0.8)]"
+            className="absolute left-2 top-7 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(69, 73, 85,0.8)]"
           />
         )}
 
@@ -270,20 +270,20 @@ export default function InboxItemCard({
                 </span>
               )}
               <span
-                className={`text-xs font-semibold truncate ${item.read ? 'text-[#bacac5]' : 'text-white'}`}
+                className={`text-xs font-semibold truncate ${item.read ? 'text-[#9E9DA0]' : 'text-white'}`}
               >
                 {item.actor.name}
               </span>
               {item.objectReference.dealAddress && (
                 <span
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-lg truncate max-w-[160px] bg-white/5 text-[#bacac5] border border-white/5"
+                  className="text-[10px] font-semibold px-2 py-0.5 rounded-lg truncate max-w-[160px] bg-white/5 text-[#9E9DA0] border border-white/5"
                 >
                   {item.objectReference.dealAddress}
                 </span>
               )}
             </div>
             <span
-              className="flex-shrink-0 text-[10px] text-[#bacac5] tabular-nums"
+              className="flex-shrink-0 text-[10px] text-[#9E9DA0] tabular-nums"
             >
               {formatRelativeTime(item.createdAt)}
             </span>
@@ -292,7 +292,7 @@ export default function InboxItemCard({
           {/* Title */}
           <p
             className={`text-sm leading-snug mb-1 truncate ${
-              item.read ? 'text-[#dae4ec] font-medium' : 'text-white font-bold'
+              item.read ? 'text-[#9E9DA0] font-medium' : 'text-white font-bold'
             }`}
           >
             {item.title}
@@ -300,7 +300,7 @@ export default function InboxItemCard({
 
           {/* Body preview */}
           <p
-            className="text-xs leading-relaxed text-[#bacac5] line-clamp-2"
+            className="text-xs leading-relaxed text-[#9E9DA0] line-clamp-2"
           >
             {item.body}
           </p>
@@ -319,7 +319,7 @@ export default function InboxItemCard({
           {isActionable && (
             <button
               onClick={toggleExpand}
-              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#9E9DA0] hover:text-white active:scale-95"
               title={isExpanded ? 'Collapse' : 'Expand'}
             >
               <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
@@ -333,7 +333,7 @@ export default function InboxItemCard({
               if (!item.read) onMarkRead(item.id);
               router.push(item.deepLinkUrl);
             }}
-            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#9E9DA0] hover:text-white active:scale-95"
             title="Open Details"
           >
             <ExternalLink className="w-3.5 h-3.5" />
@@ -346,7 +346,7 @@ export default function InboxItemCard({
                 e.stopPropagation();
                 onMarkRead(item.id);
               }}
-              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+              className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#9E9DA0] hover:text-white active:scale-95"
               title="Mark as Read"
             >
               <Check className="w-3.5 h-3.5" />
@@ -359,7 +359,7 @@ export default function InboxItemCard({
               e.stopPropagation();
               onArchive(item.id);
             }}
-            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#bacac5] hover:text-white active:scale-95"
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 text-[#9E9DA0] hover:text-white active:scale-95"
             title="Archive"
           >
             <Archive className="w-3.5 h-3.5" />
@@ -371,7 +371,7 @@ export default function InboxItemCard({
               e.stopPropagation();
               onDelete(item.id);
             }}
-            className="p-1.5 rounded-xl transition-all hover:bg-white/10 hover:text-red-400 text-[#bacac5] active:scale-95"
+            className="p-1.5 rounded-xl transition-all hover:bg-white/10 hover:text-red-400 text-[#9E9DA0] active:scale-95"
             title="Delete"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -390,7 +390,7 @@ export default function InboxItemCard({
             className="overflow-hidden border-t border-white/5 pt-4 flex flex-col gap-3.5"
             onClick={(e) => e.stopPropagation()} // Prevent collapse when clicking details
           >
-            <div className="text-xs text-[#bacac5] bg-white/5 rounded-xl p-3.5 space-y-2 border border-white/5">
+            <div className="text-xs text-[#9E9DA0] bg-white/5 rounded-xl p-3.5 space-y-2 border border-white/5">
               {item.type === 'VENDOR_BID' && (
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-primary">Bid Details</span>
@@ -438,7 +438,7 @@ export default function InboxItemCard({
                   // Trigger action success
                   toast.success('Approved successfully.', {
                     icon: '✓',
-                    style: { background: '#091015', color: '#dae4ec', border: '1px solid rgba(32, 178, 170,0.2)' }
+                    style: { background: '#0d0a0b', color: '#9E9DA0', border: '1px solid rgba(69, 73, 85,0.2)' }
                   });
                   setIsExpanded(false);
                 }}
@@ -452,7 +452,7 @@ export default function InboxItemCard({
                   e.stopPropagation();
                   router.push(item.deepLinkUrl);
                 }}
-                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-[#dae4ec] transition-all active:scale-97"
+                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-[#9E9DA0] transition-all active:scale-97"
               >
                 View Details
               </button>

@@ -62,7 +62,7 @@ export default function BlogPostPage() {
             className="flex flex-wrap items-center gap-6 font-body-sm text-body-sm text-on-surface-variant rounded-xl px-6 py-4"
             style={{
               background:
-                'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+                'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
               borderTop: '1px solid rgba(255,255,255,0.12)',
@@ -95,7 +95,7 @@ export default function BlogPostPage() {
               className="rounded-2xl p-3 overflow-hidden"
               style={{
                 background:
-                  'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+                  'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 borderTop: '1px solid rgba(255,255,255,0.12)',
@@ -113,7 +113,7 @@ export default function BlogPostPage() {
               className="rounded-2xl p-8 sm:p-10"
               style={{
                 background:
-                  'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+                  'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
                 borderTop: '1px solid rgba(255,255,255,0.12)',
@@ -183,7 +183,7 @@ export default function BlogPostPage() {
         <div className="mb-20">
           <p
             className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed mb-10 pl-6"
-            style={{ borderLeft: '3px solid #57f1db' }}
+            style={{ borderLeft: '3px solid #454955' }}
           >
             {post.excerpt}
           </p>
@@ -212,7 +212,7 @@ export default function BlogPostPage() {
           className="rounded-2xl p-10 sm:p-14 text-center"
           style={{
             background:
-              'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+              'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
             borderTop: '1px solid rgba(255,255,255,0.12)',

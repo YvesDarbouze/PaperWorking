@@ -37,9 +37,9 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) =>
         params[0].axisValue + '<br/>' +
         params.map((p: any) => `<span style="color:${p.color}">─</span> ${p.seriesName}: <b>${p.value}%</b>`).join('<br/>'),
@@ -48,7 +48,7 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
       top: 0,
       right: 0,
       icon: 'line',
-      textStyle: { color: '#bacac5', fontSize: 10 },
+      textStyle: { color: '#9E9DA0', fontSize: 10 },
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -69,7 +69,7 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
       show: false,
       type: 'piecewise',
       seriesIndex: 0,
-      pieces: [{ gte: 4, lte: 6, color: '#20B2AA' }, { gte: 6, color: '#fb923c' }],
+      pieces: [{ gte: 4, lte: 6, color: '#454955' }, { gte: 6, color: '#fb923c' }],
     },
     series: [
       {
@@ -77,11 +77,11 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2.5, color: '#454955' },
+        itemStyle: { color: '#454955' },
         areaStyle: {
           color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [{ offset: 0, color: 'rgba(32, 178, 170,0.15)' }, { offset: 1, color: 'transparent' }] },
+            colorStops: [{ offset: 0, color: 'rgba(69, 73, 85,0.15)' }, { offset: 1, color: 'transparent' }] },
         },
         symbol: 'circle',
         symbolSize: 6,
@@ -109,27 +109,27 @@ function CapRateGauge({ value }: { value: number }) {
   const nx = cx + r * Math.cos(rad);
   const ny = cy + r * Math.sin(rad);
 
-  const zone = value < 6 ? { label: 'Stable', color: '#20B2AA' } : value < 8 ? { label: 'Neutral', color: '#859490' } : { label: 'High Yield', color: '#ffb4ab' };
+  const zone = value < 6 ? { label: 'Stable', color: '#454955' } : value < 8 ? { label: 'Neutral', color: '#859490' } : { label: 'High Yield', color: '#ffb4ab' };
 
   return (
     <div>
       <div className="relative flex justify-center overflow-hidden" style={{ height: 90 }}>
         <svg viewBox="0 0 100 60" className="w-56 h-28 absolute -top-2">
           <path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" strokeLinecap="round" />
-          <path d="M 20 50 A 30 30 0 0 1 40 32.5" fill="none" stroke="#20B2AA" strokeWidth="8" />
+          <path d="M 20 50 A 30 30 0 0 1 40 32.5" fill="none" stroke="#454955" strokeWidth="8" />
           <path d="M 40 32.5 A 30 30 0 0 1 60 32.5" fill="none" stroke="#859490" strokeWidth="8" />
           <path d="M 60 32.5 A 30 30 0 0 1 80 50" fill="none" stroke="#ffb4ab" strokeWidth="8" />
-          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#dae4ec" strokeWidth="2" strokeLinecap="round" />
-          <circle cx={cx} cy={cy} r="3.5" fill="#dae4ec" />
+          <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#9E9DA0" strokeWidth="2" strokeLinecap="round" />
+          <circle cx={cx} cy={cy} r="3.5" fill="#9E9DA0" />
         </svg>
-        <div className="absolute bottom-0 w-56 flex justify-between px-5 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+        <div className="absolute bottom-0 w-56 flex justify-between px-5 text-[9px] font-bold text-[#6B6870] uppercase tracking-widest">
           <span>4%</span>
           <span>10%</span>
         </div>
       </div>
       <div className="grid grid-cols-3 gap-1 mt-2">
         {[
-          { label: 'Stable', range: '4–6%', color: '#20B2AA' },
+          { label: 'Stable', range: '4–6%', color: '#454955' },
           { label: 'Neutral', range: '6–8%', color: '#859490' },
           { label: 'High Yield', range: '8%+', color: '#ffb4ab' },
         ].map((z) => (
@@ -215,10 +215,10 @@ export default function CapRateIntelligencePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">Cap Rate Intelligence</span>
+            <span className="text-[#6E7480]">Cap Rate Intelligence</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Cap Rate Intelligence</h1>
         </div>
@@ -227,7 +227,7 @@ export default function CapRateIntelligencePage() {
             {(['Property', 'My Share'] as Scope[]).map((s) => (
               <button key={s} onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
-                  scope === s ? 'bg-teal-500 text-black' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}>{s}</button>
             ))}
           </div>
@@ -235,11 +235,11 @@ export default function CapRateIntelligencePage() {
             {(['Month', 'Quarter', 'Year', 'Overall'] as Period[]).map((p) => (
               <button key={p} onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
-                  period === p ? 'bg-white/10 text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                  period === p ? 'bg-white/10 text-[#6E7480] font-bold' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}>{p}</button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -257,8 +257,8 @@ export default function CapRateIntelligencePage() {
           {/* Current Cap Rate Card */}
           <div className="rounded-xl border border-white/10 p-6 relative overflow-hidden" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex justify-between items-start mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Current Cap Rate</span>
-              <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${capRateChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Current Cap Rate</span>
+              <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${capRateChange >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                 {capRateChange >= 0 ? '+' : ''}{capRateChange.toFixed(2)}%
                 <ArrowUpRight className={`w-3.5 h-3.5 ${capRateChange < 0 ? 'rotate-180' : ''}`} />
               </div>
@@ -266,31 +266,31 @@ export default function CapRateIntelligencePage() {
 
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-baseline gap-3">
-                <span className="text-5xl font-bold text-teal-400 tabular-nums tracking-tighter">{currentCapRate.toFixed(2)}%</span>
-                <div className="px-2 py-0.5 rounded border border-teal-400/20 bg-teal-400/10 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                  <span className="text-[9px] font-extrabold tracking-widest text-teal-400">LIVE</span>
+                <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">{currentCapRate.toFixed(2)}%</span>
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
                 </div>
               </div>
               {/* Sparkline */}
               <svg viewBox="0 0 100 40" className="w-24 h-12 overflow-visible">
                 <path
                   d={`M 0 35 ${trendValues.map((v, i) => `L ${(i / (trendValues.length - 1)) * 100} ${35 - ((v - 4) / 6) * 30}`).join(' ')}`}
-                  fill="none" stroke="rgba(32, 178, 170,0.5)" strokeWidth="2" strokeLinecap="round"
+                  fill="none" stroke="rgba(69, 73, 85,0.5)" strokeWidth="2" strokeLinecap="round"
                 />
-                <circle cx="100" cy={35 - ((trendValues[trendValues.length - 1] - 4) / 6) * 30} r="2.5" fill="#20B2AA" />
+                <circle cx="100" cy={35 - ((trendValues[trendValues.length - 1] - 4) / 6) * 30} r="2.5" fill="#454955" />
               </svg>
             </div>
 
             <div className="flex items-center gap-2 pt-4 border-t border-white/[0.06]">
-              <span className="w-2 h-2 rounded-full bg-teal-400" />
-              <span className="text-sm text-slate-300">In-Range Performance</span>
+              <span className="w-2 h-2 rounded-full bg-[#6E7480]" />
+              <span className="text-sm text-[#C0BEC2]">In-Range Performance</span>
             </div>
           </div>
 
           {/* Gauge */}
           <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">Performance Gauge</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">Performance Gauge</span>
             <CapRateGauge value={currentCapRate} />
           </div>
         </div>
@@ -301,14 +301,14 @@ export default function CapRateIntelligencePage() {
           {/* Trend History Chart */}
           <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Historical Trend Analysis</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Historical Trend Analysis</span>
             </div>
             <TrendChart values={trendValues} labels={trendLabels} target={DEMO_TARGET} />
           </div>
 
           {/* Property Rankings */}
           <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">Property Cap Rate Rankings</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">Property Cap Rate Rankings</span>
             <div className="space-y-1">
               {propertyRankings.map((prop) => (
                 <div key={prop.address} className="flex items-center justify-between py-3 border-b border-white/[0.04] hover:bg-white/[0.02] rounded-lg px-2 transition-colors">
@@ -317,11 +317,11 @@ export default function CapRateIntelligencePage() {
                     <span className="text-sm font-semibold text-white truncate">{prop.address}</span>
                   </div>
                   <div className="flex items-center gap-4 flex-shrink-0">
-                    <span className="text-xs text-slate-500 tabular-nums">{prop.value}</span>
-                    <div className={`flex items-center gap-0.5 text-xs font-bold tabular-nums ${prop.change >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                    <span className="text-xs text-[#6B6870] tabular-nums">{prop.value}</span>
+                    <div className={`flex items-center gap-0.5 text-xs font-bold tabular-nums ${prop.change >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                       {prop.change >= 0 ? '+' : ''}{prop.change.toFixed(2)}%
                     </div>
-                    <span className="text-sm font-bold text-teal-400 tabular-nums">{prop.capRate.toFixed(2)}%</span>
+                    <span className="text-sm font-bold text-[#6E7480] tabular-nums">{prop.capRate.toFixed(2)}%</span>
                   </div>
                 </div>
               ))}

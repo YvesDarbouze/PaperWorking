@@ -64,7 +64,7 @@ function buildWaterfallData(c: NOIComponents) {
     { name: 'Vacancy', value: -c.vacancyLoss, fill: '#A5A5A5', type: 'loss' },
     { name: 'Taxes', value: -c.propertyTaxes, fill: '#F06543', type: 'expense' },
     { name: 'Insurance', value: -c.insurance, fill: '#F97316', type: 'expense' },
-    { name: 'Utilities', value: -c.utilities, fill: '#20B2AA', type: 'expense' },
+    { name: 'Utilities', value: -c.utilities, fill: '#454955', type: 'expense' },
     { name: 'Mgmt', value: -c.propertyManagement, fill: '#EC4899', type: 'expense' },
     { name: 'Maint/CapEx', value: -c.maintenance, fill: '#14B8A6', type: 'expense' },
     { name: 'HOA', value: -c.hoa, fill: '#A855F7', type: 'expense' },
@@ -109,7 +109,7 @@ function buildExpenseDonut(c: NOIComponents) {
   const items = [
     { name: 'Taxes', value: c.propertyTaxes, fill: '#F06543' },
     { name: 'Insurance', value: c.insurance, fill: '#F97316' },
-    { name: 'Utilities', value: c.utilities, fill: '#20B2AA' },
+    { name: 'Utilities', value: c.utilities, fill: '#454955' },
     { name: 'Mgmt', value: c.propertyManagement, fill: '#EC4899' },
     { name: 'Maint/CapEx', value: c.maintenance, fill: '#14B8A6' },
     { name: 'HOA', value: c.hoa, fill: '#A855F7' },

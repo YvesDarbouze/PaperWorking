@@ -172,7 +172,7 @@ export function GuidedOverlay({
             left: targetRect.left - spotlightPadding,
             width: targetRect.width + spotlightPadding * 2,
             height: targetRect.height + spotlightPadding * 2,
-            boxShadow: '0 0 0 2px rgba(87, 241, 219, 0.4), 0 0 30px rgba(87, 241, 219, 0.15)',
+            boxShadow: '0 0 0 2px rgba(69, 73, 85, 0.4), 0 0 30px rgba(69, 73, 85, 0.15)',
             animation: 'onb-pulse-ring 2s ease-in-out infinite',
           }}
         />
@@ -189,15 +189,15 @@ export function GuidedOverlay({
         <div
           className="rounded-xl p-5 border border-white/15"
           style={{
-            background: 'linear-gradient(135deg, rgba(18, 28, 35, 0.95) 0%, rgba(11, 20, 26, 0.98) 100%)',
+            background: 'linear-gradient(135deg, rgba(18, 28, 35, 0.95) 0%, rgba(13, 10, 11, 0.98) 100%)',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.5), 0 0 30px -5px rgba(87, 241, 219, 0.08)',
+            boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.5), 0 0 30px -5px rgba(69, 73, 85, 0.08)',
           }}
         >
           {/* Close button */}
           <button
             onClick={handleDismiss}
-            className="absolute top-3 right-3 text-[#bacac5]/60 hover:text-white transition-colors p-1"
+            className="absolute top-3 right-3 text-[#9E9DA0]/60 hover:text-white transition-colors p-1"
             aria-label="Dismiss guide"
           >
             <X className="w-4 h-4" />
@@ -205,7 +205,7 @@ export function GuidedOverlay({
 
           {/* Step counter */}
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-[11px] font-medium tracking-[0.08em] text-[#57f1db] uppercase">
+            <span className="text-[11px] font-medium tracking-[0.08em] text-[#454955] uppercase">
               Step {currentStep + 1} of {steps.length}
             </span>
           </div>
@@ -214,7 +214,7 @@ export function GuidedOverlay({
           <h4 className="text-[15px] font-semibold text-white mb-2 pr-6">
             {step.title}
           </h4>
-          <p className="text-[13px] leading-[20px] text-[#bacac5] mb-4">
+          <p className="text-[13px] leading-[20px] text-[#9E9DA0] mb-4">
             {step.description}
           </p>
 
@@ -228,9 +228,9 @@ export function GuidedOverlay({
                   style={{
                     width: i === currentStep ? 20 : 6,
                     backgroundColor: i === currentStep
-                      ? '#57f1db'
+                      ? '#454955'
                       : i < currentStep
-                        ? 'rgba(87, 241, 219, 0.4)'
+                        ? 'rgba(69, 73, 85, 0.4)'
                         : 'rgba(255, 255, 255, 0.15)',
                   }}
                 />
@@ -242,7 +242,7 @@ export function GuidedOverlay({
               {currentStep > 0 && (
                 <button
                   onClick={handleBack}
-                  className="p-1.5 text-[#bacac5] hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                  className="p-1.5 text-[#9E9DA0] hover:text-white transition-colors rounded-lg hover:bg-white/5"
                   aria-label="Previous step"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -252,8 +252,8 @@ export function GuidedOverlay({
                 onClick={handleNext}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-semibold rounded-lg transition-all duration-200"
                 style={{
-                  backgroundColor: 'rgba(87, 241, 219, 0.15)',
-                  color: '#57f1db',
+                  backgroundColor: 'rgba(69, 73, 85, 0.15)',
+                  color: '#454955',
                 }}
               >
                 {isLastStep ? 'Got it' : 'Next'}
@@ -275,8 +275,8 @@ export function GuidedOverlay({
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes onb-pulse-ring {
-          0%, 100% { box-shadow: 0 0 0 2px rgba(87, 241, 219, 0.4), 0 0 30px rgba(87, 241, 219, 0.15); }
-          50% { box-shadow: 0 0 0 3px rgba(87, 241, 219, 0.6), 0 0 40px rgba(87, 241, 219, 0.25); }
+          0%, 100% { box-shadow: 0 0 0 2px rgba(69, 73, 85, 0.4), 0 0 30px rgba(69, 73, 85, 0.15); }
+          50% { box-shadow: 0 0 0 3px rgba(69, 73, 85, 0.6), 0 0 40px rgba(69, 73, 85, 0.25); }
         }
       `}</style>
     </div>

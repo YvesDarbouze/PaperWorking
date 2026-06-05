@@ -214,10 +214,10 @@ export default function CPASharePage() {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center text-on-surface"
-        style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)' }}
       >
-        <Loader2 className="w-10 h-10 animate-spin text-teal-400 mb-4" />
-        <p className="text-sm font-semibold text-slate-400">Loading secure tax data...</p>
+        <Loader2 className="w-10 h-10 animate-spin text-[#6E7480] mb-4" />
+        <p className="text-sm font-semibold text-[#9E9DA0]">Loading secure tax data...</p>
       </div>
     );
   }
@@ -227,7 +227,7 @@ export default function CPASharePage() {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center p-6 text-on-surface"
-        style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
+        style={{ background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)' }}
       >
         <div className="w-full max-w-md border border-white/10 rounded-2xl p-8 space-y-6 text-center shadow-2xl bg-white/[0.02]" style={{ backdropFilter: 'blur(20px)' }}>
           <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto text-red-400">
@@ -235,12 +235,12 @@ export default function CPASharePage() {
           </div>
           <div className="space-y-2">
             <h1 className="text-xl font-bold text-white">Access Expired or Revoked</h1>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-[#9E9DA0] leading-relaxed">
               This tax professional sharing link has expired, been revoked by the owner, or is invalid.
             </p>
           </div>
           <div className="pt-2">
-            <p className="text-xs text-slate-500">Contact the property owner to request a new secure sharing link.</p>
+            <p className="text-xs text-[#6B6870]">Contact the property owner to request a new secure sharing link.</p>
           </div>
         </div>
       </div>
@@ -250,7 +250,7 @@ export default function CPASharePage() {
   return (
     <div 
       className="min-h-screen flex flex-col text-on-surface pb-12"
-      style={{ background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)' }}
     >
       <Toaster position="top-right" />
       
@@ -258,7 +258,7 @@ export default function CPASharePage() {
       <header className="border-b border-white/5 bg-black/25 backdrop-blur-md px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <Logo size="md" />
-          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded-full px-3 py-1">
+          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded-full px-3 py-1">
             Secure CPA Portal
           </span>
         </div>
@@ -270,12 +270,12 @@ export default function CPASharePage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-white">Tax Portfolio Review — FY {taxYear}</h2>
-            <p className="text-xs text-slate-400 mt-1">Read-only access to Schedule E and Profit & Loss statements shared for accountant review.</p>
+            <p className="text-xs text-[#9E9DA0] mt-1">Read-only access to Schedule E and Profit & Loss statements shared for accountant review.</p>
           </div>
           <button
             onClick={handleDownloadTaxPack}
             disabled={exporting}
-            className="flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-black px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-200 shadow-lg shadow-teal-500/10 disabled:opacity-50"
+            className="flex items-center justify-center gap-2 bg-[#454955] hover:bg-[#6E7480] text-black px-6 py-3 rounded-xl font-bold uppercase tracking-wider text-xs transition-all duration-200 shadow-lg shadow-[#454955]/10 disabled:opacity-50"
           >
             {exporting ? (
               <>
@@ -306,8 +306,8 @@ export default function CPASharePage() {
             onClick={() => setActiveTab('schedE')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               activeTab === 'schedE'
-                ? 'bg-teal-500 text-black'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#454955] text-black'
+                : 'text-[#9E9DA0] hover:text-slate-200'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -317,8 +317,8 @@ export default function CPASharePage() {
             onClick={() => setActiveTab('pl')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               activeTab === 'pl'
-                ? 'bg-teal-500 text-black'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#454955] text-black'
+                : 'text-[#9E9DA0] hover:text-slate-200'
             }`}
           >
             <Percent className="w-3.5 h-3.5" />
@@ -327,9 +327,9 @@ export default function CPASharePage() {
         </div>
 
         {/* Shared Properties list */}
-        <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(11,20,26,0.3)', backdropFilter: 'blur(20px)' }}>
-          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
-            <Building className="w-3.5 h-3.5 text-teal-400" />
+        <div className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ background: 'rgba(13,10,11,0.3)', backdropFilter: 'blur(20px)' }}>
+          <h3 className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] flex items-center gap-2">
+            <Building className="w-3.5 h-3.5 text-[#6E7480]" />
             Properties in this share ({previews.length})
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -338,7 +338,7 @@ export default function CPASharePage() {
                 key={p.projectId} 
                 className="px-3 py-1.5 rounded-lg border border-white/5 bg-white/[0.02] text-xs font-semibold text-white flex items-center gap-2"
               >
-                <span className="w-4 h-4 rounded bg-teal-500/10 text-teal-400 flex items-center justify-center text-[10px] font-bold">
+                <span className="w-4 h-4 rounded bg-[#454955]/10 text-[#6E7480] flex items-center justify-center text-[10px] font-bold">
                   {String.fromCharCode(65 + idx)}
                 </span>
                 <span>{p.propertyName}</span>
@@ -349,20 +349,20 @@ export default function CPASharePage() {
 
         {/* Tab 1: Schedule E Preview */}
         {activeTab === 'schedE' && aggregatedSchedE && (
-          <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(11,20,26,0.3)', backdropFilter: 'blur(20px)' }}>
+          <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(13,10,11,0.3)', backdropFilter: 'blur(20px)' }}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white">Schedule E (Form 1040) Preview</h3>
-              <span className="text-[10px] font-bold text-teal-400 border border-teal-500/20 bg-teal-500/5 px-2 py-0.5 rounded-full uppercase tracking-wider">IRS Form 1040</span>
+              <span className="text-[10px] font-bold text-[#6E7480] border border-[#454955]/20 bg-[#454955]/5 px-2 py-0.5 rounded-full uppercase tracking-wider">IRS Form 1040</span>
             </div>
 
             <div className="overflow-x-auto border border-white/5 rounded-xl">
               <table className="w-full text-xs text-left min-w-[800px]">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/10">
-                    <th className="px-4 py-3 font-bold text-slate-400 uppercase tracking-widest text-[9px]">Schedule E Item</th>
-                    <th className="px-4 py-3 font-bold text-teal-400 uppercase tracking-widest text-[9px] bg-teal-500/5">Portfolio Total</th>
+                    <th className="px-4 py-3 font-bold text-[#9E9DA0] uppercase tracking-widest text-[9px]">Schedule E Item</th>
+                    <th className="px-4 py-3 font-bold text-[#6E7480] uppercase tracking-widest text-[9px] bg-[#454955]/5">Portfolio Total</th>
                     {previews.map((p, idx) => (
-                      <th key={p.projectId} className="px-4 py-3 font-bold text-slate-300 uppercase tracking-widest text-[9px]">
+                      <th key={p.projectId} className="px-4 py-3 font-bold text-[#C0BEC2] uppercase tracking-widest text-[9px]">
                         {String.fromCharCode(65 + idx)}) {p.propertyName}
                       </th>
                     ))}
@@ -395,8 +395,8 @@ export default function CPASharePage() {
                         key={row.key} 
                         className={`${row.isBold ? 'bg-white/[0.02] font-semibold' : ''} ${isNet ? 'bg-white/[0.04]' : ''}`}
                       >
-                        <td className="px-4 py-2.5 font-medium text-slate-300">{row.label}</td>
-                        <td className={`px-4 py-2.5 tabular-nums bg-teal-500/5 font-bold ${isNet ? (aggregatedSchedE.netIncome >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-teal-300'}`}>
+                        <td className="px-4 py-2.5 font-medium text-[#C0BEC2]">{row.label}</td>
+                        <td className={`px-4 py-2.5 tabular-nums bg-[#454955]/5 font-bold ${isNet ? (aggregatedSchedE.netIncome >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#8a8e9a]'}`}>
                           {fmtCurrency((aggregatedSchedE as any)[row.key])}
                         </td>
                         {previews.map((p) => {
@@ -404,7 +404,7 @@ export default function CPASharePage() {
                           return (
                             <td 
                               key={p.projectId} 
-                              className={`px-4 py-2.5 tabular-nums ${isNet ? (val >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-slate-400'}`}
+                              className={`px-4 py-2.5 tabular-nums ${isNet ? (val >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#9E9DA0]'}`}
                             >
                               {fmtCurrency(val)}
                             </td>
@@ -421,20 +421,20 @@ export default function CPASharePage() {
 
         {/* Tab 2: Profit & Loss Summary */}
         {activeTab === 'pl' && aggregatedPL && (
-          <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(11,20,26,0.3)', backdropFilter: 'blur(20px)' }}>
+          <div className="rounded-2xl border border-white/10 p-6 space-y-6" style={{ background: 'rgba(13,10,11,0.3)', backdropFilter: 'blur(20px)' }}>
             <div>
               <h3 className="text-base font-bold text-white">Profit & Loss Statements</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Operating income statement and tax summaries.</p>
+              <p className="text-xs text-[#9E9DA0] mt-0.5">Operating income statement and tax summaries.</p>
             </div>
 
             <div className="overflow-x-auto border border-white/5 rounded-xl">
               <table className="w-full text-xs text-left min-w-[800px]">
                 <thead>
                   <tr className="bg-white/5 border-b border-white/10">
-                    <th className="px-4 py-3 font-bold text-slate-400 uppercase tracking-widest text-[9px]">Financial Metric</th>
-                    <th className="px-4 py-3 font-bold text-teal-400 uppercase tracking-widest text-[9px] bg-teal-500/5">Portfolio Total</th>
+                    <th className="px-4 py-3 font-bold text-[#9E9DA0] uppercase tracking-widest text-[9px]">Financial Metric</th>
+                    <th className="px-4 py-3 font-bold text-[#6E7480] uppercase tracking-widest text-[9px] bg-[#454955]/5">Portfolio Total</th>
                     {plReports.map((p, idx) => (
-                      <th key={p.projectId} className="px-4 py-3 font-bold text-slate-300 uppercase tracking-widest text-[9px]">
+                      <th key={p.projectId} className="px-4 py-3 font-bold text-[#C0BEC2] uppercase tracking-widest text-[9px]">
                         {String.fromCharCode(65 + idx)}) {p.propertyName}
                       </th>
                     ))}
@@ -476,7 +476,7 @@ export default function CPASharePage() {
                     if (row.isSection) {
                       return (
                         <tr key={row.label} className="bg-white/[0.02]">
-                          <td colSpan={2 + plReports.length} className="px-4 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-slate-500">
+                          <td colSpan={2 + plReports.length} className="px-4 py-1.5 text-[9px] font-extrabold uppercase tracking-widest text-[#6B6870]">
                             {row.label}
                           </td>
                         </tr>
@@ -486,13 +486,13 @@ export default function CPASharePage() {
                     const isSub = row.isSubtotal;
                     const isTot = row.isTotal;
                     const isHighlight = row.isHighlight;
-                    const fontClass = isTot ? 'font-bold text-white' : isSub ? 'font-semibold text-slate-200' : 'text-slate-300';
+                    const fontClass = isTot ? 'font-bold text-white' : isSub ? 'font-semibold text-slate-200' : 'text-[#C0BEC2]';
                     const bgClass = isTot ? 'bg-white/[0.03]' : isSub ? 'bg-white/[0.01]' : '';
 
                     return (
                       <tr key={row.key} className={`${fontClass} ${bgClass}`}>
                         <td className="px-4 py-2.5 pl-6 font-medium">{row.label}</td>
-                        <td className={`px-4 py-2.5 tabular-nums bg-teal-500/5 font-bold ${isHighlight ? (aggregatedPL[row.key!] >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-teal-300'}`}>
+                        <td className={`px-4 py-2.5 tabular-nums bg-[#454955]/5 font-bold ${isHighlight ? (aggregatedPL[row.key!] >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#8a8e9a]'}`}>
                           {fmtCurrency(aggregatedPL[row.key!])}
                         </td>
                         {plReports.map((p) => {
@@ -500,7 +500,7 @@ export default function CPASharePage() {
                           return (
                             <td 
                               key={p.projectId} 
-                              className={`px-4 py-2.5 tabular-nums ${isHighlight ? (val >= 0 ? 'text-teal-400' : 'text-red-400') : 'text-slate-400'}`}
+                              className={`px-4 py-2.5 tabular-nums ${isHighlight ? (val >= 0 ? 'text-[#6E7480]' : 'text-red-400') : 'text-[#9E9DA0]'}`}
                             >
                               {fmtCurrency(val)}
                             </td>

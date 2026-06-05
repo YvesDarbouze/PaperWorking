@@ -111,7 +111,7 @@ export default function ManualLeadModal({ open, onClose }: ManualLeadModalProps)
   if (!open) return null;
 
   const inputClasses =
-    'w-full rounded-lg border border-pw-border bg-white/5 px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-1 focus:ring-teal-400/40 focus:border-teal-400/40 transition-colors';
+    'w-full rounded-lg border border-pw-border bg-white/5 px-3 py-2.5 text-sm text-text-primary placeholder:text-text-secondary/50 focus:outline-none focus:ring-1 focus:ring-[#6E7480]/40 focus:border-[#6E7480]/40 transition-colors';
   const labelClasses = 'block text-xs font-semibold text-text-secondary tracking-wider uppercase mb-1.5';
 
   return (

@@ -19,7 +19,7 @@ export default function DebtFinancingAdvanced() {
   };
 
   return (
-    <div className="min-h-screen bg-[#091015] text-on-surface flex flex-col dark selection:bg-primary/30 selection:text-primary pb-32">
+    <div className="min-h-screen bg-[#0d0a0b] text-on-surface flex flex-col dark selection:bg-primary/30 selection:text-primary pb-32">
       <main className="pt-24 px-4 max-w-4xl mx-auto w-full">
         {/* Dashboard Header */}
         <div className="mb-8">
@@ -31,7 +31,7 @@ export default function DebtFinancingAdvanced() {
         </div>
 
         {/* Main Configuration Panel */}
-        <div className="bg-[#141d23]/60 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 relative overflow-hidden">
+        <div className="bg-[#161318]/60 backdrop-blur-md border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] rounded-xl p-6 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-[2px] bg-primary/10 pointer-events-none animate-[scan_8s_linear_infinite]"></div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -44,7 +44,7 @@ export default function DebtFinancingAdvanced() {
                   type="number"
                   value={loanAmount}
                   onChange={(e) => setLoanAmount(Number(e.target.value))}
-                  className="w-full bg-[#060f15]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(87,241,219,0.3)] transition-all pl-8 py-3 rounded-lg font-mono text-on-surface outline-none"
+                  className="w-full bg-[#0d0a0b]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(69,73,85,0.3)] transition-all pl-8 py-3 rounded-lg font-mono text-on-surface outline-none"
                 />
               </div>
             </div>
@@ -59,7 +59,7 @@ export default function DebtFinancingAdvanced() {
                   step="0.1"
                   value={interestRate}
                   onChange={(e) => setInterestRate(Number(e.target.value))}
-                  className="w-full bg-[#060f15]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(87,241,219,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
+                  className="w-full bg-[#0d0a0b]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(69,73,85,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
                 />
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function DebtFinancingAdvanced() {
                   type="number"
                   value={loanTerm}
                   onChange={(e) => setLoanTerm(Number(e.target.value))}
-                  className="w-full bg-[#060f15]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(87,241,219,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
+                  className="w-full bg-[#0d0a0b]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(69,73,85,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
                 />
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function DebtFinancingAdvanced() {
 
           {/* Advanced Disclosure Panel */}
           <div className={`mt-6 overflow-hidden transition-all duration-500 ${isAdvancedOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="bg-[#182127] rounded-xl p-6 border border-primary/20">
+            <div className="bg-[#1e1b20] rounded-xl p-6 border border-primary/20">
               <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary text-sm">settings_input_component</span>
                 <h3 className="text-[12px] font-semibold text-primary uppercase tracking-widest">Leverage Mechanics</h3>
@@ -111,7 +111,7 @@ export default function DebtFinancingAdvanced() {
                       step="0.25"
                       value={lenderPoints}
                       onChange={(e) => setLenderPoints(Number(e.target.value))}
-                      className="w-full bg-[#060f15]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(87,241,219,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
+                      className="w-full bg-[#0d0a0b]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(69,73,85,0.3)] transition-all px-4 py-3 rounded-lg font-mono text-on-surface outline-none"
                     />
                   </div>
                 </div>
@@ -125,7 +125,7 @@ export default function DebtFinancingAdvanced() {
                       type="number"
                       value={junkFees}
                       onChange={(e) => setJunkFees(Number(e.target.value))}
-                      className="w-full bg-[#060f15]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(87,241,219,0.3)] transition-all pl-8 py-3 rounded-lg font-mono text-on-surface outline-none"
+                      className="w-full bg-[#0d0a0b]/80 border border-[#3c4a46] focus:border-primary focus:shadow-[0_0_0_1px_rgba(69,73,85,0.3)] transition-all pl-8 py-3 rounded-lg font-mono text-on-surface outline-none"
                     />
                   </div>
                 </div>
@@ -141,13 +141,13 @@ export default function DebtFinancingAdvanced() {
                 <span className="text-[12px] font-semibold text-on-surface-variant tracking-wider uppercase">Live Valuation Sync</span>
               </div>
               <div className="flex items-baseline gap-3">
-                <span className="text-[32px] font-bold text-on-surface drop-shadow-[0_0_10px_rgba(87,241,219,0.4)]">
+                <span className="text-[32px] font-bold text-on-surface drop-shadow-[0_0_10px_rgba(69,73,85,0.4)]">
                   ${totalCashToClose.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
                 <span className="text-[14px] font-semibold text-primary">TOTAL CASH TO CLOSE</span>
               </div>
             </div>
-            <button className="bg-primary hover:bg-[#20B2AA] text-[#00574d] text-[14px] px-8 py-4 rounded-lg font-bold shadow-[0_0_20px_rgba(87,241,219,0.3)] transition-all active:scale-95">
+            <button className="bg-primary hover:bg-[#454955] text-[#454955] text-[14px] px-8 py-4 rounded-lg font-bold shadow-[0_0_20px_rgba(69,73,85,0.3)] transition-all active:scale-95">
               EXECUTE STRUCTURE
             </button>
           </div>

@@ -111,7 +111,7 @@ export function DebtServiceInputForm({
     <div
       className={`glass-card rounded-xl overflow-hidden relative ${className}`}
       style={{
-        background: "rgba(11, 20, 26, 0.6)",
+        background: "rgba(13, 10, 11, 0.6)",
         backdropFilter: "blur(20px)",
         border: "1px solid rgba(255, 255, 255, 0.08)",
       }}
@@ -202,7 +202,7 @@ export function DebtServiceInputForm({
               className="rounded-xl p-4 border border-white/5"
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
-              <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold block mb-1">
+              <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold block mb-1">
                 Monthly Payment
               </span>
               <span className="text-2xl font-bold text-white tabular-nums font-mono">
@@ -215,7 +215,7 @@ export function DebtServiceInputForm({
               className="rounded-xl p-4 border border-white/5"
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
-              <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold block mb-1">
+              <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold block mb-1">
                 Annual Debt Service
               </span>
               <span className="text-2xl font-bold text-white tabular-nums font-mono">
@@ -228,21 +228,21 @@ export function DebtServiceInputForm({
               className="rounded-xl p-4 border border-white/5"
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
-              <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold block mb-1">
+              <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold block mb-1">
                 {noi != null ? "Monthly Cash Flow" : "Cash Flow"}
               </span>
               {noi != null && noi > 0 ? (
                 <span
                   className={`text-2xl font-bold tabular-nums font-mono ${
                     derived.monthlyCashFlow >= 0
-                      ? "text-teal-400"
+                      ? "text-[#6E7480]"
                       : "text-red-400"
                   }`}
                 >
                   {formatCurrencyDetailed(derived.monthlyCashFlow)}
                 </span>
               ) : (
-                <span className="text-sm text-slate-500 italic">
+                <span className="text-sm text-[#6B6870] italic">
                   Provide NOI to compute
                 </span>
               )}
@@ -252,13 +252,13 @@ export function DebtServiceInputForm({
           {/* Annual Cash Flow summary when NOI is present */}
           {noi != null && noi > 0 && (
             <div className="mt-3 flex items-center justify-between py-3 px-4 rounded-lg bg-white/5 border border-white/5">
-              <span className="text-xs text-slate-400 uppercase tracking-widest font-semibold">
+              <span className="text-xs text-[#9E9DA0] uppercase tracking-widest font-semibold">
                 Annual Cash Flow (NOI − Debt Service)
               </span>
               <span
                 className={`text-base font-bold tabular-nums font-mono ${
                   derived.annualCashFlow >= 0
-                    ? "text-teal-400"
+                    ? "text-[#6E7480]"
                     : "text-red-400"
                 }`}
               >

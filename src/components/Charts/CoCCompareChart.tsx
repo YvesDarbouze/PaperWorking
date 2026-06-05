@@ -25,10 +25,10 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
   const option = {
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127', // var(--color-surface-container)
+      backgroundColor: '#1e1b20', // var(--color-surface-container)
       borderColor: 'rgba(255, 255, 255, 0.1)',
       textStyle: {
-        color: '#dae4ec', // var(--color-on-surface)
+        color: '#9E9DA0', // var(--color-on-surface)
         fontSize: 12,
         fontFamily: 'Plus Jakarta Sans, sans-serif'
       },
@@ -41,10 +41,10 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
 
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
-            <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${d.name}</strong>
-            <span style="color: #bacac5">CoC Return:</span> <strong style="color: #57f1db">${d.cocReturn.toFixed(2)}%</strong><br/>
-            <span style="color: #bacac5">Cash Flow:</span> <strong style="color: #dae4ec">${fmtUSD(d.annualCashFlow)}/yr</strong><br/>
-            <span style="color: #bacac5">Invested:</span> <strong style="color: #dae4ec">${fmtUSD(d.totalCashInvested)}</strong>
+            <strong style="color: #9E9DA0; display: block; margin-bottom: 4px;">${d.name}</strong>
+            <span style="color: #9E9DA0">CoC Return:</span> <strong style="color: #454955">${d.cocReturn.toFixed(2)}%</strong><br/>
+            <span style="color: #9E9DA0">Cash Flow:</span> <strong style="color: #9E9DA0">${fmtUSD(d.annualCashFlow)}/yr</strong><br/>
+            <span style="color: #9E9DA0">Invested:</span> <strong style="color: #9E9DA0">${fmtUSD(d.totalCashInvested)}</strong>
           </div>
         `;
       }
@@ -62,7 +62,7 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 9,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         interval: 0,
@@ -80,7 +80,7 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        color: '#bacac5',
+        color: '#9E9DA0',
         fontSize: 9,
         fontFamily: 'Plus Jakarta Sans, sans-serif',
         formatter: '{value}%'
@@ -113,7 +113,7 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
                 formatter: '8% Target',
                 position: 'end',
                 fontSize: 9,
-                color: '#bacac5',
+                color: '#9E9DA0',
                 fontFamily: 'Plus Jakarta Sans, sans-serif'
               }
             },
@@ -128,7 +128,7 @@ export default function CoCCompareChart({ data, height = 300 }: CoCCompareChartP
                 formatter: '12% Excellent',
                 position: 'end',
                 fontSize: 9,
-                color: '#bacac5',
+                color: '#9E9DA0',
                 fontFamily: 'Plus Jakarta Sans, sans-serif'
               }
             }

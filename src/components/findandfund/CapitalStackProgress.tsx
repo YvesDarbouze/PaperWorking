@@ -55,7 +55,7 @@ export default function CapitalStackProgress({ capitalNeeded, capitalPledged, in
             width: `${percent}%`,
             background: isFunded
               ? 'linear-gradient(90deg, #059669, #3f7d20)'
-              : 'linear-gradient(90deg, #0d9488, #20B2AA)',
+              : 'linear-gradient(90deg, #0d9488, #454955)',
           }}
         />
         {/* Animated shimmer overlay */}

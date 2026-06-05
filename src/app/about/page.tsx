@@ -67,7 +67,7 @@ export default function AboutPage() {
           <div
             className="rounded-2xl p-10 sm:p-14"
             style={{
-              background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+              background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
               borderTop: '1px solid rgba(255,255,255,0.12)',
@@ -96,7 +96,7 @@ export default function AboutPage() {
                 key={v.title}
                 className="rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(20,29,35,0.8))',
+                  background: 'linear-gradient(135deg, rgba(34,43,50,0.4), rgba(22,19,24,0.8))',
                   backdropFilter: 'blur(16px)',
                   WebkitBackdropFilter: 'blur(16px)',
                   borderTop: '1px solid rgba(255,255,255,0.12)',

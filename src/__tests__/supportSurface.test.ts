@@ -22,10 +22,10 @@ code block
     expect(html).toContain('<h1 class="text-2xl font-bold tracking-tight text-[var(--pw-black)] mt-10 mb-6">Heading 1</h1>');
     expect(html).toContain('<h2 class="text-xl font-bold tracking-tight text-[var(--pw-black)] mt-8 mb-4">Heading 2</h2>');
     expect(html).toContain('<strong>bold</strong>');
-    expect(html).toContain('<code class="bg-black/30 text-teal-300 px-1 py-0.5 rounded font-mono text-xs">code</code>');
+    expect(html).toContain('<code class="bg-black/30 text-[#8a8e9a] px-1 py-0.5 rounded font-mono text-xs">code</code>');
     expect(html).toContain('<ul class="list-disc pl-5 my-4 space-y-2 text-on-surface-variant">');
     expect(html).toContain('<li class="text-sm">List Item 1</li>');
-    expect(html).toContain('<pre class="bg-black/40 text-teal-400 p-4 rounded-lg my-4 font-mono text-xs overflow-x-auto">');
+    expect(html).toContain('<pre class="bg-black/40 text-[#6E7480] p-4 rounded-lg my-4 font-mono text-xs overflow-x-auto">');
   });
 
   test('getHelpArticles loads all articles', () => {

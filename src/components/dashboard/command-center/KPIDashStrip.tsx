@@ -83,13 +83,13 @@ export function KPIDashStrip() {
                 <div className="flex justify-between items-start mb-3">
                   <span
                     className="text-[10px] font-semibold uppercase tracking-widest"
-                    style={{ color: "rgba(218,228,236,0.5)" }}
+                    style={{ color: "rgba(253,255,252,0.5)" }}
                   >
                     {metric.label}
                   </span>
                   <span
                     className="material-symbols-outlined text-base"
-                    style={{ color: "rgba(218,228,236,0.3)" }}
+                    style={{ color: "rgba(253,255,252,0.3)" }}
                   >
                     {metric.icon}
                   </span>
@@ -98,7 +98,7 @@ export function KPIDashStrip() {
                 {/* Value */}
                 <div
                   className="text-xl md:text-2xl font-bold tracking-tight mb-3"
-                  style={{ color: "rgba(218,228,236,0.95)" }}
+                  style={{ color: "rgba(253,255,252,0.95)" }}
                 >
                   {metric.value}
                 </div>

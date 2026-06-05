@@ -33,12 +33,12 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) =>
         params[0].axisValue + '<br/>' +
-        `<span style="color:#20B2AA">─</span> CoC Return: <b>${params[0].value}%</b>`,
+        `<span style="color:#454955">─</span> CoC Return: <b>${params[0].value}%</b>`,
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -61,13 +61,13 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2.5, color: '#454955' },
+        itemStyle: { color: '#454955' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32, 178, 170,0.20)' },
+              { offset: 0, color: 'rgba(69, 73, 85,0.20)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -85,8 +85,8 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
             },
             {
               yAxis: 8,
-              lineStyle: { color: '#20B2AA', type: 'dashed', width: 1, opacity: 0.7 },
-              label: { formatter: 'Target (8%)', color: '#20B2AA', fontSize: 9, position: 'insideEndTop' },
+              lineStyle: { color: '#454955', type: 'dashed', width: 1, opacity: 0.7 },
+              label: { formatter: 'Target (8%)', color: '#454955', fontSize: 9, position: 'insideEndTop' },
             },
             {
               yAxis: 12,
@@ -107,17 +107,17 @@ const SCENARIOS = [
     coc: 6.5,
     description: 'Higher vacancy, conservative rent',
     borderClass: 'border-white/10',
-    textClass: 'text-slate-400',
-    numClass: 'text-slate-300',
+    textClass: 'text-[#9E9DA0]',
+    numClass: 'text-[#C0BEC2]',
     active: false,
   },
   {
     label: 'Current',
     coc: 8.42,
     description: 'Live portfolio performance',
-    borderClass: 'border-teal-400/40',
-    textClass: 'text-teal-400',
-    numClass: 'text-teal-400',
+    borderClass: 'border-[#6E7480]/40',
+    textClass: 'text-[#6E7480]',
+    numClass: 'text-[#6E7480]',
     active: true,
   },
   {
@@ -125,8 +125,8 @@ const SCENARIOS = [
     coc: 11.8,
     description: 'Full occupancy, rent optimization',
     borderClass: 'border-white/10',
-    textClass: 'text-slate-400',
-    numClass: 'text-slate-300',
+    textClass: 'text-[#9E9DA0]',
+    numClass: 'text-[#C0BEC2]',
     active: false,
   },
 ];
@@ -195,7 +195,7 @@ export default function CoCIntelligencePage() {
   }, [projects]);
 
   const benchmarkBadge = currentCoC >= 8
-    ? 'bg-teal-400/10 border-teal-400/20 text-teal-400'
+    ? 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]'
     : 'bg-amber-400/10 border-amber-400/20 text-amber-400';
   const benchmarkLabel = currentCoC >= 8 ? 'Above Benchmark' : 'Below Benchmark';
 
@@ -205,14 +205,14 @@ export default function CoCIntelligencePage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">CoC Intelligence</span>
+            <span className="text-[#6E7480]">CoC Intelligence</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Cash-on-Cash Return</h1>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2 self-start md:self-auto">
+        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
           <Download className="w-4 h-4" />
           Export
         </button>
@@ -228,7 +228,7 @@ export default function CoCIntelligencePage() {
           <div className="rounded-xl border border-white/10 p-6 space-y-5" style={{ background: 'rgba(24,33,39,0.7)' }}>
 
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Cash-on-Cash Return</span>
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Cash-on-Cash Return</span>
               <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${benchmarkBadge}`}>
                 {benchmarkLabel}
               </span>
@@ -236,21 +236,21 @@ export default function CoCIntelligencePage() {
 
             {/* Big number */}
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-bold text-teal-400 tabular-nums tracking-tighter">
+              <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
                 {currentCoC.toFixed(2)}%
               </span>
             </div>
 
             {/* Change */}
-            <div className="flex items-center gap-1.5 text-sm font-bold text-teal-400">
+            <div className="flex items-center gap-1.5 text-sm font-bold text-[#6E7480]">
               <ArrowUpRight className="w-4 h-4" />
               +{cocChange.toFixed(1)}% vs Last Year
             </div>
 
             {/* Formula */}
             <div className="px-3 py-2.5 rounded-lg bg-white/[0.03] border border-white/[0.06]">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">Formula</p>
-              <p className="text-xs text-slate-300 font-mono">Annual Cash Flow ÷ Equity Invested</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Formula</p>
+              <p className="text-xs text-[#C0BEC2] font-mono">Annual Cash Flow ÷ Equity Invested</p>
             </div>
           </div>
 
@@ -259,8 +259,8 @@ export default function CoCIntelligencePage() {
             {SCENARIOS.map((sc) => (
               <div
                 key={sc.label}
-                className={`rounded-xl border p-4 flex items-center justify-between transition-all ${sc.borderClass} ${sc.active ? 'ring-1 ring-teal-400/20' : ''}`}
-                style={{ background: sc.active ? 'rgba(32, 178, 170,0.04)' : 'rgba(24,33,39,0.7)' }}
+                className={`rounded-xl border p-4 flex items-center justify-between transition-all ${sc.borderClass} ${sc.active ? 'ring-1 ring-[#6E7480]/20' : ''}`}
+                style={{ background: sc.active ? 'rgba(69, 73, 85,0.04)' : 'rgba(24,33,39,0.7)' }}
               >
                 <div>
                   <p className={`text-[10px] font-bold uppercase tracking-wider ${sc.textClass}`}>{sc.label}</p>
@@ -276,10 +276,10 @@ export default function CoCIntelligencePage() {
         <div className="md:col-span-8">
           <div className="rounded-xl border border-white/10 p-6 h-full" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">CoC Return Trend</span>
-              <div className="flex items-center gap-3 text-[10px] text-slate-500">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">CoC Return Trend</span>
+              <div className="flex items-center gap-3 text-[10px] text-[#6B6870]">
                 <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-amber-400/60 inline-block" /> Min (6%)</span>
-                <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-teal-400/60 inline-block" /> Target (8%)</span>
+                <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-[#6E7480]/60 inline-block" /> Target (8%)</span>
                 <span className="flex items-center gap-1"><span className="w-3 border-t border-dashed border-white/30 inline-block" /> Excellent (12%)</span>
               </div>
             </div>
@@ -311,13 +311,13 @@ export default function CoCIntelligencePage() {
 
       {/* ── Bottom: CoC by Investment Tranche ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-        <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">CoC by Investment Tranche</span>
+        <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">CoC by Investment Tranche</span>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06]">
                 {['Tranche / Property', 'Equity In', 'Annual Cash Flow', 'CoC%', 'vs Target'].map((h) => (
-                  <th key={h} className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">{h}</th>
+                  <th key={h} className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -326,19 +326,19 @@ export default function CoCIntelligencePage() {
                 const diff = row.coc - row.target;
                 return (
                   <tr key={row.tranche} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-3 text-slate-300 font-medium">{row.tranche}</td>
-                    <td className="py-3 px-3 text-slate-400 tabular-nums">
+                    <td className="py-3 px-3 text-[#C0BEC2] font-medium">{row.tranche}</td>
+                    <td className="py-3 px-3 text-[#9E9DA0] tabular-nums">
                       ${row.equityIn >= 1_000_000
                         ? `${(row.equityIn / 1_000_000).toFixed(2)}M`
                         : `${(row.equityIn / 1000).toFixed(0)}k`}
                     </td>
-                    <td className="py-3 px-3 text-slate-400 tabular-nums">
+                    <td className="py-3 px-3 text-[#9E9DA0] tabular-nums">
                       ${row.annualCF >= 1000
                         ? `${(row.annualCF / 1000).toFixed(1)}k`
                         : row.annualCF.toFixed(0)}
                     </td>
-                    <td className="py-3 px-3 font-bold tabular-nums text-teal-400">{row.coc.toFixed(2)}%</td>
-                    <td className={`py-3 px-3 font-bold tabular-nums ${diff >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                    <td className="py-3 px-3 font-bold tabular-nums text-[#6E7480]">{row.coc.toFixed(2)}%</td>
+                    <td className={`py-3 px-3 font-bold tabular-nums ${diff >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                       {diff >= 0 ? '+' : ''}{diff.toFixed(2)}%
                     </td>
                   </tr>

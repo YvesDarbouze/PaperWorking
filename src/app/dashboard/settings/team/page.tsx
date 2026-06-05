@@ -73,7 +73,7 @@ function MemberRow({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-4">
         {/* Left Side: Avatar & Info */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-pw-primary/10 border border-pw-primary/20 text-pw-primary flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-[0_0_10px_rgba(87,241,219,0.1)]">
+          <div className="w-10 h-10 rounded-lg bg-pw-primary/10 border border-pw-primary/20 text-pw-primary flex items-center justify-center text-xs font-bold flex-shrink-0 shadow-[0_0_10px_rgba(69,73,85,0.1)]">
             {initials}
           </div>
           <div className="min-w-0">
@@ -255,7 +255,7 @@ export default function TeamManagementPage() {
     return (
       <div className="flex items-center justify-center py-20 px-4">
         <div className="glass-card border border-pw-border p-8 max-w-sm text-center space-y-4 rounded-2xl shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center mx-auto text-pw-primary shadow-[0_0_15px_rgba(87,241,219,0.2)] animate-pulse">
+          <div className="w-12 h-12 rounded-full bg-pw-primary/10 border border-pw-primary/20 flex items-center justify-center mx-auto text-pw-primary shadow-[0_0_15px_rgba(69,73,85,0.2)] animate-pulse">
             <Shield className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-bold text-pw-black">Team Plan Required</h2>
@@ -345,7 +345,7 @@ export default function TeamManagementPage() {
             {/* Progress bar */}
             <div className="w-full h-2.5 bg-pw-glass-bg border border-pw-border rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(87,241,219,0.3)] ${
+                className={`h-full rounded-full transition-all duration-500 ease-out shadow-[0_0_12px_rgba(69,73,85,0.3)] ${
                   seatPercent >= 90 ? 'bg-error' : seatPercent >= 70 ? 'bg-amber-500' : 'bg-pw-primary'
                 }`}
                 style={{ width: `${Math.min(seatPercent, 100)}%` }}
@@ -517,7 +517,7 @@ export default function TeamManagementPage() {
                       <div className={`absolute left-[-26px] top-1.5 w-2 h-2 rounded-full border ${
                         isSecurityAlert 
                           ? 'border-error bg-error/20 shadow-[0_0_8px_rgba(255,100,100,0.6)]' 
-                          : 'border-pw-primary bg-pw-primary/20 shadow-[0_0_8px_rgba(87,241,219,0.6)]'
+                          : 'border-pw-primary bg-pw-primary/20 shadow-[0_0_8px_rgba(69,73,85,0.6)]'
                       }`}></div>
 
                       <div>

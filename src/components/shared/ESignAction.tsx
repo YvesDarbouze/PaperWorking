@@ -36,7 +36,7 @@ export default function ESignAction({ documentName, signeeRole, onSigned, isSign
     <button 
       onClick={handleSigning}
       disabled={isSigning}
-      className="flex items-center gap-1.5 bg-[#20B2AA]/10 border border-[#20B2AA]/30 text-[#20B2AA] px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-[#20B2AA]/20 transition disabled:opacity-50"
+      className="flex items-center gap-1.5 bg-[#454955]/10 border border-[#454955]/30 text-[#454955] px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-[#454955]/20 transition disabled:opacity-50"
     >
       {isSigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PenTool className="w-3.5 h-3.5" />}
       Request E-Signature

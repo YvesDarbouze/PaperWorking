@@ -38,13 +38,13 @@ import type { MetricResult } from '@/lib/metrics/types';
    Stitch Schemas: c442a569 (Exit Phase) + 650e166b (Typography)
    "Luminous Glass" dark mode — single-column mobile-first stack.
 
-   Phase 4 accent: #57f1db (primary / teal) — same as global primary
+   Phase 4 accent: #454955 (primary / teal) — same as global primary
    Gold accent: #ffd1aa (tertiary) — for IRR hero card
    All save/close logic 100% preserved from original.
    ═══════════════════════════════════════════════════════════════ */
 
-const PHASE_COLOR = '#57f1db';
-const PHASE_GLOW  = 'rgba(87, 241, 219, 0.4)';
+const PHASE_COLOR = '#454955';
+const PHASE_GLOW  = 'rgba(69, 73, 85, 0.4)';
 
 type ExitPath = 'Sell' | 'Rent' | 'Refinance';
 
@@ -344,13 +344,13 @@ export default function Phase4WorkspacePage() {
   /* ── Loading state ── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="flex flex-col items-center gap-4">
           <div
             className="w-12 h-12 border-2 rounded-full animate-spin"
             style={{ borderColor: PHASE_COLOR, borderTopColor: 'transparent' }}
           />
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#bacac5]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9E9DA0]">
             Loading Workspace…
           </p>
         </div>
@@ -360,12 +360,12 @@ export default function Phase4WorkspacePage() {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#091015]">
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
         <div className="text-center space-y-3">
-          <p className="text-sm font-bold text-[#dae4ec]">Project not found.</p>
+          <p className="text-sm font-bold text-[#9E9DA0]">Project not found.</p>
           <button
             onClick={() => router.push('/dashboard/projects')}
-            className="text-xs font-bold uppercase tracking-[0.12em] underline text-[#bacac5]"
+            className="text-xs font-bold uppercase tracking-[0.12em] underline text-[#9E9DA0]"
           >
             Back to Projects
           </button>
@@ -375,12 +375,12 @@ export default function Phase4WorkspacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#091015] relative">
+    <div className="min-h-screen bg-[#0d0a0b] relative">
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[20%] -right-[10%] w-[500px] h-[500px] bg-[#20B2AA]/5 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-[#57f1db]/5 rounded-full blur-[100px]" />
+        <div className="absolute top-[20%] -right-[10%] w-[500px] h-[500px] bg-[#454955]/5 rounded-full blur-[120px]" />
+        <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-[#454955]/5 rounded-full blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
@@ -389,9 +389,9 @@ export default function Phase4WorkspacePage() {
 
       {/* ── Locked / Realized State Banner ── */}
       {(project.locked || isRealized) && (
-        <div className="sticky top-0 z-[100] bg-[#57f1db]/10 border-b border-[#57f1db]/30 py-2 px-6 flex items-center justify-center gap-3 backdrop-blur-xl">
-          <span className="material-symbols-outlined text-[#57f1db] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#57f1db]">
+        <div className="sticky top-0 z-[100] bg-[#454955]/10 border-b border-[#454955]/30 py-2 px-6 flex items-center justify-center gap-3 backdrop-blur-xl">
+          <span className="material-symbols-outlined text-[#454955] text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#454955]">
             {project.locked
               ? 'Immutable Record: Project Archived & Locked'
               : `Realized · Closed ${closedAtDate || ''}`}
@@ -420,7 +420,7 @@ export default function Phase4WorkspacePage() {
 
         {/* ── Strategy Selector (Stitch: pill toggle bar) ── */}
         <section className="space-y-2">
-          <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase tracking-widest">Exit Strategy</h2>
+          <h2 className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase tracking-widest">Exit Strategy</h2>
           <div className="glass-card rounded-2xl p-2 inline-flex items-center gap-1">
             {(['Sell', 'Rent', 'Refinance'] as ExitPath[]).map((path) => {
               const isActive = strategy === path || (path === 'Refinance' && strategy !== 'Sell' && strategy !== 'Rent');
@@ -432,8 +432,8 @@ export default function Phase4WorkspacePage() {
                   }}
                   className={`px-8 py-3 rounded-xl text-[14px] leading-[16px] tracking-[0.02em] font-semibold transition-all ${
                     isActive
-                      ? 'bg-[#57f1db]/20 text-[#57f1db]'
-                      : 'text-[#bacac5] hover:bg-white/5'
+                      ? 'bg-[#454955]/20 text-[#454955]'
+                      : 'text-[#9E9DA0] hover:bg-white/5'
                   }`}
                   style={isActive ? { boxShadow: `0 0 20px -5px ${PHASE_GLOW}` } : {}}
                 >
@@ -452,20 +452,20 @@ export default function Phase4WorkspacePage() {
             { label: 'Holding Costs', value: metrics.holding, desc: 'Accrued carry & maintenance' }
           ].map((m, i) => (
             <div key={i} className="glass-card p-5 rounded-xl flex flex-col gap-2 transition-all hover:border-white/20 group">
-              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#bacac5] uppercase">{m.label}</span>
-              <span className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums group-hover:text-[#57f1db] transition-colors">
+              <span className="text-[12px] leading-[14px] font-medium tracking-[0.05em] text-[#9E9DA0] uppercase">{m.label}</span>
+              <span className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums group-hover:text-[#454955] transition-colors">
                 {fmtCurrency(Math.round(m.value * shareMultiplier))}
               </span>
-              <span className="text-[10px] text-[#bacac5]/60">{m.desc}</span>
+              <span className="text-[10px] text-[#9E9DA0]/60">{m.desc}</span>
             </div>
           ))}
         </section>
 
         {/* ── Exit Assumptions Quick-View (projected sale vs. cost basis) ── */}
         {!isRealized && (
-          <section className="glass-card rounded-2xl p-6 space-y-4 border border-[#57f1db]/10">
+          <section className="glass-card rounded-2xl p-6 space-y-4 border border-[#454955]/10">
             <div className="flex items-center justify-between">
-              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec] flex items-center gap-2">
+              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0] flex items-center gap-2">
                 <span className="material-symbols-outlined text-[#ffd1aa]" style={{ fontVariationSettings: "'FILL' 1" }}>trending_up</span>
                 Exit Assumptions
               </h3>
@@ -475,17 +475,17 @@ export default function Phase4WorkspacePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <p className="text-[11px] text-[#bacac5] uppercase tracking-wider font-medium">Projected Sale Price</p>
-                <p className="text-[20px] font-semibold text-[#dae4ec] tabular-nums">
+                <p className="text-[11px] text-[#9E9DA0] uppercase tracking-wider font-medium">Projected Sale Price</p>
+                <p className="text-[20px] font-semibold text-[#9E9DA0] tabular-nums">
                   {fmtCurrency(localProject?.financials?.projectedSalePrice || localProject?.financials?.estimatedARV || project.financials?.estimatedARV || 0)}
                 </p>
-                <p className="text-[9px] text-[#bacac5]/50">vs. Basis: {fmtCurrency(Math.round(metrics.basis))}</p>
+                <p className="text-[9px] text-[#9E9DA0]/50">vs. Basis: {fmtCurrency(Math.round(metrics.basis))}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-[11px] text-[#bacac5] uppercase tracking-wider font-medium">Hold Period</p>
-                <p className="text-[20px] font-semibold text-[#dae4ec] tabular-nums">
+                <p className="text-[11px] text-[#9E9DA0] uppercase tracking-wider font-medium">Hold Period</p>
+                <p className="text-[20px] font-semibold text-[#9E9DA0] tabular-nums">
                   {Math.round((localProject?.financials?.projectedHoldTimeMonths || project.financials?.projectedHoldTimeMonths || 60) / 12)}y
-                  <span className="text-[14px] text-[#bacac5] ml-1">
+                  <span className="text-[14px] text-[#9E9DA0] ml-1">
                     ({localProject?.financials?.projectedHoldTimeMonths || project.financials?.projectedHoldTimeMonths || 60}mo)
                   </span>
                 </p>
@@ -499,7 +499,7 @@ export default function Phase4WorkspacePage() {
               <button
                 onClick={handleConfirmSale}
                 disabled={isConfirmingSale || project.locked}
-                className="px-8 py-3 rounded-xl bg-[#57f1db]/10 border border-[#57f1db]/30 text-[#57f1db] font-semibold text-[14px] leading-[16px] hover:bg-[#57f1db]/20 active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-40"
+                className="px-8 py-3 rounded-xl bg-[#454955]/10 border border-[#454955]/30 text-[#454955] font-semibold text-[14px] leading-[16px] hover:bg-[#454955]/20 active:scale-[0.98] transition-all flex items-center gap-2 disabled:opacity-40"
               >
                 {isConfirmingSale ? (
                   <>
@@ -513,7 +513,7 @@ export default function Phase4WorkspacePage() {
                   </>
                 )}
               </button>
-              <p className="text-[10px] text-[#bacac5]/50 mt-2">This will lock all financial fields and transition metrics to Realized state.</p>
+              <p className="text-[10px] text-[#9E9DA0]/50 mt-2">This will lock all financial fields and transition metrics to Realized state.</p>
             </div>
           </section>
         )}
@@ -522,7 +522,7 @@ export default function Phase4WorkspacePage() {
         {isRealized && (
           <section className="glass-card rounded-2xl p-6 space-y-4 border border-blue-400/20" style={{ background: 'linear-gradient(90deg, rgba(96,165,250,0.05) 0%, transparent 100%)' }}>
             <div className="flex items-center justify-between">
-              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec] flex items-center gap-2">
+              <h3 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0] flex items-center gap-2">
                 <span className="material-symbols-outlined text-blue-300" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                 Realized Performance Summary
               </h3>
@@ -538,8 +538,8 @@ export default function Phase4WorkspacePage() {
                 { label: 'Total Rehab', value: fmtCurrency(autopsy?.actualRehabCost || 0) },
               ].map((item, i) => (
                 <div key={i} className="space-y-1">
-                  <p className="text-[10px] text-[#bacac5] uppercase tracking-wider font-medium">{item.label}</p>
-                  <p className="text-[18px] font-semibold text-[#dae4ec] tabular-nums">{item.value}</p>
+                  <p className="text-[10px] text-[#9E9DA0] uppercase tracking-wider font-medium">{item.label}</p>
+                  <p className="text-[18px] font-semibold text-[#9E9DA0] tabular-nums">{item.value}</p>
                 </div>
               ))}
             </div>
@@ -551,11 +551,11 @@ export default function Phase4WorkspacePage() {
                 { label: 'Net Profit', value: fmtCurrency(autopsy?.netProfit || 0), accent: true },
               ].map((item, i) => (
                 <div key={i} className="space-y-1">
-                  <p className="text-[10px] text-[#bacac5] uppercase tracking-wider font-medium">{item.label}</p>
+                  <p className="text-[10px] text-[#9E9DA0] uppercase tracking-wider font-medium">{item.label}</p>
                   <p className={`text-[18px] font-semibold tabular-nums ${
                     (item as any).accent
-                      ? (autopsy && autopsy.netProfit >= 0 ? 'text-[#57f1db]' : 'text-[#ffb4ab]')
-                      : 'text-[#dae4ec]'
+                      ? (autopsy && autopsy.netProfit >= 0 ? 'text-[#454955]' : 'text-[#ffb4ab]')
+                      : 'text-[#9E9DA0]'
                   }`}>{item.value}</p>
                 </div>
               ))}
@@ -652,7 +652,7 @@ export default function Phase4WorkspacePage() {
 
             {/* Structured MetricReadout Cards */}
             <div className="glass-card rounded-2xl p-5 space-y-4 border border-white/5">
-              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#bacac5]">Live Metric Readouts</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9E9DA0]">Live Metric Readouts</h4>
               <div className="grid grid-cols-2 gap-4">
                 <MetricReadout label="IRR" result={irrResult} format="percent" accentColor="#ffd1aa" />
                 <MetricReadout label="Cash-on-Cash" result={cocResult} format="percent" />
@@ -662,18 +662,18 @@ export default function Phase4WorkspacePage() {
             </div>
 
             {/* Realized Metrics Panel (Stitch: glass-card with Property/MyShare toggle) */}
-            <div className="glass-card rounded-2xl p-6 space-y-6 border-[#57f1db]/20">
+            <div className="glass-card rounded-2xl p-6 space-y-6 border-[#454955]/20">
               <div className="flex items-center justify-between">
-                <h3 className="text-[24px] leading-[32px] font-semibold text-[#dae4ec]">Realized Metrics</h3>
-                <div className="bg-[#2d363d]/50 p-1 rounded-lg flex gap-1">
+                <h3 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">Realized Metrics</h3>
+                <div className="bg-[#262328]/50 p-1 rounded-lg flex gap-1">
                   {(['property', 'myShare'] as const).map((scope) => (
                     <button
                       key={scope}
                       onClick={() => setMetricsScope(scope)}
                       className={`px-3 py-1 rounded text-[12px] leading-[14px] tracking-[0.05em] font-medium transition-all ${
                         metricsScope === scope
-                          ? 'bg-[#57f1db] text-[#003731]'
-                          : 'text-[#bacac5] hover:text-[#dae4ec]'
+                          ? 'bg-[#454955] text-[#0d0a0b]'
+                          : 'text-[#9E9DA0] hover:text-[#9E9DA0]'
                       }`}
                     >
                       {scope === 'property' ? 'Property' : 'My Share'}
@@ -686,9 +686,9 @@ export default function Phase4WorkspacePage() {
               <div className="glass-card rounded-2xl p-4 relative overflow-hidden"
                 style={{ borderLeft: '4px solid #ffd1aa', background: 'linear-gradient(90deg, rgba(255, 209, 170, 0.1) 0%, transparent 100%)' }}
               >
-                <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Final IRR</p>
+                <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Final IRR</p>
                 <div className="flex items-end gap-2">
-                  <p className="text-[48px] leading-[56px] font-bold tracking-[-0.02em] text-[#57f1db] tabular-nums">
+                  <p className="text-[48px] leading-[56px] font-bold tracking-[-0.02em] text-[#454955] tabular-nums">
                     {irr > 0 ? irr.toFixed(1) : autopsy ? (autopsy.holdDays && autopsy.holdDays > 0 ? (autopsy.roi * (365 / autopsy.holdDays)).toFixed(1) : '—') : '—'}
                     <span className="text-[24px]">%</span>
                   </p>
@@ -704,48 +704,48 @@ export default function Phase4WorkspacePage() {
               <div className="grid grid-cols-2 gap-3">
                 {/* Total Appreciation */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Total Appreciation</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums">
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Total Appreciation</p>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
                     {autopsy ? fmtDollar(Math.round((autopsy.grossSalePrice - autopsy.purchasePrice) * shareMultiplier)) : '—'}
                   </p>
                 </div>
 
                 {/* Net ROI */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Net ROI</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums">
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Net ROI</p>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
                     {autopsy ? fmtPct(autopsy.roi) : '—'}
                   </p>
                 </div>
 
                 {/* Total Profit */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Total Profit</p>
-                  <p className={`text-[24px] leading-[32px] font-semibold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Total Profit</p>
+                  <p className={`text-[24px] leading-[32px] font-semibold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#454955]' : 'text-[#ffb4ab]'}`}>
                     {autopsy ? fmtCurrency(Math.round(autopsy.netProfit * shareMultiplier)) : '—'}
                   </p>
                 </div>
 
                 {/* Cash-on-Cash */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Cash-on-Cash</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums">
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Cash-on-Cash</p>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
                     {autopsy ? fmtPct(autopsy.coc) : '—'}
                   </p>
                 </div>
 
                 {/* GRM */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">GRM</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums">
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">GRM</p>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
                     {liveMetrics ? liveMetrics.grossRentMultiplier.toFixed(1) : '—'}
                   </p>
                 </div>
 
                 {/* Profit Margin */}
                 <div className="glass-card rounded-2xl border border-white/5 p-3">
-                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5] mb-1">Profit Margin</p>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#dae4ec] tabular-nums">
+                  <p className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0] mb-1">Profit Margin</p>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0] tabular-nums">
                     {autopsy ? fmtPct(autopsy.profitMargin) : '—'}
                   </p>
                 </div>
@@ -754,7 +754,7 @@ export default function Phase4WorkspacePage() {
               {/* Generate Tax Report CTA (Stitch: full-width button) */}
               <button
                 onClick={handleGenerateTaxReport}
-                className="w-full py-3.5 rounded-xl border border-white/20 text-[#dae4ec] font-semibold text-[16px] leading-[24px] hover:bg-white/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40"
+                className="w-full py-3.5 rounded-xl border border-white/20 text-[#9E9DA0] font-semibold text-[16px] leading-[24px] hover:bg-white/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-40"
               >
                 <span className="material-symbols-outlined">request_quote</span>
                 Generate Tax Report
@@ -764,35 +764,35 @@ export default function Phase4WorkspacePage() {
             {/* ── Tax Snapshot Card ── */}
             {taxEstimate && (
               <div className="glass-card rounded-xl p-5 space-y-3">
-                <h4 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec] flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#adc6ff]">receipt_long</span>
+                <h4 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0] flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[#7A9EAA]">receipt_long</span>
                   Tax Intelligence
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">Hold Period</span>
-                    <p className="text-[14px] leading-[16px] font-semibold text-[#dae4ec]">{taxEstimate.holdingPeriodDays} days</p>
+                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">Hold Period</span>
+                    <p className="text-[14px] leading-[16px] font-semibold text-[#9E9DA0]">{taxEstimate.holdingPeriodDays} days</p>
                   </div>
                   <div>
-                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">Classification</span>
-                    <p className={`text-[14px] leading-[16px] font-semibold ${taxEstimate.isLongTerm ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">Classification</span>
+                    <p className={`text-[14px] leading-[16px] font-semibold ${taxEstimate.isLongTerm ? 'text-[#454955]' : 'text-[#ffb4ab]'}`}>
                       {taxEstimate.isLongTerm ? 'Long-Term' : 'Short-Term'}
                     </p>
                   </div>
                   <div>
-                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">Est. Tax Rate</span>
-                    <p className="text-[14px] leading-[16px] font-semibold text-[#dae4ec]">{taxEstimate.estimatedTaxRate}%</p>
+                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">Est. Tax Rate</span>
+                    <p className="text-[14px] leading-[16px] font-semibold text-[#9E9DA0]">{taxEstimate.estimatedTaxRate}%</p>
                   </div>
                   <div>
-                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">Tax Liability</span>
+                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">Tax Liability</span>
                     <p className="text-[14px] leading-[16px] font-semibold text-[#ffb4ab]">
                       {fmtCurrency(Math.round(taxEstimate.estimatedTaxLiability * shareMultiplier))}
                     </p>
                   </div>
                 </div>
                 <div className="pt-3 border-t border-white/5">
-                  <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">Net After Tax</span>
-                  <p className="text-[24px] leading-[32px] font-semibold text-[#57f1db] tabular-nums">
+                  <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">Net After Tax</span>
+                  <p className="text-[24px] leading-[32px] font-semibold text-[#454955] tabular-nums">
                     {fmtCurrency(Math.round(taxEstimate.netAfterTax * shareMultiplier))}
                   </p>
                 </div>
@@ -801,10 +801,10 @@ export default function Phase4WorkspacePage() {
 
             {/* ── Project Metadata Card ── */}
             <div className="glass-card rounded-xl overflow-hidden">
-              <div className="px-5 py-3 bg-[#57f1db]/10 flex items-center justify-between border-b border-[#57f1db]/20">
-                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#57f1db]">Project Metadata</h4>
+              <div className="px-5 py-3 bg-[#454955]/10 flex items-center justify-between border-b border-[#454955]/20">
+                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#454955]">Project Metadata</h4>
                 <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest ${
-                  project.locked ? 'bg-[#57f1db]/20 text-[#57f1db]' : 'bg-white/10 text-[#bacac5]'
+                  project.locked ? 'bg-[#454955]/20 text-[#454955]' : 'bg-white/10 text-[#9E9DA0]'
                 }`}>
                   {project.status}
                 </span>
@@ -816,8 +816,8 @@ export default function Phase4WorkspacePage() {
                   { label: 'Ownership', value: `${ownershipPct}%` }
                 ].map((row, i) => (
                   <div key={i} className="flex justify-between items-center">
-                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#bacac5]">{row.label}</span>
-                    <span className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec]">{row.value}</span>
+                    <span className="text-[12px] leading-[14px] tracking-[0.05em] font-medium text-[#9E9DA0]">{row.label}</span>
+                    <span className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0]">{row.value}</span>
                   </div>
                 ))}
               </div>
@@ -826,10 +826,10 @@ export default function Phase4WorkspacePage() {
             {/* ── Exit Intelligence ── */}
             <div className="glass-card rounded-xl p-5 border border-dashed border-white/10">
               <div className="flex items-center gap-3 mb-3">
-                <span className="material-symbols-outlined text-[#adc6ff]">psychology</span>
-                <h4 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#dae4ec]">Exit Intelligence</h4>
+                <span className="material-symbols-outlined text-[#7A9EAA]">psychology</span>
+                <h4 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0]">Exit Intelligence</h4>
               </div>
-              <p className="text-[12px] leading-[20px] text-[#bacac5]">
+              <p className="text-[12px] leading-[20px] text-[#9E9DA0]">
                 Our calculation engine uses capital-weighted aggregation to derive your final net realized profit. Every staging fee, lender payoff, and tax proratio is factored into the terminal ROI.
               </p>
             </div>
@@ -839,16 +839,16 @@ export default function Phase4WorkspacePage() {
         {/* ── Final Submission Hub (Stitch: centered hero CTA) ── */}
         <section className="mt-12 pt-12 border-t border-white/5 flex flex-col items-center text-center gap-8">
           <div className="max-w-xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#57f1db]/5 border border-[#57f1db]/10">
-              <div className={`w-2 h-2 rounded-full ${project.locked ? 'bg-[#57f1db]' : 'bg-[#57f1db] animate-pulse'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#57f1db]">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#454955]/5 border border-[#454955]/10">
+              <div className={`w-2 h-2 rounded-full ${project.locked ? 'bg-[#454955]' : 'bg-[#454955] animate-pulse'}`} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#454955]">
                 {project.locked ? 'Project Archived' : 'Ready for Archival'}
               </span>
             </div>
-            <h2 className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#dae4ec]">
+            <h2 className="text-[32px] leading-[40px] font-bold tracking-[-0.01em] text-[#9E9DA0]">
               Terminal Project Reconciliation
             </h2>
-            <p className="text-[14px] leading-[20px] text-[#bacac5] max-w-lg mx-auto">
+            <p className="text-[14px] leading-[20px] text-[#9E9DA0] max-w-lg mx-auto">
               Archiving this project will freeze all financial data, set the project to an immutable read-only state, and push the final performance metrics to your organization&apos;s global SaaS dashboard.
             </p>
           </div>
@@ -858,10 +858,10 @@ export default function Phase4WorkspacePage() {
             disabled={isSaving || project.locked}
             className={`relative px-16 py-5 rounded-xl text-[14px] leading-[16px] font-bold uppercase tracking-[0.12em] transition-all flex items-center justify-center gap-3 ${
               project.locked
-                ? 'bg-white/5 text-[#bacac5] cursor-not-allowed'
-                : 'bg-[#20B2AA] text-[#003731] hover:scale-105 active:scale-95'
+                ? 'bg-white/5 text-[#9E9DA0] cursor-not-allowed'
+                : 'bg-[#454955] text-[#0d0a0b] hover:scale-105 active:scale-95'
             }`}
-            style={!project.locked ? { boxShadow: `0 20px 50px rgba(32, 178, 170,0.3)` } : {}}
+            style={!project.locked ? { boxShadow: `0 20px 50px rgba(69, 73, 85,0.3)` } : {}}
           >
             {isSaving ? (
               <>
@@ -889,13 +889,13 @@ export default function Phase4WorkspacePage() {
           Glass-card bar pinned to bottom with IRR, Total Return,
           and Appreciation Rate.
           ═══════════════════════════════════════════════════════ */}
-      <div className="sticky bottom-0 z-50 border-t border-white/10 bg-[#091015]/80 backdrop-blur-xl">
+      <div className="sticky bottom-0 z-50 border-t border-white/10 bg-[#0d0a0b]/80 backdrop-blur-xl">
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-3">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Phase chip */}
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isRealized ? 'bg-blue-400' : 'bg-[#57f1db] animate-pulse'}`} />
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#bacac5]">
+              <div className={`w-2 h-2 rounded-full ${isRealized ? 'bg-blue-400' : 'bg-[#454955] animate-pulse'}`} />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#9E9DA0]">
                 {isRealized ? `Realized · ${closedAtDate || 'Closed'}` : 'Phase 4 · Exit'}
               </span>
             </div>
@@ -904,7 +904,7 @@ export default function Phase4WorkspacePage() {
             <div className="flex items-center gap-6">
               {/* IRR */}
               <div className="text-center">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">IRR</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#9E9DA0]">IRR</p>
                 <p className="text-[20px] font-bold text-[#ffd1aa] tabular-nums">
                   {irrResult.value !== null ? `${irrResult.value.toFixed(1)}%` : (irr > 0 ? `${irr.toFixed(1)}%` : '—')}
                 </p>
@@ -915,8 +915,8 @@ export default function Phase4WorkspacePage() {
 
               {/* Total Return */}
               <div className="text-center">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">Total Return</p>
-                <p className={`text-[20px] font-bold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#57f1db]' : 'text-[#ffb4ab]'}`}>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#9E9DA0]">Total Return</p>
+                <p className={`text-[20px] font-bold tabular-nums ${autopsy && autopsy.netProfit >= 0 ? 'text-[#454955]' : 'text-[#ffb4ab]'}`}>
                   {autopsy ? fmtDollar(Math.round(autopsy.netProfit * shareMultiplier)) : '—'}
                 </p>
               </div>
@@ -926,8 +926,8 @@ export default function Phase4WorkspacePage() {
 
               {/* Appreciation Rate */}
               <div className="text-center">
-                <p className="text-[9px] font-bold uppercase tracking-widest text-[#bacac5]">Appreciation</p>
-                <p className="text-[20px] font-bold text-[#dae4ec] tabular-nums">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-[#9E9DA0]">Appreciation</p>
+                <p className="text-[20px] font-bold text-[#9E9DA0] tabular-nums">
                   {appreciationResult.value !== null ? `${appreciationResult.value.toFixed(1)}%` : '—'}
                 </p>
               </div>

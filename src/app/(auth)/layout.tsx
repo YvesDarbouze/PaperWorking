@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative min-h-screen bg-[#091015] flex flex-col items-center overflow-x-hidden font-sans text-on-surface"
+      className="relative min-h-screen bg-[#0d0a0b] flex flex-col items-center overflow-x-hidden font-sans text-on-surface"
       style={{
         backgroundImage:
-          'radial-gradient(circle at 50% 50%, rgba(87, 241, 219, 0.03) 0%, transparent 50%), ' +
+          'radial-gradient(circle at 50% 50%, rgba(69, 73, 85, 0.03) 0%, transparent 50%), ' +
           'linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), ' +
           'linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px)',
         backgroundSize: '100% 100%, 40px 40px, 40px 40px',
@@ -25,12 +25,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <GlowEffect />
 
       {/* Simplified TopAppBar */}
-      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#091015]/40 backdrop-blur-md border-b border-white/5 h-16">
+      <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#0d0a0b]/40 backdrop-blur-md border-b border-white/5 h-16">
         <div className="w-full max-w-7xl flex items-center justify-between">
-          <Logo href="/" size="sm" className="text-[#57f1db]" />
+          <Logo href="/" size="sm" className="text-[#454955]" />
           <div className="hidden md:block">
             <span className="text-xs font-medium tracking-widest text-[#859490] uppercase">
-              System Status: <span className="text-[#57f1db]">Active</span>
+              System Status: <span className="text-[#454955]">Active</span>
             </span>
           </div>
         </div>
@@ -46,19 +46,19 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="flex items-center gap-6 mb-2">
           <Link
             href="/privacy"
-            className="text-xs text-[#859490] hover:text-[#57f1db] transition-all"
+            className="text-xs text-[#859490] hover:text-[#454955] transition-all"
           >
             Privacy Policy
           </Link>
           <Link
             href="/terms"
-            className="text-xs text-[#859490] hover:text-[#57f1db] transition-all"
+            className="text-xs text-[#859490] hover:text-[#454955] transition-all"
           >
             Terms of Service
           </Link>
           <a
             href="#"
-            className="text-xs text-[#859490] hover:text-[#57f1db] transition-all"
+            className="text-xs text-[#859490] hover:text-[#454955] transition-all"
           >
             Security Audit
           </a>

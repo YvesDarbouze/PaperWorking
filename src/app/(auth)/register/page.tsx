@@ -68,7 +68,7 @@ export default function RegisterPage() {
           className="text-sm md:text-base mx-auto"
           style={{
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            color: '#bacac5',
+            color: '#9E9DA0',
             maxWidth: '400px',
           }}
         >
@@ -92,7 +92,7 @@ export default function RegisterPage() {
                 className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                 style={
                   active
-                    ? { backgroundColor: 'rgba(87, 241, 219, 0.2)', color: '#57f1db' }
+                    ? { backgroundColor: 'rgba(69, 73, 85, 0.2)', color: '#454955' }
                     : { backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--pw-muted)' }
                 }
               >
@@ -129,8 +129,8 @@ export default function RegisterPage() {
                 <CheckCircle2
                   className="w-6 h-6"
                   style={{
-                    color: '#57f1db',
-                    fill: 'rgba(87, 241, 219, 0.1)',
+                    color: '#454955',
+                    fill: 'rgba(69, 73, 85, 0.1)',
                   }}
                 />
               </div>
@@ -158,11 +158,11 @@ export default function RegisterPage() {
           className="text-xs md:text-sm hover:text-pw-primary transition-colors py-2 flex items-center gap-1 group"
           style={{
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-            color: '#bacac5',
+            color: '#9E9DA0',
           }}
         >
           Already have an account?{' '}
-          <span className="font-bold group-hover:underline" style={{ color: '#57f1db' }}>Log in</span>
+          <span className="font-bold group-hover:underline" style={{ color: '#454955' }}>Log in</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

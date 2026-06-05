@@ -120,12 +120,12 @@ export default function DSCRGauge({
             />
 
             <div
-              className="absolute inset-y-0 w-0.5 bg-[#1A73E8]"
+              className="absolute inset-y-0 w-0.5 bg-[#454955]"
               style={{ left: `${(1.0 / MAX_DSCR) * 100}%` }}
               title="Break-even (1.0x)"
             />
             <div
-              className="absolute inset-y-0 w-0.5 bg-[#1A73E8]"
+              className="absolute inset-y-0 w-0.5 bg-[#454955]"
               style={{ left: `${(1.25 / MAX_DSCR) * 100}%` }}
               title="Lender benchmark (1.25x)"
             />

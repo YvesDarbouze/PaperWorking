@@ -72,7 +72,7 @@ export default async function HelpArticlePage({ params }: HelpArticlePageProps) 
                          prose-headings:font-light prose-headings:tracking-tight prose-headings:text-[var(--pw-black)]
                          prose-p:my-4 prose-p:leading-relaxed prose-p:text-sm prose-p:text-[var(--pw-muted)]
                          prose-strong:font-bold prose-strong:text-[var(--pw-black)]
-                         prose-code:bg-black/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-xs prose-code:text-teal-300"
+                         prose-code:bg-black/30 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-xs prose-code:text-[#8a8e9a]"
               dangerouslySetInnerHTML={{ __html: article.content }}
             />
           </article>

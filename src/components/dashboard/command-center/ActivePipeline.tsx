@@ -12,14 +12,14 @@ const LANES = [
     phase: "Acquisition",
     phaseKey: 1,
     icon: "domain_add",
-    accentColor: "#57f1db",
+    accentColor: "#454955",
     emptyLabel: "No deals in sourcing",
   },
   {
     phase: "Transaction",
     phaseKey: 2,
     icon: "receipt_long",
-    accentColor: "#adc6ff",
+    accentColor: "#7A9EAA",
     emptyLabel: "No deals in closing",
   },
   {
@@ -33,7 +33,7 @@ const LANES = [
     phase: "Hold / Exit",
     phaseKey: 4,
     icon: "exit_to_app",
-    accentColor: "#62fae3",
+    accentColor: "#5aaa3f",
     emptyLabel: "No held properties",
   },
 ];
@@ -107,7 +107,7 @@ export function ActivePipeline() {
             key={lane.phase}
             className="relative rounded-2xl p-5 flex flex-col cursor-pointer group transition-all duration-200"
             style={{
-              background: "linear-gradient(135deg, rgba(20,29,35,0.6) 0%, rgba(11,20,26,0.85) 100%)",
+              background: "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
               backdropFilter: "blur(24px)",
               WebkitBackdropFilter: "blur(24px)",
               border: "1px solid rgba(255,255,255,0.08)",
@@ -136,7 +136,7 @@ export function ActivePipeline() {
                 className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg"
                 style={{
                   background: "rgba(45,54,61,0.8)",
-                  color: primary ? lane.accentColor : "rgba(218,228,236,0.3)",
+                  color: primary ? lane.accentColor : "rgba(253,255,252,0.3)",
                   letterSpacing: "0.06em",
                 }}
               >
@@ -150,11 +150,11 @@ export function ActivePipeline() {
                 <div>
                   <h3
                     className="text-[15px] font-semibold mb-1 leading-snug"
-                    style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "0.01em" }}
+                    style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "0.01em" }}
                   >
                     {primary.propertyName || primary.address || "Unnamed Project"}
                   </h3>
-                  <p className="text-[13px] mb-4" style={{ color: "rgba(218,228,236,0.45)" }}>
+                  <p className="text-[13px] mb-4" style={{ color: "rgba(253,255,252,0.45)" }}>
                     {projectSubtext(primary)}
                   </p>
                 </div>
@@ -171,7 +171,7 @@ export function ActivePipeline() {
                     />
                   </div>
                   <div className="flex justify-between mt-2">
-                    <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+                    <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.4)" }}>
                       {progressLabel(primary)}
                     </span>
                     <span className="text-[11px] font-bold" style={{ color: lane.accentColor }}>
@@ -184,7 +184,7 @@ export function ActivePipeline() {
                       className="mt-3 pt-3"
                       style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                      <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.35)" }}>
+                      <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.35)" }}>
                         +{extra} more deal{extra > 1 ? "s" : ""}
                       </span>
                     </div>
@@ -196,10 +196,10 @@ export function ActivePipeline() {
                 className="relative flex-1 flex flex-col items-center justify-center rounded-xl py-6"
                 style={{ border: "1.5px dashed rgba(255,255,255,0.07)" }}
               >
-                <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: "rgba(218,228,236,0.15)" }}>
+                <span className="material-symbols-outlined text-[28px] mb-2" style={{ color: "rgba(253,255,252,0.15)" }}>
                   add_circle_outline
                 </span>
-                <span className="text-[12px] text-center leading-snug" style={{ color: "rgba(218,228,236,0.25)" }}>
+                <span className="text-[12px] text-center leading-snug" style={{ color: "rgba(253,255,252,0.25)" }}>
                   {lane.emptyLabel}
                 </span>
               </div>

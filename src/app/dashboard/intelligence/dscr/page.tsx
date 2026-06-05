@@ -46,7 +46,7 @@ function DSCRGauge({ value }: { value: number }) {
   const zoneColor =
     value < 1.0  ? '#F06543' :
     value < 1.25 ? '#f59e0b' :
-                   '#20B2AA';
+                   '#454955';
 
   return (
     <div className="space-y-3">
@@ -76,7 +76,7 @@ function DSCRGauge({ value }: { value: number }) {
       <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
         <span className="text-red-400">0.8 Risk</span>
         <span className="text-amber-400">1.25 Min</span>
-        <span className="text-teal-400">2.0 Optimal</span>
+        <span className="text-[#6E7480]">2.0 Optimal</span>
       </div>
 
       {/* Zone cards */}
@@ -84,7 +84,7 @@ function DSCRGauge({ value }: { value: number }) {
         {[
           { label: 'At Risk',  range: '< 1.0',   color: '#F06543',  active: value < 1.0 },
           { label: 'Min',      range: '1.0–1.25', color: '#f59e0b',  active: value >= 1.0 && value < 1.25 },
-          { label: 'Optimal',  range: '1.25+',    color: '#20B2AA',  active: value >= 1.25 },
+          { label: 'Optimal',  range: '1.25+',    color: '#454955',  active: value >= 1.25 },
         ].map((z) => (
           <div
             key={z.label}
@@ -107,9 +107,9 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any[]) =>
         `${params[0].axisValue}<br/>` +
         params.map((p: any) => `<span style="color:${p.color}">─</span> ${p.seriesName}: <b>${Number(p.value).toFixed(2)}x</b>`).join('<br/>'),
@@ -118,7 +118,7 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
       top: 0,
       right: 0,
       icon: 'line',
-      textStyle: { color: '#bacac5', fontSize: 10 },
+      textStyle: { color: '#9E9DA0', fontSize: 10 },
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -141,13 +141,13 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2.5, color: '#454955' },
+        itemStyle: { color: '#454955' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32, 178, 170,0.18)' },
+              { offset: 0, color: 'rgba(69, 73, 85,0.18)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -237,13 +237,13 @@ export default function DSCRIntelligencePage() {
       {/* ── Header ── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">DSCR Intelligence</span>
+            <span className="text-[#6E7480]">DSCR Intelligence</span>
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">DSCR Intelligence</h1>
-          <p className="text-sm text-slate-500 mt-1">Debt Service Coverage Ratio — portfolio health signal</p>
+          <p className="text-sm text-[#6B6870] mt-1">Debt Service Coverage Ratio — portfolio health signal</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
@@ -252,7 +252,7 @@ export default function DSCRIntelligencePage() {
                 key={s}
                 onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
-                  scope === s ? 'bg-teal-500 text-black' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >{s}</button>
             ))}
@@ -263,12 +263,12 @@ export default function DSCRIntelligencePage() {
                 key={p}
                 onClick={() => setPeriod(p)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
-                  period === p ? 'bg-white/10 text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+                  period === p ? 'bg-white/10 text-[#6E7480] font-bold' : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >{p}</button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -286,27 +286,27 @@ export default function DSCRIntelligencePage() {
           {/* Hero DSCR Card */}
           <div className="rounded-xl border border-white/10 p-6 relative overflow-hidden" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex justify-between items-start mb-2">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
                 Debt Service Coverage
               </span>
-              <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${dscrChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+              <div className={`flex items-center gap-1 text-sm font-bold tabular-nums ${dscrChange >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                 {dscrChange >= 0 ? '+' : ''}{dscrChange.toFixed(2)}x vs Last Month
                 <ArrowUpRight className={`w-3.5 h-3.5 ${dscrChange < 0 ? 'rotate-180' : ''}`} />
               </div>
             </div>
 
             <div className="flex items-baseline gap-3 mb-2">
-              <span className="text-6xl font-bold text-teal-400 tabular-nums tracking-tighter">
+              <span className="text-6xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
                 {currentDscr.toFixed(2)}x
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-2 py-0.5 rounded border border-teal-400/20 bg-teal-400/10 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                <span className="text-[9px] font-extrabold tracking-widest text-teal-400">LIVE</span>
+              <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-[#6B6870]">
                 {currentDscr >= 1.25 ? 'Above lender minimum' : currentDscr >= 1.0 ? 'At lender minimum' : 'Below threshold — review required'}
               </span>
             </div>
@@ -314,7 +314,7 @@ export default function DSCRIntelligencePage() {
 
           {/* Threshold Gauge Card */}
           <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
-            <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500 block mb-4">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870] block mb-4">
               Coverage Threshold Gauge
             </span>
             <DSCRGauge value={currentDscr} />
@@ -325,10 +325,10 @@ export default function DSCRIntelligencePage() {
         <div className="md:col-span-8">
           <div className="rounded-xl border border-white/10 p-6 h-full" style={{ background: 'rgba(24,33,39,0.7)' }}>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
                 Historical DSCR Trend
               </span>
-              <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
+              <div className="flex items-center gap-3 text-[10px] text-[#6B6870] font-semibold">
                 <span className="flex items-center gap-1.5">
                   <span className="w-6 h-0.5 rounded" style={{ background: '#F06543', display: 'inline-block' }} />
                   Risk Line (1.0x)
@@ -369,7 +369,7 @@ export default function DSCRIntelligencePage() {
       {/* ── Bottom: Property-Level DSCR Breakdown ── */}
       <div className="rounded-xl border border-white/10 p-6" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <div className="flex items-center justify-between mb-5">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">
             Property-Level DSCR Breakdown
           </span>
           <span className="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">
@@ -381,28 +381,28 @@ export default function DSCRIntelligencePage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06]">
-                <th className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Address</th>
-                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">NOI</th>
-                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Debt Service</th>
-                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">DSCR</th>
-                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+                <th className="text-left py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Address</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">NOI</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Debt Service</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">DSCR</th>
+                <th className="text-right py-2 px-3 text-[10px] font-bold uppercase tracking-widest text-[#6B6870]">Status</th>
               </tr>
             </thead>
             <tbody>
               {DEMO_PROPERTIES.map((prop) => {
                 const status =
-                  prop.dscr >= 1.25 ? { label: 'Healthy', color: '#20B2AA', bg: 'rgba(32, 178, 170,0.1)' } :
+                  prop.dscr >= 1.25 ? { label: 'Healthy', color: '#454955', bg: 'rgba(69, 73, 85,0.1)' } :
                   prop.dscr >= 1.0  ? { label: 'Marginal', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' } :
                                       { label: 'At Risk',  color: '#F06543', bg: 'rgba(239,68,68,0.1)' };
                 return (
                   <tr key={prop.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-3 font-semibold text-white">{prop.address}</td>
-                    <td className="py-3 px-3 text-right text-slate-300 tabular-nums">{fmt(prop.noi)}</td>
-                    <td className="py-3 px-3 text-right text-slate-300 tabular-nums">{fmt(prop.debtService)}</td>
+                    <td className="py-3 px-3 text-right text-[#C0BEC2] tabular-nums">{fmt(prop.noi)}</td>
+                    <td className="py-3 px-3 text-right text-[#C0BEC2] tabular-nums">{fmt(prop.debtService)}</td>
                     <td className="py-3 px-3 text-right">
                       <span
                         className="font-bold tabular-nums"
-                        style={{ color: prop.dscr >= 1.25 ? '#20B2AA' : prop.dscr >= 1.0 ? '#f59e0b' : '#F06543' }}
+                        style={{ color: prop.dscr >= 1.25 ? '#454955' : prop.dscr >= 1.0 ? '#f59e0b' : '#F06543' }}
                       >
                         {prop.dscr.toFixed(2)}x
                       </span>

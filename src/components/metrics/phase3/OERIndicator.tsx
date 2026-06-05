@@ -19,7 +19,7 @@ interface ColorZone {
 
 function getZone(oer: number): ColorZone {
   if (oer < 35) return { label: 'Excellent', color: '#3f7d20', bg: '#f0fdf4', range: '< 35%' };
-  if (oer <= 45) return { label: 'Good', color: '#1A73E8', bg: '#eff6ff', range: '35–45%' };
+  if (oer <= 45) return { label: 'Good', color: '#454955', bg: '#eff6ff', range: '35–45%' };
   if (oer <= 55) return { label: 'Watch', color: '#f59e0b', bg: '#fffbeb', range: '45–55%' };
   return { label: 'Poor', color: '#F06543', bg: '#fef2f2', range: '> 55%' };
 }
@@ -51,7 +51,7 @@ function ArcGauge({ pct, color }: { pct: number; color: string }) {
 
   const zones = [
     { from: 210, to: 210 - 240 * 0.292, color: '#3f7d20' },
-    { from: 210 - 240 * 0.292, to: 210 - 240 * 0.458, color: '#1A73E8' },
+    { from: 210 - 240 * 0.292, to: 210 - 240 * 0.458, color: '#454955' },
     { from: 210 - 240 * 0.458, to: 210 - 240 * 0.625, color: '#f59e0b' },
     { from: 210 - 240 * 0.625, to: -30, color: '#F06543' },
   ];
@@ -143,7 +143,7 @@ export default function OERIndicator({ operatingExpenses, grossRentalIncome, cla
       <div className="mt-3 grid grid-cols-4 gap-1 text-center">
         {[
           { label: 'Excellent', range: '< 35%', color: '#3f7d20' },
-          { label: 'Good', range: '35–45%', color: '#1A73E8' },
+          { label: 'Good', range: '35–45%', color: '#454955' },
           { label: 'Watch', range: '45–55%', color: '#f59e0b' },
           { label: 'Poor', range: '> 55%', color: '#F06543' },
         ].map((z) => (

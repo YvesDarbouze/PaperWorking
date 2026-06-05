@@ -21,7 +21,7 @@ export function CashFlowChart({ data, isLoading }: CashFlowChartProps) {
 
   if (isLoading || !isMounted) {
     return (
-      <div className="w-full h-[250px] flex flex-col justify-between p-4 bg-slate-900/10 rounded-xl border border-white/5 animate-pulse">
+      <div className="w-full h-[250px] flex flex-col justify-between p-4 bg-[#161318]/10 rounded-xl border border-white/5 animate-pulse">
         {/* Y Axis lines */}
         <div className="flex-1 flex flex-col justify-between gap-6 pb-2">
           {[1, 2, 3, 4].map((i) => (
@@ -32,8 +32,8 @@ export function CashFlowChart({ data, isLoading }: CashFlowChartProps) {
         <div className="flex items-end justify-around gap-4 h-[120px] px-8">
           {[60, 80, 70, 100, 90].map((h, i) => (
             <div key={i} className="flex gap-1.5 items-end w-full max-w-[50px]">
-              <div style={{ height: `${h}px` }} className="w-1/2 bg-teal-500/20 rounded-t-sm"></div>
-              <div style={{ height: `${h * 0.6}px` }} className="w-1/2 bg-teal-500/5 rounded-t-sm"></div>
+              <div style={{ height: `${h}px` }} className="w-1/2 bg-[#454955]/20 rounded-t-sm"></div>
+              <div style={{ height: `${h * 0.6}px` }} className="w-1/2 bg-[#454955]/5 rounded-t-sm"></div>
             </div>
           ))}
         </div>
@@ -43,14 +43,14 @@ export function CashFlowChart({ data, isLoading }: CashFlowChartProps) {
 
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-[250px] flex flex-col items-center justify-center bg-slate-900/10 rounded-xl border border-white/5 p-6 text-center">
-        <div className="w-12 h-12 rounded-full bg-slate-800/50 flex items-center justify-center mb-3">
-          <svg className="w-6 h-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="w-full h-[250px] flex flex-col items-center justify-center bg-[#161318]/10 rounded-xl border border-white/5 p-6 text-center">
+        <div className="w-12 h-12 rounded-full bg-[#1e1b20]/50 flex items-center justify-center mb-3">
+          <svg className="w-6 h-6 text-[#6B6870]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
           </svg>
         </div>
-        <h4 className="text-sm font-semibold text-slate-300 font-sans">No Data Available</h4>
-        <p className="text-xs text-slate-500 mt-1 max-w-[200px] font-sans">Rent and expense projections will display here once property values are configured.</p>
+        <h4 className="text-sm font-semibold text-[#C0BEC2] font-sans">No Data Available</h4>
+        <p className="text-xs text-[#6B6870] mt-1 max-w-[200px] font-sans">Rent and expense projections will display here once property values are configured.</p>
       </div>
     );
   }

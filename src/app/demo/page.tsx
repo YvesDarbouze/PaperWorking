@@ -107,7 +107,7 @@ export default function DemoPage() {
       <div 
         className="flex flex-col items-center justify-center min-h-screen text-on-surface"
         style={{
-          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
+          background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)',
         }}
       >
         <Loader2 className="w-10 h-10 animate-spin text-pw-primary mb-4" />
@@ -121,7 +121,7 @@ export default function DemoPage() {
       <div 
         className="flex flex-col items-center justify-center min-h-screen text-on-surface p-6 text-center"
         style={{
-          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
+          background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)',
         }}
       >
         <ShieldAlert className="w-12 h-12 text-error mb-4 animate-bounce" />
@@ -139,7 +139,7 @@ export default function DemoPage() {
       <div 
         className="dashboard-context flex flex-col md:flex-row h-screen overflow-hidden text-on-surface"
         style={{
-          background: 'linear-gradient(135deg, #091015 0%, #0f1922 40%, #091015 100%)',
+          background: 'linear-gradient(135deg, #0d0a0b 0%, #0f1922 40%, #0d0a0b 100%)',
         }}
       >
         {/* Sidebar (Desktop) */}
@@ -154,10 +154,10 @@ export default function DemoPage() {
           <div 
             className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-6 py-3 text-center text-xs font-semibold select-none z-10 shrink-0"
             style={{
-              background: 'linear-gradient(90deg, rgba(32, 178, 170,0.08) 0%, rgba(32, 178, 170,0.04) 50%, rgba(32, 178, 170,0.08) 100%)',
-              borderBottom: '1px solid rgba(32, 178, 170,0.15)',
+              background: 'linear-gradient(90deg, rgba(69, 73, 85,0.08) 0%, rgba(69, 73, 85,0.04) 50%, rgba(69, 73, 85,0.08) 100%)',
+              borderBottom: '1px solid rgba(69, 73, 85,0.15)',
               backdropFilter: 'blur(12px)',
-              color: 'rgba(218, 228, 236, 0.95)',
+              color: 'rgba(253, 255, 252, 0.95)',
             }}
           >
             <span className="flex items-center gap-1.5 text-pw-primary">
@@ -170,7 +170,7 @@ export default function DemoPage() {
             <span className="opacity-80">You are viewing a read-only example account.</span>
             <Link 
               href="/register" 
-              className="inline-flex items-center gap-1 text-[#20B2AA] hover:text-[#20B2AA]/80 underline transition-all font-bold"
+              className="inline-flex items-center gap-1 text-[#454955] hover:text-[#454955]/80 underline transition-all font-bold"
             >
               Sign up to start your own portfolio
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

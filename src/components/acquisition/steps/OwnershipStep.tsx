@@ -79,13 +79,13 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
 
       {/* Heading */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}>
+        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}>
           Ownership Structure
         </h2>
-        <p className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>
+        <p className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>
           How will title be held?{" "}
           {isEarlyStage && (
-            <span style={{ color: "rgba(218,228,236,0.25)" }}>
+            <span style={{ color: "rgba(253,255,252,0.25)" }}>
               You can skip this for now and set it before closing.
             </span>
           )}
@@ -102,39 +102,39 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
               onClick={() => handleStructureSelect(card.value)}
               className="flex flex-col gap-3 p-4 rounded-xl text-left transition-all duration-150"
               style={{
-                background: active ? "rgba(87,241,219,0.08)" : "rgba(20,29,35,0.65)",
-                border:     `1px solid ${active ? "rgba(87,241,219,0.28)" : "rgba(255,255,255,0.08)"}`,
-                boxShadow:  active ? "0 0 0 3px rgba(87,241,219,0.05)" : "none",
+                background: active ? "rgba(69,73,85,0.08)" : "rgba(22,19,24,0.65)",
+                border:     `1px solid ${active ? "rgba(69,73,85,0.28)" : "rgba(255,255,255,0.08)"}`,
+                boxShadow:  active ? "0 0 0 3px rgba(69,73,85,0.05)" : "none",
               }}
             >
               {/* Icon + title row */}
               <div className="flex items-center gap-2.5">
                 <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: active ? "rgba(87,241,219,0.14)" : "rgba(255,255,255,0.06)" }}
+                  style={{ background: active ? "rgba(69,73,85,0.14)" : "rgba(255,255,255,0.06)" }}
                 >
                   <span
                     className="material-symbols-outlined text-[18px]"
-                    style={{ color: active ? "#57f1db" : "rgba(218,228,236,0.4)", fontVariationSettings: "'FILL' 0" }}
+                    style={{ color: active ? "#454955" : "rgba(253,255,252,0.4)", fontVariationSettings: "'FILL' 0" }}
                   >
                     {card.icon}
                   </span>
                 </div>
                 <span
                   className="text-[13px] font-semibold leading-tight"
-                  style={{ color: active ? "#57f1db" : "rgba(218,228,236,0.85)" }}
+                  style={{ color: active ? "#454955" : "rgba(253,255,252,0.85)" }}
                 >
                   {card.title}
                 </span>
                 {active && (
-                  <span className="ml-auto material-symbols-outlined text-[16px]" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}>
+                  <span className="ml-auto material-symbols-outlined text-[16px]" style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}>
                     check_circle
                   </span>
                 )}
               </div>
 
               {/* Description */}
-              <p className="text-[12px] leading-relaxed" style={{ color: "rgba(218,228,236,0.4)" }}>
+              <p className="text-[12px] leading-relaxed" style={{ color: "rgba(253,255,252,0.4)" }}>
                 {card.description}
               </p>
             </button>
@@ -146,13 +146,13 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
       {selectedCard?.isEntity && (
         <div
           className="rounded-2xl p-5 space-y-4"
-          style={{ background: "rgba(20,29,35,0.7)", border: "1px solid rgba(87,241,219,0.15)" }}
+          style={{ background: "rgba(22,19,24,0.7)", border: "1px solid rgba(69,73,85,0.15)" }}
         >
-          <p className="text-[13px] font-semibold" style={{ color: "#57f1db" }}>Entity Details</p>
+          <p className="text-[13px] font-semibold" style={{ color: "#454955" }}>Entity Details</p>
 
           {/* Entity type selector */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)" }}>
+            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)" }}>
               Entity Type
             </label>
             <div className="flex flex-wrap gap-2">
@@ -162,9 +162,9 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
                   onClick={() => handleEntityType(t)}
                   className="px-3 py-1.5 rounded-lg text-[12px] font-medium"
                   style={{
-                    background: entityType === t ? "rgba(87,241,219,0.12)" : "rgba(255,255,255,0.05)",
-                    border:     `1px solid ${entityType === t ? "rgba(87,241,219,0.25)" : "rgba(255,255,255,0.08)"}`,
-                    color:      entityType === t ? "#57f1db" : "rgba(218,228,236,0.55)",
+                    background: entityType === t ? "rgba(69,73,85,0.12)" : "rgba(255,255,255,0.05)",
+                    border:     `1px solid ${entityType === t ? "rgba(69,73,85,0.25)" : "rgba(255,255,255,0.08)"}`,
+                    color:      entityType === t ? "#454955" : "rgba(253,255,252,0.55)",
                   }}
                 >
                   {t}
@@ -175,12 +175,12 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
 
           {/* Entity name */}
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)" }}>
+            <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)" }}>
               Entity Name
             </label>
             <input
               className="w-full rounded-xl px-4 py-3 text-sm bg-transparent outline-none"
-              style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(218,228,236,0.9)" }}
+              style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(253,255,252,0.9)" }}
               placeholder="e.g. Brooklyn Heights LLC"
               value={entityName}
               onChange={e => handleEntityName(e.target.value)}
@@ -193,11 +193,11 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
       {selectedCard?.isMultiOwner && (
         <div
           className="rounded-2xl p-5 space-y-4"
-          style={{ background: "rgba(20,29,35,0.7)", border: "1px solid rgba(173,198,255,0.15)" }}
+          style={{ background: "rgba(22,19,24,0.7)", border: "1px solid rgba(173,198,255,0.15)" }}
         >
           <div className="flex justify-between items-center">
-            <p className="text-[13px] font-semibold" style={{ color: "#adc6ff" }}>Co-Owners</p>
-            <span className="text-[11px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+            <p className="text-[13px] font-semibold" style={{ color: "#7A9EAA" }}>Co-Owners</p>
+            <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.3)" }}>
               Link to Members in a later phase
             </span>
           </div>
@@ -207,7 +207,7 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
               <div key={idx} className="flex items-center gap-2">
                 <input
                   className="flex-1 rounded-xl px-4 py-3 text-sm bg-transparent outline-none"
-                  style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(218,228,236,0.9)" }}
+                  style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(253,255,252,0.9)" }}
                   placeholder={`Co-owner ${idx + 1} full name`}
                   value={name}
                   onChange={e => handleCoOwnerChange(idx, e.target.value)}
@@ -228,7 +228,7 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
           <button
             onClick={addCoOwner}
             className="flex items-center gap-1.5 text-[12px] font-semibold"
-            style={{ color: "#adc6ff" }}
+            style={{ color: "#7A9EAA" }}
           >
             <span className="material-symbols-outlined text-[16px]">add</span>
             Add co-owner
@@ -241,7 +241,7 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
         <button
           onClick={onNext}
           className="text-[12px]"
-          style={{ color: "rgba(218,228,236,0.3)" }}
+          style={{ color: "rgba(253,255,252,0.3)" }}
         >
           Skip for now →
         </button>
@@ -250,8 +250,8 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
           onClick={() => { setStepDone("ownership"); onNext(); }}
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold"
           style={{
-            background: canContinue ? "#57f1db" : "rgba(255,255,255,0.06)",
-            color:      canContinue ? "#0b141a"  : "rgba(218,228,236,0.25)",
+            background: canContinue ? "#454955" : "rgba(255,255,255,0.06)",
+            color:      canContinue ? "#0d0a0b"  : "rgba(253,255,252,0.25)",
             cursor:     canContinue ? "pointer"  : "not-allowed",
           }}
         >

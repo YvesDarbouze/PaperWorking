@@ -85,7 +85,7 @@ export default function LandingHeader() {
         <nav className="flex justify-between items-center h-16 md:h-20 px-6 md:px-10 max-w-[1280px] mx-auto">
 
           {/* ── Logo Lockup ── */}
-          <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]" />
+          <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(69,73,85,0.5)]" />
 
           {/* ── Desktop Center Nav ── */}
           <div className="hidden md:flex items-center gap-8">
@@ -253,7 +253,7 @@ export default function LandingHeader() {
               {/* Drawer header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
                 <div onClick={() => setMobileOpen(false)}>
-                  <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(87,241,219,0.5)]" />
+                  <Logo href="/" size="sm" className="drop-shadow-[0_0_10px_rgba(69,73,85,0.5)]" />
                 </div>
                 <button
                   type="button"

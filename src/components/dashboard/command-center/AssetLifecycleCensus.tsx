@@ -8,7 +8,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
  *
  * Shows project distribution across 4 REIL phases with a donut chart.
  * Center label shows total project count.
- * Phase colors: Acquisition=#3B82F6, Transaction=#20B2AA, Rehab=#F59E0B, Hold=#3f7d20
+ * Phase colors match PHASE_LEGEND: Acquisition=#454955, Transaction=#7A9EAA, Rehab=#ffac5a, Hold=#5aaa3f
  */
 
 interface PhaseData {
@@ -18,10 +18,10 @@ interface PhaseData {
 }
 
 const PHASE_DATA: PhaseData[] = [
-  { name: "Acquisition", value: 2, color: "#3B82F6" },
-  { name: "Transaction", value: 1, color: "#20B2AA" },
-  { name: "Rehab", value: 2, color: "#F59E0B" },
-  { name: "Hold / Exit", value: 1, color: "#3f7d20" },
+  { name: "Acquisition", value: 2, color: "#454955" },
+  { name: "Transaction", value: 1, color: "#7A9EAA" },
+  { name: "Rehab",       value: 2, color: "#ffac5a" },
+  { name: "Hold / Exit", value: 1, color: "#5aaa3f" },
 ];
 
 const TOTAL_PROJECTS = PHASE_DATA.reduce((sum, p) => sum + p.value, 0);
@@ -39,7 +39,7 @@ export function AssetLifecycleCensus() {
       {/* Header */}
       <h3
         className="text-[10px] font-semibold uppercase tracking-widest mb-4"
-        style={{ color: "rgba(218,228,236,0.4)" }}
+        style={{ color: "rgba(253,255,252,0.4)" }}
       >
         Asset Lifecycle
       </h3>
@@ -69,13 +69,13 @@ export function AssetLifecycleCensus() {
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span
             className="text-3xl font-bold"
-            style={{ color: "rgba(218,228,236,0.95)" }}
+            style={{ color: "rgba(253,255,252,0.95)" }}
           >
             {TOTAL_PROJECTS}
           </span>
           <span
             className="text-[10px] uppercase tracking-wider"
-            style={{ color: "rgba(218,228,236,0.4)" }}
+            style={{ color: "rgba(253,255,252,0.4)" }}
           >
             Projects
           </span>
@@ -92,7 +92,7 @@ export function AssetLifecycleCensus() {
             />
             <span
               className="text-[11px] truncate"
-              style={{ color: "rgba(218,228,236,0.5)" }}
+              style={{ color: "rgba(253,255,252,0.5)" }}
             >
               {phase.name}
             </span>

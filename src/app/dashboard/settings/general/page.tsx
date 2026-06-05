@@ -153,7 +153,7 @@ export default function GeneralSettingsPage() {
                   className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-pointer"
                 >
                   {TIMEZONES.map((tz) => (
-                    <option key={tz.value} value={tz.value} className="bg-[#141d23] text-pw-black">
+                    <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
                       {tz.label}
                     </option>
                   ))}
@@ -178,7 +178,7 @@ export default function GeneralSettingsPage() {
                   disabled
                   className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-not-allowed opacity-60"
                 >
-                  <option value="en" className="bg-[#141d23] text-pw-black">English (US)</option>
+                  <option value="en" className="bg-[#161318] text-pw-black">English (US)</option>
                 </select>
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted text-lg pointer-events-none select-none">
                   expand_more

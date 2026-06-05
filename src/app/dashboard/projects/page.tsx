@@ -127,7 +127,7 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   let phaseIconBg = "bg-primary-container/10";
   let phaseIconBorder = "border-primary-container/20";
   let progressBg = "bg-primary-container";
-  let progressGlow = "shadow-[0_0_10px_rgba(32, 178, 170,0.8)]";
+  let progressGlow = "shadow-[0_0_10px_rgba(69, 73, 85,0.8)]";
 
   if (phase === 2) {
     phaseIcon = "snippet_folder";
@@ -153,13 +153,13 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   }
 
   // Phase accent colors for top stripe (Stitch folder tab)
-  const phaseStripeColor = phase === 1 ? '#57f1db' : phase === 2 ? '#adc6ff' : phase === 3 ? '#ffac5a' : '#62fae3';
+  const phaseStripeColor = phase === 1 ? '#454955' : phase === 2 ? '#7A9EAA' : phase === 3 ? '#ffac5a' : '#5aaa3f';
 
   return (
     <div
       className="backdrop-blur-xl border border-white/[0.08] flex flex-col gap-4 cursor-pointer group relative overflow-hidden transition-all duration-200"
       style={{
-        background: 'linear-gradient(135deg, rgba(20,29,35,0.65) 0%, rgba(11,20,26,0.88) 100%)',
+        background: 'linear-gradient(135deg, rgba(22,19,24,0.65) 0%, rgba(13,10,11,0.88) 100%)',
         // Asymmetric folder tab: sharp top-left, rounded top-right (Stitch blueprint)
         borderRadius: '8px 28px 16px 16px',
         borderTop: `2px solid ${phaseStripeColor}55`,
@@ -363,11 +363,11 @@ export default function ProjectsPage() {
         <div>
           <h2
             className="text-2xl font-bold tracking-tight"
-            style={{ color: 'rgba(218,228,236,0.95)', letterSpacing: '-0.01em' }}
+            style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
           >
             Portfolio
           </h2>
-          <p className="text-sm mt-1" style={{ color: 'rgba(218,228,236,0.45)' }}>
+          <p className="text-sm mt-1" style={{ color: 'rgba(253,255,252,0.45)' }}>
             {storeProjects.length} project{storeProjects.length !== 1 ? 's' : ''} · track phase progression
           </p>
         </div>
@@ -375,10 +375,10 @@ export default function ProjectsPage() {
           onClick={handleCreateProject}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
           style={{
-            background: 'rgba(87,241,219,0.12)',
-            border: '1px solid rgba(87,241,219,0.3)',
-            color: '#57f1db',
-            boxShadow: '0 0 20px -8px rgba(87,241,219,0.4)',
+            background: 'rgba(69,73,85,0.12)',
+            border: '1px solid rgba(69,73,85,0.3)',
+            color: '#454955',
+            boxShadow: '0 0 20px -8px rgba(69,73,85,0.4)',
           }}
         >
           <span className="material-symbols-outlined text-[18px]">add</span>
@@ -392,7 +392,7 @@ export default function ProjectsPage() {
         <div className="relative flex-1 group">
           <span
             className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200 pointer-events-none"
-            style={{ color: 'rgba(218,228,236,0.35)' }}
+            style={{ color: 'rgba(253,255,252,0.35)' }}
           >
             search
           </span>
@@ -405,7 +405,7 @@ export default function ProjectsPage() {
             style={{
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.08)',
-              color: 'rgba(218,228,236,0.9)',
+              color: 'rgba(253,255,252,0.9)',
             }}
           />
         </div>
@@ -418,7 +418,7 @@ export default function ProjectsPage() {
           style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.08)',
-            color: 'rgba(218,228,236,0.7)',
+            color: 'rgba(253,255,252,0.7)',
           }}
         >
           <option value="recent">Recent Activity</option>
@@ -435,10 +435,10 @@ export default function ProjectsPage() {
         {/* Phase pills */}
         {[
           { value: '', label: 'All Phases' },
-          { value: '1', label: 'Acquisition', color: '#57f1db' },
-          { value: '2', label: 'Transaction',  color: '#adc6ff' },
+          { value: '1', label: 'Acquisition', color: '#454955' },
+          { value: '2', label: 'Transaction',  color: '#7A9EAA' },
           { value: '3', label: 'Rehab',        color: '#ffac5a' },
-          { value: '4', label: 'Hold / Exit',  color: '#62fae3' },
+          { value: '4', label: 'Hold / Exit',  color: '#5aaa3f' },
         ].map(({ value, label, color }) => (
           <button
             key={value}
@@ -446,10 +446,10 @@ export default function ProjectsPage() {
             className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-150"
             style={{
               background: phaseFilter === value
-                ? `${color || '#57f1db'}18`
+                ? `${color || '#454955'}18`
                 : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${phaseFilter === value ? `${color || '#57f1db'}40` : 'rgba(255,255,255,0.08)'}`,
-              color: phaseFilter === value ? (color || '#57f1db') : 'rgba(218,228,236,0.5)',
+              border: `1px solid ${phaseFilter === value ? `${color || '#454955'}40` : 'rgba(255,255,255,0.08)'}`,
+              color: phaseFilter === value ? (color || '#454955') : 'rgba(253,255,252,0.5)',
             }}
           >
             {label}
@@ -470,9 +470,9 @@ export default function ProjectsPage() {
             onClick={() => setStrategyFilter(value)}
             className="text-xs font-semibold px-3 py-1.5 rounded-full transition-all duration-150"
             style={{
-              background: strategyFilter === value ? 'rgba(87,241,219,0.1)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${strategyFilter === value ? 'rgba(87,241,219,0.3)' : 'rgba(255,255,255,0.08)'}`,
-              color: strategyFilter === value ? '#57f1db' : 'rgba(218,228,236,0.5)',
+              background: strategyFilter === value ? 'rgba(69,73,85,0.1)' : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${strategyFilter === value ? 'rgba(69,73,85,0.3)' : 'rgba(255,255,255,0.08)'}`,
+              color: strategyFilter === value ? '#454955' : 'rgba(253,255,252,0.5)',
             }}
           >
             {label}
@@ -480,7 +480,7 @@ export default function ProjectsPage() {
         ))}
 
         {filteredProjects.length !== storeProjects.length && (
-          <span className="ml-auto text-xs self-center" style={{ color: 'rgba(218,228,236,0.35)' }}>
+          <span className="ml-auto text-xs self-center" style={{ color: 'rgba(253,255,252,0.35)' }}>
             {filteredProjects.length} of {storeProjects.length}
           </span>
         )}

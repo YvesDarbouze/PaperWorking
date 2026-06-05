@@ -45,7 +45,7 @@ const LIFECYCLE_STAGES = [
     label:       "Acquisition",
     description: "Find, analyze, and close the deal.",
     icon:        "domain_add",
-    color:       "#57f1db",
+    color:       "#454955",
     wizardBase:  "/dashboard/projects/new?resume=",
   },
   {
@@ -53,7 +53,7 @@ const LIFECYCLE_STAGES = [
     label:       "Fund",
     description: "Capital raise, financing, and closing room.",
     icon:        "account_balance",
-    color:       "#adc6ff",
+    color:       "#7A9EAA",
     locked:      true,
   },
   {
@@ -69,7 +69,7 @@ const LIFECYCLE_STAGES = [
     label:       "Exit",
     description: "Sale, settlement, and realized ROI.",
     icon:        "exit_to_app",
-    color:       "#62fae3",
+    color:       "#5aaa3f",
     locked:      true,
   },
 ] as const;
@@ -81,8 +81,8 @@ type StageKey = (typeof LIFECYCLE_STAGES)[number]["key"];
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-      <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.4)" }}>{label}</span>
-      <span className="text-[12px] font-medium" style={{ color: value === "—" ? "rgba(218,228,236,0.2)" : "rgba(218,228,236,0.85)" }}>
+      <span className="text-[12px]" style={{ color: "rgba(253,255,252,0.4)" }}>{label}</span>
+      <span className="text-[12px] font-medium" style={{ color: value === "—" ? "rgba(253,255,252,0.2)" : "rgba(253,255,252,0.85)" }}>
         {value}
       </span>
     </div>
@@ -96,15 +96,15 @@ function SectionCard({
   return (
     <div
       className="rounded-2xl overflow-hidden"
-      style={{ background: "rgba(20,29,35,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "rgba(22,19,24,0.6)", border: "1px solid rgba(255,255,255,0.07)" }}
     >
       <div
         className="flex justify-between items-center px-5 py-3.5"
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[16px]" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 0" }}>{icon}</span>
-          <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
+          <span className="material-symbols-outlined text-[16px]" style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}>{icon}</span>
+          <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.07em" }}>
             {title}
           </span>
         </div>
@@ -112,7 +112,7 @@ function SectionCard({
           <button
             onClick={() => router.push(editHref)}
             className="flex items-center gap-1 text-[11px] font-semibold hover:opacity-70"
-            style={{ color: "#57f1db" }}
+            style={{ color: "#454955" }}
           >
             <span className="material-symbols-outlined text-[13px]">edit</span>
             Edit
@@ -155,8 +155,8 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
     return (
       <div className="flex-1 flex items-center justify-center" style={{ background: "rgba(8,14,19,0.97)" }}>
         <div className="flex items-center gap-3">
-          <span className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(87,241,219,0.2)", borderTopColor: "#57f1db" }} />
-          <span className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>Loading project…</span>
+          <span className="w-6 h-6 border-2 rounded-full animate-spin" style={{ borderColor: "rgba(69,73,85,0.2)", borderTopColor: "#454955" }} />
+          <span className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>Loading project…</span>
         </div>
       </div>
     );
@@ -166,7 +166,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4">
         <p className="text-sm" style={{ color: "#F06543" }}>Project not found or access denied.</p>
-        <button onClick={() => router.push("/dashboard")} className="text-[13px]" style={{ color: "#57f1db" }}>
+        <button onClick={() => router.push("/dashboard")} className="text-[13px]" style={{ color: "#454955" }}>
           ← Back to Portfolio
         </button>
       </div>
@@ -191,21 +191,21 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
               <button
                 onClick={() => router.push("/dashboard")}
                 className="text-[12px] flex items-center gap-1 hover:opacity-70"
-                style={{ color: "rgba(218,228,236,0.4)" }}
+                style={{ color: "rgba(253,255,252,0.4)" }}
               >
                 <span className="material-symbols-outlined text-[14px]">arrow_back</span>
                 Portfolio
               </button>
-              <span style={{ color: "rgba(218,228,236,0.15)" }}>/</span>
-              <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.4)" }}>
+              <span style={{ color: "rgba(253,255,252,0.15)" }}>/</span>
+              <span className="text-[12px]" style={{ color: "rgba(253,255,252,0.4)" }}>
                 {project.displayName ?? project.addressLine}
               </span>
             </div>
 
-            <h1 className="text-2xl font-bold tracking-tight" style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}>
+            <h1 className="text-2xl font-bold tracking-tight" style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}>
               {project.displayName ?? project.addressLine}
             </h1>
-            <p className="text-sm mt-1" style={{ color: "rgba(218,228,236,0.4)" }}>
+            <p className="text-sm mt-1" style={{ color: "rgba(253,255,252,0.4)" }}>
               {[project.addressLine, project.city, project.state, project.zip].filter(Boolean).join(", ")}
             </p>
           </div>
@@ -214,7 +214,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
             {project.acquisitionStatus && (
               <span
                 className="text-[11px] font-bold px-3 py-1.5 rounded-full"
-                style={{ background: "rgba(87,241,219,0.12)", color: "#57f1db", border: "1px solid rgba(87,241,219,0.25)" }}
+                style={{ background: "rgba(69,73,85,0.12)", color: "#454955", border: "1px solid rgba(69,73,85,0.25)" }}
               >
                 {ACQUISITION_STATUS_LABELS[project.acquisitionStatus as AcquisitionStatus] ?? project.acquisitionStatus}
               </span>
@@ -222,7 +222,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
             <button
               onClick={() => router.push(wizardResumeUrl)}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold hover:opacity-70"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(218,228,236,0.6)" }}
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(253,255,252,0.6)" }}
             >
               <span className="material-symbols-outlined text-[15px]">edit</span>
               Edit deal
@@ -237,7 +237,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
             style={{ background: "rgba(255,209,170,0.07)", border: "1px solid rgba(255,209,170,0.18)" }}
           >
             <span className="material-symbols-outlined text-[16px]" style={{ color: "#ffd1aa" }}>pending</span>
-            <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.6)" }}>
+            <span className="text-[12px]" style={{ color: "rgba(253,255,252,0.6)" }}>
               <span className="font-semibold" style={{ color: "#ffd1aa" }}>{openAssignments.length} field{openAssignments.length !== 1 ? "s" : ""} awaiting teammates</span>
               {" "}— open assignments don't block this project.
             </span>
@@ -253,7 +253,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
 
         {/* ── Lifecycle stages ── */}
         <section>
-          <h2 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(218,228,236,0.35)", letterSpacing: "0.08em" }}>
+          <h2 className="text-[11px] font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}>
             REIL Lifecycle
           </h2>
           <div className="grid grid-cols-4 gap-3">
@@ -282,7 +282,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
                       </span>
                     </div>
                     {isLocked && (
-                      <span className="material-symbols-outlined text-[14px]" style={{ color: "rgba(218,228,236,0.2)" }}>lock</span>
+                      <span className="material-symbols-outlined text-[14px]" style={{ color: "rgba(253,255,252,0.2)" }}>lock</span>
                     )}
                     {isActive && (
                       <span
@@ -294,10 +294,10 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
                     )}
                   </div>
                   <div>
-                    <p className="text-[13px] font-semibold mb-0.5" style={{ color: isActive ? "rgba(218,228,236,0.9)" : "rgba(218,228,236,0.4)" }}>
+                    <p className="text-[13px] font-semibold mb-0.5" style={{ color: isActive ? "rgba(253,255,252,0.9)" : "rgba(253,255,252,0.4)" }}>
                       {stage.label}
                     </p>
-                    <p className="text-[11px] leading-relaxed" style={{ color: "rgba(218,228,236,0.3)" }}>
+                    <p className="text-[11px] leading-relaxed" style={{ color: "rgba(253,255,252,0.3)" }}>
                       {stage.description}
                     </p>
                   </div>
@@ -311,7 +311,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
                     </button>
                   )}
                   {isLocked && (
-                    <p className="text-[10px]" style={{ color: "rgba(218,228,236,0.2)" }}>
+                    <p className="text-[10px]" style={{ color: "rgba(253,255,252,0.2)" }}>
                       Unlocks after Acquisition closes
                     </p>
                   )}
@@ -354,10 +354,10 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
             {statusEvents.length > 0 && (
               <div className="mt-3 space-y-2">
                 {statusEvents.slice(0, 3).map((e: any) => (
-                  <div key={e.id} className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(218,228,236,0.4)" }}>
-                    <span className="material-symbols-outlined text-[11px]" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}>history</span>
+                  <div key={e.id} className="flex items-center gap-2 text-[11px]" style={{ color: "rgba(253,255,252,0.4)" }}>
+                    <span className="material-symbols-outlined text-[11px]" style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}>history</span>
                     <span>{ACQUISITION_STATUS_LABELS[e.status as AcquisitionStatus] ?? e.status}</span>
-                    <span style={{ color: "rgba(218,228,236,0.2)" }}>·</span>
+                    <span style={{ color: "rgba(253,255,252,0.2)" }}>·</span>
                     <span>{timeAgo(e.occurredAt)}</span>
                   </div>
                 ))}

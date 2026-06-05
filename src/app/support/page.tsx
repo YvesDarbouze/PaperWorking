@@ -205,7 +205,7 @@ export default function SupportPage() {
                 aria-label="Search PaperWorking knowledge base"
                 className="w-full h-14 pl-12 pr-12 rounded-xl glass-panel border border-white/12
                   text-[15px] text-on-surface placeholder:text-on-surface-variant/35
-                  focus:outline-none focus:border-primary/40 focus:shadow-[0_0_0_3px_rgba(87,241,219,0.10)]
+                  focus:outline-none focus:border-primary/40 focus:shadow-[0_0_0_3px_rgba(69,73,85,0.10)]
                   transition-all duration-200"
               />
               {searching && (

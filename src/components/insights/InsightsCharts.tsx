@@ -61,13 +61,13 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11, fontFamily: 'var(--font-plus-jakarta)' },
+      textStyle: { color: '#9E9DA0', fontSize: 11, fontFamily: 'var(--font-plus-jakarta)' },
       formatter: (params: unknown) => {
         const arr = params as TooltipParam[];
         if (!arr || arr.length === 0) return '';
-        let res = `<div class="font-plus-jakarta text-xs font-light text-slate-400 mb-1">${arr[0].axisValue}</div>`;
+        let res = `<div class="font-plus-jakarta text-xs font-light text-[#9E9DA0] mb-1">${arr[0].axisValue}</div>`;
         arr.forEach((p) => {
           let valStr = String(p.value);
           if (p.seriesName === 'NOI' || p.seriesName === 'Cash Flow') {
@@ -77,7 +77,7 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
           }
           res += `
             <div class="flex items-center justify-between gap-4 text-xs font-plus-jakarta">
-              <span class="flex items-center gap-1.5 font-light text-slate-300">
+              <span class="flex items-center gap-1.5 font-light text-[#C0BEC2]">
                 <span class="w-2 h-2 rounded-full" style="background:${p.color}"></span>
                 ${p.seriesName}
               </span>
@@ -96,7 +96,7 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
         'Vacancy': false,
         'OER': false,
       },
-      textStyle: { color: '#bacac5', fontSize: 10, fontFamily: 'var(--font-plus-jakarta)' },
+      textStyle: { color: '#9E9DA0', fontSize: 10, fontFamily: 'var(--font-plus-jakarta)' },
       bottom: 0,
     },
     grid: { top: 35, right: 45, bottom: 45, left: 65 },
@@ -105,7 +105,7 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
       data: periods,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#bacac5', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
+      axisLabel: { color: '#9E9DA0', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
     },
     yAxis: [
       {
@@ -158,15 +158,15 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: cfData,
         smooth: true,
-        lineStyle: { width: 2, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2, color: '#454955' },
+        itemStyle: { color: '#454955' },
         areaStyle: {
           color: {
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(32, 178, 170, 0.15)' },
-              { offset: 1, color: 'rgba(32, 178, 170, 0)' }
+              { offset: 0, color: 'rgba(69, 73, 85, 0.15)' },
+              { offset: 1, color: 'rgba(69, 73, 85, 0)' }
             ]
           }
         },
@@ -241,13 +241,13 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11, fontFamily: 'var(--font-plus-jakarta)' },
+      textStyle: { color: '#9E9DA0', fontSize: 11, fontFamily: 'var(--font-plus-jakarta)' },
       formatter: (params: unknown) => {
         const arr = params as TooltipParam[];
         if (!arr || arr.length === 0) return '';
-        let res = `<div class="font-plus-jakarta text-xs font-light text-slate-400 mb-1">${arr[0].axisValue}</div>`;
+        let res = `<div class="font-plus-jakarta text-xs font-light text-[#9E9DA0] mb-1">${arr[0].axisValue}</div>`;
         arr.forEach((p) => {
           let valStr = String(p.value);
           if (p.seriesName === 'DSCR' || p.seriesName === 'GRM') {
@@ -257,7 +257,7 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
           }
           res += `
             <div class="flex items-center justify-between gap-4 text-xs font-plus-jakarta">
-              <span class="flex items-center gap-1.5 font-light text-slate-300">
+              <span class="flex items-center gap-1.5 font-light text-[#C0BEC2]">
                 <span class="w-2 h-2 rounded-full" style="background:${p.color}"></span>
                 ${p.seriesName}
               </span>
@@ -278,7 +278,7 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         'GRM': false,
         'IRR': false,
       },
-      textStyle: { color: '#bacac5', fontSize: 10, fontFamily: 'var(--font-plus-jakarta)' },
+      textStyle: { color: '#9E9DA0', fontSize: 10, fontFamily: 'var(--font-plus-jakarta)' },
       bottom: 0,
     },
     grid: { top: 35, right: 45, bottom: 45, left: 55 },
@@ -287,7 +287,7 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
       data: periods,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#bacac5', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
+      axisLabel: { color: '#9E9DA0', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
     },
     yAxis: [
       {
@@ -311,8 +311,8 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: capRateData,
         smooth: true,
-        lineStyle: { width: 2, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2, color: '#454955' },
+        itemStyle: { color: '#454955' },
         symbol: 'circle',
         symbolSize: 6,
         markPoint: {
@@ -344,8 +344,8 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: appreciationData,
         smooth: true,
-        lineStyle: { width: 2, color: '#20B2AA' },
-        itemStyle: { color: '#20B2AA' },
+        lineStyle: { width: 2, color: '#454955' },
+        itemStyle: { color: '#454955' },
         symbol: 'circle',
         symbolSize: 6,
         markPoint: {
@@ -437,17 +437,17 @@ export function RiskReturnScatterChart({
     grid: { top: 35, right: 35, bottom: 45, left: 55 },
     tooltip: {
       trigger: 'item',
-      backgroundColor: '#182127',
+      backgroundColor: '#1e1b20',
       borderColor: 'rgba(255,255,255,0.1)',
-      textStyle: { color: '#dae4ec', fontSize: 11 },
+      textStyle: { color: '#9E9DA0', fontSize: 11 },
       formatter: (params: any) => {
         const item = params.data;
         const xVal = item.value[0];
         const yVal = item.value[1];
         return `
           <div class="font-plus-jakarta text-xs font-semibold text-white mb-1">${item.name}</div>
-          <div class="flex flex-col gap-1 text-[10px] font-plus-jakarta font-light text-slate-300">
-            <div>${metricLabels[xAxisMetric]}: <span class="font-mono font-semibold text-teal-400">${xVal.toFixed(2)}</span></div>
+          <div class="flex flex-col gap-1 text-[10px] font-plus-jakarta font-light text-[#C0BEC2]">
+            <div>${metricLabels[xAxisMetric]}: <span class="font-mono font-semibold text-[#6E7480]">${xVal.toFixed(2)}</span></div>
             <div>${metricLabels[yAxisMetric]}: <span class="font-mono font-semibold text-blue-400">${yVal.toFixed(2)}</span></div>
             <div>Phase: <span class="font-mono text-amber-400">Phase ${item.phase}</span></div>
           </div>
@@ -462,7 +462,7 @@ export function RiskReturnScatterChart({
       nameTextStyle: { color: '#859490', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#bacac5', fontSize: 9, fontFamily: 'var(--font-mono)' },
+      axisLabel: { color: '#9E9DA0', fontSize: 9, fontFamily: 'var(--font-mono)' },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } },
     },
     yAxis: {
@@ -471,7 +471,7 @@ export function RiskReturnScatterChart({
       nameTextStyle: { color: '#859490', fontSize: 9, fontFamily: 'var(--font-plus-jakarta)' },
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#bacac5', fontSize: 9, fontFamily: 'var(--font-mono)' },
+      axisLabel: { color: '#9E9DA0', fontSize: 9, fontFamily: 'var(--font-mono)' },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } },
     },
     series: [
@@ -480,17 +480,17 @@ export function RiskReturnScatterChart({
         data: data,
         symbolSize: 12,
         itemStyle: {
-          color: '#20B2AA',
-          borderColor: 'rgba(32, 178, 170, 0.4)',
+          color: '#454955',
+          borderColor: 'rgba(69, 73, 85, 0.4)',
           borderWidth: 2,
           shadowBlur: 8,
-          shadowColor: 'rgba(32, 178, 170, 0.3)',
+          shadowColor: 'rgba(69, 73, 85, 0.3)',
         },
         label: {
           show: true,
           formatter: '{b}',
           position: 'top',
-          color: '#bacac5',
+          color: '#9E9DA0',
           fontSize: 8,
           fontFamily: 'var(--font-plus-jakarta)',
         }

@@ -26,7 +26,7 @@ export default function SeventyPercentRule() {
   return (
     <div className="bg-bg-surface border border-border-accent rounded-xl p-6 shadow-sm">
       <div className="flex items-center space-x-2 border-b pb-4 mb-4 text-text-primary">
-        <Calculator className="w-5 h-5 text-[#20B2AA]" />
+        <Calculator className="w-5 h-5 text-[#454955]" />
         <h3 className="text-lg font-semibold">70% Rule Engine</h3>
       </div>
       

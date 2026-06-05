@@ -53,7 +53,7 @@ export default function OrgRoleSelector() {
                 onClick={() => setOrgRole(r.key)}
                 className={`relative p-4 rounded-xl border transition-all duration-200 text-left cursor-pointer ${
                   active
-                    ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(87,241,219,0.15)]'
+                    ? 'border-pw-primary/45 bg-pw-primary/10 text-pw-black shadow-[0_0_15px_rgba(69,73,85,0.15)]'
                     : 'border-pw-border bg-pw-glass-bg/50 text-pw-muted hover:border-pw-muted/40'
                 }`}
               >

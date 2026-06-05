@@ -54,7 +54,7 @@ const INTENT_OPTIONS: IntentOption[] = [
     description: 'Log completed investments and build your track record.',
     phase: 4,
     route: '/dashboard/projects?wizard=true&phase=4',
-    accentColor: '#20B2AA', // brand secondary — Exit
+    accentColor: '#454955', // brand secondary — Exit
   },
   {
     id: 're_professional',
@@ -139,7 +139,7 @@ export default function OnboardingIntentPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-6 h-6 text-[#20B2AA] animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#454955] animate-spin" />
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function OnboardingIntentPage() {
         <h1 className="text-[32px] leading-[40px] md:text-[40px] md:leading-[48px] font-bold text-white tracking-tight">
           What brings you to PaperWorking today?
         </h1>
-        <p className="text-[16px] leading-[24px] text-[#bacac5] max-w-md mx-auto">
+        <p className="text-[16px] leading-[24px] text-[#9E9DA0] max-w-md mx-auto">
           We'll tailor your workspace to match your investing journey.
         </p>
       </div>
@@ -206,11 +206,11 @@ export default function OnboardingIntentPage() {
               <div className="flex-grow min-w-0">
                 <h3
                   className="text-[16px] leading-[24px] font-semibold tracking-tight transition-colors"
-                  style={{ color: isSelected ? option.accentColor : '#dae4ec' }}
+                  style={{ color: isSelected ? option.accentColor : '#9E9DA0' }}
                 >
                   {option.title}
                 </h3>
-                <p className="text-[14px] leading-[20px] text-[#bacac5] opacity-80 mt-1">
+                <p className="text-[14px] leading-[20px] text-[#9E9DA0] opacity-80 mt-1">
                   {option.description}
                 </p>
               </div>
@@ -231,7 +231,7 @@ export default function OnboardingIntentPage() {
           type="button"
           onClick={handleSkip}
           disabled={isNavigating}
-          className="text-[13px] text-[#bacac5]/60 hover:text-[#bacac5] transition-colors underline-offset-4 hover:underline disabled:opacity-40"
+          className="text-[13px] text-[#9E9DA0]/60 hover:text-[#9E9DA0] transition-colors underline-offset-4 hover:underline disabled:opacity-40"
         >
           Skip for now — take me to the dashboard
         </button>

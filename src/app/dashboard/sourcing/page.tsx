@@ -115,7 +115,7 @@ export default function SourcingDashboard() {
                         SYSTEM ({lead.financials?.ownershipPercentage ?? 100}%)
                       </td>
                       <td className="p-4">
-                        <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-teal-400/10 border border-teal-400/20 text-teal-400">
+                        <span className="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-[#6E7480]/10 border border-[#6E7480]/20 text-[#6E7480]">
                           {lead.status}
                         </span>
                       </td>

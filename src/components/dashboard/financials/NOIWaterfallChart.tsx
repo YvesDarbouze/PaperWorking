@@ -51,7 +51,7 @@ export default function NOIWaterfallChart({
         {/* Net Income */}
         <div className="flex items-center gap-4 pt-4">
           <div className="w-24 text-right"><span className="text-[10px] text-primary font-mono font-bold">NET NOI</span></div>
-          <div className="flex-1 h-16 bg-primary border-2 border-primary-fixed rounded flex items-center justify-end px-6 shadow-[0_0_30px_rgba(32, 178, 170,0.2)]">
+          <div className="flex-1 h-16 bg-primary border-2 border-primary-fixed rounded flex items-center justify-end px-6 shadow-[0_0_30px_rgba(69, 73, 85,0.2)]">
             <div className="text-right">
               <div className="font-mono text-2xl text-on-primary font-bold">{formatCur(noi)}</div>
               <div className="text-[10px] text-on-primary/80 font-bold uppercase tracking-wider">Annual Yield</div>

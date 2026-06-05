@@ -98,9 +98,9 @@ export function DealTermsClosingForm({
   // Cap rate health indicator
   const capRateHealth =
     derived.capRate >= 8
-      ? { label: "Excellent", color: "#20B2AA" }
+      ? { label: "Excellent", color: "#454955" }
       : derived.capRate >= 5
-        ? { label: "Good", color: "#20B2AA" }
+        ? { label: "Good", color: "#454955" }
         : derived.capRate >= 3
           ? { label: "Fair", color: "#f59e0b" }
           : derived.capRate > 0
@@ -112,7 +112,7 @@ export function DealTermsClosingForm({
     derived.ltv <= 0
       ? { label: "—", color: "#64748b" }
       : derived.ltv <= 75
-        ? { label: "Conservative", color: "#20B2AA" }
+        ? { label: "Conservative", color: "#454955" }
         : derived.ltv <= 85
           ? { label: "Standard", color: "#f59e0b" }
           : { label: "High Leverage", color: "#F06543" };
@@ -121,7 +121,7 @@ export function DealTermsClosingForm({
     <div
       className={`glass-card rounded-xl overflow-hidden relative ${className}`}
       style={{
-        background: "rgba(11, 20, 26, 0.6)",
+        background: "rgba(13, 10, 11, 0.6)",
         backdropFilter: "blur(20px)",
         border: "1px solid rgba(255, 255, 255, 0.08)",
       }}
@@ -210,7 +210,7 @@ export function DealTermsClosingForm({
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold">
+                <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold">
                   Cap Rate
                 </span>
                 {derived.capRate > 0 && (
@@ -230,7 +230,7 @@ export function DealTermsClosingForm({
                   {derived.capRate.toFixed(2)}%
                 </span>
               ) : (
-                <span className="text-sm text-slate-500 italic">
+                <span className="text-sm text-[#6B6870] italic">
                   Provide NOI to compute
                 </span>
               )}
@@ -242,7 +242,7 @@ export function DealTermsClosingForm({
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold">
+                <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold">
                   LTV
                 </span>
                 {derived.ltv > 0 && (
@@ -262,7 +262,7 @@ export function DealTermsClosingForm({
                   {derived.ltv.toFixed(1)}%
                 </span>
               ) : (
-                <span className="text-sm text-slate-500 italic">
+                <span className="text-sm text-[#6B6870] italic">
                   Enter purchase price
                 </span>
               )}
@@ -273,7 +273,7 @@ export function DealTermsClosingForm({
               className="rounded-xl p-4 border border-white/5"
               style={{ background: "rgba(24,33,39,0.5)" }}
             >
-              <span className="text-xs uppercase tracking-widest text-slate-500 font-semibold block mb-1">
+              <span className="text-xs uppercase tracking-widest text-[#6B6870] font-semibold block mb-1">
                 Total Cash Invested
               </span>
               <span className="text-2xl font-bold text-white tabular-nums font-mono">
@@ -285,7 +285,7 @@ export function DealTermsClosingForm({
           {/* Loan amount summary row */}
           {purchasePrice > 0 && downPayment > 0 && (
             <div className="mt-3 flex items-center justify-between py-3 px-4 rounded-lg bg-white/5 border border-white/5">
-              <span className="text-xs text-slate-400 uppercase tracking-widest font-semibold">
+              <span className="text-xs text-[#9E9DA0] uppercase tracking-widest font-semibold">
                 Implied Loan Amount (Price − Down Payment)
               </span>
               <span className="text-base font-bold text-white tabular-nums font-mono">

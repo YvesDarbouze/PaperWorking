@@ -48,7 +48,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
     tooltip: {
       trigger: 'axis',
       backgroundColor: '#1a2332',
-      borderColor: '#20B2AA33',
+      borderColor: '#45495533',
       textStyle: { color: '#e2e8f0', fontSize: 12 },
       formatter: (params: any[]) => {
         const p = params[0];
@@ -76,14 +76,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           value: v,
           itemStyle: {
             color: i === values.length - 1
-              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#20B2AA' }, { offset: 1, color: '#0d9488' }] }
+              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#454955' }, { offset: 1, color: '#0d9488' }] }
               : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#1a4a44' }, { offset: 1, color: '#0d2d29' }] },
           },
         })),
         barMaxWidth: 40,
         barCategoryGap: '25%',
         emphasis: {
-          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#20B2AA' }, { offset: 1, color: '#0d9488' }] } },
+          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#454955' }, { offset: 1, color: '#0d9488' }] } },
         },
       },
     ],
@@ -93,7 +93,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
 }
 
 /* ── Expense Donut ECharts ── */
-const EXPENSE_COLORS = ['#20B2AA', '#818cf8', '#fb923c', '#64748b'];
+const EXPENSE_COLORS = ['#454955', '#818cf8', '#fb923c', '#64748b'];
 
 function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: string; pct: number }[] }) {
   const data = items.map((item, i) => ({
@@ -108,7 +108,7 @@ function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: 
       trigger: 'item',
       formatter: '{b}: {d}%',
       backgroundColor: '#1a2332',
-      borderColor: '#20B2AA33',
+      borderColor: '#45495533',
       textStyle: { color: '#e2e8f0', fontSize: 12 },
     },
     series: [
@@ -150,7 +150,7 @@ function CashFlowBar({ label, value, max, color }: { label: string; value: numbe
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-400 uppercase tracking-wider">{label}</span>
+        <span className="text-xs text-[#9E9DA0] uppercase tracking-wider">{label}</span>
         <span className="text-sm font-semibold text-slate-100 tabular-nums">{fmt(value)}</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
@@ -181,21 +181,21 @@ function IRRScenario({
     <div
       className={`px-4 py-3 rounded-lg border transition-all ${
         active
-          ? 'border-teal-500/50 bg-teal-500/5'
+          ? 'border-[#454955]/50 bg-[#454955]/5'
           : 'border-white/5 bg-white/[0.02] hover:border-white/10'
       }`}
     >
       <div className="flex items-center justify-between mb-1">
-        <span className={`text-xs uppercase tracking-widest font-semibold ${active ? 'text-teal-400' : 'text-slate-400'}`}>
+        <span className={`text-xs uppercase tracking-widest font-semibold ${active ? 'text-[#6E7480]' : 'text-[#9E9DA0]'}`}>
           {label}
         </span>
-        <span className="text-xs text-slate-500 tabular-nums">{holdYears}</span>
+        <span className="text-xs text-[#6B6870] tabular-nums">{holdYears}</span>
       </div>
       <div className="flex items-end justify-between">
-        <span className={`text-2xl font-bold tabular-nums ${active ? 'text-teal-400' : 'text-slate-100'}`}>
+        <span className={`text-2xl font-bold tabular-nums ${active ? 'text-[#6E7480]' : 'text-slate-100'}`}>
           {irr}
         </span>
-        <span className={`text-xs font-medium tabular-nums ${active ? 'text-teal-500' : 'text-slate-500'}`}>
+        <span className={`text-xs font-medium tabular-nums ${active ? 'text-[#454955]' : 'text-[#6B6870]'}`}>
           {capExit}
         </span>
       </div>
@@ -215,21 +215,21 @@ interface BentoMetricProps {
 function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricProps & { href?: string }) {
   const inner = (
     <div
-      className={`rounded-xl border border-white/[0.08] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-teal-500/30 hover:bg-white/[0.02] cursor-pointer transition-all' : ''}`}
+      className={`rounded-xl border border-white/[0.08] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-[#454955]/30 hover:bg-white/[0.02] cursor-pointer transition-all' : ''}`}
       style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)' }}
     >
-      <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-widest text-[#6B6870]">{label}</span>
       <div className="flex items-end justify-between gap-2">
         <span className="text-2xl font-bold tabular-nums text-white leading-none">{value}</span>
         {trend && trend !== 'neutral' && (
           <ArrowUpRight
             className={`w-3.5 h-3.5 mb-0.5 flex-shrink-0 ${
-              trend === 'up' ? 'text-teal-400' : 'text-red-400 rotate-90'
+              trend === 'up' ? 'text-[#6E7480]' : 'text-red-400 rotate-90'
             }`}
           />
         )}
       </div>
-      {sub && <span className="text-[11px] text-slate-500 leading-tight">{sub}</span>}
+      {sub && <span className="text-[11px] text-[#6B6870] leading-tight">{sub}</span>}
     </div>
   );
   if (href) return <Link href={href} className={colSpan ? 'col-span-2' : ''}>{inner}</Link>;
@@ -251,8 +251,8 @@ function SkeletonMetric() {
 function EmptyState({ message }: { message: string }) {
   return (
     <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
-      <AlertCircle className="w-5 h-5 text-slate-500 flex-shrink-0" />
-      <p className="text-sm text-slate-400">{message}</p>
+      <AlertCircle className="w-5 h-5 text-[#6B6870] flex-shrink-0" />
+      <p className="text-sm text-[#9E9DA0]">{message}</p>
     </div>
   );
 }
@@ -277,28 +277,28 @@ function TaxReportRow({
     <div className="flex items-center justify-between gap-4 py-4 border-b border-white/[0.06] last:border-0">
       <div className="flex items-center gap-3 min-w-0">
         <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-          <FileText className="w-4 h-4 text-teal-400" />
+          <FileText className="w-4 h-4 text-[#6E7480]" />
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <p className="text-xs text-slate-500">{period} · {rows}</p>
+          <p className="text-xs text-[#6B6870]">{period} · {rows}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         {badge && (
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20">
             {badge}
           </span>
         )}
         <button
           onClick={onPDF}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 border border-white/10 hover:border-white/20 hover:text-white transition-all"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#9E9DA0] border border-white/10 hover:border-white/20 hover:text-white transition-all"
         >
           PDF
         </button>
         <button
           onClick={onCSV}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-all"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#6E7480] border border-[#454955]/30 hover:bg-[#454955]/10 transition-all"
         >
           CSV
         </button>
@@ -312,13 +312,13 @@ function TaxAlert({ title, body, severity }: { title: string; body: string; seve
   return (
     <div
       className={`px-4 py-3 rounded-lg border-l-2 bg-white/[0.025] ${
-        severity === 'warning' ? 'border-l-amber-400' : 'border-l-teal-400'
+        severity === 'warning' ? 'border-l-amber-400' : 'border-l-[#6E7480]'
       }`}
     >
-      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-amber-400' : 'text-teal-400'}`}>
+      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-amber-400' : 'text-[#6E7480]'}`}>
         {title}
       </p>
-      <p className="text-xs text-slate-400 leading-relaxed">{body}</p>
+      <p className="text-xs text-[#9E9DA0] leading-relaxed">{body}</p>
     </div>
   );
 }
@@ -335,16 +335,16 @@ function PreviewModal({ csvData, onClose }: { csvData: string; onClose: () => vo
         <div className="flex items-center justify-between mb-4">
           <span className="text-sm font-bold text-white">CSV Data Preview</span>
           <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-all">
-            <X className="w-4 h-4 text-slate-400" />
+            <X className="w-4 h-4 text-[#9E9DA0]" />
           </button>
         </div>
         <div className="overflow-x-auto rounded-lg bg-white/[0.03] border border-white/[0.06] p-4">
-          <pre className="text-xs text-slate-300 font-mono whitespace-pre leading-relaxed">
+          <pre className="text-xs text-[#C0BEC2] font-mono whitespace-pre leading-relaxed">
             {lines.join('\n')}
             {csvData.split('\n').length > 25 && '\n\n... (truncated — full data will be in export)'}
           </pre>
         </div>
-        <p className="text-[11px] text-slate-500 mt-3">
+        <p className="text-[11px] text-[#6B6870] mt-3">
           Showing first {Math.min(25, csvData.split('\n').length)} of {csvData.split('\n').length} rows.
         </p>
       </div>
@@ -814,7 +814,7 @@ export default function ReportsPage() {
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white tracking-tight">Reports &amp; Tax Intelligence</h1>
-          <p className="text-sm text-slate-400 mt-1">Intelligent fiscal oversight for your real estate portfolio.</p>
+          <p className="text-sm text-[#9E9DA0] mt-1">Intelligent fiscal oversight for your real estate portfolio.</p>
         </div>
 
         {/* Controls */}
@@ -827,8 +827,8 @@ export default function ReportsPage() {
                 onClick={() => setPeriod(t)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
                   period === t
-                    ? 'border border-teal-500/60 text-teal-400 bg-teal-500/10'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10'
+                    : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {t}
@@ -844,8 +844,8 @@ export default function ReportsPage() {
                 onClick={() => setScope(t)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
                   scope === t
-                    ? 'bg-teal-500 text-black'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#454955] text-black'
+                    : 'text-[#9E9DA0] hover:text-slate-200'
                 }`}
               >
                 {t}
@@ -866,14 +866,14 @@ export default function ReportsPage() {
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Core REI Metrics</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Core REI Metrics</span>
           <div className="flex items-center gap-2">
             {scope === 'My Share' && (
-              <span className="text-[10px] font-semibold text-[#20B2AA] bg-[#20B2AA]/10 border border-[#20B2AA]/20 rounded px-2 py-0.5 uppercase tracking-widest">
+              <span className="text-[10px] font-semibold text-[#454955] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
                 My Share
               </span>
             )}
-            <span className="text-[10px] font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+            <span className="text-[10px] font-semibold text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
               Portfolio Aggregate
             </span>
           </div>
@@ -913,19 +913,19 @@ export default function ReportsPage() {
         {/* NOI Trend Chart — 2/3 */}
         <div className="lg:col-span-2 rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-start justify-between mb-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">
               Net Operating Income (NOI) Trend
             </span>
             <div className="flex gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full border border-slate-500 cursor-pointer hover:border-teal-400 transition-colors" />
-              <span className="w-2.5 h-2.5 rounded-full border border-teal-400 bg-teal-400/20 cursor-pointer" />
+              <span className="w-2.5 h-2.5 rounded-full border border-slate-500 cursor-pointer hover:border-[#6E7480] transition-colors" />
+              <span className="w-2.5 h-2.5 rounded-full border border-[#6E7480] bg-[#6E7480]/20 cursor-pointer" />
             </div>
           </div>
           {noiValues.length > 0 ? (
             <>
               <div className="flex items-baseline gap-3 mb-5">
-                <span className="text-3xl font-bold text-teal-400 tabular-nums">{fmtLarge(latestNOI)}</span>
-                <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+                <span className="text-3xl font-bold text-[#6E7480] tabular-nums">{fmtLarge(latestNOI)}</span>
+                <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
                   {noiChange >= 0 ? '+' : ''}{noiChange.toFixed(1)}%
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </span>
@@ -938,7 +938,7 @@ export default function ReportsPage() {
             </>
           ) : (
             <div className="flex items-center justify-center h-[260px]">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-[#6B6870]">
                 {loading ? 'Loading chart data...' : 'Not enough data points to display trend. Add metric snapshots to see the NOI chart.'}
               </p>
             </div>
@@ -948,8 +948,8 @@ export default function ReportsPage() {
         {/* Cash Flow Intelligence — 1/3 */}
         <div className="rounded-2xl border border-white/10 p-6 flex flex-col gap-5" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Cash Flow Intelligence</span>
-            <TrendingUp className="w-4 h-4 text-teal-400" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Cash Flow Intelligence</span>
+            <TrendingUp className="w-4 h-4 text-[#6E7480]" />
           </div>
 
           {hasFinancials ? (
@@ -959,7 +959,7 @@ export default function ReportsPage() {
                   label="Gross Revenue"
                   value={portfolioFinancials.grossRevenue}
                   max={portfolioFinancials.grossRevenue}
-                  color="#20B2AA"
+                  color="#454955"
                 />
                 <CashFlowBar
                   label="Op. Expenses"
@@ -974,7 +974,7 @@ export default function ReportsPage() {
                   color="#fb923c"
                 />
               </div>
-              <p className="text-xs text-slate-500 italic leading-relaxed border-t border-white/5 pt-4">
+              <p className="text-xs text-[#6B6870] italic leading-relaxed border-t border-white/5 pt-4">
                 &quot;Current liquidity supports {portfolioFinancials.debtService > 0
                   ? (portfolioFinancials.grossRevenue / portfolioFinancials.debtService).toFixed(1)
                   : '∞'}x debt coverage ratio.&quot;
@@ -982,7 +982,7 @@ export default function ReportsPage() {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <p className="text-xs text-slate-500 text-center leading-relaxed">
+              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
                 Add financial data to your projects to see cash flow analysis.
               </p>
             </div>
@@ -995,7 +995,7 @@ export default function ReportsPage() {
 
         {/* IRR Scenarios */}
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-4">IRR Scenarios</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-4">IRR Scenarios</span>
           {irrScenarios ? (
             <div className="space-y-3">
               {irrScenarios.map((s) => (
@@ -1004,7 +1004,7 @@ export default function ReportsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-xs text-slate-500 text-center leading-relaxed">
+              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
                 No cash-on-cash return data available. Add financial details to project(s) to see IRR scenarios.
               </p>
             </div>
@@ -1013,7 +1013,7 @@ export default function ReportsPage() {
 
         {/* Expense Distribution */}
         <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-2">Expense Distribution</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-2">Expense Distribution</span>
           {hasFinancials ? (
             <>
               <ExpenseDonut totalOpex={totalOpex} items={expenseItems} />
@@ -1021,14 +1021,14 @@ export default function ReportsPage() {
                 {expenseItems.map((item, i) => (
                   <div key={item.name} className="flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: EXPENSE_COLORS[i % EXPENSE_COLORS.length] }} />
-                    <span className="text-xs text-slate-400">{item.name} ({item.pct}%)</span>
+                    <span className="text-xs text-[#9E9DA0]">{item.name} ({item.pct}%)</span>
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <div className="flex items-center justify-center py-12">
-              <p className="text-xs text-slate-500 text-center leading-relaxed">
+              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
                 No expense data available yet.
               </p>
             </div>
@@ -1038,7 +1038,7 @@ export default function ReportsPage() {
         {/* Tax Optimization Alerts */}
         <div className="rounded-2xl border border-white/10 p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-teal-400" />
+            <Sparkles className="w-4 h-4 text-[#6E7480]" />
             <span className="text-sm font-semibold text-white">Tax Optimization Alerts</span>
           </div>
 
@@ -1049,14 +1049,14 @@ export default function ReportsPage() {
               ))
             ) : (
               <div className="flex items-center justify-center py-4">
-                <p className="text-xs text-slate-500">No tax alerts — add projects with financial data to see optimization insights.</p>
+                <p className="text-xs text-[#6B6870]">No tax alerts — add projects with financial data to see optimization insights.</p>
               </div>
             )}
           </div>
 
           <button
             onClick={handleViewTaxStrategy}
-            className="w-full py-2.5 rounded-lg border border-teal-500/40 text-teal-400 text-xs font-bold uppercase tracking-widest hover:bg-teal-500/10 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg border border-[#454955]/40 text-[#6E7480] text-xs font-bold uppercase tracking-widest hover:bg-[#454955]/10 transition-all flex items-center justify-center gap-2"
           >
             View Detailed Tax Strategy
             <ChevronRight className="w-3.5 h-3.5" />
@@ -1073,12 +1073,12 @@ export default function ReportsPage() {
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Tax Intelligence</span>
-            <span className="text-[10px] text-teal-400 font-semibold border border-teal-500/20 bg-teal-500/10 rounded px-2 py-0.5 uppercase tracking-widest">
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Tax Intelligence</span>
+            <span className="text-[10px] text-[#6E7480] font-semibold border border-[#454955]/20 bg-[#454955]/10 rounded px-2 py-0.5 uppercase tracking-widest">
               IRS-Ready
             </span>
           </div>
-          <p className="text-xs text-slate-500 mb-5">Auto-generated reports formatted for Schedule E, K-1, and 1031 filings.</p>
+          <p className="text-xs text-[#6B6870] mb-5">Auto-generated reports formatted for Schedule E, K-1, and 1031 filings.</p>
 
           <TaxReportRow
             title="Quarterly P&L"
@@ -1110,15 +1110,15 @@ export default function ReportsPage() {
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 text-teal-400" />
-            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Automation</span>
+            <RefreshCw className="w-4 h-4 text-[#6E7480]" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Automation</span>
           </div>
 
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-white">Monthly Auto-Sync</p>
-                <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                <p className="text-xs text-[#6B6870] mt-0.5 leading-relaxed">
                   Reconcile transactions and refresh all P&amp;L reports every 1st of the month.
                 </p>
               </div>
@@ -1128,28 +1128,28 @@ export default function ReportsPage() {
                 aria-label="Toggle auto-sync"
               >
                 {autoSync
-                  ? <ToggleRight className="w-7 h-7 text-teal-400" />
-                  : <ToggleLeft  className="w-7 h-7 text-slate-500" />}
+                  ? <ToggleRight className="w-7 h-7 text-[#6E7480]" />
+                  : <ToggleLeft  className="w-7 h-7 text-[#6B6870]" />}
               </button>
             </div>
 
             <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Last sync</span>
-                <span className="text-slate-300 font-semibold tabular-nums">
+                <span className="text-[#6B6870]">Last sync</span>
+                <span className="text-[#C0BEC2] font-semibold tabular-nums">
                   {new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Next sync</span>
-                <span className="text-teal-400 font-semibold tabular-nums">
+                <span className="text-[#6B6870]">Next sync</span>
+                <span className="text-[#6E7480] font-semibold tabular-nums">
                   {new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500">Status</span>
-                <span className={`font-semibold flex items-center gap-1 ${autoSync ? 'text-teal-400' : 'text-slate-500'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${autoSync ? 'bg-teal-400' : 'bg-slate-500'}`} />
+                <span className="text-[#6B6870]">Status</span>
+                <span className={`font-semibold flex items-center gap-1 ${autoSync ? 'text-[#6E7480]' : 'text-[#6B6870]'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${autoSync ? 'bg-[#6E7480]' : 'bg-slate-500'}`} />
                   {autoSync ? 'Active' : 'Paused'}
                 </span>
               </div>
@@ -1159,7 +1159,7 @@ export default function ReportsPage() {
           <button
             onClick={handleSyncNow}
             disabled={syncing}
-            className="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {syncing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1179,8 +1179,8 @@ export default function ReportsPage() {
         style={{ background: 'var(--bg-surface)' }}
       >
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Tax Reporting Hub</span>
-          <p className="text-xs text-slate-500 mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Tax Reporting Hub</span>
+          <p className="text-xs text-[#6B6870] mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
         </div>
         <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
           {[2024, 2025, 2026].map((yr) => (
@@ -1189,8 +1189,8 @@ export default function ReportsPage() {
               onClick={() => setTaxYear(yr)}
               className={`px-4 py-1.5 rounded-md text-xs font-semibold tabular-nums transition-all ${
                 taxYear === yr
-                  ? 'border border-teal-500/60 text-teal-400 bg-teal-500/10'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10'
+                  : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               {yr}
@@ -1205,10 +1205,10 @@ export default function ReportsPage() {
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">
             Schedule E Preview — {taxYear}
           </span>
-          <span className="text-[10px] font-semibold text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+          <span className="text-[10px] font-semibold text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
             IRS Form 1040
           </span>
         </div>
@@ -1221,7 +1221,7 @@ export default function ReportsPage() {
                   <th
                     key={h}
                     className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap"
-                    style={{ color: 'rgba(218, 228, 236, 0.5)', fontSize: '10px' }}
+                    style={{ color: 'rgba(253, 255, 252, 0.5)', fontSize: '10px' }}
                   >
                     {h}
                   </th>
@@ -1251,20 +1251,20 @@ export default function ReportsPage() {
                     className="border-b border-white/[0.04] last:border-0"
                   >
                     <td className="px-3 py-2.5 font-semibold text-white whitespace-nowrap truncate max-w-[180px]">{p.propertyName || p.address || 'Unnamed'}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(grossRent)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-400">{fmt(advertising)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(insurance)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(repairs)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(taxes)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300">{fmt(utilities)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-teal-400">{fmt(depreciation)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-slate-300 font-semibold">{fmt(totalExpenses)}</td>
-                    <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-teal-400' : 'text-red-400'}`}>{fmt(netIncome)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(grossRent)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#9E9DA0]">{fmt(advertising)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(insurance)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(repairs)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(taxes)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(utilities)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#6E7480]">{fmt(depreciation)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2] font-semibold">{fmt(totalExpenses)}</td>
+                    <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>{fmt(netIncome)}</td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-slate-500 text-xs">
+                  <td colSpan={10} className="px-3 py-8 text-center text-[#6B6870] text-xs">
                     No properties with financial data for {taxYear}.
                   </td>
                 </tr>
@@ -1294,14 +1294,14 @@ export default function ReportsPage() {
                       <>
                         <td className="px-3 py-2.5 font-bold text-white text-[11px] uppercase tracking-widest">Totals</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tGross)}</td>
-                        <td className="px-3 py-2.5 tabular-nums text-slate-500">$0</td>
+                        <td className="px-3 py-2.5 tabular-nums text-[#6B6870]">$0</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tIns)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tRepairs)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTaxes)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tUtils)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-teal-400">{fmt(tDepr)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[#6E7480]">{fmt(tDepr)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTotal)}</td>
-                        <td className={`px-3 py-2.5 tabular-nums font-bold ${tNet >= 0 ? 'text-teal-400' : 'text-red-400'}`}>{fmt(tNet)}</td>
+                        <td className={`px-3 py-2.5 tabular-nums font-bold ${tNet >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>{fmt(tNet)}</td>
                       </>
                     );
                   })()}
@@ -1320,13 +1320,13 @@ export default function ReportsPage() {
           className="rounded-2xl border border-white/10 p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Depreciation Schedule</span>
-          <p className="text-[11px] text-slate-500 mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-1">Depreciation Schedule</span>
+          <p className="text-[11px] text-[#6B6870] mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
 
           {projectsWithFinancials.length > 0 ? (() => {
             // Use first property with purchase price as example
             const exampleProject = projectsWithFinancials.find((p) => (p.financials.purchasePrice ?? 0) > 0);
-            if (!exampleProject) return <p className="text-xs text-slate-500">No properties with purchase price data.</p>;
+            if (!exampleProject) return <p className="text-xs text-[#6B6870]">No properties with purchase price data.</p>;
             const pp = exampleProject.financials.purchasePrice ?? 0;
             const depreciableBasis = Math.round(pp * 0.85); // exclude 15% land
             const annualDepreciation = Math.round(depreciableBasis / 27.5);
@@ -1345,7 +1345,7 @@ export default function ReportsPage() {
 
             return (
               <>
-                <div className="text-[11px] text-slate-500 mb-3">
+                <div className="text-[11px] text-[#6B6870] mb-3">
                   Based on: <span className="text-white font-semibold">{exampleProject.propertyName || exampleProject.address}</span> — {fmt(pp)} purchase, {fmt(depreciableBasis)} depreciable basis
                 </div>
                 <div className="overflow-x-auto">
@@ -1353,7 +1353,7 @@ export default function ReportsPage() {
                     <thead>
                       <tr style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
                         {['Year', 'Beginning Value', 'Depreciation', 'Ending Value'].map((h) => (
-                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest" style={{ color: 'rgba(218, 228, 236, 0.5)', fontSize: '10px' }}>{h}</th>
+                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest" style={{ color: 'rgba(253, 255, 252, 0.5)', fontSize: '10px' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -1371,23 +1371,23 @@ export default function ReportsPage() {
                             className="border-b border-white/[0.04] last:border-0"
                           >
                             <td className="px-3 py-2 tabular-nums font-semibold text-white">{r.year}</td>
-                            <td className="px-3 py-2 tabular-nums text-slate-300">{fmt(r.beginVal)}</td>
-                            <td className="px-3 py-2 tabular-nums text-teal-400">{fmt(r.depr)}</td>
-                            <td className="px-3 py-2 tabular-nums text-slate-300">{fmt(r.endVal)}</td>
+                            <td className="px-3 py-2 tabular-nums text-[#C0BEC2]">{fmt(r.beginVal)}</td>
+                            <td className="px-3 py-2 tabular-nums text-[#6E7480]">{fmt(r.depr)}</td>
+                            <td className="px-3 py-2 tabular-nums text-[#C0BEC2]">{fmt(r.endVal)}</td>
                           </tr>
                         </React.Fragment>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <div className="mt-3 text-[11px] text-slate-500">
-                  Annual deduction: <span className="text-teal-400 font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
+                <div className="mt-3 text-[11px] text-[#6B6870]">
+                  Annual deduction: <span className="text-[#6E7480] font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
                 </div>
               </>
             );
           })() : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-xs text-slate-500">Add properties with purchase prices to see depreciation schedules.</p>
+              <p className="text-xs text-[#6B6870]">Add properties with purchase prices to see depreciation schedules.</p>
             </div>
           )}
         </div>
@@ -1397,8 +1397,8 @@ export default function ReportsPage() {
           className="rounded-2xl border border-white/10 p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 block mb-1">Capital Gains Calculator</span>
-          <p className="text-[11px] text-slate-500 mb-4">Estimate tax liability for sold or prospective dispositions</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-1">Capital Gains Calculator</span>
+          <p className="text-[11px] text-[#6B6870] mb-4">Estimate tax liability for sold or prospective dispositions</p>
 
           <div className="grid grid-cols-2 gap-3 mb-5">
             {([
@@ -1408,21 +1408,21 @@ export default function ReportsPage() {
               { label: 'Depreciation Recapture', key: 'depreciationRecapture' as const, prefix: '$' },
             ]).map((field) => (
               <div key={field.key} className="space-y-1">
-                <label className="block text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(218, 228, 236, 0.35)' }}>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(253, 255, 252, 0.35)' }}>
                   {field.label}
                 </label>
                 <div
                   className="flex items-center rounded-lg overflow-hidden"
                   style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
                 >
-                  <span className="pl-2.5 text-xs font-medium" style={{ color: 'rgba(218, 228, 236, 0.4)' }}>{field.prefix}</span>
+                  <span className="pl-2.5 text-xs font-medium" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>{field.prefix}</span>
                   <input
                     type="text"
                     value={capGains[field.key]}
                     onChange={(e) => setCapGains((prev) => ({ ...prev, [field.key]: e.target.value }))}
                     placeholder="0"
                     className="flex-1 bg-transparent px-2 py-2 text-xs font-medium outline-none placeholder:text-slate-600 tabular-nums"
-                    style={{ color: 'rgba(218, 228, 236, 0.9)' }}
+                    style={{ color: 'rgba(253, 255, 252, 0.9)' }}
                   />
                 </div>
               </div>
@@ -1450,13 +1450,13 @@ export default function ReportsPage() {
             return (
               <div className="space-y-2">
                 {[
-                  { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-slate-300' },
-                  { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-teal-400' : 'text-red-400' },
+                  { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-[#C0BEC2]' },
+                  { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-[#6E7480]' : 'text-red-400' },
                   { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-amber-400' },
-                  { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-slate-300' },
+                  { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-[#C0BEC2]' },
                 ].map((row) => (
                   <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0">
-                    <span className="text-[11px] text-slate-500">{row.label}</span>
+                    <span className="text-[11px] text-[#6B6870]">{row.label}</span>
                     <span className={`text-xs font-semibold tabular-nums ${row.color}`}>{hasInput ? row.value : '—'}</span>
                   </div>
                 ))}
@@ -1465,7 +1465,7 @@ export default function ReportsPage() {
                   style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-white">Estimated Tax</span>
-                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-400' : 'text-teal-400') : 'text-slate-500'}`}>
+                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-400' : 'text-[#6E7480]') : 'text-[#6B6870]'}`}>
                     {hasInput ? fmt(totalTaxEstimate) : '—'}
                   </span>
                 </div>
@@ -1481,7 +1481,7 @@ export default function ReportsPage() {
         className="rounded-2xl border border-white/10 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Export Tax Reports</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Export Tax Reports</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
@@ -1489,7 +1489,7 @@ export default function ReportsPage() {
               const csv = generatePortfolioCSV(projects, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
               downloadPDFViaPrint(`Schedule E — ${taxYear}`, csv);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/20 text-xs font-bold uppercase tracking-wider text-slate-300 hover:border-white/40 hover:text-white transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/20 text-xs font-bold uppercase tracking-wider text-[#C0BEC2] hover:border-white/40 hover:text-white transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             Download PDF
@@ -1500,7 +1500,7 @@ export default function ReportsPage() {
               downloadCSV(csv, `Schedule_E_${taxYear}.csv`);
               toast.success('CSV downloaded');
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-xs font-bold uppercase tracking-wider transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#454955] hover:bg-[#6E7480] text-black text-xs font-bold uppercase tracking-wider transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             Download CSV
@@ -1514,12 +1514,12 @@ export default function ReportsPage() {
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center flex-shrink-0">
-            <Download className="w-4 h-4 text-teal-400" />
+          <div className="w-10 h-10 rounded-xl bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center flex-shrink-0">
+            <Download className="w-4 h-4 text-[#6E7480]" />
           </div>
           <div>
             <p className="text-sm font-semibold text-white">Generate Tax-Ready CSV</p>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#9E9DA0] mt-0.5">
               Formatted for direct import into TurboTax, H&amp;R Block, or professional CPA portals.
             </p>
           </div>
@@ -1527,13 +1527,13 @@ export default function ReportsPage() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={handlePreviewData}
-            className="px-5 py-2.5 rounded-lg border border-white/20 text-sm font-semibold text-slate-300 hover:border-white/40 hover:text-white transition-all"
+            className="px-5 py-2.5 rounded-lg border border-white/20 text-sm font-semibold text-[#C0BEC2] hover:border-white/40 hover:text-white transition-all"
           >
             Preview Data
           </button>
           <button
             onClick={handleExportForFiling}
-            className="px-5 py-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-black text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+            className="px-5 py-2.5 rounded-lg bg-[#454955] hover:bg-[#6E7480] text-black text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
           >
             Export for Filing
             <Download className="w-3.5 h-3.5" />
@@ -1543,7 +1543,7 @@ export default function ReportsPage() {
 
       {/* ── Data Completeness Footer ── */}
       <div className="text-center pb-2">
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-[#6B6870]">
           Based on {projectsWithFinancials.length} of {projects.length} project{projects.length !== 1 ? 's' : ''} with complete financial data.
           {scope === 'My Share' && ' Metrics scaled by your ownership percentage.'}
         </p>

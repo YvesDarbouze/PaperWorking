@@ -39,15 +39,15 @@ const IRR_HOLD_YEARS = 5;
 const SELLING_COSTS_PERCENT = 8;
 
 const ZONE_STYLES: Record<MetricResult['zone'], { bg: string; text: string; border: string }> = {
-  excellent: { bg: 'rgba(32, 178, 170, 0.12)', text: '#20B2AA', border: 'rgba(32, 178, 170, 0.3)' },
-  good:      { bg: 'rgba(32, 178, 170, 0.06)', text: '#5eead4', border: 'rgba(32, 178, 170, 0.15)' },
+  excellent: { bg: 'rgba(69, 73, 85, 0.12)', text: '#454955', border: 'rgba(69, 73, 85, 0.3)' },
+  good:      { bg: 'rgba(69, 73, 85, 0.06)', text: '#5eead4', border: 'rgba(69, 73, 85, 0.15)' },
   fair:      { bg: 'rgba(251, 146, 60, 0.08)', text: '#fb923c', border: 'rgba(251, 146, 60, 0.2)' },
   poor:      { bg: 'rgba(240, 101, 67, 0.08)', text: '#F06543', border: 'rgba(240, 101, 67, 0.2)' },
-  neutral:   { bg: 'rgba(255, 255, 255, 0.03)', text: 'rgba(218, 228, 236, 0.5)', border: 'rgba(255, 255, 255, 0.06)' },
+  neutral:   { bg: 'rgba(255, 255, 255, 0.03)', text: 'rgba(253, 255, 252, 0.5)', border: 'rgba(255, 255, 255, 0.06)' },
 };
 
 const VERDICT_STYLES: Record<Verdict, { bg: string; text: string; border: string; glow: string }> = {
-  'STRONG BUY': { bg: 'rgba(32, 178, 170, 0.1)', text: '#20B2AA', border: 'rgba(32, 178, 170, 0.4)', glow: '0 0 30px rgba(32, 178, 170, 0.2)' },
+  'STRONG BUY': { bg: 'rgba(69, 73, 85, 0.1)', text: '#454955', border: 'rgba(69, 73, 85, 0.4)', glow: '0 0 30px rgba(69, 73, 85, 0.2)' },
   'BUY':        { bg: 'rgba(94, 234, 212, 0.06)', text: '#5eead4', border: 'rgba(94, 234, 212, 0.25)', glow: '0 0 20px rgba(94, 234, 212, 0.1)' },
   'HOLD':       { bg: 'rgba(251, 146, 60, 0.06)', text: '#fb923c', border: 'rgba(251, 146, 60, 0.25)', glow: '0 0 20px rgba(251, 146, 60, 0.1)' },
   'PASS':       { bg: 'rgba(240, 101, 67, 0.06)', text: '#F06543', border: 'rgba(240, 101, 67, 0.25)', glow: '0 0 20px rgba(240, 101, 67, 0.1)' },
@@ -113,12 +113,12 @@ function GlassInput({
     <div className="space-y-1.5">
       <label
         className="block text-[10px] font-semibold uppercase tracking-widest"
-        style={{ color: 'rgba(218, 228, 236, 0.35)' }}
+        style={{ color: 'rgba(253, 255, 252, 0.35)' }}
       >
         {label}
       </label>
       <div
-        className="flex items-center rounded-lg overflow-hidden transition-all focus-within:border-teal-500/50"
+        className="flex items-center rounded-lg overflow-hidden transition-all focus-within:border-[#454955]/50"
         style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -127,7 +127,7 @@ function GlassInput({
         {prefix && (
           <span
             className="pl-3 pr-1 text-sm font-medium select-none"
-            style={{ color: 'rgba(218, 228, 236, 0.4)' }}
+            style={{ color: 'rgba(253, 255, 252, 0.4)' }}
           >
             {prefix}
           </span>
@@ -138,12 +138,12 @@ function GlassInput({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className="flex-1 bg-transparent px-3 py-2.5 text-sm font-medium outline-none placeholder:text-slate-600"
-          style={{ color: 'rgba(218, 228, 236, 0.9)' }}
+          style={{ color: 'rgba(253, 255, 252, 0.9)' }}
         />
         {suffix && (
           <span
             className="pr-3 pl-1 text-sm font-medium select-none"
-            style={{ color: 'rgba(218, 228, 236, 0.4)' }}
+            style={{ color: 'rgba(253, 255, 252, 0.4)' }}
           >
             {suffix}
           </span>
@@ -167,7 +167,7 @@ function MetricCard({ metric }: { metric: MetricResult }) {
     >
       <span
         className="text-[10px] font-bold uppercase tracking-widest"
-        style={{ color: 'rgba(218, 228, 236, 0.4)' }}
+        style={{ color: 'rgba(253, 255, 252, 0.4)' }}
       >
         {metric.label}
       </span>
@@ -189,7 +189,7 @@ function MetricCard({ metric }: { metric: MetricResult }) {
           {metric.zone}
         </span>
       </div>
-      <span className="text-[11px] leading-tight" style={{ color: 'rgba(218, 228, 236, 0.35)' }}>
+      <span className="text-[11px] leading-tight" style={{ color: 'rgba(253, 255, 252, 0.35)' }}>
         {metric.description}
       </span>
     </div>
@@ -442,10 +442,10 @@ export default function DealAnalyzerPage() {
     >
       {/* ── Page Header ── */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'rgba(218, 228, 236, 0.95)' }}>
+        <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'rgba(253, 255, 252, 0.95)' }}>
           Deal Analyzer
         </h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(218, 228, 236, 0.45)' }}>
+        <p className="text-sm mt-1" style={{ color: 'rgba(253, 255, 252, 0.45)' }}>
           Underwrite a potential deal instantly — no project needed.
         </p>
       </div>
@@ -460,7 +460,7 @@ export default function DealAnalyzerPage() {
       >
         <span
           className="block text-[10px] font-bold uppercase tracking-widest mb-5"
-          style={{ color: 'rgba(218, 228, 236, 0.35)' }}
+          style={{ color: 'rgba(253, 255, 252, 0.35)' }}
         >
           Quick Entry
         </span>
@@ -539,7 +539,7 @@ export default function DealAnalyzerPage() {
         >
           <span
             className="block text-[10px] font-bold uppercase tracking-widest mb-5"
-            style={{ color: 'rgba(218, 228, 236, 0.35)' }}
+            style={{ color: 'rgba(253, 255, 252, 0.35)' }}
           >
             Instant Analysis — 10 Key Metrics
           </span>
@@ -585,7 +585,7 @@ export default function DealAnalyzerPage() {
               >
                 {verdict}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: 'rgba(218, 228, 236, 0.45)' }}>
+              <p className="text-xs mt-0.5" style={{ color: 'rgba(253, 255, 252, 0.45)' }}>
                 {verdict === 'STRONG BUY'
                   ? 'Cap Rate > 5%, DSCR > 1.2x, CoC > 8% — strong fundamentals'
                   : verdict === 'BUY'
@@ -598,15 +598,15 @@ export default function DealAnalyzerPage() {
           </div>
 
           {/* Verdict Summary */}
-          <div className="flex items-center gap-3 text-xs font-semibold tabular-nums" style={{ color: 'rgba(218, 228, 236, 0.55)' }}>
+          <div className="flex items-center gap-3 text-xs font-semibold tabular-nums" style={{ color: 'rgba(253, 255, 252, 0.55)' }}>
             <span>
               Cap {metrics.find((m) => m.label === 'Cap Rate')?.value ?? '—'}
             </span>
-            <span style={{ color: 'rgba(218, 228, 236, 0.2)' }}>·</span>
+            <span style={{ color: 'rgba(253, 255, 252, 0.2)' }}>·</span>
             <span>
               DSCR {metrics.find((m) => m.label === 'DSCR')?.value ?? '—'}
             </span>
-            <span style={{ color: 'rgba(218, 228, 236, 0.2)' }}>·</span>
+            <span style={{ color: 'rgba(253, 255, 252, 0.2)' }}>·</span>
             <span>
               CoC {metrics.find((m) => m.label === 'Cash-on-Cash')?.value ?? '—'}
             </span>
@@ -624,10 +624,10 @@ export default function DealAnalyzerPage() {
           }}
         >
           <div>
-            <p className="text-sm font-semibold" style={{ color: 'rgba(218, 228, 236, 0.9)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'rgba(253, 255, 252, 0.9)' }}>
               Ready to track this deal?
             </p>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(218, 228, 236, 0.4)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>
               Create a full project to track acquisition, rehab, and exit.
             </p>
           </div>
@@ -637,7 +637,7 @@ export default function DealAnalyzerPage() {
             style={{
               background: 'var(--color-primary-container)',
               color: 'var(--color-on-primary)',
-              boxShadow: '0 0 20px -5px rgba(32, 178, 170, 0.4)',
+              boxShadow: '0 0 20px -5px rgba(69, 73, 85, 0.4)',
             }}
           >
             Save as Project
@@ -657,15 +657,15 @@ export default function DealAnalyzerPage() {
         >
           <span
             className="material-symbols-outlined text-4xl"
-            style={{ color: 'rgba(218, 228, 236, 0.15)' }}
+            style={{ color: 'rgba(253, 255, 252, 0.15)' }}
           >
             calculate
           </span>
           <div>
-            <p className="text-sm font-semibold" style={{ color: 'rgba(218, 228, 236, 0.5)' }}>
+            <p className="text-sm font-semibold" style={{ color: 'rgba(253, 255, 252, 0.5)' }}>
               Enter a purchase price and monthly rent to begin analysis
             </p>
-            <p className="text-xs mt-1" style={{ color: 'rgba(218, 228, 236, 0.3)' }}>
+            <p className="text-xs mt-1" style={{ color: 'rgba(253, 255, 252, 0.3)' }}>
               All 10 key investment metrics will compute instantly as you type.
             </p>
           </div>
@@ -673,7 +673,7 @@ export default function DealAnalyzerPage() {
       )}
 
       {/* ── Disclaimer ── */}
-      <p className="text-center text-[11px] pb-2" style={{ color: 'rgba(218, 228, 236, 0.3)' }}>
+      <p className="text-center text-[11px] pb-2" style={{ color: 'rgba(253, 255, 252, 0.3)' }}>
         Assumptions: {ASSUMED_OCCUPANCY}% occupancy, {ASSUMED_APPRECIATION}% annual appreciation, {SELLING_COSTS_PERCENT}% selling costs, {IRR_HOLD_YEARS}-year hold period for IRR.
         This tool is for estimation only — consult a CPA for tax advice.
       </p>

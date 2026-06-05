@@ -172,11 +172,11 @@ export function TopAppBar() {
       className="w-full flex-shrink-0 flex items-center justify-between z-40"
       style={{
         height: '64px',
-        background: 'rgba(11,20,26,0.80)',
+        background: 'rgba(13,10,11,0.80)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(255,255,255,0.10)',
-        boxShadow: '0 0 20px -5px rgba(87,241,219,0.10)',
+        boxShadow: '0 0 20px -5px rgba(69,73,85,0.10)',
         padding: '0 24px',
       }}
     >
@@ -184,20 +184,20 @@ export function TopAppBar() {
       <div className="flex items-center gap-3">
         {/* Mobile: compact logo */}
         <div className="md:hidden w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-container)' }}>
-          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1", color: '#091015' }}>dataset</span>
+          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1", color: '#0d0a0b' }}>dataset</span>
         </div>
 
         {/* Breadcrumb (desktop) */}
         <div className="hidden md:flex items-center gap-2">
           <span
             className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: 'rgba(218,228,236,0.35)' }}
+            style={{ color: 'rgba(253,255,252,0.35)' }}
           >
             Dashboard
           </span>
           <span
             className="material-symbols-outlined text-[14px]"
-            style={{ color: 'rgba(218,228,236,0.2)' }}
+            style={{ color: 'rgba(253,255,252,0.2)' }}
           >
             chevron_right
           </span>
@@ -215,7 +215,7 @@ export function TopAppBar() {
         <div className="relative">
           <span
             className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200"
-            style={{ color: searchFocused ? 'var(--color-primary)' : 'rgba(218,228,236,0.3)' }}
+            style={{ color: searchFocused ? 'var(--color-primary)' : 'rgba(253,255,252,0.3)' }}
           >
             search
           </span>
@@ -234,9 +234,9 @@ export function TopAppBar() {
             onBlur={() => setSearchFocused(false)}
             style={{
               background: searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${searchFocused ? 'rgba(32, 178, 170,0.3)' : 'rgba(255,255,255,0.06)'}`,
+              border: `1px solid ${searchFocused ? 'rgba(69, 73, 85,0.3)' : 'rgba(255,255,255,0.06)'}`,
               color: 'var(--color-on-surface)',
-              boxShadow: searchFocused ? '0 0 0 3px rgba(32, 178, 170,0.08)' : 'none',
+              boxShadow: searchFocused ? '0 0 0 3px rgba(69, 73, 85,0.08)' : 'none',
             }}
           />
           {/* Cmd+K hint */}
@@ -247,7 +247,7 @@ export function TopAppBar() {
               className="text-[10px] font-bold px-1.5 py-0.5 rounded"
               style={{
                 background: 'rgba(255,255,255,0.06)',
-                color: 'rgba(218,228,236,0.3)',
+                color: 'rgba(253,255,252,0.3)',
                 border: '1px solid rgba(255,255,255,0.08)',
               }}
             >
@@ -272,18 +272,18 @@ export function TopAppBar() {
           style={{
             background: 'rgba(45,54,61,0.5)',
             border: '1px solid rgba(255,255,255,0.12)',
-            color: 'rgba(218,228,236,0.9)',
+            color: 'rgba(253,255,252,0.9)',
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(87,241,219,0.4)';
-            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(87,241,219,0.06)';
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(69,73,85,0.4)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(69,73,85,0.06)';
           }}
           onMouseLeave={e => {
             (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.12)';
             (e.currentTarget as HTMLButtonElement).style.background = 'rgba(45,54,61,0.5)';
           }}
         >
-          <span className="material-symbols-outlined text-[16px]" style={{ color: '#57f1db' }}>add</span>
+          <span className="material-symbols-outlined text-[16px]" style={{ color: '#454955' }}>add</span>
           New Project
         </button>
 
@@ -313,8 +313,8 @@ export function TopAppBar() {
               className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
               style={{
                 background: 'var(--color-primary)',
-                color: '#091015',
-                boxShadow: '0 0 8px rgba(32, 178, 170,0.5)',
+                color: '#0d0a0b',
+                boxShadow: '0 0 8px rgba(69, 73, 85,0.5)',
               }}
             >
               {unreadTotal > 9 ? '9+' : unreadTotal}
@@ -346,7 +346,7 @@ export function TopAppBar() {
             <div
               className="absolute right-0 top-full mt-2 w-72 py-3 rounded-xl z-50 p-4"
               style={{
-                background: 'rgba(11,20,26,0.95)',
+                background: 'rgba(13,10,11,0.95)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(24px)',
                 boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
@@ -413,7 +413,7 @@ export function TopAppBar() {
                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#091015',
+                  color: '#0d0a0b',
                 }}
               >
                 U
@@ -430,7 +430,7 @@ export function TopAppBar() {
                 className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-200 group-hover:scale-105"
                 style={{
                   background: 'linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%)',
-                  color: '#091015',
+                  color: '#0d0a0b',
                 }}
               >
                 {profile?.displayName ? profile.displayName.charAt(0).toUpperCase() : (user?.email ? user.email.charAt(0).toUpperCase() : "U")}
@@ -450,7 +450,7 @@ export function TopAppBar() {
             <span
               className="material-symbols-outlined text-[16px] hidden lg:block transition-transform duration-200"
               style={{
-                color: 'rgba(218,228,236,0.3)',
+                color: 'rgba(253,255,252,0.3)',
                 transform: showUserMenu ? 'rotate(180deg)' : 'rotate(0deg)',
               }}
             >
@@ -463,7 +463,7 @@ export function TopAppBar() {
             <div
               className="absolute right-0 top-full mt-2 w-56 py-2 rounded-xl z-50"
               style={{
-                background: 'rgba(11,20,26,0.95)',
+                background: 'rgba(13,10,11,0.95)',
                 border: '1px solid rgba(255,255,255,0.08)',
                 backdropFilter: 'blur(24px)',
                 boxShadow: '0 16px 48px rgba(0,0,0,0.4)',
@@ -479,7 +479,7 @@ export function TopAppBar() {
                   }
                 }}
                 className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150"
-                style={{ color: 'rgba(218,228,236,0.7)' }}
+                style={{ color: 'rgba(253,255,252,0.7)' }}
               >
                 <span className="material-symbols-outlined text-[18px]">account_circle</span>
                 <span className="text-sm font-medium">Profile</span>
@@ -494,7 +494,7 @@ export function TopAppBar() {
                   }
                 }}
                 className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150"
-                style={{ color: 'rgba(218,228,236,0.7)' }}
+                style={{ color: 'rgba(253,255,252,0.7)' }}
               >
                 <span className="material-symbols-outlined text-[18px]">payments</span>
                 <span className="text-sm font-medium">Billing</span>
@@ -509,14 +509,14 @@ export function TopAppBar() {
                   }
                 }}
                 className="flex items-center gap-3 px-4 py-2.5 transition-colors duration-150"
-                style={{ color: 'rgba(218,228,236,0.7)' }}
+                style={{ color: 'rgba(253,255,252,0.7)' }}
               >
                 <span className="material-symbols-outlined text-[18px]">settings</span>
                 <span className="text-sm font-medium">Settings</span>
               </Link>
               <div className="mx-3 my-1.5" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
               <div className="px-4 py-1">
-                <LogoutButton compact={false} className="w-full flex items-center gap-3 py-2 text-sm font-medium transition-colors duration-150" style={{ color: 'rgba(218,228,236,0.5)' }} />
+                <LogoutButton compact={false} className="w-full flex items-center gap-3 py-2 text-sm font-medium transition-colors duration-150" style={{ color: 'rgba(253,255,252,0.5)' }} />
               </div>
             </div>
           )}

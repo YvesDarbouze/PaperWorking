@@ -540,15 +540,15 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
   }, [rentalInputs, computeCocAndIrr]);
 
   return (
-    <div className="min-h-full py-8 w-full text-[#dae4ec]">
+    <div className="min-h-full py-8 w-full text-[#9E9DA0]">
       
       {/* ─── Top Header & Tabs ─── */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-6 lg:px-8 border-b border-white/10 pb-6 mb-8 bg-[#091015]/20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-6 lg:px-8 border-b border-white/10 pb-6 mb-8 bg-[#0d0a0b]/20">
         <div>
           <div className="flex items-center gap-2 mb-1 text-[11px] font-bold uppercase tracking-widest text-[#859490]">
             <span>Intelligence Hub</span>
             <span>›</span>
-            <span className="text-[#57f1db]">Deal Analyzer</span>
+            <span className="text-[#454955]">Deal Analyzer</span>
           </div>
           <h1 className="text-3xl font-light text-white tracking-tight leading-none">Deal Analyzer</h1>
           <p className="text-xs text-[#859490] mt-2">
@@ -564,7 +564,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
             <button
               onClick={() => setActiveTab('inputs')}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
-                activeTab === 'inputs' ? 'bg-[#57f1db] text-[#003731] shadow-lg' : 'text-slate-400 hover:text-slate-200'
+                activeTab === 'inputs' ? 'bg-[#454955] text-[#0d0a0b] shadow-lg' : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               Underwriting Inputs
@@ -572,7 +572,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
             <button
               onClick={() => setActiveTab('proforma')}
               className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
-                activeTab === 'proforma' ? 'bg-[#57f1db] text-[#003731] shadow-lg' : 'text-slate-400 hover:text-slate-200'
+                activeTab === 'proforma' ? 'bg-[#454955] text-[#0d0a0b] shadow-lg' : 'text-[#9E9DA0] hover:text-slate-200'
               }`}
             >
               5-Year Pro-Forma
@@ -591,13 +591,13 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
             <div className="xl:col-span-8 space-y-6">
               
               {/* Strategy Toggle */}
-              <div className="glass-card p-1.5 rounded-xl flex inline-flex w-fit bg-slate-900/35 border border-white/10">
+              <div className="glass-card p-1.5 rounded-xl flex inline-flex w-fit bg-[#161318]/35 border border-white/10">
                 <button
                   onClick={() => setStrategy('rental')}
                   className={`px-6 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider transition-all ${
                     strategy === 'rental' 
                       ? 'bg-surface-variant text-white border border-white/10 shadow-inner' 
-                      : 'text-slate-400 hover:text-slate-200'
+                      : 'text-[#9E9DA0] hover:text-slate-200'
                   }`}
                 >
                   Rental Strategy
@@ -607,7 +607,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   className={`px-6 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider transition-all ${
                     strategy === 'flip' 
                       ? 'bg-surface-variant text-white border border-white/10 shadow-inner' 
-                      : 'text-slate-400 hover:text-slate-200'
+                      : 'text-[#9E9DA0] hover:text-slate-200'
                   }`}
                 >
                   Flip Strategy
@@ -619,7 +619,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   {/* Rental: Purchase Details */}
                   <section className="space-y-3">
                     <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                      <Home className="w-4 h-4 text-[#57f1db]" />
+                      <Home className="w-4 h-4 text-[#454955]" />
                       Purchase Details
                     </h3>
                     <div className="glass-card rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -669,8 +669,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             className="bg-transparent border-none p-0 focus:ring-0 text-white font-mono text-[16px] w-1/3 outline-none"
                           />
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-slate-400">%</span>
-                            <span className="text-xs text-slate-500 font-mono">(= {fmt(rentalCalc.closingCostsAmt)})</span>
+                            <span className="text-xs text-[#9E9DA0]">%</span>
+                            <span className="text-xs text-[#6B6870] font-mono">(= {fmt(rentalCalc.closingCostsAmt)})</span>
                           </div>
                         </div>
                       </div>
@@ -680,7 +680,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   {/* Rental: Financing */}
                   <section className="space-y-3">
                     <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                      <Landmark className="w-4 h-4 text-[#57f1db]" />
+                      <Landmark className="w-4 h-4 text-[#454955]" />
                       Debt &amp; Financing
                     </h3>
                     <div className="glass-card rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -699,7 +699,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <span className="text-[#859490] font-mono text-sm">
                             = {fmt(rentalInputs.purchasePrice * (rentalInputs.downPaymentPct / 100))} down
                           </span>
-                          <span className="text-slate-500 font-mono text-sm">
+                          <span className="text-[#6B6870] font-mono text-sm">
                             ({fmt(rentalInputs.loanAmount)} loan)
                           </span>
                         </div>
@@ -737,7 +737,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                     {/* Income */}
                     <section className="space-y-3">
                       <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                        <DollarSign className="w-4 h-4 text-[#57f1db]" />
+                        <DollarSign className="w-4 h-4 text-[#454955]" />
                         Income
                       </h3>
                       <div className="glass-card rounded-2xl p-6 space-y-4">
@@ -771,7 +771,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                     {/* Operating Expenses */}
                     <section className="space-y-3">
                       <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-[#57f1db]" />
+                        <Layers className="w-4 h-4 text-[#454955]" />
                         Operating Expenses
                       </h3>
                       <div className="glass-card rounded-2xl p-6 space-y-4">
@@ -787,7 +787,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                                 className="bg-transparent border-none p-0 focus:ring-0 text-white font-mono text-[16px] w-full outline-none"
                               />
                             </div>
-                            <span className="text-[10px] text-slate-500 font-mono shrink-0">(= {fmt(rentalInputs.monthlyTaxes)}/mo)</span>
+                            <span className="text-[10px] text-[#6B6870] font-mono shrink-0">(= {fmt(rentalInputs.monthlyTaxes)}/mo)</span>
                           </div>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -802,7 +802,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                                 className="bg-transparent border-none p-0 focus:ring-0 text-white font-mono text-[16px] w-full outline-none"
                               />
                             </div>
-                            <span className="text-[10px] text-slate-500 font-mono shrink-0">(= {fmt(rentalInputs.monthlyInsurance)}/mo)</span>
+                            <span className="text-[10px] text-[#6B6870] font-mono shrink-0">(= {fmt(rentalInputs.monthlyInsurance)}/mo)</span>
                           </div>
                         </div>
                         <div className="flex flex-col gap-2">
@@ -838,7 +838,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   {/* Flip: Purchase Details */}
                   <section className="space-y-3">
                     <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                      <Home className="w-4 h-4 text-[#57f1db]" />
+                      <Home className="w-4 h-4 text-[#454955]" />
                       Purchase Details
                     </h3>
                     <div className="glass-card rounded-2xl p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -888,8 +888,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             className="bg-transparent border-none p-0 focus:ring-0 text-white font-mono text-[16px] w-1/3 outline-none"
                           />
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-slate-400">%</span>
-                            <span className="text-xs text-slate-500 font-mono">(= {fmt(flipCalc.closingCostsAmt)})</span>
+                            <span className="text-xs text-[#9E9DA0]">%</span>
+                            <span className="text-xs text-[#6B6870] font-mono">(= {fmt(flipCalc.closingCostsAmt)})</span>
                           </div>
                         </div>
                       </div>
@@ -899,7 +899,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   {/* Flip: Financing */}
                   <section className="space-y-3">
                     <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                      <Landmark className="w-4 h-4 text-[#57f1db]" />
+                      <Landmark className="w-4 h-4 text-[#454955]" />
                       Debt &amp; Financing
                     </h3>
                     <div className="glass-card rounded-2xl p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -918,7 +918,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <span className="text-[#859490] font-mono text-sm">
                             = {fmt(flipInputs.purchasePrice * (flipInputs.downPaymentPct / 100))} down
                           </span>
-                          <span className="text-slate-500 font-mono text-sm">
+                          <span className="text-[#6B6870] font-mono text-sm">
                             ({fmt(flipInputs.loanAmount)} loan)
                           </span>
                         </div>
@@ -956,7 +956,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                     {/* Holding Costs */}
                     <section className="space-y-3">
                       <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-[#57f1db]" />
+                        <Layers className="w-4 h-4 text-[#454955]" />
                         Monthly Holding Costs
                       </h3>
                       <div className="glass-card rounded-2xl p-6 space-y-4">
@@ -1014,7 +1014,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                     {/* Exit Costs */}
                     <section className="space-y-3">
                       <h3 className="font-label-md text-label-md text-white flex items-center gap-2">
-                        <Percent className="w-4 h-4 text-[#57f1db]" />
+                        <Percent className="w-4 h-4 text-[#454955]" />
                         Disposition Costs
                       </h3>
                       <div className="glass-card rounded-2xl p-6 space-y-4">
@@ -1029,7 +1029,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             />
                             <div className="flex items-center gap-2">
                               <span className="text-[#859490] font-mono">%</span>
-                              <span className="text-xs text-slate-500 font-mono">(= {fmt(flipCalc.costOfSaleAmt)})</span>
+                              <span className="text-xs text-[#6B6870] font-mono">(= {fmt(flipCalc.costOfSaleAmt)})</span>
                             </div>
                           </div>
                         </div>
@@ -1048,49 +1048,49 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 <div className="grid grid-cols-2 gap-4">
                   {/* Monthly Cash Flow */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group col-span-2">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.monthlyCF >= 0 ? 'bg-[#57f1db]' : 'bg-red-400'}`} />
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.monthlyCF >= 0 ? 'bg-[#454955]' : 'bg-red-400'}`} />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">Monthly Cash Flow</span>
                     <div className="flex items-end gap-1">
-                      <span className={`font-headline-lg text-headline-lg font-bold font-mono-num ${rentalCalc.monthlyCF >= 0 ? 'text-[#57f1db] metric-glow-teal' : 'text-red-400'}`}>
+                      <span className={`font-headline-lg text-headline-lg font-bold font-mono-num ${rentalCalc.monthlyCF >= 0 ? 'text-[#454955] metric-glow-teal' : 'text-red-400'}`}>
                         {fmt(rentalCalc.monthlyCF)}
                       </span>
-                      <span className="text-slate-500 text-[12px] mb-2 font-mono">/mo</span>
+                      <span className="text-[#6B6870] text-[12px] mb-2 font-mono">/mo</span>
                     </div>
                   </div>
 
                   {/* Cap Rate */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#57f1db]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#454955]" />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">Cap Rate</span>
                     <div className="flex items-end gap-1">
                       <span className="font-headline-lg text-headline-lg text-white font-mono-num font-bold">
                         {rentalCalc.capRate.toFixed(2)}
                       </span>
-                      <span className="text-slate-500 text-[12px] mb-2 font-mono">%</span>
+                      <span className="text-[#6B6870] text-[12px] mb-2 font-mono">%</span>
                     </div>
                   </div>
 
                   {/* Cash on Cash */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.coc >= 6.0 ? 'bg-[#57f1db]' : 'bg-amber-400'}`} />
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.coc >= 6.0 ? 'bg-[#454955]' : 'bg-amber-400'}`} />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">Cash-on-Cash</span>
                     <div className="flex items-end gap-1">
-                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${rentalCalc.coc >= 6.0 ? 'text-[#57f1db]' : 'text-amber-400'}`}>
+                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${rentalCalc.coc >= 6.0 ? 'text-[#454955]' : 'text-amber-400'}`}>
                         {rentalCalc.coc.toFixed(2)}
                       </span>
-                      <span className="text-slate-500 text-[12px] mb-2 font-mono">%</span>
+                      <span className="text-[#6B6870] text-[12px] mb-2 font-mono">%</span>
                     </div>
                   </div>
 
                   {/* DSCR */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.dscr >= 1.25 ? 'bg-[#57f1db]' : 'bg-amber-400'}`} />
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${rentalCalc.dscr >= 1.25 ? 'bg-[#454955]' : 'bg-amber-400'}`} />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">DSCR</span>
                     <div className="flex items-end gap-1">
-                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${rentalCalc.dscr >= 1.25 ? 'text-[#57f1db]' : 'text-amber-400'}`}>
+                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${rentalCalc.dscr >= 1.25 ? 'text-[#454955]' : 'text-amber-400'}`}>
                         {rentalCalc.dscr.toFixed(2)}
                       </span>
-                      <span className="text-slate-500 text-[12px] mb-2 font-mono">x</span>
+                      <span className="text-[#6B6870] text-[12px] mb-2 font-mono">x</span>
                     </div>
                   </div>
 
@@ -1106,8 +1106,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   </div>
 
                   {/* Summary Box */}
-                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-slate-900/40 border border-white/5">
-                    <span className="text-sm font-medium text-slate-400">Total Cash Needed</span>
+                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-[#161318]/40 border border-white/5">
+                    <span className="text-sm font-medium text-[#9E9DA0]">Total Cash Needed</span>
                     <span className="font-headline-md text-headline-md text-white font-mono font-bold">
                       {fmt(rentalCalc.totalInvested)}
                     </span>
@@ -1117,10 +1117,10 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 <div className="grid grid-cols-2 gap-4">
                   {/* Gross Profit */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group col-span-2">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${flipCalc.grossProfit >= 0 ? 'bg-[#57f1db]' : 'bg-red-400'}`} />
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${flipCalc.grossProfit >= 0 ? 'bg-[#454955]' : 'bg-red-400'}`} />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">Estimated Profit</span>
                     <div className="flex items-end gap-1">
-                      <span className={`font-headline-lg text-headline-lg font-bold font-mono-num ${flipCalc.grossProfit >= 0 ? 'text-[#57f1db] metric-glow-teal' : 'text-red-400'}`}>
+                      <span className={`font-headline-lg text-headline-lg font-bold font-mono-num ${flipCalc.grossProfit >= 0 ? 'text-[#454955] metric-glow-teal' : 'text-red-400'}`}>
                         {fmt(flipCalc.grossProfit)}
                       </span>
                     </div>
@@ -1128,13 +1128,13 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
 
                   {/* ROI */}
                   <div className="glass-panel rounded-xl p-5 flex flex-col gap-2 relative overflow-hidden group">
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${flipCalc.roi >= 15.0 ? 'bg-[#57f1db]' : 'bg-amber-400'}`} />
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${flipCalc.roi >= 15.0 ? 'bg-[#454955]' : 'bg-amber-400'}`} />
                     <span className="font-label-sm text-label-sm text-[#859490] uppercase tracking-wide">Projected ROI</span>
                     <div className="flex items-end gap-1">
-                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${flipCalc.roi >= 15.0 ? 'text-[#57f1db]' : 'text-amber-400'}`}>
+                      <span className={`font-headline-lg text-headline-lg font-mono-num font-bold ${flipCalc.roi >= 15.0 ? 'text-[#454955]' : 'text-amber-400'}`}>
                         {flipCalc.roi.toFixed(1)}
                       </span>
-                      <span className="text-slate-500 text-[12px] mb-2 font-mono">%</span>
+                      <span className="text-[#6B6870] text-[12px] mb-2 font-mono">%</span>
                     </div>
                   </div>
 
@@ -1150,16 +1150,16 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   </div>
 
                   {/* Total Costs */}
-                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-slate-900/40 border border-white/5">
-                    <span className="text-sm font-medium text-slate-400">Total Project Costs</span>
+                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-[#161318]/40 border border-white/5">
+                    <span className="text-sm font-medium text-[#9E9DA0]">Total Project Costs</span>
                     <span className="font-headline-md text-headline-md text-white font-mono font-bold">
                       {fmt(flipCalc.totalCosts)}
                     </span>
                   </div>
 
                   {/* Total Cash Needed */}
-                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-slate-900/40 border border-white/5">
-                    <span className="text-sm font-medium text-slate-400">Total Cash Needed</span>
+                  <div className="glass-panel rounded-xl p-5 col-span-2 flex justify-between items-center bg-[#161318]/40 border border-white/5">
+                    <span className="text-sm font-medium text-[#9E9DA0]">Total Cash Needed</span>
                     <span className="font-headline-md text-headline-md text-white font-mono font-bold">
                       {fmt(flipCalc.totalCashNeeded)}
                     </span>
@@ -1171,7 +1171,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
               <div className="space-y-3 pt-2">
                 <button
                   onClick={handleSave}
-                  className="luminous-button bg-[#57f1db] hover:bg-[#3cddc7] text-[#003731] w-full py-4 rounded-xl font-label-md text-label-md uppercase tracking-widest flex justify-center items-center gap-2 group cursor-pointer transition-all duration-300"
+                  className="luminous-button bg-[#454955] hover:bg-[#454955] text-[#0d0a0b] w-full py-4 rounded-xl font-label-md text-label-md uppercase tracking-widest flex justify-center items-center gap-2 group cursor-pointer transition-all duration-300"
                 >
                   <Save className="w-4 h-4 transition-transform group-hover:scale-110" />
                   {storeProject ? 'Update Deal Model' : 'Save As Project'}
@@ -1202,16 +1202,16 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-50"></div>
                 <div className="flex justify-between items-start mb-4">
                   <span className="font-label-md text-label-md text-[#859490]">Cash-on-Cash Return</span>
-                  <span className="material-symbols-outlined text-[#57f1db] text-xl">trending_up</span>
+                  <span className="material-symbols-outlined text-[#454955] text-xl">trending_up</span>
                 </div>
                 <div>
                   <div className="font-headline-xl text-headline-xl text-white flex items-baseline">
                     <span>{rentalCalc.coc.toFixed(1)}</span>
-                    <span className="text-[#57f1db] text-2xl ml-1 font-semibold">%</span>
+                    <span className="text-[#454955] text-2xl ml-1 font-semibold">%</span>
                   </div>
                   <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
                     <span className={`px-2 py-0.5 rounded-full flex items-center gap-1 ${
-                      rentalCalc.coc > 0 ? 'bg-[#57f1db]/10 text-[#57f1db]' : 'bg-red-500/10 text-red-400'
+                      rentalCalc.coc > 0 ? 'bg-[#454955]/10 text-[#454955]' : 'bg-red-500/10 text-red-400'
                     }`}>
                       <span className="material-symbols-outlined text-xs">
                         {rentalCalc.coc > 0 ? 'arrow_upward' : 'arrow_downward'}
@@ -1235,10 +1235,10 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 <div>
                   <div className="font-headline-xl text-headline-xl text-white flex items-baseline">
                     <span>{rentalCalc.capRate.toFixed(2)}</span>
-                    <span className="text-[#adc6ff] text-2xl ml-1 font-semibold">%</span>
+                    <span className="text-[#7A9EAA] text-2xl ml-1 font-semibold">%</span>
                   </div>
                   <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
-                    <span className="bg-[#2d363d] text-[#bacac5] px-2 py-0.5 rounded-full">
+                    <span className="bg-[#262328] text-[#9E9DA0] px-2 py-0.5 rounded-full">
                       Unleveraged
                     </span>
                     <span className="text-[#859490]">Market Avg: ~5.8%</span>
@@ -1277,10 +1277,10 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 <div>
                   <div className="font-headline-xl text-headline-xl text-white flex items-baseline">
                     <span>{(irr * 100).toFixed(1)}</span>
-                    <span className="text-[#57f1db] text-2xl ml-1 font-semibold">%</span>
+                    <span className="text-[#454955] text-2xl ml-1 font-semibold">%</span>
                   </div>
                   <div className="mt-2 flex items-center gap-2 font-label-sm text-label-sm">
-                    <span className="bg-[#57f1db]/10 text-[#57f1db] px-2 py-0.5 rounded-full">
+                    <span className="bg-[#454955]/10 text-[#454955] px-2 py-0.5 rounded-full">
                       Internal Rate
                     </span>
                     <span className="text-[#859490]">Annual Compounded</span>
@@ -1313,7 +1313,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                   </div>
                   <div className="flex-1 text-right">
                     <p className="font-label-sm text-label-sm text-[#859490] uppercase font-sans">Built Equity (Y5)</p>
-                    <p className="font-headline-sm text-headline-sm font-mono mt-1 text-[#57f1db]">
+                    <p className="font-headline-sm text-headline-sm font-mono mt-1 text-[#454955]">
                       {projections.length >= 5 ? fmt(projections[4].equity) : '$0'}
                     </p>
                   </div>
@@ -1323,7 +1323,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
 
             {/* Bottom Detailed Tabs */}
             <section className="glass-card rounded-xl overflow-hidden">
-              <div className="pw-tabs bg-slate-900/40 px-6 border-b border-white/5">
+              <div className="pw-tabs bg-[#161318]/40 px-6 border-b border-white/5">
                 {(['pnl', 'assumptions', 'sensitivity'] as SubTabType[]).map((tab) => (
                   <button
                     key={tab}
@@ -1339,7 +1339,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                 {activeSubTab === 'pnl' && (
                   <div className="overflow-x-auto -mx-6 -my-6">
                     <table className="w-full text-left border-collapse font-mono text-sm">
-                      <thead className="bg-slate-800/30 font-label-sm text-label-sm text-[#859490] font-sans">
+                      <thead className="bg-[#1e1b20]/30 font-label-sm text-label-sm text-[#859490] font-sans">
                         <tr>
                           <th className="px-6 py-4">Line Item</th>
                           {projections.map(p => <th key={p.year} className="px-6 py-4 text-right">Year {p.year}</th>)}
@@ -1347,14 +1347,14 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                       </thead>
                       <tbody className="divide-y divide-white/5 font-body-sm text-body-sm">
                         <tr className="hover:bg-white/5 transition-colors group">
-                          <td className="px-6 py-4 text-white font-sans group-hover:text-[#57f1db]">Gross Potential Rent</td>
+                          <td className="px-6 py-4 text-white font-sans group-hover:text-[#454955]">Gross Potential Rent</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right">{fmt(p.grossPotentialRent)}</td>)}
                         </tr>
                         <tr className="hover:bg-white/5 transition-colors group">
                           <td className="px-6 py-4 text-red-400 font-sans group-hover:text-red-300">Vacancy Loss</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right text-red-400">-{fmt(p.vacancyLoss)}</td>)}
                         </tr>
-                        <tr className="bg-slate-900/50 text-[#57f1db]">
+                        <tr className="bg-[#161318]/50 text-[#454955]">
                           <td className="px-6 py-4 font-sans font-bold">Effective Gross Income</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right font-bold">{fmt(p.effectiveGrossIncome)}</td>)}
                         </tr>
@@ -1362,7 +1362,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <td className="px-6 py-4 text-red-400 font-sans group-hover:text-red-300">Operating Expenses</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right text-red-400">-{fmt(p.operatingExpenses)}</td>)}
                         </tr>
-                        <tr className="bg-slate-800/50 text-white">
+                        <tr className="bg-[#1e1b20]/50 text-white">
                           <td className="px-6 py-4 font-sans font-bold uppercase">Net Operating Income (NOI)</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right font-bold">{fmt(p.noi)}</td>)}
                         </tr>
@@ -1370,7 +1370,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <td className="px-6 py-4 text-[#859490] font-sans group-hover:text-white">Debt Service (P&amp;I)</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right text-[#859490]">-{fmt(p.debtService)}</td>)}
                         </tr>
-                        <tr className="bg-[#57f1db]/10 text-[#57f1db]">
+                        <tr className="bg-[#454955]/10 text-[#454955]">
                           <td className="px-6 py-4 font-sans font-bold uppercase">Pre-Tax Cash Flow</td>
                           {projections.map(p => <td key={p.year} className="px-6 py-4 text-right font-bold">{fmt(p.preTaxCashFlow)}</td>)}
                         </tr>
@@ -1398,8 +1398,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <span className="font-mono text-white">{fmt(rentalInputs.arv)}</span>
                         </div>
                         <div className="flex justify-between border-t border-white/5 pt-2 font-semibold text-sm">
-                          <span className="text-[#57f1db]">Total Deployed Capital</span>
-                          <span className="font-mono text-[#57f1db]">{fmt(rentalCalc.totalInvested)}</span>
+                          <span className="text-[#454955]">Total Deployed Capital</span>
+                          <span className="font-mono text-[#454955]">{fmt(rentalCalc.totalInvested)}</span>
                         </div>
                       </div>
                     </div>
@@ -1421,8 +1421,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <span className="font-mono text-white">{rentalInputs.interestRate.toFixed(2)}%</span>
                         </div>
                         <div className="flex justify-between border-t border-white/5 pt-2 font-semibold text-sm">
-                          <span className="text-[#57f1db]">Monthly Debt Service</span>
-                          <span className="font-mono text-[#57f1db]">{fmt(rentalCalc.monthlyDebtSvc)}/mo</span>
+                          <span className="text-[#454955]">Monthly Debt Service</span>
+                          <span className="font-mono text-[#454955]">{fmt(rentalCalc.monthlyDebtSvc)}/mo</span>
                         </div>
                       </div>
                     </div>
@@ -1444,8 +1444,8 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                           <span className="text-white font-mono">3.0% / year</span>
                         </div>
                         <div className="flex justify-between border-t border-white/5 pt-2 font-semibold text-sm">
-                          <span className="text-[#57f1db]">Monthly Expenses</span>
-                          <span className="font-mono text-[#57f1db]">{fmt(rentalCalc.monthlyOpEx)}/mo</span>
+                          <span className="text-[#454955]">Monthly Expenses</span>
+                          <span className="font-mono text-[#454955]">{fmt(rentalCalc.monthlyOpEx)}/mo</span>
                         </div>
                       </div>
                     </div>
@@ -1454,7 +1454,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
 
                 {activeSubTab === 'sensitivity' && (
                   <div className="space-y-6">
-                    <p className="text-sm text-slate-400 font-sans">
+                    <p className="text-sm text-[#9E9DA0] font-sans">
                       Evaluate return variance relative to shifting macro conditions. Base cases are highlighted.
                     </p>
                     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -1474,7 +1474,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             {interestRateSensitivity.map(item => (
                               <tr
                                 key={item.label}
-                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#57f1db]/15 text-[#57f1db] font-semibold' : 'text-slate-300'}`}
+                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#454955]/15 text-[#454955] font-semibold' : 'text-[#C0BEC2]'}`}
                               >
                                 <td className="py-2">{item.label}</td>
                                 <td className="py-2 text-right">{fmt(item.firstYearCF)}</td>
@@ -1502,7 +1502,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             {rentSensitivity.map(item => (
                               <tr
                                 key={item.label}
-                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#57f1db]/15 text-[#57f1db] font-semibold' : 'text-slate-300'}`}
+                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#454955]/15 text-[#454955] font-semibold' : 'text-[#C0BEC2]'}`}
                               >
                                 <td className="py-2">{item.label}</td>
                                 <td className="py-2 text-right">{fmt(item.firstYearCF)}</td>
@@ -1530,7 +1530,7 @@ export function DealAnalyzerTerminal({ data, isLoading = false }: DealAnalyzerTe
                             {vacancySensitivity.map(item => (
                               <tr
                                 key={item.label}
-                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#57f1db]/15 text-[#57f1db] font-semibold' : 'text-slate-300'}`}
+                                className={`hover:bg-white/5 ${item.isBase ? 'bg-[#454955]/15 text-[#454955] font-semibold' : 'text-[#C0BEC2]'}`}
                               >
                                 <td className="py-2">{item.label}</td>
                                 <td className="py-2 text-right">{fmt(item.firstYearCF)}</td>

@@ -102,7 +102,7 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
             <div
               className="pointer-events-auto w-full max-w-md rounded-2xl overflow-hidden"
               style={{
-                background:    "linear-gradient(135deg, rgba(20,29,35,0.98) 0%, rgba(11,18,24,0.99) 100%)",
+                background:    "linear-gradient(135deg, rgba(22,19,24,0.98) 0%, rgba(11,18,24,0.99) 100%)",
                 backdropFilter:"blur(32px)",
                 border:        "1px solid rgba(255,255,255,0.1)",
                 boxShadow:     "0 32px 80px rgba(0,0,0,0.6)",
@@ -111,17 +111,17 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
               {/* Header */}
               <div className="flex justify-between items-center px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
                 <div>
-                  <h3 className="text-[16px] font-bold" style={{ color: "rgba(218,228,236,0.95)" }}>
+                  <h3 className="text-[16px] font-bold" style={{ color: "rgba(253,255,252,0.95)" }}>
                     Invite a teammate
                   </h3>
                   {projectName && (
-                    <p className="text-[12px] mt-0.5" style={{ color: "rgba(218,228,236,0.4)" }}>
+                    <p className="text-[12px] mt-0.5" style={{ color: "rgba(253,255,252,0.4)" }}>
                       to {projectName}
                     </p>
                   )}
                 </div>
                 <button onClick={onClose} className="hover:opacity-70 transition-opacity">
-                  <span className="material-symbols-outlined text-[20px]" style={{ color: "rgba(218,228,236,0.4)" }}>close</span>
+                  <span className="material-symbols-outlined text-[20px]" style={{ color: "rgba(253,255,252,0.4)" }}>close</span>
                 </button>
               </div>
 
@@ -129,7 +129,7 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 {/* Email */}
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
+                  <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.07em" }}>
                     Email Address
                   </label>
                   <input
@@ -142,14 +142,14 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                     style={{
                       background: "rgba(14,22,28,0.8)",
                       border:     `1px solid ${error ? "#F0654340" : "rgba(255,255,255,0.09)"}`,
-                      color:      "rgba(218,228,236,0.9)",
+                      color:      "rgba(253,255,252,0.9)",
                     }}
                   />
                 </div>
 
                 {/* Role */}
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
+                  <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.4)", letterSpacing: "0.07em" }}>
                     Role
                   </label>
                   <div className="grid grid-cols-2 gap-2">
@@ -160,14 +160,14 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                         onClick={() => setRole(r.value)}
                         className="flex flex-col px-3 py-2.5 rounded-xl text-left"
                         style={{
-                          background: role === r.value ? "rgba(87,241,219,0.08)" : "rgba(255,255,255,0.04)",
-                          border:     `1px solid ${role === r.value ? "rgba(87,241,219,0.25)" : "rgba(255,255,255,0.07)"}`,
+                          background: role === r.value ? "rgba(69,73,85,0.08)" : "rgba(255,255,255,0.04)",
+                          border:     `1px solid ${role === r.value ? "rgba(69,73,85,0.25)" : "rgba(255,255,255,0.07)"}`,
                         }}
                       >
-                        <span className="text-[12px] font-semibold" style={{ color: role === r.value ? "#57f1db" : "rgba(218,228,236,0.75)" }}>
+                        <span className="text-[12px] font-semibold" style={{ color: role === r.value ? "#454955" : "rgba(253,255,252,0.75)" }}>
                           {r.label}
                         </span>
-                        <span className="text-[10px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+                        <span className="text-[10px]" style={{ color: "rgba(253,255,252,0.3)" }}>
                           {r.description}
                         </span>
                       </button>
@@ -183,7 +183,7 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                 )}
 
                 {/* Note about mock email */}
-                <p className="text-[11px]" style={{ color: "rgba(218,228,236,0.2)" }}>
+                <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.2)" }}>
                   📬 Email delivery is mocked — invite is logged to console. Wire a real provider to complete the flow.
                 </p>
 
@@ -192,8 +192,8 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                   disabled={inviteMutation.isPending}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold"
                   style={{
-                    background: inviteMutation.isPending ? "rgba(87,241,219,0.1)" : "#57f1db",
-                    color:      inviteMutation.isPending ? "#57f1db" : "#0b141a",
+                    background: inviteMutation.isPending ? "rgba(69,73,85,0.1)" : "#454955",
+                    color:      inviteMutation.isPending ? "#454955" : "#0d0a0b",
                   }}
                 >
                   {inviteMutation.isPending ? "Sending invite…" : "Send Invite"}

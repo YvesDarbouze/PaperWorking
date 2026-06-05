@@ -153,7 +153,7 @@ export default function InsightsPage() {
       case 1:
         return {
           label: 'Acquisition Focus',
-          color: 'text-teal-400 border-teal-500/20 bg-teal-500/10',
+          color: 'text-[#6E7480] border-[#454955]/20 bg-[#454955]/10',
           description: 'Leaning on Cap Rate & GRM screening insights to assess deal feasibility and thesis alignment.'
         };
       case 2:
@@ -165,7 +165,7 @@ export default function InsightsPage() {
       case 3:
         return {
           label: 'Hold / Operations Focus',
-          color: 'text-slate-400 border-slate-500/20 bg-slate-500/10',
+          color: 'text-[#9E9DA0] border-slate-500/20 bg-slate-500/10',
           description: 'Leaning on Occupancy, OER efficiency, and monthly cash flow drift to track asset management performance.'
         };
       case 4:
@@ -340,14 +340,14 @@ export default function InsightsPage() {
 
   // Color helper for metrics thresholds
   const getBenchmarkColorClass = useCallback((metricId: string, value: number | null) => {
-    if (value === null) return 'text-slate-400';
+    if (value === null) return 'text-[#9E9DA0]';
     const bounds = BENCHMARKS[metricId];
     if (!bounds) return 'text-slate-200';
 
-    if (metricId === 'DSCR' && value === 999) return 'text-teal-400'; // All Cash DSCR
+    if (metricId === 'DSCR' && value === 999) return 'text-[#6E7480]'; // All Cash DSCR
 
     if (metricId === 'OER') {
-      if (value <= (bounds.goodMax ?? 40)) return 'text-teal-400';
+      if (value <= (bounds.goodMax ?? 40)) return 'text-[#6E7480]';
       if (value > (bounds.warningMax ?? 55)) return 'text-red-400';
       return 'text-amber-400';
     }
@@ -356,7 +356,7 @@ export default function InsightsPage() {
       if (value < (bounds.warningMin ?? bounds.goodMin)) return 'text-red-400';
       if (value < bounds.goodMin) return 'text-amber-400';
       if (bounds.goodMax !== undefined && value > bounds.goodMax) return 'text-amber-400';
-      return 'text-teal-400';
+      return 'text-[#6E7480]';
     }
 
     return 'text-slate-200';
@@ -523,16 +523,16 @@ export default function InsightsPage() {
 
       // Compute drift from thesis
       let driftLabel = '—';
-      let driftClass = 'text-slate-400';
+      let driftClass = 'text-[#9E9DA0]';
       if (!isLocked && metricVal !== null && proFormaVal !== null && proFormaVal !== 0) {
         const diff = (metricVal - proFormaVal) / proFormaVal;
         const diffPct = diff * 100;
         if (Math.abs(diff) > 0.02) {
           driftLabel = diffPct > 0 ? `+${diffPct.toFixed(1)}%` : `${diffPct.toFixed(1)}%`;
-          driftClass = diffPct > 0 ? 'text-teal-400 bg-teal-500/10' : 'text-red-400 bg-red-500/10';
+          driftClass = diffPct > 0 ? 'text-[#6E7480] bg-[#454955]/10' : 'text-red-400 bg-red-500/10';
         } else {
           driftLabel = 'Aligned';
-          driftClass = 'text-slate-400 bg-white/5';
+          driftClass = 'text-[#9E9DA0] bg-white/5';
         }
       }
 
@@ -575,19 +575,19 @@ export default function InsightsPage() {
     return (
       <div 
         key={metric.id}
-        className="rounded-xl border border-white/5 p-5 relative overflow-hidden backdrop-blur-md transition-all duration-200 hover:border-teal-500/30 group cursor-default"
+        className="rounded-xl border border-white/5 p-5 relative overflow-hidden backdrop-blur-md transition-all duration-200 hover:border-[#454955]/30 group cursor-default"
         style={{ background: 'rgba(255, 255, 255, 0.02)' }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
         <div className="flex items-start justify-between relative z-10">
           <div className="space-y-1">
-            <span className="text-[10px] text-slate-400 font-plus-jakarta font-semibold tracking-widest uppercase">
+            <span className="text-[10px] text-[#9E9DA0] font-plus-jakarta font-semibold tracking-widest uppercase">
               {metric.name}
             </span>
             
             {isLocked ? (
-              <div className="flex items-center gap-1.5 text-slate-500 mt-1.5">
+              <div className="flex items-center gap-1.5 text-[#6B6870] mt-1.5">
                 <Lock className="w-3.5 h-3.5" />
                 <span className="text-xs font-light tracking-wide">Unlocks in {locksIn}</span>
               </div>
@@ -605,40 +605,40 @@ export default function InsightsPage() {
 
           <button 
             onClick={() => setActiveTooltip(isTooltipOpen ? null : metric.id)}
-            className="p-1 rounded-md text-slate-500 hover:text-teal-400 hover:bg-white/5 transition-colors relative"
+            className="p-1 rounded-md text-[#6B6870] hover:text-[#6E7480] hover:bg-white/5 transition-colors relative"
             title="Formula & Phase details"
           >
             <Info className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="mt-4 flex items-center justify-between text-[10px] text-slate-500 group-hover:text-teal-400/80 transition-colors pt-3 border-t border-white/[0.03] relative z-10">
+        <div className="mt-4 flex items-center justify-between text-[10px] text-[#6B6870] group-hover:text-[#6E7480]/80 transition-colors pt-3 border-t border-white/[0.03] relative z-10">
           <span className="font-extralight tracking-wider uppercase">{metric.phase}</span>
           <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
 
         {isTooltipOpen && (
           <div 
-            className="absolute inset-0 z-20 p-5 flex flex-col justify-between rounded-xl border border-teal-500/30 backdrop-blur-xl transition-all duration-300"
+            className="absolute inset-0 z-20 p-5 flex flex-col justify-between rounded-xl border border-[#454955]/30 backdrop-blur-xl transition-all duration-300"
             style={{ background: 'rgba(9, 16, 21, 0.96)' }}
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-light text-teal-400 tracking-wide">{metric.name}</span>
+                <span className="text-xs font-light text-[#6E7480] tracking-wide">{metric.name}</span>
                 <button 
                   onClick={() => setActiveTooltip(null)}
-                  className="text-[10px] uppercase text-slate-500 hover:text-white tracking-widest"
+                  className="text-[10px] uppercase text-[#6B6870] hover:text-white tracking-widest"
                 >
                   Close
                 </button>
               </div>
-              <p className="text-xs text-slate-300 font-extralight leading-relaxed">
+              <p className="text-xs text-[#C0BEC2] font-extralight leading-relaxed">
                 {metric.description}
               </p>
             </div>
             
             <div className="space-y-1.5 pt-2 border-t border-white/5">
-              <div className="text-[9px] uppercase tracking-widest text-slate-500 font-light">Formula</div>
+              <div className="text-[9px] uppercase tracking-widest text-[#6B6870] font-light">Formula</div>
               <div className="text-xs font-mono text-white bg-white/5 p-1.5 rounded border border-white/5">
                 {metric.formula}
               </div>
@@ -654,14 +654,14 @@ export default function InsightsPage() {
       <div className="font-plus-jakarta min-h-screen text-slate-100 p-6 flex items-center justify-center font-hanken">
         <div 
           className="w-full max-w-lg rounded-2xl border border-white/10 p-8 shadow-2xl backdrop-blur-[20px] text-center space-y-6 relative overflow-hidden"
-          style={{ background: 'rgba(24, 33, 39, 0.7)' }}
+          style={{ background: 'rgba(30, 27, 32, 0.7)' }}
         >
-          <div className="absolute -top-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-80 h-80 bg-[#454955]/10 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
           
           <div className="flex justify-center">
-            <div className="p-4 rounded-full bg-teal-500/10 border border-teal-500/20">
-              <FolderPlus className="w-10 h-10 text-teal-400" />
+            <div className="p-4 rounded-full bg-[#454955]/10 border border-[#454955]/20">
+              <FolderPlus className="w-10 h-10 text-[#6E7480]" />
             </div>
           </div>
           
@@ -669,7 +669,7 @@ export default function InsightsPage() {
             <h1 className="text-2xl font-light tracking-tight text-white">
               Assemble Your Portfolio
             </h1>
-            <p className="text-sm text-slate-400 font-extralight leading-relaxed">
+            <p className="text-sm text-[#9E9DA0] font-extralight leading-relaxed">
               PaperWorking connects pro-forma thesis models to live operational metrics. Add a project to unlock the portfolio diagnostic engine, trend lines, and underwriting variance sheets.
             </p>
           </div>
@@ -677,13 +677,13 @@ export default function InsightsPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Link
               href="/dashboard/projects/new"
-              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-teal-500 text-teal-950 font-semibold rounded-xl hover:bg-teal-400 transition-all duration-200 shadow-lg shadow-teal-500/20 text-sm"
+              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#454955] text-[#FDFFFC] font-semibold rounded-xl hover:bg-[#6E7480] transition-all duration-200 shadow-lg shadow-[#454955]/20 text-sm"
             >
               <span>Add a Project</span>
             </Link>
             <Link
               href="/dashboard/projects"
-              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all duration-200 text-slate-300 hover:text-white text-sm"
+              className="flex items-center justify-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl transition-all duration-200 text-[#C0BEC2] hover:text-white text-sm"
             >
               <span>View Projects</span>
             </Link>
@@ -697,9 +697,9 @@ export default function InsightsPage() {
     <div className="font-plus-jakarta min-h-screen text-slate-100 p-6 space-y-6">
       <div 
         className="w-full rounded-2xl border border-white/10 p-8 shadow-2xl backdrop-blur-[20px] transition-all duration-300 relative overflow-hidden"
-        style={{ background: 'rgba(24, 33, 39, 0.7)' }}
+        style={{ background: 'rgba(30, 27, 32, 0.7)' }}
       >
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-[#454955]/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
 
         {/* Top Header */}
@@ -709,11 +709,11 @@ export default function InsightsPage() {
               <h1 className="text-3xl font-light tracking-tight text-white font-hanken">
                 Portfolio Diagnostics & Insights
               </h1>
-              <span className="text-[10px] font-mono bg-teal-500/10 text-teal-400 border border-teal-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="text-[10px] font-mono bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
                 Read-Only
               </span>
             </div>
-            <p className="text-sm text-slate-400 font-extralight tracking-wide font-hanken">
+            <p className="text-sm text-[#9E9DA0] font-extralight tracking-wide font-hanken">
               Deterministic underwriting analysis, pro-forma thesis drift, and portfolio risk mapping.
             </p>
           </div>
@@ -725,7 +725,7 @@ export default function InsightsPage() {
             <Layers className="w-5 h-5 shrink-0" />
             <div>
               <span className="font-semibold block mb-0.5">{dominantPhaseInfo.label}</span>
-              <span className="text-slate-300 leading-relaxed block">{dominantPhaseInfo.description}</span>
+              <span className="text-[#C0BEC2] leading-relaxed block">{dominantPhaseInfo.description}</span>
             </div>
           </div>
         )}
@@ -735,11 +735,11 @@ export default function InsightsPage() {
           <div className="flex flex-wrap items-center gap-4">
             {/* Phase Filter */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Phase:</span>
+              <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Phase:</span>
               <select
                 value={globalPhaseFilter}
                 onChange={(e) => setGlobalPhaseFilter(e.target.value as 'all' | 'Acquisition' | 'Fund' | 'Hold' | 'Exit')}
-                className="bg-[#121c21] border border-white/10 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:border-teal-500 focus:outline-none font-light"
+                className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-xs rounded-lg px-3 py-1.5 focus:border-[#454955] focus:outline-none font-light"
               >
                 <option value="all">All Phases</option>
                 <option value="Acquisition">Acquisition (Phase 1)</option>
@@ -751,11 +751,11 @@ export default function InsightsPage() {
 
             {/* Market / Strategy Filter */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Strategy:</span>
+              <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Strategy:</span>
               <select
                 value={globalStrategyFilter}
                 onChange={(e) => setGlobalStrategyFilter(e.target.value as 'all' | 'LTR' | 'STR')}
-                className="bg-[#121c21] border border-white/10 text-slate-300 text-xs rounded-lg px-3 py-1.5 focus:border-teal-500 focus:outline-none font-light"
+                className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-xs rounded-lg px-3 py-1.5 focus:border-[#454955] focus:outline-none font-light"
               >
                 <option value="all">All Strategies</option>
                 <option value="LTR">Long-Term Rental (LTR)</option>
@@ -765,26 +765,26 @@ export default function InsightsPage() {
             
             {/* Single-Project Focus mode selector */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Focus Mode:</span>
+              <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Focus Mode:</span>
               <div className="relative">
                 <button
                   onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-[#121c21] border border-white/10 rounded-lg text-xs font-light text-slate-300 hover:text-white transition-all duration-200"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-[#161318] border border-white/10 rounded-lg text-xs font-light text-[#C0BEC2] hover:text-white transition-all duration-200"
                 >
                   <span className="max-w-[150px] truncate">{currentProject ? currentProject.propertyName : 'All Projects (Roll-up)'}</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                  <ChevronDown className="w-3.5 h-3.5 text-[#6B6870]" />
                 </button>
                 {isProjectDropdownOpen && (
-                  <div className="absolute left-0 mt-1 w-60 rounded-xl border border-white/10 bg-[#121c21] p-1.5 shadow-2xl z-30 space-y-0.5">
+                  <div className="absolute left-0 mt-1 w-60 rounded-xl border border-white/10 bg-[#161318] p-1.5 shadow-2xl z-30 space-y-0.5">
                     <button
                       onClick={() => {
                         clearDeal();
                         setIsProjectDropdownOpen(false);
                       }}
-                      className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-slate-300 hover:text-white hover:bg-white/5"
+                      className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-[#C0BEC2] hover:text-white hover:bg-white/5"
                     >
                       <span>All Projects (Roll-up)</span>
-                      {!currentProject && <Check className="w-3.5 h-3.5 text-teal-400" />}
+                      {!currentProject && <Check className="w-3.5 h-3.5 text-[#6E7480]" />}
                     </button>
                     {filteredProjectsForDropdown.map((p) => (
                       <button
@@ -793,10 +793,10 @@ export default function InsightsPage() {
                           setDeal(p);
                           setIsProjectDropdownOpen(false);
                         }}
-                        className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-slate-300 hover:text-white hover:bg-white/5"
+                        className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-[#C0BEC2] hover:text-white hover:bg-white/5"
                       >
                         <span className="truncate">{p.propertyName ?? p.name}</span>
-                        {currentProject?.id === p.id && <Check className="w-3.5 h-3.5 text-teal-400" />}
+                        {currentProject?.id === p.id && <Check className="w-3.5 h-3.5 text-[#6E7480]" />}
                       </button>
                     ))}
                   </div>
@@ -818,8 +818,8 @@ export default function InsightsPage() {
                   }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold tracking-wider uppercase transition-all duration-200 ${
                     isActive
-                      ? 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent'
+                      ? 'bg-[#454955]/20 text-[#8a8e9a] border border-[#454955]/30'
+                      : 'text-[#9E9DA0] hover:text-slate-200 hover:bg-white/5 border border-transparent'
                   }`}
                 >
                   <Icon className="w-3 h-3" />
@@ -843,14 +843,14 @@ export default function InsightsPage() {
           <div className="space-y-6 mt-6 relative z-10 font-hanken">
             <div className="rounded-xl border border-white/5 p-6 bg-white/[0.02] backdrop-blur-sm space-y-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-teal-500/10 border border-teal-500/20">
-                  <Grid className="w-5 h-5 text-teal-400" />
+                <div className="p-2 rounded-lg bg-[#454955]/10 border border-[#454955]/20">
+                  <Grid className="w-5 h-5 text-[#6E7480]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-light tracking-wide text-white">
                     Portfolio Scorecard
                   </h2>
-                  <p className="text-xs text-slate-400 font-extralight tracking-wider uppercase">
+                  <p className="text-xs text-[#9E9DA0] font-extralight tracking-wider uppercase">
                     10 core financial & operational metrics across the REIL investment lifecycle
                   </p>
                 </div>
@@ -858,7 +858,7 @@ export default function InsightsPage() {
 
               {/* Sub-group A: Short-Term Operational Metrics (NOI, Cash Flow, OER, Occupancy) */}
               <div className="space-y-4">
-                <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest border-b border-white/[0.04] pb-2">
+                <h3 className="text-xs font-semibold text-[#9E9DA0] uppercase tracking-widest border-b border-white/[0.04] pb-2">
                   Short-Term Operational Metrics
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -868,7 +868,7 @@ export default function InsightsPage() {
 
               {/* Sub-group B: Long-Term Performance Projections (Cap Rate, CoC, Appreciation, DSCR, GRM, IRR) */}
               <div className="space-y-4 pt-4 border-t border-white/[0.03]">
-                <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest border-b border-white/[0.04] pb-2">
+                <h3 className="text-xs font-semibold text-[#9E9DA0] uppercase tracking-widest border-b border-white/[0.04] pb-2">
                   Long-Term Performance Projections
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -891,7 +891,7 @@ export default function InsightsPage() {
                   <h2 className="text-lg font-light tracking-wide text-white">
                     Underwriting Variance Analysis
                   </h2>
-                  <p className="text-xs text-slate-400 font-extralight tracking-wider uppercase">
+                  <p className="text-xs text-[#9E9DA0] font-extralight tracking-wider uppercase">
                     Comparison of actual operations vs pro-forma target underwriting for NOI, CoC, and OER
                   </p>
                 </div>
@@ -901,7 +901,7 @@ export default function InsightsPage() {
               <div className="overflow-x-auto rounded-xl border border-white/5 bg-[#0a1114]/30">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-400 font-semibold bg-white/[0.02] font-hanken">
+                    <tr className="border-b border-white/10 text-[10px] uppercase tracking-wider text-[#9E9DA0] font-semibold bg-white/[0.02] font-hanken">
                       <th className="p-4">Project Name</th>
                       <th className="p-4">REIL Phase</th>
                       <th className="p-4">Strategy</th>
@@ -909,7 +909,7 @@ export default function InsightsPage() {
                       <th className="p-4 text-center border-l border-white/5 bg-white/[0.01]" colSpan={3}>Cash-on-Cash Return (CoC)</th>
                       <th className="p-4 text-center border-l border-white/5 bg-white/[0.01]" colSpan={3}>Operating Expense Ratio (OER)</th>
                     </tr>
-                    <tr className="border-b border-white/5 text-[9px] uppercase tracking-widest text-slate-500 bg-white/[0.01] font-mono">
+                    <tr className="border-b border-white/5 text-[9px] uppercase tracking-widest text-[#6B6870] bg-white/[0.01] font-mono">
                       <th className="p-2"></th>
                       <th className="p-2"></th>
                       <th className="p-2"></th>
@@ -935,14 +935,14 @@ export default function InsightsPage() {
                       const targetNoi = proForma.noi;
                       const actualNoi = actuals.noi;
                       const noiVar = (actualNoi !== null && targetNoi) ? ((actualNoi - targetNoi) / targetNoi) * 100 : null;
-                      const noiVarColor = noiVar !== null ? (noiVar >= 0 ? 'text-teal-400 bg-teal-500/10' : 'text-red-400 bg-red-500/10') : 'text-slate-500';
+                      const noiVarColor = noiVar !== null ? (noiVar >= 0 ? 'text-[#6E7480] bg-[#454955]/10' : 'text-red-400 bg-red-500/10') : 'text-[#6B6870]';
 
                       // CoC (Phase 2 lock)
                       const cocLocked = phaseNum < 2;
                       const targetCoc = proForma.cashOnCashReturn;
                       const actualCoc = actuals.cashOnCashReturn;
                       const cocVar = (actualCoc !== null && targetCoc !== null) ? actualCoc - targetCoc : null;
-                      const cocVarColor = cocVar !== null ? (cocVar >= 0 ? 'text-teal-400 bg-teal-500/10' : 'text-red-400 bg-red-500/10') : 'text-slate-500';
+                      const cocVarColor = cocVar !== null ? (cocVar >= 0 ? 'text-[#6E7480] bg-[#454955]/10' : 'text-red-400 bg-red-500/10') : 'text-[#6B6870]';
 
                       // OER (Phase 3 lock)
                       const oerLocked = phaseNum < 3;
@@ -950,45 +950,45 @@ export default function InsightsPage() {
                       const actualOer = actuals.oer;
                       const oerVar = (actualOer !== null && targetOer !== null) ? actualOer - targetOer : null;
                       // lower expenses are better, so if actual <= target, variance is negative or 0 (good)
-                      const oerVarColor = oerVar !== null ? (oerVar <= 0 ? 'text-teal-400 bg-teal-500/10' : 'text-red-400 bg-red-500/10') : 'text-slate-500';
+                      const oerVarColor = oerVar !== null ? (oerVar <= 0 ? 'text-[#6E7480] bg-[#454955]/10' : 'text-red-400 bg-red-500/10') : 'text-[#6B6870]';
 
                       const strategyLabel = p.strategyType || 'LTR';
 
                       return (
                         <tr key={p.id} className="hover:bg-white/[0.02] transition-colors border-b border-white/5">
                           <td className="p-4 font-semibold text-white">
-                            <Link href={`/dashboard/projects/${p.id}`} className="hover:text-teal-400 hover:underline transition-all">
+                            <Link href={`/dashboard/projects/${p.id}`} className="hover:text-[#6E7480] hover:underline transition-all">
                               {p.propertyName ?? p.name}
                             </Link>
                           </td>
                           <td className="p-4">
                             <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-mono tracking-wider ${
-                              phaseNum === 1 ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20' :
+                              phaseNum === 1 ? 'bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20' :
                               phaseNum === 2 ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                              phaseNum === 3 ? 'bg-slate-500/10 text-slate-400 border border-slate-500/20' :
+                              phaseNum === 3 ? 'bg-slate-500/10 text-[#9E9DA0] border border-slate-500/20' :
                               'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                             }`}>
                               {getPhaseName(phaseNum)}
                             </span>
                           </td>
                           <td className="p-4">
-                            <span className="text-[10px] text-slate-400 font-mono tracking-wider">{strategyLabel}</span>
+                            <span className="text-[10px] text-[#9E9DA0] font-mono tracking-wider">{strategyLabel}</span>
                           </td>
 
                           {/* NOI */}
-                          <td className="p-4 text-center font-mono text-slate-300 border-l border-white/5">
+                          <td className="p-4 text-center font-mono text-[#C0BEC2] border-l border-white/5">
                             {targetNoi !== null ? `$${Math.round(targetNoi).toLocaleString()}` : '—'}
                           </td>
                           <td className="p-4 text-center font-mono">
                             {noiLocked ? (
-                              <span className="text-slate-500 text-[10px] flex items-center justify-center gap-1">
+                              <span className="text-[#6B6870] text-[10px] flex items-center justify-center gap-1">
                                 <Lock className="w-3 h-3 shrink-0" />
                                 <span>Locked (Hold)</span>
                               </span>
                             ) : actualNoi !== null ? (
                               <span className="text-white font-semibold">${Math.round(actualNoi).toLocaleString()}</span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
                           <td className="p-4 text-center font-mono border-r border-white/5">
@@ -997,24 +997,24 @@ export default function InsightsPage() {
                                 {noiVar >= 0 ? '+' : ''}{noiVar.toFixed(1)}%
                               </span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
 
                           {/* CoC */}
-                          <td className="p-4 text-center font-mono text-slate-300">
+                          <td className="p-4 text-center font-mono text-[#C0BEC2]">
                             {targetCoc !== null ? `${targetCoc.toFixed(2)}%` : '—'}
                           </td>
                           <td className="p-4 text-center font-mono">
                             {cocLocked ? (
-                              <span className="text-slate-500 text-[10px] flex items-center justify-center gap-1">
+                              <span className="text-[#6B6870] text-[10px] flex items-center justify-center gap-1">
                                 <Lock className="w-3 h-3 shrink-0" />
                                 <span>Locked (Fund)</span>
                               </span>
                             ) : actualCoc !== null ? (
                               <span className="text-white font-semibold">{actualCoc.toFixed(2)}%</span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
                           <td className="p-4 text-center font-mono border-r border-white/5">
@@ -1023,24 +1023,24 @@ export default function InsightsPage() {
                                 {cocVar >= 0 ? '+' : ''}{cocVar.toFixed(2)}%
                               </span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
 
                           {/* OER */}
-                          <td className="p-4 text-center font-mono text-slate-300">
+                          <td className="p-4 text-center font-mono text-[#C0BEC2]">
                             {targetOer !== null ? `${targetOer.toFixed(1)}%` : '—'}
                           </td>
                           <td className="p-4 text-center font-mono">
                             {oerLocked ? (
-                              <span className="text-slate-500 text-[10px] flex items-center justify-center gap-1">
+                              <span className="text-[#6B6870] text-[10px] flex items-center justify-center gap-1">
                                 <Lock className="w-3 h-3 shrink-0" />
                                 <span>Locked (Hold)</span>
                               </span>
                             ) : actualOer !== null ? (
                               <span className="text-white font-semibold">{actualOer.toFixed(1)}%</span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
                           <td className="p-4 text-center font-mono">
@@ -1049,7 +1049,7 @@ export default function InsightsPage() {
                                 {oerVar >= 0 ? '+' : ''}{oerVar.toFixed(1)}%
                               </span>
                             ) : (
-                              <span className="text-slate-500">—</span>
+                              <span className="text-[#6B6870]">—</span>
                             )}
                           </td>
                         </tr>
@@ -1067,14 +1067,14 @@ export default function InsightsPage() {
           <div className="mt-6 space-y-6 relative z-10 font-hanken">
             <div className="rounded-xl border border-white/5 p-6 bg-white/[0.02] backdrop-blur-sm space-y-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[#20B2AA]/10 border border-[#20B2AA]/20">
-                  <TrendingUp className="w-5 h-5 text-[#20B2AA]" />
+                <div className="p-2 rounded-lg bg-[#454955]/10 border border-[#454955]/20">
+                  <TrendingUp className="w-5 h-5 text-[#454955]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-light tracking-wide text-white">
                     Rankings & Trend Intelligence
                   </h2>
-                  <p className="text-xs text-slate-400 font-extralight tracking-wider uppercase">
+                  <p className="text-xs text-[#9E9DA0] font-extralight tracking-wider uppercase">
                     Cross-property performance leaderboards, concentrations, and chronological trajectories
                   </p>
                 </div>
@@ -1093,17 +1093,17 @@ export default function InsightsPage() {
                           type="checkbox"
                           checked={rankOnly}
                           onChange={(e) => setRankOnly(e.target.checked)}
-                          className="w-3.5 h-3.5 rounded border-white/10 bg-[#121c21] text-teal-500 focus:ring-0 focus:ring-offset-0 focus:outline-none"
+                          className="w-3.5 h-3.5 rounded border-white/10 bg-[#161318] text-[#454955] focus:ring-0 focus:ring-offset-0 focus:outline-none"
                         />
-                        <span className="text-[10px] text-slate-400 hover:text-slate-300 font-light">Rank Only</span>
+                        <span className="text-[10px] text-[#9E9DA0] hover:text-[#C0BEC2] font-light">Rank Only</span>
                       </label>
 
                       <div className="flex items-center gap-1">
-                        <span className="text-[10px] text-slate-500 uppercase tracking-widest mr-1">Sort:</span>
+                        <span className="text-[10px] text-[#6B6870] uppercase tracking-widest mr-1">Sort:</span>
                         <select 
                           value={rankingMetric}
                           onChange={(e) => setRankingMetric(e.target.value as RankingMetric)}
-                          className="bg-[#121c21] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-slate-300 focus:outline-none focus:border-teal-500/50"
+                          className="bg-[#161318] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-[#C0BEC2] focus:outline-none focus:border-[#454955]/50"
                         >
                           <option value="COC">Cash-on-Cash Return</option>
                           <option value="CAP_RATE">Cap Rate</option>
@@ -1120,7 +1120,7 @@ export default function InsightsPage() {
                       const isWorst = item.isProjectDrag;
                       
                       let accentBorder = 'border-white/5 hover:border-white/15';
-                      if (isLeader) accentBorder = 'border-teal-500/20 bg-teal-500/[0.01] hover:border-teal-500/30';
+                      if (isLeader) accentBorder = 'border-[#454955]/20 bg-[#454955]/[0.01] hover:border-[#454955]/30';
                       if (isWorst) accentBorder = 'border-red-500/20 bg-red-500/[0.01] hover:border-red-500/30';
 
                       return (
@@ -1129,12 +1129,12 @@ export default function InsightsPage() {
                           className={`p-3 rounded-lg border ${accentBorder} flex items-center justify-between text-xs transition-colors`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <span className="font-mono text-slate-500 text-[10px] w-4 shrink-0">#{index + 1}</span>
+                            <span className="font-mono text-[#6B6870] text-[10px] w-4 shrink-0">#{index + 1}</span>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-semibold text-white truncate max-w-[120px]">{item.name}</p>
                                 {isLeader && (
-                                  <span className="text-[8px] bg-teal-500/10 text-teal-400 border border-teal-500/20 px-1 py-0.2 rounded font-plus-jakarta font-semibold shrink-0">
+                                  <span className="text-[8px] bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20 px-1 py-0.2 rounded font-plus-jakarta font-semibold shrink-0">
                                     Beating Thesis
                                   </span>
                                 )}
@@ -1144,7 +1144,7 @@ export default function InsightsPage() {
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[9px] text-slate-500 uppercase tracking-wider">{item.phase}</p>
+                              <p className="text-[9px] text-[#6B6870] uppercase tracking-wider">{item.phase}</p>
                             </div>
                           </div>
 
@@ -1173,7 +1173,7 @@ export default function InsightsPage() {
                       <select
                         value={scatterXMetric}
                         onChange={(e) => setScatterXMetric(e.target.value as 'capRate' | 'dscr' | 'oer')}
-                        className="bg-[#121c21] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-slate-300 focus:outline-none"
+                        className="bg-[#161318] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-[#C0BEC2] focus:outline-none"
                       >
                         <option value="capRate">X: Cap Rate</option>
                         <option value="dscr">X: DSCR</option>
@@ -1184,7 +1184,7 @@ export default function InsightsPage() {
                       <select
                         value={scatterYMetric}
                         onChange={(e) => setScatterYMetric(e.target.value as 'cashOnCashReturn' | 'annualizedAppreciation' | 'irr')}
-                        className="bg-[#121c21] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-slate-300 focus:outline-none"
+                        className="bg-[#161318] border border-white/10 rounded px-2 py-1 text-[10px] font-light text-[#C0BEC2] focus:outline-none"
                       >
                         <option value="cashOnCashReturn">Y: Cash-on-Cash</option>
                         <option value="annualizedAppreciation">Y: Appreciation</option>
@@ -1207,13 +1207,13 @@ export default function InsightsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 border-t border-white/[0.03]">
                 {/* Short-Term Trend Chart */}
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01]">
-                  <h4 className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mb-2">Short-Term Historical Trend</h4>
+                  <h4 className="text-[10px] font-semibold text-[#9E9DA0] tracking-wider uppercase mb-2">Short-Term Historical Trend</h4>
                   <ShortTermTrendChart snapshots={snapshots} />
                 </div>
 
                 {/* Long-Term Trend Chart */}
                 <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01]">
-                  <h4 className="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mb-2">Long-Term Historical Trend</h4>
+                  <h4 className="text-[10px] font-semibold text-[#9E9DA0] tracking-wider uppercase mb-2">Long-Term Historical Trend</h4>
                   <LongTermTrendChart snapshots={snapshots} />
                 </div>
               </div>
@@ -1226,10 +1226,10 @@ export default function InsightsPage() {
           <div className="mt-6 p-6 rounded-xl border border-white/5 bg-white/[0.01] backdrop-blur-sm space-y-6 relative z-10 font-hanken">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-white/[0.04]">
               <div className="flex items-center gap-2.5">
-                <ShieldAlert className="w-5 h-5 text-teal-400" />
+                <ShieldAlert className="w-5 h-5 text-[#6E7480]" />
                 <div>
                   <h3 className="text-sm font-semibold tracking-wide text-white uppercase font-hanken">Attention Feed</h3>
-                  <p className="text-[11px] text-slate-400 font-light">Prioritized actionable system diagnostics and underwriting anomalies.</p>
+                  <p className="text-[11px] text-[#9E9DA0] font-light">Prioritized actionable system diagnostics and underwriting anomalies.</p>
                 </div>
               </div>
               
@@ -1239,7 +1239,7 @@ export default function InsightsPage() {
                 <select
                   value={attentionProject}
                   onChange={(e) => setAttentionProject(e.target.value)}
-                  className="bg-[#121c21] border border-white/10 text-slate-300 text-[11px] rounded-lg px-2.5 py-1.5 focus:border-teal-500 focus:outline-none font-light"
+                  className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-[11px] rounded-lg px-2.5 py-1.5 focus:border-[#454955] focus:outline-none font-light"
                 >
                   <option value="all">All Projects</option>
                   {filteredProjects.map((p) => (
@@ -1253,7 +1253,7 @@ export default function InsightsPage() {
                 <select
                   value={attentionPhase}
                   onChange={(e) => setAttentionPhase(e.target.value as 'all' | 'Acquisition' | 'Fund' | 'Hold' | 'Exit')}
-                  className="bg-[#121c21] border border-white/10 text-slate-300 text-[11px] rounded-lg px-2.5 py-1.5 focus:border-teal-500 focus:outline-none font-light"
+                  className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-[11px] rounded-lg px-2.5 py-1.5 focus:border-[#454955] focus:outline-none font-light"
                 >
                   <option value="all">All Phases</option>
                   <option value="Acquisition">Acquisition (Phase 1)</option>
@@ -1263,17 +1263,17 @@ export default function InsightsPage() {
                 </select>
 
                 {/* Risk Only checkbox */}
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white transition-colors bg-white/5 border border-white/5 hover:bg-white/10 rounded-lg px-2.5 py-1.5 font-hanken">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-[#C0BEC2] hover:text-white transition-colors bg-white/5 border border-white/5 hover:bg-white/10 rounded-lg px-2.5 py-1.5 font-hanken">
                   <input
                     type="checkbox"
                     checked={attentionRiskOnly}
                     onChange={(e) => setAttentionRiskOnly(e.target.checked)}
-                    className="rounded border-white/10 bg-white/5 text-teal-500 focus:ring-teal-500/20 w-3.5 h-3.5"
+                    className="rounded border-white/10 bg-white/5 text-[#454955] focus:ring-[#454955]/20 w-3.5 h-3.5"
                   />
                   <span className="text-[11px] font-light">Risk Only</span>
                 </label>
 
-                <span className="text-[10px] font-mono bg-white/5 px-2.5 py-1.5 rounded-lg text-slate-400 border border-white/[0.02]">
+                <span className="text-[10px] font-mono bg-white/5 px-2.5 py-1.5 rounded-lg text-[#9E9DA0] border border-white/[0.02]">
                   {deduplicatedAttentionInsights.length} active
                 </span>
               </div>
@@ -1282,8 +1282,8 @@ export default function InsightsPage() {
             {/* Attention Feed Alerts List */}
             <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
               {deduplicatedAttentionInsights.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 font-light text-xs flex flex-col items-center justify-center gap-2 font-hanken">
-                  <CheckCircle className="w-8 h-8 text-teal-500/40" />
+                <div className="py-12 text-center text-[#9E9DA0] font-light text-xs flex flex-col items-center justify-center gap-2 font-hanken">
+                  <CheckCircle className="w-8 h-8 text-[#454955]/40" />
                   <span>No active alerts fit the current filters. All metrics nominal.</span>
                 </div>
               ) : (
@@ -1304,14 +1304,14 @@ export default function InsightsPage() {
                     : sev === 'warning' 
                     ? 'text-amber-400' 
                     : sev === 'good' 
-                    ? 'text-teal-400' 
+                    ? 'text-[#6E7480]' 
                     : 'text-blue-400';
 
                   return (
                     <div key={sev} className="space-y-3 font-hanken">
-                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-slate-400 font-hanken">
+                      <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-[#9E9DA0] font-hanken">
                         <span className={`w-1.5 h-1.5 rounded-full ${
-                          sev === 'risk' ? 'bg-red-500' : sev === 'warning' ? 'bg-amber-500' : sev === 'good' ? 'bg-teal-500' : 'bg-blue-500'
+                          sev === 'risk' ? 'bg-red-500' : sev === 'warning' ? 'bg-amber-500' : sev === 'good' ? 'bg-[#454955]' : 'bg-blue-500'
                         }`} />
                         <span className={sectionColor}>{sectionTitle}</span>
                         <span className="text-slate-600">({groupItems.length})</span>
@@ -1328,7 +1328,7 @@ export default function InsightsPage() {
                             : isWarning 
                             ? 'border-amber-500/10 bg-amber-500/[0.02] hover:border-amber-500/20'
                             : isGood
-                            ? 'border-teal-500/10 bg-teal-500/[0.02] hover:border-teal-500/20'
+                            ? 'border-[#454955]/10 bg-[#454955]/[0.02] hover:border-[#454955]/20'
                             : 'border-white/5 bg-white/[0.01] hover:border-white/10';
 
                           const iconColor = isRisk 
@@ -1336,7 +1336,7 @@ export default function InsightsPage() {
                             : isWarning 
                             ? 'text-amber-400' 
                             : isGood
-                            ? 'text-teal-400' 
+                            ? 'text-[#6E7480]' 
                             : 'text-blue-400';
 
                           const IconComponent = isRisk 
@@ -1359,8 +1359,8 @@ export default function InsightsPage() {
                                     <div className="space-y-0.5">
                                       <span className="text-xs font-semibold text-white tracking-wide font-hanken block">{insight.headline}</span>
                                       {insight.projectName && (
-                                        <span className="text-[9px] uppercase tracking-wider text-slate-500 block">
-                                          Project: <span className="text-slate-300 font-light">{insight.projectName}</span>
+                                        <span className="text-[9px] uppercase tracking-wider text-[#6B6870] block">
+                                          Project: <span className="text-[#C0BEC2] font-light">{insight.projectName}</span>
                                         </span>
                                       )}
                                     </div>
@@ -1371,18 +1371,18 @@ export default function InsightsPage() {
                                       : isWarning 
                                       ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20'
                                       : isGood
-                                      ? 'bg-teal-500/15 text-teal-400 border border-teal-500/20'
-                                      : 'bg-white/5 text-slate-400'
+                                      ? 'bg-[#454955]/15 text-[#6E7480] border border-[#454955]/20'
+                                      : 'bg-white/5 text-[#9E9DA0]'
                                   }`}>
                                     {insight.kind}
                                   </span>
                                 </div>
-                                <p className="text-[11px] font-extralight text-slate-300 leading-relaxed font-hanken">{insight.detail}</p>
+                                <p className="text-[11px] font-extralight text-[#C0BEC2] leading-relaxed font-hanken">{insight.detail}</p>
                               </div>
 
                               {/* Recommended Action alerts */}
                               {insight.recommendedAction && (
-                                <div className="text-[10px] text-slate-300 bg-red-950/15 border border-red-500/10 p-2.5 rounded-lg flex items-start gap-2 font-light font-hanken">
+                                <div className="text-[10px] text-[#C0BEC2] bg-red-950/15 border border-red-500/10 p-2.5 rounded-lg flex items-start gap-2 font-light font-hanken">
                                   <Info className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
                                   <div>
                                     <span className="font-semibold text-slate-200 block mb-0.5">Recommended Action:</span>
@@ -1393,9 +1393,9 @@ export default function InsightsPage() {
 
                               {/* Figure vs. Benchmark & Links */}
                               <div className="space-y-2 pt-2 border-t border-white/[0.04]">
-                                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                                <div className="flex items-center justify-between text-[10px] text-[#9E9DA0] font-mono">
                                   <span>Value: <span className="text-white font-semibold">{insight.value}</span></span>
-                                  <span>Target: <span className="text-slate-300 font-semibold">{insight.benchmark}</span></span>
+                                  <span>Target: <span className="text-[#C0BEC2] font-semibold">{insight.benchmark}</span></span>
                                 </div>
 
                                 <div className="flex items-center justify-between gap-4 pt-1 font-hanken">
@@ -1403,7 +1403,7 @@ export default function InsightsPage() {
                                     {insight.projectId && (
                                       <Link
                                         href={`/dashboard/projects/${insight.projectId}`}
-                                        className="flex items-center gap-1 text-[10px] font-light text-slate-400 hover:text-teal-400 transition-colors"
+                                        className="flex items-center gap-1 text-[10px] font-light text-[#9E9DA0] hover:text-[#6E7480] transition-colors"
                                       >
                                         <span>Project Workspace</span>
                                         <ExternalLink className="w-2.5 h-2.5" />
@@ -1411,7 +1411,7 @@ export default function InsightsPage() {
                                     )}
                                     <Link
                                       href={`/dashboard/intelligence/${getMetricSlug(insight.metric)}`}
-                                      className="flex items-center gap-1 text-[10px] font-light text-slate-400 hover:text-blue-400 transition-colors"
+                                      className="flex items-center gap-1 text-[10px] font-light text-[#9E9DA0] hover:text-blue-400 transition-colors"
                                     >
                                       <span>Drill-down</span>
                                       <ExternalLink className="w-2.5 h-2.5" />
@@ -1424,18 +1424,18 @@ export default function InsightsPage() {
                                     disabled={sendingInbox[insight.id] || sentInbox[insight.id]}
                                     className={`flex items-center gap-1 px-2.5 py-1 rounded text-[10px] transition-all duration-200 ${
                                       sentInbox[insight.id]
-                                        ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20 cursor-default'
-                                        : 'bg-white/5 text-slate-300 border border-white/5 hover:bg-white/10 hover:text-white'
+                                        ? 'bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20 cursor-default'
+                                        : 'bg-white/5 text-[#C0BEC2] border border-white/5 hover:bg-white/10 hover:text-white'
                                     }`}
                                   >
                                     {sendingInbox[insight.id] ? (
                                       <>
-                                        <Loader2 className="w-3 h-3 animate-spin text-teal-400" />
+                                        <Loader2 className="w-3 h-3 animate-spin text-[#6E7480]" />
                                         <span>Assigning...</span>
                                       </>
                                     ) : sentInbox[insight.id] ? (
                                       <>
-                                        <Check className="w-3 h-3 text-teal-400" />
+                                        <Check className="w-3 h-3 text-[#6E7480]" />
                                         <span>In Inbox</span>
                                       </>
                                     ) : (

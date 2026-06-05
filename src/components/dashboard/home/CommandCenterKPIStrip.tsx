@@ -119,11 +119,11 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
     {
       label: 'Target IRR',
       icon: 'trending_up',
-      accentColor: '#57f1db',
-      accentFrom: 'from-[#57f1db]',
+      accentColor: '#454955',
+      accentFrom: 'from-[#454955]',
       value: kpis.irr > 0 ? `${kpis.irr.toFixed(1)}` : '--',
       suffix: kpis.irr > 0 ? '%' : '',
-      suffixColor: '#57f1db',
+      suffixColor: '#454955',
       delta: kpis.irr > 0 ? '+2.1%' : null,
       deltaLabel: 'vs last quarter',
       deltaPositive: true,
@@ -131,11 +131,11 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
     {
       label: 'Equity Multiple',
       icon: 'layers',
-      accentColor: '#adc6ff',
-      accentFrom: 'from-[#adc6ff]',
+      accentColor: '#7A9EAA',
+      accentFrom: 'from-[#7A9EAA]',
       value: kpis.equityMultiple > 0 ? `${kpis.equityMultiple.toFixed(1)}x` : '--',
       suffix: '',
-      suffixColor: '#adc6ff',
+      suffixColor: '#7A9EAA',
       delta: null,
       deltaLabel: kpis.equityMultiple > 0 ? `Projected ${(kpis.equityMultiple * 1.2).toFixed(1)}x` : 'On Track',
       deltaPositive: true,
@@ -147,7 +147,7 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
       accentFrom: 'from-[#ffac5a]',
       value: profit.whole,
       suffix: profit.suffix,
-      suffixColor: '#bacac5',
+      suffixColor: '#9E9DA0',
       delta: kpis.realizedProfit > 0 ? '+8.4%' : null,
       deltaLabel: 'YTD Growth',
       deltaPositive: true,
@@ -169,7 +169,7 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
           <div className="flex justify-between items-start mb-4">
             <span
               className="font-label-md text-[14px] tracking-wider"
-              style={{ color: '#bacac5', letterSpacing: '0.02em', fontWeight: 600 }}
+              style={{ color: '#9E9DA0', letterSpacing: '0.02em', fontWeight: 600 }}
             >
               {card.label}
             </span>
@@ -182,20 +182,17 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
           </div>
 
           <div>
-            <div
-              className="flex items-baseline gap-1"
-              style={{ fontFamily: 'var(--font-plus-jakarta)' }}
-            >
+            <div className="flex items-baseline gap-1 font-tabular">
               <span
                 className="text-[48px] leading-[56px] font-bold tracking-tight"
-                style={{ color: '#dae4ec', letterSpacing: '-0.02em' }}
+                style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.02em', fontFamily: 'var(--font-display)' }}
               >
                 {card.value}
               </span>
               {card.suffix && (
                 <span
-                  className="text-[24px] font-bold ml-1"
-                  style={{ color: card.suffixColor }}
+                  className="text-[24px] font-semibold ml-1"
+                  style={{ color: 'rgba(253,255,252,0.55)' }}
                 >
                   {card.suffix}
                 </span>
@@ -207,8 +204,8 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
                 <span
                   className="flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold"
                   style={{
-                    background: card.deltaPositive ? 'rgba(87,241,219,0.10)' : 'rgba(255,180,171,0.10)',
-                    color: card.deltaPositive ? card.accentColor : '#ffb4ab',
+                    background: card.deltaPositive ? 'rgba(63,125,32,0.15)' : 'rgba(240,101,67,0.15)',
+                    color: card.deltaPositive ? '#5aaa3f' : '#F06543',
                   }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
@@ -217,7 +214,7 @@ export default function CommandCenterKPIStrip({ projects, scope, period }: Comma
                   {card.delta}
                 </span>
               )}
-              <span style={{ color: '#859490' }}>{card.deltaLabel}</span>
+              <span style={{ color: 'rgba(253,255,252,0.38)' }}>{card.deltaLabel}</span>
             </div>
           </div>
         </div>

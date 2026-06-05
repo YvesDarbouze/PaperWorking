@@ -53,7 +53,7 @@ export function PortfolioSummaryBar({ projects, isLoading, className }: Portfoli
       <>
         <style dangerouslySetInnerHTML={{__html: `
           .luminous-glass-panel {
-            background: linear-gradient(135deg, rgba(45, 54, 61, 0.4) 0%, rgba(20, 29, 35, 0.6) 100%) !important;
+            background: linear-gradient(135deg, rgba(38, 35, 40, 0.4) 0%, rgba(22, 19, 24, 0.6) 100%) !important;
             backdrop-filter: blur(24px) !important;
             -webkit-backdrop-filter: blur(24px) !important;
             border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -100,7 +100,7 @@ export function PortfolioSummaryBar({ projects, isLoading, className }: Portfoli
     {
       key: 'acquisition',
       title: 'Acquisition',
-      dotClass: 'bg-primary-container shadow-[0_0_8px_rgba(32, 178, 170,0.6)]',
+      dotClass: 'bg-primary-container shadow-[0_0_8px_rgba(69, 73, 85,0.6)]',
       hoverTextClass: 'group-hover:text-primary-container',
       value: metrics.acquisition.val,
       count: metrics.acquisition.count,
@@ -143,7 +143,7 @@ export function PortfolioSummaryBar({ projects, isLoading, className }: Portfoli
     <>
       <style dangerouslySetInnerHTML={{__html: `
         .luminous-glass-panel {
-          background: linear-gradient(135deg, rgba(45, 54, 61, 0.4) 0%, rgba(20, 29, 35, 0.6) 100%) !important;
+          background: linear-gradient(135deg, rgba(38, 35, 40, 0.4) 0%, rgba(22, 19, 24, 0.6) 100%) !important;
           backdrop-filter: blur(24px) !important;
           -webkit-backdrop-filter: blur(24px) !important;
           border-top: 1px solid rgba(255, 255, 255, 0.12) !important;

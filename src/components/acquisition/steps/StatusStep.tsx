@@ -129,10 +129,10 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
 
       {/* Heading */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(218,228,236,0.95)", letterSpacing: "-0.02em" }}>
+        <h2 className="text-2xl font-bold tracking-tight mb-2" style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}>
           Where are you with this deal?
         </h2>
-        <p className="text-sm" style={{ color: "rgba(218,228,236,0.4)" }}>
+        <p className="text-sm" style={{ color: "rgba(253,255,252,0.4)" }}>
           {hasEntry ? "Advance through stages or jump to any point." : "Pick where you are right now."}
         </p>
       </div>
@@ -145,14 +145,14 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
               key={opt.value}
               onClick={() => handleEntry(opt.value)}
               className="flex items-center gap-3 px-4 py-4 rounded-xl text-left"
-              style={{ background: "rgba(20,29,35,0.7)", border: "1px solid rgba(255,255,255,0.09)" }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(87,241,219,0.25)")}
+              style={{ background: "rgba(22,19,24,0.7)", border: "1px solid rgba(255,255,255,0.09)" }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(69,73,85,0.25)")}
               onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)")}
             >
-              <span className="material-symbols-outlined text-[22px] flex-shrink-0" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 0" }}>
+              <span className="material-symbols-outlined text-[22px] flex-shrink-0" style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}>
                 {opt.icon}
               </span>
-              <span className="text-[14px] font-medium" style={{ color: "rgba(218,228,236,0.85)" }}>
+              <span className="text-[14px] font-medium" style={{ color: "rgba(253,255,252,0.85)" }}>
                 {opt.label}
               </span>
             </button>
@@ -168,16 +168,16 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
             onClick={() => setSkipPre(v => !v)}
             className="self-start flex items-center gap-2 text-[12px] px-3 py-1.5 rounded-lg"
             style={{
-              background: skipPre ? "rgba(255,255,255,0.05)" : "rgba(87,241,219,0.07)",
-              border:     `1px solid ${skipPre ? "rgba(255,255,255,0.08)" : "rgba(87,241,219,0.18)"}`,
-              color:      skipPre ? "rgba(218,228,236,0.4)" : "#57f1db",
+              background: skipPre ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.07)",
+              border:     `1px solid ${skipPre ? "rgba(255,255,255,0.08)" : "rgba(69,73,85,0.18)"}`,
+              color:      skipPre ? "rgba(253,255,252,0.4)" : "#454955",
             }}
           >
             <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0" }}>
               {skipPre ? "check_box_outline_blank" : "check_box"}
             </span>
             Include pre-possession
-            <span style={{ color: "rgba(218,228,236,0.3)", fontWeight: 400 }}> (optional stage)</span>
+            <span style={{ color: "rgba(253,255,252,0.3)", fontWeight: 400 }}> (optional stage)</span>
           </button>
 
           {/* Stepper */}
@@ -197,15 +197,15 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-3"
                       style={{
-                        background: isCur ? "#57f1db" : isPast ? "rgba(87,241,219,0.18)" : "rgba(255,255,255,0.06)",
-                        border: `2px solid ${isCur ? "#57f1db" : isPast ? "rgba(87,241,219,0.4)" : "rgba(255,255,255,0.1)"}`,
+                        background: isCur ? "#454955" : isPast ? "rgba(69,73,85,0.18)" : "rgba(255,255,255,0.06)",
+                        border: `2px solid ${isCur ? "#454955" : isPast ? "rgba(69,73,85,0.4)" : "rgba(255,255,255,0.1)"}`,
                       }}
                     >
-                      {isPast && <span className="material-symbols-outlined text-[11px]" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}>check</span>}
-                      {isCur  && <span className="w-2 h-2 rounded-full bg-[#0b141a]" />}
+                      {isPast && <span className="material-symbols-outlined text-[11px]" style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}>check</span>}
+                      {isCur  && <span className="w-2 h-2 rounded-full bg-[#0d0a0b]" />}
                     </div>
                     {!isLast && (
-                      <div className="w-px flex-1 mt-1 mb-0" style={{ background: isPast ? "rgba(87,241,219,0.2)" : "rgba(255,255,255,0.06)", minHeight: "16px" }} />
+                      <div className="w-px flex-1 mt-1 mb-0" style={{ background: isPast ? "rgba(69,73,85,0.2)" : "rgba(255,255,255,0.06)", minHeight: "16px" }} />
                     )}
                   </div>
 
@@ -214,23 +214,23 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
                     <div className="flex items-center gap-2 mb-0.5">
                       <span
                         className="text-[14px] font-semibold"
-                        style={{ color: isCur ? "#57f1db" : isFuture ? "rgba(218,228,236,0.3)" : "rgba(218,228,236,0.8)" }}
+                        style={{ color: isCur ? "#454955" : isFuture ? "rgba(253,255,252,0.3)" : "rgba(253,255,252,0.8)" }}
                       >
                         {ACQUISITION_STATUS_LABELS[s]}
                       </span>
                       {isOpt && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(218,228,236,0.3)" }}>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(255,255,255,0.05)", color: "rgba(253,255,252,0.3)" }}>
                           OPTIONAL
                         </span>
                       )}
                       {isCur && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(87,241,219,0.12)", color: "#57f1db" }}>
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ background: "rgba(69,73,85,0.12)", color: "#454955" }}>
                           CURRENT
                         </span>
                       )}
                     </div>
                     {(isCur || isPast) && ACQUISITION_STATUS_HELP[s] && (
-                      <p className="text-[12px] leading-relaxed" style={{ color: "rgba(218,228,236,0.38)" }}>
+                      <p className="text-[12px] leading-relaxed" style={{ color: "rgba(253,255,252,0.38)" }}>
                         {ACQUISITION_STATUS_HELP[s]}
                       </p>
                     )}
@@ -242,10 +242,10 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
 
           {/* Advance control */}
           {nextStatus && (
-            <div className="rounded-2xl p-5 space-y-4" style={{ background: "rgba(20,29,35,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <p className="text-[13px] font-semibold" style={{ color: "rgba(218,228,236,0.8)" }}>
+            <div className="rounded-2xl p-5 space-y-4" style={{ background: "rgba(22,19,24,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <p className="text-[13px] font-semibold" style={{ color: "rgba(253,255,252,0.8)" }}>
                 Ready to advance to{" "}
-                <span style={{ color: "#57f1db" }}>{ACQUISITION_STATUS_LABELS[nextStatus]}</span>?
+                <span style={{ color: "#454955" }}>{ACQUISITION_STATUS_LABELS[nextStatus]}</span>?
               </p>
               <textarea
                 rows={2}
@@ -253,7 +253,7 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
                 value={note}
                 onChange={e => setNote(e.target.value)}
                 className="w-full rounded-xl px-4 py-3 text-sm bg-transparent outline-none resize-none"
-                style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(218,228,236,0.85)" }}
+                style={{ background: "rgba(14,22,28,0.8)", border: "1px solid rgba(255,255,255,0.09)", color: "rgba(253,255,252,0.85)" }}
               />
               <div className="flex items-center gap-3">
                 <button
@@ -261,8 +261,8 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
                   disabled={recordMutation.isPending || !projectId}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
                   style={{
-                    background: (recordMutation.isPending || !projectId) ? "rgba(87,241,219,0.1)" : "#57f1db",
-                    color:      (recordMutation.isPending || !projectId) ? "#57f1db" : "#0b141a",
+                    background: (recordMutation.isPending || !projectId) ? "rgba(69,73,85,0.1)" : "#454955",
+                    color:      (recordMutation.isPending || !projectId) ? "#454955" : "#0d0a0b",
                     opacity:    !projectId ? 0.45 : 1,
                     cursor:     !projectId ? "not-allowed" : "pointer",
                   }}
@@ -271,7 +271,7 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
                   <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </button>
                 {!projectId && (
-                  <p className="text-[11px]" style={{ color: "rgba(218,228,236,0.3)" }}>
+                  <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.3)" }}>
                     Complete the Address step to record events.
                   </p>
                 )}
@@ -282,20 +282,20 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
           {/* Event history */}
           {events.length > 0 && (
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(218,228,236,0.3)", letterSpacing: "0.08em" }}>
+              <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: "rgba(253,255,252,0.3)", letterSpacing: "0.08em" }}>
                 Status History
               </p>
               <div className="space-y-2">
                 {events.map(ev => (
                   <div key={ev.id} className="flex items-start gap-3 px-4 py-3 rounded-xl" style={{ background: "rgba(14,22,28,0.5)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                    <span className="material-symbols-outlined text-[14px] mt-0.5 flex-shrink-0" style={{ color: "#57f1db", fontVariationSettings: "'FILL' 1" }}>history</span>
+                    <span className="material-symbols-outlined text-[14px] mt-0.5 flex-shrink-0" style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}>history</span>
                     <div className="flex-1 min-w-0">
-                      <span className="text-[13px] font-medium" style={{ color: "rgba(218,228,236,0.85)" }}>
+                      <span className="text-[13px] font-medium" style={{ color: "rgba(253,255,252,0.85)" }}>
                         {ACQUISITION_STATUS_LABELS[ev.status as AcquisitionStatus] ?? ev.status}
                       </span>
-                      {ev.note && <p className="text-[12px] mt-0.5" style={{ color: "rgba(218,228,236,0.4)" }}>{ev.note}</p>}
+                      {ev.note && <p className="text-[12px] mt-0.5" style={{ color: "rgba(253,255,252,0.4)" }}>{ev.note}</p>}
                     </div>
-                    <span className="text-[11px] flex-shrink-0" style={{ color: "rgba(218,228,236,0.25)" }}>{timeAgo(ev.occurredAt)}</span>
+                    <span className="text-[11px] flex-shrink-0" style={{ color: "rgba(253,255,252,0.25)" }}>{timeAgo(ev.occurredAt)}</span>
                   </div>
                 ))}
               </div>
@@ -309,7 +309,7 @@ export function StatusStep({ onNext }: { onNext: () => void }) {
         <button
           onClick={() => { if (hasEntry) setStepDone("status"); onNext(); }}
           className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold"
-          style={{ background: "#57f1db", color: "#0b141a" }}
+          style={{ background: "#454955", color: "#0d0a0b" }}
         >
           {hasEntry ? "Continue" : "Skip for now"}
           <span className="material-symbols-outlined text-[18px]">arrow_forward</span>

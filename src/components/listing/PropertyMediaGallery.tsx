@@ -92,7 +92,7 @@ const PropertyMediaGallery: React.FC<PropertyMediaGalleryProps> = ({
                 key={i}
                 onClick={() => setActiveIndex(i)}
                 className={`flex-shrink-0 w-16 h-10 rounded-lg overflow-hidden border-2 transition-all ${
-                  activeIndex === i ? 'border-[#20B2AA] scale-105 shadow-lg' : 'border-transparent opacity-50 grayscale hover:opacity-100 hover:grayscale-0'
+                  activeIndex === i ? 'border-[#454955] scale-105 shadow-lg' : 'border-transparent opacity-50 grayscale hover:opacity-100 hover:grayscale-0'
                 }`}
               >
                 <img src={url} className="w-full h-full object-cover" />

@@ -34,7 +34,7 @@ const DEFAULT_EXIT_COSTS: ExitCostLineItem[] = [
 
 const CATEGORY_COLORS: Record<ExitCostCategory, string> = {
   'Broker Fee': 'text-blue-600 bg-blue-50',
-  Staging: 'text-[#20B2AA] bg-[#20B2AA]/10',
+  Staging: 'text-[#454955] bg-[#454955]/10',
   Marketing: 'text-amber-600 bg-amber-50',
   'Buyer Concessions': 'text-red-600 bg-red-50',
   Other: 'text-text-secondary bg-bg-primary',

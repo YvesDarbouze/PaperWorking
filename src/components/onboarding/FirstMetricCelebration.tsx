@@ -110,23 +110,23 @@ export function FirstMetricCelebration({
       <div
         className="relative z-10 w-full max-w-md rounded-2xl border border-white/15 overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, rgba(18, 28, 35, 0.97) 0%, rgba(11, 20, 26, 0.99) 100%)',
+          background: 'linear-gradient(135deg, rgba(18, 28, 35, 0.97) 0%, rgba(13, 10, 11, 0.99) 100%)',
           backdropFilter: 'blur(24px)',
-          boxShadow: '0 25px 60px -10px rgba(0, 0, 0, 0.6), 0 0 50px -5px rgba(87, 241, 219, 0.1)',
+          boxShadow: '0 25px 60px -10px rgba(0, 0, 0, 0.6), 0 0 50px -5px rgba(69, 73, 85, 0.1)',
           animation: isClosing ? '' : 'celebration-scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
         {/* Close button */}
         <button
           onClick={handleDismiss}
-          className="absolute top-4 right-4 text-[#bacac5]/60 hover:text-white transition-colors p-1 z-10"
+          className="absolute top-4 right-4 text-[#9E9DA0]/60 hover:text-white transition-colors p-1 z-10"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Hero Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[120px] bg-[#57f1db]/20 blur-[80px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[120px] bg-[#454955]/20 blur-[80px] rounded-full pointer-events-none" />
 
         {/* Content */}
         <div className="relative p-8 text-center space-y-6">
@@ -134,12 +134,12 @@ export function FirstMetricCelebration({
           <div
             className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, rgba(87, 241, 219, 0.2) 0%, rgba(87, 241, 219, 0.08) 100%)',
-              boxShadow: '0 0 30px rgba(87, 241, 219, 0.2)',
+              background: 'linear-gradient(135deg, rgba(69, 73, 85, 0.2) 0%, rgba(69, 73, 85, 0.08) 100%)',
+              boxShadow: '0 0 30px rgba(69, 73, 85, 0.2)',
               animation: 'celebration-bounce 1.5s ease-in-out infinite',
             }}
           >
-            <Rocket className="w-8 h-8 text-[#57f1db]" style={{ animation: 'celebration-rocket 1.5s ease-in-out infinite' }} />
+            <Rocket className="w-8 h-8 text-[#454955]" style={{ animation: 'celebration-rocket 1.5s ease-in-out infinite' }} />
           </div>
 
           {/* Text */}
@@ -147,7 +147,7 @@ export function FirstMetricCelebration({
             <h2 className="text-[24px] leading-[32px] font-bold text-white tracking-tight">
               Your first metric is live!
             </h2>
-            <p className="text-[14px] leading-[22px] text-[#bacac5] max-w-sm mx-auto">
+            <p className="text-[14px] leading-[22px] text-[#9E9DA0] max-w-sm mx-auto">
               PaperWorking is now tracking your deal in real-time. As market data
               changes, your metrics update automatically.
             </p>
@@ -155,11 +155,11 @@ export function FirstMetricCelebration({
 
           {/* Live Metric Preview */}
           <div
-            className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-[#57f1db]/20"
-            style={{ background: 'rgba(87, 241, 219, 0.06)' }}
+            className="inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-[#454955]/20"
+            style={{ background: 'rgba(69, 73, 85, 0.06)' }}
           >
             <div className="w-2 h-2 rounded-full bg-[#4ADE80] animate-pulse" />
-            <span className="text-[13px] font-medium text-[#57f1db] uppercase tracking-wider">
+            <span className="text-[13px] font-medium text-[#454955] uppercase tracking-wider">
               LIVE
             </span>
           </div>
@@ -170,9 +170,9 @@ export function FirstMetricCelebration({
               onClick={handleAddProject}
               className="w-full flex items-center justify-center gap-2 h-12 rounded-xl text-[14px] font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
               style={{
-                background: 'linear-gradient(135deg, #3cddc7 0%, #57f1db 100%)',
-                color: '#091015',
-                boxShadow: '0 4px 20px rgba(87, 241, 219, 0.3)',
+                background: 'linear-gradient(135deg, #454955 0%, #454955 100%)',
+                color: '#0d0a0b',
+                boxShadow: '0 4px 20px rgba(69, 73, 85, 0.3)',
               }}
             >
               <Plus className="w-4 h-4" />
@@ -181,7 +181,7 @@ export function FirstMetricCelebration({
 
             <button
               onClick={handleInvite}
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl text-[14px] font-semibold border border-white/10 text-[#dae4ec] hover:bg-white/5 transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl text-[14px] font-semibold border border-white/10 text-[#9E9DA0] hover:bg-white/5 transition-all duration-200"
             >
               <UserPlus className="w-4 h-4" />
               Invite a Vendor
@@ -189,7 +189,7 @@ export function FirstMetricCelebration({
 
             <button
               onClick={handleDismiss}
-              className="text-[12px] text-[#bacac5]/60 hover:text-[#bacac5] transition-colors pt-1"
+              className="text-[12px] text-[#9E9DA0]/60 hover:text-[#9E9DA0] transition-colors pt-1"
             >
               Continue exploring
             </button>
@@ -223,10 +223,10 @@ export function FirstMetricCelebration({
 /* ── Confetti Generation ── */
 
 const CONFETTI_COLORS = [
-  '#57f1db', // teal
+  '#454955', // teal
   '#D4A843', // gold
   '#4ADE80', // green
-  '#20B2AA', // brand secondary accent
+  '#454955', // brand secondary accent
   '#60A5FA', // blue
   '#F06543', // red
   '#FBBF24', // amber

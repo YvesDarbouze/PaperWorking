@@ -26,7 +26,7 @@ const PHASE_COLORS: Record<number, { stripe: string; glow: string; label: string
   1: { stripe: '#3B82F6', glow: 'rgba(59,130,246,0.15)', label: 'Acquisition' },
   2: { stripe: '#3f7d20', glow: 'rgba(63, 125, 32,0.15)', label: 'Purchase' },
   3: { stripe: '#F59E0B', glow: 'rgba(245,158,11,0.15)', label: 'Hold' },
-  4: { stripe: '#20B2AA', glow: 'rgba(32, 178, 170,0.15)', label: 'Exit' },
+  4: { stripe: '#454955', glow: 'rgba(69, 73, 85,0.15)', label: 'Exit' },
 };
 
 /* ── Strategy to display label ── */
@@ -175,13 +175,13 @@ export function ProjectCard({
             <div className="min-w-0 flex-1">
               <h3
                 className={`font-semibold truncate tracking-tight ${isCompact ? 'text-sm' : 'text-base'}`}
-                style={{ color: 'rgba(218,228,236,0.95)' }}
+                style={{ color: 'rgba(253,255,252,0.95)' }}
               >
                 {project.propertyName}
               </h3>
               <p
                 className="text-[11px] truncate mt-0.5 flex items-center gap-1"
-                style={{ color: 'rgba(218,228,236,0.45)' }}
+                style={{ color: 'rgba(253,255,252,0.45)' }}
               >
                 <span className="material-symbols-outlined text-[12px]">location_on</span>
                 {project.address}
@@ -216,7 +216,7 @@ export function ProjectCard({
               className="px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider"
               style={{
                 backgroundColor: 'rgba(255,255,255,0.06)',
-                color: 'rgba(218,228,236,0.6)',
+                color: 'rgba(253,255,252,0.6)',
               }}
             >
               {assetLabel}
@@ -250,8 +250,8 @@ export function ProjectCard({
               <span
                 className="px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider"
                 style={{
-                  backgroundColor: 'rgba(32, 178, 170,0.1)',
-                  color: '#20B2AA',
+                  backgroundColor: 'rgba(69, 73, 85,0.1)',
+                  color: '#454955',
                 }}
               >
                 {ownership}% owned
@@ -274,11 +274,11 @@ export function ProjectCard({
           {/* Compact KPI row */}
           {showKPIs && state !== 'draft' && metrics && isCompact && (
             <div className="flex items-center gap-4 mt-auto">
-              <span className="text-[10px] font-medium" style={{ color: 'rgba(218,228,236,0.5)' }}>
-                NOI <span className="text-[11px] font-bold" style={{ color: 'rgba(218,228,236,0.85)', fontVariantNumeric: 'tabular-nums' }}>{fmtCurrency(noiValue)}</span>
+              <span className="text-[10px] font-medium" style={{ color: 'rgba(253,255,252,0.5)' }}>
+                NOI <span className="text-[11px] font-bold" style={{ color: 'rgba(253,255,252,0.85)', fontVariantNumeric: 'tabular-nums' }}>{fmtCurrency(noiValue)}</span>
               </span>
-              <span className="text-[10px] font-medium" style={{ color: 'rgba(218,228,236,0.5)' }}>
-                Cap <span className="text-[11px] font-bold" style={{ color: 'rgba(218,228,236,0.85)', fontVariantNumeric: 'tabular-nums' }}>{capRateValue.toFixed(1)}%</span>
+              <span className="text-[10px] font-medium" style={{ color: 'rgba(253,255,252,0.5)' }}>
+                Cap <span className="text-[11px] font-bold" style={{ color: 'rgba(253,255,252,0.85)', fontVariantNumeric: 'tabular-nums' }}>{capRateValue.toFixed(1)}%</span>
               </span>
             </div>
           )}
@@ -287,10 +287,10 @@ export function ProjectCard({
           {state === 'draft' && !isCompact && (
             <div className="mt-auto pt-3 space-y-1.5" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
               <div className="flex justify-between items-end">
-                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(218,228,236,0.5)' }}>
+                <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(253,255,252,0.5)' }}>
                   Setup Progress
                 </span>
-                <span className="text-[10px] font-mono" style={{ color: 'rgba(218,228,236,0.4)', fontVariantNumeric: 'tabular-nums' }}>
+                <span className="text-[10px] font-mono" style={{ color: 'rgba(253,255,252,0.4)', fontVariantNumeric: 'tabular-nums' }}>
                   {wizardCompletion}%
                 </span>
               </div>
@@ -333,13 +333,13 @@ function KPIMiniCell({ label, value }: { label: string; value: string }) {
     <div>
       <p
         className="text-[9px] font-semibold uppercase tracking-wider mb-0.5"
-        style={{ color: 'rgba(218,228,236,0.4)' }}
+        style={{ color: 'rgba(253,255,252,0.4)' }}
       >
         {label}
       </p>
       <p
         className="text-sm font-bold"
-        style={{ color: 'rgba(218,228,236,0.9)', fontVariantNumeric: 'tabular-nums' }}
+        style={{ color: 'rgba(253,255,252,0.9)', fontVariantNumeric: 'tabular-nums' }}
       >
         {value}
       </p>

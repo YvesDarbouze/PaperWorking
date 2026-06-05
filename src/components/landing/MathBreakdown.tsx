@@ -26,7 +26,7 @@ function SliderRow({
   step,
   format,
   onChange,
-  color = '#20B2AA',
+  color = '#454955',
 }: {
   label: string;
   value: number;
@@ -186,7 +186,7 @@ export default function MathBreakdown() {
 
               {/* Sliders */}
               <div className="space-y-5 mb-7">
-                <SliderRow label="Purchase Price" value={pp}  min={50_000}  max={500_000} step={5_000}  format={fmt$}   onChange={setPP}  color="#20B2AA" />
+                <SliderRow label="Purchase Price" value={pp}  min={50_000}  max={500_000} step={5_000}  format={fmt$}   onChange={setPP}  color="#454955" />
                 <SliderRow label="Rehab Budget"   value={rh}  min={0}       max={150_000} step={1_000}  format={fmt$}   onChange={setRH}  color="#818cf8" />
                 <SliderRow label="Hold Period"    value={mo}  min={1}       max={24}      step={1}      format={fmtMo}  onChange={setMo}  color="#fb923c" />
                 <SliderRow label="Closing Costs"  value={cp}  min={1}       max={12}      step={0.5}    format={fmtPct} onChange={setCP}  color="#F06543" />
@@ -245,7 +245,7 @@ export default function MathBreakdown() {
               {/* CTA */}
               <a
                 href="/signup"
-                className="mt-5 w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-[#20B2AA] text-[#003731] font-bold text-sm uppercase tracking-widest hover:bg-[#57f1db] transition-colors"
+                className="mt-5 w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-[#454955] text-[#0d0a0b] font-bold text-sm uppercase tracking-widest hover:bg-[#454955] transition-colors"
               >
                 Analyze Your Deal Free
                 <ArrowUpRight className="w-4 h-4" />

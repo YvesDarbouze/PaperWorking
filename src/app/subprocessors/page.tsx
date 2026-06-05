@@ -70,7 +70,7 @@ export default function SubprocessorsPage() {
         </p>
 
         {/* Table of Subprocessors */}
-        <div className="overflow-x-auto rounded-2xl border border-white/10" style={{ background: 'rgba(20,29,35,0.4)', backdropFilter: 'blur(16px)' }}>
+        <div className="overflow-x-auto rounded-2xl border border-white/10" style={{ background: 'rgba(22,19,24,0.4)', backdropFilter: 'blur(16px)' }}>
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/10 bg-white/5 font-label-sm text-label-sm text-on-surface uppercase tracking-wider">

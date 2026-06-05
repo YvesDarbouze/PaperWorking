@@ -96,3 +96,11 @@ scratch/
 /test-results/
 /test-fixtures/
 
+# Local credentials and screenshots
+firebase-key 2.json
+/screenshots/
+screenshot-dashboard.mjs
+jest.setup 2.ts
+
+
+

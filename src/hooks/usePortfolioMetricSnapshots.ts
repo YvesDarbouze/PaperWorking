@@ -22,6 +22,7 @@ export interface PortfolioMetricSnapshot {
   ltv: number | null;
   oer: number | null;
   occupancyRate: number | null;
+  vacancyRate: number | null;
   irr: number | null;
   appreciation: number | null;
 
@@ -53,13 +54,14 @@ export function usePortfolioMetricSnapshots(
   const { profile } = useAuth();
   const { activeTenantId } = useTenant();
   const [snapshots, setSnapshots] = useState<PortfolioMetricSnapshot[]>([]);
+  const [rawSnapshots, setRawSnapshots] = useState<PropertyMetricSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const orgId = activeTenantId;
     if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
-      setSnapshots([
+      const demoPortfolioSnapshots = [
         {
           organizationId: 'org_demo_seed',
           period: '2026-01',
@@ -141,7 +143,53 @@ export function usePortfolioMetricSnapshots(
           occupiedUnits: 10,
           numberOfUnits: 10,
         }
-      ] as any[]);
+      ] as any[];
+
+      setSnapshots(demoPortfolioSnapshots);
+
+      const demoProjects = projects && projects.length > 0 ? projects : [
+        { id: 'proj_demo_1', propertyName: 'Demo Property 1' },
+        { id: 'proj_demo_2', propertyName: 'Demo Property 2' }
+      ] as any[];
+
+      const mockRaw: PropertyMetricSnapshot[] = [];
+      demoPortfolioSnapshots.forEach((ps) => {
+        demoProjects.forEach((proj, idx) => {
+          const multiplier = 0.9 + (idx * 0.2); // project 1 gets 0.9x, project 2 gets 1.1x
+          mockRaw.push({
+            id: `snap_${proj.id}_${ps.period}`,
+            projectId: proj.id,
+            organizationId: ps.organizationId,
+            period: ps.period,
+            periodType: ps.periodType,
+            date: ps.date,
+            noi: ps.noi ? ps.noi * multiplier : null,
+            annualCashFlow: ps.annualCashFlow ? ps.annualCashFlow * multiplier : null,
+            monthlyCashFlow: ps.monthlyCashFlow ? ps.monthlyCashFlow * multiplier : null,
+            capRate: ps.capRate ? ps.capRate * multiplier : null,
+            cashOnCashReturn: ps.cashOnCashReturn ? ps.cashOnCashReturn * multiplier : null,
+            grossRentMultiplier: ps.grossRentMultiplier ? ps.grossRentMultiplier / multiplier : null,
+            dscr: ps.dscr ? ps.dscr * multiplier : null,
+            ltv: ps.ltv ? ps.ltv * multiplier : null,
+            oer: ps.oer ? ps.oer / multiplier : null,
+            occupancyRate: ps.occupancyRate ? Math.min(100, ps.occupancyRate * multiplier) : null,
+            vacancyRate: ps.occupancyRate ? 100 - Math.min(100, ps.occupancyRate * multiplier) : null,
+            irr: ps.irr ? ps.irr * multiplier : null,
+            appreciation: ps.appreciation ? ps.appreciation * multiplier : null,
+            propertyValue: ps.propertyValue ? ps.propertyValue * multiplier : null,
+            totalCashInvested: ps.totalCashInvested ? ps.totalCashInvested * multiplier : null,
+            grossRentalIncome: ps.grossRentalIncome ? ps.grossRentalIncome * multiplier : null,
+            annualDebtService: ps.annualDebtService ? ps.annualDebtService * multiplier : null,
+            loanAmount: ps.loanAmount ? ps.loanAmount * multiplier : null,
+            totalOperatingExpenses: ps.totalOperatingExpenses ? ps.totalOperatingExpenses * multiplier : null,
+            grossOperatingIncome: ps.grossOperatingIncome ? ps.grossOperatingIncome * multiplier : null,
+            occupiedUnits: ps.occupiedUnits ? Math.round(ps.occupiedUnits * multiplier) : null,
+            numberOfUnits: ps.numberOfUnits ? Math.round(ps.numberOfUnits * multiplier) : null,
+          } as any);
+        });
+      });
+
+      setRawSnapshots(mockRaw);
       setLoading(false);
       return;
     }
@@ -457,6 +505,7 @@ export function usePortfolioMetricSnapshots(
             ltv,
             oer,
             occupancyRate,
+            vacancyRate: occupancyRate !== null ? 100 - occupancyRate : null,
             irr,
             appreciation,
 
@@ -480,6 +529,7 @@ export function usePortfolioMetricSnapshots(
           return a.period.localeCompare(b.period);
         });
 
+        setRawSnapshots(filteredDocs);
         setSnapshots(sortedAggregated);
         setLoading(false);
       },
@@ -493,5 +543,5 @@ export function usePortfolioMetricSnapshots(
     return () => unsubscribe();
   }, [activeTenantId, periodType, projects, scope]);
 
-  return { snapshots, loading, error };
+  return { snapshots, rawSnapshots, loading, error };
 }

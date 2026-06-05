@@ -38,6 +38,7 @@ export interface DerivedMetrics {
   oer: number;                    // Percentage (0–100) Operating Expense Ratio
   annualizedAppreciation: number;  // Annualized % change in value
   isAppreciationRealized: boolean; // True if sold, false if estimated
+  irr: number | null;
 
   // Supplemental
   arvSpread: number;              // ARV - All-In Cost
@@ -698,6 +699,26 @@ export function deriveAllMetrics(
     yearsHeld
   );
 
+  // Calculate IRR
+  let irr: number | null = null;
+  if (totalCashInvested > 0) {
+    const holdYears = Math.max(1, Math.round(yearsHeld));
+    const irrCashFlows = buildIRRCashFlows(
+      totalCashInvested,
+      annualCashFlow,
+      holdYears,
+      purchasePrice,
+      annualizedAppreciation,
+      loanAmount,
+      loanInterestRate,
+      financials.loanTermYears ?? 30
+    );
+    const irrValue = computeIRR(irrCashFlows);
+    if (irrValue !== null) {
+      irr = irrValue * 100; // Return as percentage (e.g. 12.5 instead of 0.125)
+    }
+  }
+
   return {
     noi,
     annualCashFlow,
@@ -722,6 +743,7 @@ export function deriveAllMetrics(
     healthScore,
     annualizedAppreciation,
     isAppreciationRealized,
+    irr,
   };
 }
 

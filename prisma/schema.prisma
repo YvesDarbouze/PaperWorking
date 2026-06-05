@@ -435,3 +435,200 @@ model RehabDocument {
   
   @@index([rehabProjectId])
 }
+
+// ── REIL Acquisition Models ───────────────────────────────────────────────────
+// These models back the Create-Project wizard and the full acquisition pipeline.
+// Separate from the Firestore-based Project; co-exists in the Neon DB alongside
+// DealFinancials and the MLS bridge models above.
+
+enum AcquisitionStatus {
+  PROSPECT
+  OFFER_MADE
+  UNDER_CONTRACT
+  DUE_DILIGENCE
+  CLEAR_TO_CLOSE
+  PRE_POSSESSION
+  OWNED
+  // Legacy values — kept for backward compat with existing rows
+  UNDERWRITING
+  CLOSED
+  DEAD
+}
+
+enum OwnershipStructure {
+  SOLE_SEVERALTY
+  JOINT_TENANCY
+  TENANCY_IN_COMMON
+  TENANCY_BY_ENTIRETY
+  COMMUNITY_PROPERTY
+  ENTITY
+  // Legacy values — kept for backward compat
+  SOLE_OWNER
+  JOINT_VENTURE
+  LLC
+  LP
+  TRUST
+  SYNDICATION
+}
+
+enum MemberRole {
+  OWNER
+  PARTNER
+  ANALYST
+  VIEWER
+}
+
+enum SellerResponse {
+  PENDING
+  ACCEPTED
+  COUNTERED
+  REJECTED
+}
+
+enum FieldStatus {
+  OPEN
+  FILLED
+}
+
+model AppUser {
+  id         String   @id  // Firebase UID
+  email      String   @unique
+  name       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  projects         ReilProject[]
+  collaborations   ProjectCollaborator[]
+  fieldAssignedTo  FieldAssignment[]    @relation("FieldAssignedTo")
+  fieldAssignedBy  FieldAssignment[]    @relation("FieldAssignedBy")
+  statusEvents     StatusEvent[]
+}
+
+model ReilProject {
+  id                 String              @id @default(uuid())
+  addressLine        String              @default("")
+  city               String              @default("")
+  state              String              @default("")
+  zip                String              @default("")
+  lat                Float?
+  lng                Float?
+  placeId            String?
+  displayName        String?
+  acquisitionStatus  AcquisitionStatus   @default(PROSPECT)
+  ownershipStructure OwnershipStructure?
+  entityType         String?   // e.g. "LLC", "Trust", "Corporation" — set when ENTITY selected
+  entityName         String?   // name of the holding entity
+  coOwners           String[]  // free-text co-owner names (linked to Members in a later phase)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  createdById        String
+
+  createdBy       AppUser               @relation(fields: [createdById], references: [id])
+  propertyFacts   ReilPropertyFacts?
+  comps           ReilComp[]
+  purchaseTerms   ReilPurchaseTerms?
+  statusEvents    StatusEvent[]
+  collaborators   ProjectCollaborator[]
+  fieldAssignments FieldAssignment[]
+
+  @@index([createdById])
+  @@index([acquisitionStatus])
+}
+
+model ReilPropertyFacts {
+  id                 String      @id @default(uuid())
+  projectId          String      @unique
+  photoUrl           String?
+  beds               Int?
+  baths              Float?
+  sqft               Int?
+  yearBuilt          Int?
+  lotSqft            Int?
+  propertyType       String?
+  listPriceCents     BigInt?
+  estRentCents       BigInt?
+  lastSoldPriceCents BigInt?
+  lastSoldDate       DateTime?
+  sourceProvider     String?
+  fetchedAt          DateTime?
+
+  project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ReilComp {
+  id             String      @id @default(uuid())
+  projectId      String
+  addressLine    String
+  soldPriceCents BigInt
+  soldDate       DateTime
+  beds           Int?
+  baths          Float?
+  sqft           Int?
+  distanceMiles  Float?
+
+  project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model ReilPurchaseTerms {
+  id                   String         @id @default(uuid())
+  projectId            String         @unique
+  offerMadeCents       BigInt?
+  offerDate            DateTime?
+  sellerResponse       SellerResponse @default(PENDING)
+  counterPriceCents    BigInt?
+  acceptedPriceCents   BigInt?
+  earnestMoneyCents    BigInt?
+  estClosingCostsCents BigInt?
+  amountPaidCents      BigInt?
+
+  project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model StatusEvent {
+  id           String            @id @default(uuid())
+  projectId    String
+  status       AcquisitionStatus
+  note         String?
+  occurredAt   DateTime          @default(now())
+  recordedById String
+
+  project    ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  recordedBy AppUser     @relation(fields: [recordedById], references: [id])
+
+  @@index([projectId])
+}
+
+model ProjectCollaborator {
+  id         String     @id @default(uuid())
+  projectId  String
+  userId     String
+  role       MemberRole @default(VIEWER)
+  invitedAt  DateTime   @default(now())
+  acceptedAt DateTime?
+
+  project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    AppUser     @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+model FieldAssignment {
+  id           String      @id @default(uuid())
+  projectId    String
+  fieldKey     String
+  assignedToId String
+  assignedById String
+  status       FieldStatus @default(OPEN)
+  createdAt    DateTime    @default(now())
+
+  project    ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignedTo AppUser     @relation("FieldAssignedTo", fields: [assignedToId], references: [id])
+  assignedBy AppUser     @relation("FieldAssignedBy", fields: [assignedById], references: [id])
+
+  @@index([projectId])
+  @@index([assignedToId])
+}

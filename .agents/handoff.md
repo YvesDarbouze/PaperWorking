@@ -1,7 +1,83 @@
-# Agent Handoff — P0 Reconciliation Complete
+# Agent Handoff — Portfolio Dashboard Redesign (R-13 closed)
 
-**Last Updated**: 2026-06-02  
-**Agent**: Claude Code (Logic Lens discipline)
+**Last Updated**: 2026-06-04  
+**Agent**: Claude Code (UX-Design + Logic Lens discipline)
+
+## Status: P1 R-13 Closed — Portfolio Dashboard 5-Zone Redesign
+
+### What Was Done This Session
+
+1. **Portfolio Dashboard redesign** — `CommandCenter.tsx` rebuilt as 5-zone layout:
+   - Zone A: Page header with live pulse + active deal count
+   - Zone B: 5-card KPI strip — IRR, Equity Multiple, Capital Deployed, **Total NOI** (new), **Portfolio Cash Flow** (new)
+   - Zone C: **NeedsAttentionFeed** (P1 R-13 — built fresh)
+   - Zone D: 8/12 + 4/12 two-col — ActivePipeline | InboxStrip + TopPerformersWidget
+   - Zone E: TerminalAuditFeed (1/3) + MarketHeatmap (2/3)
+
+2. **New files created** (TypeScript clean, 0 errors):
+   - `src/components/dashboard/command-center/NeedsAttentionFeed.tsx`
+     - Derives attention items from: contingency deadlines ≤7 days, rehab budget overruns, overdue actionItems, phase-gate blocks (phase 2 + no loan)
+     - Priority tiers: critical (red) / warning (warm) / info (blue)
+     - AnimatePresence expand/collapse, max 10 items
+   - `src/components/dashboard/command-center/TopPerformersWidget.tsx`
+     - Ranks projects by CoC (toggle: CoC / IRR) using `deriveAllMetrics`
+     - Top 5 sorted descending, empty state
+   - `src/components/dashboard/command-center/CommandCenter.tsx` (refactored)
+     - `usePortfolioKPIs` extended: adds `totalNOI` (rental/hold-phase projects via `computeNOIComponents`) and `portfolioCashFlow` (monthly sum)
+     - `grid-cols-3` → `grid-cols-5` for KPI strip
+     - InboxStrip inline component (pointer to /dashboard/inbox, real SmartInboxWidget lives in home/)
+
+### TypeScript Status
+- `tsc --noEmit --skipLibCheck`: **exit 0, zero errors**
+
+### Remaining Open Gaps (unchanged from prior session)
+- P1: R-09 Data completion outreach engine
+- P1: R-10 MFA not implemented
+- P1: R-11 Marketplace density gate
+- P1: R-12 PostHog funnel events not firing
+- P1: R-15 Phase URLs still `phase-1/2/3/4` — should be `/acquisition` etc.
+- P2: R-17 Project schema flat vs nested
+- P2: R-19 Property-based test suite
+
+**R-13 "Needs Attention feed" and "Top Performers" — CLOSED this session.**
+
+---
+
+---
+
+# Prior Session: REIL Wizard Prompts 1–9 (2026-06-04)
+
+## Status: Prompts 1–9 closed; property provider abstraction tested
+
+### New files this session (REIL acquisition wizard)
+- `src/lib/enums.ts` — AcquisitionStatus pipeline, OwnershipCards, STATUS_ENTRY_OPTIONS
+- `src/lib/db/projects.ts` — full CRUD + StatusEvent + PurchaseTerms + FieldAssignment + Collaborator helpers
+- `src/lib/providers/address.ts` — AddressProvider interface + MockAddressProvider (20 US addresses)
+- `src/lib/providers/property.ts` — PropertyDataProvider + Mock + RentCast/ATTOM/Mashvisor skeletons + getPropertyProvider() factory
+- `src/store/acquisitionWizardStore.ts` — Zustand persist store (address, status, ownership, terms)
+- `src/components/acquisition/` — AcquisitionWizard, StepRail, InviteModal, MembersPanel, AssignableField
+- `src/components/acquisition/steps/` — 6 steps: Address, Status, Property, Ownership, Terms, Review
+- `src/app/api/reil/projects/` — full REST: GET/POST projects, GET/PATCH project, POST property, GET/POST status, GET/POST/PATCH assignments, POST invite, GET/POST terms
+- `src/app/dashboard/projects/new/page.tsx` — replaced with AcquisitionWizard
+- `src/app/dashboard/projects/reil/[id]/page.tsx` — REIL project detail: photo, facts, 4 lifecycle stages (Acquisition active; Fund/Hold/Exit locked), edit links
+- `src/components/providers/QueryProvider.tsx` — TanStack Query provider
+- `prisma/schema.prisma` — REIL models added via `db push` (AppUser, ReilProject, ReilPropertyFacts, ReilComp, ReilPurchaseTerms, StatusEvent, ProjectCollaborator, FieldAssignment)
+
+### Tests
+- `src/__tests__/propertyProvider.test.ts` — 11/11 passing (getPropertyProvider factory + skeletons)
+
+### TypeScript: 0 errors (tsc --noEmit --skipLibCheck, excl .next/)
+
+### Open (not started this session)
+- Real geocoder (address provider, currently mock)
+- Real property data (env var PROPERTY_DATA_PROVIDER=rentcast|attom|mashvisor + API key)
+- Proper Prisma migration files (currently using db push)
+- Fund / Hold / Exit wizard steps (lifecycle stages 2–4)
+- FieldAssignment resolution on AssignableField save (client-side auto-resolve works; server sync on next load)
+
+---
+
+# Prior Session: P0 Reconciliation Complete
 
 ## Status: All 8 P0 Gaps Closed
 

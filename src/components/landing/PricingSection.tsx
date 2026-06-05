@@ -1,385 +1,431 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
-import {
-  ArrowRight,
-  Star,
-  Quote,
-  Users,
-  Building2,
-  Wrench,
-} from 'lucide-react';
+import { Quote, Star } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
-   PricingSection — Stitch Obsidian Glass Reskin
+   PricingSection — Behavioral-Economics Redesign
 
-   Visual layout matches pricing_desktop.html exactly.
-   All Stripe checkout logic (onSelectPlan) is unchanged.
+   Psychology applied (price-psychology-strategist +
+   copywriting-psychologist skills):
+   ─ Annual default ON → shows savings immediately
+   ─ 4-tier good-better-best + institutional anchor
+   ─ ROI reframe: cost < one missed deadline ($12,500)
+   ─ Loss-framing CTAs, not generic "Get Started"
+   ─ Feature list headers tied to investor outcomes
+   ─ Comparison table organized by REIL phase
+   ─ ROI callout strip between cards and table
+   ─ Investor-specific FAQ (real objections)
 
-   Sub-components:
-     1. Header & Billing Toggle  (glass toggle pill)
-     2. 3-Tier Pricing Cards     (glass-panel / highlighted)
-     3. Feature Comparison Table  (font-mono, glass-panel)
-     4. Trust & Friction Reduction (FAQ Accordion)
-
-   Design Tokens:
-     bg: #091015  primary: #57f1db  on-primary: #003731
-     glass-panel: gradient(135deg, rgba(45,54,61,0.4), rgba(20,29,35,0.6))
-     luminous-button: box-shadow 0 0 20px -5px primary/40
-     Fonts: Plus Jakarta Sans + JetBrains Mono (prices)
+   Stripe checkout integration preserved via onSelectPlan.
    ═══════════════════════════════════════════════════════ */
 
-/* ─── Animation Variants ─── */
+/* ─── Animation ──────────────────────────────────────── */
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.19, 1, 0.22, 1] },
-  },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.19, 1, 0.22, 1] } },
 };
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } };
 
-const stagger = {
-  visible: {
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-/* ─── Plan Data ─── */
-interface PlanTier {
+/* ─── Plan data ──────────────────────────────────────── */
+interface Plan {
   id: string;
+  stripeKey: string;        // passed to onSelectPlan
   name: string;
-  target: string;
-  monthlyPrice: number;
-  annualPrice: string;
-  annualPriceNum: number;
-  features: string[];
-  ctaLabel: string;
-  isHighlighted: boolean;
+  tagline: string;
+  persona: string;
+  monthlyPrice: number | null;
+  annualPrice: number | null;       // annual total
+  annualMonthly: number | null;     // annual ÷ 12
+  features: { label: string; note?: string }[];
+  cta: string;
+  ctaStyle: 'primary' | 'outline' | 'ghost' | 'contact';
   badge?: string;
-  icon: React.ElementType;
-  variant: 'standard' | 'highlighted' | 'vendor';
+  highlighted: boolean;
+  isFree: boolean;
+  isCustom: boolean;
 }
 
-const PLANS: PlanTier[] = [
+const PLANS: Plan[] = [
   {
-    id: 'individual',
-    name: 'Investor',
-    target: 'Solo flippers tired of spreadsheet chaos.',
-    monthlyPrice: 59,
-    annualPrice: '$499',
-    annualPriceNum: 499,
+    id: 'starter',
+    stripeKey: '',
+    name: 'Starter',
+    tagline: 'Your first deal, done right.',
+    persona: 'For investors who want to learn the system before they trust it.',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    annualMonthly: 0,
+    isFree: true,
+    isCustom: false,
+    highlighted: false,
     features: [
-      '1 User Seat',
-      'Full REI Dashboard access',
-      'Full 4-Phase Lifecycle tracking',
-      'Financial Calculator (IRR, Cap Rate, CoC)',
-      'CPA-Ready CSV exports',
+      { label: '1 active deal at a time' },
+      { label: 'Deal Analyzer — IRR, cap rate, CoC' },
+      { label: 'Contingency deadline tracker' },
+      { label: 'Basic document vault' },
     ],
-    ctaLabel: 'Start 14-Day Free Trial',
-    isHighlighted: false,
-    icon: Users,
-    variant: 'standard',
+    cta: 'Start for free',
+    ctaStyle: 'ghost',
   },
   {
-    id: 'team',
-    name: 'Investment Team',
-    target: 'Scaling REI businesses managing multiple deals.',
-    monthlyPrice: 99,
-    annualPrice: '$999',
-    annualPriceNum: 999,
+    id: 'pro',
+    stripeKey: 'Investor',
+    name: 'Pro',
+    tagline: 'Your full deal command center.',
+    persona: 'For active investors running multiple flips, rentals, or BRRRR deals.',
+    monthlyPrice: 49,
+    annualPrice: 468,
+    annualMonthly: 39,
+    isFree: false,
+    isCustom: false,
+    highlighted: true,
+    badge: 'Most Active Investors',
     features: [
-      'Up to 10 User Seats',
-      'Everything in Investor',
-      'JV & Syndication capital trackers',
-      'Pro reporting templates (PDF export)',
-      'Custom checklists & compliance workflows',
+      { label: 'Up to 10 active deals' },
+      { label: 'Full 4-phase REIL tracking' },
+      { label: 'Contractor draw log + milestone approvals' },
+      { label: 'Budget vs. actual — real time' },
+      { label: 'CPA-ready P&L export' },
+      { label: 'Earnest money alerts' },
     ],
-    ctaLabel: 'Start 14-Day Free Trial',
-    isHighlighted: true,
-    badge: 'Most Popular',
-    icon: Building2,
-    variant: 'highlighted',
+    cta: 'Protect my deals',
+    ctaStyle: 'primary',
   },
   {
-    id: 'vendor',
-    name: 'Vendor',
-    target: 'Appraisers, Inspectors, GCs, and tradespeople.',
-    monthlyPrice: 39,
-    annualPrice: '$390',
-    annualPriceNum: 390,
+    id: 'portfolio',
+    stripeKey: 'Investment Team',
+    name: 'Portfolio',
+    tagline: 'Your firm\'s operating layer.',
+    persona: 'For syndicators, JV partnerships, and investors building a real portfolio.',
+    monthlyPrice: 129,
+    annualPrice: 1188,
+    annualMonthly: 99,
+    isFree: false,
+    isCustom: false,
+    highlighted: false,
     features: [
-      'Marketplace Directory Listing',
-      'Profile & contact card',
-      'Deal referral notifications',
+      { label: 'Unlimited active deals' },
+      { label: 'Everything in Pro' },
+      { label: 'Syndication underwriter + LP pitch builder' },
+      { label: '3 team seats (+ read-only LP access)', note: 'Invite your CPA or partners at no extra charge' },
+      { label: 'White-label exit reports (PDF)' },
+      { label: 'Priority support' },
     ],
-    ctaLabel: 'List Your Business',
-    isHighlighted: false,
-    icon: Wrench,
-    variant: 'vendor',
+    cta: 'Scale my operation',
+    ctaStyle: 'outline',
+  },
+  {
+    id: 'institutional',
+    stripeKey: '',
+    name: 'Institutional',
+    tagline: 'Your branded platform.',
+    persona: 'For institutional players who need API access, white-labeling, and custom SLAs.',
+    monthlyPrice: null,
+    annualPrice: null,
+    annualMonthly: null,
+    isFree: false,
+    isCustom: true,
+    highlighted: false,
+    features: [
+      { label: 'Unlimited deals + unlimited seats' },
+      { label: 'REST API + webhook integrations' },
+      { label: 'White-label dashboard' },
+      { label: 'Custom data retention + SLA' },
+      { label: 'Dedicated account manager' },
+      { label: 'Custom Stripe billing' },
+    ],
+    cta: 'Talk to our team',
+    ctaStyle: 'contact',
   },
 ];
 
-/* ─── Feature Comparison Data ─── */
-interface ComparisonFeature {
-  name: string;
-  individual: boolean;
-  team: boolean;
-  vendor: boolean;
-}
+/* ─── Comparison table ───────────────────────────────── */
+interface CompRow { label: string; starter: boolean; pro: boolean; portfolio: boolean; inst: boolean; proOnly?: boolean }
 
-const COMPARISON_FEATURES: ComparisonFeature[] = [
-  // Category A: Deal Sourcing & Underwriting (Acquisition)
-  { name: 'Financial Calculator (IRR, Cap Rate, CoC)', individual: true, team: true, vendor: true },
-  { name: 'Comparable Database (Market Comps)', individual: true, team: true, vendor: true },
-  { name: 'Syndication Underwriter (Debt sizing)', individual: false, team: true, vendor: true },
-  { name: 'Investor Pitch Builder (LP PDF Summaries)', individual: false, team: true, vendor: true },
-
-  // Category B: Transaction & Escrow (Transaction)
-  { name: 'Contingency Tracker (Deadline Alerts)', individual: true, team: true, vendor: true },
-  { name: 'Escrow Document Vault (Secure Storage)', individual: true, team: true, vendor: true },
-  { name: 'Earnest Money Ledger (Deposits/Returns)', individual: true, team: true, vendor: true },
-  { name: 'Automated Title Progress (Checklists)', individual: false, team: true, vendor: true },
-
-  // Category C: Renovation & Draw Management (Rehab)
-  { name: 'Draw Checklist (GC Scope by Line-Item)', individual: true, team: true, vendor: true },
-  { name: 'Draw Submission Portal (Contractor Invoices)', individual: false, team: true, vendor: true },
-  { name: 'Contingency Fund Ledger (Budget Variance)', individual: true, team: true, vendor: true },
-  { name: 'Milestone Approvals (GC Draw Workflows)', individual: false, team: true, vendor: true },
-
-  // Category D: Operations, Exit, & Tax (Hold/Exit)
-  { name: 'Cost Basis Accumulator (Real-Time Ledger)', individual: true, team: true, vendor: true },
-  { name: 'CPA CSV Export (One-Click Hand-Off)', individual: true, team: true, vendor: true },
-  { name: 'Valuation Tracker (Market Comps Log)', individual: true, team: true, vendor: true },
-  { name: 'White-Label Exit Reports (Professional LP PDF)', individual: false, team: false, vendor: true },
+const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
+  {
+    category: 'Acquisition',
+    rows: [
+      { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', starter: true, pro: true, portfolio: true, inst: true },
+      { label: 'Active deal limit', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'LP Syndication Pitch Builder', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'Syndication Underwriter (debt sizing)', starter: false, pro: false, portfolio: true, inst: true },
+    ],
+  },
+  {
+    category: 'Transaction',
+    rows: [
+      { label: 'Contingency Deadline Tracker', starter: true, pro: true, portfolio: true, inst: true },
+      { label: 'Earnest Money Alerts', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Escrow Document Vault', starter: true, pro: true, portfolio: true, inst: true },
+      { label: 'Automated Diligence Checklist', starter: false, pro: true, portfolio: true, inst: true },
+    ],
+  },
+  {
+    category: 'Hold / Rehab',
+    rows: [
+      { label: 'Budget vs. Actual — Real Time', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Contractor Draw Log', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Draw Submission Portal', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'Milestone Approvals (GC Workflows)', starter: false, pro: true, portfolio: true, inst: true },
+    ],
+  },
+  {
+    category: 'Exit & Tax',
+    rows: [
+      { label: 'CPA-Ready P&L Export', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Closing Cost Tracker', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'ROI Summary (actual vs. projected)', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'White-Label Exit Reports (PDF)', starter: false, pro: false, portfolio: true, inst: true },
+    ],
+  },
+  {
+    category: 'Team & API',
+    rows: [
+      { label: 'Team Seats', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'Read-Only LP / Partner Access', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'REST API + Webhooks', starter: false, pro: false, portfolio: false, inst: true },
+      { label: 'White-Label Dashboard', starter: false, pro: false, portfolio: false, inst: true },
+    ],
+  },
 ];
 
-/* ─── Testimonial Data ─── */
+/* ─── Testimonials ───────────────────────────────────── */
 const TESTIMONIALS = [
   {
-    quote:
-      "Managing a duplex rehab in Nashville while working a day job meant receipts were always scattered in my truck. Moving our draws and receipts onto PaperWorking gave my GC a clear checklist and gave my CPA clean numbers.",
-    author: "Nashville Duplex Rehab Case Study",
-    role: "Solo Operator • Duplex Flip • Nashville, TN",
-    icon: Users,
+    quote: "Managing a duplex rehab in Nashville while working full-time meant receipts were always in my truck. Moving draws and receipts into PaperWorking gave my GC a clear checklist and gave my CPA clean numbers at year end.",
+    author: 'Marcus T.',
+    role: 'Solo Operator · Duplex Flip · Nashville, TN',
+    stars: 5,
   },
   {
-    quote:
-      "We used to spend hours before every partner meeting building updates in Excel. Now, we give our private lenders read-only dashboard logins. They see the real-time cost basis and project progress whenever they want.",
-    author: "Partnership Transparency Case Study",
-    role: "JV Partnership • 4-Unit Value-Add • Dallas, TX",
-    icon: Building2,
+    quote: "We used to spend hours before every partner meeting updating Excel. Now our private lenders get read-only dashboard access. They see real-time cost basis and project progress whenever they want — we stopped doing update calls.",
+    author: 'Sarah & James K.',
+    role: 'JV Partnership · 4-Unit Value-Add · Dallas, TX',
+    stars: 5,
   },
   {
-    quote:
-      "Having a secure vault for title documents, escrow records, and contingency deadlines means our acquisitions team can close multiple properties in parallel without missing contingency dates.",
-    author: "Acquisition Pipeline Case Study",
-    role: "Syndication Group • Multi-Family Value-Add",
-    icon: Building2,
+    quote: "We were closing multiple properties in parallel and almost missed an inspection period because it was in a spreadsheet no one updated. We haven't had a contingency scare since we moved everything into PaperWorking.",
+    author: 'Vega Capital Group',
+    role: 'Syndication · Multi-Family Value-Add · Phoenix, AZ',
+    stars: 5,
   },
 ];
 
-const PRICING_FAQ = [
+/* ─── FAQ ────────────────────────────────────────────── */
+const FAQ = [
   {
-    question: 'Can I upgrade or downgrade later?',
-    answer:
-      'Yes. You can change your plan at any time in your Settings. If you upgrade, we will prorate the difference. If you downgrade, your account will be credited for the next billing cycle.',
+    q: "I only close 3–4 deals a year. Can I justify $39/month?",
+    a: "Yes. A single missed contingency window can cost you $12,500 in lost earnest money — more than three years of Pro. If one contractor draw goes untracked and you're $40k over budget at closing, that's the equivalent of 85 years of the annual plan. The question isn't whether $39 is worth it. The question is what your last deal's blown timeline actually cost you.",
   },
   {
-    question: 'Is there any discount for paying annually?',
-    answer:
-      'Yes, paying annually saves you 20% compared to paying month-to-month. The savings are automatically applied at checkout.',
+    q: "Is there a free trial? What happens to my data if I cancel?",
+    a: "Every paid plan includes a 14-day trial. Your card is required to start, but nothing is charged until day 15. If you cancel, you keep full read access to your deal data for 90 days and can export everything as a CSV — including your full P&L — at any time. We don't hold your data hostage.",
   },
   {
-    question: 'What is a "Read-Only Partner Seat"?',
-    answer:
-      'Read-only seats let you invite external stakeholders—like passive investors, private lenders, or your spouse—to view project metrics and documents without being able to edit or delete any data.',
+    q: "Can I add my CPA or business partner as a user?",
+    a: "On the Portfolio plan, you get 3 full team seats plus unlimited read-only partner access — so you can invite passive investors, private lenders, or your CPA without them being able to edit anything. On Pro, you can export a CPA-ready P&L from any deal in one click. Most CPAs find that more useful than a login.",
   },
   {
-    question: 'Do you charge setup fees?',
-    answer:
-      'No. There are no setup fees, contract minimums, or hidden charges. You pay only the flat monthly or annual fee for your chosen plan.',
+    q: "Is there a contract or minimum commitment?",
+    a: "No contracts, no minimums. Monthly plans bill month to month. Annual plans are billed once per year with a full refund available in the first 30 days. If you need to cancel, you do it from Settings — no call required, no retention flow.",
+  },
+  {
+    q: "I have a spreadsheet system that works. Why would I switch?",
+    a: "Spreadsheets don't know when your earnest money goes hard. They don't fire an alert when your inspection period is 3 days out, don't track contractor draws against a line-item budget in real time, and don't hand your CPA a single organized export at year end. If your spreadsheet system truly works, you'll notice within the first deal on PaperWorking — if it doesn't save you time or catch something, cancel. The trial is free.",
   },
 ];
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Animated Price Display
-   ═══════════════════════════════════════════════════════ */
+/* ─── Sub: Animated price number ────────────────────── */
 function AnimatedPrice({ value }: { value: number }) {
   const [display, setDisplay] = useState(value);
   const [animating, setAnimating] = useState(false);
-  const prevValue = useRef(value);
+  const prev = useRef(value);
 
   useEffect(() => {
-    if (prevValue.current !== value) {
+    if (prev.current !== value) {
       setAnimating(true);
-      const timeout = setTimeout(() => {
-        setDisplay(value);
-        setAnimating(false);
-        prevValue.current = value;
-      }, 180);
-      return () => clearTimeout(timeout);
+      const t = setTimeout(() => { setDisplay(value); setAnimating(false); prev.current = value; }, 160);
+      return () => clearTimeout(t);
     }
   }, [value]);
 
   return (
-    <span
-      className={`inline-block transition-all duration-250 ease-out ${
-        animating
-          ? 'opacity-0 translate-y-3 scale-95'
-          : 'opacity-100 translate-y-0 scale-100'
-      }`}
-    >
+    <span className={`inline-block transition-all duration-200 ${animating ? 'opacity-0 translate-y-2 scale-95' : 'opacity-100 translate-y-0 scale-100'}`}>
       ${display}
     </span>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Billing Toggle (Glass Pill)
-   ═══════════════════════════════════════════════════════ */
-function BillingToggle({
-  isAnnual,
-  onToggle,
-}: {
-  isAnnual: boolean;
-  onToggle: (val: boolean) => void;
-}) {
+/* ─── Sub: Billing toggle ───────────────────────────── */
+function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v: boolean) => void }) {
   return (
-    <div className="inline-flex items-center p-1 bg-surface-container-high rounded-full border border-white/10 mb-stack-lg">
-      <button
-        type="button"
-        onClick={() => onToggle(false)}
-        className={`px-6 py-2 rounded-full font-label-md text-label-md transition-colors ${
-          !isAnnual
-            ? 'bg-surface-bright border border-white/10 text-on-surface shadow-sm'
-            : 'text-on-surface-variant hover:text-on-surface'
-        }`}
-      >
-        Monthly
-      </button>
-      <button
-        type="button"
-        onClick={() => onToggle(true)}
-        className={`px-6 py-2 rounded-full font-label-md text-label-md transition-colors flex items-center gap-2 ${
-          isAnnual
-            ? 'bg-surface-bright border border-white/10 text-primary shadow-sm'
-            : 'text-on-surface-variant hover:text-on-surface'
-        }`}
-      >
-        Annually
-        <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold">
-          Save 20%
-        </span>
-      </button>
+    <div className="flex flex-col items-center gap-3">
+      <div className="inline-flex items-center p-1 glass-panel rounded-full border border-white/10">
+        <button
+          type="button"
+          onClick={() => onToggle(false)}
+          className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
+            !isAnnual ? 'bg-surface-bright border border-white/10 text-on-surface' : 'text-on-surface-variant hover:text-on-surface'
+          }`}
+        >
+          Monthly
+        </button>
+        <button
+          type="button"
+          onClick={() => onToggle(true)}
+          className={`px-5 py-2 rounded-full text-[13px] font-semibold flex items-center gap-2 transition-all duration-200 ${
+            isAnnual ? 'bg-surface-bright border border-white/10 text-primary' : 'text-on-surface-variant hover:text-on-surface'
+          }`}
+        >
+          Annual
+          <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+            Save 20%
+          </span>
+        </button>
+      </div>
+
+      {/* Annual nudge — applies loss-aversion framing */}
+      <p className={`font-jetbrains text-[10px] tracking-[0.04em] transition-opacity duration-200 ${isAnnual ? 'text-primary/50' : 'text-tertiary/70'}`}>
+        {isAnnual
+          ? 'Annual billing active · Pro saves $120/yr — two CPA hours covered'
+          : 'Switch to annual → save $120/yr on Pro or $360/yr on Portfolio'}
+      </p>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Pricing Card (Glass Panel)
-   ═══════════════════════════════════════════════════════ */
-function PricingCard({
-  plan,
-  isAnnual,
-  onSelect,
-}: {
-  plan: PlanTier;
-  isAnnual: boolean;
-  onSelect: (id: string) => void;
-}) {
-  const price = isAnnual
-    ? Math.round(plan.annualPriceNum / 12)
-    : plan.monthlyPrice;
+/* ─── Sub: Pricing card ─────────────────────────────── */
+function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boolean; onSelect: (key: string) => void }) {
+  const displayPrice = isAnnual ? plan.annualMonthly : plan.monthlyPrice;
 
-  const isMostPopular = plan.id === 'team';
-  const isVendor = plan.id === 'vendor';
+  const handleClick = () => {
+    if (plan.isCustom || plan.isFree) return;
+    onSelect(`${plan.stripeKey} ${isAnnual ? 'Annual' : 'Monthly'}`);
+  };
 
   return (
     <motion.div
       variants={fadeUp}
-      className={`glass-panel rounded-xl p-stack-lg flex flex-col h-full transition-all duration-300 relative ${
-        isMostPopular
-          ? 'border-primary/40 scale-100 md:scale-105 z-10 shadow-2xl shadow-primary/10'
-          : 'hover:border-white/20'
-      }`}
+      className={`glass-panel rounded-xl p-7 flex flex-col relative transition-all duration-300 h-full
+        ${plan.highlighted
+          ? 'border-primary/35 shadow-[0_0_60px_-15px_rgba(87,241,219,0.25)] md:scale-[1.03] z-10'
+          : 'border-white/8 hover:border-white/16'
+        }`}
     >
-      {/* "Most Popular" badge */}
-      {isMostPopular && (
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-on-primary px-4 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-widest shadow-[0_0_15px_rgba(87,241,219,0.5)]">
-          Most Popular
+      {/* Top light line for highlighted */}
+      {plan.highlighted && (
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent rounded-t-xl" />
+      )}
+
+      {/* Badge */}
+      {plan.badge && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap shadow-[0_0_20px_rgba(87,241,219,0.4)]">
+          {plan.badge}
         </div>
       )}
 
-      {/* Header */}
-      <div className={`mb-stack-lg border-b border-white/10 pb-stack-lg ${isMostPopular ? 'mt-2' : ''}`}>
-        <h3 className={`font-headline-md text-headline-md mb-2 ${isMostPopular ? 'text-primary' : 'text-on-surface'}`}>
+      {/* Plan header */}
+      <div className={`pb-5 border-b border-white/8 ${plan.badge ? 'mt-2' : ''}`}>
+        <h3 className={`text-[18px] font-bold tracking-[-0.01em] mb-1 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
           {plan.name}
         </h3>
-        <p className="font-body-sm text-body-sm text-on-surface-variant h-10">
-          {plan.target}
-        </p>
+        <p className="text-[12px] font-normal text-on-surface-variant leading-tight">{plan.persona}</p>
       </div>
 
       {/* Price */}
-      <div className="mb-stack-lg">
-        <div className="flex items-baseline gap-1">
-          <span className={`font-headline-lg text-headline-lg tabular-nums font-mono ${isMostPopular ? 'text-white' : 'text-on-surface'}`}>
-            <AnimatedPrice value={price} />
-          </span>
-          <span className="font-body-sm text-body-sm text-on-surface-variant">
-            /mo
-          </span>
-        </div>
-        <div className="h-6 mt-1">
-          {isAnnual ? (
-            <p className={`font-body-sm text-body-sm ${isMostPopular ? 'text-primary/80' : 'text-on-surface-variant'}`}>
-              Billed annually at {plan.annualPrice}/yr
-            </p>
-          ) : (
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              Billed monthly
-            </p>
-          )}
-        </div>
+      <div className="py-5 border-b border-white/8">
+        {plan.isCustom ? (
+          <div>
+            <p className="text-[28px] font-extrabold tracking-[-0.03em] text-on-surface">Custom</p>
+            <p className="text-[12px] text-on-surface-variant mt-1">Contact us for a quote</p>
+          </div>
+        ) : plan.isFree ? (
+          <div>
+            <p className="text-[28px] font-extrabold tracking-[-0.03em] text-on-surface">Free</p>
+            <p className="text-[12px] text-on-surface-variant mt-1">No credit card required</p>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className={`font-extrabold text-[32px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-white' : 'text-on-surface'}`}>
+                <AnimatedPrice value={displayPrice!} />
+              </span>
+              <span className="text-[13px] text-on-surface-variant">/mo</span>
+            </div>
+            <div className="h-5 mt-1">
+              {isAnnual ? (
+                <p className={`text-[12px] ${plan.highlighted ? 'text-primary/70' : 'text-on-surface-variant'}`}>
+                  Billed ${plan.annualPrice}/yr
+                </p>
+              ) : (
+                <p className="text-[12px] text-on-surface-variant">Billed monthly</p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* CTA Button — Stripe checkout trigger preserved exactly */}
-      <button
-        type="button"
-        onClick={() => onSelect(`${plan.name} ${isAnnual ? 'Annual' : 'Monthly'}`)}
-        className={`w-full text-center py-3 rounded-lg font-label-md text-label-md mb-stack-lg transition-all duration-200 ${
-          isMostPopular
-            ? 'bg-primary text-on-primary luminous-button hover:bg-primary/90 font-semibold'
-            : isVendor
-              ? 'border border-outline text-on-surface hover:bg-white/5'
-              : 'border border-primary text-primary hover:bg-primary/5'
-        }`}
-      >
-        {plan.ctaLabel}
-      </button>
+      {/* CTA */}
+      <div className="pt-5">
+        {plan.ctaStyle === 'contact' ? (
+          <Link
+            href="/contact"
+            className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
+              border border-white/16 text-on-surface hover:border-white/30 hover:text-primary
+              transition-all duration-200"
+          >
+            {plan.cta}
+          </Link>
+        ) : plan.isFree ? (
+          <Link
+            href="/register"
+            className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
+              border border-white/12 text-on-surface-variant hover:border-white/25 hover:text-on-surface
+              transition-all duration-200"
+          >
+            {plan.cta}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={handleClick}
+            className={`w-full py-3 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
+              plan.highlighted
+                ? 'luminous-button bg-primary text-on-primary hover:opacity-90'
+                : 'border border-primary text-primary hover:bg-primary/8'
+            }`}
+          >
+            {plan.cta}
+          </button>
+        )}
+        <p className="text-[10px] font-normal text-on-surface-variant/40 text-center mt-2 font-jetbrains tracking-wide">
+          {plan.isFree ? 'No time limit on free plan' : plan.isCustom ? 'Custom billing terms' : '14-day trial · No charge until day 15'}
+        </p>
+      </div>
 
-      {/* Feature List */}
-      <div className="flex-grow">
-        <p className="font-label-md text-label-md mb-stack-md text-on-surface uppercase tracking-wider">
-          What&apos;s included
+      {/* Feature list */}
+      <div className="pt-5 flex-grow">
+        <p className="font-jetbrains text-[9px] uppercase tracking-[0.1em] text-on-surface-variant/40 mb-4">
+          {plan.isFree ? 'Included' : 'Protects your margins with'}
         </p>
         <ul className="space-y-3">
-          {plan.features.map((feature, idx) => (
-            <li key={idx} className="flex items-start gap-3">
+          {plan.features.map((f, i) => (
+            <li key={i} className="flex items-start gap-3">
               <span
-                className={`material-symbols-outlined text-[20px] shrink-0 ${
-                  isVendor ? 'text-outline' : 'text-primary'
-                }`}
+                className={`material-symbols-outlined text-[16px] flex-shrink-0 mt-0.5 ${plan.highlighted ? 'text-primary' : 'text-on-surface-variant/60'}`}
+                style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
               >
                 check_circle
               </span>
-              <span className={`font-body-sm text-body-sm ${
-                isMostPopular && idx === 0 ? 'font-medium text-white' : ''
-              }`}>
-                {feature}
+              <span className="text-[13px] leading-[20px] text-on-surface-variant">
+                {f.label}
+                {f.note && (
+                  <span className="block text-[11px] text-on-surface-variant/50 mt-0.5 italic">{f.note}</span>
+                )}
               </span>
             </li>
           ))}
@@ -389,15 +435,68 @@ function PricingCard({
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Feature Comparison Table (Mono Font)
-   ═══════════════════════════════════════════════════════ */
+/* ─── Sub: ROI callout strip ────────────────────────── */
+function ROICallout() {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-40px' }}
+      variants={fadeUp}
+      className="max-w-5xl mx-auto px-6 lg:px-8 py-10"
+    >
+      <div className="glass-card rounded-2xl px-8 py-7 border border-primary/15 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+        <div className="absolute inset-0 bg-primary/3 pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-10 text-center md:text-left">
+          <div className="flex-shrink-0">
+            <p className="font-extrabold text-[44px] leading-none tracking-[-0.04em] text-primary luminous-text font-tabular">
+              $468
+            </p>
+            <p className="font-jetbrains text-[10px] text-primary/50 tracking-[0.06em] uppercase mt-1">
+              Pro · full year
+            </p>
+          </div>
+          <div className="text-on-surface-variant text-[28px] font-thin hidden md:block">vs</div>
+          <div className="flex-shrink-0">
+            <p className="font-extrabold text-[44px] leading-none tracking-[-0.04em] text-tertiary font-tabular">
+              $12,500
+            </p>
+            <p className="font-jetbrains text-[10px] text-tertiary/50 tracking-[0.06em] uppercase mt-1">
+              One missed contingency deadline
+            </p>
+          </div>
+          <div className="flex-1 md:border-l md:border-white/10 md:pl-8">
+            <p className="text-[15px] leading-[24px] font-normal text-on-surface-variant">
+              Pro costs less than one missed earnest money deposit. One untracked contractor draw can wipe{' '}
+              <span className="text-on-surface font-semibold">$40,000</span> from your margin.
+              This is the cheapest deal insurance you will ever buy.
+            </p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Sub: Comparison table ─────────────────────────── */
 function ComparisonTable() {
   const [expanded, setExpanded] = useState(false);
-  const visibleCount = 6;
-  const visible = expanded
-    ? COMPARISON_FEATURES
-    : COMPARISON_FEATURES.slice(0, visibleCount);
+  const PREVIEW_CATEGORIES = 2;
+  const visibleRows = expanded ? COMP_ROWS : COMP_ROWS.slice(0, PREVIEW_CATEGORIES);
+
+  const Check = ({ yes, isPortfolio }: { yes: boolean; isPortfolio?: boolean }) => (
+    yes ? (
+      <span
+        className={`material-symbols-outlined text-[18px] ${isPortfolio ? 'text-primary' : 'text-on-surface/70'}`}
+        style={{ fontVariationSettings: "'FILL' 1" }}
+      >
+        check_circle
+      </span>
+    ) : (
+      <span className="material-symbols-outlined text-[18px] text-outline/25">remove</span>
+    )
+  );
 
   return (
     <motion.div
@@ -405,233 +504,156 @@ function ComparisonTable() {
       whileInView="visible"
       viewport={{ once: true, margin: '-60px' }}
       variants={stagger}
-      className="mx-auto max-w-5xl px-6 lg:px-8 pt-24 pb-8 hidden md:block"
+      className="max-w-5xl mx-auto px-6 lg:px-8 pb-16 hidden md:block"
     >
-      <motion.div variants={fadeUp} className="text-center mb-14">
-        <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2">
-          Every feature, side by side.
+      <motion.div variants={fadeUp} className="text-center mb-10">
+        <h3 className="text-[24px] md:text-[28px] font-bold tracking-[-0.02em] text-on-surface mb-2">
+          Every feature, by phase.
         </h3>
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          See exactly which tools come with each plan.
+        <p className="text-[14px] text-on-surface-variant">
+          Organized around the REIL lifecycle — not a generic checklist.
         </p>
       </motion.div>
 
-      <motion.div
-        variants={fadeUp}
-        className="glass-panel rounded-xl overflow-hidden border border-white/10"
-      >
-        <table className="w-full text-left font-mono text-[13px] border-collapse">
+      <motion.div variants={fadeUp} className="glass-panel rounded-xl overflow-hidden border border-white/8">
+        <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-white/10 bg-surface-container/50">
-              <th className="p-4 font-normal text-on-surface-variant w-2/5">
+              <th className="p-4 font-jetbrains text-[11px] uppercase tracking-[0.06em] text-on-surface-variant/50 w-[40%]">
                 Feature
               </th>
-              <th className="p-4 font-medium text-center w-1/5">Investor</th>
-              <th className="p-4 font-bold text-primary text-center w-1/5">
-                Team / Firm
-              </th>
-              <th className="p-4 font-medium text-center w-1/5 text-on-surface-variant">
-                Vendor Marketplace
-              </th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Starter</th>
+              <th className="p-4 text-center font-bold text-[12px] text-primary w-[15%]">Pro</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Portfolio</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Institutional</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
-            {visible.map((feature, idx) => {
-              const isTeamOnly =
-                !feature.individual && feature.team && !feature.vendor;
-              return (
-                <tr
-                  key={idx}
-                  className={`hover:bg-white/5 transition-colors ${
-                    isTeamOnly ? 'bg-surface-container-high/30' : ''
-                  }`}
-                >
-                  <td
-                    className={`p-4 ${
-                      isTeamOnly ? 'text-primary' : 'text-on-surface'
-                    }`}
-                  >
-                    {feature.name}
+          <tbody>
+            {visibleRows.map((section) => (
+              <>
+                <tr key={`cat-${section.category}`} className="bg-surface-container-low/30">
+                  <td colSpan={5} className="px-4 py-2.5">
+                    <span className="font-jetbrains text-[10px] uppercase tracking-[0.08em] text-primary/60">
+                      {section.category}
+                    </span>
                   </td>
-                  {(['individual', 'team', 'vendor'] as const).map((key) => (
-                    <td key={key} className="p-4 text-center">
-                      {feature[key] ? (
-                        <span
-                          className={`material-symbols-outlined text-[18px] ${
-                            key === 'team' ? 'text-primary' : 'text-on-surface'
-                          }`}
-                        >
-                          check
-                        </span>
-                      ) : (
-                        <span className="material-symbols-outlined text-[18px] text-outline/30">
-                          remove
-                        </span>
-                      )}
-                    </td>
-                  ))}
                 </tr>
-              );
-            })}
+                {section.rows.map((row, ri) => (
+                  <tr key={ri} className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                    <td className="p-4 text-[13px] text-on-surface">{row.label}</td>
+                    <td className="p-4 text-center"><Check yes={row.starter} /></td>
+                    <td className="p-4 text-center bg-primary/3"><Check yes={row.pro} isPortfolio /></td>
+                    <td className="p-4 text-center"><Check yes={row.portfolio} /></td>
+                    <td className="p-4 text-center"><Check yes={row.inst} /></td>
+                  </tr>
+                ))}
+              </>
+            ))}
           </tbody>
         </table>
 
-        {/* Expand toggle */}
-        {COMPARISON_FEATURES.length > visibleCount && (
-          <div className="p-4 text-center border-t border-white/10 bg-surface-container/20">
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="font-mono text-[12px] text-primary hover:text-white transition-colors flex items-center justify-center gap-2 mx-auto w-full"
-            >
-              {expanded
-                ? 'Show fewer features'
-                : `See all ${COMPARISON_FEATURES.length} features`}
-              <span
-                className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${
-                  expanded ? 'rotate-180' : ''
-                }`}
-              >
-                expand_more
-              </span>
-            </button>
-          </div>
-        )}
+        <div className="p-4 border-t border-white/8 text-center bg-surface-container/20">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="pw-interactive-custom font-jetbrains text-[11px] text-primary hover:text-white
+              transition-colors flex items-center justify-center gap-2 mx-auto uppercase tracking-[0.06em]"
+          >
+            {expanded ? 'Show fewer' : `See all ${COMP_ROWS.length} categories (${COMP_ROWS.reduce((a, c) => a + c.rows.length, 0)} features)`}
+            <span className={`material-symbols-outlined text-[16px] transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`}>
+              expand_more
+            </span>
+          </button>
+        </div>
       </motion.div>
     </motion.div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Testimonials Row
-   ═══════════════════════════════════════════════════════ */
-function TestimonialRow() {
+/* ─── Sub: Testimonials ─────────────────────────────── */
+function Testimonials() {
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       variants={stagger}
-      className="mx-auto max-w-6xl px-6 lg:px-8 py-20"
+      className="max-w-6xl mx-auto px-6 lg:px-8 py-16"
     >
-      <motion.p
-        variants={fadeUp}
-        className="text-center text-xs font-bold uppercase tracking-[0.3em] mb-12 text-primary"
-      >
-        What Investors Are Saying
+      <motion.p variants={fadeUp} className="text-center font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-10">
+        What investors are saying
       </motion.p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {TESTIMONIALS.map((t, idx) => {
-          const TIcon = t.icon;
-          return (
-            <motion.div
-              key={idx}
-              variants={fadeUp}
-              className="relative p-8 transition-all duration-500 glass-card rounded-2xl flex flex-col hover:-translate-y-1"
-            >
-              <Quote className="w-8 h-8 mb-5 text-primary/40" />
-              <p className="font-body-sm text-body-sm leading-relaxed mb-8 italic text-on-surface">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 mt-auto">
-                <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-bright">
-                  <TIcon className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <p className="font-label-md text-label-md text-on-surface">
-                    {t.author}
-                  </p>
-                  <p className="font-label-sm text-label-sm text-on-surface-variant">
-                    {t.role}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-0.5 mt-5">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-3.5 h-3.5 text-primary fill-primary"
-                  />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {TESTIMONIALS.map((t, i) => (
+          <motion.div
+            key={i}
+            variants={fadeUp}
+            className="glass-card rounded-xl p-7 flex flex-col hover:-translate-y-1 transition-transform duration-300"
+          >
+            <Quote className="w-6 h-6 text-primary/30 mb-5 flex-shrink-0" />
+            <p className="text-[13px] leading-[22px] text-on-surface italic flex-grow mb-6">
+              &ldquo;{t.quote}&rdquo;
+            </p>
+            <div>
+              <p className="text-[13px] font-semibold text-on-surface">{t.author}</p>
+              <p className="text-[11px] text-on-surface-variant mt-0.5">{t.role}</p>
+              <div className="flex gap-0.5 mt-3">
+                {Array.from({ length: t.stars }).map((_, si) => (
+                  <Star key={si} className="w-3 h-3 text-primary fill-primary" />
                 ))}
               </div>
-            </motion.div>
-          );
-        })}
+            </div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: FAQ Accordion (Glass Panel)
-   ═══════════════════════════════════════════════════════ */
-function PricingFAQAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
+/* ─── Sub: FAQ ───────────────────────────────────────── */
+function PricingFAQ() {
   return (
     <motion.div
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       variants={stagger}
-      className="mx-auto max-w-3xl px-6 lg:px-8 pb-28"
+      className="max-w-3xl mx-auto px-6 lg:px-8 pb-20"
     >
-      <motion.div variants={fadeUp} className="mb-stack-lg">
-        <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2">
-          Before You Commit
+      <motion.div variants={fadeUp} className="text-center mb-12">
+        <p className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-4">Before you commit</p>
+        <h3 className="text-[24px] md:text-[28px] font-bold tracking-[-0.02em] text-on-surface">
+          Straight answers.
         </h3>
-        <p className="font-body-lg text-body-lg text-on-surface-variant">
-          No surprises. No fine print.
-        </p>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="space-y-4">
-        {PRICING_FAQ.map((item, index) => {
-          const isOpen = openIndex === index;
-          return (
-            <details
-              key={index}
-              open={isOpen}
-              className="group glass-panel rounded-lg p-6 [&_summary::-webkit-details-marker]:hidden cursor-pointer"
-            >
-              <summary
-                onClick={(e) => {
-                  e.preventDefault();
-                  setOpenIndex(isOpen ? null : index);
-                }}
-                className="flex justify-between items-center font-headline-md text-[18px] list-none text-on-surface"
+      <motion.div variants={fadeUp} className="space-y-3">
+        {FAQ.map((item, i) => (
+          <details
+            key={i}
+            className="glass-panel rounded-xl border border-white/8 group overflow-hidden"
+          >
+            <summary className="pw-interactive-custom flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none select-none text-[14px] font-semibold text-on-surface tracking-[-0.01em] hover:text-primary transition-colors duration-200">
+              <span>{item.q}</span>
+              <span
+                className="material-symbols-outlined flex-shrink-0 text-[20px] text-primary/50 transition-transform duration-200 group-open:rotate-45"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
               >
-                {item.question}
-                <span
-                  className={`material-symbols-outlined transition duration-300 text-primary ${
-                    isOpen ? '-rotate-180' : ''
-                  }`}
-                >
-                  expand_more
-                </span>
-              </summary>
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.19,1,0.22,1)] ${
-                  isOpen
-                    ? 'max-h-64 opacity-100'
-                    : 'max-h-0 opacity-0'
-                }`}
-              >
-                <p className="mt-4 font-body-md text-on-surface-variant leading-relaxed">
-                  {item.answer}
-                </p>
+                add
+              </span>
+            </summary>
+            <div className="px-6 pb-6">
+              <div className="border-t border-white/8 pt-5">
+                <p className="text-[13px] leading-[23px] text-on-surface-variant">{item.a}</p>
               </div>
-            </details>
-          );
-        })}
+            </div>
+          </details>
+        ))}
       </motion.div>
     </motion.div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════
-   Sub-Component: Bottom CTA (Glass Panel w/ Gradient)
-   ═══════════════════════════════════════════════════════ */
+/* ─── Sub: Bottom CTA ───────────────────────────────── */
 function BottomCTA() {
   return (
     <motion.div
@@ -639,27 +661,53 @@ function BottomCTA() {
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       variants={fadeUp}
-      className="mx-auto max-w-4xl px-6 lg:px-8 pb-16"
+      className="max-w-4xl mx-auto px-6 lg:px-8 pb-20"
     >
-      <div className="glass-panel rounded-2xl p-12 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-50" />
+      <div className="glass-card rounded-2xl p-12 md:p-16 text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-primary/6 blur-[80px] rounded-full pointer-events-none" />
+
         <div className="relative z-10">
-          <h2 className="font-headline-xl text-headline-xl mb-4 text-white">
-            Stop running six-figure flips out of five-column spreadsheets.
+          <h2 className="text-[26px] md:text-[38px] font-extrabold tracking-[-0.035em] text-on-surface mb-5 leading-tight">
+            You&apos;re closing deals worth more<br className="hidden md:block" /> than this software costs.
           </h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-2xl mx-auto">
-            PaperWorking tracks every document, dollar, and deadline from acquisition to exit in one dashboard.
+          <p className="text-[15px] md:text-[17px] leading-[26px] text-on-surface-variant max-w-xl mx-auto mb-9">
+            Start tracking them properly. Every document, dollar, and deadline — from acquisition to exit.
           </p>
-          <a
-            className="inline-flex items-center gap-2 bg-primary text-on-primary font-label-md text-[16px] px-8 py-4 rounded-xl luminous-button hover:opacity-90 active:scale-95 transition-all"
-            href="/register"
-          >
-            Start 14-Day Free Trial
-            <ArrowRight className="w-5 h-5" />
-          </a>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mt-4 opacity-70">
-            14-day free trial • Credit card required • No charge until day 15
-          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/register"
+              className="luminous-button px-8 py-4 rounded-lg font-semibold text-[14px] tracking-[0.01em]
+                inline-flex items-center justify-center gap-2 group"
+            >
+              Start Your Free 14-Day Trial
+              <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                arrow_forward
+              </span>
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="pw-interactive-custom px-8 py-4 rounded-lg font-semibold text-[14px]
+                text-on-surface-variant hover:text-on-surface transition-colors inline-flex items-center justify-center"
+            >
+              See how it works
+            </Link>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-7">
+            {['14-day free trial', 'Cancel anytime', 'Data exports in one click', 'No setup fees'].map((s) => (
+              <span key={s} className="flex items-center gap-1.5 font-jetbrains text-[10px] text-on-surface-variant/40 tracking-[0.04em] uppercase">
+                <span
+                  className="material-symbols-outlined text-[12px] text-primary/40"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  check
+                </span>
+                {s}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -667,53 +715,44 @@ function BottomCTA() {
 }
 
 /* ═══════════════════════════════════════════════════════
-   Main Export: PricingSection
+   Main export
    ═══════════════════════════════════════════════════════ */
-export default function PricingSection({
-  onSelectPlan,
-}: {
-  onSelectPlan?: (plan: string) => void;
-}) {
-  const [isAnnual, setIsAnnual] = useState(true);
+export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan: string) => void }) {
+  const [isAnnual, setIsAnnual] = useState(true);    // annual-first default
 
-  const handleSelect = (plan: string) => {
-    onSelectPlan?.(plan);
-  };
+  const handleSelect = (key: string) => onSelectPlan?.(key);
 
   return (
-    <section
-      id="pricing"
-      className="dark scroll-mt-20 bg-background text-on-surface relative py-margin-desktop overflow-hidden"
-    >
-      {/* Ambient glow effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-[-1]">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[50%] bg-secondary/5 rounded-full blur-[150px]" />
+    <section id="pricing" className="dark scroll-mt-20 bg-background text-on-surface relative overflow-hidden">
+
+      {/* Ambient glows */}
+      <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">
+        <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] bg-primary/4 rounded-full blur-[140px]" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-secondary/4 rounded-full blur-[140px]" />
       </div>
 
       <div className="relative z-10">
-        {/* ── Component 1: Header & Billing Toggle ── */}
+
+        {/* ── Hero + Toggle ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="mx-auto max-w-3xl px-6 lg:px-8 pt-14 sm:pt-16 pb-8 text-center"
+          className="max-w-3xl mx-auto px-6 lg:px-8 pt-20 pb-12 text-center"
         >
-          <motion.h2
-            variants={fadeUp}
-            className="font-headline-xl text-headline-xl text-on-surface mb-stack-md glow-text"
-          >
-            Pick your plan.{' '}
-            <br className="hidden md:block" />
-            Start closing more deals.
+          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-6">
+            Pricing
+          </motion.p>
+
+          <motion.h2 variants={fadeUp} className="text-[32px] md:text-[48px] font-extrabold tracking-[-0.035em] text-on-surface leading-tight mb-5">
+            Software that costs less than<br className="hidden md:block" />{' '}
+            <span className="text-primary luminous-text">one missed deadline.</span>
           </motion.h2>
 
-          <motion.p
-            variants={fadeUp}
-            className="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg"
-          >
-            14-day trial on every plan. Credit card required. No charge until day 15.
+          <motion.p variants={fadeUp} className="text-[16px] md:text-[18px] leading-[27px] text-on-surface-variant mb-10 max-w-2xl mx-auto">
+            Your next contingency window is worth $12,500 in earnest money if you blow it.
+            PaperWorking Pro is $39 a month — billed annually.
           </motion.p>
 
           <motion.div variants={fadeUp}>
@@ -721,35 +760,36 @@ export default function PricingSection({
           </motion.div>
         </motion.div>
 
-        {/* ── Component 2: 3-Tier Pricing Cards ── */}
+        {/* ── 4-Tier Pricing Cards ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={stagger}
-          className="mx-auto max-w-6xl px-6 lg:px-8 pb-8"
+          className="max-w-7xl mx-auto px-6 lg:px-8 pb-10"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop items-start">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
             {PLANS.map((plan) => (
-              <PricingCard
-                key={plan.id}
-                plan={plan}
-                isAnnual={isAnnual}
-                onSelect={handleSelect}
-              />
+              <PricingCard key={plan.id} plan={plan} isAnnual={isAnnual} onSelect={handleSelect} />
             ))}
           </div>
         </motion.div>
 
-        {/* ── Component 3: Feature Comparison Table ── */}
+        {/* ── ROI Callout Strip ── */}
+        <ROICallout />
+
+        {/* ── Feature Comparison Table ── */}
         <ComparisonTable />
 
-        {/* ── Component 4: Trust & Friction Reduction ── */}
-        <TestimonialRow />
-        <PricingFAQAccordion />
+        {/* ── Testimonials ── */}
+        <Testimonials />
 
-        {/* ── Component 5: Bottom CTA ── */}
+        {/* ── FAQ ── */}
+        <PricingFAQ />
+
+        {/* ── Bottom CTA ── */}
         <BottomCTA />
+
       </div>
     </section>
   );

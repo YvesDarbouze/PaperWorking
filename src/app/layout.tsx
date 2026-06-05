@@ -9,6 +9,7 @@ import ChatbotWidget from "@/components/shared/ChatbotWidget";
 import { CustomToaster } from "@/components/ui/CustomToaster";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import CookieConsent from "@/components/legal/CookieConsent";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
@@ -62,6 +63,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans antialiased bg-pw-bg text-pw-black mesh-bg relative overflow-x-hidden">
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none z-[-1]" />
+        <QueryProvider>
         <PostHogProvider>
           <AuthProvider>
             <TenantProvider>
@@ -75,6 +77,7 @@ export default function RootLayout({
             </TenantProvider>
           </AuthProvider>
         </PostHogProvider>
+        </QueryProvider>
       </body>
     </html>
   );

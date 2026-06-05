@@ -121,7 +121,7 @@ export function AssignableField({ fieldKey, label, hasValue, children }: Assigna
   useEffect(() => {
     if (!hasValue || !openAssignment || !projectId || !user) return;
     let cancelled = false;
-    user.getIdToken().then(token => {
+    user.getIdToken().then((token: string) => {
       if (cancelled) return;
       resolveAssignment(projectId, openAssignment.id, token)
         .then(() => qc.invalidateQueries({ queryKey: ["assignments", projectId] }))

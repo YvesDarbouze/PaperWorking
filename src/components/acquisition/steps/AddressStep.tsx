@@ -206,7 +206,7 @@ export function AddressStep({ onNext }: { onNext: () => void }) {
 
           {/* Error */}
           {error && (
-            <p className="mt-2 text-[12px]" style={{ color: "#ef4444" }}>
+            <p className="mt-2 text-[12px]" style={{ color: "#F06543" }}>
               {error}
             </p>
           )}

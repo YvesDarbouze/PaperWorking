@@ -108,7 +108,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                         {/* Web3 Title Check */}
                         <div className="bg-pw-glass-bg border border-pw-border rounded-2xl p-5 shadow-sm">
                             <h3 className="text-md font-medium flex items-center gap-2 mb-3 text-pw-black">
-                                <Link className="w-5 h-5 text-indigo-400" /> Digital Chain of Title
+                                <Link className="w-5 h-5 text-[#20B2AA]" /> Digital Chain of Title
                             </h3>
                             <div className="bg-pw-glass-bg/50 border border-pw-border/50 p-4 rounded-2xl flex flex-col gap-3">
                                 {closingRoom.chainOfTitleStatus === 'verified' ? (

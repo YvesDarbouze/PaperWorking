@@ -77,7 +77,7 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
         type: 'bar',
         data: scenarios.map((s) => ({
           value: s.actual || null,
-          itemStyle: { color: '#2dd4bf' },
+          itemStyle: { color: '#20B2AA' },
         })),
         barMaxWidth: 32,
         barGap: '20%',
@@ -89,7 +89,7 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
           value: s.projected,
           itemStyle: {
             color: 'transparent',
-            borderColor: '#2dd4bf',
+            borderColor: '#20B2AA',
             borderWidth: 1.5,
             borderType: 'dashed',
           },
@@ -262,8 +262,8 @@ export default function IRRIntelligencePage() {
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${benchmarkPct}%`,
-                  background: 'linear-gradient(90deg, #0d9488, #2dd4bf)',
-                  boxShadow: '0 0 12px rgba(45,212,191,0.3)',
+                  background: 'linear-gradient(90deg, #0d9488, #20B2AA)',
+                  boxShadow: '0 0 12px rgba(32, 178, 170,0.3)',
                 }}
               />
             </div>

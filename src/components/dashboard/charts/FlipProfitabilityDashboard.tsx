@@ -27,7 +27,7 @@ function classifyROI(roi: number): { grade: ProfitGrade; label: string; color: s
   if (roi >= 40) return { grade: 'exceptional', label: 'Exceptional Deal', color: '#595959', bg: 'rgba(89,89,89,0.08)', border: 'rgba(89,89,89,0.2)' };
   if (roi >= 25) return { grade: 'strong', label: 'Strong Return', color: '#7F7F7F', bg: 'rgba(127,127,127,0.08)', border: 'rgba(127,127,127,0.2)' };
   if (roi > 0) return { grade: 'marginal', label: 'Thin Margins', color: '#A5A5A5', bg: 'rgba(165,165,165,0.08)', border: 'rgba(165,165,165,0.2)' };
-  return { grade: 'loss', label: 'Loss Territory', color: '#EF4444', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)' };
+  return { grade: 'loss', label: 'Loss Territory', color: '#F06543', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)' };
 }
 
 function ChartTooltip({ active, payload }: any) {
@@ -96,9 +96,9 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       { name: 'Purchase', value: purchasePrice, color: '#7F7F7F' },
       { name: 'Closing', value: closingCosts, color: '#595959' },
       { name: 'Rehab', value: rehabCost, color: '#A5A5A5' },
-      { name: 'Holding', value: totalHolding, color: '#EF4444' },
+      { name: 'Holding', value: totalHolding, color: '#F06543' },
       { name: 'Financing', value: financingCosts + loanPoints, color: '#EC4899' },
-      { name: 'Selling', value: sellingCosts, color: '#8B5CF6' },
+      { name: 'Selling', value: sellingCosts, color: '#20B2AA' },
     ].filter(c => c.value > 0);
 
     // MAO scenarios
@@ -163,8 +163,8 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { icon: Building, label: 'After Repair Value', value: fmtUSD(analysis.arv), sub: `Purchase: ${fmtUSD(analysis.purchasePrice)}`, color: '#7F7F7F' },
-          { icon: Target, label: 'Max Allowable Offer', value: fmtUSD(analysis.mao), sub: `70% rule → ${analysis.purchasePrice <= analysis.mao ? '✅ Under MAO' : '⚠️ Over MAO'}`, color: analysis.purchasePrice <= analysis.mao ? '#595959' : '#EF4444' },
-          { icon: DollarSign, label: 'Net Profit', value: fmtUSD(analysis.netProfit), sub: `Sale: ${fmtUSD(analysis.salePrice)} − Costs: ${fmtUSD(analysis.totalAllInCost)}`, color: analysis.netProfit >= 0 ? '#595959' : '#EF4444' },
+          { icon: Target, label: 'Max Allowable Offer', value: fmtUSD(analysis.mao), sub: `70% rule → ${analysis.purchasePrice <= analysis.mao ? '✅ Under MAO' : '⚠️ Over MAO'}`, color: analysis.purchasePrice <= analysis.mao ? '#595959' : '#F06543' },
+          { icon: DollarSign, label: 'Net Profit', value: fmtUSD(analysis.netProfit), sub: `Sale: ${fmtUSD(analysis.salePrice)} − Costs: ${fmtUSD(analysis.totalAllInCost)}`, color: analysis.netProfit >= 0 ? '#595959' : '#F06543' },
           { icon: Percent, label: 'ROI', value: fmtPct(analysis.roi), sub: `2026 target: ≥25% — ${analysis.roi >= 25 ? 'Passing' : 'Below target'}`, color: analysis.roi >= 25 ? '#595959' : '#A5A5A5' },
           { icon: TrendingUp, label: 'Gross Margin', value: fmtPct(analysis.grossMargin), sub: `(Sale − Cost) ÷ Sale × 100`, color: analysis.grossMargin >= 20 ? '#595959' : '#A5A5A5' },
           { icon: Clock, label: 'Days on Market', value: analysis.dom != null ? `${analysis.dom} days` : 'Pending', sub: analysis.dom != null ? (analysis.dom <= 90 ? '✅ Under 90-day target' : '⚠️ Over 90-day target') : 'List & sell dates needed', color: analysis.dom != null && analysis.dom <= 90 ? '#595959' : '#A5A5A5' },
@@ -247,13 +247,13 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                     <td className="px-3 py-2 font-bold" style={{ color: s.isCurrent ? 'var(--text-primary)' : 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>
                       {s.pct}% {s.isCurrent ? '← standard' : ''}
                     </td>
-                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#EF4444', background: s.isCurrent ? 'rgba(89,89,89,0.06)' : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#F06543', background: s.isCurrent ? 'rgba(89,89,89,0.06)' : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtUSD(s.mao)}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: diff >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>
                       {diff >= 0 ? `+${fmtUSD(diff)} cushion` : `${fmtUSD(diff)} over`}
                     </td>
-                    <td className="px-3 py-2 text-[9px] font-bold uppercase" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 text-[9px] font-bold uppercase" style={{ color: diff >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>
                       {diff >= 0 ? '✅ Pass' : '❌ Fail'}
                     </td>
                   </tr>
@@ -286,7 +286,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                       {s.label} {s.isCurrent ? '← yours' : ''}
                     </td>
                     <td className="px-3 py-2 tabular-nums" style={{ borderBottom: '1px solid var(--border-ui)', color: 'var(--text-primary)' }}>{fmtUSD(s.salePrice)}</td>
-                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: s.netProfit >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(s.netProfit)}</td>
+                    <td className="px-3 py-2 tabular-nums font-bold" style={{ color: s.netProfit >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(s.netProfit)}</td>
                     <td className="px-3 py-2 tabular-nums font-bold" style={{ color: cls.color, background: s.isCurrent ? cls.bg : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>{fmtPct(s.roi)}</td>
                   </tr>
                 );
@@ -300,7 +300,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       {analysis.comps.length > 0 && (
         <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
           <div className="flex items-center gap-2 mb-4">
-            <Building className="w-4 h-4" style={{ color: '#8B5CF6' }} />
+            <Building className="w-4 h-4" style={{ color: '#20B2AA' }} />
             <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Comparable Sales — ARV Validation</h4>
           </div>
           <div className="overflow-x-auto">
@@ -323,7 +323,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
                       <td className="px-3 py-2 tabular-nums" style={{ color: '#595959', borderBottom: '1px solid var(--border-ui)' }}>{priceSqft > 0 ? `$${priceSqft.toFixed(0)}` : '—'}</td>
                       <td className="px-3 py-2" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>{c.beds ?? '—'}/{c.baths ?? '—'}</td>
                       <td className="px-3 py-2" style={{ color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>{c.saleDate ? new Date(c.saleDate).toLocaleDateString() : '—'}</td>
-                      <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(1)}%</td>
+                      <td className="px-3 py-2 tabular-nums font-bold" style={{ color: diff >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>{diff >= 0 ? '+' : ''}{diff.toFixed(1)}%</td>
                     </tr>
                   );
                 })}
@@ -336,7 +336,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
       {/* ── Holding & Financing Cost Line Items ── */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-4 h-4" style={{ color: '#EF4444' }} />
+          <Calendar className="w-4 h-4" style={{ color: '#F06543' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">Holding & Financing Cost Detail</h4>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -355,7 +355,7 @@ export default function FlipProfitabilityDashboard({ projects: propProjects }: P
           ))}
           <div className="flex justify-between items-center py-2 col-span-full" style={{ borderTop: '2px solid var(--border-ui)' }}>
             <span className="text-xs font-black" style={{ color: 'var(--text-primary)' }}>TOTAL ALL-IN COST</span>
-            <span className="text-sm font-black tabular-nums" style={{ color: '#EF4444' }}>{fmtUSD(analysis.totalAllInCost)}</span>
+            <span className="text-sm font-black tabular-nums" style={{ color: '#F06543' }}>{fmtUSD(analysis.totalAllInCost)}</span>
           </div>
         </div>
       </div>

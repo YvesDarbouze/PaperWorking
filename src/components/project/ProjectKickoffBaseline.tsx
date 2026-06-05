@@ -139,7 +139,7 @@ export default function ProjectKickoffBaseline() {
                   <button
                     ref={ctaRef}
                     onMouseMove={handleMouseMove}
-                    className="w-full py-4 bg-primary text-[#00574d] text-[14px] font-semibold rounded-lg shadow-[0_0_20px_-5px_rgba(45,212,191,0.5)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden relative"
+                    className="w-full py-4 bg-primary text-[#00574d] text-[14px] font-semibold rounded-lg shadow-[0_0_20px_-5px_rgba(32, 178, 170,0.5)] flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden relative"
                   >
                     BEGIN UNDERWRITING
                     <span className="material-symbols-outlined">rocket_launch</span>

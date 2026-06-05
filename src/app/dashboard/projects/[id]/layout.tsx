@@ -69,12 +69,12 @@ const PHASE_BADGE_COLORS: Record<string, { bg: string; text: string }> = {
   'Phase 1: Find & Fund':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
   'Phase 2: Acquisition':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
   'Phase 3: Holding & Rehab':   { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Closing & Exit':    { bg: 'rgba(16,185,129,0.10)', text: '#10B981' },
+  'Phase 4: Closing & Exit':    { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
   // v2 equivalents
   'Phase 1: Acquisition':       { bg: 'rgba(89,89,89,0.12)',  text: '#808080' },
   'Phase 2: Transaction':       { bg: 'rgba(37,99,235,0.10)', text: '#2563EB' },
   'Phase 3: Rehab':             { bg: 'rgba(234,88,12,0.10)', text: '#EA580C' },
-  'Phase 4: Hold / Exit':       { bg: 'rgba(16,185,129,0.10)', text: '#10B981' },
+  'Phase 4: Hold / Exit':       { bg: 'rgba(63, 125, 32,0.10)', text: '#3f7d20' },
 };
 
 /* ─── Phase-aware folder icon color ──────────────────────────── */
@@ -87,7 +87,7 @@ const PHASE_FOLDER_COLORS: Record<string, { bg: string; icon: string }> = {
   'Phase 1: Acquisition':       { bg: '#595959', icon: '#FFFFFF' },
   'Phase 2: Transaction':       { bg: '#2563EB', icon: '#FFFFFF' },
   'Phase 3: Rehab':             { bg: '#EA580C', icon: '#FFFFFF' },
-  'Phase 4: Hold / Exit':       { bg: '#10B981', icon: '#FFFFFF' },
+  'Phase 4: Hold / Exit':       { bg: '#3f7d20', icon: '#FFFFFF' },
 };
 
 /* ─── Status badge ───────────────────────────────────────────── */
@@ -148,7 +148,7 @@ function Sparkline({ data, isUp }: { data: number[]; isUp: boolean }) {
       <polyline
         points={points}
         fill="none"
-        stroke={isUp ? '#2dd4bf' : '#ef4444'}
+        stroke={isUp ? '#20B2AA' : '#F06543'}
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -483,7 +483,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
           const displayState = isNa ? 'n/a' : isIncomplete ? 'incomplete' : cfg.result.state;
 
           const statePillStyle: React.CSSProperties = (() => {
-            if (displayState === 'live') return { background: 'rgba(16,185,129,0.15)', color: '#10B981' };
+            if (displayState === 'live') return { background: 'rgba(63, 125, 32,0.15)', color: '#3f7d20' };
             if (displayState === 'projected') return { background: 'rgba(245,158,11,0.15)', color: '#F59E0B' };
             if (displayState === 'realized') return { background: 'rgba(59,130,246,0.15)', color: '#3B82F6' };
             return { background: 'rgba(255,255,255,0.08)', color: 'var(--text-secondary)' };

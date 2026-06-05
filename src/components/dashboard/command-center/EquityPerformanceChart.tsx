@@ -106,13 +106,13 @@ export function EquityPerformanceChart() {
         <div className="flex items-center gap-1.5">
           <span
             className="material-symbols-outlined text-sm"
-            style={{ color: "#2dd4bf" }}
+            style={{ color: "#20B2AA" }}
           >
             arrow_upward
           </span>
           <span
             className="text-sm font-bold"
-            style={{ color: "#2dd4bf" }}
+            style={{ color: "#20B2AA" }}
           >
             +{growthPercent}%
           </span>
@@ -128,8 +128,8 @@ export function EquityPerformanceChart() {
           >
             <defs>
               <linearGradient id="equityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(45,212,191,0.25)" />
-                <stop offset="100%" stopColor="rgba(45,212,191,0)" />
+                <stop offset="0%" stopColor="rgba(32, 178, 170,0.25)" />
+                <stop offset="100%" stopColor="rgba(32, 178, 170,0)" />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -162,20 +162,20 @@ export function EquityPerformanceChart() {
             <Tooltip
               content={<CustomTooltip />}
               cursor={{
-                stroke: "rgba(45,212,191,0.3)",
+                stroke: "rgba(32, 178, 170,0.3)",
                 strokeDasharray: "3 3",
               }}
             />
             <Area
               type="monotone"
               dataKey="equity"
-              stroke="#2dd4bf"
+              stroke="#20B2AA"
               strokeWidth={2.5}
               fill="url(#equityGradient)"
               dot={false}
               activeDot={{
                 r: 5,
-                fill: "#2dd4bf",
+                fill: "#20B2AA",
                 stroke: "rgba(15,20,25,0.8)",
                 strokeWidth: 2,
               }}

@@ -154,8 +154,8 @@ export default function DemoPage() {
           <div 
             className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 px-6 py-3 text-center text-xs font-semibold select-none z-10 shrink-0"
             style={{
-              background: 'linear-gradient(90deg, rgba(45,212,191,0.08) 0%, rgba(45,212,191,0.04) 50%, rgba(45,212,191,0.08) 100%)',
-              borderBottom: '1px solid rgba(45,212,191,0.15)',
+              background: 'linear-gradient(90deg, rgba(32, 178, 170,0.08) 0%, rgba(32, 178, 170,0.04) 50%, rgba(32, 178, 170,0.08) 100%)',
+              borderBottom: '1px solid rgba(32, 178, 170,0.15)',
               backdropFilter: 'blur(12px)',
               color: 'rgba(218, 228, 236, 0.95)',
             }}
@@ -170,7 +170,7 @@ export default function DemoPage() {
             <span className="opacity-80">You are viewing a read-only example account.</span>
             <Link 
               href="/register" 
-              className="inline-flex items-center gap-1 text-[#2dd4bf] hover:text-[#2dd4bf]/80 underline transition-all font-bold"
+              className="inline-flex items-center gap-1 text-[#20B2AA] hover:text-[#20B2AA]/80 underline transition-all font-bold"
             >
               Sign up to start your own portfolio
               <span className="material-symbols-outlined text-[14px]">arrow_forward</span>

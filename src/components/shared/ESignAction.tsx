@@ -26,7 +26,7 @@ export default function ESignAction({ documentName, signeeRole, onSigned, isSign
 
   if (isSigned) {
      return (
-        <div className="flex items-center text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg text-xs font-semibold">
+        <div className="flex items-center text-[#3f7d20] bg-[#3f7d20]/10 border border-[#3f7d20]/20 px-3 py-1.5 rounded-lg text-xs font-semibold">
            <CheckCircle className="w-4 h-4 mr-1.5" /> Signed ({signeeRole})
         </div>
      );
@@ -36,7 +36,7 @@ export default function ESignAction({ documentName, signeeRole, onSigned, isSign
     <button 
       onClick={handleSigning}
       disabled={isSigning}
-      className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-indigo-100 transition disabled:opacity-50"
+      className="flex items-center gap-1.5 bg-[#20B2AA]/10 border border-[#20B2AA]/30 text-[#20B2AA] px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-[#20B2AA]/20 transition disabled:opacity-50"
     >
       {isSigning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PenTool className="w-3.5 h-3.5" />}
       Request E-Signature

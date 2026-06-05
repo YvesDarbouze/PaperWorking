@@ -33,7 +33,7 @@ const CATEGORY_META: Record<RehabExpenseCategory, { icon: React.ReactNode; color
   Exterior: { icon: <Trees className="w-4 h-4" />, color: 'text-emerald-600' },
   Material: { icon: <Package className="w-4 h-4" />, color: 'text-blue-600' },
   'Professional Labor': { icon: <HardHat className="w-4 h-4" />, color: 'text-amber-600' },
-  Permits: { icon: <Receipt className="w-4 h-4" />, color: 'text-purple-600' },
+  Permits: { icon: <Receipt className="w-4 h-4" />, color: 'text-[#20B2AA]' },
   'Dumpster Rental': { icon: <TrashIcon className="w-4 h-4" />, color: 'text-text-secondary' },
   Other: { icon: <Wrench className="w-4 h-4" />, color: 'text-text-secondary' },
 };

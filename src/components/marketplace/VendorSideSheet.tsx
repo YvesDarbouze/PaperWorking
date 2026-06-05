@@ -118,20 +118,20 @@ export default function VendorSideSheet({
         <div className="px-6 py-6 space-y-6">
           {/* Company Header */}
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center text-[#2dd4bf] font-bold text-xl flex-shrink-0">
+            <div className="w-14 h-14 rounded-xl bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center text-[#20B2AA] font-bold text-xl flex-shrink-0">
               {vendor.companyName.charAt(0)}
             </div>
             <div className="min-w-0">
               <h3 className="text-lg font-bold leading-tight truncate">
                 {vendor.companyName}
               </h3>
-              <p className="text-sm text-[#2dd4bf] font-medium">
+              <p className="text-sm text-[#20B2AA] font-medium">
                 {vendor.type}
               </p>
               {/* Badges */}
               <div className="flex gap-1.5 mt-2">
                 {vendor.verified && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 text-[#2dd4bf] text-[9px] font-bold uppercase">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 text-[#20B2AA] text-[9px] font-bold uppercase">
                     <BadgeCheck className="w-3 h-3" /> Verified
                   </span>
                 )}
@@ -169,7 +169,7 @@ export default function VendorSideSheet({
           {/* Quick Metrics */}
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-lg font-bold font-mono text-[#2dd4bf]">
+              <p className="text-lg font-bold font-mono text-[#20B2AA]">
                 {vendor.avgTurnaroundDays}d
               </p>
               <p className="text-[9px] text-slate-400 uppercase tracking-wider mt-1">
@@ -177,7 +177,7 @@ export default function VendorSideSheet({
               </p>
             </div>
             <div className="text-center p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-              <p className="text-lg font-bold font-mono text-[#2dd4bf]">
+              <p className="text-lg font-bold font-mono text-[#20B2AA]">
                 {vendor.feeRangeLabel.split('-')[0]?.trim() ?? '—'}
               </p>
               <p className="text-[9px] text-slate-400 uppercase tracking-wider mt-1">
@@ -239,13 +239,13 @@ export default function VendorSideSheet({
           {/* Service Info */}
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2 text-slate-300">
-              <MapPin className="w-4 h-4 text-[#2dd4bf]" />
+              <MapPin className="w-4 h-4 text-[#20B2AA]" />
               <span>
                 Licensed: {vendor.licensingStates.join(', ')}
               </span>
             </div>
             <div className="flex items-center gap-2 text-slate-300">
-              <Clock className="w-4 h-4 text-[#2dd4bf]" />
+              <Clock className="w-4 h-4 text-[#20B2AA]" />
               <span>{vendor.availability}</span>
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function VendorSideSheet({
             {onRequestQuote && (
               <button
                 onClick={() => onRequestQuote(vendor)}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#2dd4bf] text-[#003731] text-sm font-bold hover:bg-[#2dd4bf]/90 transition-all shadow-[0_0_20px_rgba(45,212,191,0.15)]"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#20B2AA] text-[#003731] text-sm font-bold hover:bg-[#20B2AA]/90 transition-all shadow-[0_0_20px_rgba(32, 178, 170,0.15)]"
               >
                 <MessageSquare className="w-4 h-4" />
                 Request Quote
@@ -264,7 +264,7 @@ export default function VendorSideSheet({
             <Link
               href={`/pros/${slug}`}
               target="_blank"
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/[0.08] text-sm font-bold text-slate-300 hover:text-white hover:border-[#2dd4bf]/30 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-white/[0.08] text-sm font-bold text-slate-300 hover:text-white hover:border-[#20B2AA]/30 transition-all"
             >
               <ExternalLink className="w-4 h-4" />
               Full Profile

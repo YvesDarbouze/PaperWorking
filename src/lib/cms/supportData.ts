@@ -29,6 +29,7 @@ export interface SupportArticle {
   readTime: string;
   tags: string[];
   popular?: boolean;         // surfaces in popular articles strip
+  content?: string;
 }
 
 export interface SupportFAQ {

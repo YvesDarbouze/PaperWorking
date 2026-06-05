@@ -21,7 +21,7 @@ export function CustomToaster({ position = 'bottom-left' }: CustomToasterProps) 
               accentColor = 'var(--color-secondary-container, #D3E7DF)';
               icon = <Check className="w-4 h-4 text-pw-forest dark:text-pw-minty shrink-0" />;
             } else if (t.type === 'error') {
-              accentColor = 'var(--color-error, #ba1a1a)';
+              accentColor = 'var(--color-error, #F06543)';
               icon = <AlertCircle className="w-4 h-4 text-[var(--color-error)] shrink-0" />;
             } else if (t.type === 'loading') {
               accentColor = 'var(--pw-muted)';

@@ -142,7 +142,7 @@ export default function ProfitabilityByProject({ projects, year }: Profitability
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={entry.profit >= 0 ? '#111827' : '#ef4444'}
+                fill={entry.profit >= 0 ? '#111827' : '#F06543'}
                 filter="url(#barShadow)"
               />
             ))}

@@ -18,7 +18,7 @@ import toast from 'react-hot-toast';
 import type { CRMContact, ContactRole } from '@/types/schema';
 
 const ROLE_CONFIG: Record<ContactRole, { label: string; icon: React.ReactNode; color: string }> = {
-  'Lawyer':             { label: 'Lawyer',           icon: <Scale className="w-4 h-4" />,    color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  'Lawyer':             { label: 'Lawyer',           icon: <Scale className="w-4 h-4" />,    color: 'bg-[#20B2AA]/10 text-[#1e7874] border-[#20B2AA]/20' },
   'Real Estate Agent':  { label: 'Real Estate Agent', icon: <Home className="w-4 h-4" />,     color: 'bg-blue-50 text-blue-700 border-blue-200' },
   'Lender / Bank':      { label: 'Lender / Bank',     icon: <Landmark className="w-4 h-4" />, color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   'Appraiser':          { label: 'Appraiser',         icon: <Briefcase className="w-4 h-4" />, color: 'bg-amber-50 text-amber-700 border-amber-200' },
@@ -206,7 +206,7 @@ export default function ContactManager() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">Role *</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                   value={form.role}
                   onChange={e => setForm(f => ({ ...f, role: e.target.value as ContactRole }))}
                 >
@@ -220,7 +220,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">First Name *</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="Jane"
                     value={form.firstName}
                     onChange={e => setForm(f => ({ ...f, firstName: e.target.value }))}
@@ -230,7 +230,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Last Name</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="Smith"
                     value={form.lastName}
                     onChange={e => setForm(f => ({ ...f, lastName: e.target.value }))}
@@ -244,7 +244,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Email *</label>
                   <input
                     type="email"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="jane@firm.com"
                     value={form.email}
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
@@ -254,7 +254,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Phone</label>
                   <input
                     type="tel"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="+1 (555) 000-0000"
                     value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
@@ -268,7 +268,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">Company / Firm</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="Smith & Associates"
                     value={form.companyName}
                     onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))}
@@ -278,7 +278,7 @@ export default function ContactManager() {
                   <label className="block text-xs font-medium text-text-primary mb-1">License #</label>
                   <input
                     type="text"
-                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                     placeholder="RE-1234567"
                     value={form.licenseNumber}
                     onChange={e => setForm(f => ({ ...f, licenseNumber: e.target.value }))}
@@ -316,7 +316,7 @@ export default function ContactManager() {
                 <label className="block text-xs font-medium text-text-primary mb-1">Notes</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA] resize-none"
                   placeholder="Specializes in distressed properties…"
                   value={form.notes}
                   onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}

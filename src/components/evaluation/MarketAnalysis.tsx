@@ -33,7 +33,7 @@ function HeatBar({ score }: { score: number }) {
           className="h-2.5 w-2 rounded-sm transition-colors"
           style={{
             backgroundColor: i < score
-              ? score >= 8 ? '#10b981' : score >= 5 ? '#f59e0b' : '#ef4444'
+              ? score >= 8 ? '#3f7d20' : score >= 5 ? '#f59e0b' : '#F06543'
               : '#e5e7eb',
           }}
         />

@@ -79,7 +79,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
        return d;
     });
     setDeals(updatedDeals);
-    toast.success(isBrrrr ? 'REFINANCE EXECUTED! Assets moved to holding portfolio.' : 'SALE EXECUTED! The Net Engine has recorded the transaction.', { icon: '💰', style: { background: '#10b981', color: '#fff' }});
+    toast.success(isBrrrr ? 'REFINANCE EXECUTED! Assets moved to holding portfolio.' : 'SALE EXECUTED! The Net Engine has recorded the transaction.', { icon: '💰', style: { background: '#3f7d20', color: '#fff' }});
   };
 
   return (

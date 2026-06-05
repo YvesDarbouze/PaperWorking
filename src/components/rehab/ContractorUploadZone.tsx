@@ -73,7 +73,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
             setAmount('');
             setLineItem('');
             setFile(null);
-        } catch (err: any) {
+        } catch (err) {
             console.error('Failed to upload receipt:', err);
             toast.error('Failed to upload receipt. Please try again.');
         } finally {
@@ -111,7 +111,7 @@ export default function ContractorUploadZone({ projectId }: ContractorUploadZone
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-purple-600"/> Budget Line Item</label>
+                    <label className="block text-sm font-medium text-text-primary mb-1 flex items-center"><List className="w-4 h-4 mr-1 text-[#20B2AA]"/> Budget Line Item</label>
                     <select
                         value={lineItem}
                         onChange={(e) => setLineItem(e.target.value)}

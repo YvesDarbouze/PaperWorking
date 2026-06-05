@@ -12,79 +12,79 @@
 :root,
 html[data-theme="light"] {
   /* ─── PaperWorking Luminous Glass Palette (Stitch Extracted) ─── */
-  --color-surface: #f9f9f9;
-  --color-surface-dim: #dadada;
-  --color-surface-bright: #f9f9f9;
+  --color-surface: #FDFFFC;
+  --color-surface-dim: #e6e9e6;
+  --color-surface-bright: #FDFFFC;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f3f3;
-  --color-surface-container: #eeeeee;
-  --color-surface-container-high: #e8e8e8;
-  --color-surface-container-highest: #e2e2e2;
-  --color-on-surface: #1a1c1c;
-  --color-on-surface-variant: #42474d;
-  --color-inverse-surface: #2f3131;
-  --color-inverse-on-surface: #f1f1f1;
-  --color-outline: #72777e;
-  --color-outline-variant: #c2c7ce;
-  --color-surface-tint: #3f627e;
-  --color-primary: #002a43;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #1b405b;
-  --color-on-primary-container: #89accb;
-  --color-inverse-primary: #a7caeb;
-  --color-secondary: #50625c;
-  --color-on-secondary: #ffffff;
-  --color-secondary-container: #d3e7df;
-  --color-on-secondary-container: #566862;
-  --color-tertiary: #382300;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-container: #533708;
-  --color-on-tertiary-container: #c9a169;
-  --color-error: #ba1a1a;
-  --color-on-error: #ffffff;
+  --color-surface-container-low: #f3f6f3;
+  --color-surface-container: #eaeaea;
+  --color-surface-container-high: #e0e3e0;
+  --color-surface-container-highest: #d5d8d5;
+  --color-on-surface: #0d0a0b;
+  --color-on-surface-variant: #454955;
+  --color-inverse-surface: #0d0a0b;
+  --color-inverse-on-surface: #FDFFFC;
+  --color-outline: #8c92ac;
+  --color-outline-variant: #c0c5c0;
+  --color-surface-tint: #454955;
+  --color-primary: #454955;
+  --color-on-primary: #FDFFFC;
+  --color-primary-container: #454955;
+  --color-on-primary-container: #FDFFFC;
+  --color-inverse-primary: #8a8e9a;
+  --color-secondary: #20B2AA;
+  --color-on-secondary: #0d0a0b;
+  --color-secondary-container: #20B2AA;
+  --color-on-secondary-container: #0d0a0b;
+  --color-tertiary: #20B2AA;
+  --color-on-tertiary: #0d0a0b;
+  --color-tertiary-container: #20B2AA;
+  --color-on-tertiary-container: #0d0a0b;
+  --color-error: #F06543;
+  --color-on-error: #FDFFFC;
   --color-error-container: #ffdad6;
-  --color-on-error-container: #93000a;
-  --color-primary-fixed: #cce5ff;
-  --color-primary-fixed-dim: #a7caeb;
-  --color-on-primary-fixed: #001e31;
-  --color-on-primary-fixed-variant: #264a65;
-  --color-secondary-fixed: #d3e7df;
-  --color-secondary-fixed-dim: #b7cbc3;
-  --color-on-secondary-fixed: #0d1f1a;
-  --color-on-secondary-fixed-variant: #394a45;
-  --color-tertiary-fixed: #ffddb3;
-  --color-tertiary-fixed-dim: #ebbf85;
-  --color-on-tertiary-fixed: #291800;
-  --color-on-tertiary-fixed-variant: #5f4112;
-  --color-background: #f9f9f9;
-  --color-on-background: #1a1c1c;
-  --color-surface-variant: #e2e2e2;
-  --color-glass-bg: rgba(255, 255, 255, 0.4);
-  --color-glass-border: rgba(255, 255, 255, 0.6);
-  --color-deep-forest: #0D2A26;
-  --color-status-info: #163144;
-  --input-focus-glow-color: rgba(27, 64, 91, 0.25);
+  --color-on-error-container: #F06543;
+  --color-primary-fixed: #454955;
+  --color-primary-fixed-dim: #454955;
+  --color-on-primary-fixed: #FDFFFC;
+  --color-on-primary-fixed-variant: #FDFFFC;
+  --color-secondary-fixed: #20B2AA;
+  --color-secondary-fixed-dim: #20B2AA;
+  --color-on-secondary-fixed: #0d0a0b;
+  --color-on-secondary-fixed-variant: #0d0a0b;
+  --color-tertiary-fixed: #20B2AA;
+  --color-tertiary-fixed-dim: #20B2AA;
+  --color-on-tertiary-fixed: #0d0a0b;
+  --color-on-tertiary-fixed-variant: #0d0a0b;
+  --color-background: #FDFFFC;
+  --color-on-background: #0d0a0b;
+  --color-surface-variant: #eaeaea;
+  --color-glass-bg: rgba(253, 255, 252, 0.4);
+  --color-glass-border: rgba(32, 178, 170, 0.25);
+  --color-deep-forest: #454955;
+  --color-status-info: #20B2AA;
+  --input-focus-glow-color: rgba(69, 73, 85, 0.25);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: var(--color-status-info);
-  --pw-btn-primary-hover-bg: #1c3c54;
-  --pw-btn-primary-text: #ffffff;
+  --pw-btn-primary-bg: var(--color-primary);
+  --pw-btn-primary-hover-bg: #5a5f6e;
+  --pw-btn-primary-text: #FDFFFC;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(255, 255, 255, 0.6);
+  --pw-btn-secondary-hover-bg: rgba(32, 178, 170, 0.15);
   --pw-btn-secondary-text: var(--color-primary);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(255, 255, 255, 0.05);
+  --pw-btn-tertiary-hover-bg: rgba(69, 73, 85, 0.05);
   --pw-btn-tertiary-text: var(--color-primary);
-  --pw-btn-tertiary-border: rgba(255, 255, 255, 0.3);
+  --pw-btn-tertiary-border: rgba(69, 73, 85, 0.3);
   --pw-btn-danger-bg: var(--color-error);
-  --pw-btn-danger-hover-bg: #93000a;
-  --pw-btn-danger-text: #ffffff;
+  --pw-btn-danger-hover-bg: #ff7f5f;
+  --pw-btn-danger-text: #FDFFFC;
 
   /* ─── Stitch Brand Overrides ─── */
-  --color-brand-primary: #1b405b;
-  --color-brand-secondary: #dff3eb;
-  --color-brand-neutral: #f2f2f2;
+  --color-brand-primary: #454955;
+  --color-brand-secondary: #20B2AA;
+  --color-brand-neutral: #FDFFFC;
   --spacing-scale: 2;
 
   /* Legacy Aliases */
@@ -128,9 +128,9 @@ html[data-theme="light"] {
   --radius-3xl: 2.5rem;
   --radius-full: 9999px;
 
-  /* Typography — Inter Full Weight System (100–900) */
-  --font-hanken: "Hanken Grotesk", system-ui, sans-serif;
-  --font-plus-jakarta: "Plus Jakarta Sans", system-ui, sans-serif;
+  /* Typography — Inter Sans & Merriweather Serif System */
+  --font-hanken: var(--font-inter), system-ui, sans-serif;
+  --font-plus-jakarta: var(--font-merriweather), Georgia, serif;
 
   /* Display / Hero — Inter 800 ExtraBold */
   --text-display-hero-size: 72px;
@@ -199,65 +199,65 @@ html[data-theme="light"] {
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     /* ─── Stitch Command Center Dark Palette (Luminous Glass Dark) ─── */
-    --color-surface: #091015;
-    --color-surface-dim: #091015;
-    --color-surface-bright: #313a41;
-    --color-surface-container-lowest: #060f15;
-    --color-surface-container-low: #141d23;
-    --color-surface-container: #182127;
-    --color-surface-container-high: #222b32;
-    --color-surface-container-highest: #2d363d;
-    --color-on-surface: #dae4ec;
-    --color-on-surface-variant: #bacac5;
-    --color-inverse-surface: #dae4ec;
-    --color-inverse-on-surface: #293238;
-    --color-outline: #859490;
-    --color-outline-variant: #3c4a46;
-    --color-surface-tint: #3cddc7;
-    --color-primary: #57f1db;
-    --color-on-primary: #003731;
-    --color-primary-container: #2dd4bf;
-    --color-on-primary-container: #00574d;
-    --color-inverse-primary: #006b5f;
-    --color-secondary: #adc6ff;
-    --color-on-secondary: #002e6a;
-    --color-secondary-container: #0566d9;
-    --color-on-secondary-container: #e6ecff;
-    --color-tertiary: #ffd1aa;
-    --color-on-tertiary: #4b2800;
-    --color-tertiary-container: #ffac5a;
-    --color-on-tertiary-container: #744000;
-    --color-error: #ffb4ab;
-    --color-on-error: #690005;
+    --color-surface: #0d0a0b;
+    --color-surface-dim: #1a1a1e;
+    --color-surface-bright: #2c2c30;
+    --color-surface-container-lowest: #050405;
+    --color-surface-container-low: #141215;
+    --color-surface-container: #1e1b20;
+    --color-surface-container-high: #2a262c;
+    --color-surface-container-highest: #37323a;
+    --color-on-surface: #FDFFFC;
+    --color-on-surface-variant: #20B2AA;
+    --color-inverse-surface: #FDFFFC;
+    --color-inverse-on-surface: #0d0a0b;
+    --color-outline: #5a625f;
+    --color-outline-variant: #2c3331;
+    --color-surface-tint: #454955;
+    --color-primary: #454955;
+    --color-on-primary: #FDFFFC;
+    --color-primary-container: #454955;
+    --color-on-primary-container: #FDFFFC;
+    --color-inverse-primary: #8a8e9a;
+    --color-secondary: #20B2AA;
+    --color-on-secondary: #0d0a0b;
+    --color-secondary-container: #20B2AA;
+    --color-on-secondary-container: #0d0a0b;
+    --color-tertiary: #20B2AA;
+    --color-on-tertiary: #0d0a0b;
+    --color-tertiary-container: #20B2AA;
+    --color-on-tertiary-container: #0d0a0b;
+    --color-error: #F06543;
+    --color-on-error: #FDFFFC;
     --color-error-container: #93000a;
-    --color-on-error-container: #ffdad6;
-    --color-primary-fixed: #62fae3;
-    --color-primary-fixed-dim: #3cddc7;
-    --color-on-primary-fixed: #00201c;
-    --color-on-primary-fixed-variant: #005047;
-    --color-secondary-fixed: #d8e2ff;
-    --color-secondary-fixed-dim: #adc6ff;
-    --color-on-secondary-fixed: #001a42;
-    --color-on-secondary-fixed-variant: #004395;
-    --color-tertiary-fixed: #ffdcc0;
-    --color-tertiary-fixed-dim: #ffb875;
-    --color-on-tertiary-fixed: #2d1600;
-    --color-on-tertiary-fixed-variant: #6b3b00;
-    --color-background: #091015; /* Darkened by 20% from #091015 */
-    --color-on-background: #dae4ec;
-    --color-surface-variant: #2d363d;
-    --color-glass-bg: rgba(255, 255, 255, 0.03);
-    --color-glass-border: rgba(255, 255, 255, 0.08);
-    --color-deep-forest: #00201c;
-    --color-status-info: #004395;
-    --input-focus-glow-color: rgba(45, 212, 191, 0.35);
+    --color-on-error-container: #FFDAD6;
+    --color-primary-fixed: #454955;
+    --color-primary-fixed-dim: #454955;
+    --color-on-primary-fixed: #FDFFFC;
+    --color-on-primary-fixed-variant: #FDFFFC;
+    --color-secondary-fixed: #20B2AA;
+    --color-secondary-fixed-dim: #20B2AA;
+    --color-on-secondary-fixed: #0d0a0b;
+    --color-on-secondary-fixed-variant: #0d0a0b;
+    --color-tertiary-fixed: #20B2AA;
+    --color-tertiary-fixed-dim: #20B2AA;
+    --color-on-tertiary-fixed: #0d0a0b;
+    --color-on-tertiary-fixed-variant: #0d0a0b;
+    --color-background: #0d0a0b;
+    --color-on-background: #FDFFFC;
+    --color-surface-variant: #1e1b20;
+    --color-glass-bg: rgba(13, 10, 11, 0.4);
+    --color-glass-border: rgba(32, 178, 170, 0.15);
+    --color-deep-forest: #454955;
+    --color-status-info: #20B2AA;
+    --input-focus-glow-color: rgba(32, 178, 170, 0.35);
 
     /* ─── Button System Variables ─── */
-    --pw-btn-primary-bg: var(--color-status-info);
-    --pw-btn-primary-hover-bg: #0050b5;
+    --pw-btn-primary-bg: var(--color-primary);
+    --pw-btn-primary-hover-bg: #5a5f6e;
     --pw-btn-primary-text: #ffffff;
     --pw-btn-secondary-bg: var(--color-glass-bg);
-    --pw-btn-secondary-hover-bg: rgba(255, 255, 255, 0.08);
+    --pw-btn-secondary-hover-bg: rgba(32, 178, 170, 0.15);
     --pw-btn-secondary-text: var(--color-on-surface);
     --pw-btn-secondary-border: var(--color-glass-border);
     --pw-btn-tertiary-bg: transparent;
@@ -265,95 +265,95 @@ html[data-theme="light"] {
     --pw-btn-tertiary-text: var(--color-on-surface);
     --pw-btn-tertiary-border: rgba(255, 255, 255, 0.1);
     --pw-btn-danger-bg: var(--color-error);
-    --pw-btn-danger-hover-bg: var(--color-error-container);
-    --pw-btn-danger-text: var(--color-on-error);
+    --pw-btn-danger-hover-bg: #ff7f5f;
+    --pw-btn-danger-text: #ffffff;
 
     /* ─── Stitch Brand Overrides ─── */
-    --color-brand-primary: #2dd4bf;
-    --color-brand-secondary: #00574d;
-    --color-brand-neutral: #141d23;
+    --color-brand-primary: #454955;
+    --color-brand-secondary: #20B2AA;
+    --color-brand-neutral: #0d0a0b;
 
     /* Legacy aliases for dark */
-    --pw-bg: #091015; /* Darkened */
-    --pw-primary: #2dd4bf;
-    --pw-ocean: #3cddc7;
-    --pw-info: #bacac5;
-    --pw-minty: #bacac5;
-    --pw-forest: #182127;
-    --pw-surface: #091015;
-    --pw-border: rgba(255, 255, 255, 0.08);
-    --pw-glass-bg: rgba(255, 255, 255, 0.03);
-    --pw-white: #091015;
-    --pw-black: #dae4ec;
-    --pw-muted: #859490;
-    --pw-brand-secondary: #00574d;
-    --pw-brand-neutral: #141d23;
-    --pw-accent: #2dd4bf;
+    --pw-bg: #0d0a0b;
+    --pw-primary: #454955;
+    --pw-ocean: #20B2AA;
+    --pw-info: #20B2AA;
+    --pw-minty: #20B2AA;
+    --pw-forest: #454955;
+    --pw-surface: #0d0a0b;
+    --pw-border: rgba(32, 178, 170, 0.15);
+    --pw-glass-bg: rgba(13, 10, 11, 0.4);
+    --pw-white: #0d0a0b;
+    --pw-black: #FDFFFC;
+    --pw-muted: #5a625f;
+    --pw-brand-secondary: #20B2AA;
+    --pw-brand-neutral: #0d0a0b;
+    --pw-accent: #454955;
   }
 }
 
 html[data-theme="dark"],
 .dark {
   /* ─── Stitch Command Center Dark Palette (Luminous Glass Dark) ─── */
-  --color-surface: #091015;
-  --color-surface-dim: #091015;
-  --color-surface-bright: #313a41;
-  --color-surface-container-lowest: #060f15;
-  --color-surface-container-low: #141d23;
-  --color-surface-container: #182127;
-  --color-surface-container-high: #222b32;
-  --color-surface-container-highest: #2d363d;
-  --color-on-surface: #dae4ec;
-  --color-on-surface-variant: #bacac5;
-  --color-inverse-surface: #dae4ec;
-  --color-inverse-on-surface: #293238;
-  --color-outline: #859490;
-  --color-outline-variant: #3c4a46;
-  --color-surface-tint: #3cddc7;
-  --color-primary: #57f1db;
-  --color-on-primary: #003731;
-  --color-primary-container: #2dd4bf;
-  --color-on-primary-container: #00574d;
-  --color-inverse-primary: #006b5f;
-  --color-secondary: #adc6ff;
-  --color-on-secondary: #002e6a;
-  --color-secondary-container: #0566d9;
-  --color-on-secondary-container: #e6ecff;
-  --color-tertiary: #ffd1aa;
-  --color-on-tertiary: #4b2800;
-  --color-tertiary-container: #ffac5a;
-  --color-on-tertiary-container: #744000;
-  --color-error: #ffb4ab;
-  --color-on-error: #690005;
+  --color-surface: #0d0a0b;
+  --color-surface-dim: #1a1a1e;
+  --color-surface-bright: #2c2c30;
+  --color-surface-container-lowest: #050405;
+  --color-surface-container-low: #141215;
+  --color-surface-container: #1e1b20;
+  --color-surface-container-high: #2a262c;
+  --color-surface-container-highest: #37323a;
+  --color-on-surface: #FDFFFC;
+  --color-on-surface-variant: #20B2AA;
+  --color-inverse-surface: #FDFFFC;
+  --color-inverse-on-surface: #0d0a0b;
+  --color-outline: #5a625f;
+  --color-outline-variant: #2c3331;
+  --color-surface-tint: #454955;
+  --color-primary: #454955;
+  --color-on-primary: #FDFFFC;
+  --color-primary-container: #454955;
+  --color-on-primary-container: #FDFFFC;
+  --color-inverse-primary: #8a8e9a;
+  --color-secondary: #20B2AA;
+  --color-on-secondary: #0d0a0b;
+  --color-secondary-container: #20B2AA;
+  --color-on-secondary-container: #0d0a0b;
+  --color-tertiary: #20B2AA;
+  --color-on-tertiary: #0d0a0b;
+  --color-tertiary-container: #20B2AA;
+  --color-on-tertiary-container: #0d0a0b;
+  --color-error: #F06543;
+  --color-on-error: #FDFFFC;
   --color-error-container: #93000a;
-  --color-on-error-container: #ffdad6;
-  --color-primary-fixed: #62fae3;
-  --color-primary-fixed-dim: #3cddc7;
-  --color-on-primary-fixed: #00201c;
-  --color-on-primary-fixed-variant: #005047;
-  --color-secondary-fixed: #d8e2ff;
-  --color-secondary-fixed-dim: #adc6ff;
-  --color-on-secondary-fixed: #001a42;
-  --color-on-secondary-fixed-variant: #004395;
-  --color-tertiary-fixed: #ffdcc0;
-  --color-tertiary-fixed-dim: #ffb875;
-  --color-on-tertiary-fixed: #2d1600;
-  --color-on-tertiary-fixed-variant: #6b3b00;
-  --color-background: #091015; /* Darkened */
-  --color-on-background: #dae4ec;
-  --color-surface-variant: #2d363d;
-  --color-glass-bg: rgba(255, 255, 255, 0.03);
-  --color-glass-border: rgba(255, 255, 255, 0.08);
-  --color-deep-forest: #00201c;
-  --color-status-info: #004395;
-  --input-focus-glow-color: rgba(45, 212, 191, 0.35);
+  --color-on-error-container: #FFDAD6;
+  --color-primary-fixed: #454955;
+  --color-primary-fixed-dim: #454955;
+  --color-on-primary-fixed: #FDFFFC;
+  --color-on-primary-fixed-variant: #FDFFFC;
+  --color-secondary-fixed: #20B2AA;
+  --color-secondary-fixed-dim: #20B2AA;
+  --color-on-secondary-fixed: #0d0a0b;
+  --color-on-secondary-fixed-variant: #0d0a0b;
+  --color-tertiary-fixed: #20B2AA;
+  --color-tertiary-fixed-dim: #20B2AA;
+  --color-on-tertiary-fixed: #0d0a0b;
+  --color-on-tertiary-fixed-variant: #0d0a0b;
+  --color-background: #0d0a0b;
+  --color-on-background: #FDFFFC;
+  --color-surface-variant: #1e1b20;
+  --color-glass-bg: rgba(13, 10, 11, 0.4);
+  --color-glass-border: rgba(32, 178, 170, 0.15);
+  --color-deep-forest: #454955;
+  --color-status-info: #20B2AA;
+  --input-focus-glow-color: rgba(32, 178, 170, 0.35);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: var(--color-status-info);
-  --pw-btn-primary-hover-bg: #0050b5;
+  --pw-btn-primary-bg: var(--color-primary);
+  --pw-btn-primary-hover-bg: #5a5f6e;
   --pw-btn-primary-text: #ffffff;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(255, 255, 255, 0.08);
+  --pw-btn-secondary-hover-bg: rgba(32, 178, 170, 0.15);
   --pw-btn-secondary-text: var(--color-on-surface);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
@@ -361,30 +361,30 @@ html[data-theme="dark"],
   --pw-btn-tertiary-text: var(--color-on-surface);
   --pw-btn-tertiary-border: rgba(255, 255, 255, 0.1);
   --pw-btn-danger-bg: var(--color-error);
-  --pw-btn-danger-hover-bg: var(--color-error-container);
-  --pw-btn-danger-text: var(--color-on-error);
+  --pw-btn-danger-hover-bg: #ff7f5f;
+  --pw-btn-danger-text: #ffffff;
 
   /* ─── Stitch Brand Overrides ─── */
-  --color-brand-primary: #2dd4bf;
-  --color-brand-secondary: #00574d;
-  --color-brand-neutral: #141d23;
+  --color-brand-primary: #454955;
+  --color-brand-secondary: #20B2AA;
+  --color-brand-neutral: #0d0a0b;
 
   /* Legacy aliases for dark */
-  --pw-bg: #091015; /* Darkened */
-  --pw-primary: #2dd4bf;
-  --pw-ocean: #3cddc7;
-  --pw-info: #bacac5;
-  --pw-minty: #bacac5;
-  --pw-forest: #182127;
-  --pw-surface: #091015;
-  --pw-border: rgba(255, 255, 255, 0.08);
-  --pw-glass-bg: rgba(255, 255, 255, 0.03);
-  --pw-white: #091015;
-  --pw-black: #dae4ec;
-  --pw-muted: #859490;
-  --pw-brand-secondary: #00574d;
-  --pw-brand-neutral: #141d23;
-  --pw-accent: #2dd4bf;
+  --pw-bg: #0d0a0b;
+  --pw-primary: #454955;
+  --pw-ocean: #20B2AA;
+  --pw-info: #20B2AA;
+  --pw-minty: #20B2AA;
+  --pw-forest: #454955;
+  --pw-surface: #0d0a0b;
+  --pw-border: rgba(32, 178, 170, 0.15);
+  --pw-glass-bg: rgba(13, 10, 11, 0.4);
+  --pw-white: #0d0a0b;
+  --pw-black: #FDFFFC;
+  --pw-muted: #5a625f;
+  --pw-brand-secondary: #20B2AA;
+  --pw-brand-neutral: #0d0a0b;
+  --pw-accent: #454955;
 }
 
 /* ─── Tailwind v4 @theme ─── */
@@ -407,21 +407,21 @@ html[data-theme="dark"],
   --color-text-primary: var(--pw-black);
   --color-text-secondary: var(--pw-muted);
 
-  /* ─── Font System — Inter Primary, JetBrains Mono terminal ─── */
+  /* ─── Font System — Inter Primary, Merriweather Serif, JetBrains Mono terminal ─── */
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-merriweather), Georgia, serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
   --font-jetbrains: var(--font-jetbrains-mono), monospace;
-  --font-hanken: var(--font-hanken);
-  --font-plus-jakarta: var(--font-plus-jakarta);
+  --font-hanken: var(--font-inter), system-ui, sans-serif;
+  --font-plus-jakarta: var(--font-merriweather), Georgia, serif;
 
-  /* Font Family Mappings — all headings and body use Inter */
-  --font-display-hero: var(--font-inter), system-ui, sans-serif;
-  --font-headline-xl: var(--font-inter), system-ui, sans-serif;
-  --font-headline-lg: var(--font-inter), system-ui, sans-serif;
-  --font-headline-md: var(--font-inter), system-ui, sans-serif;
-  --font-headline-sm: var(--font-inter), system-ui, sans-serif;
-  --font-headline-lg-mobile: var(--font-inter), system-ui, sans-serif;
+  /* Font Family Mappings — headings use Merriweather, body uses Inter */
+  --font-display-hero: var(--font-merriweather), Georgia, serif;
+  --font-headline-xl: var(--font-merriweather), Georgia, serif;
+  --font-headline-lg: var(--font-merriweather), Georgia, serif;
+  --font-headline-md: var(--font-merriweather), Georgia, serif;
+  --font-headline-sm: var(--font-merriweather), Georgia, serif;
+  --font-headline-lg-mobile: var(--font-merriweather), Georgia, serif;
   --font-body-lg: var(--font-inter), system-ui, sans-serif;
   --font-body-md: var(--font-inter), system-ui, sans-serif;
   --font-body-sm: var(--font-inter), system-ui, sans-serif;
@@ -568,7 +568,7 @@ html[data-theme="dark"],
 
   /* ─── Stitch Schema Utility Classes ─── */
   .luminous-glow {
-    box-shadow: 0 0 20px -5px rgba(45, 212, 191, 0.4);
+    box-shadow: 0 0 20px -5px rgba(32, 178, 170, 0.4);
   }
 
   .text-glow {
@@ -577,7 +577,7 @@ html[data-theme="dark"],
 
   .luminous-text {
     color: var(--color-primary);
-    text-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+    text-shadow: 0 0 20px rgba(32, 178, 170, 0.4);
   }
 
   .luminous-teal {
@@ -642,7 +642,7 @@ html[data-theme="dark"],
   }
   .dark .glass-input:focus {
     background-color: rgba(255, 255, 255, 0.05) !important;
-    box-shadow: 0 0 8px rgba(45, 212, 191, 0.35) !important;
+    box-shadow: 0 0 8px rgba(32, 178, 170, 0.35) !important;
   }
 
   .glow-accent-primary {
@@ -680,7 +680,7 @@ html[data-theme="dark"],
     transition: all 0.3s ease;
   }
   .luminous-button:hover {
-    box-shadow: 0 0 25px -2px rgba(45, 212, 191, 0.6);
+    box-shadow: 0 0 25px -2px rgba(32, 178, 170, 0.6);
     transform: translateY(-1px);
   }
   .luminous-button:active {
@@ -724,7 +724,7 @@ html[data-theme="dark"],
 /* Stitch Typography System Enforcement */
 @layer base {
   h1 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-display-lg-size);
     font-weight: var(--text-display-lg-weight);
     line-height: var(--text-display-lg-line-height);
@@ -732,48 +732,48 @@ html[data-theme="dark"],
     color: var(--pw-black);
   }
   h2 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-headline-lg-size);
     font-weight: var(--text-headline-lg-weight);
     line-height: var(--text-headline-lg-line-height);
     color: var(--pw-black);
   }
   h3 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-headline-lg-mobile-size);
     font-weight: var(--text-headline-lg-mobile-weight);
     line-height: var(--text-headline-lg-mobile-line-height);
     color: var(--pw-black);
   }
   h4 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-title-md-size);
     font-weight: var(--text-title-md-weight);
     line-height: var(--text-title-md-line-height);
     color: var(--pw-black);
   }
   h5 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-body-lg-size);
     font-weight: 600;
     line-height: var(--text-body-lg-line-height);
     color: var(--pw-black);
   }
   h6 {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-merriweather), Georgia, serif;
     font-size: var(--text-body-sm-size);
     font-weight: 600;
     line-height: var(--text-body-sm-line-height);
     color: var(--pw-black);
   }
   p {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-body-lg-size);
     font-weight: var(--text-body-lg-weight);
     line-height: var(--text-body-lg-line-height);
   }
   label, .ag-label, .pw-menu-label {
-    font-family: var(--font-plus-jakarta);
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-label-caps-size);
     font-weight: var(--text-label-caps-weight);
     line-height: var(--text-label-caps-line-height);
@@ -933,7 +933,7 @@ html {
 .dark .dashboard-context textarea:focus,
 .dark .dashboard-context select:focus {
   background-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 8px rgba(45, 212, 191, 0.35);
+  box-shadow: 0 0 8px rgba(32, 178, 170, 0.35);
 }
 
 .dashboard-context input::placeholder,
@@ -1325,7 +1325,7 @@ select:not(.bg-transparent):not(.border-none):focus,
 .dark select:not(.bg-transparent):not(.border-none):focus,
 .dark .pw-input:focus {
   background-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 0 8px rgba(45, 212, 191, 0.35);
+  box-shadow: 0 0 8px rgba(32, 178, 170, 0.35);
 }
 
 input[type="text"]::placeholder,
@@ -1360,7 +1360,7 @@ select:not(.bg-transparent):not(.border-none):disabled,
 }
 
 .pw-input--error {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
 }
 
 /* ─── Unified Validation Error System (Stitch/Luminous Glass) ─── */
@@ -1370,14 +1370,14 @@ input[aria-invalid="true"]:not(.auth-input),
 textarea[aria-invalid="true"],
 select[aria-invalid="true"],
 .pw-input--error {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
 }
 
 input[aria-invalid="true"]:not(.auth-input):hover:not(:disabled),
 textarea[aria-invalid="true"]:hover:not(:disabled),
 select[aria-invalid="true"]:hover:not(:disabled),
 .pw-input--error:hover:not(:disabled) {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
 }
 
 input[aria-invalid="true"]:not(.auth-input):focus,
@@ -1385,7 +1385,7 @@ textarea[aria-invalid="true"]:focus,
 select[aria-invalid="true"]:focus,
 .pw-input--error:focus {
   outline: none !important;
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
   box-shadow: 0 0 8px rgba(186, 26, 26, 0.35) !important;
 }
 
@@ -1399,13 +1399,13 @@ select[aria-invalid="true"]:focus,
 
 /* 2. Custom Input Wrapper error states (e.g. prefix/suffix inputs) */
 .pw-input-wrapper--error {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
 }
 .pw-input-wrapper--error:hover:not(.disabled) {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
 }
 .pw-input-wrapper--error:focus-within {
-  border-color: var(--color-error, #ba1a1a) !important;
+  border-color: var(--color-error, #F06543) !important;
   box-shadow: 0 0 8px rgba(186, 26, 26, 0.35) !important;
 }
 .dark .pw-input-wrapper--error:focus-within {
@@ -1431,7 +1431,7 @@ select[aria-invalid="true"]:focus,
 
 /* 4. Unified error text styling */
 .pw-error-text {
-  color: var(--color-error, #ba1a1a) !important;
+  color: var(--color-error, #F06543) !important;
 }
 .dark .pw-error-text {
   color: var(--color-error, #ffb4ab) !important;
@@ -1461,7 +1461,7 @@ select[aria-invalid="true"]:focus,
   box-shadow: 0 0 8px var(--input-focus-glow-color, rgba(27, 64, 91, 0.25)) !important;
 }
 .dark .pw-input-wrapper:focus-within {
-  box-shadow: 0 0 8px rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 0 8px rgba(32, 178, 170, 0.35) !important;
 }
 .pw-input-wrapper.disabled {
   opacity: 0.38 !important;
@@ -1473,8 +1473,8 @@ select[aria-invalid="true"]:focus,
    Marketing Context — Typography and Spacing Overrides
    ═══════════════════════════════════════════════════════ */
 .marketing-context {
-  --font-sans: var(--font-plus-jakarta);
-  --font-display: var(--font-plus-jakarta);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-merriweather);
   --radius-xl: 2.5rem;
   --radius-3xl: 6.25rem;
   --spacing-unit: 8px;
@@ -1645,8 +1645,8 @@ select {
 .terminal-grid {
   background-color: #060f15;
   background-image: 
-      linear-gradient(to right, rgba(45, 212, 191, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(45, 212, 191, 0.03) 1px, transparent 1px);
+      linear-gradient(to right, rgba(32, 178, 170, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(32, 178, 170, 0.03) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -1654,7 +1654,7 @@ select {
   position: absolute;
   width: 60vw;
   height: 60vh;
-  background: radial-gradient(circle, rgba(45,212,191,0.08) 0%, rgba(11,20,26,0) 70%);
+  background: radial-gradient(circle, rgba(32, 178, 170,0.08) 0%, rgba(11,20,26,0) 70%);
   top: -10vh;
   left: 20vw;
   z-index: -1;
@@ -1701,15 +1701,15 @@ select {
   transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
 }
 .bento-card:hover {
-  border-color: rgba(45, 212, 191, 0.3);
+  border-color: rgba(32, 178, 170, 0.3);
   background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
 }
 .neon-glow-teal {
-  filter: drop-shadow(0 0 15px rgba(45, 212, 191, 0.5));
+  filter: drop-shadow(0 0 15px rgba(32, 178, 170, 0.5));
 }
 .radial-glow {
-  background: radial-gradient(circle at center, rgba(45, 212, 191, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at center, rgba(32, 178, 170, 0.15) 0%, transparent 70%);
 }
 .inner-glow {
   box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.03);

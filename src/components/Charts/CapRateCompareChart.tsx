@@ -34,8 +34,8 @@ export default function CapRateCompareChart({ data, height = 300 }: CapRateCompa
         return `
           <div style="font-family: inherit; font-size: 12px; padding: 4px;">
             <strong style="color: #dae4ec; display: block; margin-bottom: 4px;">${name}</strong>
-            ${itemCR ? `<span style="color: #bacac5">Cap Rate:</span> <strong style="color: #57f1db">${itemCR.value.toFixed(2)}%</strong><br/>` : ''}
-            ${itemARV ? `<span style="color: #bacac5">ARV Cap Rate:</span> <strong style="color: #c084fc">${itemARV.value.toFixed(2)}%</strong>` : ''}
+            ${itemCR ? `<span style="color: #bacac5">Cap Rate:</span> <strong style="color: #20B2AA">${itemCR.value.toFixed(2)}%</strong><br/>` : ''}
+            ${itemARV ? `<span style="color: #bacac5">ARV Cap Rate:</span> <strong style="color: #a0a4b0">${itemARV.value.toFixed(2)}%</strong>` : ''}
           </div>
         `;
       }
@@ -107,7 +107,7 @@ export default function CapRateCompareChart({ data, height = 300 }: CapRateCompa
         type: 'bar',
         data: data.map(d => d.arvCapRate),
         itemStyle: {
-          color: '#c084fc', // purple/lavender
+          color: '#454955', // primary brand color
           borderRadius: [4, 4, 0, 0]
         },
         barMaxWidth: 16

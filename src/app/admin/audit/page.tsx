@@ -192,7 +192,7 @@ export default function AdminAuditPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-3">
           {[
-            { label: 'Critical Events', value: criticalCount, color: '#ef4444' },
+            { label: 'Critical Events', value: criticalCount, color: '#F06543' },
             { label: 'Warnings', value: warningCount, color: '#f59e0b' },
             { label: 'Total Events', value: list.length, color: '#3b82f6' },
           ].map((s) => (

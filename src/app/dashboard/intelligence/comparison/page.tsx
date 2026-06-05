@@ -50,7 +50,7 @@ const PHASE_COLORS: Record<string, string> = {
   Acquisition: 'text-blue-400 bg-blue-500/10 border-blue-500/20',
   Hold:        'text-teal-400 bg-teal-500/10 border-teal-500/20',
   Exit:        'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  Rehab:       'text-purple-400 bg-purple-500/10 border-purple-500/20',
+  Rehab:       'text-slate-400 bg-slate-500/10 border-slate-500/20',
 };
 
 function metricScore(col: typeof METRIC_COLS[number], values: number[], v: number): 'best' | 'worst' | 'mid' {
@@ -123,15 +123,15 @@ export default function PortfolioComparisonPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1 text-xs text-slate-500 font-semibold uppercase tracking-widest">
-            <Link href="/dashboard/reports" className="hover:text-teal-400 transition-colors">Reports</Link>
+            <Link href="/dashboard/reports" className="hover:text-[#20B2AA] transition-colors">Reports</Link>
             <span>›</span>
-            <span className="text-teal-400">Comparison Matrix</span>
+            <span className="text-[#20B2AA]">Comparison Matrix</span>
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Portfolio Comparison</h1>
           <p className="text-sm text-slate-400 mt-1">Side-by-side performance metrics across all properties</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-teal-500/40 hover:text-teal-400 transition-all flex items-center gap-2">
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-slate-300 hover:border-[#20B2AA]/40 hover:text-[#20B2AA] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
           </button>
@@ -147,7 +147,7 @@ export default function PortfolioComparisonPage() {
             onClick={() => setSortKey(col.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
               sortKey === col.key
-                ? 'bg-teal-500 text-black'
+                ? 'bg-[#20B2AA] text-black'
                 : 'bg-white/5 border border-white/10 text-slate-400 hover:text-slate-200 hover:border-white/20'
             }`}
           >
@@ -168,7 +168,7 @@ export default function PortfolioComparisonPage() {
           </p>
           <Link
             href="/dashboard/projects/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-colors"
           >
             <span className="material-symbols-outlined text-base select-none">add</span>
             Add Your First Project
@@ -188,11 +188,11 @@ export default function PortfolioComparisonPage() {
                   key={col.key}
                   onClick={() => setSortKey(col.key)}
                   className={`text-right px-4 py-3 text-[11px] font-bold uppercase tracking-widest cursor-pointer transition-colors ${
-                    sortKey === col.key ? 'text-teal-400' : 'text-slate-500 hover:text-slate-300'
+                    sortKey === col.key ? 'text-[#20B2AA]' : 'text-slate-500 hover:text-slate-300'
                   }`}
                 >
                   {col.label}
-                  {sortKey === col.key && <span className="ml-1 text-teal-400">↓</span>}
+                  {sortKey === col.key && <span className="ml-1 text-[#20B2AA]">↓</span>}
                 </th>
               ))}
             </tr>
@@ -207,8 +207,8 @@ export default function PortfolioComparisonPage() {
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-teal-400 flex-shrink-0"
-                      style={{ background: 'rgba(45,212,191,0.1)' }}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-[#20B2AA] flex-shrink-0"
+                      style={{ background: 'rgba(32,178,170,0.1)' }}
                     >
                       #{idx + 1}
                     </div>
@@ -232,8 +232,8 @@ export default function PortfolioComparisonPage() {
                     <td key={col.key} className="px-4 py-4 text-right">
                       <span
                         className={`inline-block font-mono font-semibold tabular-nums text-sm px-2 py-0.5 rounded ${
-                          score === 'best'  ? 'text-teal-400 bg-teal-500/10' :
-                          score === 'worst' ? 'text-red-400 bg-red-500/[0.08]' :
+                          score === 'best'  ? 'text-[#20B2AA] bg-[#20B2AA]/10' :
+                          score === 'worst' ? 'text-[#F06543] bg-[#F06543]/[0.08]' :
                           'text-slate-300'
                         }`}
                       >
@@ -268,8 +268,8 @@ export default function PortfolioComparisonPage() {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
         <span className="font-semibold uppercase tracking-widest">Legend:</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-teal-500/20 border border-teal-500/30" /> Best in portfolio</span>
-        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-red-500/15 border border-red-500/20" /> Lowest performer</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#20B2AA]/20 border border-[#20B2AA]/30" /> Best in portfolio</span>
+        <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#F06543]/15 border border-[#F06543]/20" /> Lowest performer</span>
         <span className="flex items-center gap-1.5"><ArrowUpRight className="w-3 h-3" /> Click column header to sort</span>
       </div>
 

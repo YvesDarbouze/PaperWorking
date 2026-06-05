@@ -13,28 +13,28 @@ import { computeIRRMetric } from "@/lib/metrics/computeIRR";
 
 // ─── Design Tokens (Luminous Glass Theme) ────────────────────────
 const T = {
-  teal: "#2dd4bf",
-  purple: "#818cf8",
+  teal: "#20B2AA",
+  brandPrimary: "#454955",
   amber: "#fbbf24",
-  red: "#f87171",
-  green: "#34d399",
+  red: "#F06543",
+  green: "#3f7d20",
   blue: "#60a5fa",
-  rose: "#fb7185",
+  rose: "#20B2AA",
   orange: "#fb923c",
   canvas: "#091015",
   surface: "rgba(24,33,39,0.7)",
   surfaceHover: "rgba(24,33,39,0.85)",
   border: "rgba(255,255,255,0.08)",
-  borderHover: "rgba(45,212,191,0.2)",
+  borderHover: "rgba(32,178,170,0.2)",
   textPrimary: "rgba(218,228,236,0.95)",
   textSecondary: "rgba(218,228,236,0.6)",
   textMuted: "rgba(218,228,236,0.35)",
   tooltipBg: "rgba(24,33,39,0.95)",
-  tooltipBorder: "rgba(45,212,191,0.2)",
+  tooltipBorder: "rgba(32,178,170,0.2)",
 } as const;
 
 // Chart palette for multi-property stacking
-const PROPERTY_COLORS = [T.teal, T.purple, T.amber, T.blue, T.rose, T.orange, T.green, "#a78bfa", "#38bdf8", "#facc15"];
+const PROPERTY_COLORS = [T.teal, T.brandPrimary, T.amber, T.blue, T.orange, T.rose, "#20B2AA", "#38bdf8", "#facc15", "#454955"];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 type Scope = "Property" | "My Share";
@@ -82,7 +82,7 @@ function EmptyState() {
     >
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-        style={{ background: "rgba(45,212,191,0.08)", border: "1px solid rgba(45,212,191,0.15)" }}
+        style={{ background: "rgba(32,178,170,0.08)", border: "1px solid rgba(32,178,170,0.15)" }}
       >
         <span className="material-symbols-outlined text-3xl" style={{ color: T.teal, fontVariationSettings: "'FILL' 0" }}>
           folder_open
@@ -101,7 +101,7 @@ function EmptyState() {
         style={{
           background: T.teal,
           color: "#000",
-          boxShadow: "0 8px 24px rgba(45,212,191,0.2)",
+          boxShadow: "0 8px 24px rgba(32,178,170,0.2)",
         }}
       >
         <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
@@ -144,7 +144,7 @@ function KPICard({ icon, label, value, trend, trendUp }: {
         backdropFilter: "blur(16px)",
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(45,212,191,0.2)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "rgba(32,178,170,0.2)";
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.borderColor = T.border;
@@ -153,7 +153,7 @@ function KPICard({ icon, label, value, trend, trendUp }: {
       {/* Ambient glow */}
       <div
         className="absolute -top-12 -right-12 w-24 h-24 rounded-full blur-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ background: "rgba(45,212,191,0.06)" }}
+        style={{ background: "rgba(32,178,170,0.06)" }}
       />
       <div className="flex items-center gap-2 mb-3">
         <span
@@ -170,7 +170,7 @@ function KPICard({ icon, label, value, trend, trendUp }: {
         {value}
       </div>
       {trend && (
-        <div className="flex items-center gap-1 text-xs font-medium" style={{ color: trendUp ? T.green : T.red }}>
+        <div className="flex items-center gap-1 text-xs font-medium" style={{ color: trendUp ? T.rose : T.rose }}>
           <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
             {trendUp ? "trending_up" : "trending_down"}
           </span>
@@ -202,13 +202,13 @@ function getZoneStyle(metricKey: string, val: number): { color: string; bg: stri
   const isLowerBetter = b.direction === "lower";
 
   if (isLowerBetter) {
-    if (val > b.target * 1.15) return { color: T.red, bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.12)" };
+    if (val > b.target * 1.15) return { color: T.rose, bg: "rgba(240,101,67,0.06)", border: "rgba(240,101,67,0.12)" };
     if (val > b.target) return { color: T.amber, bg: "rgba(251,191,36,0.06)", border: "rgba(251,191,36,0.12)" };
-    return { color: T.green, bg: "rgba(52,211,153,0.06)", border: "rgba(52,211,153,0.12)" };
+    return { color: T.rose, bg: "rgba(63,125,32,0.06)", border: "rgba(63,125,32,0.12)" };
   } else {
-    if (val < b.target * 0.8) return { color: T.red, bg: "rgba(248,113,113,0.06)", border: "rgba(248,113,113,0.12)" };
+    if (val < b.target * 0.8) return { color: T.rose, bg: "rgba(240,101,67,0.06)", border: "rgba(240,101,67,0.12)" };
     if (val < b.target) return { color: T.amber, bg: "rgba(251,191,36,0.06)", border: "rgba(251,191,36,0.12)" };
-    return { color: T.green, bg: "rgba(52,211,153,0.06)", border: "rgba(52,211,153,0.12)" };
+    return { color: T.rose, bg: "rgba(63,125,32,0.06)", border: "rgba(63,125,32,0.12)" };
   }
 }
 
@@ -550,7 +550,7 @@ export default function DataRoomPage() {
                   style={{
                     background: scope === s ? T.teal : "transparent",
                     color: scope === s ? "#000" : T.textSecondary,
-                    boxShadow: scope === s ? "0 4px 12px rgba(45,212,191,0.2)" : "none",
+                    boxShadow: scope === s ? "0 4px 12px rgba(32,178,170,0.2)" : "none",
                   }}
                 >
                   {s}
@@ -569,7 +569,7 @@ export default function DataRoomPage() {
                 color: T.textSecondary,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(45,212,191,0.3)";
+                (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(32,178,170,0.3)";
                 (e.currentTarget as HTMLButtonElement).style.color = T.teal;
               }}
               onMouseLeave={(e) => {
@@ -791,7 +791,7 @@ export default function DataRoomPage() {
               style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
             >
               <div className="flex items-center gap-2 mb-6">
-                <span className="material-symbols-outlined text-lg" style={{ color: T.purple, fontVariationSettings: "'FILL' 0" }}>
+                <span className="material-symbols-outlined text-lg" style={{ color: T.brandPrimary, fontVariationSettings: "'FILL' 0" }}>
                   bar_chart
                 </span>
                 <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
@@ -807,8 +807,8 @@ export default function DataRoomPage() {
                     <Tooltip content={<GlassTooltip />} />
                     <Bar dataKey="Gross Income" fill={T.teal} radius={[2, 2, 0, 0]} opacity={0.85} />
                     <Bar dataKey="Operating Expenses" fill={T.amber} radius={[2, 2, 0, 0]} opacity={0.85} />
-                    <Bar dataKey="Debt Service" fill={T.red} radius={[2, 2, 0, 0]} opacity={0.85} />
-                    <Bar dataKey="Net Cash Flow" fill={T.green} radius={[2, 2, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="Debt Service" fill={T.rose} radius={[2, 2, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="Net Cash Flow" fill={T.rose} radius={[2, 2, 0, 0]} opacity={0.85} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -824,7 +824,7 @@ export default function DataRoomPage() {
               style={{ background: T.surface, borderColor: T.border, backdropFilter: "blur(16px)" }}
             >
               <div className="flex items-center gap-2 mb-6">
-                <span className="material-symbols-outlined text-lg" style={{ color: T.green, fontVariationSettings: "'FILL' 0" }}>
+                <span className="material-symbols-outlined text-lg" style={{ color: T.rose, fontVariationSettings: "'FILL' 0" }}>
                   grid_on
                 </span>
                 <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: T.textSecondary }}>
@@ -855,11 +855,11 @@ export default function DataRoomPage() {
                           {MONTHS.map((m) => {
                             const val = row[m] as number;
                             // Color gradient: red < 70, amber 70-90, green 90+
-                            let cellBg = "rgba(52,211,153,0.15)";
-                            let cellColor: string = T.green;
+                            let cellBg = "rgba(63,125,32,0.15)";
+                            let cellColor: string = T.rose;
                             if (val < 70) {
-                              cellBg = "rgba(248,113,113,0.15)";
-                              cellColor = T.red;
+                              cellBg = "rgba(240,101,67,0.15)";
+                              cellColor = T.rose;
                             } else if (val < 90) {
                               cellBg = "rgba(251,191,36,0.12)";
                               cellColor = T.amber;
@@ -940,7 +940,7 @@ export default function DataRoomPage() {
                       {expenseRatioData.map((entry, idx) => (
                         <Cell
                           key={idx}
-                          fill={entry.oer > 45 ? T.red : entry.oer > 35 ? T.amber : T.teal}
+                          fill={entry.oer > 45 ? T.rose : entry.oer > 35 ? T.amber : T.teal}
                           opacity={0.8}
                         />
                       ))}
@@ -953,7 +953,7 @@ export default function DataRoomPage() {
                 </div>
               )}
               {/* 45% target line indicator */}
-              <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: `1px solid rgba(255,255,255,0.04)` }}>
+              <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: `1px solid ${T.border}` }}>
                 <div className="w-4 h-0.5" style={{ background: T.amber }} />
                 <span className="text-[10px]" style={{ color: T.textMuted }}>
                   Target OER: 45% — below is efficient, above indicates high overhead
@@ -988,7 +988,7 @@ export default function DataRoomPage() {
                   color: T.textSecondary,
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(45,212,191,0.3)";
+                  (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(32, 178, 170,0.3)";
                   (e.currentTarget as HTMLButtonElement).style.color = T.teal;
                 }}
                 onMouseLeave={(e) => {
@@ -1009,7 +1009,7 @@ export default function DataRoomPage() {
                   style={{
                     background: T.teal,
                     color: "#000",
-                    boxShadow: "0 4px 16px rgba(45,212,191,0.2)",
+                    boxShadow: "0 4px 16px rgba(32,178,170,0.2)",
                   }}
                 >
                   <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>

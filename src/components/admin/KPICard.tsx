@@ -84,13 +84,13 @@ export default function KPICard({ label, value, change, changeLabel, sparkline }
       {/* Change indicator */}
       <div className="flex items-center gap-1.5 mt-3">
         {isPositive ? (
-          <TrendingUp className="w-3.5 h-3.5" style={{ color: isGood ? '#22c55e' : '#ef4444' }} />
+          <TrendingUp className="w-3.5 h-3.5" style={{ color: isGood ? '#3f7d20' : '#F06543' }} />
         ) : (
-          <TrendingDown className="w-3.5 h-3.5" style={{ color: isGood ? '#22c55e' : '#ef4444' }} />
+          <TrendingDown className="w-3.5 h-3.5" style={{ color: isGood ? '#3f7d20' : '#F06543' }} />
         )}
         <span
           className="text-xs font-semibold"
-          style={{ color: isGood ? '#22c55e' : '#ef4444' }}
+          style={{ color: isGood ? '#3f7d20' : '#F06543' }}
         >
           {isPositive ? '+' : ''}{change}%
         </span>

@@ -26,7 +26,7 @@ function SliderRow({
   step,
   format,
   onChange,
-  color = '#2dd4bf',
+  color = '#20B2AA',
 }: {
   label: string;
   value: number;
@@ -90,7 +90,7 @@ export default function MathBreakdown() {
     return { holdingCost, closingCost, allIn, profit, roi, cocReturn };
   }, [pp, rh, mo, cp, arv]);
 
-  const profitColor = calc.profit >= 0 ? '#4ade80' : '#f87171';
+  const profitColor = calc.profit >= 0 ? '#4ade80' : '#F06543';
 
   const reset = () => {
     setPP(DEFAULTS.purchasePrice); setRH(DEFAULTS.rehabBudget);
@@ -186,10 +186,10 @@ export default function MathBreakdown() {
 
               {/* Sliders */}
               <div className="space-y-5 mb-7">
-                <SliderRow label="Purchase Price" value={pp}  min={50_000}  max={500_000} step={5_000}  format={fmt$}   onChange={setPP}  color="#2dd4bf" />
+                <SliderRow label="Purchase Price" value={pp}  min={50_000}  max={500_000} step={5_000}  format={fmt$}   onChange={setPP}  color="#20B2AA" />
                 <SliderRow label="Rehab Budget"   value={rh}  min={0}       max={150_000} step={1_000}  format={fmt$}   onChange={setRH}  color="#818cf8" />
                 <SliderRow label="Hold Period"    value={mo}  min={1}       max={24}      step={1}      format={fmtMo}  onChange={setMo}  color="#fb923c" />
-                <SliderRow label="Closing Costs"  value={cp}  min={1}       max={12}      step={0.5}    format={fmtPct} onChange={setCP}  color="#f87171" />
+                <SliderRow label="Closing Costs"  value={cp}  min={1}       max={12}      step={0.5}    format={fmtPct} onChange={setCP}  color="#F06543" />
                 <SliderRow label="Target ARV"     value={arv} min={100_000} max={800_000} step={10_000} format={fmt$}   onChange={setARV} color="#4ade80" />
               </div>
 
@@ -199,7 +199,7 @@ export default function MathBreakdown() {
                   { label: 'Purchase Price',     value: pp,                  color: 'text-white/70' },
                   { label: '+ Rehab Budget',      value: rh,                  color: 'text-[#818cf8]' },
                   { label: `+ Holding (${mo}mo)`, value: calc.holdingCost,    color: 'text-[#fb923c]' },
-                  { label: `+ Closing (${cp}%)`,  value: calc.closingCost,    color: 'text-[#f87171]' },
+                  { label: `+ Closing (${cp}%)`,  value: calc.closingCost,    color: 'text-[#F06543]' },
                 ].map((row) => (
                   <div key={row.label} className="flex justify-between items-center">
                     <span className="text-white/50 text-xs">{row.label}</span>
@@ -245,7 +245,7 @@ export default function MathBreakdown() {
               {/* CTA */}
               <a
                 href="/signup"
-                className="mt-5 w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-[#2dd4bf] text-[#003731] font-bold text-sm uppercase tracking-widest hover:bg-[#57f1db] transition-colors"
+                className="mt-5 w-full py-3 flex items-center justify-center gap-2 rounded-lg bg-[#20B2AA] text-[#003731] font-bold text-sm uppercase tracking-widest hover:bg-[#57f1db] transition-colors"
               >
                 Analyze Your Deal Free
                 <ArrowUpRight className="w-4 h-4" />

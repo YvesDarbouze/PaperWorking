@@ -35,7 +35,7 @@ export function MarketHeatmap() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse at center, rgba(45,212,191,0.04) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(32, 178, 170,0.04) 0%, transparent 70%)",
         }}
       />
 
@@ -44,11 +44,11 @@ export function MarketHeatmap() {
         {/* Icon */}
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(45,212,191,0.08)" }}
+          style={{ backgroundColor: "rgba(32, 178, 170,0.08)" }}
         >
           <span
             className="material-symbols-outlined text-3xl"
-            style={{ color: "rgba(45,212,191,0.6)" }}
+            style={{ color: "rgba(32, 178, 170,0.6)" }}
           >
             map
           </span>
@@ -75,9 +75,9 @@ export function MarketHeatmap() {
         <button
           className="px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           style={{
-            backgroundColor: "rgba(45,212,191,0.12)",
-            color: "#2dd4bf",
-            border: "1px solid rgba(45,212,191,0.2)",
+            backgroundColor: "rgba(32, 178, 170,0.12)",
+            color: "#20B2AA",
+            border: "1px solid rgba(32, 178, 170,0.2)",
           }}
         >
           <span className="material-symbols-outlined text-base">

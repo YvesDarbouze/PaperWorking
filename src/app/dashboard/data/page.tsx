@@ -18,10 +18,10 @@ import type { Project } from '@/types/schema';
 
 // ─── Design tokens ────────────────────────────────────────────
 const T = {
-  teal: '#2dd4bf',
-  purple: '#818cf8',
+  teal: '#20B2AA',
+  brandPrimary: '#454955',
   amber: '#fbbf24',
-  red: '#f87171',
+  red: '#F06543',
   canvas: '#091015',
   surface: 'rgba(24,33,39,0.7)',
   border: 'rgba(255,255,255,0.08)',
@@ -29,7 +29,7 @@ const T = {
   textMuted: '#64748b',
   textVariant: '#bacac5',
   tooltipBg: '#182127',
-  tooltipBorder: 'rgba(45,212,191,0.2)',
+  tooltipBorder: 'rgba(32,178,170,0.2)',
 } as const;
 
 // ─── Demo / fallback data ─────────────────────────────────────
@@ -38,7 +38,7 @@ const DEMO_ROI_VALUES = [920000, 940000, 910000, 970000, 985000, 1020000, 105000
 
 const DEMO_ALLOCATION = [
   { value: 45, name: 'Fix & Flip', itemStyle: { color: T.teal } },
-  { value: 35, name: 'Buy & Hold', itemStyle: { color: T.purple } },
+  { value: 35, name: 'Buy & Hold', itemStyle: { color: T.brandPrimary } },
   { value: 20, name: 'BRRRR', itemStyle: { color: T.amber } },
 ];
 
@@ -120,7 +120,7 @@ function CardHeader({
   return (
     <div className="flex items-center justify-between px-5 py-4 border-b border-white/8">
       <div className="flex items-center gap-3">
-        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(45,212,191,0.12)' }}>
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'rgba(32,178,170,0.12)' }}>
           {icon}
         </div>
         <span className="text-xs font-bold uppercase tracking-widest" style={{ color: T.textVariant }}>
@@ -191,14 +191,14 @@ function RoiTrendChart({
         data: values,
         smooth: 0.35,
         symbol: 'none',
-        lineStyle: { color: T.teal, width: 2.5, shadowColor: 'rgba(45,212,191,0.5)', shadowBlur: 8 },
+        lineStyle: { color: T.teal, width: 2.5, shadowColor: 'rgba(32,178,170,0.5)', shadowBlur: 8 },
         areaStyle: {
           color: {
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.28)' },
-              { offset: 1, color: 'rgba(45,212,191,0.01)' },
+              { offset: 0, color: 'rgba(32,178,170,0.28)' },
+              { offset: 1, color: 'rgba(32,178,170,0.01)' },
             ],
           },
         },
@@ -212,7 +212,7 @@ function RoiTrendChart({
         icon={<TrendingUp className="w-3.5 h-3.5" style={{ color: T.teal }} />}
         title="Portfolio Value Trend"
         badge={
-          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(45,212,191,0.15)', color: T.teal }}>
+          <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: 'rgba(32,178,170,0.15)', color: T.teal }}>
             +14.2% YTD
           </span>
         }
@@ -239,7 +239,7 @@ function AllocationChart({
       const type = (p as { dealType?: string }).dealType ?? 'Other';
       counts[type] = (counts[type] ?? 0) + 1;
     }
-    const palette = [T.teal, T.purple, T.amber, '#fb923c', '#a78bfa'];
+    const palette = [T.teal, T.brandPrimary, T.amber, '#fb923c', '#20B2AA'];
     const entries = Object.entries(counts).map(([name, value], i) => ({
       name,
       value,
@@ -282,7 +282,7 @@ function AllocationChart({
 
   return (
     <GlassCard className="col-span-12 lg:col-span-4">
-      <CardHeader icon={<PieChart className="w-3.5 h-3.5" style={{ color: T.purple }} />} title="Asset Allocation" />
+      <CardHeader icon={<PieChart className="w-3.5 h-3.5" style={{ color: T.brandPrimary }} />} title="Asset Allocation" />
       <div className="p-4">
         {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
       </div>
@@ -320,7 +320,7 @@ function CapRateChart({ loading }: { loading: boolean }) {
             type: 'linear',
             x: 0, y: 0, x2: 1, y2: 0,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.6)' },
+              { offset: 0, color: 'rgba(32,178,170,0.6)' },
               { offset: 1, color: T.teal },
             ],
           },
@@ -385,14 +385,14 @@ function CocTrendChart({
         smooth: 0.3,
         symbol: 'circle',
         symbolSize: 5,
-        lineStyle: { color: T.purple, width: 2.5, shadowColor: 'rgba(129,140,248,0.4)', shadowBlur: 6 },
-        itemStyle: { color: T.purple, borderColor: T.canvas, borderWidth: 2 },
+        lineStyle: { color: T.brandPrimary, width: 2.5, shadowColor: 'rgba(69,73,85,0.4)', shadowBlur: 6 },
+        itemStyle: { color: T.brandPrimary, borderColor: T.canvas, borderWidth: 2 },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(129,140,248,0.30)' },
-              { offset: 1, color: 'rgba(129,140,248,0.01)' },
+              { offset: 0, color: 'rgba(69,73,85,0.30)' },
+              { offset: 1, color: 'rgba(69,73,85,0.01)' },
             ],
           },
         },
@@ -409,7 +409,7 @@ function CocTrendChart({
 
   return (
     <GlassCard className="col-span-12 lg:col-span-6">
-      <CardHeader icon={<ArrowUpRight className="w-3.5 h-3.5" style={{ color: T.purple }} />} title="Cash-on-Cash Trend" />
+      <CardHeader icon={<ArrowUpRight className="w-3.5 h-3.5" style={{ color: T.brandPrimary }} />} title="Cash-on-Cash Trend" />
       <div className="p-4">
         {loading ? <ChartSkeleton height={240} /> : <ReactECharts option={option} style={{ height: 240 }} opts={{ renderer: 'canvas' }} />}
       </div>
@@ -503,7 +503,7 @@ function WaterfallChart({
 
     const vals = [grossRent, opEx, debtSvc, netCf];
     const colors = vals.map((v, i) =>
-      i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(45,212,191,0.7)' : '#f87171'
+      i === vals.length - 1 ? T.teal : v >= 0 ? 'rgba(32,178,170,0.7)' : T.red
     );
 
     return { labels: DEMO_WATERFALL_LABELS, barValues: vals, barColors: colors };
@@ -615,7 +615,7 @@ export default function DataPage() {
                 onClick={() => setScope(s)}
                 className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors"
                 style={{
-                  background: scope === s ? 'rgba(45,212,191,0.15)' : 'transparent',
+                  background: scope === s ? 'rgba(32,178,170,0.15)' : 'transparent',
                   color: scope === s ? T.teal : T.textMuted,
                 }}
               >
@@ -632,7 +632,7 @@ export default function DataPage() {
                 onClick={() => setPeriod(tab.id)}
                 className="px-3 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors"
                 style={{
-                  background: period === tab.id ? 'rgba(45,212,191,0.15)' : 'transparent',
+                  background: period === tab.id ? 'rgba(32,178,170,0.15)' : 'transparent',
                   color: period === tab.id ? T.teal : T.textMuted,
                 }}
               >

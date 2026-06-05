@@ -610,8 +610,8 @@ export default function ZoningScanPanel({
           <div
             className="flex items-start gap-2 rounded-[var(--radius-lg)] p-4 text-xs border bg-[var(--pw-glass-bg)] backdrop-blur-xl"
             style={{
-              borderColor: 'var(--color-error, #ba1a1a)',
-              color: 'var(--color-error, #ba1a1a)',
+              borderColor: 'var(--color-error, #F06543)',
+              color: 'var(--color-error, #F06543)',
             }}
           >
             <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-error)]" />

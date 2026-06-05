@@ -177,7 +177,7 @@ export default function ProspectingBoard() {
                         onClick={() => updateProspect(prospect.id, { syndicationEnabled: !prospect.syndicationEnabled })}
                         className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold transition ${
                           prospect.syndicationEnabled
-                            ? 'bg-indigo-50 text-indigo-600'
+                            ? 'bg-[#20B2AA]/15 text-[#20B2AA]'
                             : 'bg-bg-primary text-text-secondary hover:text-text-secondary'
                         }`}
                         title={prospect.syndicationEnabled ? 'Syndication ON' : 'Syndication OFF'}
@@ -250,14 +250,14 @@ export default function ProspectingBoard() {
 
                       {/* Syndication CTA */}
                       {prospect.syndicationEnabled && currentProject && (
-                        <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 flex items-center justify-between">
+                        <div className="bg-[#20B2AA]/10 border border-[#20B2AA]/20 rounded-lg p-3 flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-semibold text-indigo-700">Syndication Active</p>
-                            <p className="text-xs text-indigo-500">Invite investors to co-fund this prospect.</p>
+                            <p className="text-xs font-semibold text-[#20B2AA]">Syndication Active</p>
+                            <p className="text-xs text-text-secondary">Invite investors to co-fund this prospect.</p>
                           </div>
                           <button
                             onClick={() => setCrowdfundTarget(prospect.id)}
-                            className="px-3 py-1.5 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition"
+                            className="px-3 py-1.5 bg-[#454955] text-white text-xs font-semibold rounded-lg hover:bg-[#454955]/90 transition"
                           >
                             Invite Investor
                           </button>

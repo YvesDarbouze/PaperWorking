@@ -85,9 +85,9 @@ export function RecentProjects() {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-all cursor-pointer
               hover:brightness-110 active:scale-95"
             style={{
-              backgroundColor: 'rgba(45,212,191,0.1)',
-              color: '#2dd4bf',
-              border: '1px solid rgba(45,212,191,0.2)',
+              backgroundColor: 'rgba(32, 178, 170,0.1)',
+              color: '#20B2AA',
+              border: '1px solid rgba(32, 178, 170,0.2)',
             }}
           >
             <Plus className="w-3.5 h-3.5" />
@@ -98,7 +98,7 @@ export function RecentProjects() {
           {projects.length > MAX_RECENT && (
             <Link
               href="/dashboard/projects"
-              className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:text-[#2dd4bf]"
+              className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider transition-colors hover:text-[#20B2AA]"
               style={{ color: 'rgba(218,228,236,0.5)' }}
             >
               View All

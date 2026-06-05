@@ -53,7 +53,7 @@ export default function InboxTabs({ activeTab, onTabChange, unreadCounts }: Inbo
             onClick={() => onTabChange(tab.id)}
             className={`relative flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wide transition-all duration-200 rounded-xl whitespace-nowrap border ${
               isActive
-                ? 'bg-primary/20 border-primary/30 text-primary luminous-glow shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                ? 'bg-primary/20 border-primary/30 text-primary luminous-glow shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
                 : 'glass-card hover:bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
             }`}
           >

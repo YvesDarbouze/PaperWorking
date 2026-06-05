@@ -20,7 +20,7 @@ function classifyAppreciation(rate: number): {
   if (rate >= 6) return { grade: 'exceptional', label: 'Above-Average Growth', description: 'Exceeds recent national averages (3-5%/yr)', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
   if (rate >= 4.5) return { grade: 'strong', label: 'Strong Appreciation', description: 'Above the historical 4% long-run baseline', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
   if (rate >= 3) return { grade: 'moderate', label: 'Steady Growth', description: 'In line with the 3-5% baseline average', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
-  if (rate >= 1) return { grade: 'below', label: 'Below Average', description: 'Underperforming historical inflation averages', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
+  if (rate >= 1) return { grade: 'below', label: 'Below Average', description: 'Underperforming historical inflation averages', color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'flat', label: 'Stagnant / Declining', description: 'Minimal growth or depreciation', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
@@ -186,7 +186,7 @@ export default function AppreciationDeepDive({ projects: propProjects }: Props) 
                   <p className="text-[10px] font-bold" style={{ color: 'var(--text-primary)' }}>{m.label}</p>
                   <p className="text-[9px]" style={{ color: '#595959' }}>{m.year === 1 ? 'Reflects initial forced equity' : 'Long-term compound convergence'}</p>
                 </div>
-                <p className="text-sm font-bold tabular-nums" style={{ color: m.rate >= 4 ? '#595959' : '#EF4444' }}>{fmtPct(m.rate)}</p>
+                <p className="text-sm font-bold tabular-nums" style={{ color: m.rate >= 4 ? '#595959' : '#F06543' }}>{fmtPct(m.rate)}</p>
               </div>
             ))}
           </div>

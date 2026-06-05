@@ -62,8 +62,8 @@ export default function CashFlowDeepDive({
              <div className="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent"></div>
              {/* Sparkline pseudo-svg */}
              <svg className="absolute bottom-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-               <path d="M0,100 L0,50 Q25,30 50,60 T100,20 L100,100 Z" fill="rgba(45, 212, 191, 0.2)" />
-               <path d="M0,50 Q25,30 50,60 T100,20" fill="none" stroke="#2dd4bf" strokeWidth="2" />
+               <path d="M0,100 L0,50 Q25,30 50,60 T100,20 L100,100 Z" fill="rgba(32, 178, 170, 0.2)" />
+               <path d="M0,50 Q25,30 50,60 T100,20" fill="none" stroke="#20B2AA" strokeWidth="2" />
              </svg>
            </div>
         </div>

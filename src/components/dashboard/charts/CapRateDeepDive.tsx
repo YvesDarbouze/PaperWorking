@@ -75,7 +75,7 @@ function classifyCapRate(rate: number): {
   return {
     zone: 'high-yield', label: 'Aggressive / High-Risk',
     description: 'Very high yield often signals distressed areas or significant property risk',
-    color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
+    color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
   };
 }
 
@@ -127,7 +127,7 @@ function CapRateGauge({ capRate }: { capRate: number }) {
     { start: 4, end: 6, color: '#595959', label: '4-6%' },
     { start: 6, end: 8, color: '#7F7F7F', label: '6-8%' },
     { start: 8, end: 10, color: '#A5A5A5', label: '8-10%' },
-    { start: 10, end: 15, color: '#EF4444', label: '10%+' },
+    { start: 10, end: 15, color: '#F06543', label: '10%+' },
   ];
 
   return (
@@ -360,7 +360,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
               label: 'ARV Cap Rate',
               value: fmtPct(aggregate.arvCapRate),
               sublabel: `NOI ÷ ARV ${fmtUSD(aggregate.totalARV)}`,
-              color: '#8B5CF6',
+              color: '#20B2AA',
             },
             {
               icon: Gauge,
@@ -454,7 +454,7 @@ export default function CapRateDeepDive({ projects: propProjects }: Props) {
         <span style={{ color: '#595959' }}>■ 4–6% Stable/Low-Risk</span> •{' '}
         <span style={{ color: '#7F7F7F' }}>■ 6–8% Balanced</span> •{' '}
         <span style={{ color: '#A5A5A5' }}>■ 8–10% Higher-Yield</span> •{' '}
-        <span style={{ color: '#EF4444' }}>■ 10%+ Aggressive</span>
+        <span style={{ color: '#F06543' }}>■ 10%+ Aggressive</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>When to use:</strong>{' '}
         Cap rate works best for comparing two properties of the same type in the same market.

@@ -10,31 +10,41 @@ We rely on a central custom theme configured in `tailwind.config.ts`.
 If you need a specific styling aspect that does not currently correspond to a mapped design token, you must update the global design system tokens instead of using an inline arbitrary value.
 
 ### Typography
-- **Primary Font**: Hanken Grotesk
-  - **Title (h1)**: Thin (100)
-  - **Heading (h2, h3)**: Light (300)
-  - **Sub-Heading (h4, h5, h6)**: ExtraLight (200)
-  - **Body**: Regular (400)
+- **Primary Font**: Inter (sans-serif)
+  - Used for body text, labels, general interface elements, and inputs.
+  - Weights: 100 to 900 (Regular: 400, Medium: 500, SemiBold: 600, Bold: 700).
+- **Pairing Font**: Merriweather (serif)
+  - Used for headers (h1, h2, h3, h4, h5, h6) and specific display elements.
+  - Weights: 300, 400, 700, 900 (utilizing Regular/Medium/Bold/Black weights).
 - We use predefined scalable text variables. Instead of inline `text-[something]`, use `text-xs`, `text-sm`, `text-base`, `text-lg`.
-- **Institutional Styling**: When standardizing, we rely heavily on uppercase tracking configurations. Example: `uppercase tracking-widest text-xs font-black`.
+- **Institutional Styling**: When standardizing, we rely heavily on uppercase tracking configurations. Example: `uppercase tracking-widest text-xs font-bold`.
 
 ### Colors
-We strictly rely on the "Antigravity" aesthetic (Black and White with a specific brand accent).
+We strictly rely on the new PaperWorking color scheme. **All text and interactive elements must ensure a minimum contrast ratio of 4.5:1 against their background.**
 
-- `pw-black` : Foreground black. Replaces custom grays (e.g., `#111`, `#111111`, `#1a1a1a`, `#0a0a0a`).
-- `pw-white` : Background white.
-- `pw-bg` : Subtle off-white background used for contrast without heavy lines.
-- `pw-border` : Subtle border logic.
+- **Primary Brand Color**: `#454955` (Used for primary buttons, active states, main branding).
+- **Secondary Accent**: `#20B2AA` (Used for secondary elements, borders, highlights, subtle inputs).
+- **Background (Dark Mode)**: `#0d0a0b`
+- **Background (Light Mode)**: `#FDFFFC`
+- **Text Colors**: `#FDFFFC` (on dark backgrounds) / `#0d0a0b` (on light backgrounds).
+- **Semantic Market/Performance Status**:
+  - `#3f7d20` Green: indicates "up" or positive performance.
+  - `#F06543` Red: indicates "down", negative performance, or cancel/destructive functions.
+- **Banned Hues**: Under no circumstances use any purple, violet, or magenta colors in variables, styles, or classes.
+
+- `pw-black` : Foreground black (`#0d0a0b`). Replaces custom grays.
+- `pw-white` : Background white (`#FDFFFC`).
+- `pw-bg` : Base background color (`#FDFFFC` in light mode, `#0d0a0b` in dark mode).
+- `pw-border` : Subtle border logic using secondary accent overlays.
 - `pw-muted` : Distinct muted text logic.
-- `pw-subtle` : Fainter text logic.
-- `pw-accent` : Core brand interaction state color (Replaces indigo, emerald, distinct non-brand choices).
+- `pw-accent` : Core brand interaction state color (`#454955`).
 
 ### Deal Lifecycle Phases (REIL v2 Authorized Scale)
 Strict semantic colors for deal status states matching the 4-phase color system:
 - `phase-acquisition` : #F59E0B (Gold/Amber)
 - `phase-transaction` : #3B82F6 (Blue)
 - `phase-rehab`       : #F97316 (Orange)
-- `phase-hold-exit`   : #10B981 (Green)
+- `phase-hold-exit`   : #3f7d20 (Performance Green)
 
 ## 2. Layout Aesthetics (Luminous Glass)
 
@@ -85,13 +95,13 @@ Apply to a **container** and children inherit the correct text color automatical
 
 | Class | Background | Text color |
 |-------|-----------|------------|
-| `.pw-surface-light` | `#f2f2f2` | `#0d0d0d` |
-| `.pw-surface-dark`  | `#0d0d0d` | `#ffffff` |
-| `.pw-surface-mid`   | `#7f7f7f` | `#ffffff` |
-| `.pw-phase-acquisition` | `#F59E0B` | `#000000` |
-| `.pw-phase-transaction` | `#3B82F6` | `#ffffff` |
-| `.pw-phase-rehab`       | `#F97316` | `#ffffff` |
-| `.pw-phase-hold-exit`   | `#10B981` | `#ffffff` |
+| `.pw-surface-light` | `#FDFFFC` | `#0d0a0b` |
+| `.pw-surface-dark`  | `#0d0a0b` | `#FDFFFC` |
+| `.pw-surface-mid`   | `#454955` | `#FDFFFC` |
+| `.pw-phase-acquisition` | `#F59E0B` | `#0d0a0b` |
+| `.pw-phase-transaction` | `#3B82F6` | `#FDFFFC` |
+| `.pw-phase-rehab`       | `#F97316` | `#FDFFFC` |
+| `.pw-phase-hold-exit`   | `#3f7d20` | `#FDFFFC` |
 
 Use `.pw-text-on-light` / `.pw-text-on-dark` on individual text elements when you can't modify the container.
 
@@ -118,11 +128,11 @@ Every interactive element **must** compose two classes:
 
 | Class | Light Theme | Dark Theme | Use case |
 |-------|-------------|------------|----------|
-| `.pw-btn--primary` / raw `button` | Status Info Blue (`#163144`), white text | Status Info Blue (`#004395`), white text | Primary action, one per view (or default raw button) |
-| `.pw-btn--secondary` | Frosted glass (`rgba(255,255,255,0.4)`), `#002a43` text | Frosted glass (`rgba(255,255,255,0.03)`), `#dae4ec` text | Secondary actions |
-| `.pw-btn--outline` | Transparent, outline border, `#002a43` text | Transparent, outline border, `#dae4ec` text | Tertiary actions |
+| `.pw-btn--primary` / raw `button` | Primary Brand (`#454955`), `#FDFFFC` text | Primary Brand (`#454955`), `#FDFFFC` text | Primary action, one per view (or default raw button) |
+| `.pw-btn--secondary` | Frosted glass background, `#0d0a0b` text | Frosted glass background, `#FDFFFC` text | Secondary actions |
+| `.pw-btn--outline` | Transparent, `#20B2AA` border, `#0d0a0b` text | Transparent, `#20B2AA` border, `#FDFFFC` text | Tertiary actions |
 | `.pw-btn--ghost` | Transparent, no border, inherits color | Transparent, no border, inherits color | Toolbar actions, icon buttons |
-| `.pw-btn--danger` | Red (`#ba1a1a`), white text | Red (`#ffb4ab`), dark red (`#690005`) text | Destructive: delete, revoke |
+| `.pw-btn--danger` | Red (`#F06543`), `#0d0a0b` text | Red (`#F06543`), `#0d0a0b` text | Destructive: delete, revoke |
 
 All buttons feature a subtle inner glow (`inset 0 1px 1px rgba(255, 255, 255, 0.15)`) to enhance the 3D glass effect, and adapt automatically inside `.dark` and container overrides.
 
@@ -179,9 +189,9 @@ All form inputs (`input[type="text"]`, `input[type="email"]`, `input[type="passw
 - **Transitions**: Smooth transitions on `border-color`, `box-shadow`, and `background-color`.
 - **States**:
   - *Hover*: Borders highlight to `var(--color-outline)`.
-  - *Focus*: Focus rings highlight to `var(--color-brand-primary)` (teal `#2dd4bf` in dark, brand primary `#1b405b` in light) with a custom `box-shadow` glow: `0 0 8px var(--input-focus-glow-color)`.
+  - *Focus*: Focus rings highlight to secondary accent (`#20B2AA`) or brand primary (`#454955`) with a custom `box-shadow` glow: `0 0 8px var(--input-focus-glow-color)`.
   - *Disabled*: Reduced opacity to `0.38` with `pointer-events: none` and `cursor: not-allowed`.
-  - *Error*: Border accentuates to error color (`var(--color-error)` or `#ba1a1a`).
+  - *Error*: Border accentuates to error color (`var(--color-error)` or `#F06543`).
 
 #### Base Selector Usage
 ```html

@@ -145,7 +145,7 @@ export function PropertyStep({ onNext }: { onNext: () => void }) {
           className="flex items-start gap-3 rounded-xl px-4 py-3"
           style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
         >
-          <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0" style={{ color: "#ef4444" }}>error</span>
+          <span className="material-symbols-outlined text-[18px] mt-0.5 flex-shrink-0" style={{ color: "#F06543" }}>error</span>
           <div className="flex-1 min-w-0">
             <p className="text-[13px]" style={{ color: "rgba(218,228,236,0.7)" }}>
               {(enrichMutation.error as Error)?.message ?? (error as Error)?.message ?? "Failed to load property data."}

@@ -234,9 +234,9 @@ export function TopAppBar() {
             onBlur={() => setSearchFocused(false)}
             style={{
               background: searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${searchFocused ? 'rgba(45,212,191,0.3)' : 'rgba(255,255,255,0.06)'}`,
+              border: `1px solid ${searchFocused ? 'rgba(32, 178, 170,0.3)' : 'rgba(255,255,255,0.06)'}`,
               color: 'var(--color-on-surface)',
-              boxShadow: searchFocused ? '0 0 0 3px rgba(45,212,191,0.08)' : 'none',
+              boxShadow: searchFocused ? '0 0 0 3px rgba(32, 178, 170,0.08)' : 'none',
             }}
           />
           {/* Cmd+K hint */}
@@ -314,7 +314,7 @@ export function TopAppBar() {
               style={{
                 background: 'var(--color-primary)',
                 color: '#091015',
-                boxShadow: '0 0 8px rgba(45,212,191,0.5)',
+                boxShadow: '0 0 8px rgba(32, 178, 170,0.5)',
               }}
             >
               {unreadTotal > 9 ? '9+' : unreadTotal}
@@ -335,7 +335,7 @@ export function TopAppBar() {
               <span
                 className="absolute top-1 right-1 min-w-2.5 h-2.5 rounded-full flex items-center justify-center bg-emerald-400"
                 style={{
-                  boxShadow: '0 0 8px rgba(52,211,153,0.5)',
+                  boxShadow: '0 0 8px rgba(63, 125, 32,0.5)',
                 }}
               />
             )}

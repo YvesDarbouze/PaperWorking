@@ -36,7 +36,7 @@ function grmColor(grm: number, marketGRM: number): string {
   if (grm <= marketGRM * 0.8) return '#14B8A6'; // strong buy — well below market
   if (grm <= marketGRM) return '#3B82F6';        // good — at or below market
   if (grm <= marketGRM * 1.2) return '#EAB308';  // caution — slightly above market
-  return '#EF4444';                               // overpriced
+  return '#F06543';                               // overpriced
 }
 
 function grmSignal(grm: number, marketGRM: number): { label: string; className: string } {

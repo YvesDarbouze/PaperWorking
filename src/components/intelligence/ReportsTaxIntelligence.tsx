@@ -57,7 +57,7 @@ export function ReportsTaxIntelligence() {
                 <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Starting<br/>NOI</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group self-start mt-[40%]">
-                <div className="w-full bg-teal-500/80 border border-teal-400/50 rounded-sm h-[15%] relative shadow-[0_0_10px_rgba(45,212,191,0.2)]">
+                <div className="w-full bg-teal-500/80 border border-teal-400/50 rounded-sm h-[15%] relative shadow-[0_0_10px_rgba(32, 178, 170,0.2)]">
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">+$300k</div>
                 </div>
                 <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Rental<br/>Income</span>
@@ -75,7 +75,7 @@ export function ReportsTaxIntelligence() {
                 <span className="text-[10px] text-slate-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Tax<br/>Adjustment</span>
               </div>
               <div className="flex flex-col items-center w-1/6 group">
-                <div className="w-full bg-teal-400 border border-teal-300/50 rounded-t-sm h-[62%] relative shadow-[0_0_15px_rgba(45,212,191,0.3)]">
+                <div className="w-full bg-teal-400 border border-teal-300/50 rounded-t-sm h-[62%] relative shadow-[0_0_15px_rgba(32, 178, 170,0.3)]">
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs text-teal-300 opacity-0 group-hover:opacity-100 transition-opacity font-bold tabular-nums">$1.25M</div>
                 </div>
                 <span className="text-[10px] text-teal-400 mt-2 text-center font-bold tracking-wider uppercase leading-tight">Ending<br/>NOI</span>
@@ -109,12 +109,12 @@ export function ReportsTaxIntelligence() {
             <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 50">
               <defs>
                 <linearGradient id="capRateGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="rgba(45, 212, 191, 0.3)"></stop>
-                  <stop offset="100%" stopColor="rgba(45, 212, 191, 0)"></stop>
+                  <stop offset="0%" stopColor="rgba(32, 178, 170, 0.3)"></stop>
+                  <stop offset="100%" stopColor="rgba(32, 178, 170, 0)"></stop>
                 </linearGradient>
               </defs>
               <path d="M0,50 L0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5 L100,50 Z" fill="url(#capRateGradient)"></path>
-              <path d="M0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5" fill="none" stroke="#2dd4bf" strokeLinecap="round" strokeWidth="1.5"></path>
+              <path d="M0,30 C10,25 20,35 30,20 C40,5 50,15 60,10 C70,5 80,25 90,15 C95,10 100,5 100,5" fill="none" stroke="#20B2AA" strokeLinecap="round" strokeWidth="1.5"></path>
               {/* Data Point */}
               <circle cx="100" cy="5" fill="#091015" r="2" stroke="#62fae3" strokeWidth="1.5"></circle>
             </svg>
@@ -219,7 +219,7 @@ export function ReportsTaxIntelligence() {
                 </p>
               </div>
             </div>
-            <button className="px-4 py-2 rounded-lg font-bold text-sm bg-teal-500 text-teal-950 flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_20px_-5px_rgba(45,212,191,0.5)]">
+            <button className="px-4 py-2 rounded-lg font-bold text-sm bg-teal-500 text-teal-950 flex items-center gap-2 hover:bg-teal-400 transition-colors shadow-[0_0_20px_-5px_rgba(32, 178, 170,0.5)]">
               <Download className="w-4 h-4" />
               Export CSV
             </button>

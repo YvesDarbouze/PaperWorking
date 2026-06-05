@@ -46,11 +46,11 @@ const fmtCompact = (v: number): string => {
 
 /* ── CoC Health Zones ── */
 const COC_ZONES = [
-  { min: 0, max: 3, label: 'Poor', color: '#EF4444', bgClass: 'bg-red-400/10 border-red-400/20 text-red-400' },
+  { min: 0, max: 3, label: 'Poor', color: '#F06543', bgClass: 'bg-[#F06543]/10 border-[#F06543]/20 text-[#F06543]' },
   { min: 3, max: 6, label: 'Below Avg', color: '#EAB308', bgClass: 'bg-amber-400/10 border-amber-400/20 text-amber-400' },
-  { min: 6, max: 8, label: 'Acceptable', color: '#14B8A6', bgClass: 'bg-teal-400/10 border-teal-400/20 text-teal-400' },
+  { min: 6, max: 8, label: 'Acceptable', color: '#20B2AA', bgClass: 'bg-[#20B2AA]/10 border-[#20B2AA]/20 text-[#20B2AA]' },
   { min: 8, max: 12, label: 'Good', color: '#3B82F6', bgClass: 'bg-blue-400/10 border-blue-400/20 text-blue-400' },
-  { min: 12, max: 100, label: 'Excellent', color: '#8B5CF6', bgClass: 'bg-purple-400/10 border-purple-400/20 text-purple-400' },
+  { min: 12, max: 100, label: 'Excellent', color: '#3f7d20', bgClass: 'bg-[#3f7d20]/10 border-[#3f7d20]/20 text-[#3f7d20]' },
 ] as const;
 
 function getCoCZone(coc: number) {
@@ -97,11 +97,11 @@ function HorizontalGauge({
       <div className="relative h-5 rounded-full overflow-hidden bg-white/[0.04]">
         {/* Zone segments */}
         <div className="absolute inset-0 flex">
-          <div className="h-full" style={{ width: '20%', backgroundColor: 'rgba(239,68,68,0.15)' }} />
+          <div className="h-full" style={{ width: '20%', backgroundColor: 'rgba(240,101,67,0.15)' }} />
           <div className="h-full" style={{ width: '20%', backgroundColor: 'rgba(234,179,8,0.12)' }} />
-          <div className="h-full" style={{ width: '13.3%', backgroundColor: 'rgba(20,184,166,0.12)' }} />
+          <div className="h-full" style={{ width: '13.3%', backgroundColor: 'rgba(32,178,170,0.12)' }} />
           <div className="h-full" style={{ width: '26.7%', backgroundColor: 'rgba(59,130,246,0.12)' }} />
-          <div className="h-full" style={{ width: '20%', backgroundColor: 'rgba(139,92,246,0.10)' }} />
+          <div className="h-full" style={{ width: '20%', backgroundColor: 'rgba(63,125,32,0.10)' }} />
         </div>
 
         {/* Fill bar */}
@@ -127,8 +127,8 @@ function HorizontalGauge({
 
         {/* Target marker */}
         <div
-          className="absolute top-0 bottom-0 w-px border-l border-dashed border-teal-400/60 transition-all duration-500"
-          style={{ left: `${targetPct}%` }}
+          className="absolute top-0 bottom-0 w-px border-l border-dashed transition-all duration-500"
+          style={{ left: `${targetPct}%`, borderColor: 'rgba(32,178,170,0.6)' }}
         />
       </div>
 
@@ -141,7 +141,7 @@ function HorizontalGauge({
           <span className="w-3 border-t border-dashed border-amber-400/60 inline-block" /> Market ({marketAvg}%)
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-3 border-t border-dashed border-teal-400/60 inline-block" /> Target ({targetCoC}%)
+          <span className="w-3 border-t border-dashed inline-block" style={{ borderColor: 'rgba(32,178,170,0.6)' }} /> Target ({targetCoC}%)
         </span>
       </div>
     </div>
@@ -203,8 +203,8 @@ export function CoCIntelligenceCard({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-teal-400/10 flex items-center justify-center">
-            <BarChart3 className="w-4 h-4 text-teal-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#20B2AA]/10 flex items-center justify-center">
+            <BarChart3 className="w-4 h-4 text-[#20B2AA]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Cash-on-Cash Return</h3>
@@ -221,7 +221,7 @@ export function CoCIntelligenceCard({
         <span className="text-5xl font-bold tabular-nums tracking-tighter" style={{ color: zone.color }}>
           {cocReturn.toFixed(2)}%
         </span>
-        <div className={`flex items-center gap-1 text-sm font-bold ${isAboveTarget ? 'text-teal-400' : 'text-red-400'}`}>
+        <div className={`flex items-center gap-1 text-sm font-bold ${isAboveTarget ? 'text-[#3f7d20]' : 'text-[#F06543]'}`}>
           {isAboveTarget ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
           {isAboveTarget ? '+' : ''}{gap.vsTarget.toFixed(2)}% vs target
         </div>
@@ -254,14 +254,14 @@ export function CoCIntelligenceCard({
         {/* vs Target */}
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
           <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">vs Target ({targetCoC}%)</p>
-          <p className={`text-lg font-bold tabular-nums ${isAboveTarget ? 'text-teal-400' : 'text-red-400'}`}>
+          <p className={`text-lg font-bold tabular-nums ${isAboveTarget ? 'text-[#3f7d20]' : 'text-[#F06543]'}`}>
             {isAboveTarget ? '+' : ''}{gap.vsTarget.toFixed(2)}%
           </p>
           <div className="mt-1">
             {isAboveTarget ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-400 mx-auto" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#3f7d20] mx-auto" />
             ) : (
-              <AlertTriangle className="w-3.5 h-3.5 text-red-400 mx-auto" />
+              <AlertTriangle className="w-3.5 h-3.5 text-[#F06543] mx-auto" />
             )}
           </div>
         </div>
@@ -269,12 +269,12 @@ export function CoCIntelligenceCard({
         {/* vs Market */}
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
           <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">vs Market ({marketAvgCoC}%)</p>
-          <p className={`text-lg font-bold tabular-nums ${isAboveMarket ? 'text-teal-400' : 'text-amber-400'}`}>
+          <p className={`text-lg font-bold tabular-nums ${isAboveMarket ? 'text-[#3f7d20]' : 'text-amber-400'}`}>
             {isAboveMarket ? '+' : ''}{gap.vsMarket.toFixed(2)}%
           </p>
           <div className="mt-1">
             {isAboveMarket ? (
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-400 mx-auto" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#3f7d20] mx-auto" />
             ) : (
               <AlertTriangle className="w-3.5 h-3.5 text-amber-400 mx-auto" />
             )}
@@ -284,7 +284,7 @@ export function CoCIntelligenceCard({
         {/* Cash Flow Gap */}
         <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
           <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">CF Gap to Target</p>
-          <p className={`text-lg font-bold tabular-nums ${gap.cashFlowGap <= 0 ? 'text-teal-400' : 'text-red-400'}`}>
+          <p className={`text-lg font-bold tabular-nums ${gap.cashFlowGap <= 0 ? 'text-[#3f7d20]' : 'text-[#F06543]'}`}>
             {gap.cashFlowGap <= 0 ? '—' : `+${fmtCompact(gap.cashFlowGap)}`}
           </p>
           <p className="text-[9px] text-slate-600 mt-0.5">
@@ -305,17 +305,17 @@ export function CoCIntelligenceCard({
               key={sc.label}
               className={`rounded-lg p-2 text-center transition-all ${
                 sc.isCurrent
-                  ? 'bg-teal-400/[0.06] border border-teal-400/20 ring-1 ring-teal-400/10'
+                  ? 'bg-[#20B2AA]/[0.06] border border-[#20B2AA]/20 ring-1 ring-[#20B2AA]/10'
                   : 'bg-white/[0.02] border border-white/[0.04]'
               }`}
             >
               <p className={`text-[9px] font-bold uppercase tracking-wider ${
-                sc.isCurrent ? 'text-teal-400' : 'text-slate-500'
+                sc.isCurrent ? 'text-[#20B2AA]' : 'text-slate-500'
               }`}>
                 {sc.label}
               </p>
               <p className={`text-xs font-bold tabular-nums mt-0.5 ${
-                sc.coc >= targetCoC ? 'text-teal-400' : sc.coc >= marketAvgCoC ? 'text-slate-300' : 'text-red-400'
+                sc.coc >= targetCoC ? 'text-[#3f7d20]' : sc.coc >= marketAvgCoC ? 'text-slate-300' : 'text-[#F06543]'
               }`}>
                 {sc.coc.toFixed(1)}%
               </p>

@@ -48,7 +48,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
     tooltip: {
       trigger: 'axis',
       backgroundColor: '#1a2332',
-      borderColor: '#2dd4bf33',
+      borderColor: '#20B2AA33',
       textStyle: { color: '#e2e8f0', fontSize: 12 },
       formatter: (params: any[]) => {
         const p = params[0];
@@ -76,14 +76,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           value: v,
           itemStyle: {
             color: i === values.length - 1
-              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#2dd4bf' }, { offset: 1, color: '#0d9488' }] }
+              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#20B2AA' }, { offset: 1, color: '#0d9488' }] }
               : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#1a4a44' }, { offset: 1, color: '#0d2d29' }] },
           },
         })),
         barMaxWidth: 40,
         barCategoryGap: '25%',
         emphasis: {
-          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#2dd4bf' }, { offset: 1, color: '#0d9488' }] } },
+          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#20B2AA' }, { offset: 1, color: '#0d9488' }] } },
         },
       },
     ],
@@ -93,7 +93,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
 }
 
 /* ── Expense Donut ECharts ── */
-const EXPENSE_COLORS = ['#2dd4bf', '#818cf8', '#fb923c', '#64748b'];
+const EXPENSE_COLORS = ['#20B2AA', '#818cf8', '#fb923c', '#64748b'];
 
 function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: string; pct: number }[] }) {
   const data = items.map((item, i) => ({
@@ -108,7 +108,7 @@ function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: 
       trigger: 'item',
       formatter: '{b}: {d}%',
       backgroundColor: '#1a2332',
-      borderColor: '#2dd4bf33',
+      borderColor: '#20B2AA33',
       textStyle: { color: '#e2e8f0', fontSize: 12 },
     },
     series: [
@@ -869,7 +869,7 @@ export default function ReportsPage() {
           <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Core REI Metrics</span>
           <div className="flex items-center gap-2">
             {scope === 'My Share' && (
-              <span className="text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded px-2 py-0.5 uppercase tracking-widest">
+              <span className="text-[10px] font-semibold text-[#20B2AA] bg-[#20B2AA]/10 border border-[#20B2AA]/20 rounded px-2 py-0.5 uppercase tracking-widest">
                 My Share
               </span>
             )}
@@ -959,7 +959,7 @@ export default function ReportsPage() {
                   label="Gross Revenue"
                   value={portfolioFinancials.grossRevenue}
                   max={portfolioFinancials.grossRevenue}
-                  color="#2dd4bf"
+                  color="#20B2AA"
                 />
                 <CashFlowBar
                   label="Op. Expenses"

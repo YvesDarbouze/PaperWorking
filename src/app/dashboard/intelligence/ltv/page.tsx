@@ -56,9 +56,9 @@ function LTVGauge({ value }: { value: number }) {
   const rotation = 135; // degrees
 
   const zoneColor =
-    value < 65  ? '#2dd4bf' :
+    value < 65  ? '#20B2AA' :
     value < 80  ? '#f59e0b' :
-                  '#ef4444';
+                  '#F06543';
 
   // Threshold tick positions on the circle
   // 65% of 270deg sweep = 175.5deg from start angle
@@ -99,7 +99,7 @@ function LTVGauge({ value }: { value: number }) {
           />
           {/* Threshold ticks */}
           <line x1={t65i.x} y1={t65i.y} x2={t65o.x} y2={t65o.y} stroke="#f59e0b" strokeWidth="1.5" />
-          <line x1={t80i.x} y1={t80i.y} x2={t80o.x} y2={t80o.y} stroke="#ef4444" strokeWidth="1.5" />
+          <line x1={t80i.x} y1={t80i.y} x2={t80o.x} y2={t80o.y} stroke="#F06543" strokeWidth="1.5" />
         </svg>
         {/* Center value */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -113,9 +113,9 @@ function LTVGauge({ value }: { value: number }) {
       {/* Zone labels */}
       <div className="grid grid-cols-3 gap-1 w-full mt-2">
         {[
-          { label: 'Safe',   range: '< 65%',   color: '#2dd4bf', active: value < 65 },
+          { label: 'Safe',   range: '< 65%',   color: '#20B2AA', active: value < 65 },
           { label: 'Target', range: '65–80%',  color: '#f59e0b', active: value >= 65 && value < 80 },
-          { label: 'High',   range: '> 80%',   color: '#ef4444', active: value >= 80 },
+          { label: 'High',   range: '> 80%',   color: '#F06543', active: value >= 80 },
         ].map((z) => (
           <div
             key={z.label}
@@ -186,13 +186,13 @@ function TrajectoryChart({
         type: 'line',
         data: valueData,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.12)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.12)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -263,7 +263,7 @@ export default function LTVIntelligencePage() {
   const ltvStatusLabel = (ltv: number) =>
     ltv < 65 ? 'Safe' : ltv < 80 ? 'Target' : 'High Risk';
   const ltvStatusColor = (ltv: number) =>
-    ltv < 65 ? '#2dd4bf' : ltv < 80 ? '#f59e0b' : '#ef4444';
+    ltv < 65 ? '#20B2AA' : ltv < 80 ? '#f59e0b' : '#F06543';
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -366,7 +366,7 @@ export default function LTVIntelligencePage() {
               </span>
               <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-6 h-0.5 inline-block rounded" style={{ background: '#2dd4bf' }} />
+                  <span className="w-6 h-0.5 inline-block rounded" style={{ background: '#20B2AA' }} />
                   Property Value
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -430,7 +430,7 @@ export default function LTVIntelligencePage() {
                         style={{
                           color,
                           background: prop.ltv < 65
-                            ? 'rgba(45,212,191,0.1)'
+                            ? 'rgba(32, 178, 170,0.1)'
                             : prop.ltv < 80
                             ? 'rgba(245,158,11,0.1)'
                             : 'rgba(239,68,68,0.1)',

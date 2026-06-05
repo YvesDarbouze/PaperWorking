@@ -44,21 +44,21 @@ interface ExpenseRatioCollectionTerminalProps {
 
 /* ── Seed expense breakdown matching $9,276 annual ── */
 const SEED_ITEMS: ExpenseItem[] = [
-  { id: '1', label: 'Property Taxes',    monthlyAmount: 279, color: '#2dd4bf' },
+  { id: '1', label: 'Property Taxes',    monthlyAmount: 279, color: '#20B2AA' },
   { id: '2', label: 'Insurance',         monthlyAmount: 155, color: '#38bdf8' },
-  { id: '3', label: 'Utilities',         monthlyAmount: 95,  color: '#818cf8' },
+  { id: '3', label: 'Utilities',         monthlyAmount: 95,  color: '#64748b' },
   { id: '4', label: 'Property Mgmt',     monthlyAmount: 195, color: '#fb923c' },
-  { id: '5', label: 'Maintenance',       monthlyAmount: 49,  color: '#a78bfa' },
+  { id: '5', label: 'Maintenance',       monthlyAmount: 49,  color: '#fbbf24' },
 ];
 // Total: 773/mo × 12 = $9,276
 
-const COLORS = ['#2dd4bf', '#38bdf8', '#818cf8', '#fb923c', '#a78bfa', '#f472b6', '#34d399', '#fbbf24'];
+const COLORS = ['#20B2AA', '#38bdf8', '#64748b', '#fb923c', '#fbbf24', '#3f7d20', '#F06543', '#94a3b8'];
 
 /* ── Zone configuration ── */
 const ZONE_CFG = {
-  excellent: { label: 'Excellent', color: '#2dd4bf', range: '<35%', icon: CheckCircle2 },
+  excellent: { label: 'Excellent', color: '#3f7d20', range: '<35%', icon: CheckCircle2 },
   efficient: { label: 'Efficient', color: '#fbbf24', range: '35–45%', icon: TrendingUp },
-  review:    { label: 'Review',    color: '#f87171', range: '>45%',  icon: AlertTriangle },
+  review:    { label: 'Review',    color: '#F06543', range: '>45%',  icon: AlertTriangle },
 } as const;
 
 function getZone(ratio: number): 'excellent' | 'efficient' | 'review' {
@@ -111,7 +111,7 @@ function ExpenseRow({
           onChange={(e) => onChange({ ...item, monthlyAmount: Math.max(0, Number(e.target.value) || 0) })}
           min={0}
           className="w-16 bg-white/[0.03] border border-white/[0.06] rounded px-2 py-1 text-xs text-slate-300
-                     font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                     font-mono tabular-nums text-right focus:outline-none focus:border-[#20B2AA]/30 transition-all"
         />
         <span className="text-[9px] text-slate-600">/mo</span>
       </div>
@@ -243,8 +243,8 @@ export function ExpenseRatioCollectionTerminal({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-            <PieChart className="w-4 h-4 text-indigo-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#20B2AA]/10 flex items-center justify-center">
+            <PieChart className="w-4 h-4 text-[#20B2AA]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Expense Ratio</h3>
@@ -295,7 +295,7 @@ export function ExpenseRatioCollectionTerminal({
       <div className="space-y-1">
         <div
           className="relative h-2.5 rounded-full overflow-hidden"
-          style={{ background: 'linear-gradient(to right, #2dd4bf 0%, #fbbf24 50%, #f87171 100%)' }}
+          style={{ background: 'linear-gradient(to right, #3f7d20 0%, #fbbf24 50%, #F06543 100%)' }}
         >
           <div
             className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow transition-all duration-500"
@@ -323,7 +323,7 @@ export function ExpenseRatioCollectionTerminal({
               onChange={(e) => setGrossMonthlyRent(Math.max(0, Number(e.target.value) || 0))}
               min={0}
               className="w-24 bg-white/[0.04] border border-white/[0.08] rounded px-2 py-1.5 text-sm text-white
-                         font-mono tabular-nums text-right focus:outline-none focus:border-teal-500/30 transition-all"
+                         font-mono tabular-nums text-right focus:outline-none focus:border-[#20B2AA]/30 transition-all"
             />
             <span className="text-[9px] text-slate-600">/mo</span>
           </div>
@@ -368,7 +368,7 @@ export function ExpenseRatioCollectionTerminal({
         <button
           onClick={handleAddItem}
           className="w-full py-2 mt-1 rounded-lg border border-dashed border-white/10 text-[10px] font-bold text-slate-500
-                     hover:border-teal-500/30 hover:text-teal-400 transition-all flex items-center justify-center gap-1"
+                     hover:border-[#20B2AA]/30 hover:text-[#20B2AA] transition-all flex items-center justify-center gap-1"
         >
           + Add Expense
         </button>

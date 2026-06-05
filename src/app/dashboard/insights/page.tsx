@@ -165,7 +165,7 @@ export default function InsightsPage() {
       case 3:
         return {
           label: 'Hold / Operations Focus',
-          color: 'text-purple-400 border-purple-500/20 bg-purple-500/10',
+          color: 'text-slate-400 border-slate-500/20 bg-slate-500/10',
           description: 'Leaning on Occupancy, OER efficiency, and monthly cash flow drift to track asset management performance.'
         };
       case 4:
@@ -965,7 +965,7 @@ export default function InsightsPage() {
                             <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-mono tracking-wider ${
                               phaseNum === 1 ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20' :
                               phaseNum === 2 ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                              phaseNum === 3 ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                              phaseNum === 3 ? 'bg-slate-500/10 text-slate-400 border border-slate-500/20' :
                               'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                             }`}>
                               {getPhaseName(phaseNum)}
@@ -1067,8 +1067,8 @@ export default function InsightsPage() {
           <div className="mt-6 space-y-6 relative z-10 font-hanken">
             <div className="rounded-xl border border-white/5 p-6 bg-white/[0.02] backdrop-blur-sm space-y-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                  <TrendingUp className="w-5 h-5 text-purple-400" />
+                <div className="p-2 rounded-lg bg-[#20B2AA]/10 border border-[#20B2AA]/20">
+                  <TrendingUp className="w-5 h-5 text-[#20B2AA]" />
                 </div>
                 <div>
                   <h2 className="text-lg font-light tracking-wide text-white">

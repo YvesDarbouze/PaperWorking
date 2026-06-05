@@ -36,11 +36,11 @@ const fmtCompact = (v: number): string => {
 /* ── Threshold Zones ── */
 const ZONES = [
   { min: 0, max: 0.8,  label: 'Critical',  color: '#DC2626', description: 'Default risk — immediate action required' },
-  { min: 0.8, max: 1.0, label: 'At Risk',   color: '#EF4444', description: 'Cannot fully cover debt obligations' },
+  { min: 0.8, max: 1.0, label: 'At Risk',   color: '#F06543', description: 'Cannot fully cover debt obligations' },
   { min: 1.0, max: 1.25, label: 'Marginal',  color: '#F59E0B', description: 'Meets bare minimum — no safety margin' },
   { min: 1.25, max: 1.5, label: 'Adequate',  color: '#14B8A6', description: 'Above lender minimum — acceptable' },
   { min: 1.5, max: 2.0, label: 'Strong',    color: '#3B82F6', description: 'Robust coverage — favorable terms' },
-  { min: 2.0, max: 3.0, label: 'Excellent',  color: '#8B5CF6', description: 'Best-in-class debt coverage' },
+  { min: 2.0, max: 3.0, label: 'Excellent',  color: '#20B2AA', description: 'Best-in-class debt coverage' },
 ] as const;
 
 function getZone(dscr: number) {
@@ -139,7 +139,7 @@ export function DSCRThresholdCard({
         noiRequired: ds * 1.0,
         noiGap: ds * 1.0 - noi,
         met: dscr >= 1.0,
-        color: '#EF4444',
+        color: '#F06543',
       },
       {
         label: `Lender Min (${lenderMinDSCR}x)`,
@@ -200,7 +200,7 @@ export function DSCRThresholdCard({
         <span className="text-5xl font-bold tabular-nums tracking-tighter" style={{ color: zone.color }}>
           {dscr >= 100 ? '∞' : dscr.toFixed(2)}x
         </span>
-        <div className="flex items-center gap-1 text-sm font-bold" style={{ color: dscr >= lenderMinDSCR ? '#14B8A6' : '#EF4444' }}>
+        <div className="flex items-center gap-1 text-sm font-bold" style={{ color: dscr >= lenderMinDSCR ? '#14B8A6' : '#F06543' }}>
           {dscr >= lenderMinDSCR ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
           {dscr >= lenderMinDSCR ? 'Above minimum' : 'Below minimum'}
         </div>

@@ -310,7 +310,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
       <svg width="100%" viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
         <defs>
           <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={isUp ? 'rgba(45,212,191,0.3)' : 'rgba(239,68,68,0.3)'} />
+            <stop offset="0%" stopColor={isUp ? 'rgba(32, 178, 170,0.3)' : 'rgba(239,68,68,0.3)'} />
             <stop offset="100%" stopColor="transparent" />
           </linearGradient>
         </defs>
@@ -318,7 +318,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
         <polyline
           points={points}
           fill="none"
-          stroke={isUp ? '#2dd4bf' : '#ef4444'}
+          stroke={isUp ? '#20B2AA' : '#F06543'}
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -329,7 +329,7 @@ function MiniSparkline({ data }: { data: { date: string; value: number }[] }) {
           const cx = padding + (lastI / (values.length - 1)) * innerW;
           const cy = padding + innerH - ((values[lastI] - min) / range) * innerH;
           return (
-            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#2dd4bf' : '#ef4444'} stroke="#091015" strokeWidth="2" />
+            <circle cx={cx} cy={cy} r="4" fill={isUp ? '#20B2AA' : '#F06543'} stroke="#091015" strokeWidth="2" />
           );
         })()}
       </svg>

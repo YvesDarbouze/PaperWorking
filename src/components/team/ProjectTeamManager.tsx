@@ -89,7 +89,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 member
                   ? 'border-border-accent bg-bg-primary/50'
                   : isEditing
-                  ? 'border-indigo-300 bg-indigo-50/30'
+                  ? 'border-[#20B2AA]/30 bg-[#20B2AA]/5'
                   : 'border-dashed border-border-accent hover:border-border-accent'
               }`}
             >
@@ -97,7 +97,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      member ? 'bg-indigo-100 text-indigo-600' : 'bg-bg-primary text-text-secondary'
+                      member ? 'bg-[#20B2AA]/10 text-[#20B2AA]' : 'bg-bg-primary text-text-secondary'
                     }`}
                   >
                     {icon}
@@ -118,7 +118,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 {member ? (
                   <button
                     onClick={() => handleRemove(member.id)}
-                    className="p-1.5 rounded-md hover:bg-red-50 text-text-secondary hover:text-red-500 transition"
+                    className="p-1.5 rounded-md hover:bg-[#F06543]/10 text-text-secondary hover:text-[#F06543] transition"
                     title="Remove"
                   >
                     <X className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
                 ) : !isEditing ? (
                   <button
                     onClick={() => setEditingRole(role)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-[#20B2AA] bg-[#20B2AA]/10 rounded-md hover:bg-[#20B2AA]/20 transition"
                   >
                     <UserPlus className="w-3 h-3" /> Invite
                   </button>
@@ -141,19 +141,19 @@ export default function ProjectTeamManager({ projectId }: Props) {
                     value={inviteName}
                     onChange={(e) => setInviteName(e.target.value)}
                     placeholder="Name"
-                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-1 border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#20B2AA] focus:ring-1 focus:ring-[#20B2AA] transition"
                   />
                   <input
                     type="email"
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder="email@company.com"
-                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                    className="flex-[2] border border-border-accent rounded-md px-3 py-2 text-xs focus:border-[#20B2AA] focus:ring-1 focus:ring-[#20B2AA] transition"
                   />
                   <button
                     onClick={() => handleAssign(role)}
                     disabled={!inviteEmail.trim()}
-                    className="px-4 py-2 bg-black text-white text-xs font-medium rounded-md hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
+                    className="px-4 py-2 bg-[#454955] text-white text-xs font-medium rounded-md hover:bg-[#454955]/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition"
                   >
                     Assign
                   </button>

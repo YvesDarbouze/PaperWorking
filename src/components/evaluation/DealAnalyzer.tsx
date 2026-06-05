@@ -198,9 +198,9 @@ function MetricCard({
       className={`p-${large ? 6 : 5} rounded-2xl relative overflow-hidden ${variant === 'positive' ? 'health-band-positive' : variant === 'warning' ? 'health-band-warning' : ''}`}
       style={{
         background: variant === 'hero'
-          ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(45,212,191,0.05) 100%)'
+          ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(32, 178, 170,0.05) 100%)'
           : 'var(--color-surface-container-lowest)',
-        border: `1px solid ${variant === 'hero' ? 'rgba(45,212,191,0.2)' : 'rgba(60,74,70,0.3)'}`,
+        border: `1px solid ${variant === 'hero' ? 'rgba(32, 178, 170,0.2)' : 'rgba(60,74,70,0.3)'}`,
       }}
     >
       {variant === 'hero' && (
@@ -214,7 +214,7 @@ function MetricCard({
             {label}
           </p>
           {badge && (
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase" style={{ background: 'rgba(45,212,191,0.2)', color: 'var(--color-primary)' }}>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase" style={{ background: 'rgba(32, 178, 170,0.2)', color: 'var(--color-primary)' }}>
               {badge}
             </span>
           )}
@@ -549,14 +549,14 @@ export default function DealAnalyzer() {
         <button
           onClick={() => setMode('rental')}
           className={`flex-1 py-3 text-sm font-semibold rounded-lg uppercase tracking-wider transition-all ${mode === 'rental' ? 'text-[var(--color-primary)]' : ''}`}
-          style={mode === 'rental' ? { background: 'rgba(45,212,191,0.1)', border: '1px solid rgba(45,212,191,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
+          style={mode === 'rental' ? { background: 'rgba(32, 178, 170,0.1)', border: '1px solid rgba(32, 178, 170,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
         >
           Rental
         </button>
         <button
           onClick={() => setMode('flip')}
           className={`flex-1 py-3 text-sm font-semibold rounded-lg uppercase tracking-wider transition-all ${mode === 'flip' ? 'text-[var(--color-primary)]' : ''}`}
-          style={mode === 'flip' ? { background: 'rgba(45,212,191,0.1)', border: '1px solid rgba(45,212,191,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
+          style={mode === 'flip' ? { background: 'rgba(32, 178, 170,0.1)', border: '1px solid rgba(32, 178, 170,0.2)' } : { color: 'var(--color-on-surface-variant)' }}
         >
           Flip Analysis
         </button>
@@ -592,7 +592,7 @@ export default function DealAnalyzer() {
                 <button
                   onClick={() => setMode('rental')}
                   className="px-6 py-2 rounded-lg text-sm font-bold transition-all"
-                  style={mode === 'rental' ? { background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)' } : { color: 'var(--color-on-surface-variant)' }}
+                  style={mode === 'rental' ? { background: 'rgba(32, 178, 170,0.1)', color: 'var(--color-primary)' } : { color: 'var(--color-on-surface-variant)' }}
                 >
                   Rental
                 </button>
@@ -621,7 +621,7 @@ export default function DealAnalyzer() {
                 <button
                   onClick={() => setMode('flip')}
                   className="px-4 py-1.5 rounded-md text-sm font-semibold"
-                  style={{ background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(45,212,191,0.2)' }}
+                  style={{ background: 'rgba(32, 178, 170,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(32, 178, 170,0.2)' }}
                 >
                   Flip
                 </button>
@@ -776,14 +776,14 @@ export default function DealAnalyzer() {
               <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>monitoring</span>
               Live Projections
             </h2>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter" style={{ background: 'rgba(45,212,191,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(45,212,191,0.3)' }}>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter" style={{ background: 'rgba(32, 178, 170,0.1)', color: 'var(--color-primary)', border: '1px solid rgba(32, 178, 170,0.3)' }}>
               Real-time Calc
             </span>
           </div>
 
           {/* ═══ RENTAL RESULTS ═══ */}
           {mode === 'rental' && (
-            <div className="glass-card rounded-2xl p-6 space-y-4" style={{ borderColor: 'rgba(45,212,191,0.2)', background: 'rgba(45,212,191,0.03)' }}>
+            <div className="glass-card rounded-2xl p-6 space-y-4" style={{ borderColor: 'rgba(32, 178, 170,0.2)', background: 'rgba(32, 178, 170,0.03)' }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold uppercase tracking-tighter" style={{ color: 'var(--color-primary)' }}>Live Projections</h3>
                 <div className="flex items-center gap-2">

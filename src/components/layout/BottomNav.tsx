@@ -69,7 +69,7 @@ export function BottomNav() {
                   style={{
                     background: 'var(--color-primary)',
                     color: '#091015',
-                    boxShadow: '0 0 6px rgba(45,212,191,0.5)',
+                    boxShadow: '0 0 6px rgba(32, 178, 170,0.5)',
                   }}
                 >
                   {unreadTotal > 9 ? '9+' : unreadTotal}
@@ -92,7 +92,7 @@ export function BottomNav() {
                 className="absolute -bottom-0.5 w-1 h-1 rounded-full"
                 style={{
                   background: 'var(--color-primary)',
-                  boxShadow: '0 0 10px 2px rgba(45,212,191,0.5)',
+                  boxShadow: '0 0 10px 2px rgba(32, 178, 170,0.5)',
                 }}
               />
             )}

@@ -27,19 +27,19 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
         setEntityType("");
         setEntityName("");
         setCoOwners([""]);
-        setOwnership({ entityType: null, entityName: null, coOwners: [] });
+        setOwnership({ entityType: undefined, entityName: undefined, coOwners: [] });
       }
     },
     [setOwnership, selectedStructure],
   );
 
   const handleEntityType = useCallback(
-    (v: string) => { setEntityType(v); setOwnership({ entityType: v || null }); },
+    (v: string) => { setEntityType(v); setOwnership({ entityType: v || undefined }); },
     [setOwnership],
   );
 
   const handleEntityName = useCallback(
-    (v: string) => { setEntityName(v); setOwnership({ entityName: v || null }); },
+    (v: string) => { setEntityName(v); setOwnership({ entityName: v || undefined }); },
     [setOwnership],
   );
 
@@ -218,7 +218,7 @@ export function OwnershipStep({ onNext }: { onNext: () => void }) {
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                     style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
                   >
-                    <span className="material-symbols-outlined text-[15px]" style={{ color: "#ef4444" }}>close</span>
+                    <span className="material-symbols-outlined text-[15px]" style={{ color: "#F06543" }}>close</span>
                   </button>
                 )}
               </div>

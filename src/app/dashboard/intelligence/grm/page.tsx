@@ -69,7 +69,7 @@ function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES })
         name: 'Portfolio GRM',
         type: 'bar',
         data: properties.map((p) => p.grm),
-        itemStyle: { color: '#2dd4bf', borderRadius: [3, 3, 0, 0] },
+        itemStyle: { color: '#20B2AA', borderRadius: [3, 3, 0, 0] },
         barMaxWidth: 28,
         label: {
           show: true,

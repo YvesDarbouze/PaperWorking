@@ -38,9 +38,9 @@ interface IRRScenarioComparisonCardProps {
 const DEFAULT_HOLDS = [3, 5, 7, 10];
 
 const VARIANTS: ScenarioVariant[] = [
-  { label: 'Bear', appreciationPercent: 1.5, cashFlowMultiplier: 0.8, color: '#EF4444' },
-  { label: 'Base', appreciationPercent: 3.0, cashFlowMultiplier: 1.0, color: '#14B8A6' },
-  { label: 'Bull', appreciationPercent: 5.0, cashFlowMultiplier: 1.2, color: '#8B5CF6' },
+  { label: 'Bear', appreciationPercent: 1.5, cashFlowMultiplier: 0.8, color: '#F06543' },
+  { label: 'Base', appreciationPercent: 3.0, cashFlowMultiplier: 1.0, color: '#a1a1aa' },
+  { label: 'Bull', appreciationPercent: 5.0, cashFlowMultiplier: 1.2, color: '#20B2AA' },
 ];
 
 /* ── Compute all scenarios ── */
@@ -95,10 +95,10 @@ function SignalBadge({ irr, hurdleRate }: { irr: number | null; hurdleRate: numb
   if (irr === null) return <span className="text-[8px] font-bold text-slate-600 uppercase">N/A</span>;
 
   const signals = [
-    { min: hurdleRate + 0.05, label: 'Strong', color: '#14B8A6' },
-    { min: hurdleRate, label: 'Pass', color: '#3B82F6' },
+    { min: hurdleRate + 0.05, label: 'Strong', color: '#3f7d20' },
+    { min: hurdleRate, label: 'Pass', color: '#20B2AA' },
     { min: 0, label: 'Weak', color: '#F59E0B' },
-    { min: -Infinity, label: 'Loss', color: '#EF4444' },
+    { min: -Infinity, label: 'Loss', color: '#F06543' },
   ];
 
   const signal = signals.find((s) => irr >= s.min) ?? signals[signals.length - 1];
@@ -176,8 +176,8 @@ export function IRRScenarioComparisonCard({
       {/* ── Header ── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-            <Layers className="w-4 h-4 text-violet-400" />
+          <div className="w-8 h-8 rounded-lg bg-[#20B2AA]/10 flex items-center justify-center">
+            <Layers className="w-4 h-4 text-[#20B2AA]" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Scenario Comparison</h3>
@@ -192,16 +192,16 @@ export function IRRScenarioComparisonCard({
 
       {/* ── Best Scenario Highlight ── */}
       {bestScenario && (
-        <div className="rounded-lg border border-violet-400/20 bg-violet-400/[0.06] p-3 flex items-center justify-between">
+        <div className="rounded-lg border border-[#20B2AA]/20 bg-[#20B2AA]/[0.06] p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Award className="w-4 h-4 text-violet-400" />
+            <Award className="w-4 h-4 text-[#20B2AA]" />
             <div>
-              <p className="text-xs font-bold text-violet-400">Best Scenario</p>
+              <p className="text-xs font-bold text-[#20B2AA]">Best Scenario</p>
               <p className="text-[10px] text-slate-500">{bestScenario.holdYears}-year {bestScenario.variant}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-2xl font-bold tabular-nums text-violet-400">{bestScenario.irrPct}</span>
+            <span className="text-2xl font-bold tabular-nums text-[#20B2AA]">{bestScenario.irrPct}</span>
             <span className="text-[10px] text-slate-500">{bestScenario.equityMultiple.toFixed(1)}x</span>
           </div>
         </div>
@@ -248,7 +248,7 @@ export function IRRScenarioComparisonCard({
         </div>
         <div className="text-center">
           <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Best IRR</p>
-          <p className="text-sm font-bold text-violet-400 tabular-nums">{bestScenario?.irrPct ?? 'N/A'}</p>
+          <p className="text-sm font-bold text-[#20B2AA] tabular-nums">{bestScenario?.irrPct ?? 'N/A'}</p>
         </div>
       </div>
     </div>

@@ -22,7 +22,7 @@ const DEMO_TREND = [42.1, 41.5, 40.8, 39.9, 39.2, 38.8, 38.5, 38.2];
 const DEMO_MONTHS = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 const EXPENSE_CATEGORIES = [
-  { name: 'Property Taxes', pct: 12, color: '#2dd4bf' },
+  { name: 'Property Taxes', pct: 12, color: '#20B2AA' },
   { name: 'Maintenance',    pct: 9,  color: '#38bdf8' },
   { name: 'Insurance',      pct: 8,  color: '#818cf8' },
   { name: 'Management',     pct: 7,  color: '#fb923c' },
@@ -39,7 +39,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
       textStyle: { color: '#dae4ec', fontSize: 11 },
       formatter: (params: any[]) =>
         params[0].axisValue + '<br/>' +
-        `<span style="color:#2dd4bf">─</span> OER: <b>${params[0].value}%</b>`,
+        `<span style="color:#20B2AA">─</span> OER: <b>${params[0].value}%</b>`,
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -65,7 +65,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
         data: labels.map(() => 35),
         lineStyle: { opacity: 0 },
         areaStyle: {
-          color: 'rgba(45,212,191,0.08)',
+          color: 'rgba(32, 178, 170,0.08)',
           origin: 'start',
         },
         showSymbol: false,
@@ -78,13 +78,13 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.18)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.18)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -97,8 +97,8 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
           data: [
             {
               yAxis: 35,
-              lineStyle: { color: '#2dd4bf', type: 'dashed', width: 1, opacity: 0.5 },
-              label: { formatter: 'Excellent <35%', color: '#2dd4bf', fontSize: 9 },
+              lineStyle: { color: '#20B2AA', type: 'dashed', width: 1, opacity: 0.5 },
+              label: { formatter: 'Excellent <35%', color: '#20B2AA', fontSize: 9 },
             },
             {
               yAxis: 45,
@@ -111,7 +111,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
           silent: true,
           data: [
             [
-              { yAxis: 30, itemStyle: { color: 'rgba(45,212,191,0.04)' } },
+              { yAxis: 30, itemStyle: { color: 'rgba(32, 178, 170,0.04)' } },
               { yAxis: 35 },
             ],
             [
@@ -119,7 +119,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
               { yAxis: 45 },
             ],
             [
-              { yAxis: 45, itemStyle: { color: 'rgba(248,113,113,0.05)' } },
+              { yAxis: 45, itemStyle: { color: 'rgba(240, 101, 67,0.05)' } },
               { yAxis: 55 },
             ],
           ],
@@ -200,10 +200,10 @@ export default function OERIntelligencePage() {
   }, [snapshots, projects, collectedValues]);
 
   const zone = currentOER < 35
-    ? { label: 'Excellent', color: '#2dd4bf', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
+    ? { label: 'Excellent', color: '#20B2AA', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
     : currentOER <= 45
-    ? { label: 'Efficient', color: '#2dd4bf', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
-    : { label: 'Review', color: '#f87171', bg: 'bg-red-400/10 border-red-400/20 text-red-400' };
+    ? { label: 'Efficient', color: '#20B2AA', bg: 'bg-teal-400/10 border-teal-400/20 text-teal-400' }
+    : { label: 'Review', color: '#F06543', bg: 'bg-red-400/10 border-red-400/20 text-red-400' };
 
   // Position marker on gradient bar (0% = left = good, 100% = right = bad)
   const markerPct = Math.min(Math.max(((currentOER - 25) / 35) * 100, 0), 100);
@@ -266,7 +266,7 @@ export default function OERIntelligencePage() {
             {/* Gradient bar */}
             <div className="space-y-2 pt-2">
               <div className="relative h-3 rounded-full overflow-hidden"
-                style={{ background: 'linear-gradient(to right, #2dd4bf 0%, #fbbf24 50%, #f87171 100%)' }}>
+                style={{ background: 'linear-gradient(to right, #20B2AA 0%, #fbbf24 50%, #F06543 100%)' }}>
                 <div
                   className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-white border-2 border-[#091015] shadow"
                   style={{ left: `${markerPct}%` }}
@@ -282,9 +282,9 @@ export default function OERIntelligencePage() {
             {/* Zone legend */}
             <div className="grid grid-cols-3 gap-1 pt-2 border-t border-white/[0.06]">
               {[
-                { label: 'Excellent', range: '<35%', color: '#2dd4bf' },
+                { label: 'Excellent', range: '<35%', color: '#20B2AA' },
                 { label: 'Efficient', range: '35–45%', color: '#fbbf24' },
-                { label: 'Review', range: '>45%', color: '#f87171' },
+                { label: 'Review', range: '>45%', color: '#F06543' },
               ].map((z) => (
                 <div key={z.label} className="flex flex-col items-center py-2 rounded-lg bg-white/[0.02]">
                   <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: z.color }}>{z.label}</span>

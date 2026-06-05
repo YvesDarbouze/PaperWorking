@@ -52,9 +52,9 @@ const fmtCompact = (v: number): string => {
 
 /* ── Expense category colors (consistent palette) ── */
 const EXPENSE_COLORS: Record<string, string> = {
-  Taxes: '#EF4444',
+  Taxes: '#F06543',
   Insurance: '#F97316',
-  Utilities: '#8B5CF6',
+  Utilities: '#20B2AA',
   Management: '#EC4899',
   Maintenance: '#14B8A6',
   HOA: '#A855F7',
@@ -74,7 +74,7 @@ function buildWaterfallData(c: NOIComponents) {
       name: 'Other Income',
       value: c.otherIncome,
       base: c.grossRentalIncome,
-      fill: '#2dd4bf',
+      fill: '#20B2AA',
       type: 'income' as const,
     },
     {
@@ -88,14 +88,14 @@ function buildWaterfallData(c: NOIComponents) {
       name: 'OpEx',
       value: -c.totalOperatingExpenses,
       base: c.grossRentalIncome + c.otherIncome - c.vacancyLoss,
-      fill: '#EF4444',
+      fill: '#F06543',
       type: 'expense' as const,
     },
     {
       name: 'NOI',
       value: c.noi,
       base: 0,
-      fill: c.noi >= 0 ? '#57f1db' : '#EF4444',
+      fill: c.noi >= 0 ? '#57f1db' : '#F06543',
       type: 'result' as const,
     },
   ];
@@ -212,7 +212,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
             >
               <DollarSign
                 className="h-6 w-6"
-                style={{ color: noiPositive ? '#57f1db' : '#EF4444' }}
+                style={{ color: noiPositive ? '#57f1db' : '#F06543' }}
               />
             </div>
             <div>
@@ -225,7 +225,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
               <div className="flex items-baseline gap-3">
                 <span
                   className="text-3xl font-bold tabular-nums tracking-tight"
-                  style={{ color: noiPositive ? '#57f1db' : '#EF4444' }}
+                  style={{ color: noiPositive ? '#57f1db' : '#F06543' }}
                 >
                   {fmtUSD(displayNOI)}
                 </span>
@@ -239,7 +239,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
                   className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold"
                   style={{
                     background: noiPositive ? 'rgba(87, 241, 219, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                    color: noiPositive ? '#57f1db' : '#EF4444',
+                    color: noiPositive ? '#57f1db' : '#F06543',
                   }}
                 >
                   {noiPositive ? (
@@ -292,7 +292,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
               label: 'Total Costs',
               value: fmtCompact(isAnnual ? totalExpenses : Math.round(totalExpenses / 12)),
               icon: TrendingDown,
-              color: '#EF4444',
+              color: '#F06543',
             },
             {
               label: 'Operating Ratio',
@@ -462,7 +462,7 @@ export function NOIWaterfallHero({ noiComponents, className }: NOIWaterfallHeroP
                 style={{
                   background: 'rgba(239, 68, 68, 0.06)',
                   border: '1px solid rgba(239, 68, 68, 0.15)',
-                  color: '#EF4444',
+                  color: '#F06543',
                 }}
               >
                 <span>Total OpEx + Vacancy</span>

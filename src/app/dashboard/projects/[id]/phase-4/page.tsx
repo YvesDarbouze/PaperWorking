@@ -379,7 +379,7 @@ export default function Phase4WorkspacePage() {
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[20%] -right-[10%] w-[500px] h-[500px] bg-[#2dd4bf]/5 rounded-full blur-[120px]" />
+        <div className="absolute top-[20%] -right-[10%] w-[500px] h-[500px] bg-[#20B2AA]/5 rounded-full blur-[120px]" />
         <div className="absolute -bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-[#57f1db]/5 rounded-full blur-[100px]" />
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -859,9 +859,9 @@ export default function Phase4WorkspacePage() {
             className={`relative px-16 py-5 rounded-xl text-[14px] leading-[16px] font-bold uppercase tracking-[0.12em] transition-all flex items-center justify-center gap-3 ${
               project.locked
                 ? 'bg-white/5 text-[#bacac5] cursor-not-allowed'
-                : 'bg-[#2dd4bf] text-[#003731] hover:scale-105 active:scale-95'
+                : 'bg-[#20B2AA] text-[#003731] hover:scale-105 active:scale-95'
             }`}
-            style={!project.locked ? { boxShadow: `0 20px 50px rgba(45,212,191,0.3)` } : {}}
+            style={!project.locked ? { boxShadow: `0 20px 50px rgba(32, 178, 170,0.3)` } : {}}
           >
             {isSaving ? (
               <>

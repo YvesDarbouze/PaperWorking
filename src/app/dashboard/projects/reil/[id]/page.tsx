@@ -165,7 +165,7 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
   if (error || !project) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4">
-        <p className="text-sm" style={{ color: "#ef4444" }}>Project not found or access denied.</p>
+        <p className="text-sm" style={{ color: "#F06543" }}>Project not found or access denied.</p>
         <button onClick={() => router.push("/dashboard")} className="text-[13px]" style={{ color: "#57f1db" }}>
           ← Back to Portfolio
         </button>

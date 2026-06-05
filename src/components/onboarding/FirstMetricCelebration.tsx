@@ -226,9 +226,9 @@ const CONFETTI_COLORS = [
   '#57f1db', // teal
   '#D4A843', // gold
   '#4ADE80', // green
-  '#A78BFA', // purple
+  '#20B2AA', // brand secondary accent
   '#60A5FA', // blue
-  '#F472B6', // pink
+  '#F06543', // red
   '#FBBF24', // amber
   '#ffffff', // white
 ];

@@ -74,7 +74,7 @@ const columns: Column<AdminTicketEntry>[] = [
     render: (row) => (
       <span
         className="text-xs font-semibold"
-        style={{ color: row.assignee === 'Unassigned' ? '#ef4444' : 'var(--text-primary)' }}
+        style={{ color: row.assignee === 'Unassigned' ? '#F06543' : 'var(--text-primary)' }}
       >
         {row.assignee}
       </span>
@@ -179,8 +179,8 @@ export default function AdminTicketsPage() {
           {[
             { label: 'Open', value: openCount, color: '#f59e0b' },
             { label: 'In Progress', value: inProgressCount, color: '#3b82f6' },
-            { label: 'High / Urgent', value: urgentCount, color: '#ef4444' },
-            { label: 'Resolved', value: resolvedCount, color: '#22c55e' },
+            { label: 'High / Urgent', value: urgentCount, color: '#F06543' },
+            { label: 'Resolved', value: resolvedCount, color: '#3f7d20' },
           ].map((s) => (
             <div
               key={s.label}

@@ -220,7 +220,7 @@ export default function DocumentHub() {
         <div className="flex items-center gap-3">
           {projects.length > 0 && (
             <select
-              className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-indigo-500 focus:border-indigo-500 bg-bg-surface"
+              className="border border-border-accent rounded-md text-sm py-2 pl-3 pr-8 focus:ring-[#20B2AA] focus:border-[#20B2AA] bg-bg-surface"
               value={selectedProjectId}
               onChange={e => {
                 setSelectedProjectId(e.target.value);
@@ -319,7 +319,7 @@ export default function DocumentHub() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">Category</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                   value={uploadForm.category}
                   onChange={e => setUploadForm(f => ({ ...f, category: e.target.value as DealDocumentCategory }))}
                 >
@@ -329,7 +329,7 @@ export default function DocumentHub() {
               <div>
                 <label className="block text-xs font-medium text-text-primary mb-1">eSignature Required?</label>
                 <select
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA]"
                   value={uploadForm.eSignStatus}
                   onChange={e => setUploadForm(f => ({ ...f, eSignStatus: e.target.value as ESignStatus }))}
                 >
@@ -341,7 +341,7 @@ export default function DocumentHub() {
                 <label className="block text-xs font-medium text-text-primary mb-1">Notes (optional)</label>
                 <textarea
                   rows={2}
-                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+                  className="w-full border border-border-accent rounded-md text-sm py-2 px-3 focus:ring-[#20B2AA] focus:border-[#20B2AA] resize-none"
                   placeholder="Any additional context…"
                   value={uploadForm.notes}
                   onChange={e => setUploadForm(f => ({ ...f, notes: e.target.value }))}
@@ -446,7 +446,7 @@ export default function DocumentHub() {
                       <button
                         onClick={() => handleRequestESign(doc.id)}
                         title="Request eSignature"
-                        className="p-1.5 text-text-secondary hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition"
+                        className="p-1.5 text-text-secondary hover:text-[#20B2AA] rounded-md hover:bg-[#20B2AA]/10 transition"
                       >
                         <FilePen className="w-4 h-4" />
                       </button>

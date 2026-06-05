@@ -439,7 +439,7 @@ export function CommandCenter() {
               icon="waterfall_chart"
               value={cfVal}
               suffix={kpis.portfolioCashFlow !== null ? "/mo" : ""}
-              accentColor="#a78bfa"
+              accentColor="#20B2AA"
               badge={
                 kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow > 0
                   ? "Positive"
@@ -449,8 +449,8 @@ export function CommandCenter() {
               }
               badgeColor={
                 kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0
-                  ? "#ef4444"
-                  : "#a78bfa"
+                  ? "#F06543"
+                  : "#20B2AA"
               }
               subLabel={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
             />

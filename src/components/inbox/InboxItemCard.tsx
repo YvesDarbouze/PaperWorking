@@ -212,7 +212,7 @@ export default function InboxItemCard({
           ? 'bg-[#091015]/80 border-[#57f1db]/50 shadow-[0_0_15px_-5px_rgba(87,241,219,0.3)]'
           : item.read
           ? 'glass-card border-white/5 bg-[#091015]/20 hover:bg-white/5'
-          : 'glass-card border-[#2dd4bf]/20 bg-[#091015]/40 ring-1 ring-[#2dd4bf]/10 shadow-[0_0_15px_-5px_rgba(45,212,191,0.15)] hover:border-[#2dd4bf]/30'
+          : 'glass-card border-[#20B2AA]/20 bg-[#091015]/40 ring-1 ring-[#20B2AA]/10 shadow-[0_0_15px_-5px_rgba(32, 178, 170,0.15)] hover:border-[#20B2AA]/30'
       }`}
       style={{ cursor: 'pointer' }}
     >
@@ -237,7 +237,7 @@ export default function InboxItemCard({
         {/* Unread indicator dot */}
         {!item.read && (
           <span
-            className="absolute left-2 top-7 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(45,212,191,0.8)]"
+            className="absolute left-2 top-7 w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(32, 178, 170,0.8)]"
           />
         )}
 
@@ -438,7 +438,7 @@ export default function InboxItemCard({
                   // Trigger action success
                   toast.success('Approved successfully.', {
                     icon: '✓',
-                    style: { background: '#091015', color: '#dae4ec', border: '1px solid rgba(45,212,191,0.2)' }
+                    style: { background: '#091015', color: '#dae4ec', border: '1px solid rgba(32, 178, 170,0.2)' }
                   });
                   setIsExpanded(false);
                 }}

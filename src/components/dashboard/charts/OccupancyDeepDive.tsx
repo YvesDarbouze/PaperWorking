@@ -20,7 +20,7 @@ function classifyOccupancy(rate: number): {
   if (rate >= 97) return { grade: 'excellent', label: 'Near-Full Occupancy', description: 'Exceptional retention — consider if rents are below market', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
   if (rate >= 93) return { grade: 'healthy', label: 'Healthy Occupancy', description: 'Strong demand with normal turnover — 5-7% vacancy is optimal', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
   if (rate >= 90) return { grade: 'caution', label: 'Average Occupancy', description: 'Meeting national average ~90% benchmark', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
-  if (rate >= 80) return { grade: 'risk', label: 'Sub-90% Occupancy', description: 'Sustained sub-90% occupancy indicates tenant retention or vacancy issues', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
+  if (rate >= 80) return { grade: 'risk', label: 'Sub-90% Occupancy', description: 'Sustained sub-90% occupancy indicates tenant retention or vacancy issues', color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'critical', label: 'Critical Vacancy', description: 'Severe cash flow impact — property may be losing money', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
@@ -110,7 +110,7 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
 
   const gaugeSegments = [
     { min: 0, max: 80, label: '<80%', color: '#DC2626', desc: 'Critical' },
-    { min: 80, max: 90, label: '80-90%', color: '#EF4444', desc: 'Sustained Risk' },
+    { min: 80, max: 90, label: '80-90%', color: '#F06543', desc: 'Sustained Risk' },
     { min: 90, max: 93, label: '90-93%', color: '#A5A5A5', desc: 'Below Avg' },
     { min: 93, max: 97, label: '93-97%', color: '#7F7F7F', desc: 'Healthy' },
     { min: 97, max: 101, label: '97%+', color: '#595959', desc: 'Full' },
@@ -128,8 +128,8 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
       borderStyle: primary.isOccupancyAssumption ? 'dashed' : 'solid'
     },
     { icon: TrendingDown, label: 'Break-Even Occupancy', value: fmtPct(primary.breakEvenOccupancy), sublabel: 'Min occupancy to cover all costs', color: '#A5A5A5' },
-    { icon: DollarSign, label: 'Vacancy Cost', value: `${fmtUSD(Math.round(primary.grossRent * primary.vacancyRate / 100))}/yr`, sublabel: `${fmtUSD(Math.round(primary.grossRent * primary.vacancyRate / 100 / 12))}/mo lost to vacancy`, color: '#EF4444' },
-    { icon: Target, label: 'Occupancy Cushion', value: `${cushion >= 0 ? '+' : ''}${cushion.toFixed(1)}%`, sublabel: cushion >= 0 ? 'Above break-even — safe margin' : 'BELOW break-even — losing money', color: cushion >= 0 ? '#595959' : '#EF4444' },
+    { icon: DollarSign, label: 'Vacancy Cost', value: `${fmtUSD(Math.round(primary.grossRent * primary.vacancyRate / 100))}/yr`, sublabel: `${fmtUSD(Math.round(primary.grossRent * primary.vacancyRate / 100 / 12))}/mo lost to vacancy`, color: '#F06543' },
+    { icon: Target, label: 'Occupancy Cushion', value: `${cushion >= 0 ? '+' : ''}${cushion.toFixed(1)}%`, sublabel: cushion >= 0 ? 'Above break-even — safe margin' : 'BELOW break-even — losing money', color: cushion >= 0 ? '#595959' : '#F06543' },
   ];
 
   return (
@@ -251,7 +251,7 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
 
           {/* Cushion callout */}
           <div className="mt-4 p-3 rounded-lg" style={{ background: cushion >= 5 ? 'rgba(89,89,89,0.06)' : cushion >= 0 ? 'rgba(165,165,165,0.06)' : 'rgba(239,68,68,0.06)', border: `1px solid ${cushion >= 5 ? 'rgba(89,89,89,0.15)' : cushion >= 0 ? 'rgba(165,165,165,0.15)' : 'rgba(239,68,68,0.15)'}` }}>
-            <p className="text-[10px] font-bold" style={{ color: cushion >= 5 ? '#595959' : cushion >= 0 ? '#A5A5A5' : '#EF4444' }}>
+            <p className="text-[10px] font-bold" style={{ color: cushion >= 5 ? '#595959' : cushion >= 0 ? '#A5A5A5' : '#F06543' }}>
               {cushion >= 5 && `✓ ${cushion.toFixed(1)}% cushion above break-even — comfortable safety margin.`}
               {cushion >= 0 && cushion < 5 && `⚠️ Only ${cushion.toFixed(1)}% above break-even — thin margin, minor vacancy increase could erode cash flow.`}
               {cushion < 0 && `✗ ${Math.abs(cushion).toFixed(1)}% BELOW break-even — property is losing money at current occupancy.`}
@@ -263,7 +263,7 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
       {/* Vacancy Impact Table */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <DollarSign className="w-4 h-4" style={{ color: '#EF4444' }} />
+          <DollarSign className="w-4 h-4" style={{ color: '#F06543' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;What If Vacancy Changes?&rdquo; — Revenue Impact</h4>
         </div>
         <div className="overflow-x-auto">
@@ -286,10 +286,10 @@ export default function OccupancyDeepDive({ projects: propProjects }: Props) {
                     <td className="px-3 py-2 tabular-nums font-bold" style={{ color: cls.color, background: row.isCurrent ? cls.bgColor : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtPct(row.occupancy)}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: row.revenueLost > 0 ? '#EF4444' : '#595959', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: row.revenueLost > 0 ? '#F06543' : '#595959', borderBottom: '1px solid var(--border-ui)' }}>
                       {row.revenueLost > 0 ? `-${fmtUSD(Math.round(row.revenueLost))}` : '$0'}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: row.monthlyLost > 0 ? '#EF4444' : '#595959', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: row.monthlyLost > 0 ? '#F06543' : '#595959', borderBottom: '1px solid var(--border-ui)' }}>
                       {row.monthlyLost > 0 ? `-${fmtUSD(Math.round(row.monthlyLost))}/mo` : '$0/mo'}
                     </td>
                     <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: cls.color, borderBottom: '1px solid var(--border-ui)' }}>

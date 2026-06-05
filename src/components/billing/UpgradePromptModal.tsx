@@ -99,7 +99,7 @@ export default function UpgradePromptModal({
 
         {/* Header */}
         <div className="px-8 pt-8 pb-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center mb-5 shadow-lg shadow-indigo-500/20">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pw-ocean to-pw-primary flex items-center justify-center mb-5 shadow-lg shadow-pw-ocean/20">
             <Lock className="w-7 h-7 text-white" />
           </div>
 
@@ -126,11 +126,11 @@ export default function UpgradePromptModal({
 
             <ArrowRight className="w-5 h-5 text-text-secondary shrink-0" />
 
-            <div className="flex-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 px-4 py-3 text-center">
-              <div className="text-xs text-indigo-600 dark:text-indigo-400 mb-1">Upgrade to</div>
-              <div className="font-semibold text-indigo-700 dark:text-indigo-300">{requiredDisplayName}</div>
+            <div className="flex-1 rounded-xl bg-pw-ocean/10 dark:bg-pw-ocean/5 border border-pw-ocean/20 px-4 py-3 text-center">
+              <div className="text-xs text-pw-ocean mb-1">Upgrade to</div>
+              <div className="font-semibold text-pw-primary dark:text-pw-ocean">{requiredDisplayName}</div>
               {requiredMonthly > 0 && (
-                <div className="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">${requiredMonthly}/mo</div>
+                <div className="text-xs text-pw-ocean mt-0.5">${requiredMonthly}/mo</div>
               )}
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function UpgradePromptModal({
             <ul className="space-y-1.5">
               {upgradeFeatures.map((feat) => (
                 <li key={feat} className="flex items-center gap-2 text-sm text-text-primary">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                  <Sparkles className="w-3.5 h-3.5 text-pw-ocean shrink-0" />
                   {feat}
                 </li>
               ))}
@@ -164,7 +164,7 @@ export default function UpgradePromptModal({
           <button
             onClick={handleUpgrade}
             disabled={isLoading}
-            className="w-full py-3 px-6 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 px-6 bg-pw-primary hover:bg-pw-primary/90 text-white font-semibold rounded-xl shadow-lg shadow-pw-primary/25 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

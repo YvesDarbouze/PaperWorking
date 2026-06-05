@@ -75,8 +75,8 @@ function GlassInput({
           step={step}
           min={min}
           className="w-full rounded-lg border border-white/10 bg-white/[0.03] text-slate-200 text-sm
-                     font-mono tabular-nums py-2 px-3 focus:outline-none focus:border-teal-500/40
-                     focus:ring-1 focus:ring-teal-500/20 transition-all placeholder:text-slate-600"
+                     font-mono tabular-nums py-2 px-3 focus:outline-none focus:border-pw-ocean/40
+                     focus:ring-1 focus:ring-pw-ocean/20 transition-all placeholder:text-slate-600"
           style={!suffix ? { paddingLeft: '1.75rem' } : undefined}
         />
         {suffix && (
@@ -103,7 +103,7 @@ function HoldPeriodSelector({ value, onChange }: { value: number; onChange: (v: 
             onClick={() => onChange(yr)}
             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
               value === yr
-                ? 'bg-teal-500/20 border border-teal-400/40 text-teal-400'
+                ? 'bg-pw-ocean/20 border border-pw-ocean/40 text-pw-ocean'
                 : 'bg-white/[0.03] border border-white/[0.06] text-slate-500 hover:text-slate-300 hover:border-white/10'
             }`}
           >
@@ -136,7 +136,7 @@ function CashFlowTimeline({ flows }: { flows: number[] }) {
                 className="w-full rounded-t transition-all duration-300"
                 style={{
                   height: `${Math.max(heightPct, 4)}%`,
-                  backgroundColor: isNeg ? 'rgba(239,68,68,0.5)' : 'rgba(45,212,191,0.5)',
+                  backgroundColor: isNeg ? 'rgba(240,101,67,0.5)' : 'rgba(32,178,170,0.5)',
                   minHeight: '2px',
                 }}
               />
@@ -214,7 +214,7 @@ export function IRRExitAssumptionsTerminal({
     });
   }, [cashInvested, annualCF, holdYears, purchasePrice, appreciation, loanAmount, loanRate, loanTerm, sellingCosts, computed, stableOnChange]);
 
-  const irrColor = computed.irr === null ? '#64748b' : computed.irr >= 0.15 ? '#14B8A6' : computed.irr >= 0.08 ? '#F59E0B' : '#EF4444';
+  const irrColor = computed.irr === null ? '#64748b' : computed.irr >= 0.15 ? '#3f7d20' : computed.irr >= 0.08 ? '#F59E0B' : '#F06543';
   const irrLabel = computed.irr === null ? 'N/A' : `${(computed.irr * 100).toFixed(1)}%`;
   const irrSignal = computed.irr === null ? 'Cannot Converge' : computed.irr >= 0.15 ? 'Strong Return' : computed.irr >= 0.08 ? 'Moderate' : 'Weak';
 
@@ -228,8 +228,8 @@ export function IRRExitAssumptionsTerminal({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-violet-400" />
+          <div className="w-8 h-8 rounded-lg bg-pw-ocean/10 flex items-center justify-center">
+            <Sparkles className="w-4 h-4 text-pw-ocean" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Exit Assumptions</h3>
@@ -286,8 +286,8 @@ export function IRRExitAssumptionsTerminal({
       <div className="grid grid-cols-3 gap-2">
         {[
           { label: 'Future Value', value: fmtUSD(exitMetrics.futureValue), color: '#64748b' },
-          { label: 'Total Return', value: `${exitMetrics.totalReturn >= 0 ? '+' : '-'}${fmtUSD(exitMetrics.totalReturn)}`, color: exitMetrics.totalReturn >= 0 ? '#14B8A6' : '#EF4444' },
-          { label: 'Equity Multiple', value: `${exitMetrics.equityMultiple.toFixed(2)}x`, color: '#8B5CF6' },
+          { label: 'Total Return', value: `${exitMetrics.totalReturn >= 0 ? '+' : '-'}${fmtUSD(exitMetrics.totalReturn)}`, color: exitMetrics.totalReturn >= 0 ? '#3f7d20' : '#F06543' },
+          { label: 'Equity Multiple', value: `${exitMetrics.equityMultiple.toFixed(2)}x`, color: '#20B2AA' },
         ].map((m) => (
           <div key={m.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3 text-center">
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">{m.label}</p>

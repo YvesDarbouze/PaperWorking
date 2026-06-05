@@ -243,7 +243,7 @@ export function TopPerformersWidget() {
                         ? "rgba(218,228,236,0.25)"
                         : isPositive
                         ? "#57f1db"
-                        : "#ef4444",
+                        : "#F06543",
                   }}
                 >
                   {formatPct(value)}

@@ -95,8 +95,8 @@ export function deriveCashFlowBreakdowns(projects: Project[]): PropertyCashFlowD
 function buildCashFlowWaterfall(noi: number, annualDebtService: number, annualCashFlow: number) {
   return [
     { name: 'NOI', value: noi, fill: '#595959', type: 'income' },
-    { name: 'Debt Service', value: -annualDebtService, fill: '#EF4444', type: 'expense' },
-    { name: 'Cash Flow', value: annualCashFlow, fill: annualCashFlow >= 0 ? '#7F7F7F' : '#EF4444', type: 'result' },
+    { name: 'Debt Service', value: -annualDebtService, fill: '#F06543', type: 'expense' },
+    { name: 'Cash Flow', value: annualCashFlow, fill: annualCashFlow >= 0 ? '#7F7F7F' : '#F06543', type: 'result' },
   ];
 }
 
@@ -144,7 +144,7 @@ function generateMonthlyCashFlow(
 function DSCRBadge({ dscr }: { dscr: number }) {
   const isHealthy = dscr >= 1.25;
   const isCovering = dscr >= 1.0;
-  const color = isHealthy ? '#595959' : isCovering ? '#A5A5A5' : '#EF4444';
+  const color = isHealthy ? '#595959' : isCovering ? '#A5A5A5' : '#F06543';
   const bgColor = isHealthy ? 'rgba(89,89,89,0.08)' : isCovering ? 'rgba(165,165,165,0.08)' : 'rgba(239,68,68,0.08)';
   const borderColor = isHealthy ? 'rgba(89,89,89,0.2)' : isCovering ? 'rgba(165,165,165,0.2)' : 'rgba(239,68,68,0.2)';
   const label = isHealthy ? 'Strong Coverage' : isCovering ? 'Marginal Coverage' : 'Negative Coverage';
@@ -182,7 +182,7 @@ function CFLineItem({
   const textColor = color
     ? color
     : isTotal || isSubtotal
-      ? annual >= 0 ? '#595959' : '#EF4444'
+      ? annual >= 0 ? '#595959' : '#F06543'
       : isIncome
         ? 'var(--text-primary)'
         : 'var(--text-secondary)';
@@ -302,7 +302,7 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
   /* ── Expense composition for donut (including debt service) ── */
   const expenseDonut = [
     { name: 'Operating Costs', value: aggregate.totalOperatingExpenses + aggregate.vacancyLoss, fill: '#A5A5A5' },
-    { name: 'Debt Service', value: aggregate.annualDebtService, fill: '#EF4444' },
+    { name: 'Debt Service', value: aggregate.annualDebtService, fill: '#F06543' },
   ].filter(i => i.value > 0);
 
   return (
@@ -311,7 +311,7 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg" style={{ background: isPositive ? 'rgba(127,127,127,0.1)' : 'rgba(239,68,68,0.1)' }}>
-            <Wallet className="w-5 h-5" style={{ color: isPositive ? '#7F7F7F' : '#EF4444' }} />
+            <Wallet className="w-5 h-5" style={{ color: isPositive ? '#7F7F7F' : '#F06543' }} />
           </div>
           <div>
             <h3 className="text-sm font-bold text-text-primary">
@@ -333,28 +333,28 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
             label: 'Monthly Cash Flow',
             value: `${isPositive ? '+' : ''}${fmtUSD(aggregate.monthlyCashFlow)}`,
             sublabel: 'After debt service',
-            color: isPositive ? '#7F7F7F' : '#EF4444',
+            color: isPositive ? '#7F7F7F' : '#F06543',
           },
           {
             icon: PiggyBank,
             label: 'Annual Cash Flow',
             value: `${isPositive ? '+' : ''}${fmtUSD(aggregate.annualCashFlow)}`,
             sublabel: `NOI ${fmtUSD(aggregate.noi)} − DS ${fmtUSD(aggregate.annualDebtService)}`,
-            color: isPositive ? '#595959' : '#EF4444',
+            color: isPositive ? '#595959' : '#F06543',
           },
           {
             icon: CreditCard,
             label: 'Monthly Mortgage',
             value: fmtUSD(Math.round(aggregate.annualDebtService / 12)),
             sublabel: `${fmtUSD(aggregate.annualDebtService)}/yr total`,
-            color: '#EF4444',
+            color: '#F06543',
           },
           {
             icon: ShieldCheck,
             label: 'DSCR',
             value: portfolioDSCR === Infinity ? '∞' : portfolioDSCR.toFixed(2) + 'x',
             sublabel: portfolioDSCR >= 1.25 ? 'Strong coverage' : portfolioDSCR >= 1.0 ? 'Marginal' : 'Under-covered',
-            color: portfolioDSCR >= 1.25 ? '#595959' : portfolioDSCR >= 1.0 ? '#A5A5A5' : '#EF4444',
+            color: portfolioDSCR >= 1.25 ? '#595959' : portfolioDSCR >= 1.0 ? '#A5A5A5' : '#F06543',
           },
         ].map((kpi, i) => (
           <div
@@ -554,7 +554,7 @@ export default function CashFlowDeepDive({ projects: propProjects }: Props) {
               <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Annual Total (Positive)</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="w-3 h-3" style={{ background: '#EF4444', borderRadius: '2px' }} />
+              <div className="w-3 h-3" style={{ background: '#F06543', borderRadius: '2px' }} />
               <span className="text-[10px]" style={{ color: 'var(--text-secondary)' }}>Negative Cash Flow</span>
             </div>
           </div>

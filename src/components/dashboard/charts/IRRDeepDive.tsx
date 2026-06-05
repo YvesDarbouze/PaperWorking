@@ -22,7 +22,7 @@ function classifyIRR(irr: number | null): {
   if (pct >= 20) return { grade: 'excellent', label: 'Exceptional Return', description: 'Significantly outperforms most alternative investments', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
   if (pct >= 12) return { grade: 'strong', label: 'Strong Return', description: 'Outperforms typical stock market returns (~10% avg)', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
   if (pct >= 6) return { grade: 'acceptable', label: 'Moderate Return', description: 'Reasonable return — consider risk vs alternatives', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
-  if (pct >= 0) return { grade: 'weak', label: 'Low Return', description: 'May underperform safer alternatives like index funds', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
+  if (pct >= 0) return { grade: 'weak', label: 'Low Return', description: 'May underperform safer alternatives like index funds', color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'negative', label: 'Negative Return', description: 'This investment is projected to lose money', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
@@ -398,7 +398,7 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
                     <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: cls.color, borderBottom: '1px solid var(--border-ui)' }}>
                       {cls.label}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: irrPct !== null && irrPct > 10 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: irrPct !== null && irrPct > 10 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>
                       {irrPct !== null ? `${irrPct > 10 ? '+' : ''}${(irrPct - 10).toFixed(1)}%` : '—'}
                     </td>
                   </tr>
@@ -428,8 +428,8 @@ export default function IRRDeepDive({ projects: propProjects }: Props) {
               {analysis.cashFlowTimeline.map((row, i) => (
                 <tr key={i}>
                   <td className="px-3 py-2 font-bold" style={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--border-ui)' }}>{row.year}</td>
-                  <td className="px-3 py-2 tabular-nums font-bold" style={{ color: row.cashFlow >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.cashFlow))}</td>
-                  <td className="px-3 py-2 tabular-nums" style={{ color: row.cumulative >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.cumulative))}</td>
+                  <td className="px-3 py-2 tabular-nums font-bold" style={{ color: row.cashFlow >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.cashFlow))}</td>
+                  <td className="px-3 py-2 tabular-nums" style={{ color: row.cumulative >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.cumulative))}</td>
                   <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: row.cumulative >= 0 ? '#595959' : '#A5A5A5', borderBottom: '1px solid var(--border-ui)' }}>
                     {i === 0 ? 'Invested' : row.cumulative >= 0 ? 'Profitable' : 'Recovering'}
                   </td>

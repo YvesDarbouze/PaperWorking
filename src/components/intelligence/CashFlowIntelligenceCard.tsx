@@ -91,7 +91,7 @@ function SparklineTooltip({
       }}
     >
       <p className="font-semibold">{data.month}</p>
-      <p className="font-mono tabular-nums" style={{ color: data.cashFlow >= 0 ? '#14B8A6' : '#EF4444' }}>
+      <p className="font-mono tabular-nums" style={{ color: data.cashFlow >= 0 ? '#14B8A6' : '#F06543' }}>
         CF: {fmtUSD(data.cashFlow)}
       </p>
       <p className="font-mono tabular-nums" style={{ color: 'var(--color-on-surface-variant)' }}>
@@ -126,7 +126,7 @@ export function CashFlowIntelligenceCard({
 
   // Determine cash flow health label
   const healthLabel = useMemo(() => {
-    if (annualCashFlow <= 0) return { text: 'Negative Cash Flow', color: '#EF4444' };
+    if (annualCashFlow <= 0) return { text: 'Negative Cash Flow', color: '#F06543' };
     if (monthlyCF < 100) return { text: 'Marginal', color: '#F97316' };
     if (monthlyCF < 300) return { text: 'Adequate', color: '#EAB308' };
     return { text: 'Strong', color: '#14B8A6' };
@@ -165,7 +165,7 @@ export function CashFlowIntelligenceCard({
               {isPositive ? (
                 <TrendingUp className="h-6 w-6" style={{ color: '#14B8A6' }} />
               ) : (
-                <TrendingDown className="h-6 w-6" style={{ color: '#EF4444' }} />
+                <TrendingDown className="h-6 w-6" style={{ color: '#F06543' }} />
               )}
             </div>
             <div>
@@ -178,7 +178,7 @@ export function CashFlowIntelligenceCard({
               <div className="flex items-baseline gap-3">
                 <span
                   className="text-3xl font-bold tabular-nums tracking-tight"
-                  style={{ color: isPositive ? '#14B8A6' : '#EF4444' }}
+                  style={{ color: isPositive ? '#14B8A6' : '#F06543' }}
                 >
                   {fmtUSD(annualCashFlow)}
                 </span>
@@ -189,7 +189,7 @@ export function CashFlowIntelligenceCard({
               <div className="mt-1 flex items-center gap-3">
                 <span
                   className="font-mono text-sm tabular-nums"
-                  style={{ color: isPositive ? '#14B8A6' : '#EF4444', opacity: 0.8 }}
+                  style={{ color: isPositive ? '#14B8A6' : '#F06543', opacity: 0.8 }}
                 >
                   {fmtUSD(monthlyCF)} / mo
                 </span>
@@ -230,7 +230,7 @@ export function CashFlowIntelligenceCard({
                       ? '#14B8A6'
                       : Number(dscr) >= 1.0
                         ? '#EAB308'
-                        : '#EF4444',
+                        : '#F06543',
               }}
             >
               {dscr}x
@@ -276,7 +276,7 @@ export function CashFlowIntelligenceCard({
             className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
             style={{
               background: 'rgba(239, 68, 68, 0.1)',
-              color: '#EF4444',
+              color: '#F06543',
             }}
           >
             −
@@ -299,7 +299,7 @@ export function CashFlowIntelligenceCard({
             </span>
             <span
               className="text-lg font-bold font-mono tabular-nums"
-              style={{ color: '#EF4444' }}
+              style={{ color: '#F06543' }}
             >
               {fmtCompact(annualDebtService)}
             </span>
@@ -325,7 +325,7 @@ export function CashFlowIntelligenceCard({
             </span>
             <span
               className="text-lg font-bold font-mono tabular-nums"
-              style={{ color: isPositive ? '#14B8A6' : '#EF4444' }}
+              style={{ color: isPositive ? '#14B8A6' : '#F06543' }}
             >
               {fmtCompact(annualCashFlow)}
             </span>
@@ -424,12 +424,12 @@ export function CashFlowIntelligenceCard({
                   <linearGradient id="cfGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop
                       offset="5%"
-                      stopColor={isPositive ? '#14B8A6' : '#EF4444'}
+                      stopColor={isPositive ? '#14B8A6' : '#F06543'}
                       stopOpacity={0.3}
                     />
                     <stop
                       offset="95%"
-                      stopColor={isPositive ? '#14B8A6' : '#EF4444'}
+                      stopColor={isPositive ? '#14B8A6' : '#F06543'}
                       stopOpacity={0}
                     />
                   </linearGradient>
@@ -450,7 +450,7 @@ export function CashFlowIntelligenceCard({
                 <Area
                   type="monotone"
                   dataKey="cashFlow"
-                  stroke={isPositive ? '#14B8A6' : '#EF4444'}
+                  stroke={isPositive ? '#14B8A6' : '#F06543'}
                   strokeWidth={2}
                   fill="url(#cfGradient)"
                 />

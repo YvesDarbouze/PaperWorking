@@ -28,8 +28,8 @@ interface ProjectVendorsListProps {
 
 const STATUS_BADGES: Record<string, { bg: string; text: string; icon: any }> = {
   PENDING: { bg: 'rgba(234, 179, 8, 0.1)', text: '#EAB308', icon: Clock },
-  ACCEPTED: { bg: 'rgba(34, 197, 94, 0.1)', text: '#22C55E', icon: CheckCircle2 },
-  DECLINED: { bg: 'rgba(239, 68, 68, 0.1)', text: '#EF4444', icon: XCircle },
+  ACCEPTED: { bg: 'rgba(34, 197, 94, 0.1)', text: '#3f7d20', icon: CheckCircle2 },
+  DECLINED: { bg: 'rgba(239, 68, 68, 0.1)', text: '#F06543', icon: XCircle },
   COMPLETED: { bg: 'rgba(59, 130, 246, 0.1)', text: '#3B82F6', icon: CheckCircle2 },
   CANCELLED: { bg: 'rgba(107, 114, 128, 0.1)', text: '#6B7280', icon: XCircle },
 };

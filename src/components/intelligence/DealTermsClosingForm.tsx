@@ -98,13 +98,13 @@ export function DealTermsClosingForm({
   // Cap rate health indicator
   const capRateHealth =
     derived.capRate >= 8
-      ? { label: "Excellent", color: "#2dd4bf" }
+      ? { label: "Excellent", color: "#20B2AA" }
       : derived.capRate >= 5
-        ? { label: "Good", color: "#2dd4bf" }
+        ? { label: "Good", color: "#20B2AA" }
         : derived.capRate >= 3
           ? { label: "Fair", color: "#f59e0b" }
           : derived.capRate > 0
-            ? { label: "Low", color: "#ef4444" }
+            ? { label: "Low", color: "#F06543" }
             : { label: "—", color: "#64748b" };
 
   // LTV risk indicator
@@ -112,10 +112,10 @@ export function DealTermsClosingForm({
     derived.ltv <= 0
       ? { label: "—", color: "#64748b" }
       : derived.ltv <= 75
-        ? { label: "Conservative", color: "#2dd4bf" }
+        ? { label: "Conservative", color: "#20B2AA" }
         : derived.ltv <= 85
           ? { label: "Standard", color: "#f59e0b" }
-          : { label: "High Leverage", color: "#ef4444" };
+          : { label: "High Leverage", color: "#F06543" };
 
   return (
     <div

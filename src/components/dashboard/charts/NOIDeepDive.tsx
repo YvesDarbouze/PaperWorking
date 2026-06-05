@@ -62,13 +62,13 @@ function buildWaterfallData(c: NOIComponents) {
     { name: 'Gross Rent', value: c.grossRentalIncome, fill: '#7F7F7F', type: 'income' },
     { name: 'Other Income', value: c.otherIncome, fill: '#595959', type: 'income' },
     { name: 'Vacancy', value: -c.vacancyLoss, fill: '#A5A5A5', type: 'loss' },
-    { name: 'Taxes', value: -c.propertyTaxes, fill: '#EF4444', type: 'expense' },
+    { name: 'Taxes', value: -c.propertyTaxes, fill: '#F06543', type: 'expense' },
     { name: 'Insurance', value: -c.insurance, fill: '#F97316', type: 'expense' },
-    { name: 'Utilities', value: -c.utilities, fill: '#8B5CF6', type: 'expense' },
+    { name: 'Utilities', value: -c.utilities, fill: '#20B2AA', type: 'expense' },
     { name: 'Mgmt', value: -c.propertyManagement, fill: '#EC4899', type: 'expense' },
     { name: 'Maint/CapEx', value: -c.maintenance, fill: '#14B8A6', type: 'expense' },
     { name: 'HOA', value: -c.hoa, fill: '#A855F7', type: 'expense' },
-    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#595959' : '#EF4444', type: 'result' },
+    { name: 'NOI', value: c.noi, fill: c.noi >= 0 ? '#595959' : '#F06543', type: 'result' },
   ];
 }
 
@@ -107,9 +107,9 @@ function generateMonthlyNOI(c: NOIComponents): { month: string; noi: number; ben
 /* ── Build expense composition for donut ── */
 function buildExpenseDonut(c: NOIComponents) {
   const items = [
-    { name: 'Taxes', value: c.propertyTaxes, fill: '#EF4444' },
+    { name: 'Taxes', value: c.propertyTaxes, fill: '#F06543' },
     { name: 'Insurance', value: c.insurance, fill: '#F97316' },
-    { name: 'Utilities', value: c.utilities, fill: '#8B5CF6' },
+    { name: 'Utilities', value: c.utilities, fill: '#20B2AA' },
     { name: 'Mgmt', value: c.propertyManagement, fill: '#EC4899' },
     { name: 'Maint/CapEx', value: c.maintenance, fill: '#14B8A6' },
     { name: 'HOA', value: c.hoa, fill: '#A855F7' },
@@ -167,7 +167,7 @@ function LineItemRow({
         background: isTotal ? 'var(--bg-inset)' : 'transparent',
         borderRadius: isTotal ? '6px' : '0',
         color: isTotal
-          ? annual >= 0 ? '#595959' : '#EF4444'
+          ? annual >= 0 ? '#595959' : '#F06543'
           : isIncome
             ? 'var(--text-primary)'
             : 'var(--text-secondary)',
@@ -282,7 +282,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
             label: 'Total Operating Costs',
             value: fmtUSD(aggregate.totalOperatingExpenses + aggregate.vacancyLoss),
             sublabel: `${fmtUSD((aggregate.totalOperatingExpenses + aggregate.vacancyLoss) / 12)} / mo`,
-            color: '#EF4444',
+            color: '#F06543',
           },
           {
             icon: DollarSign,
@@ -443,7 +443,7 @@ export default function NOIDeepDive({ projects: propProjects }: Props) {
         <div className="mt-2 mb-1 px-3">
           <div
             className="grid grid-cols-3 gap-4 py-2 px-3 text-xs font-bold rounded-md"
-            style={{ background: 'rgba(239,68,68,0.05)', color: '#EF4444' }}
+            style={{ background: 'rgba(239,68,68,0.05)', color: '#F06543' }}
           >
             <span>Total Operating Costs</span>
             <span className="text-right tabular-nums">

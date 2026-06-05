@@ -18,14 +18,14 @@ import toast from 'react-hot-toast';
 
 const ROLE_META: Record<InternalRole, { color: string; bg: string; icon: React.ReactNode; desc: string }> = {
   'CEO': {
-    color: 'text-purple-700',
-    bg: 'bg-purple-50',
+    color: 'text-[#454955] dark:text-[#FDFFFC]',
+    bg: 'bg-slate-100 dark:bg-[#454955]',
     icon: <Building2 className="w-3 h-3" />,
     desc: 'Chief Executive Officer — full strategic and operational authority',
   },
   'President': {
-    color: 'text-purple-700',
-    bg: 'bg-purple-50',
+    color: 'text-[#454955] dark:text-[#FDFFFC]',
+    bg: 'bg-slate-100 dark:bg-[#454955]',
     icon: <Building2 className="w-3 h-3" />,
     desc: 'President — leads company operations and organizational strategy',
   },

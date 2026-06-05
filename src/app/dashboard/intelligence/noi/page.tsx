@@ -49,10 +49,10 @@ function NOIComposition({
   const maxVal = totalIncome;
 
   const bars = [
-    { label: 'Gross Rent',     value: grossRent,  color: '#2dd4bf', pct: (grossRent / maxVal) * 100 },
+    { label: 'Gross Rent',     value: grossRent,  color: '#20B2AA', pct: (grossRent / maxVal) * 100 },
     { label: 'Other Income',   value: otherIncome, color: '#57f1db', pct: (otherIncome / maxVal) * 100 },
-    { label: 'Operating Exp.', value: -opExpenses, color: '#ef4444', pct: (opExpenses / maxVal) * 100 },
-    { label: 'Net NOI',        value: noi,         color: '#2dd4bf', pct: (noi / maxVal) * 100, highlight: true },
+    { label: 'Operating Exp.', value: -opExpenses, color: '#F06543', pct: (opExpenses / maxVal) * 100 },
+    { label: 'Net NOI',        value: noi,         color: '#20B2AA', pct: (noi / maxVal) * 100, highlight: true },
   ];
 
   return (
@@ -75,7 +75,7 @@ function NOIComposition({
               className="h-full rounded-full transition-all duration-700"
               style={{
                 width: `${bar.pct}%`,
-                background: bar.value < 0 ? 'rgba(239,68,68,0.6)' : bar.highlight ? '#2dd4bf' : bar.color,
+                background: bar.value < 0 ? 'rgba(239,68,68,0.6)' : bar.highlight ? '#20B2AA' : bar.color,
               }}
             />
           </div>
@@ -99,7 +99,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
       textStyle: { color: '#dae4ec', fontSize: 11 },
       formatter: (params: any[]) =>
         `${params[0].axisValue}<br/>` +
-        `<span style="color:#2dd4bf">─</span> NOI: <b>$${Number(params[0].value).toLocaleString()}</b>`,
+        `<span style="color:#20B2AA">─</span> NOI: <b>$${Number(params[0].value).toLocaleString()}</b>`,
     },
     grid: { top: 24, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -124,18 +124,18 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
         itemStyle: {
           color: (params: any) =>
-            params.dataIndex === lastIdx ? '#2dd4bf' : 'transparent',
+            params.dataIndex === lastIdx ? '#20B2AA' : 'transparent',
           borderWidth: (params: any) => (params.dataIndex === lastIdx ? 3 : 0),
-          borderColor: '#2dd4bf',
+          borderColor: '#20B2AA',
         },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.20)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.20)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -146,7 +146,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           data: [{ coord: [lastIdx, lastVal] }],
           symbol: 'circle',
           symbolSize: 9,
-          itemStyle: { color: '#2dd4bf', borderColor: '#091015', borderWidth: 2 },
+          itemStyle: { color: '#20B2AA', borderColor: '#091015', borderWidth: 2 },
           label: { show: false },
         },
       },

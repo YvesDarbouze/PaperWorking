@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono, Inter } from "next/font/google";
+import { Inter, Merriweather, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import PresenceHeartbeat from "@/components/shared/PresenceHeartbeat";
 import { AuthProvider } from "@/context/AuthContext";
@@ -11,28 +11,23 @@ import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import CookieConsent from "@/components/legal/CookieConsent";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
-const hankenGrotesk = Hanken_Grotesk({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-hanken",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const plusJakartaSans = Plus_Jakarta_Sans({
+const merriweather = Merriweather({
   subsets: ["latin"],
-  variable: "--font-plus-jakarta",
+  weight: ["300", "400", "700", "900"],
+  variable: "--font-merriweather",
   display: "swap",
 });
 
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-inter",
   display: "swap",
 });
 
@@ -47,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${hankenGrotesk.variable} ${plusJakartaSans.variable} ${jetBrainsMono.variable} ${inter.variable} h-full dark`} data-theme="dark">
+    <html lang="en" className={`${inter.variable} ${merriweather.variable} ${jetBrainsMono.variable} h-full dark`} data-theme="dark">
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
         <script

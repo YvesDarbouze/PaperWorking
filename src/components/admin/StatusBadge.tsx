@@ -11,9 +11,9 @@ import React from 'react';
 type Variant = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'muted';
 
 const VARIANT_STYLES: Record<Variant, { bg: string; text: string; dot: string }> = {
-  success: { bg: '#f0fdf4', text: '#166534', dot: '#22c55e' },
+  success: { bg: '#f0fdf4', text: '#166534', dot: '#3f7d20' },
   warning: { bg: '#fffbeb', text: '#92400e', dot: '#f59e0b' },
-  danger:  { bg: '#fef2f2', text: '#991b1b', dot: '#ef4444' },
+  danger:  { bg: '#fef2f2', text: '#991b1b', dot: '#F06543' },
   info:    { bg: '#eff6ff', text: '#1e40af', dot: '#3b82f6' },
   neutral: { bg: '#f2f2f2', text: '#595959', dot: '#a5a5a5' },
   muted:   { bg: '#f9fafb', text: '#7f7f7f', dot: '#cccccc' },

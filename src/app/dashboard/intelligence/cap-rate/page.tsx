@@ -69,7 +69,7 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
       show: false,
       type: 'piecewise',
       seriesIndex: 0,
-      pieces: [{ gte: 4, lte: 6, color: '#2dd4bf' }, { gte: 6, color: '#fb923c' }],
+      pieces: [{ gte: 4, lte: 6, color: '#20B2AA' }, { gte: 6, color: '#fb923c' }],
     },
     series: [
       {
@@ -77,11 +77,11 @@ function TrendChart({ values, labels, target }: { values: number[]; labels: stri
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [{ offset: 0, color: 'rgba(45,212,191,0.15)' }, { offset: 1, color: 'transparent' }] },
+            colorStops: [{ offset: 0, color: 'rgba(32, 178, 170,0.15)' }, { offset: 1, color: 'transparent' }] },
         },
         symbol: 'circle',
         symbolSize: 6,
@@ -109,14 +109,14 @@ function CapRateGauge({ value }: { value: number }) {
   const nx = cx + r * Math.cos(rad);
   const ny = cy + r * Math.sin(rad);
 
-  const zone = value < 6 ? { label: 'Stable', color: '#2dd4bf' } : value < 8 ? { label: 'Neutral', color: '#859490' } : { label: 'High Yield', color: '#ffb4ab' };
+  const zone = value < 6 ? { label: 'Stable', color: '#20B2AA' } : value < 8 ? { label: 'Neutral', color: '#859490' } : { label: 'High Yield', color: '#ffb4ab' };
 
   return (
     <div>
       <div className="relative flex justify-center overflow-hidden" style={{ height: 90 }}>
         <svg viewBox="0 0 100 60" className="w-56 h-28 absolute -top-2">
           <path d="M 20 50 A 30 30 0 0 1 80 50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" strokeLinecap="round" />
-          <path d="M 20 50 A 30 30 0 0 1 40 32.5" fill="none" stroke="#2dd4bf" strokeWidth="8" />
+          <path d="M 20 50 A 30 30 0 0 1 40 32.5" fill="none" stroke="#20B2AA" strokeWidth="8" />
           <path d="M 40 32.5 A 30 30 0 0 1 60 32.5" fill="none" stroke="#859490" strokeWidth="8" />
           <path d="M 60 32.5 A 30 30 0 0 1 80 50" fill="none" stroke="#ffb4ab" strokeWidth="8" />
           <line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#dae4ec" strokeWidth="2" strokeLinecap="round" />
@@ -129,7 +129,7 @@ function CapRateGauge({ value }: { value: number }) {
       </div>
       <div className="grid grid-cols-3 gap-1 mt-2">
         {[
-          { label: 'Stable', range: '4–6%', color: '#2dd4bf' },
+          { label: 'Stable', range: '4–6%', color: '#20B2AA' },
           { label: 'Neutral', range: '6–8%', color: '#859490' },
           { label: 'High Yield', range: '8%+', color: '#ffb4ab' },
         ].map((z) => (
@@ -276,9 +276,9 @@ export default function CapRateIntelligencePage() {
               <svg viewBox="0 0 100 40" className="w-24 h-12 overflow-visible">
                 <path
                   d={`M 0 35 ${trendValues.map((v, i) => `L ${(i / (trendValues.length - 1)) * 100} ${35 - ((v - 4) / 6) * 30}`).join(' ')}`}
-                  fill="none" stroke="rgba(45,212,191,0.5)" strokeWidth="2" strokeLinecap="round"
+                  fill="none" stroke="rgba(32, 178, 170,0.5)" strokeWidth="2" strokeLinecap="round"
                 />
-                <circle cx="100" cy={35 - ((trendValues[trendValues.length - 1] - 4) / 6) * 30} r="2.5" fill="#2dd4bf" />
+                <circle cx="100" cy={35 - ((trendValues[trendValues.length - 1] - 4) / 6) * 30} r="2.5" fill="#20B2AA" />
               </svg>
             </div>
 

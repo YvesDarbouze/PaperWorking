@@ -80,9 +80,9 @@ function deriveAttentionItems(projects: Project[]): AttentionItem[] {
             projectName: name,
             type: "deadline_expiring",
             priority: isCritical ? "critical" : "warning",
-            borderColor: isCritical ? "#ef4444" : "#ffd1aa",
+            borderColor: isCritical ? "#F06543" : "#ffd1aa",
             icon: "alarm",
-            iconColor: isCritical ? "#ef4444" : "#ffd1aa",
+            iconColor: isCritical ? "#F06543" : "#ffd1aa",
             description: `${c.type} contingency expires ${relativeDate(c.deadlineDate)}`,
             metadata: `${name} · Due ${dl}`,
             ctaLabel: "View deadline",
@@ -208,7 +208,7 @@ export function NeedsAttentionFeed() {
           <span
             className="material-symbols-outlined text-[18px]"
             style={{
-              color: items.length > 0 ? "#ef4444" : "#57f1db",
+              color: items.length > 0 ? "#F06543" : "#57f1db",
               fontVariationSettings: "'FILL' 1",
             }}
           >
@@ -223,7 +223,7 @@ export function NeedsAttentionFeed() {
           {items.length > 0 && (
             <span
               className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-              style={{ background: "#ef444418", color: "#ef4444" }}
+              style={{ background: "#F0654318", color: "#F06543" }}
             >
               {items.length}
             </span>

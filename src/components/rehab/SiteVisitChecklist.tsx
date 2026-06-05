@@ -28,7 +28,7 @@ type VisitType = SiteVisitLog['type'];
 
 const VISIT_TYPE_COLORS: Record<VisitType, string> = {
   'Daily Check': 'bg-blue-100 text-blue-700',
-  'Weekly Inspection': 'bg-purple-100 text-purple-700',
+  'Weekly Inspection': 'bg-[#20B2AA]/15 text-[#1e7874]',
   'Milestone Review': 'bg-green-100 text-green-700',
   'Issue Report': 'bg-red-100 text-red-700',
 };

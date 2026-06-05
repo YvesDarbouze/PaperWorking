@@ -105,17 +105,17 @@ export function Sidebar() {
               className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
                 background: isActive
-                  ? 'rgba(45, 212, 191, 0.10)'
+                  ? 'rgba(32, 178, 170, 0.10)'
                   : 'transparent',
-                color: isActive ? '#62fae3' : 'rgba(186, 202, 197, 0.7)',
-                borderRight: isActive ? '4px solid #62fae3' : '4px solid transparent',
+                color: isActive ? '#20B2AA' : 'rgba(186, 202, 197, 0.7)',
+                borderRight: isActive ? '4px solid #20B2AA' : '4px solid transparent',
               }}
             >
               <span
                 className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? '#62fae3' : undefined,
+                  color: isActive ? '#20B2AA' : undefined,
                 }}
               >
                 {item.icon}
@@ -125,7 +125,7 @@ export function Sidebar() {
                 className="text-sm transition-colors duration-300 group-hover:translate-x-0.5"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#62fae3' : undefined,
+                  color: isActive ? '#20B2AA' : undefined,
                   letterSpacing: '-0.01em',
                 }}
               >
@@ -183,16 +183,16 @@ export function Sidebar() {
               onClick={(e) => handleNavClick(e, item.href, item.name)}
               className="group flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 relative"
               style={{
-                background: isActive ? 'rgba(45, 212, 191, 0.10)' : 'transparent',
-                color: isActive ? '#62fae3' : 'rgba(186, 202, 197, 0.7)',
-                borderRight: isActive ? '4px solid #62fae3' : '4px solid transparent',
+                background: isActive ? 'rgba(32, 178, 170, 0.10)' : 'transparent',
+                color: isActive ? '#20B2AA' : 'rgba(186, 202, 197, 0.7)',
+                borderRight: isActive ? '4px solid #20B2AA' : '4px solid transparent',
               }}
             >
               <span
                 className="material-symbols-outlined text-[20px] transition-all duration-300"
                 style={{
                   fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0",
-                  color: isActive ? '#62fae3' : undefined,
+                  color: isActive ? '#20B2AA' : undefined,
                 }}
               >
                 {item.icon}
@@ -201,7 +201,7 @@ export function Sidebar() {
                 className="text-sm transition-colors duration-300"
                 style={{
                   fontWeight: isActive ? 700 : 500,
-                  color: isActive ? '#62fae3' : undefined,
+                  color: isActive ? '#20B2AA' : undefined,
                   letterSpacing: '-0.01em',
                 }}
               >

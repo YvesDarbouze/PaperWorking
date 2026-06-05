@@ -106,7 +106,7 @@ export default function ForProsPage() {
       className="min-h-screen bg-[#060f15] text-white font-sans antialiased"
       style={{
         backgroundImage:
-          'radial-gradient(rgba(45, 212, 191, 0.03) 1px, transparent 1px)',
+          'radial-gradient(rgba(32, 178, 170, 0.03) 1px, transparent 1px)',
         backgroundSize: '24px 24px',
       }}
     >
@@ -114,7 +114,7 @@ export default function ForProsPage() {
       <nav className="sticky top-0 z-40 bg-[#060f15]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-[#2dd4bf] font-bold text-xl tracking-tighter">
+            <span className="text-[#20B2AA] font-bold text-xl tracking-tighter">
               PaperWorking
             </span>
           </Link>
@@ -127,7 +127,7 @@ export default function ForProsPage() {
             </Link>
             <Link
               href="/register?type=vendor"
-              className="px-5 py-2 rounded-lg bg-[#2dd4bf] text-[#003731] text-sm font-bold hover:bg-[#2dd4bf]/90 transition-all"
+              className="px-5 py-2 rounded-lg bg-[#20B2AA] text-[#003731] text-sm font-bold hover:bg-[#20B2AA]/90 transition-all"
             >
               Sign Up Free
             </Link>
@@ -137,14 +137,14 @@ export default function ForProsPage() {
 
       {/* ── Hero ── */}
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 text-[#2dd4bf] text-xs font-bold uppercase tracking-widest mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 text-[#20B2AA] text-xs font-bold uppercase tracking-widest mb-8">
           <Zap className="w-3.5 h-3.5" />
           For Real Estate Professionals
         </div>
         <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-6">
           Leads exactly when
           <br />
-          <span className="text-[#2dd4bf]">investors need you</span>
+          <span className="text-[#20B2AA]">investors need you</span>
         </h1>
         <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
           PaperWorking connects inspectors, attorneys, contractors, and other RE
@@ -154,13 +154,13 @@ export default function ForProsPage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/register?type=vendor"
-            className="px-8 py-4 rounded-xl bg-[#2dd4bf] text-[#003731] text-base font-bold hover:bg-[#2dd4bf]/90 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(45,212,191,0.2)]"
+            className="px-8 py-4 rounded-xl bg-[#20B2AA] text-[#003731] text-base font-bold hover:bg-[#20B2AA]/90 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(32, 178, 170,0.2)]"
           >
             Get Started <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="#pricing"
-            className="px-8 py-4 rounded-xl border border-white/10 text-slate-300 text-base font-bold hover:border-[#2dd4bf]/40 hover:text-white transition-all"
+            className="px-8 py-4 rounded-xl border border-white/10 text-slate-300 text-base font-bold hover:border-[#20B2AA]/40 hover:text-white transition-all"
           >
             View Plans
           </Link>
@@ -201,14 +201,14 @@ export default function ForProsPage() {
           {VALUE_PROPS.map((prop) => (
             <div
               key={prop.title}
-              className="glass-card rounded-xl border border-white/[0.06] p-8 hover:border-[#2dd4bf]/20 transition-all"
+              className="glass-card rounded-xl border border-white/[0.06] p-8 hover:border-[#20B2AA]/20 transition-all"
               style={{
                 background:
-                  'linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(45,212,191,0.02) 100%)',
+                  'linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(32, 178, 170,0.02) 100%)',
               }}
             >
-              <div className="w-12 h-12 rounded-lg bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center mb-6">
-                <prop.icon className="w-6 h-6 text-[#2dd4bf]" />
+              <div className="w-12 h-12 rounded-lg bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center mb-6">
+                <prop.icon className="w-6 h-6 text-[#20B2AA]" />
               </div>
               <h3 className="text-xl font-bold mb-3">{prop.title}</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
@@ -249,7 +249,7 @@ export default function ForProsPage() {
               },
             ].map((item) => (
               <div key={item.step} className="text-center md:text-left">
-                <div className="text-[#2dd4bf] text-3xl font-bold font-mono mb-4">
+                <div className="text-[#20B2AA] text-3xl font-bold font-mono mb-4">
                   {item.step}
                 </div>
                 <h3 className="text-lg font-bold mb-2">{item.title}</h3>
@@ -283,7 +283,7 @@ export default function ForProsPage() {
                 &ldquo;{t.quote}&rdquo;
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center text-[#2dd4bf] font-bold text-sm">
+                <div className="w-10 h-10 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center text-[#20B2AA] font-bold text-sm">
                   {t.name.charAt(0)}
                 </div>
                 <div>
@@ -315,12 +315,12 @@ export default function ForProsPage() {
                 key={tier.name}
                 className={`rounded-xl border p-8 flex flex-col ${
                   tier.highlighted
-                    ? 'border-[#2dd4bf]/40 bg-[#2dd4bf]/[0.03] shadow-[0_0_40px_rgba(45,212,191,0.08)] relative'
+                    ? 'border-[#20B2AA]/40 bg-[#20B2AA]/[0.03] shadow-[0_0_40px_rgba(32, 178, 170,0.08)] relative'
                     : 'border-white/[0.06] bg-white/[0.01]'
                 }`}
               >
                 {tier.highlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#2dd4bf] text-[#003731] text-[10px] font-bold uppercase tracking-widest">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#20B2AA] text-[#003731] text-[10px] font-bold uppercase tracking-widest">
                     Most Popular
                   </div>
                 )}
@@ -340,7 +340,7 @@ export default function ForProsPage() {
                       key={feature}
                       className="flex items-start gap-2 text-sm text-slate-300"
                     >
-                      <CheckCircle className="w-4 h-4 text-[#2dd4bf] flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-4 h-4 text-[#20B2AA] flex-shrink-0 mt-0.5" />
                       {feature}
                     </li>
                   ))}
@@ -349,8 +349,8 @@ export default function ForProsPage() {
                   href="/register?type=vendor"
                   className={`w-full py-3 rounded-lg text-center text-sm font-bold transition-all ${
                     tier.highlighted
-                      ? 'bg-[#2dd4bf] text-[#003731] hover:bg-[#2dd4bf]/90 shadow-[0_0_20px_rgba(45,212,191,0.2)]'
-                      : 'border border-white/10 text-white hover:border-[#2dd4bf]/40'
+                      ? 'bg-[#20B2AA] text-[#003731] hover:bg-[#20B2AA]/90 shadow-[0_0_20px_rgba(32, 178, 170,0.2)]'
+                      : 'border border-white/10 text-white hover:border-[#20B2AA]/40'
                   }`}
                 >
                   {tier.cta}
@@ -372,7 +372,7 @@ export default function ForProsPage() {
         </p>
         <Link
           href="/register?type=vendor"
-          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#2dd4bf] text-[#003731] text-base font-bold hover:bg-[#2dd4bf]/90 transition-all shadow-[0_0_30px_rgba(45,212,191,0.2)]"
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-[#20B2AA] text-[#003731] text-base font-bold hover:bg-[#20B2AA]/90 transition-all shadow-[0_0_30px_rgba(32, 178, 170,0.2)]"
         >
           Get Started Today <ArrowRight className="w-4 h-4" />
         </Link>

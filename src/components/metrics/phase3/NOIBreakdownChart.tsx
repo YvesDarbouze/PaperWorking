@@ -58,8 +58,8 @@ function buildWaterfallData(financials: ProjectFinancials): WaterfallEntry[] {
   const EXPENSE_1 = '#A5A5A5';
   const EXPENSE_2 = '#7F7F7F';
   const EXPENSE_3 = '#595959';
-  const NOI_POS = '#22c55e';
-  const NOI_NEG = '#ef4444';
+  const NOI_POS = '#3f7d20';
+  const NOI_NEG = '#F06543';
 
   const steps: { name: string; delta: number; fill: string; type: WaterfallEntry['type'] }[] = [
     { name: 'Gross Rent', delta: c.grossAnnualRent, fill: ACCENT, type: 'income' },
@@ -92,7 +92,7 @@ function NOITooltip({ active, payload, label }: NOITooltipProps) {
       className="rounded-lg shadow-lg px-4 py-3 text-xs"
     >
       <p style={{ color: 'var(--pw-fg)' }} className="font-semibold mb-1">{label}</p>
-      <p className="font-mono font-bold" style={{ color: entry?.value >= 0 ? '#22c55e' : '#ef4444' }}>
+      <p className="font-mono font-bold" style={{ color: entry?.value >= 0 ? '#3f7d20' : '#F06543' }}>
         {fmt(entry?.value ?? 0)}
       </p>
       {entry?.type !== 'income' && entry?.type !== 'noi' && (
@@ -134,7 +134,7 @@ export default function NOIBreakdownChart({ financials, className = '', isLoadin
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="text-2xl font-semibold font-mono"
-            style={{ color: computed.noi >= 0 ? '#22c55e' : '#ef4444' }}
+            style={{ color: computed.noi >= 0 ? '#3f7d20' : '#F06543' }}
           >
             {fmt(computed.noi)}
           </motion.p>
@@ -149,7 +149,7 @@ export default function NOIBreakdownChart({ financials, className = '', isLoadin
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
             className="text-base font-mono font-semibold"
-            style={{ color: computed.noi >= 0 ? '#22c55e' : '#ef4444' }}
+            style={{ color: computed.noi >= 0 ? '#3f7d20' : '#F06543' }}
           >
             {fmt(computed.noi / 12)}
           </motion.p>

@@ -103,14 +103,14 @@ function AppreciationChart({
         type: 'line',
         data: portfolioData,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.22)' },
-              { offset: 1, color: 'rgba(45,212,191,0.03)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.22)' },
+              { offset: 1, color: 'rgba(32, 178, 170,0.03)' },
             ],
           },
         },
@@ -308,7 +308,7 @@ export default function AppreciationIntelligencePage() {
                 {
                   label: 'Current Value',
                   value: fmt(currentValue),
-                  color: '#2dd4bf',
+                  color: '#20B2AA',
                   change: null,
                 },
                 {
@@ -326,7 +326,7 @@ export default function AppreciationIntelligencePage() {
                 {
                   label: 'Annual Apprec. Rate',
                   value: `${annualRate.toFixed(1)}%`,
-                  color: '#2dd4bf',
+                  color: '#20B2AA',
                   change: null,
                 },
               ].map((kpi) => (
@@ -350,7 +350,7 @@ export default function AppreciationIntelligencePage() {
               </span>
               <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-6 h-0.5 inline-block rounded" style={{ background: '#2dd4bf' }} />
+                  <span className="w-6 h-0.5 inline-block rounded" style={{ background: '#20B2AA' }} />
                   Portfolio Value
                 </span>
                 <span className="flex items-center gap-1.5">

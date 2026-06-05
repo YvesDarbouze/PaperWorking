@@ -38,7 +38,7 @@ const SELLER_RESPONSES = [
   { value: "PENDING",   label: "Pending",   icon: "hourglass_empty",  color: "rgba(218,228,236,0.4)"  },
   { value: "ACCEPTED",  label: "Accepted",  icon: "check_circle",     color: "#57f1db"                 },
   { value: "COUNTERED", label: "Countered", icon: "swap_horiz",       color: "#ffd1aa"                 },
-  { value: "REJECTED",  label: "Rejected",  icon: "cancel",           color: "#ef4444"                 },
+  { value: "REJECTED",  label: "Rejected",  icon: "cancel",           color: "#F06543"                 },
 ] as const;
 
 type SellerResponse = (typeof SELLER_RESPONSES)[number]["value"];
@@ -73,7 +73,7 @@ function deltaPct(a: number | null | undefined, b: number | null | undefined): s
 
 function deltaColor(cents: number | null | undefined, base: number | null | undefined): string {
   if (!cents || !base) return "rgba(218,228,236,0.4)";
-  return cents <= base ? "#57f1db" : "#ef4444";
+  return cents <= base ? "#57f1db" : "#F06543";
 }
 
 // ─── Currency input ───────────────────────────────────────────────────────────
@@ -113,13 +113,13 @@ function CurrencyInput({ label, valueCents, onChange, error, required, placehold
   return (
     <div className="space-y-1.5">
       <label className="text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(218,228,236,0.4)", letterSpacing: "0.07em" }}>
-        {label}{required && <span style={{ color: "#ef4444" }}> *</span>}
+        {label}{required && <span style={{ color: "#F06543" }}> *</span>}
       </label>
       <div
         className="flex items-center gap-2 rounded-xl px-4 py-3 transition-all duration-150"
         style={{
           background: "rgba(20,29,35,0.8)",
-          border:     `1px solid ${error ? "#ef444440" : focused ? "rgba(87,241,219,0.3)" : "rgba(255,255,255,0.09)"}`,
+          border:     `1px solid ${error ? "#F0654340" : focused ? "rgba(87,241,219,0.3)" : "rgba(255,255,255,0.09)"}`,
           boxShadow:  focused ? "0 0 0 3px rgba(87,241,219,0.05)" : "none",
         }}
       >
@@ -136,7 +136,7 @@ function CurrencyInput({ label, valueCents, onChange, error, required, placehold
           style={{ color: "rgba(218,228,236,0.9)" }}
         />
       </div>
-      {error && <p className="text-[11px]" style={{ color: "#ef4444" }}>{error}</p>}
+      {error && <p className="text-[11px]" style={{ color: "#F06543" }}>{error}</p>}
     </div>
   );
 }
@@ -488,7 +488,7 @@ export function TermsStep({ onNext }: { onNext: () => void }) {
       {/* Save error */}
       {saveError && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
-          <span className="material-symbols-outlined text-[16px]" style={{ color: "#ef4444" }}>error</span>
+          <span className="material-symbols-outlined text-[16px]" style={{ color: "#F06543" }}>error</span>
           <span className="text-[12px]" style={{ color: "rgba(218,228,236,0.7)" }}>{saveError}</span>
         </div>
       )}

@@ -45,7 +45,7 @@ const INTENT_OPTIONS: IntentOption[] = [
     description: 'Track cash flow, NOI, and manage your active portfolio.',
     phase: 3,
     route: '/dashboard/projects?wizard=true&phase=3',
-    accentColor: '#4ADE80', // green — Hold
+    accentColor: '#3f7d20', // green — Hold
   },
   {
     id: 'past_deals',
@@ -54,7 +54,7 @@ const INTENT_OPTIONS: IntentOption[] = [
     description: 'Log completed investments and build your track record.',
     phase: 4,
     route: '/dashboard/projects?wizard=true&phase=4',
-    accentColor: '#A78BFA', // purple — Exit
+    accentColor: '#20B2AA', // brand secondary — Exit
   },
   {
     id: 're_professional',
@@ -139,7 +139,7 @@ export default function OnboardingIntentPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-6 h-6 text-[#57f1db] animate-spin" />
+        <Loader2 className="w-6 h-6 text-[#20B2AA] animate-spin" />
       </div>
     );
   }

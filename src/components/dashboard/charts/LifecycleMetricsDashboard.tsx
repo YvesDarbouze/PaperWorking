@@ -195,7 +195,7 @@ export function deriveMarketPortfolio(projects: Project[]) {
   }
 
   return [
-    { name: 'Debt (LTV)', value: ltv, fill: '#EF4444' },
+    { name: 'Debt (LTV)', value: ltv, fill: '#F06543' },
     { name: 'Equity', value: equity, fill: '#7F7F7F' },
   ];
 }

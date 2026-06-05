@@ -40,7 +40,7 @@ export default function MobileBottomNav() {
               {item.label}
             </span>
             {isActive && (
-              <div className="absolute -bottom-2 w-1 h-1 bg-primary rounded-full shadow-[0_0_10px_#2dd4bf]"></div>
+              <div className="absolute -bottom-2 w-1 h-1 bg-primary rounded-full shadow-[0_0_10px_#20B2AA]"></div>
             )}
           </Link>
         );

@@ -176,7 +176,7 @@ export default function TeamDirectoryPage() {
           {isAdmin && (
             <Link 
               href="/dashboard/settings/team"
-              className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_-3px_rgba(45,212,191,0.4)] cursor-pointer"
+              className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.4)] cursor-pointer"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
               Provision Access

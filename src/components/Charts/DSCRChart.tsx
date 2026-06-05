@@ -75,7 +75,7 @@ export default function DSCRChart({ data, height = 300 }: DSCRChartProps) {
       {
         type: 'bar',
         data: data.map(d => {
-          let color = '#EF4444'; // below 1.0 red
+          let color = '#F06543'; // below 1.0 red
           if (d.dscr >= 1.5) color = '#595959';
           else if (d.dscr >= 1.25) color = '#7F7F7F';
           else if (d.dscr >= 1.0) color = '#A5A5A5';
@@ -95,8 +95,8 @@ export default function DSCRChart({ data, height = 300 }: DSCRChartProps) {
           data: [
             {
               yAxis: 1.0,
-              label: { formatter: '1.0 break-even', position: 'insideEndTop', color: '#EF4444', fontSize: 9 },
-              lineStyle: { color: '#EF4444', type: 'dashed' }
+              label: { formatter: '1.0 break-even', position: 'insideEndTop', color: '#F06543', fontSize: 9 },
+              lineStyle: { color: '#F06543', type: 'dashed' }
             },
             {
               yAxis: 1.25,

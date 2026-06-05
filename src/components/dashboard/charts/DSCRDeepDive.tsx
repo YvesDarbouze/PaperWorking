@@ -20,7 +20,7 @@ function classifyDSCR(dscr: number, isAllCash?: boolean): {
   if (dscr >= 1.5) return { grade: 'excellent', label: 'Excellent Coverage', description: 'Strong buffer above debt obligations — lender-preferred territory', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
   if (dscr >= 1.25) return { grade: 'strong', label: 'Strong — Meets Lender Minimums', description: 'Most lenders require ≥1.25 — this property qualifies', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
   if (dscr >= 1.0) return { grade: 'acceptable', label: 'Thin Margin', description: 'Covers debt but with little room for unexpected expenses', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
-  if (dscr >= 0.8) return { grade: 'marginal', label: 'Below Breakeven', description: 'Property cannot cover its own mortgage — negative cash flow', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
+  if (dscr >= 0.8) return { grade: 'marginal', label: 'Below Breakeven', description: 'Property cannot cover its own mortgage — negative cash flow', color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'failing', label: 'Critical — Deep Negative', description: 'Severe shortfall — property is a significant cash drain', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
@@ -81,7 +81,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
 
   const gaugeSegments = [
     { min: 0, max: 0.8, label: '<0.8', color: '#DC2626', desc: 'Critical' },
-    { min: 0.8, max: 1.0, label: '0.8–1.0', color: '#EF4444', desc: 'Below Breakeven' },
+    { min: 0.8, max: 1.0, label: '0.8–1.0', color: '#F06543', desc: 'Below Breakeven' },
     { min: 1.0, max: 1.25, label: '1.0–1.25', color: '#A5A5A5', desc: 'Thin Margin' },
     { min: 1.25, max: 1.5, label: '1.25–1.5', color: '#7F7F7F', desc: 'Lender Min' },
     { min: 1.5, max: 2.0, label: '1.5+', color: '#595959', desc: 'Excellent' },
@@ -97,7 +97,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
 
   // Lender threshold analysis
   const lenderThresholds = [
-    { name: 'DSCR Loan Min', threshold: 1.0, color: '#EF4444' },
+    { name: 'DSCR Loan Min', threshold: 1.0, color: '#F06543' },
     { name: 'Conventional Min', threshold: 1.25, color: '#A5A5A5' },
     { name: 'Preferred Rate', threshold: 1.5, color: '#595959' },
   ];
@@ -128,8 +128,8 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
         {[
           { icon: Shield, label: 'DSCR', value: aggregate.isAllCash ? 'N/A' : `${dscrDisplay}×`, sublabel: aggregate.isAllCash ? `${fmtUSD(aggregate.totalNOI)} NOI ÷ $0 Debt (All-Cash)` : `${fmtUSD(aggregate.totalNOI)} NOI ÷ ${fmtUSD(aggregate.totalDebt)} debt`, color: classification.color },
           { icon: DollarSign, label: 'Net Operating Income', value: fmtUSD(aggregate.totalNOI), sublabel: 'Annual income after operating expenses', color: '#595959' },
-          { icon: Target, label: 'Annual Debt Service', value: aggregate.isAllCash ? 'N/A' : fmtUSD(aggregate.totalDebt), sublabel: aggregate.isAllCash ? 'No mortgage debt (All-Cash Deal)' : `${fmtUSD(Math.round(aggregate.totalDebt / 12))}/mo mortgage payment`, color: aggregate.isAllCash ? '#7F7F7F' : '#EF4444' },
-          { icon: TrendingUp, label: 'Monthly Surplus/Deficit', value: aggregate.isAllCash ? fmtUSD(Math.round(aggregate.totalNOI / 12)) : `${aggregate.monthlySurplus >= 0 ? '+' : ''}${fmtUSD(Math.round(aggregate.monthlySurplus))}/mo`, sublabel: aggregate.isAllCash ? 'Net rental income (unleveraged)' : (aggregate.monthlySurplus >= 0 ? 'Income exceeds debt obligations' : 'Mortgage exceeds property income'), color: aggregate.isAllCash ? '#595959' : (aggregate.monthlySurplus >= 0 ? '#595959' : '#EF4444') },
+          { icon: Target, label: 'Annual Debt Service', value: aggregate.isAllCash ? 'N/A' : fmtUSD(aggregate.totalDebt), sublabel: aggregate.isAllCash ? 'No mortgage debt (All-Cash Deal)' : `${fmtUSD(Math.round(aggregate.totalDebt / 12))}/mo mortgage payment`, color: aggregate.isAllCash ? '#7F7F7F' : '#F06543' },
+          { icon: TrendingUp, label: 'Monthly Surplus/Deficit', value: aggregate.isAllCash ? fmtUSD(Math.round(aggregate.totalNOI / 12)) : `${aggregate.monthlySurplus >= 0 ? '+' : ''}${fmtUSD(Math.round(aggregate.monthlySurplus))}/mo`, sublabel: aggregate.isAllCash ? 'Net rental income (unleveraged)' : (aggregate.monthlySurplus >= 0 ? 'Income exceeds debt obligations' : 'Mortgage exceeds property income'), color: aggregate.isAllCash ? '#595959' : (aggregate.monthlySurplus >= 0 ? '#595959' : '#F06543') },
         ].map((kpi, i) => (
           <div key={i} className="rounded-lg p-4 flex flex-col gap-2" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-ui)' }}>
             <div className="flex items-center gap-2">
@@ -202,7 +202,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
                   const meets = aggregate.portfolioDSCR >= t.threshold;
                   return (
                     <div key={i} className="flex items-center gap-3">
-                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: meets ? `${t.color}22` : 'rgba(239,68,68,0.1)', color: meets ? t.color : '#EF4444' }}>
+                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ background: meets ? `${t.color}22` : 'rgba(239,68,68,0.1)', color: meets ? t.color : '#F06543' }}>
                         {meets ? '✓' : '✗'}
                       </div>
                       <div className="flex-1">
@@ -211,7 +211,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
                           <span className="text-[10px] font-bold tabular-nums" style={{ color: t.color }}>{t.threshold.toFixed(2)}×</span>
                         </div>
                         <div className="w-full h-1.5 rounded-full mt-1" style={{ background: 'var(--bg-inset)' }}>
-                          <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, (aggregate.portfolioDSCR / t.threshold) * 100)}%`, background: meets ? t.color : '#EF4444' }} />
+                          <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, (aggregate.portfolioDSCR / t.threshold) * 100)}%`, background: meets ? t.color : '#F06543' }} />
                         </div>
                       </div>
                     </div>
@@ -270,7 +270,7 @@ export default function DSCRDeepDive({ projects: propProjects }: Props) {
                       </td>
                       <td className="px-3 py-2 tabular-nums" style={{ color: '#595959', fontWeight: isCurrent ? 700 : 500, borderBottom: '1px solid var(--border-ui)' }}>{fmtUSD(Math.round(row.noi))}/yr</td>
                       <td className="px-3 py-2 tabular-nums" style={{ color: cls.color, fontWeight: isCurrent ? 700 : 500, background: isCurrent ? cls.bgColor : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>{row.dscr.toFixed(2)}×</td>
-                      <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: row.dscr >= 1.25 ? '#595959' : row.dscr >= 1.0 ? '#A5A5A5' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                      <td className="px-3 py-2 text-[9px] font-bold uppercase tracking-wider" style={{ color: row.dscr >= 1.25 ? '#595959' : row.dscr >= 1.0 ? '#A5A5A5' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>
                         {row.dscr >= 1.25 ? 'Qualifies' : row.dscr >= 1.0 ? 'Marginal' : 'Rejected'}
                       </td>
                     </tr>

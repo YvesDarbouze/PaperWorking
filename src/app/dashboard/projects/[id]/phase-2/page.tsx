@@ -280,8 +280,8 @@ export default function Phase2AcquisitionPage() {
 
       {/* ── Ambient Background Layer ── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        {/* Purchase phase: indigo-tinted ambient glow (per Stitch diligence schema gradient) */}
-        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#1e1b4b]/20 blur-[120px] rounded-full" />
+        {/* Purchase phase: teal-tinted ambient glow */}
+        <div className="absolute -top-[10%] -right-[5%] w-[40%] h-[40%] bg-[#20B2AA]/5 blur-[120px] rounded-full" />
         <div className="absolute -bottom-[10%] -left-[5%] w-[30%] h-[30%] bg-[#0566d9]/8 blur-[100px] rounded-full" />
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -506,7 +506,7 @@ export default function Phase2AcquisitionPage() {
                 onClick={() => selectLender('NEO')}
                 className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
                   selectedLender === 'NEO'
-                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
                     : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
                 }`}
               >
@@ -516,7 +516,7 @@ export default function Phase2AcquisitionPage() {
                 onClick={() => selectLender('LEGACY')}
                 className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
                   selectedLender === 'LEGACY'
-                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(45,212,191,0.25)]'
+                    ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(32, 178, 170,0.25)]'
                     : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
                 }`}
               >

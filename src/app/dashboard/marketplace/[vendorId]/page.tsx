@@ -126,7 +126,7 @@ const DEMO_VENDORS: Record<
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
   Inspector:          'bg-sky-400/10 border-sky-400/20 text-sky-400',
   Lender:             'bg-teal-400/10 border-teal-400/20 text-teal-400',
-  Attorney:           'bg-violet-400/10 border-violet-400/20 text-violet-400',
+  Attorney:           'bg-slate-400/10 border-slate-400/20 text-slate-400',
   Contractor:         'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
   Agent:              'bg-pink-400/10 border-pink-400/20 text-pink-400',
@@ -229,7 +229,7 @@ export default function VendorDetailPage() {
         <button
           type="button"
           onClick={() => router.push('/dashboard/marketplace')}
-          className="flex items-center gap-2 text-sm text-slate-400 hover:text-teal-400 transition-colors"
+          className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#20B2AA] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Marketplace
@@ -239,7 +239,7 @@ export default function VendorDetailPage() {
           <button
             type="button"
             onClick={() => router.push('/dashboard/marketplace')}
-            className="text-xs text-teal-400 hover:underline"
+            className="text-xs text-[#20B2AA] hover:underline"
           >
             Return to Marketplace
           </button>
@@ -254,7 +254,7 @@ export default function VendorDetailPage() {
       <button
         type="button"
         onClick={() => router.push('/dashboard/marketplace')}
-        className="flex items-center gap-2 text-sm text-slate-400 hover:text-teal-400 transition-colors"
+        className="flex items-center gap-2 text-sm text-slate-400 hover:text-[#20B2AA] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Marketplace
@@ -280,7 +280,7 @@ export default function VendorDetailPage() {
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-bold text-white">{vendor.companyName}</h1>
               {vendor.verified && (
-                <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-teal-400/30 bg-teal-400/10 text-[10px] font-bold text-teal-400">
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded border border-[#20B2AA]/30 bg-[#20B2AA]/10 text-[10px] font-bold text-[#20B2AA]">
                   <Shield className="w-3 h-3" />
                   Verified
                 </span>
@@ -309,7 +309,7 @@ export default function VendorDetailPage() {
             <button
               type="button"
               onClick={() => setIsQuoteModalOpen(true)}
-              className="px-5 py-2.5 rounded-lg bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-all"
+              className="px-5 py-2.5 rounded-lg bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-all"
             >
               Request Quote
             </button>

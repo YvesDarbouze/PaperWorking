@@ -92,7 +92,7 @@ function DivergingBarChart({
         stack: 'cf',
         data: inflow,
         barMaxWidth: 32,
-        itemStyle: { color: '#2dd4bf', borderRadius: [3, 3, 0, 0] },
+        itemStyle: { color: '#20B2AA', borderRadius: [3, 3, 0, 0] },
       },
       {
         name: 'Outflow',
@@ -136,7 +136,7 @@ function CategoryDonut() {
         label: { show: false },
         labelLine: { show: false },
         data: [
-          { value: 12100, name: 'Rent Income',    itemStyle: { color: '#2dd4bf' } },
+          { value: 12100, name: 'Rent Income',    itemStyle: { color: '#20B2AA' } },
           { value: 3300,  name: 'Other Income',   itemStyle: { color: '#57f1db' } },
           { value: -6600, name: 'Expenses',       itemStyle: { color: 'rgba(239,68,68,0.55)' } },
           { value: -3300, name: 'Debt Interest',  itemStyle: { color: 'rgba(245,158,11,0.55)' } },
@@ -308,7 +308,7 @@ export default function CashFlowIntelligencePage() {
                       width={8}
                       height={barH}
                       rx={2}
-                      fill={isFull ? '#2dd4bf' : 'rgba(45,212,191,0.25)'}
+                      fill={isFull ? '#20B2AA' : 'rgba(32, 178, 170,0.25)'}
                     />
                   );
                 })}
@@ -325,7 +325,7 @@ export default function CashFlowIntelligencePage() {
             <div className="h-3 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${fillPct}%`, background: '#2dd4bf' }}
+                style={{ width: `${fillPct}%`, background: '#20B2AA' }}
               />
             </div>
           </div>
@@ -340,7 +340,7 @@ export default function CashFlowIntelligencePage() {
           </span>
           <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
             <span className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#2dd4bf' }} />
+              <span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#20B2AA' }} />
               Inflow
             </span>
             <span className="flex items-center gap-1.5">
@@ -363,7 +363,7 @@ export default function CashFlowIntelligencePage() {
           <CategoryDonut />
           <div className="grid grid-cols-2 gap-2 mt-2">
             {[
-              { label: 'Rent Income',   pct: '55%', color: '#2dd4bf' },
+              { label: 'Rent Income',   pct: '55%', color: '#20B2AA' },
               { label: 'Other Income',  pct: '15%', color: '#57f1db' },
               { label: 'Expenses',      pct: '30%', color: 'rgba(239,68,68,0.7)' },
               { label: 'Debt Interest', pct: '15%', color: 'rgba(245,158,11,0.7)' },
@@ -385,8 +385,8 @@ export default function CashFlowIntelligencePage() {
           <div className="space-y-3">
             {[
               { label: 'Monthly Average', value: fmt(stats.avg), highlight: false },
-              { label: 'Best Month',      value: fmt(stats.best), highlight: true, color: '#2dd4bf' },
-              { label: 'Worst Month',     value: fmt(stats.worst), highlight: true, color: '#ef4444' },
+              { label: 'Best Month',      value: fmt(stats.best), highlight: true, color: '#20B2AA' },
+              { label: 'Worst Month',     value: fmt(stats.worst), highlight: true, color: '#F06543' },
               { label: 'YTD Total',       value: fmt(stats.ytd), highlight: true, color: '#57f1db' },
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between py-3 border-b border-white/[0.05]">

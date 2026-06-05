@@ -23,7 +23,7 @@ export default function OccupancyChart({ data, height = 300 }: OccupancyChartPro
           <div style="font-family: inherit; font-size: 12px;">
             <strong>${item.name}</strong><br/>
             <span style="color: #7F7F7F">Occupancy:</span> <strong style="color: #595959">${val.toFixed(1)}%</strong><br/>
-            <span style="color: #EF4444">Vacancy:</span> <strong>${(100 - val).toFixed(1)}%</strong>
+            <span style="color: #F06543">Vacancy:</span> <strong>${(100 - val).toFixed(1)}%</strong>
           </div>
         `;
       }
@@ -71,7 +71,7 @@ export default function OccupancyChart({ data, height = 300 }: OccupancyChartPro
         data: data.map(d => {
           let color = '#595959';
           if (d.occupancyRate < 80) color = '#DC2626';
-          else if (d.occupancyRate < 90) color = '#EF4444';
+          else if (d.occupancyRate < 90) color = '#F06543';
           else if (d.occupancyRate >= 97) color = '#595959';
           else if (d.occupancyRate >= 93) color = '#7F7F7F';
           else color = '#A5A5A5';

@@ -106,7 +106,7 @@ const DEMO_VENDORS = [
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
   Inspector:        'bg-sky-400/10 border-sky-400/20 text-sky-400',
   Lender:           'bg-teal-400/10 border-teal-400/20 text-teal-400',
-  Attorney:         'bg-violet-400/10 border-violet-400/20 text-violet-400',
+  Attorney:         'bg-slate-400/10 border-slate-400/20 text-slate-400',
   Contractor:       'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
   Agent:            'bg-pink-400/10 border-pink-400/20 text-pink-400',
@@ -126,7 +126,7 @@ function VendorCard({
 
   return (
     <div
-      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-teal-400/30 hover:shadow-[0_0_24px_rgba(45,212,191,0.06)]"
+      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#20B2AA]/30 hover:shadow-[0_0_24px_rgba(32,178,170,0.06)]"
     >
       {/* Top row: category badge */}
       <div className="flex items-center justify-between">
@@ -168,14 +168,14 @@ function VendorCard({
         <button
           type="button"
           onClick={() => onViewProfile(vendor.id)}
-          className="flex-1 px-3 py-2 rounded-lg border border-teal-500/40 text-teal-400 text-xs font-bold hover:border-teal-400 hover:bg-teal-400/5 transition-all"
+          className="flex-1 px-3 py-2 rounded-lg border border-[#20B2AA]/40 text-[#20B2AA] text-xs font-bold hover:border-[#20B2AA] hover:bg-[#20B2AA]/5 transition-all"
         >
           View Profile
         </button>
         <button
           type="button"
           onClick={() => onRequestQuote(vendor)}
-          className="flex-1 px-3 py-2 rounded-lg bg-teal-500 text-black text-xs font-bold hover:bg-teal-400 transition-all"
+          className="flex-1 px-3 py-2 rounded-lg bg-[#20B2AA] text-black text-xs font-bold hover:bg-[#20B2AA]/90 transition-all"
         >
           Request Quote
         </button>
@@ -332,14 +332,14 @@ export default function MarketplacePage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
-            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-teal-500/50 transition-colors"
+            className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#20B2AA]/55 transition-colors"
             style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
           />
         </div>
         <button
           type="button"
           onClick={handleFindVendors}
-          className="pw-interactive px-6 py-3.5 bg-teal-500 text-black text-sm font-bold hover:bg-teal-400 transition-colors"
+          className="pw-interactive px-6 py-3.5 bg-[#20B2AA] text-black text-sm font-bold hover:bg-[#20B2AA]/90 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
           Find Vendors
@@ -357,8 +357,8 @@ export default function MarketplacePage() {
               onClick={() => setActiveFilter(pill)}
               className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
                 isActive
-                  ? 'bg-teal-400/10 border-teal-400 text-teal-400'
-                  : 'border-white/10 text-slate-400 hover:border-teal-400/40 hover:text-teal-400 bg-transparent'
+                  ? 'bg-[#20B2AA]/10 border-[#20B2AA] text-[#20B2AA]'
+                  : 'border-white/10 text-slate-400 hover:border-[#20B2AA]/40 hover:text-[#20B2AA] bg-transparent'
               }`}
             >
               {pill}
@@ -401,7 +401,7 @@ export default function MarketplacePage() {
           <button
             type="button"
             onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
-            className="text-xs text-teal-400 hover:underline"
+            className="text-xs text-[#20B2AA] hover:underline"
           >
             Clear filters
           </button>

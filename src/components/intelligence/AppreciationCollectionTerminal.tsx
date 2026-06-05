@@ -41,9 +41,9 @@ interface AppreciationCollectionTerminalProps {
 
 /* ── Zone config ── */
 const ZONE_CFG = {
-  strong:   { label: 'Strong Growth',   color: '#2dd4bf', range: '>5%',   icon: TrendingUp },
+  strong:   { label: 'Strong Growth',   color: '#20B2AA', range: '>5%',   icon: TrendingUp },
   moderate: { label: 'Moderate',        color: '#fbbf24', range: '2–5%',  icon: Target },
-  flat:     { label: 'Flat / Decline',  color: '#f87171', range: '<2%',   icon: TrendingDown },
+  flat:     { label: 'Flat / Decline',  color: '#F06543', range: '<2%',   icon: TrendingDown },
 } as const;
 
 function getZone(rate: number): 'strong' | 'moderate' | 'flat' {
@@ -195,12 +195,12 @@ export function AppreciationCollectionTerminal({
         {/* Gain summary */}
         <div className="flex justify-between mt-2 text-[10px]">
           <span className="text-slate-500">
-            Total Gain: <span className="font-bold" style={{ color: gainIsPositive ? '#2dd4bf' : '#f87171' }}>
+            Total Gain: <span className="font-bold" style={{ color: gainIsPositive ? '#20B2AA' : '#F06543' }}>
               {gainIsPositive ? '+' : ''}${Math.abs(computed.totalGain).toLocaleString()}
             </span>
           </span>
           <span className="text-slate-500">
-            Total Return: <span className="font-bold" style={{ color: gainIsPositive ? '#2dd4bf' : '#f87171' }}>
+            Total Return: <span className="font-bold" style={{ color: gainIsPositive ? '#20B2AA' : '#F06543' }}>
               {gainIsPositive ? '+' : ''}{computed.totalGainPct.toFixed(1)}%
             </span>
           </span>

@@ -147,7 +147,7 @@ export default function DebtFinancingAdvanced() {
                 <span className="text-[14px] font-semibold text-primary">TOTAL CASH TO CLOSE</span>
               </div>
             </div>
-            <button className="bg-primary hover:bg-[#2dd4bf] text-[#00574d] text-[14px] px-8 py-4 rounded-lg font-bold shadow-[0_0_20px_rgba(87,241,219,0.3)] transition-all active:scale-95">
+            <button className="bg-primary hover:bg-[#20B2AA] text-[#00574d] text-[14px] px-8 py-4 rounded-lg font-bold shadow-[0_0_20px_rgba(87,241,219,0.3)] transition-all active:scale-95">
               EXECUTE STRUCTURE
             </button>
           </div>

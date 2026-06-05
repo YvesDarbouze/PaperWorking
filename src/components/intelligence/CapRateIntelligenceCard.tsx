@@ -42,7 +42,7 @@ const fmtCompact = (v: number): string => {
 
 /* ── Cap Rate Health Zones ── */
 const CAP_ZONES = [
-  { min: 0, max: 3, label: 'Poor', color: '#EF4444' },
+  { min: 0, max: 3, label: 'Poor', color: '#F06543' },
   { min: 3, max: 5, label: 'Fair', color: '#EAB308' },
   { min: 5, max: 8, label: 'Good', color: '#14B8A6' },
   { min: 8, max: 12, label: 'Excellent', color: '#3B82F6' },
@@ -501,7 +501,7 @@ export function CapRateIntelligenceCard({
               {isAboveMarket ? (
                 <TrendingUp className="h-3.5 w-3.5" style={{ color: '#14B8A6' }} />
               ) : (
-                <TrendingDown className="h-3.5 w-3.5" style={{ color: '#EF4444' }} />
+                <TrendingDown className="h-3.5 w-3.5" style={{ color: '#F06543' }} />
               )}
               <span className="text-xs font-medium" style={{ color: 'var(--color-on-surface-variant)' }}>
                 vs Market
@@ -509,7 +509,7 @@ export function CapRateIntelligenceCard({
             </div>
             <span
               className="text-sm font-bold font-mono tabular-nums"
-              style={{ color: isAboveMarket ? '#14B8A6' : '#EF4444' }}
+              style={{ color: isAboveMarket ? '#14B8A6' : '#F06543' }}
             >
               {isAboveMarket ? '+' : ''}{capRateDelta.toFixed(1)}%
             </span>

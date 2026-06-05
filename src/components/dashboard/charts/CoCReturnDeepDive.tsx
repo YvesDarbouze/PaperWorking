@@ -69,7 +69,7 @@ function classifyCoC(rate: number): {
   if (rate >= 0) return {
     grade: 'below-target', label: 'Below Target',
     description: 'Low return — consider if appreciation compensates the weak cash flow',
-    color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
+    color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
   };
   return {
     grade: 'negative', label: 'Negative Return',
@@ -162,7 +162,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
   /* ── Capital breakdown donut ── */
   const capitalPieces = [
     { name: 'Down Payment', value: aggregate.totalDown, color: '#7F7F7F' },
-    { name: 'Closing Costs', value: aggregate.totalClosing, color: '#8B5CF6' },
+    { name: 'Closing Costs', value: aggregate.totalClosing, color: '#20B2AA' },
     { name: 'Rehab Budget', value: aggregate.totalRehab, color: '#A5A5A5' },
   ].filter(p => p.value > 0);
 
@@ -171,7 +171,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
     { name: 'This Property', rate: aggregate.cocReturn, color: classification.color },
     { name: 'Target (8-12%)', rate: 10, color: '#595959' },
     { name: 'S&P 500 Avg', rate: 10.5, color: '#595959' },
-    { name: 'REIT Index', rate: 7.5, color: '#8B5CF6' },
+    { name: 'REIT Index', rate: 7.5, color: '#20B2AA' },
     { name: '10-Year Treasury', rate: 4.25, color: '#94A3B8' },
     { name: 'HYSA', rate: 4.5, color: '#64748B' },
   ];
@@ -228,14 +228,14 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
               label: 'Annual Cash Flow',
               value: fmtUSD(aggregate.totalCashFlow),
               sublabel: `${fmtUSD(Math.round(aggregate.totalCashFlow / 12))}/mo after debt service`,
-              color: aggregate.totalCashFlow >= 0 ? '#595959' : '#EF4444',
+              color: aggregate.totalCashFlow >= 0 ? '#595959' : '#F06543',
             },
             {
               icon: PiggyBank,
               label: 'Total Cash Invested',
               value: fmtUSD(aggregate.totalInvested),
               sublabel: `Down payment + closing costs + rehab`,
-              color: '#8B5CF6',
+              color: '#20B2AA',
             },
             {
               icon: Target,
@@ -365,7 +365,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
                     <td
                       className="px-3 py-2 text-center tabular-nums"
                       style={{
-                        color: row.cashFlow >= 0 ? '#595959' : '#EF4444',
+                        color: row.cashFlow >= 0 ? '#595959' : '#F06543',
                         fontWeight: isCurrent ? 700 : 500,
                         borderBottom: '1px solid var(--border-ui)',
                       }}
@@ -442,7 +442,7 @@ export default function CoCReturnDeepDive({ projects: propProjects }: Props) {
         <span style={{ color: '#595959' }}>■ ≥12% Excellent</span> •{' '}
         <span style={{ color: '#7F7F7F' }}>■ 8–12% Strong (Target Zone)</span> •{' '}
         <span style={{ color: '#A5A5A5' }}>■ 4–8% Moderate</span> •{' '}
-        <span style={{ color: '#EF4444' }}>■ &lt;4% Below Target</span>
+        <span style={{ color: '#F06543' }}>■ &lt;4% Below Target</span>
         <br />
         <strong style={{ color: 'var(--text-primary)' }}>Why it matters:</strong>{' '}
         Unlike Cap Rate, CoC Return factors in financing — making it the most relevant metric for leveraged buy-and-hold investors.

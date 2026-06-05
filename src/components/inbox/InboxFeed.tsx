@@ -214,7 +214,7 @@ export default function InboxFeed({
             initial={{ opacity: 0, y: 20, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
             exit={{ opacity: 0, y: 20, x: '-50%' }}
-            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3.5 glass-card rounded-2xl border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(45,212,191,0.15)] text-[#dae4ec]"
+            className="fixed bottom-6 left-1/2 z-50 flex items-center justify-between px-6 py-3.5 glass-card rounded-2xl border border-primary/30 shadow-[0_10px_40px_rgba(0,0,0,0.5),0_0_30px_rgba(32, 178, 170,0.15)] text-[#dae4ec]"
             style={{
               width: 'calc(100% - 48px)',
               maxWidth: '520px',

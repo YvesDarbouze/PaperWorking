@@ -91,7 +91,7 @@ export function EMDVerificationWidget({
           
           <div className="flex items-center gap-3 bg-opacity-10 px-4 py-2 rounded-md border" style={{ 
             backgroundColor: emdVerified ? 'rgba(34, 197, 94, 0.1)' : 'rgba(245, 158, 11, 0.1)',
-            borderColor: emdVerified ? '#22C55E' : '#F59E0B',
+            borderColor: emdVerified ? '#3f7d20' : '#F59E0B',
             color: emdVerified ? '#166534' : '#92400E'
           }}>
             {emdVerified ? <CheckCircle className="w-5 h-5 text-green-600" /> : <Clock className="w-5 h-5 text-amber-600" />}

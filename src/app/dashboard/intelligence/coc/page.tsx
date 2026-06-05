@@ -38,7 +38,7 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
       textStyle: { color: '#dae4ec', fontSize: 11 },
       formatter: (params: any[]) =>
         params[0].axisValue + '<br/>' +
-        `<span style="color:#2dd4bf">─</span> CoC Return: <b>${params[0].value}%</b>`,
+        `<span style="color:#20B2AA">─</span> CoC Return: <b>${params[0].value}%</b>`,
     },
     grid: { top: 36, right: 16, bottom: 24, left: 0, containLabel: true },
     xAxis: {
@@ -61,13 +61,13 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.20)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.20)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -85,8 +85,8 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
             },
             {
               yAxis: 8,
-              lineStyle: { color: '#2dd4bf', type: 'dashed', width: 1, opacity: 0.7 },
-              label: { formatter: 'Target (8%)', color: '#2dd4bf', fontSize: 9, position: 'insideEndTop' },
+              lineStyle: { color: '#20B2AA', type: 'dashed', width: 1, opacity: 0.7 },
+              label: { formatter: 'Target (8%)', color: '#20B2AA', fontSize: 9, position: 'insideEndTop' },
             },
             {
               yAxis: 12,
@@ -260,7 +260,7 @@ export default function CoCIntelligencePage() {
               <div
                 key={sc.label}
                 className={`rounded-xl border p-4 flex items-center justify-between transition-all ${sc.borderClass} ${sc.active ? 'ring-1 ring-teal-400/20' : ''}`}
-                style={{ background: sc.active ? 'rgba(45,212,191,0.04)' : 'rgba(24,33,39,0.7)' }}
+                style={{ background: sc.active ? 'rgba(32, 178, 170,0.04)' : 'rgba(24,33,39,0.7)' }}
               >
                 <div>
                   <p className={`text-[10px] font-bold uppercase tracking-wider ${sc.textClass}`}>{sc.label}</p>

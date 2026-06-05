@@ -127,7 +127,7 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
   let phaseIconBg = "bg-primary-container/10";
   let phaseIconBorder = "border-primary-container/20";
   let progressBg = "bg-primary-container";
-  let progressGlow = "shadow-[0_0_10px_rgba(45,212,191,0.8)]";
+  let progressGlow = "shadow-[0_0_10px_rgba(32, 178, 170,0.8)]";
 
   if (phase === 2) {
     phaseIcon = "snippet_folder";

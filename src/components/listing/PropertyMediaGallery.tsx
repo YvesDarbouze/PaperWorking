@@ -49,7 +49,7 @@ const PropertyMediaGallery: React.FC<PropertyMediaGalleryProps> = ({
             <button 
               onClick={() => setShow3D(!show3D)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-all shadow-lg ${
-                show3D ? 'bg-indigo-600 text-white' : 'bg-bg-surface/90 text-text-primary hover:bg-bg-surface'
+                show3D ? 'bg-[#454955] text-white' : 'bg-bg-surface/90 text-text-primary hover:bg-bg-surface'
               }`}
             >
               <PlayCircle className="w-3.5 h-3.5" />
@@ -92,7 +92,7 @@ const PropertyMediaGallery: React.FC<PropertyMediaGalleryProps> = ({
                 key={i}
                 onClick={() => setActiveIndex(i)}
                 className={`flex-shrink-0 w-16 h-10 rounded-lg overflow-hidden border-2 transition-all ${
-                  activeIndex === i ? 'border-indigo-500 scale-105 shadow-lg' : 'border-transparent opacity-50 grayscale hover:opacity-100 hover:grayscale-0'
+                  activeIndex === i ? 'border-[#20B2AA] scale-105 shadow-lg' : 'border-transparent opacity-50 grayscale hover:opacity-100 hover:grayscale-0'
                 }`}
               >
                 <img src={url} className="w-full h-full object-cover" />

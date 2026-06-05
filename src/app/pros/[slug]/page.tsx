@@ -155,7 +155,7 @@ export default async function VendorProfilePage({
       <nav className="sticky top-0 z-40 bg-[#060f15]/90 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-[#2dd4bf] font-bold text-xl tracking-tighter">
+            <span className="text-[#20B2AA] font-bold text-xl tracking-tighter">
               PaperWorking
             </span>
           </Link>
@@ -175,14 +175,14 @@ export default async function VendorProfilePage({
             {/* Profile Header */}
             <div className="glass-card rounded-xl border border-white/[0.06] p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 rounded-xl bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 flex items-center justify-center text-[#2dd4bf] font-bold text-2xl">
+                <div className="w-16 h-16 rounded-xl bg-[#20B2AA]/10 border border-[#20B2AA]/20 flex items-center justify-center text-[#20B2AA] font-bold text-2xl">
                   {vendor.companyName.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <h1 className="text-xl font-bold leading-tight truncate">
                     {vendor.companyName}
                   </h1>
-                  <p className="text-sm text-[#2dd4bf] font-medium">
+                  <p className="text-sm text-[#20B2AA] font-medium">
                     {vendor.type}
                   </p>
                 </div>
@@ -191,7 +191,7 @@ export default async function VendorProfilePage({
               {/* Badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {vendor.verified && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2dd4bf]/10 border border-[#2dd4bf]/20 text-[#2dd4bf] text-[10px] font-bold uppercase">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#20B2AA]/10 border border-[#20B2AA]/20 text-[#20B2AA] text-[10px] font-bold uppercase">
                     <BadgeCheck className="w-3 h-3" /> Verified
                   </span>
                 )}
@@ -227,7 +227,7 @@ export default async function VendorProfilePage({
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-3 text-center">
                 <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                  <p className="text-xl font-bold font-mono text-[#2dd4bf]">
+                  <p className="text-xl font-bold font-mono text-[#20B2AA]">
                     {vendor.avgTurnaroundDays}d
                   </p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider">
@@ -235,7 +235,7 @@ export default async function VendorProfilePage({
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
-                  <p className="text-xl font-bold font-mono text-[#2dd4bf]">
+                  <p className="text-xl font-bold font-mono text-[#20B2AA]">
                     {vendor.completedJobs ?? '—'}
                   </p>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider">
@@ -252,27 +252,27 @@ export default async function VendorProfilePage({
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex items-center gap-3 text-slate-300">
-                  <MapPin className="w-4 h-4 text-[#2dd4bf] flex-shrink-0" />
+                  <MapPin className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
                   <span>{vendor.licensingStates.join(', ')}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-300">
-                  <Clock className="w-4 h-4 text-[#2dd4bf] flex-shrink-0" />
+                  <Clock className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
                   <span>{vendor.availability}</span>
                 </div>
                 {vendor.phone && (
                   <div className="flex items-center gap-3 text-slate-300">
-                    <Phone className="w-4 h-4 text-[#2dd4bf] flex-shrink-0" />
+                    <Phone className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
                     <span>{vendor.phone}</span>
                   </div>
                 )}
                 {vendor.website && (
                   <div className="flex items-center gap-3 text-slate-300">
-                    <Globe className="w-4 h-4 text-[#2dd4bf] flex-shrink-0" />
+                    <Globe className="w-4 h-4 text-[#20B2AA] flex-shrink-0" />
                     <a
                       href={vendor.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-[#2dd4bf] transition-colors truncate"
+                      className="hover:text-[#20B2AA] transition-colors truncate"
                     >
                       {vendor.website.replace(/^https?:\/\//, '')}
                     </a>
@@ -290,7 +290,7 @@ export default async function VendorProfilePage({
             {/* CTA */}
             <Link
               href="/login"
-              className="flex items-center justify-center w-full py-3.5 rounded-xl bg-[#2dd4bf] text-[#003731] text-sm font-bold hover:bg-[#2dd4bf]/90 transition-all shadow-[0_0_20px_rgba(45,212,191,0.2)]"
+              className="flex items-center justify-center w-full py-3.5 rounded-xl bg-[#20B2AA] text-[#003731] text-sm font-bold hover:bg-[#20B2AA]/90 transition-all shadow-[0_0_20px_rgba(32, 178, 170,0.2)]"
             >
               Request Quote
             </Link>

@@ -71,7 +71,7 @@ function classifyGRM(grm: number): {
   if (grm <= 20) return {
     grade: 'high', label: 'High — Appreciation Play?',
     description: 'Low rent relative to price. Only works if appreciation is strong.',
-    color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
+    color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)',
   };
   return {
     grade: 'very-high', label: 'Very High — Proceed with Caution',
@@ -183,7 +183,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
     { min: 0, max: 8, label: '≤8', color: '#595959', description: 'Excellent' },
     { min: 8, max: 12, label: '8–12', color: '#7F7F7F', description: 'Typical' },
     { min: 12, max: 15, label: '12–15', color: '#A5A5A5', description: 'Moderate' },
-    { min: 15, max: 20, label: '15–20', color: '#EF4444', description: 'High' },
+    { min: 15, max: 20, label: '15–20', color: '#F06543', description: 'High' },
     { min: 20, max: 25, label: '20+', color: '#DC2626', description: 'Very High' },
   ];
 
@@ -281,7 +281,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
               : aggregate.portfolioGRM <= 15
                 ? 'Borderline — verify with NOI and cash flow'
                 : 'High GRM — likely needs strong appreciation',
-            color: aggregate.portfolioGRM <= 12 ? '#595959' : aggregate.portfolioGRM <= 15 ? '#A5A5A5' : '#EF4444',
+            color: aggregate.portfolioGRM <= 12 ? '#595959' : aggregate.portfolioGRM <= 15 ? '#A5A5A5' : '#F06543',
           },
         ].map((kpi, i) => (
           <div
@@ -500,7 +500,7 @@ export default function GRMDeepDive({ projects: propProjects }: Props) {
               It serves as a high-level filter to compare properties before deep analysis. Because it completely ignores operating expenses (taxes, insurance, repairs), vacancy losses, and financing (mortgage terms), it cannot determine net profitability.
             </p>
             <p>
-              <strong style={{ color: '#EF4444' }}>What GRM ignores:</strong>{' '}
+              <strong style={{ color: '#F06543' }}>What GRM ignores:</strong>{' '}
               All property-level costs. A low-GRM property in an area with high property taxes or structural issues could easily cash-flow worse than a higher-GRM property with low expenses.
             </p>
             <p>

@@ -18,7 +18,7 @@ export default function ProjectsPage() {
       phaseDetails: "Due Diligence",
       progress: 60,
       color: "primary-container",
-      hex: "#2dd4bf", // Used for shadow
+      hex: "#20B2AA", // Used for shadow
     },
     {
       id: 2,

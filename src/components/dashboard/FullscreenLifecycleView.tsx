@@ -710,7 +710,7 @@ function StaticPhase2({ deal }: { deal: Project }) {
              )}
            </div>
            {/* Urgency callout */}
-           <div className="mt-4 p-3 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(89, 89, 89, 0.05)' }}>
+           <div className="mt-4 p-3 rounded-lg border flex items-center gap-3" style={{ borderColor: '#F06543', background: 'rgba(89, 89, 89, 0.05)' }}>
              <span className="text-lg">⏱️</span>
              <p className="text-sm text-text-primary">
                Every day past your timeline costs <strong style={{ color: '#595959' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.
@@ -1226,7 +1226,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
                       className="h-full rounded-full transition-all duration-500"
                       style={{
                         width: `${Math.min(renoROI.moneyRoomsPercent, 100)}%`,
-                        background: renoROI.moneyRoomsHealthy ? '#10B981' : '#F59E0B',
+                        background: renoROI.moneyRoomsHealthy ? '#3f7d20' : '#F59E0B',
                       }}
                     />
                   </div>
@@ -1281,7 +1281,7 @@ function StaticPhase3({ deal, ledgerItems, canAdd }: StaticPhase3Props) {
 
           {/* ── Daily Burn Rate Urgency ── */}
           {burnRate && burnRate.dailyBurnRate > 0 && (
-            <div className="w-full mb-6 p-4 rounded-lg border flex items-center gap-3" style={{ borderColor: '#EF4444', background: 'rgba(89, 89, 89, 0.05)' }}>
+            <div className="w-full mb-6 p-4 rounded-lg border flex items-center gap-3" style={{ borderColor: '#F06543', background: 'rgba(89, 89, 89, 0.05)' }}>
               <span className="text-lg">⏱️</span>
               <p className="text-sm text-white">
                 Every day past your timeline costs <strong style={{ color: '#595959' }}>${burnRate.dailyBurnRate.toLocaleString()}</strong>.

@@ -158,15 +158,15 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: cfData,
         smooth: true,
-        lineStyle: { width: 2, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear',
             x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45, 212, 191, 0.15)' },
-              { offset: 1, color: 'rgba(45, 212, 191, 0)' }
+              { offset: 0, color: 'rgba(32, 178, 170, 0.15)' },
+              { offset: 1, color: 'rgba(32, 178, 170, 0)' }
             ]
           }
         },
@@ -182,15 +182,15 @@ export function ShortTermTrendChart({ snapshots }: ChartProps) {
         yAxisIndex: 1,
         data: vacancyData,
         smooth: true,
-        lineStyle: { width: 2, color: '#ef4444' },
-        itemStyle: { color: '#ef4444' },
+        lineStyle: { width: 2, color: '#F06543' },
+        itemStyle: { color: '#F06543' },
         symbol: 'circle',
         symbolSize: 6,
         markLine: {
           silent: true,
           lineStyle: { type: 'dashed', color: 'rgba(239, 68, 68, 0.3)' },
           data: [
-            { yAxis: 10, label: { formatter: 'Vacancy Threshold (10%)', position: 'end', color: '#ef4444', fontSize: 8 } }
+            { yAxis: 10, label: { formatter: 'Vacancy Threshold (10%)', position: 'end', color: '#F06543', fontSize: 8 } }
           ]
         },
         markPoint: {
@@ -311,8 +311,8 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: capRateData,
         smooth: true,
-        lineStyle: { width: 2, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         symbol: 'circle',
         symbolSize: 6,
         markPoint: {
@@ -344,8 +344,8 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         type: 'line',
         data: appreciationData,
         smooth: true,
-        lineStyle: { width: 2, color: '#a78bfa' },
-        itemStyle: { color: '#a78bfa' },
+        lineStyle: { width: 2, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         symbol: 'circle',
         symbolSize: 6,
         markPoint: {
@@ -480,11 +480,11 @@ export function RiskReturnScatterChart({
         data: data,
         symbolSize: 12,
         itemStyle: {
-          color: '#2dd4bf',
-          borderColor: 'rgba(45, 212, 191, 0.4)',
+          color: '#20B2AA',
+          borderColor: 'rgba(32, 178, 170, 0.4)',
           borderWidth: 2,
           shadowBlur: 8,
-          shadowColor: 'rgba(45, 212, 191, 0.3)',
+          shadowColor: 'rgba(32, 178, 170, 0.3)',
         },
         label: {
           show: true,

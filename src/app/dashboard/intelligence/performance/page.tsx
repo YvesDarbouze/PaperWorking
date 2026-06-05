@@ -31,14 +31,14 @@ function PerformanceChart({ labels, values }: { labels: string[]; values: number
     tooltip: {
       trigger: 'axis',
       backgroundColor: 'rgba(6,15,21,0.92)',
-      borderColor: '#2dd4bf',
+      borderColor: '#20B2AA',
       borderWidth: 1,
       textStyle: { color: '#dae4ec', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' },
       formatter: (params: any[]) => {
         const p = params[0];
-        return `${p.name}<br/><b style="color:#2dd4bf">$${(p.value / 1000).toFixed(0)}k</b>`;
+        return `${p.name}<br/><b style="color:#20B2AA">$${(p.value / 1000).toFixed(0)}k</b>`;
       },
-      extraCssText: 'box-shadow: 0 0 20px rgba(45,212,191,0.2); backdrop-filter: blur(12px);',
+      extraCssText: 'box-shadow: 0 0 20px rgba(32, 178, 170,0.2); backdrop-filter: blur(12px);',
     },
     grid: { top: 20, right: 16, bottom: 28, left: 0, containLabel: true },
     xAxis: {
@@ -64,15 +64,15 @@ function PerformanceChart({ labels, values }: { labels: string[]; values: number
         smooth: 0.4,
         symbol: 'circle',
         symbolSize: 5,
-        lineStyle: { color: '#2dd4bf', width: 2.5 },
-        itemStyle: { color: '#2dd4bf', borderColor: '#060f15', borderWidth: 2 },
-        emphasis: { itemStyle: { color: '#57f1db', borderColor: '#060f15', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(45,212,191,0.5)' } },
+        lineStyle: { color: '#20B2AA', width: 2.5 },
+        itemStyle: { color: '#20B2AA', borderColor: '#060f15', borderWidth: 2 },
+        emphasis: { itemStyle: { color: '#57f1db', borderColor: '#060f15', borderWidth: 2, shadowBlur: 8, shadowColor: 'rgba(32, 178, 170,0.5)' } },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.35)' },
-              { offset: 1, color: 'rgba(45,212,191,0)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.35)' },
+              { offset: 1, color: 'rgba(32, 178, 170,0)' },
             ],
           },
         },
@@ -190,7 +190,7 @@ export default function PortfolioPerformancePage() {
                 key={s}
                 onClick={() => setScope(s)}
                 className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all font-mono ${
-                  scope === s ? 'bg-teal-500 text-black shadow-[0_0_15px_rgba(45,212,191,0.3)]' : 'text-slate-400 hover:text-slate-200'
+                  scope === s ? 'bg-teal-500 text-black shadow-[0_0_15px_rgba(32, 178, 170,0.3)]' : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 {s}

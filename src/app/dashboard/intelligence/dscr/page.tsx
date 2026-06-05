@@ -44,9 +44,9 @@ function DSCRGauge({ value }: { value: number }) {
   const threshold2Pct = (1.25 / MAX) * 100; // 62.5%
 
   const zoneColor =
-    value < 1.0  ? '#ef4444' :
+    value < 1.0  ? '#F06543' :
     value < 1.25 ? '#f59e0b' :
-                   '#2dd4bf';
+                   '#20B2AA';
 
   return (
     <div className="space-y-3">
@@ -82,9 +82,9 @@ function DSCRGauge({ value }: { value: number }) {
       {/* Zone cards */}
       <div className="grid grid-cols-3 gap-1.5 mt-2">
         {[
-          { label: 'At Risk',  range: '< 1.0',   color: '#ef4444',  active: value < 1.0 },
+          { label: 'At Risk',  range: '< 1.0',   color: '#F06543',  active: value < 1.0 },
           { label: 'Min',      range: '1.0–1.25', color: '#f59e0b',  active: value >= 1.0 && value < 1.25 },
-          { label: 'Optimal',  range: '1.25+',    color: '#2dd4bf',  active: value >= 1.25 },
+          { label: 'Optimal',  range: '1.25+',    color: '#20B2AA',  active: value >= 1.25 },
         ].map((z) => (
           <div
             key={z.label}
@@ -141,13 +141,13 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
         type: 'line',
         data: values,
         smooth: true,
-        lineStyle: { width: 2.5, color: '#2dd4bf' },
-        itemStyle: { color: '#2dd4bf' },
+        lineStyle: { width: 2.5, color: '#20B2AA' },
+        itemStyle: { color: '#20B2AA' },
         areaStyle: {
           color: {
             type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
             colorStops: [
-              { offset: 0, color: 'rgba(45,212,191,0.18)' },
+              { offset: 0, color: 'rgba(32, 178, 170,0.18)' },
               { offset: 1, color: 'transparent' },
             ],
           },
@@ -160,8 +160,8 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
           data: [
             {
               yAxis: 1.0,
-              lineStyle: { color: '#ef4444', type: 'dashed', width: 1.5 },
-              label: { show: true, position: 'insideEndTop', color: '#ef4444', fontSize: 10, formatter: 'Risk (1.0x)' },
+              lineStyle: { color: '#F06543', type: 'dashed', width: 1.5 },
+              label: { show: true, position: 'insideEndTop', color: '#F06543', fontSize: 10, formatter: 'Risk (1.0x)' },
             },
             {
               yAxis: 1.25,
@@ -330,7 +330,7 @@ export default function DSCRIntelligencePage() {
               </span>
               <div className="flex items-center gap-3 text-[10px] text-slate-500 font-semibold">
                 <span className="flex items-center gap-1.5">
-                  <span className="w-6 h-0.5 rounded" style={{ background: '#ef4444', display: 'inline-block' }} />
+                  <span className="w-6 h-0.5 rounded" style={{ background: '#F06543', display: 'inline-block' }} />
                   Risk Line (1.0x)
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -391,9 +391,9 @@ export default function DSCRIntelligencePage() {
             <tbody>
               {DEMO_PROPERTIES.map((prop) => {
                 const status =
-                  prop.dscr >= 1.25 ? { label: 'Healthy', color: '#2dd4bf', bg: 'rgba(45,212,191,0.1)' } :
+                  prop.dscr >= 1.25 ? { label: 'Healthy', color: '#20B2AA', bg: 'rgba(32, 178, 170,0.1)' } :
                   prop.dscr >= 1.0  ? { label: 'Marginal', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' } :
-                                      { label: 'At Risk',  color: '#ef4444', bg: 'rgba(239,68,68,0.1)' };
+                                      { label: 'At Risk',  color: '#F06543', bg: 'rgba(239,68,68,0.1)' };
                 return (
                   <tr key={prop.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-3 font-semibold text-white">{prop.address}</td>
@@ -402,7 +402,7 @@ export default function DSCRIntelligencePage() {
                     <td className="py-3 px-3 text-right">
                       <span
                         className="font-bold tabular-nums"
-                        style={{ color: prop.dscr >= 1.25 ? '#2dd4bf' : prop.dscr >= 1.0 ? '#f59e0b' : '#ef4444' }}
+                        style={{ color: prop.dscr >= 1.25 ? '#20B2AA' : prop.dscr >= 1.0 ? '#f59e0b' : '#F06543' }}
                       >
                         {prop.dscr.toFixed(2)}x
                       </span>

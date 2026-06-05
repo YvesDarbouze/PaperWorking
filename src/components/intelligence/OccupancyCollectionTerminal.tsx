@@ -57,7 +57,7 @@ const SEED_UNITS: UnitOccupancy[] = [
 /* ── Status config ── */
 const STATUS_CFG = {
   occupied: { icon: CheckCircle2, color: '#14B8A6', bg: 'rgba(20,184,166,0.08)', label: 'Occupied' },
-  vacant:   { icon: XCircle,      color: '#EF4444', bg: 'rgba(239,68,68,0.08)',  label: 'Vacant'   },
+  vacant:   { icon: XCircle,      color: '#F06543', bg: 'rgba(239,68,68,0.08)',  label: 'Vacant'   },
   notice:   { icon: AlertTriangle, color: '#F59E0B', bg: 'rgba(245,158,11,0.08)', label: 'Notice'   },
 } as const;
 
@@ -167,7 +167,7 @@ function UnitRow({
                      font-mono tabular-nums focus:outline-none focus:border-teal-500/30 transition-all"
         />
         {unit.vacantDays > 0 && (
-          <span className="text-[9px] font-bold tabular-nums" style={{ color: unit.vacantDays > 30 ? '#EF4444' : '#F59E0B' }}>
+          <span className="text-[9px] font-bold tabular-nums" style={{ color: unit.vacantDays > 30 ? '#F06543' : '#F59E0B' }}>
             {((unit.vacantDays / 365) * 100).toFixed(1)}% vacancy
           </span>
         )}
@@ -251,7 +251,7 @@ export function OccupancyCollectionTerminal({
   }, [units.length]);
 
   /* ── Colors ── */
-  const rateColor = seedRate >= 95 ? '#14B8A6' : seedRate >= 85 ? '#F59E0B' : '#EF4444';
+  const rateColor = seedRate >= 95 ? '#14B8A6' : seedRate >= 85 ? '#F59E0B' : '#F06543';
   const rateLabel = seedRate >= 95 ? 'Strong' : seedRate >= 85 ? 'Moderate' : 'At Risk';
 
   return (

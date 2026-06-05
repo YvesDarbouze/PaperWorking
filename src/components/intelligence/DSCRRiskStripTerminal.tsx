@@ -33,10 +33,10 @@ const RISK_CONFIG = {
   'at-risk': {
     label: 'AT RISK',
     sublabel: 'Cannot cover debt obligations',
-    color: '#EF4444',
+    color: '#F06543',
     icon: XCircle,
     bgClass: 'bg-red-400/10 border-red-400/20',
-    stripGradient: 'linear-gradient(90deg, #EF4444 0%, #EF444440 100%)',
+    stripGradient: 'linear-gradient(90deg, #F06543 0%, #F0654340 100%)',
   },
   'marginal': {
     label: 'MARGINAL',

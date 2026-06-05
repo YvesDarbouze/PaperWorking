@@ -133,7 +133,7 @@ export default function IRRChart({ data, height = 300, actualHoldYears = 0 }: IR
             {
               yAxis: 0,
               label: { show: false },
-              lineStyle: { color: '#EF4444', type: 'dashed' }
+              lineStyle: { color: '#F06543', type: 'dashed' }
             }
           ]
         }

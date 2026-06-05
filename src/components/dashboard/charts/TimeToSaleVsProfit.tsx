@@ -96,7 +96,7 @@ function CustomDot(props: any) {
         cx={cx}
         cy={cy}
         r={7}
-        fill={isPositive ? '#111827' : '#ef4444'}
+        fill={isPositive ? '#111827' : '#F06543'}
         stroke="#fff"
         strokeWidth={2}
         className="drop-shadow-md"

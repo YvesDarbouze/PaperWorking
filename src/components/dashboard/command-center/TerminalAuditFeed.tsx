@@ -48,13 +48,13 @@ function toDisplay(fieldPath: string, newValue: unknown, source: string): Pick<F
   if (fp.includes("rehab") || fp.includes("lineitem") || fp.includes("renovation"))
     return { icon: "construction",    iconColor: "#ffac5a", action: "Rehab update",     target: fp.split(".").pop() ?? fp };
   if (fp.includes("team") || fp.includes("member") || fp.includes("vendor"))
-    return { icon: "person_add",      iconColor: "#34d399", action: "Team change",      target: val };
+    return { icon: "person_add",      iconColor: "#3f7d20", action: "Team change",      target: val };
   if (fp.includes("offer") || fp.includes("bid"))
     return { icon: "gavel",           iconColor: "#fbbf24", action: "Offer updated",    target: val };
   if (fp.includes("loanamount") || fp.includes("interest"))
     return { icon: "account_balance", iconColor: "#adc6ff", action: "Financing updated", target: val };
   if (source === "ocr")
-    return { icon: "document_scanner", iconColor: "#c084fc", action: "OCR extraction", target: fp.split(".").pop() ?? fp };
+    return { icon: "document_scanner", iconColor: "#20B2AA", action: "OCR extraction", target: fp.split(".").pop() ?? fp };
   return { icon: "edit_note", iconColor: "rgba(186,202,197,0.6)", action: "Updated", target: fp.split(".").pop() ?? fp };
 }
 

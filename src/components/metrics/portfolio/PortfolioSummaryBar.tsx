@@ -100,7 +100,7 @@ export function PortfolioSummaryBar({ projects, isLoading, className }: Portfoli
     {
       key: 'acquisition',
       title: 'Acquisition',
-      dotClass: 'bg-primary-container shadow-[0_0_8px_rgba(45,212,191,0.6)]',
+      dotClass: 'bg-primary-container shadow-[0_0_8px_rgba(32, 178, 170,0.6)]',
       hoverTextClass: 'group-hover:text-primary-container',
       value: metrics.acquisition.val,
       count: metrics.acquisition.count,

@@ -9,11 +9,11 @@ import type { ActivityItem } from '@/actions/admin';
    ═══════════════════════════════════════════════════════ */
 
 const ICON_MAP: Record<ActivityItem['type'], React.ReactNode> = {
-  signup:  <UserPlus className="w-4 h-4" style={{ color: '#22c55e' }} />,
+  signup:  <UserPlus className="w-4 h-4" style={{ color: '#3f7d20' }} />,
   upgrade: <ArrowUpCircle className="w-4 h-4" style={{ color: '#3b82f6' }} />,
   ticket:  <Ticket className="w-4 h-4" style={{ color: '#f59e0b' }} />,
-  churn:   <UserMinus className="w-4 h-4" style={{ color: '#ef4444' }} />,
-  payment: <CreditCard className="w-4 h-4" style={{ color: '#ef4444' }} />,
+  churn:   <UserMinus className="w-4 h-4" style={{ color: '#F06543' }} />,
+  payment: <CreditCard className="w-4 h-4" style={{ color: '#F06543' }} />,
 };
 
 export default function ActivityFeed({ items }: { items: ActivityItem[] }) {

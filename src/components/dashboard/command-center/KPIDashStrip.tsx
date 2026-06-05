@@ -34,8 +34,8 @@ const SEED_METRICS: KPIMetric[] = [
 
 const statusColors: Record<KPIMetric["status"], { bg: string; dot: string; label: string }> = {
   healthy: {
-    bg: "rgba(16,185,129,0.1)",
-    dot: "#10B981",
+    bg: "rgba(63, 125, 32,0.1)",
+    dot: "#3f7d20",
     label: "Healthy",
   },
   watch: {
@@ -45,7 +45,7 @@ const statusColors: Record<KPIMetric["status"], { bg: string; dot: string; label
   },
   alert: {
     bg: "rgba(239,68,68,0.1)",
-    dot: "#EF4444",
+    dot: "#F06543",
     label: "Alert",
   },
 };

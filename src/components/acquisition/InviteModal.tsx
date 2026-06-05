@@ -141,7 +141,7 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                     className="w-full rounded-xl px-4 py-3 text-sm bg-transparent outline-none"
                     style={{
                       background: "rgba(14,22,28,0.8)",
-                      border:     `1px solid ${error ? "#ef444440" : "rgba(255,255,255,0.09)"}`,
+                      border:     `1px solid ${error ? "#F0654340" : "rgba(255,255,255,0.09)"}`,
                       color:      "rgba(218,228,236,0.9)",
                     }}
                   />
@@ -176,7 +176,7 @@ export function InviteModal({ projectId, projectName, isOpen, onClose }: InviteM
                 </div>
 
                 {error && (
-                  <p className="text-[12px] flex items-center gap-1.5" style={{ color: "#ef4444" }}>
+                  <p className="text-[12px] flex items-center gap-1.5" style={{ color: "#F06543" }}>
                     <span className="material-symbols-outlined text-[14px]">error</span>
                     {error}
                   </p>

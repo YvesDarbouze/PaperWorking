@@ -79,7 +79,7 @@ export default function AdminHeader() {
             {/* Notification dot */}
             <span
               className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
-              style={{ background: '#ef4444' }}
+              style={{ background: '#F06543' }}
               aria-label="3 unread notifications"
             />
           </button>

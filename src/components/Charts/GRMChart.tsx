@@ -80,7 +80,7 @@ export default function GRMChart({ data, height = 300 }: GRMChartProps) {
           else if (d.grm <= 8) color = '#595959'; // Excellent
           else if (d.grm <= 12) color = '#7F7F7F'; // Typical
           else if (d.grm <= 15) color = '#A5A5A5'; // Moderate
-          else if (d.grm <= 20) color = '#EF4444'; // High
+          else if (d.grm <= 20) color = '#F06543'; // High
           
           return {
             value: d.grm,

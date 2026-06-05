@@ -24,9 +24,9 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 /* ── Phase Color Map ── */
 const PHASE_COLORS: Record<number, { stripe: string; glow: string; label: string }> = {
   1: { stripe: '#3B82F6', glow: 'rgba(59,130,246,0.15)', label: 'Acquisition' },
-  2: { stripe: '#10B981', glow: 'rgba(16,185,129,0.15)', label: 'Purchase' },
+  2: { stripe: '#3f7d20', glow: 'rgba(63, 125, 32,0.15)', label: 'Purchase' },
   3: { stripe: '#F59E0B', glow: 'rgba(245,158,11,0.15)', label: 'Hold' },
-  4: { stripe: '#8B5CF6', glow: 'rgba(139,92,246,0.15)', label: 'Exit' },
+  4: { stripe: '#20B2AA', glow: 'rgba(32, 178, 170,0.15)', label: 'Exit' },
 };
 
 /* ── Strategy to display label ── */
@@ -61,7 +61,7 @@ function classifyState(project: Project): ProjectState {
 
 const STATE_PILLS: Record<ProjectState, { bg: string; text: string; label: string; pulse?: boolean }> = {
   draft:    { bg: 'rgba(156,163,175,0.15)', text: '#9CA3AF', label: 'DRAFT' },
-  live:     { bg: 'rgba(16,185,129,0.15)',   text: '#10B981', label: 'LIVE', pulse: true },
+  live:     { bg: 'rgba(63, 125, 32,0.15)',   text: '#3f7d20', label: 'LIVE', pulse: true },
   realized: { bg: 'rgba(59,130,246,0.15)',   text: '#3B82F6', label: 'REALIZED' },
 };
 
@@ -250,8 +250,8 @@ export function ProjectCard({
               <span
                 className="px-2 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider"
                 style={{
-                  backgroundColor: 'rgba(139,92,246,0.1)',
-                  color: '#A78BFA',
+                  backgroundColor: 'rgba(32, 178, 170,0.1)',
+                  color: '#20B2AA',
                 }}
               >
                 {ownership}% owned

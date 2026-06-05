@@ -39,18 +39,18 @@ const IRR_HOLD_YEARS = 5;
 const SELLING_COSTS_PERCENT = 8;
 
 const ZONE_STYLES: Record<MetricResult['zone'], { bg: string; text: string; border: string }> = {
-  excellent: { bg: 'rgba(45, 212, 191, 0.12)', text: '#2dd4bf', border: 'rgba(45, 212, 191, 0.3)' },
-  good:      { bg: 'rgba(45, 212, 191, 0.06)', text: '#5eead4', border: 'rgba(45, 212, 191, 0.15)' },
+  excellent: { bg: 'rgba(32, 178, 170, 0.12)', text: '#20B2AA', border: 'rgba(32, 178, 170, 0.3)' },
+  good:      { bg: 'rgba(32, 178, 170, 0.06)', text: '#5eead4', border: 'rgba(32, 178, 170, 0.15)' },
   fair:      { bg: 'rgba(251, 146, 60, 0.08)', text: '#fb923c', border: 'rgba(251, 146, 60, 0.2)' },
-  poor:      { bg: 'rgba(248, 113, 113, 0.08)', text: '#f87171', border: 'rgba(248, 113, 113, 0.2)' },
+  poor:      { bg: 'rgba(240, 101, 67, 0.08)', text: '#F06543', border: 'rgba(240, 101, 67, 0.2)' },
   neutral:   { bg: 'rgba(255, 255, 255, 0.03)', text: 'rgba(218, 228, 236, 0.5)', border: 'rgba(255, 255, 255, 0.06)' },
 };
 
 const VERDICT_STYLES: Record<Verdict, { bg: string; text: string; border: string; glow: string }> = {
-  'STRONG BUY': { bg: 'rgba(45, 212, 191, 0.1)', text: '#2dd4bf', border: 'rgba(45, 212, 191, 0.4)', glow: '0 0 30px rgba(45, 212, 191, 0.2)' },
+  'STRONG BUY': { bg: 'rgba(32, 178, 170, 0.1)', text: '#20B2AA', border: 'rgba(32, 178, 170, 0.4)', glow: '0 0 30px rgba(32, 178, 170, 0.2)' },
   'BUY':        { bg: 'rgba(94, 234, 212, 0.06)', text: '#5eead4', border: 'rgba(94, 234, 212, 0.25)', glow: '0 0 20px rgba(94, 234, 212, 0.1)' },
   'HOLD':       { bg: 'rgba(251, 146, 60, 0.06)', text: '#fb923c', border: 'rgba(251, 146, 60, 0.25)', glow: '0 0 20px rgba(251, 146, 60, 0.1)' },
-  'PASS':       { bg: 'rgba(248, 113, 113, 0.06)', text: '#f87171', border: 'rgba(248, 113, 113, 0.25)', glow: '0 0 20px rgba(248, 113, 113, 0.1)' },
+  'PASS':       { bg: 'rgba(240, 101, 67, 0.06)', text: '#F06543', border: 'rgba(240, 101, 67, 0.25)', glow: '0 0 20px rgba(240, 101, 67, 0.1)' },
 };
 
 // ── Helper: Parse number from string ───────────────────────────
@@ -637,7 +637,7 @@ export default function DealAnalyzerPage() {
             style={{
               background: 'var(--color-primary-container)',
               color: 'var(--color-on-primary)',
-              boxShadow: '0 0 20px -5px rgba(45, 212, 191, 0.4)',
+              boxShadow: '0 0 20px -5px rgba(32, 178, 170, 0.4)',
             }}
           >
             Save as Project

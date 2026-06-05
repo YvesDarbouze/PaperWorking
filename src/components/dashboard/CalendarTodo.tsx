@@ -56,9 +56,9 @@ export default function CalendarTodo() {
 
     maybeAdd(f?.acquisitionDate,  'Closing / Acquisition', 'var(--pw-accent)');
     maybeAdd(f?.emdGoHardDate,    'EMD Go-Hard',           '#F59E0B');
-    maybeAdd(f?.emdClearedDate,   'EMD Cleared',           '#10B981');
-    maybeAdd(f?.listingDate,      'Listing Date',          '#6366F1');
-    maybeAdd(f?.soldDate,         'Sold Date',             '#EF4444');
+    maybeAdd(f?.emdClearedDate,   'EMD Cleared',           '#3f7d20');
+    maybeAdd(f?.listingDate,      'Listing Date',          '#20B2AA');
+    maybeAdd(f?.soldDate,         'Sold Date',             '#F06543');
 
     return events;
   }, [currentProject, calYear, calMonth]);

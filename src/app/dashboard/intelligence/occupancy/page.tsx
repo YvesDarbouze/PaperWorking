@@ -48,7 +48,7 @@ function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupanc
         const month = params[0].axisValue;
         const occ = params[0].value;
         const vac = params[1]?.value ?? (100 - occ);
-        return `${month}<br/><span style="color:#2dd4bf">■</span> Occupied: <b>${occ.toFixed(1)}%</b><br/><span style="color:#f87171">■</span> Vacant: <b>${(100 - occ).toFixed(1)}%</b>`;
+        return `${month}<br/><span style="color:#20B2AA">■</span> Occupied: <b>${occ.toFixed(1)}%</b><br/><span style="color:#F06543">■</span> Vacant: <b>${(100 - occ).toFixed(1)}%</b>`;
       },
     },
     legend: {
@@ -79,7 +79,7 @@ function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupanc
         stack: 'total',
         data: occupancyPcts.map((v) => ({
           value: v,
-          itemStyle: { color: '#2dd4bf' },
+          itemStyle: { color: '#20B2AA' },
         })),
         barMaxWidth: 32,
         itemStyle: { borderRadius: [0, 0, 0, 0] },
@@ -90,7 +90,7 @@ function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupanc
         stack: 'total',
         data: occupancyPcts.map((v) => ({
           value: parseFloat((100 - v).toFixed(1)),
-          itemStyle: { color: 'rgba(248,113,113,0.25)' },
+          itemStyle: { color: 'rgba(240, 101, 67,0.25)' },
         })),
         barMaxWidth: 32,
         itemStyle: { borderRadius: [3, 3, 0, 0] },
@@ -113,13 +113,13 @@ function SmallDonut({ occupiedPct }: { occupiedPct: number }) {
         cy="40"
         r={r}
         fill="none"
-        stroke="#2dd4bf"
+        stroke="#20B2AA"
         strokeWidth="10"
         strokeDasharray={`${stroke} ${gap}`}
         strokeLinecap="round"
         transform="rotate(-90 40 40)"
       />
-      <text x="40" y="43" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#2dd4bf">
+      <text x="40" y="43" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#20B2AA">
         {occupiedPct.toFixed(0)}%
       </text>
     </svg>

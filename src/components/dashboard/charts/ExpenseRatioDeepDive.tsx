@@ -21,7 +21,7 @@ function classifyER(rate: number): {
   if (rate <= 25) return { grade: 'excellent', label: 'Very Lean', description: 'Exceptional efficiency — typical of high-rent properties', color: '#595959', bgColor: 'rgba(89,89,89,0.08)', borderColor: 'rgba(89,89,89,0.2)' };
   if (rate <= 35) return { grade: 'efficient', label: 'Efficient', description: 'Strong operational control — expenses well-managed', color: '#7F7F7F', bgColor: 'rgba(127,127,127,0.08)', borderColor: 'rgba(127,127,127,0.2)' };
   if (rate <= 45) return { grade: 'average', label: 'Typical', description: 'In line with industry average — room for optimization', color: '#A5A5A5', bgColor: 'rgba(165,165,165,0.08)', borderColor: 'rgba(165,165,165,0.2)' };
-  if (rate <= 60) return { grade: 'high', label: 'High Expenses', description: 'Investigate: below-market rents, deferred maintenance, or inefficient management', color: '#EF4444', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
+  if (rate <= 60) return { grade: 'high', label: 'High Expenses', description: 'Investigate: below-market rents, deferred maintenance, or inefficient management', color: '#F06543', bgColor: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.2)' };
   return { grade: 'critical', label: 'Critical', description: 'Most of your rental income is consumed by operating costs', color: '#DC2626', bgColor: 'rgba(220,38,38,0.08)', borderColor: 'rgba(220,38,38,0.2)' };
 }
 
@@ -30,8 +30,8 @@ const EXPENSE_COLORS: Record<string, string> = {
   'Insurance': '#7F7F7F',
   'Utilities': '#A5A5A5',
   'Property Mgmt': '#595959',
-  'Maintenance': '#EF4444',
-  'HOA': '#8B5CF6',
+  'Maintenance': '#F06543',
+  'HOA': '#20B2AA',
 };
 
 // Tooltips removed since ECharts components handle their own Tooltip formatters
@@ -140,7 +140,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { icon: PieIcon, label: 'Expense Ratio', value: fmtPct(primary.oer), sublabel: `${fmtUSD(Math.round(primary.totalExpenses))} of ${fmtUSD(Math.round(primary.grossRent))} income`, color: classification.color },
-          { icon: DollarSign, label: 'Total Operating Costs', value: fmtUSD(Math.round(primary.totalExpenses)), sublabel: `${fmtUSD(Math.round(primary.totalExpenses / 12))}/mo`, color: '#EF4444' },
+          { icon: DollarSign, label: 'Total Operating Costs', value: fmtUSD(Math.round(primary.totalExpenses)), sublabel: `${fmtUSD(Math.round(primary.totalExpenses / 12))}/mo`, color: '#F06543' },
           { icon: Target, label: 'Income Retained', value: fmtPct(100 - primary.oer), sublabel: `${fmtUSD(Math.round(primary.grossRent - primary.totalExpenses))}/yr kept`, color: '#595959' },
           { icon: TrendingDown, label: 'Top Cost Driver', value: topDriver ? topDriver.name : 'N/A', sublabel: topDriver ? `${fmtUSD(topDriver.value)}/yr (${fmtPct(topDriver.pct)})` : '—', color: '#595959' },
         ].map((kpi, i) => (
@@ -231,7 +231,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
                     <td className="px-3 py-2 tabular-nums font-bold" style={{ color: cls.color, background: row.isCurrent ? cls.bgColor : 'transparent', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtPct(row.newRatio)}
                     </td>
-                    <td className="px-3 py-2 tabular-nums" style={{ color: row.newNOI >= 0 ? '#595959' : '#EF4444', borderBottom: '1px solid var(--border-ui)' }}>
+                    <td className="px-3 py-2 tabular-nums" style={{ color: row.newNOI >= 0 ? '#595959' : '#F06543', borderBottom: '1px solid var(--border-ui)' }}>
                       {fmtUSD(Math.round(row.newNOI))}
                     </td>
                     <td className="px-3 py-2 tabular-nums" style={{ color: row.savedAnnual > 0 ? '#595959' : 'var(--text-secondary)', borderBottom: '1px solid var(--border-ui)' }}>
@@ -251,7 +251,7 @@ export default function ExpenseRatioDeepDive({ projects: propProjects }: Props) 
       {/* Rent-Tier Comparison */}
       <div className="bg-bg-surface border border-border-accent rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
-          <DollarSign className="w-4 h-4" style={{ color: '#8B5CF6' }} />
+          <DollarSign className="w-4 h-4" style={{ color: '#20B2AA' }} />
           <h4 className="text-xs font-bold uppercase tracking-[0.15em] text-text-secondary">&ldquo;Rent Level Effect&rdquo; — Same Costs, Different Rents</h4>
         </div>
         <p className="text-[10px] text-text-secondary mb-4">

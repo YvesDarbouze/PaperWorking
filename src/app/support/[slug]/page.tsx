@@ -56,7 +56,9 @@ export default async function SupportArticlePage({ params }: SupportArticlePageP
           {category && (
             <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 rounded-full bg-[var(--pw-bg)] flex items-center justify-center shrink-0">
-                <category.icon className="w-4 h-4 text-[var(--pw-black)]" />
+                <span className="material-symbols-outlined text-sm text-[var(--pw-black)]">
+                  {category.icon}
+                </span>
               </div>
               <span className="text-xs font-bold uppercase tracking-widest text-[var(--pw-subtle)]">
                 {category.title}
@@ -83,7 +85,7 @@ export default async function SupportArticlePage({ params }: SupportArticlePageP
                      prose-a:text-emerald-600 prose-a:no-underline hover:prose-a:text-emerald-700
                      prose-strong:text-[var(--pw-black)] prose-strong:font-semibold
                      prose-li:marker:text-[var(--pw-muted)]"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          dangerouslySetInnerHTML={{ __html: article.content || `<p>${article.excerpt}</p><p>This article is currently being updated. Please check back later or contact support if you need immediate assistance.</p>` }}
         />
 
         {/* Feedback Widget */}

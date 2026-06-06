@@ -102,7 +102,7 @@ const TOOLTIPS: Record<string, TooltipDef> = {
     formula:     "Price-to-Rent = Median Home Price ÷ Average Annual Rent",
     description: "Price-to-Rent Ratio indicates whether buying or renting is cheaper in a market. Guides acquisition strategy.",
     benchmark:   "Below 15: strong buy market. 15–20: moderate. Above 20: rental may not pencil.",
-    goodSign:    "Low P/R ratios in your target markets mean you can acquire more rent for less capital.",
+    goodSign:    "Why it matters: A high ratio indicates a better environment for renting out properties, as people are priced out of buying.",
   },
   VACANCY: {
     formula:     "Vacancy Rate = Vacant Units ÷ Total Units × 100",

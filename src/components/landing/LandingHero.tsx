@@ -11,29 +11,6 @@ import Link from 'next/link';
    3. Stop Profit Erosion — elevated glass callout
    ═══════════════════════════════════════════════════════ */
 
-const phases = [
-  {
-    icon: 'hub',
-    title: 'Acquisition',
-    body: 'Source & secure capital.',
-  },
-  {
-    icon: 'verified_user',
-    title: 'Purchase',
-    body: 'Automated compliance.',
-  },
-  {
-    icon: 'speed',
-    title: 'Hold',
-    body: 'Real-time margin tracking.',
-  },
-  {
-    icon: 'account_balance',
-    title: 'Exit',
-    body: 'Instant ROI reporting.',
-  },
-] as const;
-
 export default function LandingHero() {
   return (
     <>
@@ -80,47 +57,6 @@ export default function LandingHero() {
           {/* Sub-note */}
           <p className="font-body-sm text-body-sm text-on-surface-variant/60">
             No credit card required. Free forever for 1 active deal.
-          </p>
-        </div>
-      </section>
-
-      {/* ── 2. REIL Phases Grid ─────────────────────────────── */}
-      <section
-        id="how-it-works"
-        className="w-full max-w-container-max mx-auto px-5 md:px-6 pb-16 md:pb-24"
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {phases.map(({ icon, title, body }) => (
-            <div
-              key={title}
-              className="glass-panel p-8 rounded-xl border border-primary/10 hover:border-primary/30 transition-all group"
-            >
-              {/* Icon wrapper */}
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-primary text-2xl">
-                  {icon}
-                </span>
-              </div>
-
-              <h3 className="font-headline-md text-headline-md text-on-surface mb-2">
-                {title}
-              </h3>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                {body}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── 3. Stop Profit Erosion ──────────────────────────── */}
-      <section className="w-full max-w-container-max mx-auto px-5 md:px-6 pb-24 md:pb-32">
-        <div className="glass-panel-elevated p-12 rounded-2xl text-center border-t-2 border-t-primary/40 relative overflow-hidden">
-          <h2 className="font-headline-lg text-headline-lg text-primary mb-4">
-            Stop Profit Erosion.
-          </h2>
-          <p className="font-body-lg text-body-lg text-on-surface">
-            Replace fragmented spreadsheets with a single, high-fidelity operating system.
           </p>
         </div>
       </section>

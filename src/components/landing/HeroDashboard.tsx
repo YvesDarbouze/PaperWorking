@@ -105,7 +105,7 @@ export default function HeroDashboard() {
           <div className="w-2 h-2 rounded-full bg-white/10" />
           <div className="w-2 h-2 rounded-full bg-white/10" />
         </div>
-        <span className="text-[10px] uppercase tracking-widest text-phase-2 font-mono">command_center.sh</span>
+        <span className="text-[10px] uppercase tracking-[0.12em] text-phase-2 font-sans font-semibold">paperworking.co / command-center</span>
         <span className="text-xs text-phase-2 font-medium tabular-nums">Live · Q2 2026</span>
       </div>
 

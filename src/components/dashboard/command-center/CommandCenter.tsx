@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useProjectStore } from "@/store/projectStore";
+import { useTheme } from "@/lib/utils/ThemeProvider";
 import { ActivePipeline } from "./ActivePipeline";
 import { TerminalAuditFeed } from "./TerminalAuditFeed";
 import { MarketHeatmap } from "./MarketHeatmap";
@@ -153,6 +154,23 @@ function fmtPct(n: number | null): string {
   return n.toFixed(1);
 }
 
+// ─── Design tokens ────────────────────────────────────────────────────────────
+
+function tokens(isDark: boolean) {
+  return {
+    heading:    isDark ? "rgba(253,255,252,0.95)" : "#0d0a0b",
+    subtext:    isDark ? "rgba(253,255,252,0.42)" : "rgba(69,73,85,0.58)",
+    muted:      isDark ? "rgba(253,255,252,0.28)" : "rgba(69,73,85,0.42)",
+    divider:    isDark ? "rgba(230, 234, 240, 0.12)" : "rgba(33, 34, 38, 0.12)",
+    link:       "#3279F9",
+    panelBg:    isDark
+      ? "linear-gradient(145deg, rgba(30,27,34,0.72) 0%, rgba(18,16,20,0.90) 100%)"
+      : "#FFFFFF",
+    panelBorder:isDark ? "rgba(230, 234, 240, 0.12)"  : "rgba(33, 34, 38, 0.12)",
+    panelShadow:isDark ? "0 4px 20px rgba(0,0,0,0.28)" : "0 2px 10px rgba(0,0,0,0.06)",
+  };
+}
+
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
 
 interface KPICardProps {
@@ -161,106 +179,182 @@ interface KPICardProps {
   value: string;
   suffix?: string;
   accentColor: string;
-  badge?: string;
-  badgeColor?: string;
-  subLabel?: string;
+  trend?: "up" | "down" | "flat";
+  chip?: string;
+  meta?: string;
+  isDark: boolean;
 }
 
-function KPICard({
-  label,
-  icon,
-  value,
-  suffix,
-  accentColor,
-  badge,
-  badgeColor,
-  subLabel,
-}: KPICardProps) {
+function KPICard({ label, icon, value, suffix, accentColor, trend, chip, meta, isDark }: KPICardProps) {
+  const t        = tokens(isDark);
+  const trendIcon = trend === "up" ? "arrow_upward" : trend === "down" ? "arrow_downward" : null;
+  const trendClr  = trend === "up" ? "#5aaa3f" : trend === "down" ? "#F06543" : undefined;
+  const [hovered, setHovered] = useState(false);
+
   return (
     <article
       aria-label={`${label}: ${value}${suffix ?? ""}`}
-      className="relative rounded-2xl p-5 flex flex-col justify-between overflow-hidden group"
+      className="relative flex flex-col gap-2.5 rounded-xl p-4 overflow-hidden group cursor-default"
       style={{
-        background:
-          "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.28)",
+        background: t.panelBg,
+        backdropFilter: isDark ? "blur(24px)" : undefined,
+        WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
+        border: `1px solid ${hovered ? "#3279F9" : t.panelBorder}`,
+        boxShadow: hovered
+          ? (isDark ? "0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px #3279F9" : "0 8px 30px rgba(50, 121, 249, 0.06), 0 0 0 1px #3279F9")
+          : t.panelShadow,
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      {/* Top accent bar */}
+      {/* Left accent bar */}
       <div
-        className="absolute top-0 left-0 right-0 h-[3px] opacity-60"
-        style={{ background: `linear-gradient(90deg, ${accentColor}, transparent)` }}
-      />
-      {/* Inner light leak */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 50%)",
-        }}
+        className="absolute left-0 top-4 bottom-4 w-[3px] rounded-r-full"
+        style={{ background: accentColor, opacity: 0.7 }}
       />
 
       {/* Label + icon */}
-      <div className="relative flex justify-between items-start mb-4">
+      <div className="flex items-center justify-between pl-3">
         <span
           className="text-[10px] font-bold uppercase tracking-widest"
-          style={{ color: "rgba(253,255,252,0.45)", letterSpacing: "0.08em" }}
+          style={{ color: t.subtext, letterSpacing: "0.08em" }}
         >
           {label}
         </span>
         <span
-          className="material-symbols-outlined text-[20px] transition-transform duration-300 group-hover:scale-110"
-          style={{ color: accentColor, fontVariationSettings: "'FILL' 0" }}
+          className="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover:scale-105"
+          style={{ color: accentColor, fontVariationSettings: "'FILL' 0", opacity: 0.75 }}
         >
           {icon}
         </span>
       </div>
 
       {/* Value */}
-      <div className="relative">
-        <div className="flex items-baseline gap-1 mb-1.5">
+      <div className="pl-3">
+        <div className="flex items-baseline gap-1 leading-none mb-1.5">
           <span
-            className="text-[2.25rem] font-bold leading-none tracking-tight tabular-nums"
-            style={{ color: "rgba(253,255,252,0.95)" }}
+            className="text-[2.1rem] font-bold tracking-tight tabular-nums"
+            style={{ color: t.heading, fontVariantNumeric: "tabular-nums" }}
           >
             {value}
           </span>
           {suffix && (
-            <span className="text-xl font-semibold ml-0.5" style={{ color: accentColor }}>
+            <span className="text-[1rem] font-semibold" style={{ color: accentColor }}>
               {suffix}
             </span>
           )}
         </div>
 
-        {(badge || subLabel) && (
-          <div className="flex items-center gap-2">
-            {badge && (
-              <span
-                className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                style={{
-                  background: `${badgeColor ?? accentColor}18`,
-                  color: badgeColor ?? accentColor,
-                }}
-              >
-                {badge}
-              </span>
-            )}
-            {subLabel && (
-              <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.35)" }}>
-                {subLabel}
-              </span>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {chip && (
+            <span
+              className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+              style={{ background: `${accentColor}15`, color: accentColor }}
+            >
+              {trendIcon && (
+                <span
+                  className="material-symbols-outlined text-[11px]"
+                  style={{ fontVariationSettings: "'FILL' 1", color: trendClr ?? accentColor }}
+                >
+                  {trendIcon}
+                </span>
+              )}
+              {chip}
+            </span>
+          )}
+          {meta && (
+            <span className="text-[11px]" style={{ color: t.muted }}>
+              {meta}
+            </span>
+          )}
+        </div>
       </div>
     </article>
   );
 }
 
-// ─── Phase Legend ─────────────────────────────────────────────────────────────
+// ─── Section heading ──────────────────────────────────────────────────────────
+
+function SectionHeading({
+  title,
+  href,
+  linkLabel,
+  badge,
+  badgeColor,
+  isDark,
+}: {
+  title: string;
+  href?: string;
+  linkLabel?: string;
+  badge?: string | number;
+  badgeColor?: string;
+  isDark: boolean;
+}) {
+  const t = tokens(isDark);
+  return (
+    <div className="flex items-center gap-3 mb-4">
+      <h2
+        className="text-[14px] font-semibold tracking-tight shrink-0"
+        style={{ color: t.heading, letterSpacing: "-0.01em" }}
+      >
+        {title}
+      </h2>
+      {badge !== undefined && (
+        <span
+          className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+          style={{
+            background: `${badgeColor ?? "#F06543"}18`,
+            color: badgeColor ?? "#F06543",
+          }}
+        >
+          {badge}
+        </span>
+      )}
+      <div className="flex-1 h-px" style={{ background: t.divider }} />
+      {href && linkLabel && (
+        <Link
+          href={href}
+          className="text-[12px] font-semibold shrink-0 transition-opacity duration-150 hover:opacity-70"
+          style={{ color: t.link }}
+        >
+          {linkLabel} →
+        </Link>
+      )}
+    </div>
+  );
+}
+
+// ─── Glass panel wrapper ───────────────────────────────────────────────────────
+
+function Panel({
+  children,
+  isDark,
+  className = "",
+}: {
+  children: React.ReactNode;
+  isDark: boolean;
+  className?: string;
+}) {
+  const t = tokens(isDark);
+  return (
+    <div
+      className={`rounded-xl overflow-hidden ${className}`}
+      style={{
+        background: t.panelBg,
+        backdropFilter: isDark ? "blur(20px)" : undefined,
+        WebkitBackdropFilter: isDark ? "blur(20px)" : undefined,
+        border: `1px solid ${t.panelBorder}`,
+        boxShadow: t.panelShadow,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Phase legend pills ────────────────────────────────────────────────────────
 
 const PHASE_LEGEND = [
   { label: "Acquisition", color: "#454955" },
@@ -269,68 +363,157 @@ const PHASE_LEGEND = [
   { label: "Hold / Exit", color: "#5aaa3f" },
 ];
 
-// ─── Inbox preview strip ──────────────────────────────────────────────────────
+// ─── Recent Activity Feed ─────────────────────────────────────────────────────
 
-function InboxStrip() {
+const ACTIVITY_ITEMS = [
+  { icon: "upload_file",       label: "Document uploaded",   sub: "123 Main St · Closing Docs",    time: "2m",  accent: "#7A9EAA" },
+  { icon: "group_add",         label: "Team invite accepted", sub: "Sarah K. joined the workspace", time: "14m", accent: "#3f7d20" },
+  { icon: "edit_note",         label: "Project updated",      sub: "456 Oak Ave · Phase 2",         time: "1h",  accent: "#3279F9" },
+  { icon: "mark_email_unread", label: "New message",          sub: "Vendor quote · ABC Roofing",    time: "3h",  accent: "#ffac5a" },
+  { icon: "task_alt",          label: "Task completed",       sub: "Title search · 789 Pine St",    time: "1d",  accent: "#3f7d20" },
+  { icon: "request_quote",     label: "Deal invite received", sub: "Crowdfund opportunity · $50K",  time: "2d",  accent: "#C4A35A" },
+] as const;
+
+function RecentActivityFeed({ isDark }: { isDark: boolean }) {
+  const t = tokens(isDark);
   return (
-    <div
-      className="rounded-2xl overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
-      }}
-    >
+    <Panel isDark={isDark} className="h-full flex flex-col">
+      {/* Header */}
       <div
-        className="px-5 py-4 flex justify-between items-center"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        className="px-4 py-3.5 flex justify-between items-center shrink-0"
+        style={{ borderBottom: `1px solid ${t.divider}` }}
       >
         <div className="flex items-center gap-2">
           <span
-            className="material-symbols-outlined text-[18px]"
-            style={{ color: "#7A9EAA", fontVariationSettings: "'FILL' 0" }}
+            className="material-symbols-outlined text-[16px]"
+            style={{ color: "#3279F9", fontVariationSettings: "'FILL' 0" }}
           >
-            inbox
+            history
           </span>
           <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(253,255,252,0.5)", letterSpacing: "0.08em" }}
+            className="text-[10px] font-bold uppercase"
+            style={{ letterSpacing: "0.08em", color: t.subtext }}
           >
-            Inbox
+            Recent Activity
           </span>
         </div>
         <Link
           href="/dashboard/inbox"
-          className="text-[11px] font-semibold transition-opacity duration-150 hover:opacity-70"
-          style={{ color: "#7A9EAA" }}
+          className="text-[11px] font-semibold hover:opacity-70 transition-opacity"
+          style={{ color: "#3279F9" }}
         >
-          Open →
+          All →
         </Link>
       </div>
 
-      {/* Placeholder rows — real threads wired via SmartInboxWidget in /inbox */}
-      <div className="px-5 py-4 flex flex-col items-center justify-center gap-1 text-center min-h-[80px]">
-        <span
-          className="material-symbols-outlined text-2xl"
-          style={{ color: "rgba(253,255,252,0.12)" }}
-        >
-          mark_email_unread
-        </span>
-        <p className="text-[11px]" style={{ color: "rgba(253,255,252,0.25)" }}>
-          Messages and deal invites appear here.
-        </p>
-        <Link
-          href="/dashboard/inbox"
-          className="text-[11px] font-semibold mt-1 hover:opacity-70"
-          style={{ color: "#7A9EAA" }}
-        >
-          Go to Inbox
-        </Link>
+      {/* Items */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+        {ACTIVITY_ITEMS.map((item, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 cursor-default relative overflow-hidden group"
+            style={{
+              borderColor: t.divider,
+              background: "transparent",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = "#3279F9";
+              e.currentTarget.style.boxShadow = isDark
+                ? "0 4px 20px rgba(0,0,0,0.35)"
+                : "0 2px 10px rgba(0,0,0,0.04)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = t.divider;
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            {/* Hover glass overlay effect */}
+            <div
+              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+              style={{
+                background: isDark
+                  ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)"
+                  : "linear-gradient(135deg, rgba(50, 121, 249, 0.02) 0%, rgba(50, 121, 249, 0.01) 100%)",
+                backdropFilter: "blur(4px)",
+                WebkitBackdropFilter: "blur(4px)",
+              }}
+            />
+
+            {/* Custom Outline-styled Icon badge */}
+            <div
+              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 border z-10"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+                borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-[13px]"
+                style={{
+                  color: isDark ? "rgba(253,255,252,0.8)" : "rgba(69,73,85,0.8)",
+                  fontVariationSettings: "'FILL' 0, 'wght' 300"
+                }}
+              >
+                {item.icon}
+              </span>
+            </div>
+
+            <div className="flex-1 min-w-0 z-10 text-left">
+              <p
+                className="text-[12px] font-semibold truncate leading-snug"
+                style={{ color: t.heading }}
+              >
+                {item.label}
+              </p>
+              <p className="text-[10px] truncate mt-0.5" style={{ color: t.muted }}>
+                {item.sub}
+              </p>
+            </div>
+            <span
+              className="text-[9px] shrink-0 mt-0.5 tabular-nums z-10"
+              style={{ color: t.muted, fontWeight: 500 }}
+            >
+              {item.time}
+            </span>
+          </div>
+        ))}
       </div>
-    </div>
+    </Panel>
+  );
+}
+
+// ─── Empty state (no projects) ────────────────────────────────────────────────
+
+function EmptyPortfolio({ isDark }: { isDark: boolean }) {
+  const t = tokens(isDark);
+  return (
+    <Panel isDark={isDark} className="flex flex-col items-center justify-center py-16 px-8 text-center">
+      <span
+        className="material-symbols-outlined text-5xl mb-4"
+        style={{ color: "#454955", fontVariationSettings: "'FILL' 0" }}
+      >
+        folder_open
+      </span>
+      <h3
+        className="text-[18px] font-semibold mb-2"
+        style={{ color: t.heading, letterSpacing: "-0.01em" }}
+      >
+        No projects yet
+      </h3>
+      <p className="text-[13px] max-w-xs leading-relaxed mb-6" style={{ color: t.subtext }}>
+        Add your first real estate project to start tracking performance, deploying capital, and closing deals.
+      </p>
+      <Link
+        href="/dashboard/projects/new"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-150 active:scale-95"
+        style={{ background: "#454955", color: "#FDFFFC" }}
+      >
+        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+          add
+        </span>
+        Create first project
+      </Link>
+    </Panel>
   );
 }
 
@@ -338,177 +521,249 @@ function InboxStrip() {
 
 export function CommandCenter() {
   const projects = useProjectStore((s) => s.projects);
-  const kpis = usePortfolioKPIs(projects);
+  const kpis     = usePortfolioKPIs(projects);
+  const { theme } = useTheme();
+  const isDark    = theme === "dark";
+  const t         = tokens(isDark);
 
-  // ── KPI display values ──
-  const irrVal  = fmtPct(kpis.irr);
-  const emVal   = kpis.equityMultiple !== null ? `${kpis.equityMultiple.toFixed(2)}` : "—";
-  const capVal  = fmtCompact(kpis.capitalDeployed);
-  const noiVal  = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
-  const cfVal   = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
+  const irrVal = fmtPct(kpis.irr);
+  const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
+  const capVal = fmtCompact(kpis.capitalDeployed);
+  const noiVal = kpis.totalNOI !== null ? fmtCompact(kpis.totalNOI) : "—";
+  const cfVal  = kpis.portfolioCashFlow !== null ? fmtCompact(kpis.portfolioCashFlow) : "—";
+  const cfNeg  = kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0;
 
   return (
-    <div
-      className="flex-1 overflow-y-auto pb-24"
-      style={{ scrollbarWidth: "none" } as React.CSSProperties}
-    >
-      <div className="p-8 space-y-8 max-w-[1280px] mx-auto">
+    <div className="w-full min-h-full">
+      <div className="px-5 py-6 lg:px-8 lg:py-7 space-y-7 max-w-[1400px] mx-auto">
 
-        {/* ══ ZONE A — Page Header ══════════════════════════════════════════ */}
-        <div className="flex justify-between items-center">
+        {/* ══════════════════════════════════════════════════════════════════
+            ZONE 1 — Page Header
+            TopAppBar handles: global search (⌘K) + notification bell.
+            This zone: page title, deal count, live status, quick CTA.
+        ══════════════════════════════════════════════════════════════════ */}
+        <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <h1
-              className="text-3xl font-bold tracking-tight"
-              style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.02em" }}
-            >
-              Portfolio
-            </h1>
-            <p className="text-sm mt-1" style={{ color: "rgba(253,255,252,0.4)" }}>
+            <div className="flex items-center gap-2.5 mb-1">
+              <h1
+                className="text-[28px] font-bold leading-none"
+                style={{ color: t.heading, letterSpacing: "-0.03em" }}
+              >
+                Portfolio
+              </h1>
+              {/* Live pulse */}
+              <span className="flex items-center gap-1 mt-0.5">
+                <span className="relative flex h-2 w-2">
+                  <span
+                    className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
+                    style={{ backgroundColor: "#5aaa3f" }}
+                  />
+                  <span
+                    className="relative inline-flex rounded-full h-2 w-2"
+                    style={{ backgroundColor: "#5aaa3f" }}
+                  />
+                </span>
+                <span
+                  className="text-[10px] font-bold uppercase"
+                  style={{ color: t.muted, letterSpacing: "0.08em" }}
+                >
+                  Live
+                </span>
+              </span>
+            </div>
+            <p className="text-[13px]" style={{ color: t.subtext }}>
               {kpis.activeCount > 0
-                ? `${kpis.activeCount} active deal${kpis.activeCount !== 1 ? "s" : ""} · updated just now`
-                : "Start by adding your first deal."}
+                ? `${kpis.activeCount} active deal${kpis.activeCount !== 1 ? "s" : ""} across your portfolio`
+                : "No deals yet — create your first project to get started."}
             </p>
           </div>
-          {/* Live pulse */}
-          <span
-            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(253,255,252,0.35)", letterSpacing: "0.08em" }}
-          >
-            <span className="relative flex h-2 w-2">
-              <span
-                className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                style={{ backgroundColor: "#454955" }}
-              />
-              <span
-                className="relative inline-flex h-2 w-2 rounded-full"
-                style={{ backgroundColor: "#454955" }}
-              />
-            </span>
-            Live
-          </span>
-        </div>
 
-        {/* ══ ZONE B — KPI Strip (5 cards) ═════════════════════════════════ */}
-        <section aria-label="Portfolio KPIs">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/dashboard/reports"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 cursor-pointer"
+              style={{
+                background: isDark ? "rgba(255,255,255,0.05)" : "rgba(69,73,85,0.07)",
+                border: `1px solid ${t.panelBorder}`,
+                color: t.subtext,
+              }}
+            >
+              <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                bar_chart_4_bars
+              </span>
+              Reports
+            </Link>
+            <Link
+              href="/dashboard/projects/new"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
+              style={{
+                background: isDark ? "rgba(69,73,85,0.35)" : "#454955",
+                border: isDark ? `1px solid rgba(255,255,255,0.12)` : "none",
+                color: "#FDFFFC",
+              }}
+            >
+              <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+                add
+              </span>
+              New Project
+            </Link>
+          </div>
+        </header>
+
+        {/* ══════════════════════════════════════════════════════════════════
+            ZONE 2 — Hero Metrics Strip
+            5 KPI cards: IRR · Equity Multiple · Capital Deployed · NOI · Cash Flow
+            Scroll-snaps on mobile. Full row on desktop.
+        ══════════════════════════════════════════════════════════════════ */}
+        <section aria-label="Portfolio health metrics">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             <KPICard
+              isDark={isDark}
               label="Portfolio IRR"
               icon="trending_up"
               value={irrVal}
               suffix={kpis.irr !== null ? "%" : ""}
               accentColor="#454955"
-              badge={kpis.irr !== null && kpis.irr > 0 ? "↑ On Track" : undefined}
-              badgeColor="#454955"
-              subLabel={kpis.irr !== null ? "annualized" : "No projects yet"}
+              trend={kpis.irr !== null && kpis.irr > 0 ? "up" : undefined}
+              chip={kpis.irr !== null && kpis.irr > 0 ? "On track" : undefined}
+              meta={kpis.irr !== null ? "annualized" : "Add a project"}
             />
             <KPICard
+              isDark={isDark}
               label="Equity Multiple"
               icon="layers"
               value={emVal}
-              suffix={kpis.equityMultiple !== null ? "x" : ""}
+              suffix={kpis.equityMultiple !== null ? "×" : ""}
               accentColor="#7A9EAA"
-              badge={
-                kpis.equityMultiple !== null && kpis.equityMultiple >= 1
-                  ? "On Track"
-                  : undefined
-              }
-              badgeColor="#7A9EAA"
-              subLabel={kpis.equityMultiple !== null ? "vs. 2.5× target" : "No projects yet"}
+              trend={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "up" : undefined}
+              chip={kpis.equityMultiple !== null && kpis.equityMultiple >= 1 ? "On track" : undefined}
+              meta={kpis.equityMultiple !== null ? "vs. 2.5× target" : "Add a project"}
             />
             <KPICard
+              isDark={isDark}
               label="Capital Deployed"
               icon="account_balance_wallet"
               value={capVal}
-              accentColor="#ffd1aa"
-              badge={kpis.capitalDeployed !== null && kpis.capitalDeployed > 0 ? "Active" : undefined}
-              badgeColor="#ffd1aa"
-              subLabel={`${projects.length} project${projects.length !== 1 ? "s" : ""}`}
+              accentColor="#ffac5a"
+              chip={kpis.capitalDeployed !== null && kpis.capitalDeployed > 0 ? "Deployed" : undefined}
+              meta={`${projects.length} project${projects.length !== 1 ? "s" : ""}`}
             />
             <KPICard
+              isDark={isDark}
               label="Total NOI"
               icon="home_work"
               value={noiVal}
               suffix={kpis.totalNOI !== null ? "/yr" : ""}
               accentColor="#5aaa3f"
-              badge={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "Rentals" : undefined}
-              badgeColor="#5aaa3f"
-              subLabel={kpis.totalNOI !== null ? "hold-phase only" : "Rentals only"}
+              trend={kpis.totalNOI !== null && kpis.totalNOI > 0 ? "up" : undefined}
+              chip={kpis.totalNOI !== null ? "Rental" : undefined}
+              meta={kpis.totalNOI !== null ? "hold-phase" : "Rentals only"}
             />
             <KPICard
-              label="Portfolio Cash Flow"
+              isDark={isDark}
+              label="Monthly Cash Flow"
               icon="waterfall_chart"
               value={cfVal}
               suffix={kpis.portfolioCashFlow !== null ? "/mo" : ""}
-              accentColor="#454955"
-              badge={
-                kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow > 0
-                  ? "Positive"
-                  : kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0
-                  ? "Negative"
-                  : undefined
-              }
-              badgeColor={
-                kpis.portfolioCashFlow !== null && kpis.portfolioCashFlow < 0
-                  ? "#F06543"
-                  : "#454955"
-              }
-              subLabel={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
+              accentColor={cfNeg ? "#F06543" : "#454955"}
+              trend={kpis.portfolioCashFlow !== null ? (cfNeg ? "down" : "up") : undefined}
+              chip={kpis.portfolioCashFlow !== null ? (cfNeg ? "Negative" : "Positive") : undefined}
+              meta={kpis.portfolioCashFlow !== null ? "rental income" : "Rentals only"}
             />
           </div>
         </section>
 
-        {/* ══ ZONE C — Needs Attention ══════════════════════════════════════ */}
-        <NeedsAttentionFeed />
+        {/* ══════════════════════════════════════════════════════════════════
+            ZONE 3 — Action Center
+            Priority items needing immediate investor attention:
+            contingency deadlines, pending signatures, vendor approvals,
+            phase-gate blockers. Surfaces critical items BEFORE the pipeline.
+        ══════════════════════════════════════════════════════════════════ */}
+        <section aria-label="Action center">
+          <SectionHeading
+            title="Action Center"
+            href="/dashboard/projects"
+            linkLabel="All projects"
+            isDark={isDark}
+          />
+          {kpis.activeCount === 0 ? (
+            <EmptyPortfolio isDark={isDark} />
+          ) : (
+            <NeedsAttentionFeed />
+          )}
+        </section>
 
-        {/* ══ ZONE D — Active Pipeline + Right Sidebar ═════════════════════ */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-          {/* D-LEFT: Pipeline */}
-          <div className="lg:col-span-8 space-y-5">
-            <div className="flex justify-between items-end">
-              <h2
-                className="text-lg font-bold tracking-tight"
-                style={{ color: "rgba(253,255,252,0.95)", letterSpacing: "-0.01em" }}
-              >
-                Active Pipeline
-              </h2>
-              <div className="hidden md:flex items-center gap-4">
+        {/* ══════════════════════════════════════════════════════════════════
+            ZONE 4 — Active Pipeline + Top Performers
+            Pipeline: 8/12 cols — full kanban-style deal list with phase state.
+            Top Performers: 4/12 cols — highest-return assets for quick context.
+        ══════════════════════════════════════════════════════════════════ */}
+        {kpis.activeCount > 0 && (
+          <section
+            aria-label="Active deal pipeline"
+            className="grid grid-cols-1 lg:grid-cols-12 gap-5"
+          >
+            <div className="lg:col-span-8">
+              <SectionHeading
+                title="Active Pipeline"
+                href="/dashboard/projects"
+                linkLabel="Manage"
+                isDark={isDark}
+              />
+              {/* Phase legend */}
+              <div className="flex flex-wrap items-center gap-4 mb-3">
                 {PHASE_LEGEND.map(({ label, color }) => (
                   <span
                     key={label}
-                    className="flex items-center gap-1.5 text-xs"
-                    style={{ color: "rgba(253,255,252,0.4)" }}
+                    className="flex items-center gap-1.5 text-[11px]"
+                    style={{ color: t.muted }}
                   >
-                    <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: color }}
-                    />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
                     {label}
                   </span>
                 ))}
               </div>
+              <ActivePipeline />
             </div>
-            <ActivePipeline />
-          </div>
 
-          {/* D-RIGHT: Inbox + Top Performers */}
-          <div className="lg:col-span-4 space-y-5">
-            <InboxStrip />
-            <TopPerformersWidget />
-          </div>
+            <div className="lg:col-span-4">
+              <SectionHeading title="Top Performers" isDark={isDark} />
+              <TopPerformersWidget />
+            </div>
+          </section>
+        )}
 
-        </section>
-
-        {/* ══ ZONE E — Activity + Market Heatmap ═══════════════════════════ */}
+        {/* ══════════════════════════════════════════════════════════════════
+            ZONE 5 — Marketplace Heatmap + Recent Activity
+            Heatmap: 2/3 — posted deal opportunities + market sourcing.
+            Activity: 1/3 — files, messages, team events, project updates.
+        ══════════════════════════════════════════════════════════════════ */}
         <section
+          aria-label="Marketplace and activity"
           className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-          style={{ minHeight: "300px" }}
         >
-          <div className="lg:col-span-1 h-full">
-            <TerminalAuditFeed />
+          <div className="lg:col-span-2 flex flex-col">
+            <SectionHeading
+              title="Marketplace Heatmap"
+              href="/dashboard/insights"
+              linkLabel="Browse opportunities"
+              isDark={isDark}
+            />
+            <div className="flex-1 min-h-[280px]">
+              <MarketHeatmap />
+            </div>
           </div>
-          <div className="lg:col-span-2 h-full">
-            <MarketHeatmap />
+
+          <div className="lg:col-span-1 flex flex-col">
+            <SectionHeading
+              title="Recent Activity"
+              href="/dashboard/inbox"
+              linkLabel="Inbox"
+              isDark={isDark}
+            />
+            <div className="flex-1">
+              <RecentActivityFeed isDark={isDark} />
+            </div>
           </div>
         </section>
 

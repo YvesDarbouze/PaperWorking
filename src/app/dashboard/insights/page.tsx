@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { KPIInsightsDashboard } from '@/components/insights/KPIInsightsDashboard';
 import { 
   Calendar, 
   BarChart3, 
@@ -78,6 +79,9 @@ export default function InsightsPage() {
   const setDeal = useProjectStore((s) => s.setDeal);
   const clearDeal = useProjectStore((s) => s.clearDeal);
   const { user, profile } = useAuth();
+
+  // ── View: KPI Overview (new) | Deep Analysis (legacy) ──────────────────────
+  const [view, setView] = useState<'kpi' | 'analysis'>('kpi');
 
   const [granularity, setGranularity] = useState<Granularity>('month');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -694,8 +698,51 @@ export default function InsightsPage() {
   }
 
   return (
-    <div className="font-plus-jakarta min-h-screen text-slate-100 p-6 space-y-6">
-      <div 
+    <div className="font-plus-jakarta min-h-screen text-slate-100">
+
+      {/* ── Tab bar ──────────────────────────────────────────────────────────── */}
+      <div
+        className="sticky top-0 z-30 flex items-center gap-1 px-6 py-3 border-b"
+        style={{
+          background: "rgba(18,16,20,0.88)",
+          backdropFilter: "blur(20px)",
+          borderColor: "rgba(255,255,255,0.07)",
+        }}
+      >
+        {(["kpi", "analysis"] as const).map((v) => {
+          const label = v === "kpi" ? "KPI Overview" : "Deep Analysis";
+          const icon  = v === "kpi" ? "monitoring"   : "analytics";
+          const active = view === v;
+          return (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150 cursor-pointer"
+              style={{
+                background: active ? "rgba(69,73,85,0.25)" : "transparent",
+                color: active ? "rgba(253,255,252,0.92)" : "rgba(253,255,252,0.45)",
+                border: active ? "1px solid rgba(255,255,255,0.10)" : "1px solid transparent",
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-[15px]"
+                style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+              >
+                {icon}
+              </span>
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── KPI Overview tab ─────────────────────────────────────────────────── */}
+      {view === "kpi" && <KPIInsightsDashboard />}
+
+      {/* ── Deep Analysis tab (existing content) ─────────────────────────────── */}
+      {view === "analysis" && (
+      <div className="p-6 space-y-6">
+      <div
         className="w-full rounded-2xl border border-white/10 p-8 shadow-2xl backdrop-blur-[20px] transition-all duration-300 relative overflow-hidden"
         style={{ background: 'rgba(30, 27, 32, 0.7)' }}
       >
@@ -1459,6 +1506,8 @@ export default function InsightsPage() {
           </div>
         )}
       </div>
+      </div>
+      )}
     </div>
   );
 }

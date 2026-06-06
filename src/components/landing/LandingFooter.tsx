@@ -1,101 +1,178 @@
 'use client';
 
 import Link from 'next/link';
-
 import Logo from '@/components/brand/Logo';
+
+/* ═══════════════════════════════════════════════════════
+   LandingFooter — Antigravity-style sitemap footer.
+
+   5-column desktop grid:
+     Brand  |  Main Navigation  |  Support & Resources  |  Authentication  |  Legal
+   ═══════════════════════════════════════════════════════ */
+
+interface FooterColumn {
+  heading: string;
+  links: { label: string; href: string; external?: boolean }[];
+}
+
+const FOOTER_COLUMNS: FooterColumn[] = [
+  {
+    heading: 'Main Navigation',
+    links: [
+      { label: 'Home',          href: '/'             },
+      { label: 'How It Works',  href: '/how-it-works' },
+      { label: 'Pricing',       href: '/pricing'      },
+      { label: 'Support',       href: '/support'      },
+    ],
+  },
+  {
+    heading: 'Support & Resources',
+    links: [
+      { label: 'Support Center',     href: '/support'               },
+      { label: 'Knowledge Base',     href: '/help'                  },
+      { label: 'Help Center',        href: '/help'                  },
+      { label: 'Company Blog',       href: '/blog'                  },
+      { label: 'Case Studies',       href: '/blog'                  },
+      { label: 'Changelog',          href: '/changelog'             },
+    ],
+  },
+  {
+    heading: 'Account',
+    links: [
+      { label: 'Start 14-Day Free Trial', href: '/register'         },
+      { label: 'Sign In',                 href: '/login'            },
+      { label: 'Create Account',          href: '/register'         },
+      { label: 'Forgot Password',         href: '/forgot-password'  },
+      { label: 'Accept Team Invite',      href: '/invite'           },
+    ],
+  },
+  {
+    heading: 'Company & Legal',
+    links: [
+      { label: 'About',            href: '/about'          },
+      { label: 'Careers',          href: '/careers'        },
+      { label: 'Contact',          href: '/contact'        },
+      { label: 'Privacy Policy',   href: '/privacy'        },
+      { label: 'Terms of Service', href: '/terms'          },
+      { label: 'Cookie Policy',    href: '/cookies'        },
+    ],
+  },
+];
+
+function FooterCol({ heading, links }: FooterColumn) {
+  return (
+    <div>
+      <p
+        className="mb-4 text-[11px] font-semibold uppercase tracking-[0.07em]"
+        style={{ color: 'var(--color-on-surface-variant)' }}
+      >
+        {heading}
+      </p>
+      <ul className="space-y-2.5">
+        {links.map(({ label, href, external }) => (
+          <li key={label}>
+            <Link
+              href={href}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+              className="text-[13.5px] transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface-variant)', opacity: 0.8, textDecoration: 'none' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '1'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.opacity = '0.8'; (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-on-surface-variant)'; }}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-surface-container-lowest border-t border-white/10 w-full py-stack-lg mt-24">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-stack-lg px-6 md:px-gutter-desktop max-w-container-max mx-auto text-left">
+    <footer
+      className="w-full"
+      style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 7%, transparent)' }}
+    >
+      <div className="max-w-[1280px] mx-auto px-5 md:px-10 pt-16 pb-12">
 
-        {/* ── Brand Column ── */}
-        <div className="col-span-2 md:col-span-1">
-          <div className="flex items-center gap-2 mb-6">
-            <Logo size="sm" className="grayscale opacity-75" />
+        {/* ── Top: Brand + Columns ── */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8 mb-16">
+
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <Logo href="/" size="sm" className="mb-5" />
+            <p
+              className="text-[13.5px] leading-relaxed mb-6"
+              style={{ color: 'var(--color-on-surface-variant)', opacity: 0.75, maxWidth: '200px' }}
+            >
+              Precision deal management for serious real estate investors.
+            </p>
+
+            {/* CTA */}
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
+              style={{
+                background: 'var(--color-on-surface)',
+                color: 'var(--color-surface)',
+                borderRadius: '9999px',
+                padding: '8px 16px',
+                textDecoration: 'none',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              Start Free Trial
+              <span
+                className="material-symbols-outlined text-[13px]"
+                style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}
+              >
+                arrow_forward
+              </span>
+            </Link>
           </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant mb-6 pr-4">
-            Precision Deal Management. Built for serious real estate investors.
-          </p>
-          <p className="font-body-sm text-body-sm text-on-surface-variant/50">
+
+          {/* Link columns */}
+          {FOOTER_COLUMNS.map(col => (
+            <FooterCol key={col.heading} {...col} />
+          ))}
+        </div>
+
+        {/* ── Bottom bar ── */}
+        <div
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-8"
+          style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 6%, transparent)' }}
+        >
+          {/* Copyright */}
+          <p
+            className="text-[12.5px]"
+            style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55 }}
+          >
             © {new Date().getFullYear()} PaperWorking Corp. All rights reserved.
           </p>
-        </div>
 
-        {/* ── Product Column ── */}
-        <div>
-          <h4 className="font-label-md text-label-md text-on-surface mb-4">Product</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
-            <li>
-              <Link href="/#how-it-works" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                How It Works
+          {/* Bottom links */}
+          <div className="flex items-center gap-5">
+            {[
+              { label: 'Privacy',     href: '/privacy'        },
+              { label: 'Terms',       href: '/terms'          },
+              { label: 'Cookies',     href: '/cookies'        },
+              { label: 'Subprocessors', href: '/subprocessors' },
+            ].map(({ label, href }) => (
+              <Link
+                key={label}
+                href={href}
+                className="text-[12.5px] transition-opacity duration-150"
+                style={{ color: 'var(--color-on-surface-variant)', opacity: 0.55, textDecoration: 'none' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '0.55')}
+              >
+                {label}
               </Link>
-            </li>
-            <li>
-              <Link href="/#pricing" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Pricing
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link href="/#news" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                News
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* ── Company Column ── */}
-        <div>
-          <h4 className="font-label-md text-label-md text-on-surface mb-4">Company</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
-            <li>
-              <Link href="/about" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                About
-              </Link>
-            </li>
-            <li>
-              <Link href="/careers" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Careers
-              </Link>
-            </li>
-            <li>
-              <Link href="/blog" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Blog
-              </Link>
-            </li>
-            <li>
-              <Link href="/contact" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Contact
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* ── Legal Column ── */}
-        <div>
-          <h4 className="font-label-md text-label-md text-on-surface mb-4">Legal</h4>
-          <ul className="space-y-3 font-body-sm text-body-sm">
-            <li>
-              <Link href="/privacy" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Terms of Service
-              </Link>
-            </li>
-            <li>
-              <Link href="/cookies" className="text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
-                Cookie Policy
-              </Link>
-            </li>
-          </ul>
+            ))}
+          </div>
         </div>
 
       </div>

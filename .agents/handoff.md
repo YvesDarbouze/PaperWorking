@@ -1,3 +1,95 @@
+# Agent Handoff — Portfolio Dashboard Redesign Complete (2026-06-06)
+
+## ✅ COMPLETED PROMPT 2 ("Portfolio" Dashboard Landing Page Redesign)
+
+1. **Top Bar Search & Alerts (`TopAppBar.tsx`)**:
+   - Autocomplete search filtering projects and active marketplace vendors.
+   - Click-outside mouse down handlers to resolve blur conflicts.
+   - Notification bell dropdown containing Mentions, Document Updates, and "Join Team" Invites with inline Accept/Decline actions.
+
+2. **Hero Section Metrics (`CommandCenter.tsx`)**:
+   - Re-styled KPI Cards to support thin outlines, custom shadows, and hover transition states. Mapped accent colors to the grayscale design system.
+   - Set panel borders and dividers consistently to use `rgba(230, 234, 240, 0.12)` in dark mode and `rgba(33, 34, 38, 0.12)` in light mode.
+
+3. **Action Center (Needs Attention) (`NeedsAttentionFeed.tsx`)**:
+   - Verified priority level triggers (e.g. contingencies, budget overruns, transaction financing blocks).
+
+4. **Marketplace Sourcing Heatmap (`MarketHeatmap.tsx`)**:
+   - Replaced MLS placeholder with a high-fidelity interactive component containing a tab switcher: Yield Heatmap, Sourced Deals feed, and local Vendor Directory.
+
+5. **Recent Activity Feed (`CommandCenter.tsx`)**:
+   - Refactored `RecentActivityFeed` with thin border outlines, custom minimalist outline icons, and hover-triggered glass overlay backdrops.
+
+6. **Verification & Testing**:
+   - Verified TypeScript compilation safety (`tsc --noEmit` exits with 0 errors).
+   - Ran Jest test suite (`npm run test` is completely green).
+
+---
+
+# Agent Handoff — Portfolio Dashboard v2 + Nav v3 (2026-06-06)
+
+### Navigation — final contract (v3)
+Sidebar nav updated to: **Portfolio → Projects(folder) → Insights → Reports → Inbox → Team**
+- `Reports` replaces `Documents`; moved `Team` after `Inbox`
+- `Projects` icon changed from `assignment` → `folder` per spec
+- `Portfolio` icon: `space_dashboard`
+- AGENTS.md updated with full nav contract table and page descriptions
+
+### NeedsAttentionFeed — theme-adapted
+- Reads `useTheme()` internally; panel bg, borders, text, hover all respond to light/dark
+- "Needs Attention" heading renamed to "Action Center"
+- Critical/warning/info urgency levels preserved
+- Item rows use `itemHoverBg` + `itemDivider` theme tokens
+
+### CommandCenter (Portfolio Dashboard) — complete rewrite
+5-zone investor UX layout:
+1. **Page Header** — title, live pulse, Reports shortcut + New Project CTA
+2. **Hero Metrics Strip** — 5 KPI cards (IRR, Equity ×, Capital, NOI, CF) with left accent bar, trend pill, meta label
+3. **Action Center** — NeedsAttentionFeed; EmptyPortfolio if no projects
+4. **Active Pipeline + Top Performers** — hidden if no projects (no empty grid)
+5. **Marketplace Heatmap (2/3) + Recent Activity (1/3)** — static activity feed with 6 typed event items
+
+New shared design primitives:
+- `tokens(isDark)` — single source for all theme values (heading, subtext, muted, divider, link, panelBg, etc.)
+- `Panel` — glass/white surface wrapper
+- `SectionHeading` — title + optional badge + divider line + link
+- `EmptyPortfolio` — full-panel empty state with CTA
+- `RecentActivityFeed` — typed 6-item activity list
+
+TypeScript: `tsc --noEmit` exits 0.
+
+---
+
+# Agent Handoff — Portfolio Workspace Redesign (2026-06-06)
+
+## ✅ COMPLETED THIS SESSION
+
+### Workspace Shell & Navigation
+- **ThemeProvider** (`src/lib/utils/ThemeProvider.tsx`): upgraded from dark-only to full light/dark toggle. Persistent via `localStorage["pw-theme"]`. Exposes `useTheme()` hook with `{ theme, toggleTheme, setTheme }`.
+- **Sidebar** (`src/components/layout/Sidebar.tsx`): rebuilt with new nav contract: `Portfolio → Projects → Insights → Team → Inbox → Documents` + Account section. Added theme toggle button. Theme-adaptive surfaces (light/dark). Width: 240px.
+- **Logo** (`src/components/brand/Logo.tsx`): SVG replaced PNG. Uses `fill="currentColor"` — adapts to any theme surface automatically. Added `xl` size, `wordmarkOnly`, `iconOnly` props.
+- **TopAppBar** (`src/components/layout/TopAppBar.tsx`): theme-adaptive header background, breadcrumb, search input, kbd hint.
+- **AGENTS.md**: nav contract updated to reflect new spec. Locked: `Portfolio → Projects → Insights → Team → Inbox → Documents`.
+
+### Portfolio Dashboard (CommandCenter)
+- **5-zone layout** per investor UX spec:
+  - Zone 1: Page header + quick-action CTA (search/notifications in TopAppBar)
+  - Zone 2: Hero KPI strip (5 cards — IRR, Equity Multiple, Capital Deployed, NOI, Cash Flow)
+  - Zone 3: Action Center (NeedsAttentionFeed — urgent items BEFORE pipeline)
+  - Zone 4: Active Pipeline (8-col) + Top Performers (4-col)
+  - Zone 5: Marketplace Heatmap (2-col) + Recent Activity feed (1-col)
+- KPI cards: theme-adaptive (white bg light / glass dark), accent lines, clean badges
+- `RecentActivityFeed`: new lightweight activity feed component inside CommandCenter
+- `Panel` + `SectionHeading`: reusable theme-adaptive building blocks
+
+### TypeScript
+- `tsc --noEmit` exits 0. IDE false-positives are pre-existing `@types/react` resolution issue (types at user root, not project root) — does not affect build.
+
+### Plans
+- `plans/01-site-dna.md`: High-fidelity Site DNA written for Antigravity design reference.
+
+---
+
 # Agent Handoff — v3 Design System + Cloud Run Deployment (2026-06-05)
 
 ## ✅ LIVE — Both URLs serving HTTP/2 200

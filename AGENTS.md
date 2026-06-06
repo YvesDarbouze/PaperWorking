@@ -20,13 +20,48 @@ To ensure harmony, ALL agents MUST strictly follow these rules:
 
 <!-- BEGIN:global-navigation-contract -->
 # 🧭 GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN
-All agents MUST strictly enforce the persistent left-side navigation contract:
-- **Top Brand Area**: PaperWorking logo mark + wordmark (Plus Jakarta Sans).
-- **Primary Group** (exact order/labels): `Portfolio` -> `Projects` -> `Data Room` -> `Inbox` (with badge) -> `Team` -> `Reports` -> `Deal Analyzer`.
-- **Section Divider**: uppercase "Account" label.
-- **Account Group** (exact order/labels): `Profile` -> `Billing` -> `Settings`.
-- **Bottom Area**: Workspace switcher ("acting as: Me / [Team Account]") and Profile menu (avatar + username + role + logout).
 
-No agent is allowed to add, remove, reorder, rename, combine, or move navigation items. This is a fixed contract. Any screen layout rendering navigation must use `src/components/layout/Sidebar.tsx` or match it exactly.
+All agents MUST strictly enforce the persistent left-side navigation contract.
+Source of truth: `src/components/layout/Sidebar.tsx`
+
+## Brand Area
+- PaperWorking SVG icon (currentColor — adapts to theme) + wordmark
+- Font: Inter · "Paper" fw-700 · "Working" fw-300 · zero letter-spacing gap
+- Href: `/dashboard/command-center`
+
+## Primary Navigation (exact order — DO NOT change)
+
+| Label | Route | Icon | Description |
+|-------|-------|------|-------------|
+| **Portfolio** | `/dashboard/command-center` | `space_dashboard` | Default landing page — KPIs, action center, heatmap, activity |
+| **Projects** | `/dashboard/projects` | `folder` | All real estate investment projects in the portfolio |
+| **Insights** | `/dashboard/insights` | `monitoring` | Portfolio-wide metrics, investment views, deep analytics |
+| **Reports** | `/dashboard/reports` | `bar_chart_4_bars` | Generate monthly / quarterly / annual expense reports |
+| **Inbox** | `/dashboard/inbox` | `inbox` | Internal messages, to-dos, requests, deal crowdfund invites (unread badge + pulse) |
+| **Team** | `/dashboard/team` | `group` | Team management, invites, presence status |
+
+## Section Divider
+Uppercase label: **ACCOUNT**
+
+## Account Navigation (exact order — DO NOT change)
+
+| Label | Route | Icon | Description |
+|-------|-------|------|-------------|
+| **Profile** | `/dashboard/settings/profile` | `account_circle` | Avatar, company logo, licenses from vendor list |
+| **Billing** | `/dashboard/settings/billing` | `payments` | Subscription plan, credit card on file |
+| **Settings** | `/dashboard/settings` | `settings` | Password, tier, app preferences |
+
+## Bottom Area (top to bottom)
+1. **Theme toggle** — light/dark mode switch (sun/moon icon)
+2. **Workspace switcher** — "acting as: Me / [Team Account]" select
+3. **Profile row** — avatar + name + role + logout button
+
+## Theme
+- Dark: `rgba(18,16,20,0.98)` bg, `blur(24px)`, `rgba(253,255,252,0.07)` border
+- Light: `#FDFFFC` bg, `rgba(69,73,85,0.10)` border
+- Controlled via `data-theme` on `<html>` + `useTheme()` from `@/lib/utils/ThemeProvider`
+
+**No agent may add, remove, reorder, rename, or move navigation items without explicit human override.**
+Last updated: 2026-06-06 v3
 <!-- END:global-navigation-contract -->
 

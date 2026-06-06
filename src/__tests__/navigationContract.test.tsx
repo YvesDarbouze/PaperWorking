@@ -61,11 +61,10 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     const primaryExpected = [
       "Portfolio",
       "Projects",
-      "Data Room",
+      "Insights",
+      "Reports",
       "Inbox",
       "Team",
-      "Reports",
-      "Deal Analyzer",
     ];
 
     // Find all links in the sidebar
@@ -142,8 +141,9 @@ describe("GLOBAL NAVIGATION — FIXED CONTRACT FOR EVERY PAPERWORKING SCREEN", (
     const bottomExpected = [
       "Portfolio",
       "Projects",
-      "Inbox",
+      "Insights",
       "Reports",
+      "Inbox",
     ];
 
     bottomExpected.forEach((name) => {

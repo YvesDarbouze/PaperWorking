@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/store/projectStore";
+import { useTheme } from "@/lib/utils/ThemeProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Project } from "@/types/schema";
 
@@ -180,58 +181,78 @@ const INITIAL_COUNT = 3;
 export function NeedsAttentionFeed() {
   const projects = useProjectStore((s) => s.projects);
   const router   = useRouter();
+  const { theme } = useTheme();
+  const isDark   = theme === "dark";
   const [expanded, setExpanded] = useState(false);
 
   const items   = useMemo(() => deriveAttentionItems(projects), [projects]);
   const visible = expanded ? items.slice(0, 10) : items.slice(0, INITIAL_COUNT);
   const hidden  = Math.max(0, Math.min(items.length, 10) - INITIAL_COUNT);
   const isEmpty = items.length === 0;
+  const hasCritical = items.some((i: AttentionItem) => i.priority === "critical");
+
+  // Theme-adaptive tokens
+  const panelBg     = isDark
+    ? "linear-gradient(135deg, rgba(30,27,32,0.65) 0%, rgba(18,16,20,0.88) 100%)"
+    : "#FFFFFF";
+  const panelBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(69,73,85,0.10)";
+  const panelShadow = isDark ? "0 8px 32px rgba(0,0,0,0.25)" : "0 2px 10px rgba(0,0,0,0.06)";
+  const headerBorderB = isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.08)";
+  const labelColor  = isDark ? "rgba(253,255,252,0.55)" : "rgba(69,73,85,0.65)";
+  const metaColor   = isDark ? "rgba(253,255,252,0.28)" : "rgba(69,73,85,0.45)";
+  const itemHoverBg = isDark ? "rgba(255,255,255,0.025)" : "rgba(69,73,85,0.03)";
+  const itemDivider = isDark ? "rgba(255,255,255,0.04)"  : "rgba(69,73,85,0.07)";
 
   return (
     <section
       aria-label="Needs attention"
       className="rounded-2xl overflow-hidden"
       style={{
-        background: "linear-gradient(135deg, rgba(22,19,24,0.6) 0%, rgba(13,10,11,0.85) 100%)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+        background: panelBg,
+        backdropFilter: isDark ? "blur(24px)" : undefined,
+        WebkitBackdropFilter: isDark ? "blur(24px)" : undefined,
+        border: `1px solid ${panelBorder}`,
+        boxShadow: panelShadow,
       }}
     >
       {/* ── Header ── */}
       <div
-        className="px-6 py-4 flex justify-between items-center"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        className="px-5 py-3.5 flex justify-between items-center"
+        style={{ borderBottom: `1px solid ${headerBorderB}` }}
       >
         <div className="flex items-center gap-2.5">
           <span
             className="material-symbols-outlined text-[18px]"
             style={{
-              color: items.length > 0 ? "#F06543" : "#454955",
+              color: hasCritical ? "#F06543" : items.length > 0 ? "#ffac5a" : "#5aaa3f",
               fontVariationSettings: "'FILL' 1",
             }}
           >
-            {items.length > 0 ? "notification_important" : "check_circle"}
+            {hasCritical ? "warning" : items.length > 0 ? "pending_actions" : "check_circle"}
           </span>
           <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(253,255,252,0.6)", letterSpacing: "0.08em" }}
+            className="text-[11px] font-bold uppercase"
+            style={{ letterSpacing: "0.08em", color: labelColor }}
           >
-            Needs Attention
+            Action Center
           </span>
           {items.length > 0 && (
             <span
-              className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-              style={{ background: "#F0654318", color: "#F06543" }}
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+              style={{
+                background: hasCritical ? "rgba(240,101,67,0.12)" : "rgba(255,172,90,0.12)",
+                color: hasCritical ? "#F06543" : "#ffac5a",
+              }}
             >
-              {items.length}
+              {items.length} pending
             </span>
           )}
         </div>
         {items.length > 0 && (
-          <span className="text-[11px]" style={{ color: "rgba(253,255,252,0.3)" }}>
-            {items.length} require{items.length === 1 ? "s" : ""} action
+          <span className="text-[11px]" style={{ color: metaColor }}>
+            {items.filter((i: AttentionItem) => i.priority === "critical").length > 0
+              ? `${items.filter((i: AttentionItem) => i.priority === "critical").length} critical`
+              : `${items.length} task${items.length === 1 ? "" : "s"}`}
           </span>
         )}
       </div>
@@ -241,18 +262,18 @@ export function NeedsAttentionFeed() {
         <div className="flex flex-col items-center justify-center py-10 px-6 text-center">
           <span
             className="material-symbols-outlined text-4xl mb-3"
-            style={{ color: "#454955", fontVariationSettings: "'FILL' 1" }}
+            style={{ color: "#5aaa3f", fontVariationSettings: "'FILL' 1" }}
           >
             check_circle
           </span>
-          <p className="text-[14px] font-semibold mb-1" style={{ color: "rgba(253,255,252,0.85)" }}>
-            You&apos;re all clear.
-          </p>
           <p
-            className="text-[12px] max-w-xs leading-relaxed"
-            style={{ color: "rgba(253,255,252,0.35)" }}
+            className="text-[14px] font-semibold mb-1"
+            style={{ color: isDark ? "rgba(253,255,252,0.85)" : "#0d0a0b" }}
           >
-            No tasks, deadlines, or blockers need your attention right now.
+            All clear.
+          </p>
+          <p className="text-[12px] max-w-xs leading-relaxed" style={{ color: metaColor }}>
+            No pending tasks, deadlines, or blockers right now.
           </p>
         </div>
       )}
@@ -270,23 +291,16 @@ export function NeedsAttentionFeed() {
                 transition={{ duration: 0.18, ease: "easeOut" }}
               >
                 <div
-                  className="flex items-start gap-4 px-5 py-4 group cursor-pointer"
+                  className="flex items-start gap-4 px-5 py-3.5 group cursor-pointer transition-colors duration-100"
                   style={{
                     borderLeft: `3px solid ${item.borderColor}`,
-                    borderBottom:
-                      idx < visible.length - 1
-                        ? "1px solid rgba(255,255,255,0.04)"
-                        : "none",
+                    borderBottom: idx < visible.length - 1 ? `1px solid ${itemDivider}` : "none",
                   }}
                   onClick={() => router.push(item.ctaHref)}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "rgba(255,255,255,0.025)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "transparent")
-                  }
+                  onMouseEnter={(e) => (e.currentTarget.style.background = itemHoverBg)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
-                  {/* Icon */}
+                  {/* Icon chip */}
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
                     style={{ background: `${item.iconColor}18` }}
@@ -307,31 +321,25 @@ export function NeedsAttentionFeed() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="text-[13px] font-medium leading-snug mb-1"
-                      style={{ color: "rgba(253,255,252,0.9)" }}
+                      style={{ color: isDark ? "rgba(253,255,252,0.9)" : "#0d0a0b" }}
                     >
                       {item.description}
                     </p>
-                    <p
-                      className="text-[11px] truncate"
-                      style={{ color: "rgba(253,255,252,0.4)" }}
-                    >
-                      {item.metadata}
+                    <p className="text-[11px] truncate" style={{ color: metaColor }}>
+                      {item.projectName} · {item.metadata}
                     </p>
                   </div>
 
                   {/* CTA */}
                   <button
                     aria-label={`${item.ctaLabel} for ${item.projectName}`}
-                    className="flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-lg opacity-70 group-hover:opacity-100 transition-opacity duration-150"
+                    className="flex-shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-lg opacity-70 group-hover:opacity-100 transition-opacity duration-150 cursor-pointer"
                     style={{
-                      background: `${item.borderColor}18`,
+                      background: `${item.borderColor}15`,
                       color: item.borderColor,
-                      border: `1px solid ${item.borderColor}30`,
+                      border: `1px solid ${item.borderColor}28`,
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(item.ctaHref);
-                    }}
+                    onClick={(e) => { e.stopPropagation(); router.push(item.ctaHref); }}
                   >
                     {item.ctaLabel}
                   </button>
@@ -340,15 +348,12 @@ export function NeedsAttentionFeed() {
             ))}
           </AnimatePresence>
 
-          {/* Expand / collapse control */}
+          {/* Expand / collapse */}
           {!expanded && hidden > 0 && (
             <button
               onClick={() => setExpanded(true)}
-              className="w-full py-3 text-[12px] font-medium transition-colors duration-150 hover:opacity-70"
-              style={{
-                color: "rgba(253,255,252,0.4)",
-                borderTop: "1px solid rgba(255,255,255,0.04)",
-              }}
+              className="w-full py-3 text-[12px] font-medium transition-opacity duration-150 hover:opacity-70 cursor-pointer"
+              style={{ color: metaColor, borderTop: `1px solid ${itemDivider}` }}
             >
               Show {hidden} more →
             </button>
@@ -356,11 +361,8 @@ export function NeedsAttentionFeed() {
           {expanded && items.length > INITIAL_COUNT && (
             <button
               onClick={() => setExpanded(false)}
-              className="w-full py-3 text-[12px] font-medium hover:opacity-70"
-              style={{
-                color: "rgba(253,255,252,0.3)",
-                borderTop: "1px solid rgba(255,255,255,0.04)",
-              }}
+              className="w-full py-3 text-[12px] font-medium hover:opacity-70 cursor-pointer"
+              style={{ color: metaColor, borderTop: `1px solid ${itemDivider}` }}
             >
               Collapse ↑
             </button>

@@ -25,11 +25,11 @@ export function BottomNav() {
   };
 
   const navItems = [
-    { name: "Portfolio", href: "/dashboard/command-center", icon: "folder_shared" },
-    { name: "Projects", href: "/dashboard/projects", icon: "assignment" },
-    { name: "Analyze", href: "/dashboard/deal-analyzer", icon: "analytics" },
-    { name: "Inbox", href: "/dashboard/inbox", icon: "inbox" },
-    { name: "Reports", href: "/dashboard/reports", icon: "assessment" },
+    { name: "Portfolio", href: "/dashboard/command-center", icon: "space_dashboard" },
+    { name: "Projects",  href: "/dashboard/projects",       icon: "folder"          },
+    { name: "Insights",  href: "/dashboard/insights",       icon: "monitoring"      },
+    { name: "Reports",   href: "/dashboard/reports",        icon: "bar_chart_4_bars"},
+    { name: "Inbox",     href: "/dashboard/inbox",          icon: "inbox"           },
   ];
 
   return (

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
+import { useTheme } from "@/lib/utils/ThemeProvider";
 import Link from "next/link";
 import LogoutButton from "@/components/dashboard/LogoutButton";
 import toast from "react-hot-toast";
+import { useProjectStore } from "@/store/projectStore";
 
 /* ═══════════════════════════════════════════════════════════════
    TopAppBar — Premium dashboard header
@@ -57,15 +59,63 @@ function getHelpSlug(pathname: string): string {
   return 'portfolio';
 }
 
+const SEARCHABLE_VENDORS = [
+  { id: 'v1', name: 'Prime Structural Engineering', category: 'Inspector', location: 'Miami, FL' },
+  { id: 'v2', name: 'Capital Bridge Lending', category: 'Lender', location: 'New York, NY' },
+  { id: 'v3', name: 'Coastal Title & Escrow', category: 'Attorney', location: 'Fort Lauderdale, FL' },
+  { id: 'v4', name: 'ProBuild Contractors', category: 'Contractor', location: 'Brooklyn, NY' },
+  { id: 'v5', name: 'Premier Property Group', category: 'Property Manager', location: 'Miami, FL' },
+  { id: 'v6', name: 'NextGen Realty Partners', category: 'Agent', location: 'Newark, NJ' }
+];
+
 export function TopAppBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile } = useAuth();
   const { unreadTotal } = useNotification();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const projects = useProjectStore((s) => s.projects);
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState([
+    {
+      id: "not-mention-1",
+      type: "mention",
+      title: "Sarah K. mentioned you",
+      body: '"Can you check the rehab budget?" on 123 Main St',
+      time: "2m ago",
+      read: false,
+      href: "/dashboard/projects",
+    },
+    {
+      id: "not-doc-1",
+      type: "document",
+      title: "Document Uploaded",
+      body: "'Executed Purchase Agreement' for 456 Oak Ave",
+      time: "15m ago",
+      read: false,
+      href: "/dashboard/data-room",
+    },
+    {
+      id: "not-team-1",
+      type: "team_request",
+      title: "Join Team Request",
+      body: "John Doe requested to join your Team Workspace (InvestCo)",
+      time: "1h ago",
+      read: false,
+      actionNeeded: true,
+      senderName: "John Doe",
+    }
+  ]);
 
   const [showWhatsNew, setShowWhatsNew] = useState(false);
   const [changelogs, setChangelogs] = useState<Array<{ version: string; date: string; title: string }>>([]);
@@ -129,6 +179,28 @@ export function TopAppBar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Close search dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  // Close notifications dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
   const pageLabel = getPageLabel(pathname);
 
   const handleDemoGuard = (e: React.MouseEvent | React.FocusEvent, actionName: string) => {
@@ -167,16 +239,41 @@ export function TopAppBar() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  const filteredProjects = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return projects.filter(p => 
+      (p.propertyName && p.propertyName.toLowerCase().includes(q)) ||
+      (p.address && p.address.toLowerCase().includes(q))
+    );
+  }, [projects, searchQuery]);
+
+  const filteredVendors = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase();
+    return SEARCHABLE_VENDORS.filter(v => 
+      v.name.toLowerCase().includes(q) ||
+      v.category.toLowerCase().includes(q) ||
+      v.location.toLowerCase().includes(q)
+    );
+  }, [searchQuery]);
+
   return (
     <header
       className="w-full flex-shrink-0 flex items-center justify-between z-40"
       style={{
         height: '64px',
-        background: 'rgba(13,10,11,0.80)',
+        background: isDark
+          ? 'rgba(18,16,20,0.88)'
+          : 'rgba(253,255,252,0.92)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.10)',
-        boxShadow: '0 0 20px -5px rgba(69,73,85,0.10)',
+        borderBottom: isDark
+          ? '1px solid rgba(255,255,255,0.08)'
+          : '1px solid rgba(69,73,85,0.10)',
+        boxShadow: isDark
+          ? '0 1px 0 rgba(255,255,255,0.04)'
+          : '0 1px 0 rgba(69,73,85,0.08)',
         padding: '0 24px',
       }}
     >
@@ -191,13 +288,13 @@ export function TopAppBar() {
         <div className="hidden md:flex items-center gap-2">
           <span
             className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: 'rgba(253,255,252,0.35)' }}
+            style={{ color: isDark ? 'rgba(253,255,252,0.35)' : 'rgba(69,73,85,0.45)' }}
           >
             Dashboard
           </span>
           <span
             className="material-symbols-outlined text-[14px]"
-            style={{ color: 'rgba(253,255,252,0.2)' }}
+            style={{ color: isDark ? 'rgba(253,255,252,0.2)' : 'rgba(69,73,85,0.25)' }}
           >
             chevron_right
           </span>
@@ -211,18 +308,18 @@ export function TopAppBar() {
       </div>
 
       {/* Center: Search (desktop) */}
-      <div className="flex-1 max-w-md mx-8 hidden md:block">
+      <div className="flex-1 max-w-md mx-8 hidden md:block" ref={searchContainerRef}>
         <div className="relative">
           <span
             className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] transition-colors duration-200"
-            style={{ color: searchFocused ? 'var(--color-primary)' : 'rgba(253,255,252,0.3)' }}
+            style={{ color: searchFocused ? 'var(--color-primary)' : isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}
           >
             search
           </span>
           <input
             ref={searchRef}
             className="w-full py-2 pl-10 pr-16 text-sm rounded-lg transition-all duration-200 focus:outline-none"
-            placeholder="Search portfolio..."
+            placeholder="Search portfolio, projects, vendors…"
             type="text"
             onFocus={(e) => {
               if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
@@ -231,29 +328,115 @@ export function TopAppBar() {
                 setSearchFocused(true);
               }
             }}
-            onBlur={() => setSearchFocused(false)}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
             style={{
-              background: searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-              border: `1px solid ${searchFocused ? 'rgba(69, 73, 85,0.3)' : 'rgba(255,255,255,0.06)'}`,
+              background: isDark
+                ? (searchFocused ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)')
+                : (searchFocused ? 'rgba(69,73,85,0.06)'    : 'rgba(69,73,85,0.04)'),
+              border: `1px solid ${searchFocused
+                ? 'rgba(69,73,85,0.35)'
+                : isDark ? 'rgba(255,255,255,0.07)' : 'rgba(69,73,85,0.12)'}`,
               color: 'var(--color-on-surface)',
-              boxShadow: searchFocused ? '0 0 0 3px rgba(69, 73, 85,0.08)' : 'none',
+              boxShadow: searchFocused ? '0 0 0 3px rgba(69,73,85,0.08)' : 'none',
             }}
           />
           {/* Cmd+K hint */}
-          <div
-            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none"
-          >
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pointer-events-none">
             <kbd
               className="text-[10px] font-bold px-1.5 py-0.5 rounded"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                color: 'rgba(253,255,252,0.3)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.07)',
+                color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)',
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
               }}
             >
               ⌘K
             </kbd>
           </div>
+
+          {/* Autocomplete dropdown */}
+          {searchFocused && searchQuery.trim() !== "" && (
+            <div
+              className="absolute left-0 right-0 top-full mt-2 rounded-xl z-50 overflow-hidden"
+              style={{
+                background: isDark ? 'rgba(13,10,11,0.96)' : '#FFFFFF',
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
+                backdropFilter: 'blur(24px)',
+                boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.1)',
+                maxHeight: '320px',
+                overflowY: 'auto'
+              }}
+            >
+              {/* Projects section */}
+              {filteredProjects.length > 0 && (
+                <div className="p-3 border-b border-solid" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
+                  <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                    Projects
+                  </div>
+                  <div className="space-y-1">
+                    {filteredProjects.map(p => (
+                      <Link
+                        key={p.id}
+                        href={`/dashboard/projects/${p.id}`}
+                        onClick={() => {
+                          setSearchFocused(false);
+                          setSearchQuery("");
+                        }}
+                        className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold hover:bg-primary/10 transition-colors duration-150"
+                        style={{ color: isDark ? '#FFF' : '#121317' }}
+                      >
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#3279F9' }}>folder</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="truncate text-left">{p.propertyName || p.address}</p>
+                          <p className="text-[10px] truncate text-left" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                            {p.address}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Vendors section */}
+              {filteredVendors.length > 0 && (
+                <div className="p-3">
+                  <div className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                    Vendors & Professionals
+                  </div>
+                  <div className="space-y-1">
+                    {filteredVendors.map(v => (
+                      <Link
+                        key={v.id}
+                        href={`/dashboard/marketplace`}
+                        onClick={() => {
+                          setSearchFocused(false);
+                          setSearchQuery("");
+                        }}
+                        className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-semibold hover:bg-primary/10 transition-colors duration-150"
+                        style={{ color: isDark ? '#FFF' : '#121317' }}
+                      >
+                        <span className="material-symbols-outlined text-[16px]" style={{ color: '#7A9EAA' }}>handyman</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="truncate text-left">{v.name}</p>
+                          <p className="text-[10px] truncate text-left" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                            {v.category} · {v.location}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {filteredProjects.length === 0 && filteredVendors.length === 0 && (
+                <div className="p-4 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                  No projects or vendors match "{searchQuery}"
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -296,31 +479,147 @@ export function TopAppBar() {
         </button>
 
         {/* Notifications */}
-        <button
-          className="p-2 rounded-lg transition-all duration-200 relative group"
-          style={{ color: 'rgba(255, 255, 255, 0.85)' }}
-          onClick={(e) => {
-            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
-              handleDemoGuard(e, 'notifications');
-            } else {
-              router.push('/dashboard/inbox');
-            }
-          }}
-        >
-          <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">notifications</span>
-          {mounted && unreadTotal > 0 && (
-            <span
-              className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
+        <div className="relative" ref={notificationsRef}>
+          <button
+            className="p-2 rounded-lg transition-all duration-200 relative group"
+            style={{ color: 'rgba(255, 255, 255, 0.85)' }}
+            onClick={(e) => {
+              if (typeof window !== 'undefined' && window.location.pathname.startsWith('/demo')) {
+                handleDemoGuard(e, 'notifications');
+              } else {
+                setShowNotifications(!showNotifications);
+              }
+            }}
+          >
+            <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">notifications</span>
+            {mounted && notifications.filter(n => !n.read).length > 0 && (
+              <span
+                className="absolute top-1 right-1 min-w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center px-1"
+                style={{
+                  background: 'var(--color-primary)',
+                  color: '#0d0a0b',
+                  boxShadow: '0 0 8px rgba(69, 73, 85,0.5)',
+                }}
+              >
+                {notifications.filter(n => !n.read).length}
+              </span>
+            )}
+          </button>
+
+          {/* Notifications Dropdown */}
+          {showNotifications && (
+            <div
+              className="absolute right-0 top-full mt-2 w-80 py-2 rounded-xl z-50 text-left"
               style={{
-                background: 'var(--color-primary)',
-                color: '#0d0a0b',
-                boxShadow: '0 0 8px rgba(69, 73, 85,0.5)',
+                background: isDark ? 'rgba(13,10,11,0.96)' : '#FFFFFF',
+                border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(69,73,85,0.12)',
+                backdropFilter: 'blur(24px)',
+                boxShadow: isDark ? '0 16px 48px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.1)',
               }}
             >
-              {unreadTotal > 9 ? '9+' : unreadTotal}
-            </span>
+              <div className="px-4 py-2 flex items-center justify-between border-b" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(69,73,85,0.08)' }}>
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: isDark ? 'rgba(253,255,252,0.6)' : 'rgba(69,73,85,0.7)' }}>
+                  Notifications
+                </span>
+                <button
+                  onClick={() => {
+                    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                    toast.success("All notifications marked as read");
+                  }}
+                  className="text-[10px] font-semibold transition-opacity duration-150 hover:opacity-75"
+                  style={{ color: '#3279F9' }}
+                >
+                  Mark all read
+                </button>
+              </div>
+
+              <div className="max-h-80 overflow-y-auto animate-fade-in">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-xs" style={{ color: isDark ? 'rgba(253,255,252,0.4)' : 'rgba(69,73,85,0.5)' }}>
+                    No notifications
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`flex flex-col gap-1.5 p-3.5 border-b transition-colors duration-150 ${n.read ? 'opacity-60' : ''}`}
+                      style={{
+                        borderColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(69,73,85,0.06)',
+                        background: n.read ? 'transparent' : (isDark ? 'rgba(50, 121, 249, 0.03)' : 'rgba(50, 121, 249, 0.02)')
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start gap-2">
+                          <span
+                            className="material-symbols-outlined text-[16px] mt-0.5"
+                            style={{
+                              color: n.type === 'mention' ? '#3279F9' : n.type === 'document' ? '#7A9EAA' : '#ffac5a'
+                            }}
+                          >
+                            {n.type === 'mention' ? 'chat' : n.type === 'document' ? 'description' : 'group_add'}
+                          </span>
+                          <div className="flex-1">
+                            <p className="text-xs font-bold leading-tight" style={{ color: isDark ? '#FFF' : '#121317' }}>
+                              {n.title}
+                            </p>
+                            <p className="text-[11px] mt-0.5 leading-snug" style={{ color: isDark ? 'rgba(253,255,252,0.7)' : 'rgba(69,73,85,0.8)' }}>
+                              {n.body}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-[9px] shrink-0" style={{ color: isDark ? 'rgba(253,255,252,0.3)' : 'rgba(69,73,85,0.4)' }}>
+                          {n.time}
+                        </span>
+                      </div>
+
+                      {n.actionNeeded && (
+                        <div className="flex items-center gap-2 pl-6 mt-1">
+                          <button
+                            onClick={() => {
+                              toast.success(`Request accepted. ${n.senderName} has joined the workspace.`);
+                              setNotifications(prev => prev.filter(item => item.id !== n.id));
+                            }}
+                            className="text-[10px] font-bold px-2.5 py-1 rounded bg-primary text-white hover:bg-primary/90 transition-colors cursor-pointer"
+                            style={{ background: '#3279F9' }}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => {
+                              toast.success("Request declined.");
+                              setNotifications(prev => prev.filter(item => item.id !== n.id));
+                            }}
+                            className="text-[10px] font-bold px-2.5 py-1 rounded border hover:bg-white/5 transition-colors cursor-pointer"
+                            style={{
+                              borderColor: isDark ? 'rgba(255,255,255,0.12)' : 'rgba(69,73,85,0.2)',
+                              color: isDark ? 'rgba(253,255,252,0.7)' : 'rgba(69,73,85,0.8)'
+                            }}
+                          >
+                            Decline
+                          </button>
+                        </div>
+                      )}
+
+                      {!n.actionNeeded && n.href && (
+                        <Link
+                          href={n.href}
+                          onClick={() => {
+                            setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, read: true } : item));
+                            setShowNotifications(false);
+                          }}
+                          className="text-[10px] font-semibold pl-6 self-start hover:underline text-left"
+                          style={{ color: '#3279F9' }}
+                        >
+                          View details →
+                        </Link>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           )}
-        </button>
+        </div>
 
         {/* "What's New" Bell-adjacent Icon */}
         <div className="relative" ref={whatsNewRef}>

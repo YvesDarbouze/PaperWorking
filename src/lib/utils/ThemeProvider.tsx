@@ -1,33 +1,6 @@
 'use client';
 
-/**
- * ThemeProvider.tsx — PaperWorking Global Theme Context
- *
- * Wraps the application so any component can:
- *   1. Read the current surface background color via `useSurface()`
- *   2. Automatically get the correct text/interactive colors via the
- *      contrast hooks without needing to re-implement WCAG logic locally.
- *
- * Usage:
- *   // In layout.tsx (already wraps children):
- *   <ThemeProvider>
- *     {children}
- *   </ThemeProvider>
- *
- *   // In any descendant component:
- *   const { bg, text, isOnDark } = useSurface();
- *
- * Surface Registration:
- *   Wrap a section in <SurfaceProvider bg="#595959"> to declare that all
- *   children are rendering on that background. Children automatically
- *   receive the correct contrast color without prop-drilling.
- *
- *   <SurfaceProvider bg={phaseColor}>
- *     <PhaseCard />   ← calls useSurface(), gets white text automatically
- *   </SurfaceProvider>
- */
-
-import React, { createContext, useContext, useMemo, ReactNode, useState, useEffect } from 'react';
+import React, { createContext, useContext, useMemo, ReactNode, useState, useEffect, useCallback } from 'react';
 import { useSettingsStore } from '@/store/settingsStore';
 import {
   getContrastColor,
@@ -35,6 +8,26 @@ import {
   PW_COLORS,
   type PWColor,
 } from '@/lib/utils/contrast';
+
+// ─── Theme Toggle Context ────────────────────────────────────────────────────
+
+type ThemeMode = 'light' | 'dark';
+
+interface ThemeToggleContextValue {
+  theme: ThemeMode;
+  toggleTheme: () => void;
+  setTheme: (mode: ThemeMode) => void;
+}
+
+const ThemeToggleContext = createContext<ThemeToggleContextValue>({
+  theme: 'dark',
+  toggleTheme: () => {},
+  setTheme: () => {},
+});
+
+export function useTheme(): ThemeToggleContextValue {
+  return useContext(ThemeToggleContext);
+}
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -146,24 +139,60 @@ interface ThemeProviderProps {
 
 /**
  * Root-level provider. Wraps the entire app so all components
- * have access to the surface context without extra configuration.
- * Resolves theme dynamically based on settingsStore.
+ * have access to the surface context and theme toggle without extra configuration.
+ *
+ * Theme is persisted in localStorage under "pw-theme".
+ * The <html> element receives data-theme="light"|"dark" and class "light"|"dark".
  *
  * Add this in src/app/layout.tsx around {children}.
  */
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  // Enforce dark mode globally
-  const bg = '#0d0a0b';
+  const [theme, setThemeState] = useState<ThemeMode>('dark');
 
+  // Sync on mount from localStorage or system preference
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute('data-theme', 'dark');
-    root.classList.add('dark');
+    let saved: ThemeMode | null = null;
+    try {
+      saved = localStorage.getItem('pw-theme') as ThemeMode | null;
+    } catch { /* SSR guard */ }
+
+    const resolved: ThemeMode =
+      saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    applyTheme(resolved);
+    setThemeState(resolved);
   }, []);
 
+  const applyTheme = useCallback((mode: ThemeMode) => {
+    const root = document.documentElement;
+    root.setAttribute('data-theme', mode);
+    root.classList.remove('light', 'dark');
+    root.classList.add(mode);
+    try { localStorage.setItem('pw-theme', mode); } catch { /* SSR guard */ }
+  }, []);
+
+  const setTheme = useCallback((mode: ThemeMode) => {
+    applyTheme(mode);
+    setThemeState(mode);
+  }, [applyTheme]);
+
+  const toggleTheme = useCallback(() => {
+    setThemeState(prev => {
+      const next: ThemeMode = prev === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      return next;
+    });
+  }, [applyTheme]);
+
+  const bg = theme === 'dark' ? '#121014' : '#FDFFFC';
+
   return (
-    <SurfaceProvider bg={bg}>
-      {children}
-    </SurfaceProvider>
+    <ThemeToggleContext.Provider value={{ theme, toggleTheme, setTheme }}>
+      <SurfaceProvider bg={bg}>
+        {children}
+      </SurfaceProvider>
+    </ThemeToggleContext.Provider>
   );
 }

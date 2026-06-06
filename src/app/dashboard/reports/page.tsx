@@ -28,6 +28,10 @@ import {
   TaxPLResult,
 } from '@/lib/utils/taxService';
 import toast from 'react-hot-toast';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+
+type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall';
+type ScopeTab = 'Property' | 'My Share';
 
 /* ═══════════════════════════════════════════════════════════════
    Reports & Tax Intelligence — Stitch Design Implementation
@@ -36,20 +40,18 @@ import toast from 'react-hot-toast';
      Row 1: NOI Trend (2/3) + Cash Flow Intelligence (1/3)
      Row 2: IRR Scenarios + Expense Distribution + Tax Alerts
      Footer: Generate Tax-Ready CSV
-   ═══════════════════════════════════════════════════════════════ */
-
-type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall';
-type ScopeTab  = 'Property' | 'My Share';
-
-/* ── NOI Trend ECharts bar chart ── */
+   ════════════════/* ── NOI Trend ECharts bar chart ── */
 function NOITrendChart({ values, labels }: { values: number[]; labels: string[] }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
       trigger: 'axis',
-      backgroundColor: '#1a2332',
-      borderColor: '#45495533',
-      textStyle: { color: '#e2e8f0', fontSize: 12 },
+      backgroundColor: isDark ? '#18191D' : '#FFFFFF',
+      borderColor: isDark ? 'rgba(230, 234, 240, 0.12)' : 'rgba(33, 34, 38, 0.12)',
+      textStyle: { color: isDark ? '#FFFFFF' : '#121317', fontSize: 12 },
       formatter: (params: any[]) => {
         const p = params[0];
         return `${p.name}<br/><b>$${p.value.toLocaleString()}</b>`;
@@ -61,7 +63,7 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
       data: labels,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { color: '#64748b', fontSize: 10, fontFamily: 'Hanken Grotesk, sans-serif' },
+      axisLabel: { color: isDark ? '#9E9DA0' : '#45474D', fontSize: 10, fontFamily: 'var(--font-inter), Inter, sans-serif' },
       splitLine: { show: false },
     },
     yAxis: {
@@ -76,14 +78,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
           value: v,
           itemStyle: {
             color: i === values.length - 1
-              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#454955' }, { offset: 1, color: '#0d9488' }] }
-              : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#1a4a44' }, { offset: 1, color: '#0d2d29' }] },
+              ? { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#3279F9' }, { offset: 1, color: '#1c5fd1' }] }
+              : { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: isDark ? [{ offset: 0, color: '#282a32' }, { offset: 1, color: '#15161a' }] : [{ offset: 0, color: '#EFF2F7' }, { offset: 1, color: '#CDD4DC' }] },
           },
         })),
         barMaxWidth: 40,
         barCategoryGap: '25%',
         emphasis: {
-          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#454955' }, { offset: 1, color: '#0d9488' }] } },
+          itemStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: '#3279F9' }, { offset: 1, color: '#1c5fd1' }] } },
         },
       },
     ],
@@ -93,13 +95,14 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
 }
 
 /* ── Expense Donut ECharts ── */
-const EXPENSE_COLORS = ['#454955', '#818cf8', '#fb923c', '#64748b'];
+function ExpenseDonut({ totalOpex, items, colors }: { totalOpex: number; items: { name: string; pct: number }[]; colors: string[] }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
-function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: string; pct: number }[] }) {
   const data = items.map((item, i) => ({
     name: item.name,
     value: item.pct,
-    itemStyle: { color: EXPENSE_COLORS[i % EXPENSE_COLORS.length] },
+    itemStyle: { color: colors[i % colors.length] },
   }));
 
   const option = {
@@ -107,9 +110,9 @@ function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: 
     tooltip: {
       trigger: 'item',
       formatter: '{b}: {d}%',
-      backgroundColor: '#1a2332',
-      borderColor: '#45495533',
-      textStyle: { color: '#e2e8f0', fontSize: 12 },
+      backgroundColor: isDark ? '#18191D' : '#FFFFFF',
+      borderColor: isDark ? 'rgba(230, 234, 240, 0.12)' : 'rgba(33, 34, 38, 0.12)',
+      textStyle: { color: isDark ? '#FFFFFF' : '#121317', fontSize: 12 },
     },
     series: [
       {
@@ -129,31 +132,33 @@ function ExpenseDonut({ totalOpex, items }: { totalOpex: number; items: { name: 
         style: {
           text: totalOpex > 0 ? `$${(totalOpex / 1000).toFixed(0)}k\nTOTAL OPEX` : '$0\nTOTAL OPEX',
           textAlign: 'center',
-          fill: '#f1f5f9',
+          fill: isDark ? '#FFFFFF' : '#121317',
           fontSize: 15,
           fontWeight: 'bold',
           lineHeight: 22,
-          fontFamily: 'Hanken Grotesk, sans-serif',
+          fontFamily: 'var(--font-inter), Inter, sans-serif',
         },
       },
     ],
   };
 
-  return <ReactECharts option={option} style={{ height: 180, width: '100%' }} opts={{ renderer: 'canvas' }} />;
+  return <ReactECharts option={option} style={{ height: 220, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
 /* ── Cash Flow Progress Bar ── */
 function CashFlowBar({ label, value, max, color }: { label: string; value: number; max: number; color: string }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
   const fmt = (v: number) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`;
 
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-[#9E9DA0] uppercase tracking-wider">{label}</span>
-        <span className="text-sm font-semibold text-slate-100 tabular-nums">{fmt(value)}</span>
+        <span className="text-xs text-[var(--color-on-surface-variant)] uppercase tracking-wider">{label}</span>
+        <span className="text-sm font-semibold text-[var(--color-on-surface)] tabular-nums">{fmt(value)}</span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-[var(--color-surface-container-high)] overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, backgroundColor: color }}
@@ -181,21 +186,21 @@ function IRRScenario({
     <div
       className={`px-4 py-3 rounded-lg border transition-all ${
         active
-          ? 'border-[#454955]/50 bg-[#454955]/5'
-          : 'border-white/5 bg-white/[0.02] hover:border-white/10'
+          ? 'border-[var(--color-primary)] bg-[var(--color-primary-container)]'
+          : 'border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] hover:border-[var(--color-on-surface-variant)]'
       }`}
     >
       <div className="flex items-center justify-between mb-1">
-        <span className={`text-xs uppercase tracking-widest font-semibold ${active ? 'text-[#6E7480]' : 'text-[#9E9DA0]'}`}>
+        <span className={`text-xs uppercase tracking-widest font-semibold ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)]'}`}>
           {label}
         </span>
-        <span className="text-xs text-[#6B6870] tabular-nums">{holdYears}</span>
+        <span className="text-xs text-[var(--color-on-surface-variant)] tabular-nums">{holdYears}</span>
       </div>
       <div className="flex items-end justify-between">
-        <span className={`text-2xl font-bold tabular-nums ${active ? 'text-[#6E7480]' : 'text-slate-100'}`}>
+        <span className={`text-2xl font-bold tabular-nums ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-on-surface)]'}`}>
           {irr}
         </span>
-        <span className={`text-xs font-medium tabular-nums ${active ? 'text-[#454955]' : 'text-[#6B6870]'}`}>
+        <span className={`text-xs font-medium tabular-nums ${active ? 'text-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)]'}`}>
           {capExit}
         </span>
       </div>
@@ -215,21 +220,21 @@ interface BentoMetricProps {
 function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricProps & { href?: string }) {
   const inner = (
     <div
-      className={`rounded-xl border border-white/[0.08] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-[#454955]/30 hover:bg-white/[0.02] cursor-pointer transition-all' : ''}`}
-      style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)' }}
+      className={`rounded-xl border border-[var(--color-outline-variant)] p-4 flex flex-col gap-1.5 ${colSpan ? 'col-span-2' : ''} ${href ? 'hover:border-primary hover:bg-[var(--color-surface-container-low)] cursor-pointer transition-all' : ''}`}
+      style={{ background: 'var(--color-surface-container-low)' }}
     >
-      <span className="text-xs font-semibold uppercase tracking-widest text-[#6B6870]">{label}</span>
+      <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-on-surface-variant)]">{label}</span>
       <div className="flex items-end justify-between gap-2">
-        <span className="text-2xl font-bold tabular-nums text-white leading-none">{value}</span>
+        <span className="text-2xl font-bold tabular-nums text-[var(--color-on-surface)] leading-none">{value}</span>
         {trend && trend !== 'neutral' && (
           <ArrowUpRight
             className={`w-3.5 h-3.5 mb-0.5 flex-shrink-0 ${
-              trend === 'up' ? 'text-[#6E7480]' : 'text-red-400 rotate-90'
+              trend === 'up' ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)] rotate-90'
             }`}
           />
         )}
       </div>
-      {sub && <span className="text-[11px] text-[#6B6870] leading-tight">{sub}</span>}
+      {sub && <span className="text-[11px] text-[var(--color-on-surface-variant)] leading-tight">{sub}</span>}
     </div>
   );
   if (href) return <Link href={href} className={colSpan ? 'col-span-2' : ''}>{inner}</Link>;
@@ -239,10 +244,10 @@ function BentoMetric({ label, value, sub, trend, colSpan, href }: BentoMetricPro
 /* ── Skeleton Loader ── */
 function SkeletonMetric() {
   return (
-    <div className="rounded-xl border border-white/[0.08] p-4 flex flex-col gap-2 animate-pulse">
-      <div className="h-3 w-16 rounded bg-white/10" />
-      <div className="h-7 w-24 rounded bg-white/10" />
-      <div className="h-2.5 w-32 rounded bg-white/5" />
+    <div className="rounded-xl border border-[var(--color-outline-variant)] p-4 flex flex-col gap-2 animate-pulse">
+      <div className="h-3 w-16 rounded bg-[var(--color-outline-variant)]" />
+      <div className="h-7 w-24 rounded bg-[var(--color-outline-variant)]" />
+      <div className="h-2.5 w-32 rounded bg-[var(--color-outline-variant)] opacity-50" />
     </div>
   );
 }
@@ -250,9 +255,9 @@ function SkeletonMetric() {
 /* ── Empty State Banner ── */
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10 bg-white/[0.02]">
-      <AlertCircle className="w-5 h-5 text-[#6B6870] flex-shrink-0" />
-      <p className="text-sm text-[#9E9DA0]">{message}</p>
+    <div className="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
+      <AlertCircle className="w-5 h-5 text-[var(--color-on-surface-variant)] flex-shrink-0" />
+      <p className="text-sm text-[var(--color-on-surface-variant)]">{message}</p>
     </div>
   );
 }
@@ -274,31 +279,31 @@ function TaxReportRow({
   onCSV: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4 border-b border-white/[0.06] last:border-0">
+    <div className="flex items-center justify-between gap-4 py-4 border-b border-[var(--color-outline-variant)] last:border-0">
       <div className="flex items-center gap-3 min-w-0">
-        <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-          <FileText className="w-4 h-4 text-[#6E7480]" />
+        <div className="w-9 h-9 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
+          <FileText className="w-4 h-4 text-[var(--color-primary)]" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <p className="text-xs text-[#6B6870]">{period} · {rows}</p>
+          <p className="text-sm font-semibold text-[var(--color-on-surface)] truncate">{title}</p>
+          <p className="text-xs text-[var(--color-on-surface-variant)]">{period} · {rows}</p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
         {badge && (
-          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[#454955]/10 text-[#6E7480] border border-[#454955]/20">
+          <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-[var(--color-primary-container)] text-[var(--color-primary)] border border-[var(--color-outline-variant)]">
             {badge}
           </span>
         )}
         <button
           onClick={onPDF}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#9E9DA0] border border-white/10 hover:border-white/20 hover:text-white transition-all"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-on-surface-variant)] border border-[var(--color-outline-variant)] hover:border-primary hover:text-[var(--color-on-surface)] transition-all"
         >
           PDF
         </button>
         <button
           onClick={onCSV}
-          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[#6E7480] border border-[#454955]/30 hover:bg-[#454955]/10 transition-all"
+          className="px-3 py-1.5 rounded-lg text-xs font-semibold text-[var(--color-primary)] border border-[var(--color-outline-variant)] hover:bg-[var(--color-primary-container)] transition-all"
         >
           CSV
         </button>
@@ -311,14 +316,14 @@ function TaxReportRow({
 function TaxAlert({ title, body, severity }: { title: string; body: string; severity: 'warning' | 'info' }) {
   return (
     <div
-      className={`px-4 py-3 rounded-lg border-l-2 bg-white/[0.025] ${
-        severity === 'warning' ? 'border-l-amber-400' : 'border-l-[#6E7480]'
+      className={`px-4 py-3 rounded-lg border-l-2 bg-[var(--color-surface-container-low)] ${
+        severity === 'warning' ? 'border-l-amber-500' : 'border-l-[var(--color-primary)]'
       }`}
     >
-      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-amber-400' : 'text-[#6E7480]'}`}>
+      <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${severity === 'warning' ? 'text-amber-500' : 'text-[var(--color-primary)]'}`}>
         {title}
       </p>
-      <p className="text-xs text-[#9E9DA0] leading-relaxed">{body}</p>
+      <p className="text-xs text-[var(--color-on-surface-variant)] leading-relaxed">{body}</p>
     </div>
   );
 }
@@ -329,22 +334,22 @@ function PreviewModal({ csvData, onClose }: { csvData: string; onClose: () => vo
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="w-full max-w-3xl max-h-[80vh] rounded-2xl border border-white/10 bg-[#0d1117] p-6 overflow-auto shadow-2xl"
+        className="w-full max-w-3xl max-h-[80vh] rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--color-surface)] p-6 overflow-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-bold text-white">CSV Data Preview</span>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-all">
-            <X className="w-4 h-4 text-[#9E9DA0]" />
+          <span className="text-sm font-bold text-[var(--color-on-surface)]">CSV Data Preview</span>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-[var(--color-surface-container-high)] transition-all">
+            <X className="w-4 h-4 text-[var(--color-on-surface-variant)]" />
           </button>
         </div>
-        <div className="overflow-x-auto rounded-lg bg-white/[0.03] border border-white/[0.06] p-4">
-          <pre className="text-xs text-[#C0BEC2] font-mono whitespace-pre leading-relaxed">
+        <div className="overflow-x-auto rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4">
+          <pre className="text-xs text-[var(--color-on-surface)] font-mono whitespace-pre leading-relaxed">
             {lines.join('\n')}
             {csvData.split('\n').length > 25 && '\n\n... (truncated — full data will be in export)'}
           </pre>
         </div>
-        <p className="text-[11px] text-[#6B6870] mt-3">
+        <p className="text-[11px] text-[var(--color-on-surface-variant)] mt-3">
           Showing first {Math.min(25, csvData.split('\n').length)} of {csvData.split('\n').length} rows.
         </p>
       </div>
@@ -476,6 +481,12 @@ export default function ReportsPage() {
   useAllDealsSync();
   const router = useRouter();
   const { profile } = useAuth();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const expenseColors = isDark
+    ? ['#3279F9', '#9E9DA0', '#C4A35A', '#282a32']
+    : ['#3279F9', '#45474D', '#7A5500', '#EFF2F7'];
+
   const projects = useProjectStore((s) => s.projects);
 
   const [period, setPeriod] = useState<PeriodTab>('Quarterly');
@@ -813,22 +824,22 @@ export default function ReportsPage() {
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Reports &amp; Tax Intelligence</h1>
-          <p className="text-sm text-[#9E9DA0] mt-1">Intelligent fiscal oversight for your real estate portfolio.</p>
+          <h1 className="text-2xl font-bold text-[var(--color-on-surface)] tracking-tight">Reports &amp; Tax Intelligence</h1>
+          <p className="text-sm text-[var(--color-on-surface-variant)] mt-1">Intelligent fiscal oversight for your real estate portfolio.</p>
         </div>
 
         {/* Controls */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           {/* Period tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
             {(['Monthly', 'Quarterly', 'Yearly', 'Overall'] as PeriodTab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setPeriod(t)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
                   period === t
-                    ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10'
-                    : 'text-[#9E9DA0] hover:text-slate-200'
+                    ? 'border border-[var(--color-outline-variant)] text-[var(--color-primary)] bg-[var(--color-primary-container)]'
+                    : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
                 }`}
               >
                 {t}
@@ -837,15 +848,15 @@ export default function ReportsPage() {
           </div>
 
           {/* Scope tabs */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
             {(['Property', 'My Share'] as ScopeTab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setScope(t)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
                   scope === t
-                    ? 'bg-[#454955] text-black'
-                    : 'text-[#9E9DA0] hover:text-slate-200'
+                    ? 'bg-[var(--color-primary)] text-[var(--color-on-primary)]'
+                    : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
                 }`}
               >
                 {t}
@@ -862,18 +873,18 @@ export default function ReportsPage() {
 
       {/* ── Core REI Metrics Bento Grid ── */}
       <div
-        className="rounded-2xl border border-white/10 p-5"
+        className="rounded-2xl border border-[var(--color-outline-variant)] p-5"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Core REI Metrics</span>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Core REI Metrics</span>
           <div className="flex items-center gap-2">
             {scope === 'My Share' && (
-              <span className="text-[10px] font-semibold text-[#454955] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
+              <span className="text-[10px] font-semibold text-[var(--color-secondary)] bg-[var(--color-secondary-container)] border border-[var(--color-outline-variant)] rounded px-2 py-0.5 uppercase tracking-widest">
                 My Share
               </span>
             )}
-            <span className="text-[10px] font-semibold text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
+            <span className="text-[10px] font-semibold text-[var(--color-primary)] bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] rounded px-2 py-0.5 uppercase tracking-widest">
               Portfolio Aggregate
             </span>
           </div>
@@ -911,34 +922,34 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* NOI Trend Chart — 2/3 */}
-        <div className="lg:col-span-2 rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
+        <div className="lg:col-span-2 rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-start justify-between mb-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
               Net Operating Income (NOI) Trend
             </span>
             <div className="flex gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full border border-slate-500 cursor-pointer hover:border-[#6E7480] transition-colors" />
-              <span className="w-2.5 h-2.5 rounded-full border border-[#6E7480] bg-[#6E7480]/20 cursor-pointer" />
+              <span className="w-2.5 h-2.5 rounded-full border border-[var(--color-outline-variant)] cursor-pointer hover:border-primary transition-colors" />
+              <span className="w-2.5 h-2.5 rounded-full border border-primary bg-[var(--color-primary-container)] cursor-pointer" />
             </div>
           </div>
           {noiValues.length > 0 ? (
             <>
               <div className="flex items-baseline gap-3 mb-5">
-                <span className="text-3xl font-bold text-[#6E7480] tabular-nums">{fmtLarge(latestNOI)}</span>
-                <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
+                <span className="text-3xl font-bold text-[var(--color-on-surface)] tabular-nums">{fmtLarge(latestNOI)}</span>
+                <span className={`text-sm font-semibold flex items-center gap-0.5 ${noiChange >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]'}`}>
                   {noiChange >= 0 ? '+' : ''}{noiChange.toFixed(1)}%
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </span>
               </div>
               {loading ? (
-                <div className="h-[220px] animate-pulse rounded-lg bg-white/5" />
+                <div className="h-[220px] animate-pulse rounded-lg bg-[var(--color-surface-container-high)]" />
               ) : (
                 <NOITrendChart values={noiValues} labels={noiLabels} />
               )}
             </>
           ) : (
             <div className="flex items-center justify-center h-[260px]">
-              <p className="text-sm text-[#6B6870]">
+              <p className="text-sm text-[var(--color-on-surface-variant)]">
                 {loading ? 'Loading chart data...' : 'Not enough data points to display trend. Add metric snapshots to see the NOI chart.'}
               </p>
             </div>
@@ -946,10 +957,10 @@ export default function ReportsPage() {
         </div>
 
         {/* Cash Flow Intelligence — 1/3 */}
-        <div className="rounded-2xl border border-white/10 p-6 flex flex-col gap-5" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Cash Flow Intelligence</span>
-            <TrendingUp className="w-4 h-4 text-[#6E7480]" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Cash Flow Intelligence</span>
+            <TrendingUp className="w-4 h-4 text-[var(--color-primary)]" />
           </div>
 
           {hasFinancials ? (
@@ -959,22 +970,22 @@ export default function ReportsPage() {
                   label="Gross Revenue"
                   value={portfolioFinancials.grossRevenue}
                   max={portfolioFinancials.grossRevenue}
-                  color="#454955"
+                  color="var(--color-primary)"
                 />
                 <CashFlowBar
                   label="Op. Expenses"
                   value={portfolioFinancials.opExpenses}
                   max={portfolioFinancials.grossRevenue}
-                  color="#818cf8"
+                  color="var(--color-secondary)"
                 />
                 <CashFlowBar
                   label="Debt Service"
                   value={portfolioFinancials.debtService}
                   max={portfolioFinancials.grossRevenue}
-                  color="#fb923c"
+                  color="var(--color-tertiary)"
                 />
               </div>
-              <p className="text-xs text-[#6B6870] italic leading-relaxed border-t border-white/5 pt-4">
+              <p className="text-xs text-[var(--color-on-surface-variant)] italic leading-relaxed border-t border-[var(--color-outline-variant)] pt-4">
                 &quot;Current liquidity supports {portfolioFinancials.debtService > 0
                   ? (portfolioFinancials.grossRevenue / portfolioFinancials.debtService).toFixed(1)
                   : '∞'}x debt coverage ratio.&quot;
@@ -982,7 +993,7 @@ export default function ReportsPage() {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
+              <p className="text-xs text-[var(--color-on-surface-variant)] text-center leading-relaxed">
                 Add financial data to your projects to see cash flow analysis.
               </p>
             </div>
@@ -994,8 +1005,8 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* IRR Scenarios */}
-        <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-4">IRR Scenarios</span>
+        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-4">IRR Scenarios</span>
           {irrScenarios ? (
             <div className="space-y-3">
               {irrScenarios.map((s) => (
@@ -1004,7 +1015,7 @@ export default function ReportsPage() {
             </div>
           ) : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
+              <p className="text-xs text-[var(--color-on-surface-variant)] text-center leading-relaxed">
                 No cash-on-cash return data available. Add financial details to project(s) to see IRR scenarios.
               </p>
             </div>
@@ -1012,23 +1023,23 @@ export default function ReportsPage() {
         </div>
 
         {/* Expense Distribution */}
-        <div className="rounded-2xl border border-white/10 p-6" style={{ background: 'var(--bg-surface)' }}>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-2">Expense Distribution</span>
+        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6" style={{ background: 'var(--bg-surface)' }}>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-2">Expense Distribution</span>
           {hasFinancials ? (
             <>
-              <ExpenseDonut totalOpex={totalOpex} items={expenseItems} />
+              <ExpenseDonut totalOpex={totalOpex} items={expenseItems} colors={expenseColors} />
               <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-2">
                 {expenseItems.map((item, i) => (
                   <div key={item.name} className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: EXPENSE_COLORS[i % EXPENSE_COLORS.length] }} />
-                    <span className="text-xs text-[#9E9DA0]">{item.name} ({item.pct}%)</span>
+                    <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: expenseColors[i % expenseColors.length] }} />
+                    <span className="text-xs text-[var(--color-on-surface-variant)]">{item.name} ({item.pct}%)</span>
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <div className="flex items-center justify-center py-12">
-              <p className="text-xs text-[#6B6870] text-center leading-relaxed">
+              <p className="text-xs text-[var(--color-on-surface-variant)] text-center leading-relaxed">
                 No expense data available yet.
               </p>
             </div>
@@ -1036,10 +1047,10 @@ export default function ReportsPage() {
         </div>
 
         {/* Tax Optimization Alerts */}
-        <div className="rounded-2xl border border-white/10 p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface)' }}>
+        <div className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-4" style={{ background: 'var(--bg-surface)' }}>
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#6E7480]" />
-            <span className="text-sm font-semibold text-white">Tax Optimization Alerts</span>
+            <Sparkles className="w-4 h-4 text-[var(--color-primary)]" />
+            <span className="text-sm font-semibold text-[var(--color-on-surface)]">Tax Optimization Alerts</span>
           </div>
 
           <div className="flex-1 space-y-3">
@@ -1049,14 +1060,14 @@ export default function ReportsPage() {
               ))
             ) : (
               <div className="flex items-center justify-center py-4">
-                <p className="text-xs text-[#6B6870]">No tax alerts — add projects with financial data to see optimization insights.</p>
+                <p className="text-xs text-[var(--color-on-surface-variant)]">No tax alerts — add projects with financial data to see optimization insights.</p>
               </div>
             )}
           </div>
 
           <button
             onClick={handleViewTaxStrategy}
-            className="w-full py-2.5 rounded-lg border border-[#454955]/40 text-[#6E7480] text-xs font-bold uppercase tracking-widest hover:bg-[#454955]/10 transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] text-xs font-bold uppercase tracking-widest hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2"
           >
             View Detailed Tax Strategy
             <ChevronRight className="w-3.5 h-3.5" />
@@ -1069,16 +1080,16 @@ export default function ReportsPage() {
 
         {/* P&L Report Library — 2/3 */}
         <div
-          className="lg:col-span-2 rounded-2xl border border-white/10 p-6"
+          className="lg:col-span-2 rounded-2xl border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Tax Intelligence</span>
-            <span className="text-[10px] text-[#6E7480] font-semibold border border-[#454955]/20 bg-[#454955]/10 rounded px-2 py-0.5 uppercase tracking-widest">
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Tax Intelligence</span>
+            <span className="text-[10px] text-[var(--color-primary)] font-semibold border border-[var(--color-outline-variant)] bg-[var(--color-primary-container)] rounded px-2 py-0.5 uppercase tracking-widest">
               IRS-Ready
             </span>
           </div>
-          <p className="text-xs text-[#6B6870] mb-5">Auto-generated reports formatted for Schedule E, K-1, and 1031 filings.</p>
+          <p className="text-xs text-[var(--color-on-surface-variant)] mb-5">Auto-generated reports formatted for Schedule E, K-1, and 1031 filings.</p>
 
           <TaxReportRow
             title="Quarterly P&L"
@@ -1106,19 +1117,19 @@ export default function ReportsPage() {
 
         {/* Automation Card — 1/3 */}
         <div
-          className="rounded-2xl border border-white/10 p-6 flex flex-col gap-5"
+          className="rounded-2xl border border-[var(--color-outline-variant)] p-6 flex flex-col gap-5"
           style={{ background: 'var(--bg-surface)' }}
         >
           <div className="flex items-center gap-2">
-            <RefreshCw className="w-4 h-4 text-[#6E7480]" />
-            <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Automation</span>
+            <RefreshCw className="w-4 h-4 text-[var(--color-primary)]" />
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Automation</span>
           </div>
 
           <div className="flex-1 space-y-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold text-white">Monthly Auto-Sync</p>
-                <p className="text-xs text-[#6B6870] mt-0.5 leading-relaxed">
+                <p className="text-sm font-semibold text-[var(--color-on-surface)]">Monthly Auto-Sync</p>
+                <p className="text-xs text-[var(--color-on-surface-variant)] mt-0.5 leading-relaxed">
                   Reconcile transactions and refresh all P&amp;L reports every 1st of the month.
                 </p>
               </div>
@@ -1128,28 +1139,28 @@ export default function ReportsPage() {
                 aria-label="Toggle auto-sync"
               >
                 {autoSync
-                  ? <ToggleRight className="w-7 h-7 text-[#6E7480]" />
-                  : <ToggleLeft  className="w-7 h-7 text-[#6B6870]" />}
+                  ? <ToggleRight className="w-7 h-7 text-[var(--color-primary)]" />
+                  : <ToggleLeft  className="w-7 h-7 text-[var(--color-on-surface-variant)]" />}
               </button>
             </div>
 
-            <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-2">
+            <div className="rounded-xl bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] p-4 space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#6B6870]">Last sync</span>
-                <span className="text-[#C0BEC2] font-semibold tabular-nums">
+                <span className="text-[var(--color-on-surface-variant)]">Last sync</span>
+                <span className="text-[var(--color-on-surface)] font-semibold tabular-nums">
                   {new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#6B6870]">Next sync</span>
-                <span className="text-[#6E7480] font-semibold tabular-nums">
+                <span className="text-[var(--color-on-surface-variant)]">Next sync</span>
+                <span className="text-[var(--color-primary)] font-semibold tabular-nums">
                   {new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#6B6870]">Status</span>
-                <span className={`font-semibold flex items-center gap-1 ${autoSync ? 'text-[#6E7480]' : 'text-[#6B6870]'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${autoSync ? 'bg-[#6E7480]' : 'bg-slate-500'}`} />
+                <span className="text-[var(--color-on-surface-variant)]">Status</span>
+                <span className={`font-semibold flex items-center gap-1 ${autoSync ? 'text-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)]'}`}>
+                  <span className={`w-1.5 h-1.5 rounded-full inline-block ${autoSync ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-on-surface-variant)]'}`} />
                   {autoSync ? 'Active' : 'Paused'}
                 </span>
               </div>
@@ -1159,7 +1170,7 @@ export default function ReportsPage() {
           <button
             onClick={handleSyncNow}
             disabled={syncing}
-            className="w-full py-2.5 rounded-lg bg-white/5 border border-white/10 text-xs font-bold uppercase tracking-widest text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full py-2.5 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {syncing ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1175,22 +1186,22 @@ export default function ReportsPage() {
 
       {/* ── Tax Year Selector ── */}
       <div
-        className="rounded-2xl border border-white/10 px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div>
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Tax Reporting Hub</span>
-          <p className="text-xs text-[#6B6870] mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Tax Reporting Hub</span>
+          <p className="text-xs text-[var(--color-on-surface-variant)] mt-0.5">Schedule E, depreciation schedules, and capital gains — tax-ready.</p>
         </div>
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-[var(--color-surface-container-lowest)] border border-[var(--color-outline-variant)]">
           {[2024, 2025, 2026].map((yr) => (
             <button
               key={yr}
               onClick={() => setTaxYear(yr)}
               className={`px-4 py-1.5 rounded-md text-xs font-semibold tabular-nums transition-all ${
                 taxYear === yr
-                  ? 'border border-[#454955]/60 text-[#6E7480] bg-[#454955]/10'
-                  : 'text-[#9E9DA0] hover:text-slate-200'
+                  ? 'border border-[var(--color-outline-variant)] text-[var(--color-primary)] bg-[var(--color-primary-container)]'
+                  : 'text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]'
               }`}
             >
               {yr}
@@ -1201,14 +1212,14 @@ export default function ReportsPage() {
 
       {/* ── Schedule E Preview ── */}
       <div
-        className="rounded-2xl border border-white/10 p-6 overflow-hidden"
+        className="rounded-2xl border border-[var(--color-outline-variant)] p-6 overflow-hidden"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center justify-between mb-4">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
             Schedule E Preview — {taxYear}
           </span>
-          <span className="text-[10px] font-semibold text-[#6E7480] bg-[#454955]/10 border border-[#454955]/20 rounded px-2 py-0.5 uppercase tracking-widest">
+          <span className="text-[10px] font-semibold text-[var(--color-primary)] bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] rounded px-2 py-0.5 uppercase tracking-widest">
             IRS Form 1040
           </span>
         </div>
@@ -1216,12 +1227,12 @@ export default function ReportsPage() {
         <div className="overflow-x-auto -mx-1">
           <table className="w-full text-xs">
             <thead>
-              <tr style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
+              <tr className="bg-[var(--color-surface-container-high)]">
                 {['Property', 'Gross Rent', 'Advertising', 'Insurance', 'Repairs', 'Taxes', 'Utilities', 'Depreciation', 'Total Expenses', 'Net Income'].map((h) => (
                   <th
                     key={h}
-                    className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap"
-                    style={{ color: 'rgba(253, 255, 252, 0.5)', fontSize: '10px' }}
+                    className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap text-[var(--color-on-surface-variant)]"
+                    style={{ fontSize: '10px' }}
                   >
                     {h}
                   </th>
@@ -1247,24 +1258,23 @@ export default function ReportsPage() {
                 return (
                   <tr
                     key={p.id}
-                    style={{ background: i % 2 === 1 ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
-                    className="border-b border-white/[0.04] last:border-0"
+                    className={`border-b border-[var(--color-outline-variant)] last:border-0 ${i % 2 === 1 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
                   >
-                    <td className="px-3 py-2.5 font-semibold text-white whitespace-nowrap truncate max-w-[180px]">{p.propertyName || p.address || 'Unnamed'}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(grossRent)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#9E9DA0]">{fmt(advertising)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(insurance)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(repairs)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(taxes)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2]">{fmt(utilities)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#6E7480]">{fmt(depreciation)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[#C0BEC2] font-semibold">{fmt(totalExpenses)}</td>
-                    <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>{fmt(netIncome)}</td>
+                    <td className="px-3 py-2.5 font-semibold text-[var(--color-on-surface)] whitespace-nowrap truncate max-w-[180px]">{p.propertyName || p.address || 'Unnamed'}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(grossRent)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">{fmt(advertising)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(insurance)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(repairs)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(taxes)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(utilities)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-primary)]">{fmt(depreciation)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)] font-semibold">{fmt(totalExpenses)}</td>
+                    <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]'}`}>{fmt(netIncome)}</td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-[#6B6870] text-xs">
+                  <td colSpan={10} className="px-3 py-8 text-center text-[var(--color-on-surface-variant)] text-xs">
                     No properties with financial data for {taxYear}.
                   </td>
                 </tr>
@@ -1273,7 +1283,7 @@ export default function ReportsPage() {
             {/* Footer Totals */}
             {projectsWithFinancials.length > 0 && (
               <tfoot>
-                <tr style={{ background: 'rgba(255, 255, 255, 0.04)' }} className="border-t border-white/10">
+                <tr className="bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)]">
                   {(() => {
                     let tGross = 0, tIns = 0, tRepairs = 0, tTaxes = 0, tUtils = 0, tDepr = 0, tTotal = 0, tNet = 0;
                     projectsWithFinancials.forEach((p) => {
@@ -1292,16 +1302,16 @@ export default function ReportsPage() {
                     const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
                     return (
                       <>
-                        <td className="px-3 py-2.5 font-bold text-white text-[11px] uppercase tracking-widest">Totals</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tGross)}</td>
-                        <td className="px-3 py-2.5 tabular-nums text-[#6B6870]">$0</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tIns)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tRepairs)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTaxes)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tUtils)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-[#6E7480]">{fmt(tDepr)}</td>
-                        <td className="px-3 py-2.5 tabular-nums font-bold text-white">{fmt(tTotal)}</td>
-                        <td className={`px-3 py-2.5 tabular-nums font-bold ${tNet >= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>{fmt(tNet)}</td>
+                        <td className="px-3 py-2.5 font-bold text-[var(--color-on-surface)] text-[11px] uppercase tracking-widest">Totals</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tGross)}</td>
+                        <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">$0</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tIns)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tRepairs)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tTaxes)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tUtils)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-primary)]">{fmt(tDepr)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tTotal)}</td>
+                        <td className={`px-3 py-2.5 tabular-nums font-bold ${tNet >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]'}`}>{fmt(tNet)}</td>
                       </>
                     );
                   })()}
@@ -1317,16 +1327,16 @@ export default function ReportsPage() {
 
         {/* Depreciation Schedule — 27.5 year straight-line */}
         <div
-          className="rounded-2xl border border-white/10 p-6"
+          className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-1">Depreciation Schedule</span>
-          <p className="text-[11px] text-[#6B6870] mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Depreciation Schedule</span>
+          <p className="text-[11px] text-[var(--color-on-surface-variant)] mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
 
           {projectsWithFinancials.length > 0 ? (() => {
             // Use first property with purchase price as example
             const exampleProject = projectsWithFinancials.find((p) => (p.financials.purchasePrice ?? 0) > 0);
-            if (!exampleProject) return <p className="text-xs text-[#6B6870]">No properties with purchase price data.</p>;
+            if (!exampleProject) return <p className="text-xs text-[var(--color-on-surface-variant)]">No properties with purchase price data.</p>;
             const pp = exampleProject.financials.purchasePrice ?? 0;
             const depreciableBasis = Math.round(pp * 0.85); // exclude 15% land
             const annualDepreciation = Math.round(depreciableBasis / 27.5);
@@ -1345,15 +1355,15 @@ export default function ReportsPage() {
 
             return (
               <>
-                <div className="text-[11px] text-[#6B6870] mb-3">
-                  Based on: <span className="text-white font-semibold">{exampleProject.propertyName || exampleProject.address}</span> — {fmt(pp)} purchase, {fmt(depreciableBasis)} depreciable basis
+                <div className="text-[11px] text-[var(--color-on-surface-variant)] mb-3">
+                  Based on: <span className="text-[var(--color-on-surface)] font-semibold">{exampleProject.propertyName || exampleProject.address}</span> — {fmt(pp)} purchase, {fmt(depreciableBasis)} depreciable basis
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr style={{ background: 'rgba(255, 255, 255, 0.06)' }}>
+                      <tr className="bg-[var(--color-surface-container-high)]">
                         {['Year', 'Beginning Value', 'Depreciation', 'Ending Value'].map((h) => (
-                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest" style={{ color: 'rgba(253, 255, 252, 0.5)', fontSize: '10px' }}>{h}</th>
+                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]" style={{ fontSize: '10px' }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -1363,42 +1373,41 @@ export default function ReportsPage() {
                           {/* Insert ellipsis row between year 5 and year 27 */}
                           {i > 0 && rows[i - 1].year === 5 && r.year === 27 && (
                             <tr>
-                              <td colSpan={4} className="px-3 py-1.5 text-center text-slate-600 text-[11px]">⋮ Years 6–26 ⋮</td>
+                              <td colSpan={4} className="px-3 py-1.5 text-center text-[var(--color-on-surface-variant)] text-[11px]">⋮ Years 6–26 ⋮</td>
                             </tr>
                           )}
                           <tr
-                            style={{ background: r.year % 2 === 0 ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
-                            className="border-b border-white/[0.04] last:border-0"
+                            className={`border-b border-[var(--color-outline-variant)] last:border-0 ${r.year % 2 === 0 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
                           >
-                            <td className="px-3 py-2 tabular-nums font-semibold text-white">{r.year}</td>
-                            <td className="px-3 py-2 tabular-nums text-[#C0BEC2]">{fmt(r.beginVal)}</td>
-                            <td className="px-3 py-2 tabular-nums text-[#6E7480]">{fmt(r.depr)}</td>
-                            <td className="px-3 py-2 tabular-nums text-[#C0BEC2]">{fmt(r.endVal)}</td>
+                            <td className="px-3 py-2 tabular-nums font-semibold text-[var(--color-on-surface)]">{r.year}</td>
+                            <td className="px-3 py-2 tabular-nums text-[var(--color-on-surface)]">{fmt(r.beginVal)}</td>
+                            <td className="px-3 py-2 tabular-nums text-[var(--color-primary)]">{fmt(r.depr)}</td>
+                            <td className="px-3 py-2 tabular-nums text-[var(--color-on-surface)]">{fmt(r.endVal)}</td>
                           </tr>
                         </React.Fragment>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <div className="mt-3 text-[11px] text-[#6B6870]">
-                  Annual deduction: <span className="text-[#6E7480] font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
+                <div className="mt-3 text-[11px] text-[var(--color-on-surface-variant)]">
+                  Annual deduction: <span className="text-[var(--color-primary)] font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
                 </div>
               </>
             );
           })() : (
             <div className="flex items-center justify-center py-8">
-              <p className="text-xs text-[#6B6870]">Add properties with purchase prices to see depreciation schedules.</p>
+              <p className="text-xs text-[var(--color-on-surface-variant)]">Add properties with purchase prices to see depreciation schedules.</p>
             </div>
           )}
         </div>
 
         {/* Capital Gains Calculator */}
         <div
-          className="rounded-2xl border border-white/10 p-6"
+          className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0] block mb-1">Capital Gains Calculator</span>
-          <p className="text-[11px] text-[#6B6870] mb-4">Estimate tax liability for sold or prospective dispositions</p>
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Capital Gains Calculator</span>
+          <p className="text-[11px] text-[var(--color-on-surface-variant)] mb-4">Estimate tax liability for sold or prospective dispositions</p>
 
           <div className="grid grid-cols-2 gap-3 mb-5">
             {([
@@ -1408,21 +1417,19 @@ export default function ReportsPage() {
               { label: 'Depreciation Recapture', key: 'depreciationRecapture' as const, prefix: '$' },
             ]).map((field) => (
               <div key={field.key} className="space-y-1">
-                <label className="block text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(253, 255, 252, 0.35)' }}>
+                <label className="block text-[10px] font-semibold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
                   {field.label}
                 </label>
                 <div
-                  className="flex items-center rounded-lg overflow-hidden"
-                  style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                  className="flex items-center rounded-lg overflow-hidden bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)]"
                 >
-                  <span className="pl-2.5 text-xs font-medium" style={{ color: 'rgba(253, 255, 252, 0.4)' }}>{field.prefix}</span>
+                  <span className="pl-2.5 text-xs font-medium text-[var(--color-on-surface-variant)]">{field.prefix}</span>
                   <input
                     type="text"
                     value={capGains[field.key]}
                     onChange={(e) => setCapGains((prev) => ({ ...prev, [field.key]: e.target.value }))}
                     placeholder="0"
-                    className="flex-1 bg-transparent px-2 py-2 text-xs font-medium outline-none placeholder:text-slate-600 tabular-nums"
-                    style={{ color: 'rgba(253, 255, 252, 0.9)' }}
+                    className="flex-1 bg-transparent px-2 py-2 text-xs font-medium outline-none placeholder:text-[var(--color-on-surface-variant)] text-[var(--color-on-surface)] tabular-nums"
                   />
                 </div>
               </div>
@@ -1450,26 +1457,25 @@ export default function ReportsPage() {
             return (
               <div className="space-y-2">
                 {[
-                  { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-[#C0BEC2]' },
-                  { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-[#6E7480]' : 'text-red-400' },
-                  { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-amber-400' },
-                  { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-[#C0BEC2]' },
+                  { label: 'Adjusted Basis', value: fmt(adjustedBasis), color: 'text-[var(--color-on-surface)]' },
+                  { label: 'Total Gain', value: fmt(totalGain), color: totalGain >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]' },
+                  { label: 'Depreciation Recapture Tax (25%)', value: fmt(depRecaptureTax), color: 'text-amber-500' },
+                  { label: 'Capital Gains Tax (15%)', value: fmt(capitalGainsTax), color: 'text-[var(--color-on-surface)]' },
                 ].map((row) => (
-                  <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-white/[0.04] last:border-0">
-                    <span className="text-[11px] text-[#6B6870]">{row.label}</span>
+                  <div key={row.label} className="flex items-center justify-between py-1.5 border-b border-[var(--color-outline-variant)] last:border-0">
+                    <span className="text-[11px] text-[var(--color-on-surface-variant)]">{row.label}</span>
                     <span className={`text-xs font-semibold tabular-nums ${row.color}`}>{hasInput ? row.value : '—'}</span>
                   </div>
                 ))}
                 <div
-                  className="flex items-center justify-between py-3 mt-2 rounded-lg px-3"
-                  style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                  className="flex items-center justify-between py-3 mt-2 rounded-lg px-3 bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)]"
                 >
-                  <span className="text-xs font-bold uppercase tracking-widest text-white">Estimated Tax</span>
-                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-400' : 'text-[#6E7480]') : 'text-[#6B6870]'}`}>
+                  <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface)]">Estimated Tax</span>
+                  <span className={`text-lg font-bold tabular-nums ${hasInput ? (totalTaxEstimate > 0 ? 'text-amber-500' : 'text-[var(--color-primary)]') : 'text-[var(--color-on-surface-variant)]'}`}>
                     {hasInput ? fmt(totalTaxEstimate) : '—'}
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-600 mt-1">Assumes 15% LTCG rate + 25% depreciation recapture. Consult a CPA for actual liability.</p>
+                <p className="text-[10px] text-[var(--color-on-surface-variant)] mt-1">Assumes 15% LTCG rate + 25% depreciation recapture. Consult a CPA for actual liability.</p>
               </div>
             );
           })()}
@@ -1478,18 +1484,18 @@ export default function ReportsPage() {
 
       {/* ── Export Buttons ── */}
       <div
-        className="rounded-2xl border border-white/10 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
+        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
-        <span className="text-xs font-bold uppercase tracking-widest text-[#9E9DA0]">Export Tax Reports</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">Export Tax Reports</span>
         <div className="flex items-center gap-3">
           <button
             onClick={() => {
-              toast('PDF generation via browser print', { icon: '🖨️', style: { background: '#111', color: '#fff', border: '1px solid #333' } });
+              toast('PDF generation via browser print', { icon: '🖨️', style: { background: 'var(--color-surface-container-high)', color: 'var(--color-on-surface)', border: '1px solid var(--color-outline-variant)' } });
               const csv = generatePortfolioCSV(projects, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
               downloadPDFViaPrint(`Schedule E — ${taxYear}`, csv);
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-white/20 text-xs font-bold uppercase tracking-wider text-[#C0BEC2] hover:border-white/40 hover:text-white transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-xs font-bold uppercase tracking-wider text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             Download PDF
@@ -1500,7 +1506,7 @@ export default function ReportsPage() {
               downloadCSV(csv, `Schedule_E_${taxYear}.csv`);
               toast.success('CSV downloaded');
             }}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#454955] hover:bg-[#6E7480] text-black text-xs font-bold uppercase tracking-wider transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-inverse-primary)] text-[var(--color-on-primary)] text-xs font-bold uppercase tracking-wider transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             Download CSV
@@ -1510,16 +1516,16 @@ export default function ReportsPage() {
 
       {/* ── Footer: Generate Tax-Ready CSV ── */}
       <div
-        className="rounded-2xl border border-white/10 px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        className="rounded-2xl border border-[var(--color-outline-variant)] px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         style={{ background: 'var(--bg-surface)' }}
       >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-[#454955]/10 border border-[#454955]/20 flex items-center justify-center flex-shrink-0">
-            <Download className="w-4 h-4 text-[#6E7480]" />
+          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] flex items-center justify-center flex-shrink-0">
+            <Download className="w-4 h-4 text-[var(--color-primary)]" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">Generate Tax-Ready CSV</p>
-            <p className="text-xs text-[#9E9DA0] mt-0.5">
+            <p className="text-sm font-semibold text-[var(--color-on-surface)]">Generate Tax-Ready CSV</p>
+            <p className="text-xs text-[var(--color-on-surface-variant)] mt-0.5">
               Formatted for direct import into TurboTax, H&amp;R Block, or professional CPA portals.
             </p>
           </div>
@@ -1527,13 +1533,13 @@ export default function ReportsPage() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={handlePreviewData}
-            className="px-5 py-2.5 rounded-lg border border-white/20 text-sm font-semibold text-[#C0BEC2] hover:border-white/40 hover:text-white transition-all"
+            className="px-5 py-2.5 rounded-lg border border-[var(--color-outline-variant)] text-sm font-semibold text-[var(--color-on-surface-variant)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary-container)] transition-all"
           >
             Preview Data
           </button>
           <button
             onClick={handleExportForFiling}
-            className="px-5 py-2.5 rounded-lg bg-[#454955] hover:bg-[#6E7480] text-black text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+            className="px-5 py-2.5 rounded-lg bg-[var(--color-primary)] hover:bg-[var(--color-inverse-primary)] text-[var(--color-on-primary)] text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
           >
             Export for Filing
             <Download className="w-3.5 h-3.5" />
@@ -1543,7 +1549,7 @@ export default function ReportsPage() {
 
       {/* ── Data Completeness Footer ── */}
       <div className="text-center pb-2">
-        <p className="text-[11px] text-[#6B6870]">
+        <p className="text-[11px] text-[var(--color-on-surface-variant)]">
           Based on {projectsWithFinancials.length} of {projects.length} project{projects.length !== 1 ? 's' : ''} with complete financial data.
           {scope === 'My Share' && ' Metrics scaled by your ownership percentage.'}
         </p>

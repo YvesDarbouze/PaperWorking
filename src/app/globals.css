@@ -12,85 +12,85 @@
 
 :root,
 html[data-theme="light"] {
-  /* ─── PaperWorking Luminous Glass Palette (Stitch Extracted) ─── */
-  --color-surface: #FDFFFC;
-  --color-surface-dim: #e6e9e6;
-  --color-surface-bright: #FDFFFC;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f6f3;
-  --color-surface-container: #eaeaea;
-  --color-surface-container-high: #e0e3e0;
-  --color-surface-container-highest: #d5d8d5;
-  --color-on-surface: #0d0a0b;
-  --color-on-surface-variant: #454955;
-  --color-inverse-surface: #0d0a0b;
-  --color-inverse-on-surface: #FDFFFC;
-  --color-outline: #8c92ac;
-  --color-outline-variant: #c0c5c0;
-  --color-surface-tint: #454955;
-  --color-primary: #454955;
-  --color-on-primary: #FDFFFC;
-  --color-primary-container: #454955;
-  --color-on-primary-container: #FDFFFC;
-  --color-inverse-primary: #8a8e9a;
-  /* Secondary — steel blue-gray, not purple (contrast 7.6:1 on #FDFFFC) */
-  --color-secondary: #2A5F72;
-  --color-on-secondary: #FDFFFC;
-  --color-secondary-container: #C8E4EF;
-  --color-on-secondary-container: #0A2A36;
-  /* Tertiary — warm amber (contrast 5.2:1 on #FDFFFC) */
+  /* ─── PaperWorking Antigravity Grayscale & Blue Palette ─── */
+  --color-surface: #FFFFFF;
+  --color-surface-dim: #F8F9FC;
+  --color-surface-bright: #FFFFFF;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-low: #F8F9FC;
+  --color-surface-container: #F8F9FC;
+  --color-surface-container-high: #F0F1F5;
+  --color-surface-container-highest: #EFF2F7;
+  --color-on-surface: #121317;
+  --color-on-surface-variant: #45474D;
+  --color-inverse-surface: #121317;
+  --color-inverse-on-surface: #FFFFFF;
+  --color-outline: #CDD4DC;
+  --color-outline-variant: rgba(33, 34, 38, 0.12);
+  --color-surface-tint: #3279F9;
+  --color-primary: #3279F9;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: rgba(50, 121, 249, 0.1);
+  --color-on-primary-container: #3279F9;
+  --color-inverse-primary: #1c5fd1;
+  /* Secondary — steel blue-gray, not purple */
+  --color-secondary: #45474D;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-container: #F0F1F5;
+  --color-on-secondary-container: #121317;
+  /* Tertiary — warm amber */
   --color-tertiary: #7A5500;
-  --color-on-tertiary: #FDFFFC;
+  --color-on-tertiary: #FFFFFF;
   --color-tertiary-container: #F5E0B0;
   --color-on-tertiary-container: #2B1C00;
   /* Error / Negative — market down semantic */
   --color-error: #C43D1A;
-  --color-on-error: #FDFFFC;
+  --color-on-error: #FFFFFF;
   --color-error-container: #FFD9CC;
   --color-on-error-container: #4A1200;
   /* Positive / Market Up */
   --color-positive: #3f7d20;
-  --color-on-positive: #FDFFFC;
+  --color-on-positive: #FFFFFF;
   --color-primary-fixed: #E8E9ED;
   --color-primary-fixed-dim: #C8CAD1;
-  --color-on-primary-fixed: #0d0a0b;
+  --color-on-primary-fixed: #121317;
   --color-on-primary-fixed-variant: #2E3140;
-  --color-secondary-fixed: #C8E4EF;
-  --color-secondary-fixed-dim: #A0C8DA;
-  --color-on-secondary-fixed: #001820;
-  --color-on-secondary-fixed-variant: #1A3A48;
+  --color-secondary-fixed: #EFF2F7;
+  --color-secondary-fixed-dim: #CDD4DC;
+  --color-on-secondary-fixed: #121317;
+  --color-on-secondary-fixed-variant: #45474D;
   --color-tertiary-fixed: #F5E0B0;
   --color-tertiary-fixed-dim: #E8C880;
   --color-on-tertiary-fixed: #1A0E00;
   --color-on-tertiary-fixed-variant: #4A3000;
-  --color-background: #FDFFFC;
-  --color-on-background: #0d0a0b;
-  --color-surface-variant: #eaeaea;
-  --color-glass-bg: rgba(253, 255, 252, 0.75);
-  --color-glass-border: rgba(69, 73, 85, 0.15);
-  --color-status-info: #454955;
-  --input-focus-glow-color: rgba(69, 73, 85, 0.3);
+  --color-background: #FFFFFF;
+  --color-on-background: #121317;
+  --color-surface-variant: #F8F9FC;
+  --color-glass-bg: rgba(255, 255, 255, 0.75);
+  --color-glass-border: rgba(33, 34, 38, 0.12);
+  --color-status-info: #3279F9;
+  --input-focus-glow-color: rgba(50, 121, 249, 0.3);
 
   /* ─── Button System Variables ─── */
   --pw-btn-primary-bg: var(--color-primary);
-  --pw-btn-primary-hover-bg: #5a5f6e;
-  --pw-btn-primary-text: #FDFFFC;
+  --pw-btn-primary-hover-bg: #1c5fd1;
+  --pw-btn-primary-text: #FFFFFF;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(69, 73, 85, 0.1);
+  --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
   --pw-btn-secondary-text: var(--color-primary);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(69, 73, 85, 0.06);
+  --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
   --pw-btn-tertiary-text: var(--color-primary);
-  --pw-btn-tertiary-border: rgba(69, 73, 85, 0.2);
+  --pw-btn-tertiary-border: rgba(50, 121, 249, 0.2);
   --pw-btn-danger-bg: var(--color-error);
   --pw-btn-danger-hover-bg: #A83516;
-  --pw-btn-danger-text: #FDFFFC;
+  --pw-btn-danger-text: #FFFFFF;
 
   /* ─── Brand Tokens ─── */
-  --color-brand-primary: #454955;
-  --color-brand-secondary: #C8E4EF;
-  --color-brand-neutral: #F0F2EF;
+  --color-brand-primary: #3279F9;
+  --color-brand-secondary: #EFF2F7;
+  --color-brand-neutral: #F8F9FC;
   --spacing-scale: 2;
 
   /* Legacy Aliases */
@@ -99,13 +99,13 @@ html[data-theme="light"] {
   --pw-ocean: var(--color-primary);
   --pw-info: var(--color-status-info);
   --pw-minty: var(--color-secondary-container);
-  --pw-forest: var(--color-deep-forest);
+  --pw-forest: var(--color-surface-container);
   --pw-surface: var(--color-surface);
   --pw-border: var(--color-glass-border);
   --pw-glass-bg: var(--color-glass-bg);
   --pw-white: var(--color-on-primary);
   --pw-black: var(--color-on-background);
-  --pw-muted: var(--color-outline);
+  --pw-muted: var(--color-on-surface-variant);
   --pw-brand-secondary: var(--color-brand-secondary);
   --pw-brand-neutral: var(--color-brand-neutral);
   --pw-accent: var(--color-brand-primary);
@@ -134,9 +134,9 @@ html[data-theme="light"] {
   --radius-3xl: 2.5rem;
   --radius-full: 9999px;
 
-  /* Typography — Inter Sans & Merriweather Serif System */
+  /* Typography — Enforce Inter Globally */
   --font-hanken: var(--font-inter), system-ui, sans-serif;
-  --font-plus-jakarta: var(--font-merriweather), Georgia, serif;
+  --font-plus-jakarta: var(--font-inter), system-ui, sans-serif;
 
   /* Display / Hero — Inter 800 ExtraBold */
   --text-display-hero-size: 72px;
@@ -204,135 +204,134 @@ html[data-theme="light"] {
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* ─── PaperWorking v3 Dark — Warm Black + Slate ─── */
-    --color-surface: #121014;
+    /* ─── PaperWorking Antigravity Dark — Grayscale + Blue ─── */
+    --color-surface: #121317;
     --color-surface-dim: #0d0a0b;
-    --color-surface-bright: #2e2b31;
-    --color-surface-container-lowest: #080608;
-    --color-surface-container-low: #161318;
-    --color-surface-container: #1e1b20;
-    --color-surface-container-high: #262328;
-    --color-surface-container-highest: #302D32;
-    --color-on-surface: #FDFFFC;
+    --color-surface-bright: #1f2127;
+    --color-surface-container-lowest: #0d0a0b;
+    --color-surface-container-low: #15161a;
+    --color-surface-container: #18191D;
+    --color-surface-container-high: #1f2127;
+    --color-surface-container-highest: #282a32;
+    --color-on-surface: #FFFFFF;
     --color-on-surface-variant: #9E9DA0;
-    --color-inverse-surface: #FDFFFC;
+    --color-inverse-surface: #FFFFFF;
     --color-inverse-on-surface: #0d0a0b;
-    --color-outline: #6B6870;
-    --color-outline-variant: #3B3840;
-    --color-surface-tint: #6E7480;
-    /* Primary — slate brand (contrast 9.2:1 with #FDFFFC text) */
-    --color-primary: #6E7480;
-    --color-on-primary: #0d0a0b;
-    --color-primary-container: #454955;
-    --color-on-primary-container: #FDFFFC;
-    --color-inverse-primary: #454955;
-    /* Secondary — steel blue-gray, NOT purple (contrast 6:1 on dark bg) */
-    --color-secondary: #7A9EAA;
-    --color-on-secondary: #0d0a0b;
-    --color-secondary-container: #1A3640;
-    --color-on-secondary-container: #C8E4EF;
-    /* Tertiary — warm amber (contrast 8.2:1 on dark bg) */
+    --color-outline: #45474D;
+    --color-outline-variant: rgba(230, 234, 240, 0.12);
+    --color-surface-tint: #3279F9;
+    --color-primary: #3279F9;
+    --color-on-primary: #FFFFFF;
+    --color-primary-container: rgba(50, 121, 249, 0.14);
+    --color-on-primary-container: #3279F9;
+    --color-inverse-primary: #1c5fd1;
+    /* Secondary — steel blue-gray, NOT purple */
+    --color-secondary: #9E9DA0;
+    --color-on-secondary: #121317;
+    --color-secondary-container: #18191D;
+    --color-on-secondary-container: #FFFFFF;
+    /* Tertiary — warm amber */
     --color-tertiary: #C4A35A;
     --color-on-tertiary: #0d0a0b;
     --color-tertiary-container: #3D2C00;
     --color-on-tertiary-container: #F0CAA0;
     /* Error / Negative — market down */
     --color-error: #F06543;
-    --color-on-error: #FDFFFC;
+    --color-on-error: #FFFFFF;
     --color-error-container: #5C1A00;
     --color-on-error-container: #FFCBB8;
     /* Positive / Market Up */
     --color-positive: #3f7d20;
-    --color-on-positive: #FDFFFC;
+    --color-on-positive: #FFFFFF;
     --color-primary-fixed: #9298A8;
-    --color-primary-fixed-dim: #6E7480;
+    --color-primary-fixed-dim: #3279F9;
     --color-on-primary-fixed: #0d0a0b;
-    --color-on-primary-fixed-variant: #FDFFFC;
-    --color-secondary-fixed: #C8E4EF;
-    --color-secondary-fixed-dim: #7A9EAA;
-    --color-on-secondary-fixed: #001820;
-    --color-on-secondary-fixed-variant: #C8E4EF;
+    --color-on-primary-fixed-variant: #FFFFFF;
+    --color-secondary-fixed: #18191D;
+    --color-secondary-fixed-dim: #45474D;
+    --color-on-secondary-fixed: #FFFFFF;
+    --color-on-secondary-fixed-variant: #9E9DA0;
     --color-tertiary-fixed: #F0CAA0;
     --color-tertiary-fixed-dim: #C4A35A;
     --color-on-tertiary-fixed: #1A0E00;
     --color-on-tertiary-fixed-variant: #F0CAA0;
-    --color-background: #0d0a0b;
-    --color-on-background: #FDFFFC;
-    --color-surface-variant: #1e1b20;
-    --color-glass-bg: rgba(18, 16, 20, 0.65);
-    --color-glass-border: rgba(253, 255, 252, 0.08);
-    --color-status-info: #7A9EAA;
-    --input-focus-glow-color: rgba(110, 116, 128, 0.4);
+    --color-background: #121317;
+    --color-on-background: #FFFFFF;
+    --color-surface-variant: #18191D;
+    --color-glass-bg: rgba(18, 19, 29, 0.65);
+    --color-glass-border: rgba(230, 234, 240, 0.12);
+    --color-status-info: #3279F9;
+    --input-focus-glow-color: rgba(50, 121, 249, 0.4);
 
     /* ─── Button System Variables ─── */
-    --pw-btn-primary-bg: #454955;
-    --pw-btn-primary-hover-bg: #565A6A;
-    --pw-btn-primary-text: #FDFFFC;
+    --pw-btn-primary-bg: #3279F9;
+    --pw-btn-primary-hover-bg: #1c5fd1;
+    --pw-btn-primary-text: #FFFFFF;
     --pw-btn-secondary-bg: var(--color-glass-bg);
-    --pw-btn-secondary-hover-bg: rgba(253, 255, 252, 0.06);
+    --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
     --pw-btn-secondary-text: var(--color-on-surface);
     --pw-btn-secondary-border: var(--color-glass-border);
     --pw-btn-tertiary-bg: transparent;
-    --pw-btn-tertiary-hover-bg: rgba(253, 255, 252, 0.04);
+    --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
     --pw-btn-tertiary-text: var(--color-on-surface);
-    --pw-btn-tertiary-border: rgba(253, 255, 252, 0.1);
+    --pw-btn-tertiary-border: rgba(50, 121, 249, 0.15);
     --pw-btn-danger-bg: var(--color-error);
     --pw-btn-danger-hover-bg: #FF8060;
     --pw-btn-danger-text: #0d0a0b;
 
     /* ─── Brand Tokens ─── */
-    --color-brand-primary: #454955;
-    --color-brand-secondary: #7A9EAA;
-    --color-brand-neutral: #1e1b20;
+    --color-brand-primary: #3279F9;
+    --color-brand-secondary: #9E9DA0;
+    --color-brand-neutral: #18191D;
 
     /* Legacy aliases for dark */
-    --pw-bg: #0d0a0b;
-    --pw-primary: #6E7480;
-    --pw-ocean: #7A9EAA;
-    --pw-info: #7A9EAA;
-    --pw-minty: #C4A35A;
-    --pw-forest: #1e1b20;
-    --pw-surface: #121014;
-    --pw-border: rgba(253, 255, 252, 0.08);
-    --pw-glass-bg: rgba(18, 16, 20, 0.65);
-    --pw-white: #FDFFFC;
-    --pw-black: #0d0a0b;
-    --pw-muted: #6B6870;
-    --pw-brand-secondary: #7A9EAA;
-    --pw-brand-neutral: #1e1b20;
-    --pw-accent: #454955;
+    --pw-bg: #121317;
+    --pw-primary: #3279F9;
+    --pw-ocean: #3279F9;
+    --pw-info: #3279F9;
+    --pw-minty: var(--color-secondary-container);
+    --pw-forest: #18191D;
+    --pw-surface: #121317;
+    --pw-border: rgba(230, 234, 240, 0.12);
+    --pw-glass-bg: rgba(18, 19, 29, 0.65);
+    --pw-white: #FFFFFF;
+    --pw-black: #FFFFFF;
+    --pw-muted: #9E9DA0;
+    --pw-brand-secondary: #9E9DA0;
+    --pw-brand-neutral: #18191D;
+    --pw-accent: #3279F9;
   }
 }
 
 html[data-theme="dark"],
 .dark {
-  /* ─── PaperWorking v3 Dark — Warm Black + Slate ─── */
-  --color-surface: #121014;
+  /* ─── PaperWorking Antigravity Dark — Grayscale + Blue ─── */
+  --color-surface: #121317;
   --color-surface-dim: #0d0a0b;
-  --color-surface-bright: #2e2b31;
-  --color-surface-container-lowest: #080608;
-  --color-surface-container-low: #161318;
-  --color-surface-container: #1e1b20;
-  --color-surface-container-high: #262328;
-  --color-surface-container-highest: #302D32;
-  --color-on-surface: #FDFFFC;
+  --color-surface-bright: #1f2127;
+  --color-surface-container-lowest: #0d0a0b;
+  --color-surface-container-low: #15161a;
+  --color-surface-container: #18191D;
+  --color-surface-container-high: #1f2127;
+  --color-surface-container-highest: #282a32;
+  --color-on-surface: #FFFFFF;
   --color-on-surface-variant: #9E9DA0;
-  --color-inverse-surface: #FDFFFC;
+  --color-inverse-surface: #FFFFFF;
   --color-inverse-on-surface: #0d0a0b;
-  --color-outline: #6B6870;
-  --color-outline-variant: #3B3840;
-  --color-surface-tint: #6E7480;
-  /* Primary — slate (container #454955 for buttons, token #6E7480 for text) */
-  --color-primary: #6E7480;
-  --color-on-primary: #0d0a0b;
-  --color-primary-container: #454955;
-  --color-on-primary-container: #FDFFFC;
-  --color-inverse-primary: #454955;
+  --color-outline: #45474D;
+  --color-outline-variant: rgba(230, 234, 240, 0.12);
+  --color-surface-tint: #3279F9;
+  /* Primary — blue */
+  --color-primary: #3279F9;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: rgba(50, 121, 249, 0.14);
+  --color-on-primary-container: #3279F9;
+  --color-inverse-primary: #1c5fd1;
   /* Secondary — steel blue-gray, NOT purple */
-  --color-secondary: #7A9EAA;
-  --color-on-secondary: #0d0a0b;
-  --color-secondary-container: #1A3640;
-  --color-on-secondary-container: #C8E4EF;
+  --color-secondary: #9E9DA0;
+  --color-on-secondary: #121317;
+  --color-secondary-container: #18191D;
+  --color-on-secondary-container: #FFFFFF;
   /* Tertiary — warm amber */
   --color-tertiary: #C4A35A;
   --color-on-tertiary: #0d0a0b;
@@ -345,64 +344,64 @@ html[data-theme="dark"],
   --color-on-error-container: #FFCBB8;
   /* Positive / Market Up */
   --color-positive: #3f7d20;
-  --color-on-positive: #FDFFFC;
+  --color-on-positive: #FFFFFF;
   --color-primary-fixed: #9298A8;
-  --color-primary-fixed-dim: #6E7480;
+  --color-primary-fixed-dim: #3279F9;
   --color-on-primary-fixed: #0d0a0b;
-  --color-on-primary-fixed-variant: #FDFFFC;
-  --color-secondary-fixed: #C8E4EF;
-  --color-secondary-fixed-dim: #7A9EAA;
-  --color-on-secondary-fixed: #001820;
-  --color-on-secondary-fixed-variant: #C8E4EF;
+  --color-on-primary-fixed-variant: #FFFFFF;
+  --color-secondary-fixed: #18191D;
+  --color-secondary-fixed-dim: #45474D;
+  --color-on-secondary-fixed: #FFFFFF;
+  --color-on-secondary-fixed-variant: #9E9DA0;
   --color-tertiary-fixed: #F0CAA0;
   --color-tertiary-fixed-dim: #C4A35A;
   --color-on-tertiary-fixed: #1A0E00;
   --color-on-tertiary-fixed-variant: #F0CAA0;
-  --color-background: #0d0a0b;
-  --color-on-background: #FDFFFC;
-  --color-surface-variant: #1e1b20;
-  --color-glass-bg: rgba(18, 16, 20, 0.65);
-  --color-glass-border: rgba(253, 255, 252, 0.08);
-  --color-status-info: #7A9EAA;
-  --input-focus-glow-color: rgba(110, 116, 128, 0.4);
+  --color-background: #121317;
+  --color-on-background: #FFFFFF;
+  --color-surface-variant: #18191D;
+  --color-glass-bg: rgba(18, 19, 29, 0.65);
+  --color-glass-border: rgba(230, 234, 240, 0.12);
+  --color-status-info: #3279F9;
+  --input-focus-glow-color: rgba(50, 121, 249, 0.4);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: #454955;
-  --pw-btn-primary-hover-bg: #565A6A;
-  --pw-btn-primary-text: #FDFFFC;
+  --pw-btn-primary-bg: #3279F9;
+  --pw-btn-primary-hover-bg: #1c5fd1;
+  --pw-btn-primary-text: #FFFFFF;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(253, 255, 252, 0.06);
+  --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
   --pw-btn-secondary-text: var(--color-on-surface);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(253, 255, 252, 0.04);
+  --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
   --pw-btn-tertiary-text: var(--color-on-surface);
-  --pw-btn-tertiary-border: rgba(253, 255, 252, 0.1);
+  --pw-btn-tertiary-border: rgba(50, 121, 249, 0.15);
   --pw-btn-danger-bg: var(--color-error);
   --pw-btn-danger-hover-bg: #FF8060;
   --pw-btn-danger-text: #0d0a0b;
 
   /* ─── Brand Tokens ─── */
-  --color-brand-primary: #454955;
-  --color-brand-secondary: #7A9EAA;
-  --color-brand-neutral: #1e1b20;
+  --color-brand-primary: #3279F9;
+  --color-brand-secondary: #9E9DA0;
+  --color-brand-neutral: #18191D;
 
   /* Legacy aliases for dark */
-  --pw-bg: #0d0a0b;
-  --pw-primary: #6E7480;
-  --pw-ocean: #7A9EAA;
-  --pw-info: #7A9EAA;
-  --pw-minty: #C4A35A;
-  --pw-forest: #1e1b20;
-  --pw-surface: #121014;
-  --pw-border: rgba(253, 255, 252, 0.08);
-  --pw-glass-bg: rgba(18, 16, 20, 0.65);
-  --pw-white: #FDFFFC;
-  --pw-black: #0d0a0b;
-  --pw-muted: #6B6870;
-  --pw-brand-secondary: #7A9EAA;
-  --pw-brand-neutral: #1e1b20;
-  --pw-accent: #454955;
+  --pw-bg: #121317;
+  --pw-primary: #3279F9;
+  --pw-ocean: #3279F9;
+  --pw-info: #3279F9;
+  --pw-minty: var(--color-secondary-container);
+  --pw-forest: #18191D;
+  --pw-surface: #121317;
+  --pw-border: rgba(230, 234, 240, 0.12);
+  --pw-glass-bg: rgba(18, 19, 29, 0.65);
+  --pw-white: #FFFFFF;
+  --pw-black: #FFFFFF;
+  --pw-muted: #9E9DA0;
+  --pw-brand-secondary: #9E9DA0;
+  --pw-brand-neutral: #18191D;
+  --pw-accent: #3279F9;
 }
 
 /* ─── Tailwind v4 @theme ─── */
@@ -425,21 +424,21 @@ html[data-theme="dark"],
   --color-text-primary: var(--pw-black);
   --color-text-secondary: var(--pw-muted);
 
-  /* ─── Font System — Inter Primary, Merriweather Serif, JetBrains Mono terminal ─── */
+  /* ─── Font System — Inter Primary, JetBrains Mono terminal ─── */
   --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-merriweather), Georgia, serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), monospace;
   --font-jetbrains: var(--font-jetbrains-mono), monospace;
   --font-hanken: var(--font-inter), system-ui, sans-serif;
-  --font-plus-jakarta: var(--font-merriweather), Georgia, serif;
+  --font-plus-jakarta: var(--font-inter), system-ui, sans-serif;
 
-  /* Font Family Mappings — headings use Merriweather, body uses Inter */
-  --font-display-hero: var(--font-merriweather), Georgia, serif;
-  --font-headline-xl: var(--font-merriweather), Georgia, serif;
-  --font-headline-lg: var(--font-merriweather), Georgia, serif;
-  --font-headline-md: var(--font-merriweather), Georgia, serif;
-  --font-headline-sm: var(--font-merriweather), Georgia, serif;
-  --font-headline-lg-mobile: var(--font-merriweather), Georgia, serif;
+  /* Font Family Mappings — All slots use Inter per spec */
+  --font-display-hero: var(--font-inter), system-ui, sans-serif;
+  --font-headline-xl: var(--font-inter), system-ui, sans-serif;
+  --font-headline-lg: var(--font-inter), system-ui, sans-serif;
+  --font-headline-md: var(--font-inter), system-ui, sans-serif;
+  --font-headline-sm: var(--font-inter), system-ui, sans-serif;
+  --font-headline-lg-mobile: var(--font-inter), system-ui, sans-serif;
   --font-body-lg: var(--font-inter), system-ui, sans-serif;
   --font-body-md: var(--font-inter), system-ui, sans-serif;
   --font-body-sm: var(--font-inter), system-ui, sans-serif;
@@ -742,7 +741,7 @@ html[data-theme="dark"],
 /* Stitch Typography System Enforcement */
 @layer base {
   h1 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-display-lg-size);
     font-weight: var(--text-display-lg-weight);
     line-height: var(--text-display-lg-line-height);
@@ -750,35 +749,35 @@ html[data-theme="dark"],
     color: var(--pw-black);
   }
   h2 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-headline-lg-size);
     font-weight: var(--text-headline-lg-weight);
     line-height: var(--text-headline-lg-line-height);
     color: var(--pw-black);
   }
   h3 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-headline-lg-mobile-size);
     font-weight: var(--text-headline-lg-mobile-weight);
     line-height: var(--text-headline-lg-mobile-line-height);
     color: var(--pw-black);
   }
   h4 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-title-md-size);
     font-weight: var(--text-title-md-weight);
     line-height: var(--text-title-md-line-height);
     color: var(--pw-black);
   }
   h5 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-body-lg-size);
     font-weight: 600;
     line-height: var(--text-body-lg-line-height);
     color: var(--pw-black);
   }
   h6 {
-    font-family: var(--font-merriweather), Georgia, serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-size: var(--text-body-sm-size);
     font-weight: 600;
     line-height: var(--text-body-sm-line-height);

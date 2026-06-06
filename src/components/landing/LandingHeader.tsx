@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import Logo from '@/components/brand/Logo';
+import { useTheme } from '@/lib/utils/ThemeProvider';
 
 /* ═══════════════════════════════════════════════════════
    LandingHeader — Antigravity-style sticky nav.
@@ -29,8 +30,12 @@ export default function LandingHeader() {
   const [howOpen, setHowOpen]       = useState(false);
   const dropRef  = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
+    setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -214,6 +219,39 @@ export default function LandingHeader() {
           {/* ── Right actions ── */}
           <div className="flex items-center gap-3">
 
+            {/* Theme Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={`Switch to ${mounted && isDark ? 'light' : 'dark'} mode`}
+              className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-200 group"
+              style={{
+                background: 'transparent',
+                color: 'var(--color-on-surface)',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <span
+                className="material-symbols-outlined text-[20px] transition-transform duration-300"
+                style={{
+                  fontVariationSettings: (mounted && isDark) ? "'FILL' 1" : "'FILL' 0",
+                  transform: (mounted && isDark) ? 'rotate(0deg)' : 'rotate(180deg)',
+                  opacity: 0.7,
+                }}
+              >
+                {!mounted || isDark ? 'light_mode' : 'dark_mode'}
+              </span>
+              <span
+                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none"
+                style={{
+                  background: mounted && isDark
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(0, 0, 0, 0.06)',
+                }}
+              />
+            </button>
+
             {/* Sign In — text link */}
             <Link
               href="/login"
@@ -330,6 +368,30 @@ export default function LandingHeader() {
                     {label}
                   </Link>
                 ))}
+
+                {/* Theme toggle row for mobile */}
+                <div
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl text-[14px] font-medium mt-1"
+                  style={{ color: 'var(--color-on-surface)' }}
+                >
+                  <span>Theme</span>
+                  <button
+                    type="button"
+                    onClick={toggleTheme}
+                    className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors"
+                    style={{
+                      color: 'var(--color-on-surface)',
+                      background: 'color-mix(in srgb, var(--color-on-background) 6%, transparent)',
+                      border: 'none',
+                      cursor: 'pointer',
+                    }}
+                    aria-label={`Switch to ${mounted && isDark ? 'light' : 'dark'} mode`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">
+                      {!mounted || isDark ? 'light_mode' : 'dark_mode'}
+                    </span>
+                  </button>
+                </div>
               </div>
 
               {/* CTA area */}

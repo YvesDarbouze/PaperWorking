@@ -264,12 +264,12 @@ function AnimatedPrice({ value }: { value: number }) {
 function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v: boolean) => void }) {
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="inline-flex items-center p-1 glass-panel rounded-full border border-white/10">
+      <div className="inline-flex items-center p-1 glass-panel rounded-full border border-outline-variant">
         <button
           type="button"
           onClick={() => onToggle(false)}
           className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
-            !isAnnual ? 'bg-surface-bright border border-white/10 text-on-surface' : 'text-on-surface-variant hover:text-on-surface'
+            !isAnnual ? 'bg-surface-bright border border-outline-variant text-on-surface' : 'text-on-surface-variant hover:text-on-surface'
           }`}
         >
           Monthly
@@ -278,7 +278,7 @@ function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v
           type="button"
           onClick={() => onToggle(true)}
           className={`px-5 py-2 rounded-full text-[13px] font-semibold flex items-center gap-2 transition-all duration-200 ${
-            isAnnual ? 'bg-surface-bright border border-white/10 text-primary' : 'text-on-surface-variant hover:text-on-surface'
+            isAnnual ? 'bg-surface-bright border border-outline-variant text-primary' : 'text-on-surface-variant hover:text-on-surface'
           }`}
         >
           Annual
@@ -313,7 +313,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
       className={`glass-panel rounded-xl p-7 flex flex-col relative transition-all duration-300 h-full
         ${plan.highlighted
           ? 'border-primary/35 shadow-[0_0_60px_-15px_rgba(69,73,85,0.25)] md:scale-[1.03] z-10'
-          : 'border-white/8 hover:border-white/16'
+          : 'border-outline-variant hover:border-outline'
         }`}
     >
       {/* Top light line for highlighted */}
@@ -329,7 +329,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
       )}
 
       {/* Plan header */}
-      <div className={`pb-5 border-b border-white/8 ${plan.badge ? 'mt-2' : ''}`}>
+      <div className={`pb-5 border-b border-outline-variant ${plan.badge ? 'mt-2' : ''}`}>
         <h3 className={`text-[18px] font-bold tracking-[-0.01em] mb-1 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
           {plan.name}
         </h3>
@@ -337,7 +337,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
       </div>
 
       {/* Price */}
-      <div className="py-5 border-b border-white/8">
+      <div className="py-5 border-b border-outline-variant">
         {plan.isCustom ? (
           <div>
             <p className="text-[28px] font-extrabold tracking-[-0.03em] text-on-surface">Custom</p>
@@ -351,7 +351,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
         ) : (
           <div>
             <div className="flex items-baseline gap-1">
-              <span className={`font-extrabold text-[32px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-white' : 'text-on-surface'}`}>
+              <span className={`font-extrabold text-[32px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
                 <AnimatedPrice value={displayPrice!} />
               </span>
               <span className="text-[13px] text-on-surface-variant">/mo</span>
@@ -375,7 +375,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
           <Link
             href="/contact"
             className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
-              border border-white/16 text-on-surface hover:border-white/30 hover:text-primary
+              border border-outline-variant text-on-surface hover:border-outline hover:text-primary
               transition-all duration-200"
           >
             {plan.cta}
@@ -384,7 +384,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
           <Link
             href="/register"
             className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
-              border border-white/12 text-on-surface-variant hover:border-white/25 hover:text-on-surface
+              border border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface
               transition-all duration-200"
           >
             {plan.cta}
@@ -466,7 +466,7 @@ function ROICallout() {
               One missed contingency deadline
             </p>
           </div>
-          <div className="flex-1 md:border-l md:border-white/10 md:pl-8">
+          <div className="flex-1 md:border-l md:border-outline-variant md:pl-8">
             <p className="text-[15px] leading-[24px] font-normal text-on-surface-variant">
               Pro costs less than one missed earnest money deposit. One untracked contractor draw can wipe{' '}
               <span className="text-on-surface font-semibold">$40,000</span> from your margin.
@@ -515,10 +515,10 @@ function ComparisonTable() {
         </p>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="glass-panel rounded-xl overflow-hidden border border-white/8">
+      <motion.div variants={fadeUp} className="glass-panel rounded-xl overflow-hidden border border-outline-variant">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-white/10 bg-surface-container/50">
+            <tr className="border-b border-outline-variant bg-surface-container/50">
               <th className="p-4 font-jetbrains text-[11px] uppercase tracking-[0.06em] text-on-surface-variant/50 w-[40%]">
                 Feature
               </th>
@@ -539,7 +539,7 @@ function ComparisonTable() {
                   </td>
                 </tr>
                 {section.rows.map((row, ri) => (
-                  <tr key={ri} className="border-b border-white/5 hover:bg-white/3 transition-colors">
+                  <tr key={ri} className="border-b border-outline-variant/40 hover:bg-on-surface/5 transition-colors">
                     <td className="p-4 text-[13px] text-on-surface">{row.label}</td>
                     <td className="p-4 text-center"><Check yes={row.starter} /></td>
                     <td className="p-4 text-center bg-primary/3"><Check yes={row.pro} isPortfolio /></td>
@@ -552,7 +552,7 @@ function ComparisonTable() {
           </tbody>
         </table>
 
-        <div className="p-4 border-t border-white/8 text-center bg-surface-container/20">
+        <div className="p-4 border-t border-outline-variant text-center bg-surface-container/20">
           <button
             onClick={() => setExpanded(!expanded)}
             className="pw-interactive-custom font-jetbrains text-[11px] text-primary hover:text-white
@@ -630,7 +630,7 @@ function PricingFAQ() {
         {FAQ.map((item, i) => (
           <details
             key={i}
-            className="glass-panel rounded-xl border border-white/8 group overflow-hidden"
+            className="glass-panel rounded-xl border border-outline-variant group overflow-hidden"
           >
             <summary className="pw-interactive-custom flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none select-none text-[14px] font-semibold text-on-surface tracking-[-0.01em] hover:text-primary transition-colors duration-200">
               <span>{item.q}</span>
@@ -642,7 +642,7 @@ function PricingFAQ() {
               </span>
             </summary>
             <div className="px-6 pb-6">
-              <div className="border-t border-white/8 pt-5">
+              <div className="border-t border-outline-variant pt-5">
                 <p className="text-[13px] leading-[23px] text-on-surface-variant">{item.a}</p>
               </div>
             </div>
@@ -723,7 +723,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
   const handleSelect = (key: string) => onSelectPlan?.(key);
 
   return (
-    <section id="pricing" className="dark scroll-mt-20 bg-background text-on-surface relative overflow-hidden">
+    <section id="pricing" className="scroll-mt-20 bg-background text-on-surface relative overflow-hidden">
 
       {/* Ambient glows */}
       <div className="pointer-events-none fixed inset-0 z-[-1] overflow-hidden">

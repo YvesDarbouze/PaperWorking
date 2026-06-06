@@ -350,28 +350,121 @@ export default function LandingHeader() {
 
               {/* Links */}
               <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                {[
-                  { label: 'Home', href: '/' },
-                  { label: 'How It Works', href: '/how-it-works' },
-                  { label: 'Pricing', href: '/pricing' },
-                  { label: 'Support', href: '/support' },
-                ].map(({ label, href }) => (
-                  <Link
-                    key={label}
-                    href={href}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-medium transition-colors duration-150"
-                    style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    {label}
-                  </Link>
-                ))}
+                {/* Home */}
+                <Link
+                  href="/"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Home
+                </Link>
+
+                {/* How It Works Section */}
+                <div className="pt-2">
+                  <p className="px-4 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-surface-variant)] opacity-60 mb-1">
+                    How It Works
+                  </p>
+                  <div className="space-y-0.5 pl-3">
+                    <Link
+                      href="/how-it-works"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Feature Breakdowns
+                    </Link>
+                    <Link
+                      href="/trust"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Security Standards
+                    </Link>
+                    <Link
+                      href="/how-it-works#integrations"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Integration List
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                <Link
+                  href="/pricing"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Pricing
+                </Link>
+
+                {/* Support Section */}
+                <div className="pt-2">
+                  <p className="px-4 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-surface-variant)] opacity-60 mb-1">
+                    Support
+                  </p>
+                  <div className="space-y-0.5 pl-3">
+                    <Link
+                      href="/support"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Support Center
+                    </Link>
+                    <Link
+                      href="/blog"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Blog
+                    </Link>
+                    <Link
+                      href="/blog?category=case-studies"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Case Studies
+                    </Link>
+                    <Link
+                      href="/help"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
+                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      Help Center & Docs
+                    </Link>
+                  </div>
+                </div>
 
                 {/* Theme toggle row for mobile */}
                 <div
-                  className="flex items-center justify-between px-4 py-2.5 rounded-xl text-[14px] font-medium mt-1"
+                  className="flex items-center justify-between px-4 py-2.5 rounded-xl text-[14px] font-medium mt-3"
                   style={{ color: 'var(--color-on-surface)' }}
                 >
                   <span>Theme</span>

@@ -1,3 +1,31 @@
+# Agent Handoff — Reversion of Green Backgrounds & Auth Cleanup (2026-06-07)
+
+## ✅ COMPLETED THIS SESSION
+
+1. **Authentication Pages Cleanup (Zero Green)**:
+   - Created a clean monochrome class variable style override `auth-clean-layout` in `src/app/globals.css` that maps theme color variables (like `--color-primary`, `--pw-muted`, `--pw-black`, `--pw-primary`, `--pw-btn-primary-bg`, `--pw-btn-primary-text`, etc.) to white and slate gray, preventing green backgrounds, green borders, and green button colors on any auth screens (`/login`, `/register`, `/forgot-password`, `/login/finish`).
+   - Attached `pw-interactive-custom` to toggles, icons, link buttons, input eye-toggles, and custom buttons in all auth pages to bypass global CSS rules that render native buttons with solid green backgrounds.
+   - Removed green success/error status indicators from the password-reset and magic-link confirmation screens, replacing them with slate gray and white check circles.
+   - Removed the "System Status: Active" banner text from the layout header.
+
+2. **Reversion of Green Background Palette**:
+   - Reverted all light and dark theme background, surface, bento, and border colors in `src/app/globals.css` from the green colors (`#CEFFEF` and `#01201A`) back to their grayscale/monochrome configurations.
+   - Retained the primary green accent colors (`#00DD94` and `#00CE8E`) for accents, outlines, trend pills, active outlines, and status info only.
+   - Swapped out the `#01201A` dark green primary button background on light surfaces for a dark black (`#0d0a0b`) background button.
+
+3. **Verification**:
+   - TypeScript verification (`npx tsc --noEmit`) completed with 0 errors.
+   - Next.js production build (`npm run build`) completed successfully.
+   - Changes committed and pushed to remote branch `PaperWorking`.
+
+## ⚠️ DEPLOYMENT NOTE
+- Gcloud auth credentials have expired on the local host. The user must run `gcloud auth login` in their terminal and then trigger deployment using:
+  ```bash
+  gcloud builds submit --config cloudbuild.yaml
+  ```
+
+---
+
 # Agent Handoff — Portfolio Dashboard Redesign Complete (2026-06-06)
 
 ## ✅ COMPLETED PROMPT 2 ("Portfolio" Dashboard Landing Page Redesign)

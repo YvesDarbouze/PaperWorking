@@ -7,7 +7,6 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingNews from '@/components/landing/LandingNews';
-import TestimonialSlider from '@/components/landing/TestimonialSlider';
 import FinalCTA from '@/components/landing/FinalCTA';
 import PricingSection from '@/components/landing/PricingSection';
 import { useAuth } from '@/context/AuthContext';
@@ -158,8 +157,7 @@ export default function LandingPage() {
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">
 
-        {/* ── Testimonials ── */}
-        <TestimonialSlider />
+
 
         {/* ── Final CTA — Risk Mitigation Reframe ── */}
         <FinalCTA />

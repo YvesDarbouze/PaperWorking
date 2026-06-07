@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
           >
             <CheckCircle2 className="h-7 w-7" style={{ color: '#454955' }} />
           </div>
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-2 font-headline-md">
+          <h1 className="text-xl md:text-2xl font-thin tracking-tight text-white mb-2 font-headline-md">
             Check your inbox
           </h1>
           <p 
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
 
       <div className="flex flex-col items-center w-full relative z-10">
         <div className="mb-6 text-center">
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-2 font-headline-md">
+          <h1 className="text-xl md:text-2xl font-thin tracking-tight text-white mb-2 font-headline-md">
             Reset your password
           </h1>
           <p className="text-xs md:text-sm text-pw-muted font-body-sm">

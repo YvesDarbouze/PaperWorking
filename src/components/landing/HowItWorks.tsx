@@ -380,7 +380,7 @@ export default function HowItWorks() {
             </span>
           </div>
 
-          <h1 className="font-extrabold text-[40px] md:text-[64px] leading-[46px] md:leading-[72px] tracking-[-0.04em] text-on-surface mb-7">
+          <h1 className="font-thin text-[40px] md:text-[64px] leading-[46px] md:leading-[72px] tracking-[-0.04em] text-on-surface mb-7">
             Built for Serious<br className="hidden md:block" />{' '}
             <span className="text-primary luminous-text">Real Estate Investors</span>
           </h1>

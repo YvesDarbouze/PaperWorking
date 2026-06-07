@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
       <div className="text-center flex flex-col gap-2">
         <h1
-          className="text-2xl md:text-3xl font-bold tracking-tight text-on-surface"
+          className="text-2xl md:text-3xl font-thin tracking-tight text-on-surface"
           style={{
             fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
             color: '#e2e2e2',

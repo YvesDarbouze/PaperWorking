@@ -79,7 +79,7 @@ function MagicLinkFinishInner() {
       <div className="flex flex-col items-center w-full relative z-10">
         {/* ── Heading ── */}
         <div className="mb-6 text-center">
-          <h1 className="text-xl md:text-2xl font-bold tracking-tight text-white mb-2 font-headline-md">
+          <h1 className="text-xl md:text-2xl font-thin tracking-tight text-white mb-2 font-headline-md">
             Authenticating
           </h1>
           <p className="text-xs md:text-sm text-pw-muted font-body-sm">

@@ -12,27 +12,27 @@
 
 :root,
 html[data-theme="light"] {
-  /* ─── PaperWorking Antigravity Grayscale & Blue Palette ─── */
+  /* ─── PaperWorking Antigravity Grayscale & Green Palette ─── */
   --color-surface: #FFFFFF;
-  --color-surface-dim: #F8F9FC;
+  --color-surface-dim: #CEFFEF; /* Light Green background accent */
   --color-surface-bright: #FFFFFF;
   --color-surface-container-lowest: #FFFFFF;
-  --color-surface-container-low: #F8F9FC;
-  --color-surface-container: #F8F9FC;
-  --color-surface-container-high: #F0F1F5;
-  --color-surface-container-highest: #EFF2F7;
-  --color-on-surface: #121317;
-  --color-on-surface-variant: #45474D;
-  --color-inverse-surface: #121317;
+  --color-surface-container-low: #F3FFF9;
+  --color-surface-container: #E6FFF5;
+  --color-surface-container-high: #D4FFE0;
+  --color-surface-container-highest: #CEFFEF;
+  --color-on-surface: #01201A; /* Dark Green text */
+  --color-on-surface-variant: #1a4a3f;
+  --color-inverse-surface: #01201A;
   --color-inverse-on-surface: #FFFFFF;
-  --color-outline: #CDD4DC;
-  --color-outline-variant: rgba(33, 34, 38, 0.12);
-  --color-surface-tint: #3279F9;
-  --color-primary: #3279F9;
-  --color-on-primary: #FFFFFF;
-  --color-primary-container: rgba(50, 121, 249, 0.1);
-  --color-on-primary-container: #3279F9;
-  --color-inverse-primary: #1c5fd1;
+  --color-outline: #A2C2B9;
+  --color-outline-variant: rgba(1, 32, 26, 0.12);
+  --color-surface-tint: #00DD94;
+  --color-primary: #00CE8E; /* Primary Green 2 */
+  --color-on-primary: #01201A;
+  --color-primary-container: #CEFFEF; /* Light Green */
+  --color-on-primary-container: #00CE8E;
+  --color-inverse-primary: #00DD94;
   /* Secondary — steel blue-gray, not purple */
   --color-secondary: #45474D;
   --color-on-secondary: #FFFFFF;
@@ -64,46 +64,46 @@ html[data-theme="light"] {
   --color-on-tertiary-fixed: #1A0E00;
   --color-on-tertiary-fixed-variant: #4A3000;
   --color-background: #FFFFFF;
-  --color-on-background: #121317;
-  --color-surface-variant: #F8F9FC;
-  --color-glass-bg: rgba(255, 255, 255, 0.75);
-  --color-glass-border: rgba(33, 34, 38, 0.12);
-  --color-status-info: #3279F9;
-  --input-focus-glow-color: rgba(50, 121, 249, 0.3);
+  --color-on-background: #01201A;
+  --color-surface-variant: #E6FFF5;
+  --color-glass-bg: rgba(206, 255, 239, 0.75);
+  --color-glass-border: rgba(1, 32, 26, 0.12);
+  --color-status-info: #00CE8E;
+  --input-focus-glow-color: rgba(0, 206, 142, 0.3);
 
   /* ─── Button System Variables ─── */
   --pw-btn-primary-bg: var(--color-primary);
-  --pw-btn-primary-hover-bg: #1c5fd1;
-  --pw-btn-primary-text: #FFFFFF;
+  --pw-btn-primary-hover-bg: #00CE8E;
+  --pw-btn-primary-text: #01201A;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
+  --pw-btn-secondary-hover-bg: rgba(0, 206, 142, 0.08);
   --pw-btn-secondary-text: var(--color-primary);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
+  --pw-btn-tertiary-hover-bg: rgba(0, 206, 142, 0.05);
   --pw-btn-tertiary-text: var(--color-primary);
-  --pw-btn-tertiary-border: rgba(50, 121, 249, 0.2);
+  --pw-btn-tertiary-border: rgba(0, 206, 142, 0.2);
   --pw-btn-danger-bg: var(--color-error);
   --pw-btn-danger-hover-bg: #A83516;
   --pw-btn-danger-text: #FFFFFF;
 
   /* ─── Brand Tokens ─── */
-  --color-brand-primary: #3279F9;
-  --color-brand-secondary: #EFF2F7;
-  --color-brand-neutral: #F8F9FC;
+  --color-brand-primary: #00CE8E;
+  --color-brand-secondary: #CEFFEF;
+  --color-brand-neutral: #01201A;
   --spacing-scale: 2;
 
   /* ─── Glass & Bento System Tokens (Light Mode) ─── */
-  --color-glass-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 241, 245, 0.90) 100%);
-  --color-glass-card-border: rgba(33, 34, 38, 0.08);
-  --color-glass-card-shadow: 0 8px 32px 0 rgba(69, 73, 85, 0.08);
-  --color-glass-panel-bg: rgba(255, 255, 255, 0.75);
-  --color-glass-panel-border: rgba(33, 34, 38, 0.12);
-  --color-glass-panel-shadow: inset 0 0 20px rgba(69, 73, 85, 0.01);
+  --color-glass-card-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(206, 255, 239, 0.90) 100%);
+  --color-glass-card-border: rgba(1, 32, 26, 0.08);
+  --color-glass-card-shadow: 0 8px 32px 0 rgba(1, 32, 26, 0.08);
+  --color-glass-panel-bg: rgba(206, 255, 239, 0.75);
+  --color-glass-panel-border: rgba(1, 32, 26, 0.12);
+  --color-glass-panel-shadow: inset 0 0 20px rgba(1, 32, 26, 0.01);
   --color-bento-bg: rgba(0, 0, 0, 0.02);
-  --color-bento-border: rgba(33, 34, 38, 0.08);
+  --color-bento-border: rgba(1, 32, 26, 0.08);
   --color-bento-hover-bg: rgba(0, 0, 0, 0.04);
-  --color-glass-card-glow: linear-gradient(135deg, rgba(33, 34, 38, 0.06) 0%, rgba(33, 34, 38, 0) 40%);
+  --color-glass-card-glow: linear-gradient(135deg, rgba(1, 32, 26, 0.06) 0%, rgba(1, 32, 26, 0) 40%);
 
   /* Legacy Aliases */
   --pw-bg: var(--color-background);
@@ -150,15 +150,15 @@ html[data-theme="light"] {
   --font-hanken: var(--font-inter), system-ui, sans-serif;
   --font-plus-jakarta: var(--font-inter), system-ui, sans-serif;
 
-  /* Display / Hero — Inter 800 ExtraBold */
+  /* Display / Hero — Inter 100 Thin */
   --text-display-hero-size: 72px;
-  --text-display-hero-weight: 800;
+  --text-display-hero-weight: 100;
   --text-display-hero-line-height: 80px;
   --text-display-hero-letter-spacing: -0.04em;
 
-  /* Headline XL — Inter 800 (primary section heads) */
+  /* Headline XL — Inter 100 (primary section heads) */
   --text-display-lg-size: 56px;
-  --text-display-lg-weight: 800;
+  --text-display-lg-weight: 100;
   --text-display-lg-line-height: 64px;
   --text-display-lg-letter-spacing: -0.03em;
 
@@ -216,35 +216,35 @@ html[data-theme="light"] {
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* ─── PaperWorking Antigravity Dark — Grayscale + Blue ─── */
-    --color-surface: #121317;
-    --color-surface-dim: #0d0a0b;
-    --color-surface-bright: #1f2127;
-    --color-surface-container-lowest: #0d0a0b;
-    --color-surface-container-low: #15161a;
-    --color-surface-container: #18191D;
-    --color-surface-container-high: #1f2127;
-    --color-surface-container-highest: #282a32;
-    --color-on-surface: #FFFFFF;
-    --color-on-surface-variant: #9E9DA0;
-    --color-inverse-surface: #FFFFFF;
-    --color-inverse-on-surface: #0d0a0b;
-    --color-outline: #45474D;
-    --color-outline-variant: rgba(230, 234, 240, 0.12);
-    --color-surface-tint: #3279F9;
-    --color-primary: #3279F9;
-    --color-on-primary: #FFFFFF;
-    --color-primary-container: rgba(50, 121, 249, 0.14);
-    --color-on-primary-container: #3279F9;
-    --color-inverse-primary: #1c5fd1;
+    /* ─── PaperWorking Antigravity Dark — Grayscale + Green ─── */
+    --color-surface: #052620; /* Slightly lighter than Dark Green */
+    --color-surface-dim: #01201A; /* Dark Green base */
+    --color-surface-bright: #0c362e;
+    --color-surface-container-lowest: #01201A;
+    --color-surface-container-low: #032b23;
+    --color-surface-container: #05332a;
+    --color-surface-container-high: #084034;
+    --color-surface-container-highest: #0c4d3f;
+    --color-on-surface: #CEFFEF; /* Light Green text */
+    --color-on-surface-variant: #A2C2B9;
+    --color-inverse-surface: #CEFFEF;
+    --color-inverse-on-surface: #01201A;
+    --color-outline: #1a4a3f;
+    --color-outline-variant: rgba(206, 255, 239, 0.12);
+    --color-surface-tint: #00DD94;
+    --color-primary: #00DD94; /* Primary Green 1 */
+    --color-on-primary: #01201A;
+    --color-primary-container: rgba(0, 221, 148, 0.14);
+    --color-on-primary-container: #00DD94;
+    --color-inverse-primary: #00CE8E;
     /* Secondary — steel blue-gray, NOT purple */
     --color-secondary: #9E9DA0;
-    --color-on-secondary: #121317;
-    --color-secondary-container: #18191D;
-    --color-on-secondary-container: #FFFFFF;
+    --color-on-secondary: #01201A;
+    --color-secondary-container: #05332a;
+    --color-on-secondary-container: #CEFFEF;
     /* Tertiary — warm amber */
     --color-tertiary: #C4A35A;
-    --color-on-tertiary: #0d0a0b;
+    --color-on-tertiary: #01201A;
     --color-tertiary-container: #3D2C00;
     --color-on-tertiary-container: #F0CAA0;
     /* Error / Negative — market down */
@@ -256,49 +256,49 @@ html[data-theme="light"] {
     --color-positive: #3f7d20;
     --color-on-positive: #FFFFFF;
     --color-primary-fixed: #9298A8;
-    --color-primary-fixed-dim: #3279F9;
-    --color-on-primary-fixed: #0d0a0b;
-    --color-on-primary-fixed-variant: #FFFFFF;
-    --color-secondary-fixed: #18191D;
+    --color-primary-fixed-dim: #00DD94;
+    --color-on-primary-fixed: #01201A;
+    --color-on-primary-fixed-variant: #CEFFEF;
+    --color-secondary-fixed: #05332a;
     --color-secondary-fixed-dim: #45474D;
-    --color-on-secondary-fixed: #FFFFFF;
+    --color-on-secondary-fixed: #CEFFEF;
     --color-on-secondary-fixed-variant: #9E9DA0;
     --color-tertiary-fixed: #F0CAA0;
     --color-tertiary-fixed-dim: #C4A35A;
     --color-on-tertiary-fixed: #1A0E00;
     --color-on-tertiary-fixed-variant: #F0CAA0;
-    --color-background: #121317;
-    --color-on-background: #FFFFFF;
-    --color-surface-variant: #18191D;
-    --color-glass-bg: rgba(18, 19, 29, 0.65);
-    --color-glass-border: rgba(230, 234, 240, 0.12);
-    --color-status-info: #3279F9;
-    --input-focus-glow-color: rgba(50, 121, 249, 0.4);
+    --color-background: #01201A;
+    --color-on-background: #CEFFEF;
+    --color-surface-variant: #05332a;
+    --color-glass-bg: rgba(1, 32, 26, 0.65);
+    --color-glass-border: rgba(206, 255, 239, 0.12);
+    --color-status-info: #00DD94;
+    --input-focus-glow-color: rgba(0, 221, 148, 0.4);
 
     /* ─── Button System Variables ─── */
-    --pw-btn-primary-bg: #3279F9;
-    --pw-btn-primary-hover-bg: #1c5fd1;
-    --pw-btn-primary-text: #FFFFFF;
+    --pw-btn-primary-bg: #00DD94;
+    --pw-btn-primary-hover-bg: #00CE8E;
+    --pw-btn-primary-text: #01201A;
     --pw-btn-secondary-bg: var(--color-glass-bg);
-    --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
+    --pw-btn-secondary-hover-bg: rgba(0, 221, 148, 0.08);
     --pw-btn-secondary-text: var(--color-on-surface);
     --pw-btn-secondary-border: var(--color-glass-border);
     --pw-btn-tertiary-bg: transparent;
-    --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
+    --pw-btn-tertiary-hover-bg: rgba(0, 221, 148, 0.05);
     --pw-btn-tertiary-text: var(--color-on-surface);
-    --pw-btn-tertiary-border: rgba(50, 121, 249, 0.15);
+    --pw-btn-tertiary-border: rgba(0, 221, 148, 0.15);
     --pw-btn-danger-bg: var(--color-error);
     --pw-btn-danger-hover-bg: #FF8060;
     --pw-btn-danger-text: #0d0a0b;
 
     /* ─── Brand Tokens ─── */
-    --color-brand-primary: #3279F9;
-    --color-brand-secondary: #9E9DA0;
-    --color-brand-neutral: #18191D;
+    --color-brand-primary: #00DD94;
+    --color-brand-secondary: #CEFFEF;
+    --color-brand-neutral: #01201A;
 
     /* ─── Glass & Bento System Tokens (Dark Mode) ─── */
-    --color-glass-card-bg: linear-gradient(135deg, rgba(30, 27, 32, 0.65) 0%, rgba(13, 10, 11, 0.82) 100%);
-    --color-glass-card-border: rgba(253, 255, 252, 0.08);
+    --color-glass-card-bg: linear-gradient(135deg, rgba(5, 38, 32, 0.65) 0%, rgba(1, 32, 26, 0.82) 100%);
+    --color-glass-card-border: rgba(206, 255, 239, 0.08);
     --color-glass-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
     --color-glass-panel-bg: rgba(255, 255, 255, 0.03);
     --color-glass-panel-border: rgba(255, 255, 255, 0.1);
@@ -306,113 +306,113 @@ html[data-theme="light"] {
     --color-bento-bg: rgba(255, 255, 255, 0.02);
     --color-bento-border: rgba(255, 255, 255, 0.08);
     --color-bento-hover-bg: rgba(255, 255, 255, 0.04);
-    --color-glass-card-glow: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 40%);
+    --color-glass-card-glow: linear-gradient(135deg, rgba(206, 255, 239, 0.12) 0%, rgba(206, 255, 239, 0) 40%);
 
     /* Legacy aliases for dark */
-    --pw-bg: #121317;
-    --pw-primary: #3279F9;
-    --pw-ocean: #3279F9;
-    --pw-info: #3279F9;
+    --pw-bg: #01201A;
+    --pw-primary: #00DD94;
+    --pw-ocean: #00DD94;
+    --pw-info: #00DD94;
     --pw-minty: var(--color-secondary-container);
-    --pw-forest: #18191D;
-    --pw-surface: #121317;
-    --pw-border: rgba(230, 234, 240, 0.12);
-    --pw-glass-bg: rgba(18, 19, 29, 0.65);
-    --pw-white: #FFFFFF;
-    --pw-black: #FFFFFF;
-    --pw-muted: #9E9DA0;
-    --pw-brand-secondary: #9E9DA0;
-    --pw-brand-neutral: #18191D;
-    --pw-accent: #3279F9;
+    --pw-forest: #05332a;
+    --pw-surface: #052620;
+    --pw-border: rgba(206, 255, 239, 0.12);
+    --pw-glass-bg: rgba(1, 32, 26, 0.65);
+    --pw-white: #CEFFEF;
+    --pw-black: #CEFFEF;
+    --pw-muted: #A2C2B9;
+    --pw-brand-secondary: #CEFFEF;
+    --pw-brand-neutral: #01201A;
+    --pw-accent: #00DD94;
   }
 }
 
 html[data-theme="dark"],
 .dark {
-  /* ─── PaperWorking Antigravity Dark — Grayscale + Blue ─── */
-  --color-surface: #121317;
-  --color-surface-dim: #0d0a0b;
-  --color-surface-bright: #1f2127;
-  --color-surface-container-lowest: #0d0a0b;
-  --color-surface-container-low: #15161a;
-  --color-surface-container: #18191D;
-  --color-surface-container-high: #1f2127;
-  --color-surface-container-highest: #282a32;
-  --color-on-surface: #FFFFFF;
-  --color-on-surface-variant: #9E9DA0;
-  --color-inverse-surface: #FFFFFF;
-  --color-inverse-on-surface: #0d0a0b;
-  --color-outline: #45474D;
-  --color-outline-variant: rgba(230, 234, 240, 0.12);
-  --color-surface-tint: #3279F9;
-  /* Primary — blue */
-  --color-primary: #3279F9;
-  --color-on-primary: #FFFFFF;
-  --color-primary-container: rgba(50, 121, 249, 0.14);
-  --color-on-primary-container: #3279F9;
-  --color-inverse-primary: #1c5fd1;
+  /* ─── PaperWorking Antigravity Dark — Grayscale + Green ─── */
+  --color-surface: #052620; /* Slightly lighter than Dark Green */
+  --color-surface-dim: #01201A; /* Dark Green base */
+  --color-surface-bright: #0c362e;
+  --color-surface-container-lowest: #01201A;
+  --color-surface-container-low: #032b23;
+  --color-surface-container: #05332a;
+  --color-surface-container-high: #084034;
+  --color-surface-container-highest: #0c4d3f;
+  --color-on-surface: #CEFFEF; /* Light Green text */
+  --color-on-surface-variant: #A2C2B9;
+  --color-inverse-surface: #CEFFEF;
+  --color-inverse-on-surface: #01201A;
+  --color-outline: #1a4a3f;
+  --color-outline-variant: rgba(206, 255, 239, 0.12);
+  --color-surface-tint: #00DD94;
+  /* Primary — green */
+  --color-primary: #00DD94; /* Primary Green 1 */
+  --color-on-primary: #01201A;
+  --color-primary-container: rgba(0, 221, 148, 0.14);
+  --color-on-primary-container: #00DD94;
+  --color-inverse-primary: #00CE8E;
   /* Secondary — steel blue-gray, NOT purple */
   --color-secondary: #9E9DA0;
-  --color-on-secondary: #121317;
-  --color-secondary-container: #18191D;
-  --color-on-secondary-container: #FFFFFF;
+  --color-on-secondary: #01201A;
+  --color-secondary-container: #05332a;
+  --color-on-secondary-container: #CEFFEF;
   /* Tertiary — warm amber */
   --color-tertiary: #C4A35A;
-  --color-on-tertiary: #0d0a0b;
+  --color-on-tertiary: #01201A;
   --color-tertiary-container: #3D2C00;
   --color-on-tertiary-container: #F0CAA0;
   /* Error / Negative — market down */
   --color-error: #F06543;
-  --color-on-error: #FDFFFC;
+  --color-on-error: #FFFFFF;
   --color-error-container: #5C1A00;
   --color-on-error-container: #FFCBB8;
   /* Positive / Market Up */
   --color-positive: #3f7d20;
   --color-on-positive: #FFFFFF;
   --color-primary-fixed: #9298A8;
-  --color-primary-fixed-dim: #3279F9;
-  --color-on-primary-fixed: #0d0a0b;
-  --color-on-primary-fixed-variant: #FFFFFF;
-  --color-secondary-fixed: #18191D;
+  --color-primary-fixed-dim: #00DD94;
+  --color-on-primary-fixed: #01201A;
+  --color-on-primary-fixed-variant: #CEFFEF;
+  --color-secondary-fixed: #05332a;
   --color-secondary-fixed-dim: #45474D;
-  --color-on-secondary-fixed: #FFFFFF;
+  --color-on-secondary-fixed: #CEFFEF;
   --color-on-secondary-fixed-variant: #9E9DA0;
   --color-tertiary-fixed: #F0CAA0;
   --color-tertiary-fixed-dim: #C4A35A;
   --color-on-tertiary-fixed: #1A0E00;
   --color-on-tertiary-fixed-variant: #F0CAA0;
-  --color-background: #121317;
-  --color-on-background: #FFFFFF;
-  --color-surface-variant: #18191D;
-  --color-glass-bg: rgba(18, 19, 29, 0.65);
-  --color-glass-border: rgba(230, 234, 240, 0.12);
-  --color-status-info: #3279F9;
-  --input-focus-glow-color: rgba(50, 121, 249, 0.4);
+  --color-background: #01201A;
+  --color-on-background: #CEFFEF;
+  --color-surface-variant: #05332a;
+  --color-glass-bg: rgba(1, 32, 26, 0.65);
+  --color-glass-border: rgba(206, 255, 239, 0.12);
+  --color-status-info: #00DD94;
+  --input-focus-glow-color: rgba(0, 221, 148, 0.4);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: #3279F9;
-  --pw-btn-primary-hover-bg: #1c5fd1;
-  --pw-btn-primary-text: #FFFFFF;
+  --pw-btn-primary-bg: #00DD94;
+  --pw-btn-primary-hover-bg: #00CE8E;
+  --pw-btn-primary-text: #01201A;
   --pw-btn-secondary-bg: var(--color-glass-bg);
-  --pw-btn-secondary-hover-bg: rgba(50, 121, 249, 0.08);
+  --pw-btn-secondary-hover-bg: rgba(0, 221, 148, 0.08);
   --pw-btn-secondary-text: var(--color-on-surface);
   --pw-btn-secondary-border: var(--color-glass-border);
   --pw-btn-tertiary-bg: transparent;
-  --pw-btn-tertiary-hover-bg: rgba(50, 121, 249, 0.05);
+  --pw-btn-tertiary-hover-bg: rgba(0, 221, 148, 0.05);
   --pw-btn-tertiary-text: var(--color-on-surface);
-  --pw-btn-tertiary-border: rgba(50, 121, 249, 0.15);
+  --pw-btn-tertiary-border: rgba(0, 221, 148, 0.15);
   --pw-btn-danger-bg: var(--color-error);
   --pw-btn-danger-hover-bg: #FF8060;
   --pw-btn-danger-text: #0d0a0b;
 
   /* ─── Brand Tokens ─── */
-  --color-brand-primary: #3279F9;
-  --color-brand-secondary: #9E9DA0;
-  --color-brand-neutral: #18191D;
+  --color-brand-primary: #00DD94;
+  --color-brand-secondary: #CEFFEF;
+  --color-brand-neutral: #01201A;
 
   /* ─── Glass & Bento System Tokens (Dark Mode) ─── */
-  --color-glass-card-bg: linear-gradient(135deg, rgba(30, 27, 32, 0.65) 0%, rgba(13, 10, 11, 0.82) 100%);
-  --color-glass-card-border: rgba(253, 255, 252, 0.08);
+  --color-glass-card-bg: linear-gradient(135deg, rgba(5, 38, 32, 0.65) 0%, rgba(1, 32, 26, 0.82) 100%);
+  --color-glass-card-border: rgba(206, 255, 239, 0.08);
   --color-glass-card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
   --color-glass-panel-bg: rgba(255, 255, 255, 0.03);
   --color-glass-panel-border: rgba(255, 255, 255, 0.1);
@@ -420,24 +420,24 @@ html[data-theme="dark"],
   --color-bento-bg: rgba(255, 255, 255, 0.02);
   --color-bento-border: rgba(255, 255, 255, 0.08);
   --color-bento-hover-bg: rgba(255, 255, 255, 0.04);
-  --color-glass-card-glow: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 40%);
+  --color-glass-card-glow: linear-gradient(135deg, rgba(206, 255, 239, 0.12) 0%, rgba(206, 255, 239, 0) 40%);
 
   /* Legacy aliases for dark */
-  --pw-bg: #121317;
-  --pw-primary: #3279F9;
-  --pw-ocean: #3279F9;
-  --pw-info: #3279F9;
+  --pw-bg: #01201A;
+  --pw-primary: #00DD94;
+  --pw-ocean: #00DD94;
+  --pw-info: #00DD94;
   --pw-minty: var(--color-secondary-container);
-  --pw-forest: #18191D;
-  --pw-surface: #121317;
-  --pw-border: rgba(230, 234, 240, 0.12);
-  --pw-glass-bg: rgba(18, 19, 29, 0.65);
-  --pw-white: #FFFFFF;
-  --pw-black: #FFFFFF;
-  --pw-muted: #9E9DA0;
-  --pw-brand-secondary: #9E9DA0;
-  --pw-brand-neutral: #18191D;
-  --pw-accent: #3279F9;
+  --pw-forest: #05332a;
+  --pw-surface: #052620;
+  --pw-border: rgba(206, 255, 239, 0.12);
+  --pw-glass-bg: rgba(1, 32, 26, 0.65);
+  --pw-white: #CEFFEF;
+  --pw-black: #CEFFEF;
+  --pw-muted: #A2C2B9;
+  --pw-brand-secondary: #CEFFEF;
+  --pw-brand-neutral: #01201A;
+  --pw-accent: #00DD94;
 }
 
 /* ─── Tailwind v4 @theme ─── */
@@ -707,10 +707,10 @@ html[data-theme="dark"],
     font-family: var(--font-jetbrains-mono), monospace;
   }
 
-  /* ─── Display Hero — Inter 800, maximum impact ─── */
+  /* ─── Display Hero — Inter 100, maximum impact ─── */
   .font-display-hero {
     font-family: var(--font-inter), system-ui, sans-serif;
-    font-weight: 800;
+    font-weight: 100;
   }
   .text-display-hero {
     font-size: var(--text-display-hero-size);
@@ -775,9 +775,9 @@ html[data-theme="dark"],
 /* Stitch Typography System Enforcement */
 @layer base {
   h1 {
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif !important;
     font-size: var(--text-display-lg-size);
-    font-weight: var(--text-display-lg-weight);
+    font-weight: 100 !important;
     line-height: var(--text-display-lg-line-height);
     letter-spacing: var(--text-display-lg-letter-spacing);
     color: var(--pw-black);

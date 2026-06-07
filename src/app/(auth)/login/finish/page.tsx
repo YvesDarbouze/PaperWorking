@@ -102,9 +102,9 @@ function MagicLinkFinishInner() {
             <div className="flex flex-col items-center gap-5 animate-in fade-in zoom-in slide-in-from-bottom-4 duration-400 py-4">
               <div 
                 className="flex h-14 w-14 items-center justify-center rounded-full border"
-                style={{ backgroundColor: 'rgba(5, 46, 22, 0.4)', borderColor: 'rgba(22, 101, 52, 0.3)' }}
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: 'rgba(255, 255, 255, 0.1)' }}
               >
-                <CheckCircle2 className="w-7 h-7 text-green-400" />
+                <CheckCircle2 className="w-7 h-7 text-white" />
               </div>
               <div className="text-center">
                 <h2 className="text-lg font-semibold text-white font-headline-md">Login Successful</h2>
@@ -161,7 +161,7 @@ function MagicLinkFinishInner() {
               </div>
               <Link
                 href="/login"
-                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 text-sm font-semibold text-pw-black transition-colors flex items-center justify-center"
+                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-3 text-sm font-semibold text-white transition-colors flex items-center justify-center"
               >
                 Back to sign in
               </Link>

@@ -85,14 +85,14 @@ export default function RegisterPage() {
               key={acct.key}
               type="button"
               onClick={() => setSelectedType(acct.key)}
-              className={`register-type-btn group ${active ? 'active' : ''}`}
+              className={`pw-interactive-custom register-type-btn group ${active ? 'active' : ''}`}
             >
               {/* Icon */}
               <div
                 className="flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                 style={
                   active
-                    ? { backgroundColor: 'rgba(69, 73, 85, 0.2)', color: '#454955' }
+                    ? { backgroundColor: 'rgba(255, 255, 255, 0.1)', color: '#ffffff' }
                     : { backgroundColor: 'rgba(255, 255, 255, 0.05)', color: 'var(--pw-muted)' }
                 }
               >
@@ -129,8 +129,8 @@ export default function RegisterPage() {
                 <CheckCircle2
                   className="w-6 h-6"
                   style={{
-                    color: '#454955',
-                    fill: 'rgba(69, 73, 85, 0.1)',
+                    color: '#ffffff',
+                    fill: 'rgba(255, 255, 255, 0.1)',
                   }}
                 />
               </div>
@@ -162,7 +162,7 @@ export default function RegisterPage() {
           }}
         >
           Already have an account?{' '}
-          <span className="font-bold group-hover:underline" style={{ color: '#454955' }}>Log in</span>
+          <span className="font-bold group-hover:underline text-white">Log in</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

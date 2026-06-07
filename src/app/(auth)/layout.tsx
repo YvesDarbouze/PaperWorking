@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="relative min-h-screen bg-[#0d0a0b] flex flex-col items-center overflow-x-hidden font-sans text-on-surface"
+      className="relative min-h-screen bg-[#0d0a0b] flex flex-col items-center overflow-x-hidden font-sans text-on-surface auth-clean-layout"
       style={{
         backgroundImage:
           'radial-gradient(circle at 50% 50%, rgba(69, 73, 85, 0.03) 0%, transparent 50%), ' +
@@ -27,12 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       {/* Simplified TopAppBar */}
       <nav className="fixed top-0 left-0 w-full z-50 flex justify-center items-center px-6 md:px-10 bg-[#0d0a0b]/40 backdrop-blur-md border-b border-white/5 h-16">
         <div className="w-full max-w-7xl flex items-center justify-between">
-          <Logo href="/" size="sm" className="text-[#454955]" />
-          <div className="hidden md:block">
-            <span className="text-xs font-medium tracking-widest text-[#859490] uppercase">
-              System Status: <span className="text-[#454955]">Active</span>
-            </span>
-          </div>
+          <Logo href="/" size="sm" className="text-white/60" />
         </div>
       </nav>
 

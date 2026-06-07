@@ -280,7 +280,7 @@ function LoginPageInner() {
             type="button"
             onClick={() => handleSocialLogin('google')}
             disabled={!!loadingProvider || isSubmitting}
-            className="w-full py-3 px-4 btn-social flex items-center justify-center gap-3 disabled:opacity-50 text-white"
+            className="pw-interactive-custom w-full py-3 px-4 btn-social flex items-center justify-center gap-3 disabled:opacity-50 text-white"
           >
             {loadingProvider === 'google' ? (
               <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -292,7 +292,7 @@ function LoginPageInner() {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
               </svg>
             )}
-            <span className="font-semibold text-xs tracking-wider uppercase text-pw-black">
+            <span className="font-semibold text-xs tracking-wider uppercase text-white">
               Continue with Google
             </span>
           </button>
@@ -301,7 +301,7 @@ function LoginPageInner() {
             type="button"
             onClick={() => handleSocialLogin('facebook')}
             disabled={!!loadingProvider || isSubmitting}
-            className="w-full py-3 px-4 btn-social flex items-center justify-center gap-3 disabled:opacity-50 text-white"
+            className="pw-interactive-custom w-full py-3 px-4 btn-social flex items-center justify-center gap-3 disabled:opacity-50 text-white"
           >
             {loadingProvider === 'facebook' ? (
               <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -310,7 +310,7 @@ function LoginPageInner() {
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.384C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
             )}
-            <span className="font-semibold text-xs tracking-wider uppercase text-pw-black">
+            <span className="font-semibold text-xs tracking-wider uppercase text-white">
               Continue with Facebook
             </span>
           </button>
@@ -328,8 +328,8 @@ function LoginPageInner() {
           <button
             type="button"
             onClick={() => setLoginMode('password')}
-            className={`flex-1 h-9 rounded-lg text-xs font-semibold transition-all border border-transparent ${
-              loginMode === 'password' ? 'border-white/5 hover:text-pw-black' : 'hover:text-pw-black'
+            className={`pw-interactive-custom flex-1 h-9 rounded-lg text-xs font-semibold transition-all border border-transparent ${
+              loginMode === 'password' ? 'border-white/5 hover:text-white' : 'hover:text-white'
             }`}
             style={
               loginMode === 'password'
@@ -342,8 +342,8 @@ function LoginPageInner() {
           <button
             type="button"
             onClick={() => setLoginMode('magic-link')}
-            className={`flex-1 h-9 rounded-lg text-xs font-semibold transition-all border border-transparent ${
-              loginMode === 'magic-link' ? 'border-white/5 hover:text-pw-black' : 'hover:text-pw-black'
+            className={`pw-interactive-custom flex-1 h-9 rounded-lg text-xs font-semibold transition-all border border-transparent ${
+              loginMode === 'magic-link' ? 'border-white/5 hover:text-white' : 'hover:text-white'
             }`}
             style={
               loginMode === 'magic-link'
@@ -399,7 +399,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
+                    className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -413,7 +413,7 @@ function LoginPageInner() {
                 <button
                   type="button"
                   onClick={() => setIsSignUp(true)}
-                  className="text-xs text-pw-muted hover:text-pw-primary transition-colors"
+                  className="pw-interactive-custom text-xs text-pw-muted hover:text-pw-primary transition-colors"
                 >
                   Create an account
                 </button>
@@ -495,7 +495,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
+                    className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -522,7 +522,7 @@ function LoginPageInner() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
+                    className="pw-interactive-custom absolute right-4 top-1/2 -translate-y-1/2 text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -559,7 +559,7 @@ function LoginPageInner() {
                 <button
                   type="button"
                   onClick={() => setIsSignUp(false)}
-                  className="text-xs text-pw-muted hover:text-pw-primary transition-colors"
+                  className="pw-interactive-custom text-xs text-pw-muted hover:text-pw-primary transition-colors"
                 >
                   Already have an account? Sign in
                 </button>
@@ -580,8 +580,8 @@ function LoginPageInner() {
             <div className="w-full animate-in fade-in duration-200">
               {magicLinkSent ? (
                 <div className="text-center py-6">
-                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-green-950/40 border border-green-800/30 mx-auto">
-                    <CheckCircle2 className="w-7 h-7 text-[#454955]" />
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-white/5 border border-white/10 mx-auto">
+                    <CheckCircle2 className="w-7 h-7 text-white/80" />
                   </div>
                   <h3 className="text-lg font-bold text-white mb-2 font-headline-md">Check your inbox</h3>
                   <p className="text-xs text-pw-muted leading-relaxed mx-auto font-body-sm mb-6" style={{ maxWidth: '280px' }}>
@@ -591,7 +591,7 @@ function LoginPageInner() {
                   </p>
                   <button
                     onClick={() => setMagicLinkSent(false)}
-                    className="text-xs text-pw-muted hover:text-pw-primary transition-colors"
+                    className="pw-interactive-custom text-xs text-pw-muted hover:text-pw-primary transition-colors"
                   >
                     Use a different email
                   </button>

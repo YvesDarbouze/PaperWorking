@@ -1629,6 +1629,19 @@ select {
   transform: scale(0.98);
 }
 
+/* Auth Layout Clean Monochrome Theme (Zero Green) */
+.auth-clean-layout {
+  --color-primary: #FDFFFC !important;
+  --pw-muted: #859490 !important;
+  --pw-black: #FDFFFC !important;
+  --pw-primary: #FDFFFC !important;
+  --pw-btn-primary-bg: #FDFFFC !important;
+  --pw-btn-primary-text: #0d0a0b !important;
+  --pw-btn-primary-hover-bg: #E8E9ED !important;
+  --color-text-secondary: #859490 !important;
+  --color-text-primary: #FDFFFC !important;
+}
+
 /* ─── Auth Card Helper Classes ─── */
 .auth-card-container {
   width: 100%;

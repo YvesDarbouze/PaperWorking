@@ -44,7 +44,7 @@ export default function LandingHero() {
           {/* Primary CTA */}
           <div className="flex flex-col sm:flex-row gap-4 items-center mb-4">
             <Link
-              href="/register"
+              href="/pricing"
               className="luminous-button px-8 py-4 rounded-lg inline-flex items-center gap-2 group"
             >
               Start 14 Day Trial

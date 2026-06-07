@@ -38,9 +38,9 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Account',
     links: [
-      { label: 'Start 14 Day Trial',      href: '/register'         },
+      { label: 'Start 14 Day Trial',      href: '/pricing'          },
       { label: 'Sign In',                 href: '/login'            },
-      { label: 'Create Account',          href: '/register'         },
+      { label: 'Create Account',          href: '/pricing'          },
       { label: 'Forgot Password',         href: '/forgot-password'  },
       { label: 'Accept Team Invite',      href: '/invite'           },
     ],
@@ -111,7 +111,7 @@ export default function LandingFooter() {
 
             {/* CTA */}
             <Link
-              href="/register"
+              href="/pricing"
               className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
               style={{
                 background: 'var(--color-on-surface)',

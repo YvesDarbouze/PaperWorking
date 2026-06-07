@@ -164,7 +164,7 @@ export default function LandingHeader() {
 
             {/* Primary CTA — pill button */}
             <Link
-              href="/register"
+              href="/pricing"
               className="hidden md:inline-flex items-center gap-1.5 text-[13px] font-semibold transition-all duration-150 active:scale-[0.98] whitespace-nowrap"
               style={{
                 background: 'var(--color-on-surface)',
@@ -328,7 +328,7 @@ export default function LandingHeader() {
                   Sign In
                 </Link>
                 <Link
-                  href="/register"
+                  href="/pricing"
                   onClick={() => setMobileOpen(false)}
                   className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl text-[14px] font-semibold transition-opacity duration-150 active:scale-[0.98]"
                   style={{

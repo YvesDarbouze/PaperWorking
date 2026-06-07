@@ -48,71 +48,73 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    id: 'starter',
-    stripeKey: '',
-    name: 'Starter',
-    tagline: 'Your first deal, done right.',
-    persona: 'For investors who want to learn the system before they trust it.',
-    monthlyPrice: 0,
-    annualPrice: 0,
-    annualMonthly: 0,
-    isFree: true,
+    id: 'vendor',
+    stripeKey: 'Vendor',
+    name: 'Vendor',
+    tagline: 'Join the partner marketplace.',
+    persona: 'For professionals who want qualified investor leads in their service area.',
+    monthlyPrice: 39,
+    annualPrice: 390,
+    annualMonthly: 32,
+    isFree: false,
     isCustom: false,
     highlighted: false,
     features: [
-      { label: '1 active deal at a time' },
-      { label: 'Deal Analyzer — IRR, cap rate, CoC' },
-      { label: 'Contingency deadline tracker' },
-      { label: 'Basic document vault' },
+      { label: 'Up to 5 active project pipelines' },
+      { label: 'Full 4-Phase Lifecycle Kanban' },
+      { label: 'Engine Room Ledger' },
+      { label: 'Standard Financial Reports' },
+      { label: 'Holding Cost Clock' },
     ],
-    cta: 'Start for free',
-    ctaStyle: 'ghost',
+    cta: 'Join the Marketplace',
+    ctaStyle: 'outline',
   },
   {
-    id: 'pro',
+    id: 'individual',
     stripeKey: 'Investor',
-    name: 'Pro',
-    tagline: 'Your full deal command center.',
-    persona: 'For active investors running multiple flips, rentals, or BRRRR deals.',
-    monthlyPrice: 49,
-    annualPrice: 468,
-    annualMonthly: 39,
+    name: 'Investor',
+    tagline: 'Full pipeline visibility.',
+    persona: 'Built for solo investors who want full pipeline visibility without a team subscription.',
+    monthlyPrice: 59,
+    annualPrice: 499,
+    annualMonthly: 41,
     isFree: false,
     isCustom: false,
     highlighted: true,
-    badge: 'Most Active Investors',
+    badge: 'Most Popular',
     features: [
-      { label: 'Up to 10 active deals' },
-      { label: 'Full 4-phase REIL tracking' },
-      { label: 'Contractor draw log + milestone approvals' },
-      { label: 'Budget vs. actual — real time' },
-      { label: 'CPA-ready P&L export' },
-      { label: 'Earnest money alerts' },
+      { label: 'Unlimited active project pipelines' },
+      { label: 'Full 4-Phase Lifecycle Kanban' },
+      { label: 'Engine Room Ledger & reports' },
+      { label: 'CPA-Ready CSV & P&L exports' },
+      { label: 'Document OCR Upload' },
+      { label: '1 partner seat (Read-only)' },
     ],
-    cta: 'Protect my deals',
+    cta: 'Start Investor Trial',
     ctaStyle: 'primary',
   },
   {
-    id: 'portfolio',
+    id: 'team',
     stripeKey: 'Investment Team',
-    name: 'Portfolio',
-    tagline: 'Your firm\'s operating layer.',
-    persona: 'For syndicators, JV partnerships, and investors building a real portfolio.',
-    monthlyPrice: 129,
-    annualPrice: 1188,
-    annualMonthly: 99,
+    name: 'Investment Team',
+    tagline: 'Complete team coordination.',
+    persona: 'For investor teams who need role-based access, shared workflows, and complete financial separation.',
+    monthlyPrice: 99,
+    annualPrice: 999,
+    annualMonthly: 83,
     isFree: false,
     isCustom: false,
     highlighted: false,
     features: [
-      { label: 'Unlimited active deals' },
-      { label: 'Everything in Pro' },
-      { label: 'Syndication underwriter + LP pitch builder' },
-      { label: '3 team seats (+ read-only LP access)', note: 'Invite your CPA or partners at no extra charge' },
-      { label: 'White-label exit reports (PDF)' },
-      { label: 'Priority support' },
+      { label: 'Everything in Investor' },
+      { label: 'Team Member Invites (Agents, GCs)' },
+      { label: 'Granular Role-Based Data Isolation' },
+      { label: 'Advanced Vendor Management' },
+      { label: 'Google Drive Provisioning' },
+      { label: 'Advanced Financial Reports' },
+      { label: 'Escrow Integration & API Access' },
     ],
-    cta: 'Scale my operation',
+    cta: 'Start Team Trial',
     ctaStyle: 'outline',
   },
   {
@@ -141,52 +143,52 @@ const PLANS: Plan[] = [
 ];
 
 /* ─── Comparison table ───────────────────────────────── */
-interface CompRow { label: string; starter: boolean; pro: boolean; portfolio: boolean; inst: boolean; proOnly?: boolean }
+interface CompRow { label: string; vendor: boolean; investor: boolean; team: boolean; inst: boolean; proOnly?: boolean }
 
 const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
   {
     category: 'Acquisition',
     rows: [
-      { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', starter: true, pro: true, portfolio: true, inst: true },
-      { label: 'Active deal limit', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'LP Syndication Pitch Builder', starter: false, pro: false, portfolio: true, inst: true },
-      { label: 'Syndication Underwriter (debt sizing)', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'Deal Analyzer (IRR, Cap Rate, CoC)', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Active deal limit', vendor: true, investor: true, team: true, inst: true },
+      { label: 'LP Syndication Pitch Builder', vendor: false, investor: false, team: true, inst: true },
+      { label: 'Syndication Underwriter (debt sizing)', vendor: false, investor: false, team: true, inst: true },
     ],
   },
   {
     category: 'Transaction',
     rows: [
-      { label: 'Contingency Deadline Tracker', starter: true, pro: true, portfolio: true, inst: true },
-      { label: 'Earnest Money Alerts', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'Escrow Document Vault', starter: true, pro: true, portfolio: true, inst: true },
-      { label: 'Automated Diligence Checklist', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Contingency Deadline Tracker', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Earnest Money Alerts', vendor: false, investor: true, team: true, inst: true },
+      { label: 'Escrow Document Vault', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Automated Diligence Checklist', vendor: false, investor: true, team: true, inst: true },
     ],
   },
   {
     category: 'Hold / Rehab',
     rows: [
-      { label: 'Budget vs. Actual — Real Time', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'Contractor Draw Log', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'Draw Submission Portal', starter: false, pro: false, portfolio: true, inst: true },
-      { label: 'Milestone Approvals (GC Workflows)', starter: false, pro: true, portfolio: true, inst: true },
+      { label: 'Budget vs. Actual — Real Time', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Contractor Draw Log', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Draw Submission Portal', vendor: false, investor: false, team: true, inst: true },
+      { label: 'Milestone Approvals (GC Workflows)', vendor: false, investor: true, team: true, inst: true },
     ],
   },
   {
     category: 'Exit & Tax',
     rows: [
-      { label: 'CPA-Ready P&L Export', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'Closing Cost Tracker', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'ROI Summary (actual vs. projected)', starter: false, pro: true, portfolio: true, inst: true },
-      { label: 'White-Label Exit Reports (PDF)', starter: false, pro: false, portfolio: true, inst: true },
+      { label: 'CPA-Ready P&L Export', vendor: true, investor: true, team: true, inst: true },
+      { label: 'Closing Cost Tracker', vendor: true, investor: true, team: true, inst: true },
+      { label: 'ROI Summary (actual vs. projected)', vendor: true, investor: true, team: true, inst: true },
+      { label: 'White-Label Exit Reports (PDF)', vendor: false, investor: false, team: true, inst: true },
     ],
   },
   {
     category: 'Team & API',
     rows: [
-      { label: 'Team Seats', starter: false, pro: false, portfolio: true, inst: true },
-      { label: 'Read-Only LP / Partner Access', starter: false, pro: false, portfolio: true, inst: true },
-      { label: 'REST API + Webhooks', starter: false, pro: false, portfolio: false, inst: true },
-      { label: 'White-Label Dashboard', starter: false, pro: false, portfolio: false, inst: true },
+      { label: 'Team Seats', vendor: false, investor: false, team: true, inst: true },
+      { label: 'Read-Only LP / Partner Access', vendor: false, investor: true, team: true, inst: true },
+      { label: 'REST API + Webhooks', vendor: false, investor: false, team: false, inst: true },
+      { label: 'White-Label Dashboard', vendor: false, investor: false, team: false, inst: true },
     ],
   },
 ];
@@ -194,8 +196,8 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
 /* ─── FAQ ────────────────────────────────────────────── */
 const FAQ = [
   {
-    q: "I only close 3–4 deals a year. Can I justify $39/month?",
-    a: "Yes. A single missed contingency window can cost you $12,500 in lost earnest money — more than three years of Pro. If one contractor draw goes untracked and you're $40k over budget at closing, that's the equivalent of 85 years of the annual plan. The question isn't whether $39 is worth it. The question is what your last deal's blown timeline actually cost you.",
+    q: "I only close 3–4 deals a year. Can I justify $59/month?",
+    a: "Yes. A single missed contingency window can cost you $12,500 in lost earnest money — more than two years of Investor. If one contractor draw goes untracked and you're $40k over budget at closing, that's the equivalent of 56 years of the annual plan. The question isn't whether $59 is worth it. The question is what your last deal's blown timeline actually cost you.",
   },
   {
     q: "Is there a free trial? What happens to my data if I cancel?",
@@ -203,7 +205,7 @@ const FAQ = [
   },
   {
     q: "Can I add my CPA or business partner as a user?",
-    a: "On the Portfolio plan, you get 3 full team seats plus unlimited read-only partner access — so you can invite passive investors, private lenders, or your CPA without them being able to edit anything. On Pro, you can export a CPA-ready P&L from any deal in one click. Most CPAs find that more useful than a login.",
+    a: "On the Investment Team plan, you get full team member invites plus granular role-based data isolation — so you can invite passive investors, private lenders, or your CPA without them being able to edit anything. On Investor, you can invite 1 partner seat read-only and export a CPA-ready P&L in one click.",
   },
   {
     q: "Is there a contract or minimum commitment?",
@@ -267,8 +269,8 @@ function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v
       {/* Annual nudge — applies loss-aversion framing */}
       <p className={`font-jetbrains text-[10px] tracking-[0.04em] transition-opacity duration-200 ${isAnnual ? 'text-primary/50' : 'text-tertiary/70'}`}>
         {isAnnual
-          ? 'Annual billing active · Pro saves $120/yr — two CPA hours covered'
-          : 'Switch to annual → save $120/yr on Pro or $360/yr on Portfolio'}
+          ? 'Annual billing active · Save up to $209/yr compared to monthly'
+          : 'Switch to annual → save up to $209/yr'}
       </p>
     </div>
   );
@@ -558,9 +560,9 @@ function ComparisonTable() {
               <th className="p-4 font-jetbrains text-[11px] uppercase tracking-[0.06em] text-on-surface-variant/50 w-[40%]">
                 Feature
               </th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Starter</th>
-              <th className="p-4 text-center font-bold text-[12px] text-primary w-[15%]">Pro</th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Portfolio</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Vendor</th>
+              <th className="p-4 text-center font-bold text-[12px] text-primary w-[15%]">Investor</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Investment Team</th>
               <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Institutional</th>
             </tr>
           </thead>
@@ -577,9 +579,9 @@ function ComparisonTable() {
                 {section.rows.map((row, ri) => (
                   <tr key={ri} className="border-b border-outline-variant/40 hover:bg-on-surface/5 transition-colors">
                     <td className="p-4 text-[13px] text-on-surface">{row.label}</td>
-                    <td className="p-4 text-center"><Check yes={row.starter} /></td>
-                    <td className="p-4 text-center bg-primary/3"><Check yes={row.pro} isPortfolio /></td>
-                    <td className="p-4 text-center"><Check yes={row.portfolio} /></td>
+                    <td className="p-4 text-center"><Check yes={row.vendor} /></td>
+                    <td className="p-4 text-center bg-primary/3"><Check yes={row.investor} isPortfolio /></td>
+                    <td className="p-4 text-center"><Check yes={row.team} /></td>
                     <td className="p-4 text-center"><Check yes={row.inst} /></td>
                   </tr>
                 ))}
@@ -731,7 +733,7 @@ function BottomCTA() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href="#pricing"
               className="luminous-button px-8 py-4 rounded-lg font-semibold text-[14px] tracking-[0.01em]
                 inline-flex items-center justify-center gap-2 group"
             >
@@ -808,11 +810,40 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
 
           <motion.p variants={fadeUp} className="text-[16px] md:text-[18px] leading-[27px] text-on-surface-variant mb-10 max-w-2xl mx-auto">
             Your next contingency window is worth $12,500 in earnest money if you blow it.
-            PaperWorking Pro is $39 a month — billed annually.
+            PaperWorking starts at $39 a month — billed annually.
           </motion.p>
 
           <motion.div variants={fadeUp}>
             <BillingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
+          </motion.div>
+
+          {/* Above-the-fold Google Rating Badge */}
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/30 border border-outline-variant/50 backdrop-blur-sm shadow-sm">
+              <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
+              </svg>
+              <span className="text-[12px] font-bold text-on-surface">Google</span>
+              <div className="flex items-center gap-0.5 ml-1">
+                {[...Array(5)].map((_, i) => (
+                  <span
+                    key={i}
+                    className="material-symbols-outlined text-[15px] text-[#00CE8E]"
+                    style={{ fontVariationSettings: "'FILL' 1, 'wght' 600" }}
+                  >
+                    star
+                  </span>
+                ))}
+              </div>
+              <span className="text-[12px] font-semibold text-on-surface">4.9/5 rating</span>
+              <span className="text-[11px] text-on-surface-variant/75 font-normal border-l border-outline-variant/60 pl-2 ml-1">(142 reviews)</span>
+            </div>
           </motion.div>
         </motion.div>
 
@@ -854,6 +885,38 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
 
         {/* ── Integration Logo Strip ── */}
         <IntegrationLogoStrip />
+
+        {/* At-the-bottom-above-the-fold Google Rating Badge */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={fadeUp}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 pb-8"
+        >
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/30 border border-outline-variant/50 backdrop-blur-sm shadow-sm">
+            <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
+            </svg>
+            <span className="text-[12px] font-bold text-on-surface">Google</span>
+            <div className="flex items-center gap-0.5 ml-1">
+              {[...Array(5)].map((_, i) => (
+                <span
+                  key={i}
+                  className="material-symbols-outlined text-[15px] text-[#00CE8E]"
+                  style={{ fontVariationSettings: "'FILL' 1, 'wght' 600" }}
+                >
+                  star
+                </span>
+              ))}
+            </div>
+            <span className="text-[12px] font-semibold text-on-surface">4.9/5 rating</span>
+            <span className="text-[11px] text-on-surface-variant/75 font-normal border-l border-outline-variant/60 pl-2 ml-1">(142 reviews)</span>
+          </div>
+        </motion.div>
 
         {/* ── ROI Callout Strip ── */}
         <ROICallout />

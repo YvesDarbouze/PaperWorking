@@ -65,7 +65,7 @@ export default function FinalCTA() {
             {/* CTA buttons */}
             <div className="flex flex-col sm:flex-row gap-4 items-start">
               <Link
-                href="/register"
+                href="/pricing"
                 className="luminous-button px-8 py-3.5 rounded-full text-sm font-semibold flex items-center gap-2 group"
               >
                 <span>Start 14 Day Trial</span>

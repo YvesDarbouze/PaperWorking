@@ -694,7 +694,7 @@ export default function HowItWorks() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href="/register"
+                href="/pricing"
                 className="luminous-button px-8 py-4 rounded-lg font-semibold text-[14px] tracking-[0.01em]
                   flex items-center gap-2 group"
               >

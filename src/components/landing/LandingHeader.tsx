@@ -84,109 +84,15 @@ export default function LandingHeader() {
           {/* ── Desktop center links ── */}
           <div className="hidden md:flex items-center gap-7">
 
-            {/* How It Works dropdown */}
-            <div
-              ref={dropRef}
-              className="relative"
-              onMouseEnter={enterDrop}
-              onMouseLeave={leaveDrop}
+            <Link
+              href="/how-it-works"
+              className="text-[13.5px] font-medium transition-opacity duration-150"
+              style={{ color: 'var(--color-on-surface)', opacity: 0.7, textDecoration: 'none' }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.7')}
             >
-              <button
-                type="button"
-                onClick={() => setHowOpen(v => !v)}
-                className="flex items-center gap-0.5 text-[13.5px] font-medium transition-opacity duration-150"
-                style={{
-                  color: 'var(--color-on-surface)',
-                  opacity: howOpen ? 1 : 0.7,
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  cursor: 'pointer',
-                }}
-                aria-expanded={howOpen}
-                aria-haspopup="true"
-              >
-                How It Works
-                <span
-                  className="material-symbols-outlined text-[15px] ml-0.5 transition-transform duration-200"
-                  style={{
-                    fontVariationSettings: "'FILL' 0, 'wght' 400",
-                    transform: howOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    opacity: 0.6,
-                  }}
-                >
-                  keyboard_arrow_down
-                </span>
-              </button>
-
-              <AnimatePresence>
-                {howOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0,  scale: 1    }}
-                    exit={{   opacity: 0, y: -6, scale: 0.98 }}
-                    transition={{ duration: 0.16, ease: [0.19, 1, 0.22, 1] }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[260px] z-[100] rounded-2xl p-1.5 overflow-hidden"
-                    style={{
-                      background: 'var(--color-surface-container-low, var(--color-surface))',
-                      border: '1px solid color-mix(in srgb, var(--color-on-background) 8%, transparent)',
-                      boxShadow: '0 12px 40px -4px rgba(0,0,0,0.12), 0 4px 12px -2px rgba(0,0,0,0.06)',
-                    }}
-                  >
-                    {HOW_IT_WORKS_ITEMS.map((item) => (
-                      <Link
-                        key={item.title}
-                        href="/how-it-works"
-                        onClick={() => setHowOpen(false)}
-                        className="group flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors duration-100"
-                        style={{ textDecoration: 'none' }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                      >
-                        <div
-                          className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mt-0.5"
-                          style={{ background: 'color-mix(in srgb, var(--color-primary) 12%, transparent)' }}
-                        >
-                          <span
-                            className="material-symbols-outlined text-[15px]"
-                            style={{ color: 'var(--color-primary)', fontVariationSettings: "'FILL' 0" }}
-                          >
-                            {item.icon}
-                          </span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[13px] font-semibold leading-snug" style={{ color: 'var(--color-on-surface)' }}>
-                            {item.title}
-                          </p>
-                          <p className="text-[11.5px] leading-snug mt-0.5" style={{ color: 'var(--color-on-surface-variant)' }}>
-                            {item.subtitle}
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-
-                    <div
-                      className="mt-1 pt-1 px-1"
-                      style={{ borderTop: '1px solid color-mix(in srgb, var(--color-on-background) 6%, transparent)' }}
-                    >
-                      <Link
-                        href="/how-it-works"
-                        onClick={() => setHowOpen(false)}
-                        className="flex items-center justify-between px-3 py-2 rounded-xl text-[12.5px] font-semibold transition-colors duration-100"
-                        style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = 'color-mix(in srgb, var(--color-primary) 8%, transparent)')}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
-                      >
-                        View full process overview
-                        <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0" }}>
-                          arrow_forward
-                        </span>
-                      </Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              How It Works
+            </Link>
 
             <Link
               href="/pricing"
@@ -343,44 +249,17 @@ export default function LandingHeader() {
 
               {/* Links */}
               <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                {/* How It Works Section */}
-                <div className="pt-2">
-                  <p className="px-4 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-surface-variant)] opacity-60 mb-1">
-                    How It Works
-                  </p>
-                  <div className="space-y-0.5 pl-3">
-                    <Link
-                      href="/how-it-works"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Feature Breakdowns
-                    </Link>
-                    <Link
-                      href="/trust"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Security Standards
-                    </Link>
-                    <Link
-                      href="/how-it-works#integrations"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Integration List
-                    </Link>
-                  </div>
-                </div>
+                {/* How It Works */}
+                <Link
+                  href="/how-it-works"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  How It Works
+                </Link>
 
                 {/* Pricing */}
                 <Link
@@ -394,54 +273,17 @@ export default function LandingHeader() {
                   Pricing
                 </Link>
 
-                {/* Support Section */}
-                <div className="pt-2">
-                  <p className="px-4 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-surface-variant)] opacity-60 mb-1">
-                    Support
-                  </p>
-                  <div className="space-y-0.5 pl-3">
-                    <Link
-                      href="/support"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Support Center
-                    </Link>
-                    <Link
-                      href="/blog"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Blog
-                    </Link>
-                    <Link
-                      href="/blog?category=case-studies"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Case Studies
-                    </Link>
-                    <Link
-                      href="/help"
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-150"
-                      style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      Help Center & Docs
-                    </Link>
-                  </div>
-                </div>
+                {/* Support */}
+                <Link
+                  href="/support"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
+                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  Support
+                </Link>
 
                 {/* Theme toggle row for mobile */}
                 <div

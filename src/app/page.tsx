@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
-import HeroDashboard from '@/components/landing/HeroDashboard';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingNews from '@/components/landing/LandingNews';
 import TestimonialSlider from '@/components/landing/TestimonialSlider';
@@ -154,14 +153,7 @@ export default function LandingPage() {
       {/* ── Hero — Centered text-only ── */}
       <LandingHero />
 
-      {/* ── Dashboard Preview (standalone showcase) ── */}
-      <section id="dashboard" className="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-gutter-desktop mb-32 -mt-16">
-        <div className="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative group">
-          {/* Subtle light effect top border */}
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent z-20" />
-          <HeroDashboard />
-        </div>
-      </section>
+
 
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">

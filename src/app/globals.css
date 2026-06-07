@@ -72,9 +72,9 @@ html[data-theme="light"] {
   --input-focus-glow-color: rgba(0, 206, 142, 0.3);
 
   /* ─── Button System Variables ─── */
-  --pw-btn-primary-bg: var(--color-primary);
-  --pw-btn-primary-hover-bg: #00CE8E;
-  --pw-btn-primary-text: #01201A;
+  --pw-btn-primary-bg: #01201A; /* Dark Green (Rivalry Base) */
+  --pw-btn-primary-hover-bg: #0a2c24; /* Lighter dark green */
+  --pw-btn-primary-text: #FFFFFF; /* White text */
   --pw-btn-secondary-bg: var(--color-glass-bg);
   --pw-btn-secondary-hover-bg: rgba(0, 206, 142, 0.08);
   --pw-btn-secondary-text: var(--color-primary);
@@ -725,12 +725,13 @@ html[data-theme="dark"],
   }
 
   .luminous-button {
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
+    background-color: var(--pw-btn-primary-bg);
+    color: var(--pw-btn-primary-text);
     box-shadow: 0 0 20px -5px rgba(69, 73, 85, 0.4);
     transition: all 0.3s ease;
   }
   .luminous-button:hover {
+    background-color: var(--pw-btn-primary-hover-bg);
     box-shadow: 0 0 25px -2px rgba(69, 73, 85, 0.6);
     transform: translateY(-1px);
   }

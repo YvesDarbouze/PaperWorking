@@ -181,7 +181,7 @@ export default function ProjectsPage() {
             Your project terminal is empty. Initialize a new real estate asset to
             begin tracking phases, ownership, and documents.
           </p>
-          <button className="bg-primary text-on-primary font-label-md px-6 py-3 rounded-full luminous-button flex items-center gap-2">
+          <button className="font-label-md px-6 py-3 rounded-full luminous-button flex items-center gap-2">
             <span className="material-symbols-outlined text-sm">add</span>
             Create First Project
           </button>

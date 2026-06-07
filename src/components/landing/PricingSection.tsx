@@ -371,7 +371,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
             onClick={handleClick}
             className={`w-full py-3 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
               plan.highlighted
-                ? 'luminous-button bg-primary text-on-primary hover:opacity-90'
+                ? 'luminous-button hover:opacity-90'
                 : 'border border-primary text-primary hover:bg-primary/8'
             }`}
           >

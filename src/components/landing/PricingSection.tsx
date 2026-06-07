@@ -48,28 +48,6 @@ interface Plan {
 
 const PLANS: Plan[] = [
   {
-    id: 'vendor',
-    stripeKey: 'Vendor',
-    name: 'Vendor',
-    tagline: 'Join the partner marketplace.',
-    persona: 'For professionals who want qualified investor leads in their service area.',
-    monthlyPrice: 39,
-    annualPrice: 390,
-    annualMonthly: 32,
-    isFree: false,
-    isCustom: false,
-    highlighted: false,
-    features: [
-      { label: 'Up to 5 active project pipelines' },
-      { label: 'Full 4-Phase Lifecycle Kanban' },
-      { label: 'Engine Room Ledger' },
-      { label: 'Standard Financial Reports' },
-      { label: 'Holding Cost Clock' },
-    ],
-    cta: 'Join the Marketplace',
-    ctaStyle: 'outline',
-  },
-  {
     id: 'individual',
     stripeKey: 'Investor',
     name: 'Investor',
@@ -115,6 +93,28 @@ const PLANS: Plan[] = [
       { label: 'Escrow Integration & API Access' },
     ],
     cta: 'Start Team Trial',
+    ctaStyle: 'outline',
+  },
+  {
+    id: 'vendor',
+    stripeKey: 'Vendor',
+    name: 'Vendor',
+    tagline: 'Join the partner marketplace.',
+    persona: 'For professionals who want qualified investor leads in their service area.',
+    monthlyPrice: 39,
+    annualPrice: 390,
+    annualMonthly: 32,
+    isFree: false,
+    isCustom: false,
+    highlighted: false,
+    features: [
+      { label: 'Up to 5 active project pipelines' },
+      { label: 'Full 4-Phase Lifecycle Kanban' },
+      { label: 'Engine Room Ledger' },
+      { label: 'Standard Financial Reports' },
+      { label: 'Holding Cost Clock' },
+    ],
+    cta: 'Join the Marketplace',
     ctaStyle: 'outline',
   },
   {
@@ -277,7 +277,17 @@ function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v
 }
 
 /* ─── Sub: Pricing card ─────────────────────────────── */
-function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boolean; onSelect: (key: string) => void }) {
+function PricingCard({ 
+  plan, 
+  isAnnual, 
+  onToggleAnnual, 
+  onSelect 
+}: { 
+  plan: Plan; 
+  isAnnual: boolean; 
+  onToggleAnnual: (val: boolean) => void; 
+  onSelect: (key: string) => void; 
+}) {
   const displayPrice = isAnnual ? plan.annualMonthly : plan.monthlyPrice;
 
   const handleClick = () => {
@@ -288,7 +298,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
   return (
     <motion.div
       variants={fadeUp}
-      className={`glass-panel rounded-xl p-7 flex flex-col relative transition-all duration-300 h-full
+      className={`glass-panel rounded-xl p-5 flex flex-col relative transition-all duration-300 h-full
         ${plan.highlighted
           ? 'border-primary/35 shadow-[0_0_60px_-15px_rgba(69,73,85,0.25)] md:scale-[1.03] z-10'
           : 'border-outline-variant hover:border-outline'
@@ -307,52 +317,77 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
       )}
 
       {/* Plan header */}
-      <div className={`pb-5 border-b border-outline-variant ${plan.badge ? 'mt-2' : ''}`}>
-        <h3 className={`text-[18px] font-bold tracking-[-0.01em] mb-1 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
+      <div className={`pb-4 border-b border-outline-variant ${plan.badge ? 'mt-2' : ''}`}>
+        <h3 className={`text-[17px] font-bold tracking-[-0.01em] mb-1 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
           {plan.name}
         </h3>
-        <p className="text-[12px] font-normal text-on-surface-variant leading-tight">{plan.persona}</p>
+        <p className="text-[11px] font-normal text-on-surface-variant leading-tight">{plan.persona}</p>
       </div>
 
       {/* Price */}
-      <div className="py-5 border-b border-outline-variant">
+      <div className="py-4 border-b border-outline-variant">
         {plan.isCustom ? (
           <div>
-            <p className="text-[28px] font-extrabold tracking-[-0.03em] text-on-surface">Custom</p>
-            <p className="text-[12px] text-on-surface-variant mt-1">Contact us for a quote</p>
+            <p className="text-[26px] font-extrabold tracking-[-0.03em] text-on-surface">Custom</p>
+            <p className="text-[11px] text-on-surface-variant mt-1">Contact us for a quote</p>
           </div>
         ) : plan.isFree ? (
           <div>
-            <p className="text-[28px] font-extrabold tracking-[-0.03em] text-on-surface">Free</p>
-            <p className="text-[12px] text-on-surface-variant mt-1">No credit card required</p>
+            <p className="text-[26px] font-extrabold tracking-[-0.03em] text-on-surface">Free</p>
+            <p className="text-[11px] text-on-surface-variant mt-1">No credit card required</p>
           </div>
         ) : (
           <div>
             <div className="flex items-baseline gap-1">
-              <span className={`font-extrabold text-[32px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
+              <span className={`font-extrabold text-[30px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
                 <AnimatedPrice value={displayPrice!} />
               </span>
-              <span className="text-[13px] text-on-surface-variant">/mo</span>
+              <span className="text-[12px] text-on-surface-variant">/mo</span>
             </div>
-            <div className="h-5 mt-1">
+            <div className="h-4 mt-0.5">
               {isAnnual ? (
-                <p className={`text-[12px] ${plan.highlighted ? 'text-primary/70' : 'text-on-surface-variant'}`}>
+                <p className={`text-[11px] ${plan.highlighted ? 'text-primary/70' : 'text-on-surface-variant'}`}>
                   Billed ${plan.annualPrice}/yr
                 </p>
               ) : (
-                <p className="text-[12px] text-on-surface-variant">Billed monthly</p>
+                <p className="text-[11px] text-on-surface-variant">Billed monthly</p>
               )}
+            </div>
+
+            {/* Toggle inside column under price */}
+            <div className="mt-3">
+              <div className="inline-flex items-center p-0.5 bg-surface-container/60 rounded-lg border border-outline-variant/30 w-full">
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onToggleAnnual(false); }}
+                  className={`flex-1 py-1 text-[11px] font-semibold rounded-md transition-all ${
+                    !isAnnual ? 'bg-surface-bright text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); onToggleAnnual(true); }}
+                  className={`flex-1 py-1 text-[11px] font-semibold rounded-md transition-all flex items-center justify-center gap-1 ${
+                    isAnnual ? 'bg-surface-bright text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
+                  }`}
+                >
+                  Annual
+                  <span className="bg-primary/10 text-primary px-1 rounded text-[8px] font-bold">20% Off</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* CTA */}
-      <div className="pt-5">
+      <div className="pt-4">
         {plan.ctaStyle === 'contact' ? (
           <Link
             href="/contact"
-            className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
+            className="pw-interactive-custom block w-full text-center py-2.5 rounded-lg text-[13px] font-semibold
               border border-outline-variant text-on-surface hover:border-outline hover:text-primary
               transition-all duration-200"
           >
@@ -361,7 +396,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
         ) : plan.isFree ? (
           <Link
             href="/register"
-            className="pw-interactive-custom block w-full text-center py-3 rounded-lg text-[13px] font-semibold
+            className="pw-interactive-custom block w-full text-center py-2.5 rounded-lg text-[13px] font-semibold
               border border-outline-variant text-on-surface-variant hover:border-outline hover:text-on-surface
               transition-all duration-200"
           >
@@ -371,7 +406,7 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
           <button
             type="button"
             onClick={handleClick}
-            className={`w-full py-3 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
+            className={`w-full py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-200 ${
               plan.highlighted
                 ? 'luminous-button hover:opacity-90'
                 : 'border border-primary text-primary hover:bg-primary/8'
@@ -380,30 +415,27 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
             {plan.cta}
           </button>
         )}
-        <p className="text-[10px] font-normal text-on-surface-variant/40 text-center mt-2 font-jetbrains tracking-wide">
+        <p className="text-[10px] font-normal text-on-surface-variant/40 text-center mt-1.5 font-jetbrains tracking-wide">
           {plan.isFree ? 'No time limit on free plan' : plan.isCustom ? 'Custom billing terms' : '14-day trial · No charge until day 15'}
         </p>
       </div>
 
       {/* Feature list */}
-      <div className="pt-5 flex-grow">
-        <p className="font-jetbrains text-[9px] uppercase tracking-[0.1em] text-on-surface-variant/40 mb-4">
+      <div className="pt-4 flex-grow">
+        <p className="font-jetbrains text-[8px] uppercase tracking-[0.1em] text-on-surface-variant/40 mb-3">
           {plan.isFree ? 'Included' : 'Protects your margins with'}
         </p>
-        <ul className="space-y-3">
+        <ul className="space-y-1.5">
           {plan.features.map((f, i) => (
-            <li key={i} className="flex items-start gap-3">
+            <li key={i} className="flex items-start gap-2">
               <span
-                className={`material-symbols-outlined text-[16px] flex-shrink-0 mt-0.5 ${plan.highlighted ? 'text-primary' : 'text-on-surface-variant/60'}`}
+                className={`material-symbols-outlined text-[14px] flex-shrink-0 mt-0.5 ${plan.highlighted ? 'text-primary' : 'text-on-surface-variant/60'}`}
                 style={{ fontVariationSettings: "'FILL' 1, 'wght' 400" }}
               >
                 check_circle
               </span>
-              <span className="text-[13px] leading-[20px] text-on-surface-variant">
+              <span className="text-[12px] leading-[18px] text-on-surface-variant">
                 {f.label}
-                {f.note && (
-                  <span className="block text-[11px] text-on-surface-variant/50 mt-0.5 italic">{f.note}</span>
-                )}
               </span>
             </li>
           ))}
@@ -560,9 +592,9 @@ function ComparisonTable() {
               <th className="p-4 font-jetbrains text-[11px] uppercase tracking-[0.06em] text-on-surface-variant/50 w-[40%]">
                 Feature
               </th>
-              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Vendor</th>
               <th className="p-4 text-center font-bold text-[12px] text-primary w-[15%]">Investor</th>
               <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Investment Team</th>
+              <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Vendor</th>
               <th className="p-4 text-center font-semibold text-[12px] text-on-surface-variant w-[15%]">Institutional</th>
             </tr>
           </thead>
@@ -579,9 +611,9 @@ function ComparisonTable() {
                 {section.rows.map((row, ri) => (
                   <tr key={ri} className="border-b border-outline-variant/40 hover:bg-on-surface/5 transition-colors">
                     <td className="p-4 text-[13px] text-on-surface">{row.label}</td>
-                    <td className="p-4 text-center"><Check yes={row.vendor} /></td>
                     <td className="p-4 text-center bg-primary/3"><Check yes={row.investor} isPortfolio /></td>
                     <td className="p-4 text-center"><Check yes={row.team} /></td>
+                    <td className="p-4 text-center"><Check yes={row.vendor} /></td>
                     <td className="p-4 text-center"><Check yes={row.inst} /></td>
                   </tr>
                 ))}
@@ -791,36 +823,51 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
 
       <div className="relative z-10">
 
-        {/* ── Hero + Toggle ── */}
+        {/* ── Hero ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-60px' }}
           variants={stagger}
-          className="max-w-3xl mx-auto px-6 lg:px-8 pt-20 pb-12 text-center"
+          className="max-w-3xl mx-auto px-6 lg:px-8 pt-10 pb-6 text-center"
         >
-          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-6">
+          <motion.p variants={fadeUp} className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-3">
             Pricing
           </motion.p>
 
-          <motion.h2 variants={fadeUp} className="text-[32px] md:text-[48px] font-thin tracking-[-0.035em] text-on-surface leading-tight mb-5 font-display-hero">
-            Software that costs less than<br className="hidden md:block" />{' '}
-            <span className="text-primary luminous-text font-thin">one missed deadline.</span>
+          <motion.h2 variants={fadeUp} className="text-[28px] md:text-[36px] font-thin tracking-[-0.035em] text-on-surface leading-tight mb-3 font-display-hero">
+            Software that costs less than <span className="text-primary luminous-text font-thin">one missed deadline.</span>
           </motion.h2>
 
-          <motion.p variants={fadeUp} className="text-[16px] md:text-[18px] leading-[27px] text-on-surface-variant mb-10 max-w-2xl mx-auto">
-            Your next contingency window is worth $12,500 in earnest money if you blow it.
-            PaperWorking starts at $39 a month — billed annually.
+          <motion.p variants={fadeUp} className="text-[13px] md:text-[14px] leading-relaxed text-on-surface-variant max-w-2xl mx-auto">
+            Your next contingency window is worth $12,500 in earnest money. Start tracking properly.
           </motion.p>
+        </motion.div>
 
-          <motion.div variants={fadeUp}>
-            <BillingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
-          </motion.div>
+        {/* ── 3-Tier Pricing Cards & Ratings Badge (Above the fold) ── */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          variants={stagger}
+          className="max-w-7xl mx-auto px-6 lg:px-8 pb-6"
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 items-start">
+            {PLANS.filter(p => p.id !== 'institutional').map((plan) => (
+              <PricingCard 
+                key={plan.id} 
+                plan={plan} 
+                isAnnual={isAnnual} 
+                onToggleAnnual={setIsAnnual} 
+                onSelect={handleSelect} 
+              />
+            ))}
+          </div>
 
-          {/* Above-the-fold Google Rating Badge */}
+          {/* Google Ratings at the bottom below the columns and above the fold */}
           <motion.div
             variants={fadeUp}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
+            className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3"
           >
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/30 border border-outline-variant/50 backdrop-blur-sm shadow-sm">
               <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -847,76 +894,35 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </motion.div>
         </motion.div>
 
-        {/* ── 3-Tier Pricing Cards & Institutional Banner ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={stagger}
-          className="max-w-7xl mx-auto px-6 lg:px-8 pb-10"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 items-start">
-            {PLANS.filter(p => p.id !== 'institutional').map((plan) => (
-              <PricingCard key={plan.id} plan={plan} isAnnual={isAnnual} onSelect={handleSelect} />
-            ))}
-          </div>
-
-          {/* Institutional Banner */}
-          <motion.div variants={fadeUp} className="mt-8">
-            <div className="glass-panel border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-              <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
-              <div className="text-center md:text-left relative z-10">
-                <h4 className="text-[16px] font-bold text-on-surface">Institutional Custom Plans</h4>
-                <p className="text-[13px] text-on-surface-variant mt-1.5 max-w-2xl">
-                  Looking for custom integrations, white-labeling, REST API webhooks, or unlimited team seats? 
-                  Contact our team for custom Institutional plans.
-                </p>
-              </div>
-              <Link
-                href="/contact"
-                className="luminous-button px-6 py-3 rounded-lg font-semibold text-[13px] whitespace-nowrap relative z-10"
-              >
-                Talk to our team
-              </Link>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* ── Integration Logo Strip ── */}
-        <IntegrationLogoStrip />
-
-        {/* At-the-bottom-above-the-fold Google Rating Badge */}
+        {/* ── Institutional Banner ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
           variants={fadeUp}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 pb-8"
+          className="max-w-7xl mx-auto px-6 lg:px-8 pb-10"
         >
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container/30 border border-outline-variant/50 backdrop-blur-sm shadow-sm">
-            <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05" />
-              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335" />
-            </svg>
-            <span className="text-[12px] font-bold text-on-surface">Google</span>
-            <div className="flex items-center gap-0.5 ml-1">
-              {[...Array(5)].map((_, i) => (
-                <span
-                  key={i}
-                  className="material-symbols-outlined text-[15px] text-[#00CE8E]"
-                  style={{ fontVariationSettings: "'FILL' 1, 'wght' 600" }}
-                >
-                  star
-                </span>
-              ))}
+          <div className="glass-panel border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+            <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
+            <div className="text-center md:text-left relative z-10">
+              <h4 className="text-[16px] font-bold text-on-surface">Institutional Custom Plans</h4>
+              <p className="text-[13px] text-on-surface-variant mt-1.5 max-w-2xl">
+                Looking for custom integrations, white-labeling, REST API webhooks, or unlimited team seats? 
+                Contact our team for custom Institutional plans.
+              </p>
             </div>
-            <span className="text-[12px] font-semibold text-on-surface">4.9/5 rating</span>
-            <span className="text-[11px] text-on-surface-variant/75 font-normal border-l border-outline-variant/60 pl-2 ml-1">(142 reviews)</span>
+            <Link
+              href="/contact"
+              className="luminous-button px-6 py-3 rounded-lg font-semibold text-[13px] whitespace-nowrap relative z-10"
+            >
+              Talk to our team
+            </Link>
           </div>
         </motion.div>
+
+        {/* ── Integration Logo Strip ── */}
+        <IntegrationLogoStrip />
 
         {/* ── ROI Callout Strip ── */}
         <ROICallout />

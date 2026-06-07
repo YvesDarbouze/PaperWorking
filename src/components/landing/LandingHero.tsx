@@ -47,7 +47,7 @@ export default function LandingHero() {
               href="/register"
               className="luminous-button px-8 py-4 rounded-lg inline-flex items-center gap-2 group"
             >
-              Start Your 14-Day Trial
+              Start 14 Day Trial
               <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
                 arrow_forward
               </span>

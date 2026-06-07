@@ -45,7 +45,7 @@ const PHASES = [
     number: '01',
     key: 'acquisition',
     label: 'Acquisition',
-    labelShort: 'Evaluate & source',
+    labelShort: 'Research & Marketplace',
     icon: 'search',
     phaseColor: {
       text: 'text-primary',
@@ -54,24 +54,24 @@ const PHASES = [
       glow: 'shadow-[0_0_80px_-20px_rgba(69,73,85,0.25)]',
       bar: 'bg-primary',
     },
-    headline: 'Know the numbers before you make an offer.',
+    headline: 'Research, acquire, and connect.',
     description:
-      "Run IRR, cap rate, and cash-on-cash in real time as you're evaluating a property. Build a syndication deck with your actual projections — not round numbers from a back-of-napkin calculation.",
+      "Manage all the research and acquiring steps of purchasing an investment property in one central dashboard. Once your numbers are organized, post your projects directly to our Deal Marketplace to secure capital, discover new opportunities, and connect with other active real estate investors.",
     features: [
       {
         icon: 'calculate',
-        label: 'Deal Analyzer',
-        detail: 'IRR, cap rate, cash-on-cash — live as you fill in the numbers',
+        label: 'Research & Underwriting',
+        detail: 'Evaluate cap rates, cash-on-cash, and IRR with live deal models',
+      },
+      {
+        icon: 'storefront',
+        label: 'Deal Marketplace',
+        detail: 'List your project to source capital, JV partners, or secondary buyers',
       },
       {
         icon: 'groups',
-        label: 'Syndication Deck Builder',
-        detail: 'Generate an LP-ready pitch directly from your deal data',
-      },
-      {
-        icon: 'description',
-        label: 'Offer Letter Generator',
-        detail: 'Create and send an offer letter directly from your evaluation',
+        label: 'Syndicate & Network',
+        detail: 'Find active investors, secure capital commitments, and connect with peers',
       },
     ],
     terminal: [
@@ -381,15 +381,15 @@ export default function HowItWorks() {
           </div>
 
           <h1 className="font-extrabold text-[40px] md:text-[64px] leading-[46px] md:leading-[72px] tracking-[-0.04em] text-on-surface mb-7">
-            The Real Estate Investment<br className="hidden md:block" />{' '}
-            <span className="text-primary luminous-text">Operating System</span>
+            Built for Serious<br className="hidden md:block" />{' '}
+            <span className="text-primary luminous-text">Real Estate Investors</span>
           </h1>
 
           <p className="text-[17px] md:text-[18px] leading-[27px] md:leading-[28px] font-normal text-on-surface-variant max-w-2xl mx-auto">
-            Spreadsheets don't tell you when your earnest money goes hard, don't track
-            contractor draws against your rehab budget, and don't generate a P&L your CPA
-            can use. PaperWorking does all three — organized around the four phases every
-            deal actually goes through.
+            PaperWorking provides professional project management centered on the 
+            <strong> Real Estate Investment LifeCycle (REIL)</strong>. We track every document, 
+            dollar, and deadline across all phases of your projects, replacing fragmented spreadsheets 
+            with a single high-tech operating system.
           </p>
         </div>
       </section>
@@ -698,7 +698,7 @@ export default function HowItWorks() {
                 className="luminous-button px-8 py-4 rounded-lg font-semibold text-[14px] tracking-[0.01em]
                   flex items-center gap-2 group"
               >
-                Start Your Free 14-Day Trial
+                Start 14 Day Trial
                 <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                   arrow_forward
                 </span>

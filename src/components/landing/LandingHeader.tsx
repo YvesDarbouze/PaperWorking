@@ -84,13 +84,6 @@ export default function LandingHeader() {
           {/* ── Desktop center links ── */}
           <div className="hidden md:flex items-center gap-7">
 
-            <Link
-              href="/"
-              className="nav-link text-[13.5px] font-medium text-[var(--color-on-surface)] opacity-70 hover:opacity-100 transition-opacity duration-150"
-            >
-              Home
-            </Link>
-
             {/* How It Works dropdown */}
             <div
               ref={dropRef}
@@ -278,7 +271,7 @@ export default function LandingHeader() {
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              Start 14-Day Free Trial
+              Start 14 Day Trial
               <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>
                 arrow_forward
               </span>
@@ -350,18 +343,6 @@ export default function LandingHeader() {
 
               {/* Links */}
               <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-                {/* Home */}
-                <Link
-                  href="/"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-semibold transition-colors duration-150"
-                  style={{ color: 'var(--color-on-surface)', textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--color-on-background) 5%, transparent)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  Home
-                </Link>
-
                 {/* How It Works Section */}
                 <div className="pt-2">
                   <p className="px-4 text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-on-surface-variant)] opacity-60 mb-1">
@@ -515,7 +496,7 @@ export default function LandingHeader() {
                     borderRadius: '9999px',
                   }}
                 >
-                  Start 14-Day Free Trial
+                  Start 14 Day Trial
                 </Link>
               </div>
             </motion.nav>

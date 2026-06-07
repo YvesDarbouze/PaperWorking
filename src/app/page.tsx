@@ -8,7 +8,6 @@ import LandingHero from '@/components/landing/LandingHero';
 import HeroDashboard from '@/components/landing/HeroDashboard';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingNews from '@/components/landing/LandingNews';
-import PlatformOverview from '@/components/landing/PlatformOverview';
 import TestimonialSlider from '@/components/landing/TestimonialSlider';
 import FinalCTA from '@/components/landing/FinalCTA';
 import PricingSection from '@/components/landing/PricingSection';
@@ -166,9 +165,6 @@ export default function LandingPage() {
 
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">
-
-        {/* ── How It Works — REIL Phases ── */}
-        <PlatformOverview />
 
         {/* ── Testimonials ── */}
         <TestimonialSlider />

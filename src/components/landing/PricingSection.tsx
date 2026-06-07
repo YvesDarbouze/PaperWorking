@@ -681,7 +681,7 @@ function BottomCTA() {
               className="luminous-button px-8 py-4 rounded-lg font-semibold text-[14px] tracking-[0.01em]
                 inline-flex items-center justify-center gap-2 group"
             >
-              Start Your Free 14-Day Trial
+              Start 14 Day Trial
               <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
                 arrow_forward
               </span>

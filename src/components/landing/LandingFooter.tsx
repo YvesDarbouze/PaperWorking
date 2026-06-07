@@ -19,7 +19,6 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Main Navigation',
     links: [
-      { label: 'Home',          href: '/'             },
       { label: 'How It Works',  href: '/how-it-works' },
       { label: 'Pricing',       href: '/pricing'      },
       { label: 'Support',       href: '/support'      },
@@ -39,7 +38,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     heading: 'Account',
     links: [
-      { label: 'Start 14-Day Free Trial', href: '/register'         },
+      { label: 'Start 14 Day Trial',      href: '/register'         },
       { label: 'Sign In',                 href: '/login'            },
       { label: 'Create Account',          href: '/register'         },
       { label: 'Forgot Password',         href: '/forgot-password'  },

@@ -68,7 +68,7 @@ export default function FinalCTA() {
                 href="/register"
                 className="luminous-button px-8 py-3.5 rounded-full text-sm font-semibold flex items-center gap-2 group"
               >
-                <span>Start Your 14-Day Trial</span>
+                <span>Start 14 Day Trial</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <span className="text-sm text-on-surface-variant/60 self-center">

@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Quote, Star } from 'lucide-react';
 
 /* ═══════════════════════════════════════════════════════
    PricingSection — Behavioral-Economics Redesign
@@ -11,15 +10,14 @@ import { Quote, Star } from 'lucide-react';
    Psychology applied (price-psychology-strategist +
    copywriting-psychologist skills):
    ─ Annual default ON → shows savings immediately
-   ─ 4-tier good-better-best + institutional anchor
+   ─ 3-tier good-better-best + institutional anchor banner
    ─ ROI reframe: cost < one missed deadline ($12,500)
    ─ Loss-framing CTAs, not generic "Get Started"
    ─ Feature list headers tied to investor outcomes
    ─ Comparison table organized by REIL phase
    ─ ROI callout strip between cards and table
-   ─ Investor-specific FAQ (real objections)
-
-   Stripe checkout integration preserved via onSelectPlan.
+   ─ 2-Column static Q&A FAQ (real objections)
+   ─ Core benefits strip before final CTA
    ═══════════════════════════════════════════════════════ */
 
 /* ─── Animation ──────────────────────────────────────── */
@@ -190,28 +188,6 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
       { label: 'REST API + Webhooks', starter: false, pro: false, portfolio: false, inst: true },
       { label: 'White-Label Dashboard', starter: false, pro: false, portfolio: false, inst: true },
     ],
-  },
-];
-
-/* ─── Testimonials ───────────────────────────────────── */
-const TESTIMONIALS = [
-  {
-    quote: "Managing a duplex rehab in Nashville while working full-time meant receipts were always in my truck. Moving draws and receipts into PaperWorking gave my GC a clear checklist and gave my CPA clean numbers at year end.",
-    author: 'Marcus T.',
-    role: 'Solo Operator · Duplex Flip · Nashville, TN',
-    stars: 5,
-  },
-  {
-    quote: "We used to spend hours before every partner meeting updating Excel. Now our private lenders get read-only dashboard access. They see real-time cost basis and project progress whenever they want — we stopped doing update calls.",
-    author: 'Sarah & James K.',
-    role: 'JV Partnership · 4-Unit Value-Add · Dallas, TX',
-    stars: 5,
-  },
-  {
-    quote: "We were closing multiple properties in parallel and almost missed an inspection period because it was in a spreadsheet no one updated. We haven't had a contingency scare since we moved everything into PaperWorking.",
-    author: 'Vega Capital Group',
-    role: 'Syndication · Multi-Family Value-Add · Phoenix, AZ',
-    stars: 5,
   },
 ];
 
@@ -435,6 +411,66 @@ function PricingCard({ plan, isAnnual, onSelect }: { plan: Plan; isAnnual: boole
   );
 }
 
+/* ─── Sub: Grayscale logo strip ──────────────────────── */
+function IntegrationLogoStrip() {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-40px' }}
+      variants={fadeUp}
+      className="max-w-5xl mx-auto px-6 lg:px-8 py-12 text-center"
+    >
+      <p className="font-jetbrains text-[9px] uppercase tracking-[0.12em] text-on-surface-variant/40 mb-8">
+        Integrates with your existing real estate stack
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-40 hover:opacity-75 transition-all duration-300 grayscale contrast-120">
+        {/* MLS Logo */}
+        <div className="flex items-center gap-2 font-bold text-[18px] tracking-wider text-on-surface">
+          <svg className="w-5 h-5 text-on-surface" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          <span>MLS</span>
+        </div>
+
+        {/* DocuSign Logo */}
+        <div className="flex items-center gap-1.5 font-semibold text-[16px] text-on-surface">
+          <svg className="w-5 h-5 text-on-surface" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 20h9" />
+            <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+          <span className="font-sans font-extrabold tracking-tight">DocuSign</span>
+        </div>
+
+        {/* Plaid Logo */}
+        <div className="flex items-center gap-2 font-bold text-[17px] tracking-tight text-on-surface">
+          <svg className="w-5 h-5 text-on-surface" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M8 12h8" />
+            <path d="M12 8v8" />
+          </svg>
+          <span className="font-sans font-black tracking-tighter">PLAID</span>
+        </div>
+
+        {/* Stripe Logo */}
+        <div className="flex items-center gap-0.5 text-on-surface">
+          <span className="font-sans font-black text-[22px] italic tracking-tighter">stripe</span>
+        </div>
+
+        {/* RentCast Logo */}
+        <div className="flex items-center gap-2 font-semibold text-[16px] text-on-surface">
+          <svg className="w-5 h-5 text-on-surface" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M3 3v18h18" />
+            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+          </svg>
+          <span className="font-sans font-bold tracking-tight">RentCast</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Sub: ROI callout strip ────────────────────────── */
 function ROICallout() {
   return (
@@ -507,7 +543,7 @@ function ComparisonTable() {
       className="max-w-5xl mx-auto px-6 lg:px-8 pb-16 hidden md:block"
     >
       <motion.div variants={fadeUp} className="text-center mb-10">
-        <h3 className="text-[24px] md:text-[28px] font-bold tracking-[-0.02em] text-on-surface mb-2">
+        <h3 className="text-[24px] md:text-[28px] font-thin tracking-[-0.02em] text-on-surface mb-2 font-display-hero">
           Every feature, by phase.
         </h3>
         <p className="text-[14px] text-on-surface-variant">
@@ -530,8 +566,8 @@ function ComparisonTable() {
           </thead>
           <tbody>
             {visibleRows.map((section) => (
-              <>
-                <tr key={`cat-${section.category}`} className="bg-surface-container-low/30">
+              <React.Fragment key={`cat-${section.category}`}>
+                <tr className="bg-surface-container-low/30">
                   <td colSpan={5} className="px-4 py-2.5">
                     <span className="font-jetbrains text-[10px] uppercase tracking-[0.08em] text-primary/60">
                       {section.category}
@@ -547,7 +583,7 @@ function ComparisonTable() {
                     <td className="p-4 text-center"><Check yes={row.inst} /></td>
                   </tr>
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>
@@ -569,46 +605,6 @@ function ComparisonTable() {
   );
 }
 
-/* ─── Sub: Testimonials ─────────────────────────────── */
-function Testimonials() {
-  return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
-      variants={stagger}
-      className="max-w-6xl mx-auto px-6 lg:px-8 py-16"
-    >
-      <motion.p variants={fadeUp} className="text-center font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-10">
-        What investors are saying
-      </motion.p>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {TESTIMONIALS.map((t, i) => (
-          <motion.div
-            key={i}
-            variants={fadeUp}
-            className="glass-card rounded-xl p-7 flex flex-col hover:-translate-y-1 transition-transform duration-300"
-          >
-            <Quote className="w-6 h-6 text-primary/30 mb-5 flex-shrink-0" />
-            <p className="text-[13px] leading-[22px] text-on-surface italic flex-grow mb-6">
-              &ldquo;{t.quote}&rdquo;
-            </p>
-            <div>
-              <p className="text-[13px] font-semibold text-on-surface">{t.author}</p>
-              <p className="text-[11px] text-on-surface-variant mt-0.5">{t.role}</p>
-              <div className="flex gap-0.5 mt-3">
-                {Array.from({ length: t.stars }).map((_, si) => (
-                  <Star key={si} className="w-3 h-3 text-primary fill-primary" />
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
-  );
-}
-
 /* ─── Sub: FAQ ───────────────────────────────────────── */
 function PricingFAQ() {
   return (
@@ -617,38 +613,96 @@ function PricingFAQ() {
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       variants={stagger}
-      className="max-w-3xl mx-auto px-6 lg:px-8 pb-20"
+      className="max-w-5xl mx-auto px-6 lg:px-8 pb-20"
     >
       <motion.div variants={fadeUp} className="text-center mb-12">
         <p className="font-jetbrains text-[10px] uppercase tracking-[0.12em] text-primary/50 mb-4">Before you commit</p>
-        <h3 className="text-[24px] md:text-[28px] font-bold tracking-[-0.02em] text-on-surface">
+        <h3 className="text-[24px] md:text-[28px] font-thin tracking-[-0.02em] text-on-surface font-display-hero">
           Straight answers.
         </h3>
       </motion.div>
 
-      <motion.div variants={fadeUp} className="space-y-3">
+      <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-x-12">
         {FAQ.map((item, i) => (
-          <details
-            key={i}
-            className="glass-panel rounded-xl border border-outline-variant group overflow-hidden"
-          >
-            <summary className="pw-interactive-custom flex items-center justify-between gap-4 px-6 py-5 cursor-pointer list-none select-none text-[14px] font-semibold text-on-surface tracking-[-0.01em] hover:text-primary transition-colors duration-200">
-              <span>{item.q}</span>
-              <span
-                className="material-symbols-outlined flex-shrink-0 text-[20px] text-primary/50 transition-transform duration-200 group-open:rotate-45"
-                style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}
-              >
-                add
-              </span>
-            </summary>
-            <div className="px-6 pb-6">
-              <div className="border-t border-outline-variant pt-5">
-                <p className="text-[13px] leading-[23px] text-on-surface-variant">{item.a}</p>
-              </div>
-            </div>
-          </details>
+          <div key={i} className="flex flex-col">
+            <h4 className="text-[15px] font-semibold text-on-surface tracking-[-0.01em]">
+              {item.q}
+            </h4>
+            <p className="text-[13px] leading-[22px] text-on-surface-variant mt-2.5">
+              {item.a}
+            </p>
+          </div>
         ))}
       </motion.div>
+    </motion.div>
+  );
+}
+
+/* ─── Sub: Benefits Section ──────────────────────────── */
+function BenefitsSection() {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-40px' }}
+      variants={stagger}
+      className="max-w-5xl mx-auto px-6 lg:px-8 pb-20"
+    >
+      <div className="text-center mb-12">
+        <h3 className="text-[24px] md:text-[28px] font-thin tracking-[-0.02em] text-on-surface font-display-hero">
+          Try Us Once, Use PaperWorking Forever.
+        </h3>
+        <p className="text-[13px] text-on-surface-variant mt-2 max-w-lg mx-auto">
+          We build for serious real estate investors. No lock-in, no complex integrations, just pure portfolio execution.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Zero Complexity */}
+        <motion.div
+          variants={fadeUp}
+          className="glass-panel border border-outline-variant rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all duration-300"
+        >
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="material-symbols-outlined text-[28px] text-primary mb-4" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
+            bolt
+          </span>
+          <h4 className="text-[15px] font-bold text-on-surface mb-2">Zero Complexity</h4>
+          <p className="text-[13px] leading-[22px] text-on-surface-variant">
+            Out-of-the-box REIL templates and workflow automation built specifically for real estate acquisitions and exits.
+          </p>
+        </motion.div>
+
+        {/* No Hidden Fees */}
+        <motion.div
+          variants={fadeUp}
+          className="glass-panel border border-outline-variant rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all duration-300"
+        >
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="material-symbols-outlined text-[28px] text-primary mb-4" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
+            payments
+          </span>
+          <h4 className="text-[15px] font-bold text-on-surface mb-2">No Hidden Fees</h4>
+          <p className="text-[13px] leading-[22px] text-on-surface-variant">
+            Flat-rate pricing based on active deals. Unlimited CPA reports, full document exports, and no seat tax on partners.
+          </p>
+        </motion.div>
+
+        {/* Data Security */}
+        <motion.div
+          variants={fadeUp}
+          className="glass-panel border border-outline-variant rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all duration-300"
+        >
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <span className="material-symbols-outlined text-[28px] text-primary mb-4" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>
+            shield
+          </span>
+          <h4 className="text-[15px] font-bold text-on-surface mb-2">Data Security</h4>
+          <p className="text-[13px] leading-[22px] text-on-surface-variant">
+            Bank-grade data encryption, redundant cloud storage, and a robust SOC 2-ready compliance infrastructure.
+          </p>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
@@ -668,7 +722,7 @@ function BottomCTA() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[200px] bg-primary/6 blur-[80px] rounded-full pointer-events-none" />
 
         <div className="relative z-10">
-          <h2 className="text-[26px] md:text-[38px] font-extrabold tracking-[-0.035em] text-on-surface mb-5 leading-tight">
+          <h2 className="text-[26px] md:text-[38px] font-thin tracking-[-0.035em] text-on-surface mb-5 leading-tight font-display-hero">
             You&apos;re closing deals worth more<br className="hidden md:block" /> than this software costs.
           </h2>
           <p className="text-[15px] md:text-[17px] leading-[26px] text-on-surface-variant max-w-xl mx-auto mb-9">
@@ -717,6 +771,8 @@ function BottomCTA() {
 /* ═══════════════════════════════════════════════════════
    Main export
    ═══════════════════════════════════════════════════════ */
+import * as React from 'react';
+
 export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan: string) => void }) {
   const [isAnnual, setIsAnnual] = useState(true);    // annual-first default
 
@@ -745,9 +801,9 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
             Pricing
           </motion.p>
 
-          <motion.h2 variants={fadeUp} className="text-[32px] md:text-[48px] font-extrabold tracking-[-0.035em] text-on-surface leading-tight mb-5">
+          <motion.h2 variants={fadeUp} className="text-[32px] md:text-[48px] font-thin tracking-[-0.035em] text-on-surface leading-tight mb-5 font-display-hero">
             Software that costs less than<br className="hidden md:block" />{' '}
-            <span className="text-primary luminous-text">one missed deadline.</span>
+            <span className="text-primary luminous-text font-thin">one missed deadline.</span>
           </motion.h2>
 
           <motion.p variants={fadeUp} className="text-[16px] md:text-[18px] leading-[27px] text-on-surface-variant mb-10 max-w-2xl mx-auto">
@@ -760,7 +816,7 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </motion.div>
         </motion.div>
 
-        {/* ── 4-Tier Pricing Cards ── */}
+        {/* ── 3-Tier Pricing Cards & Institutional Banner ── */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -768,12 +824,36 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           variants={stagger}
           className="max-w-7xl mx-auto px-6 lg:px-8 pb-10"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
-            {PLANS.map((plan) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 items-start">
+            {PLANS.filter(p => p.id !== 'institutional').map((plan) => (
               <PricingCard key={plan.id} plan={plan} isAnnual={isAnnual} onSelect={handleSelect} />
             ))}
           </div>
+
+          {/* Institutional Banner */}
+          <motion.div variants={fadeUp} className="mt-8">
+            <div className="glass-panel border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+              <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
+              <div className="text-center md:text-left relative z-10">
+                <h4 className="text-[16px] font-bold text-on-surface">Institutional Custom Plans</h4>
+                <p className="text-[13px] text-on-surface-variant mt-1.5 max-w-2xl">
+                  Looking for custom integrations, white-labeling, REST API webhooks, or unlimited team seats? 
+                  Contact our team for custom Institutional plans.
+                </p>
+              </div>
+              <Link
+                href="/contact"
+                className="luminous-button px-6 py-3 rounded-lg font-semibold text-[13px] whitespace-nowrap relative z-10"
+              >
+                Talk to our team
+              </Link>
+            </div>
+          </motion.div>
         </motion.div>
+
+        {/* ── Integration Logo Strip ── */}
+        <IntegrationLogoStrip />
 
         {/* ── ROI Callout Strip ── */}
         <ROICallout />
@@ -781,11 +861,11 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
         {/* ── Feature Comparison Table ── */}
         <ComparisonTable />
 
-        {/* ── Testimonials ── */}
-        <Testimonials />
-
         {/* ── FAQ ── */}
         <PricingFAQ />
+
+        {/* ── Benefits Section ── */}
+        <BenefitsSection />
 
         {/* ── Bottom CTA ── */}
         <BottomCTA />

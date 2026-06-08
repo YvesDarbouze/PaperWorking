@@ -80,7 +80,11 @@ export async function POST(request: Request) {
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
+
+      // Always collect a payment method — even during a free trial.
+      // The card is saved and authorised but NOT charged until the trial ends.
       payment_method_collection: 'always',
+
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/pricing`,
       customer_email: userEmail ?? undefined,
@@ -89,14 +93,33 @@ export async function POST(request: Request) {
       billing_address_collection: 'auto',
       automatic_tax: { enabled: true },
       tax_id_collection: { enabled: true },
+
+      // Cast to any: the dahlia API version exposes payment_settings and
+      // trial_settings fields that the current @types/stripe hasn't caught up to.
       subscription_data: {
+        // 14-day free trial — card collected but not charged until day 15.
         trial_period_days: trialDays > 0 ? trialDays : undefined,
+
+        // Cancel if the card fails at trial end (no silent free-ride).
+        ...(trialDays > 0 && {
+          trial_settings: {
+            end_behavior: { missing_payment_method: 'cancel' },
+          },
+        }),
+
+        // Save the collected card as the default payment method so Stripe
+        // can charge it automatically when the trial converts on day 15.
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+        },
+
         metadata: {
           userId: userId || 'guest',
           plan: canonicalPlan,
           planId,
         },
-      },
+      } as any,
+
       metadata: {
         userId: userId || 'guest',
         plan: canonicalPlan,

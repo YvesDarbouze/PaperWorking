@@ -118,7 +118,7 @@ async function updateUserAndOrg(
  */
 async function applyReferralRewards(
   refereeUid: string,
-  refereeStripeCustomerId: string,
+  _refereeStripeCustomerId: string,
   refereeSubscriptionId: string,
   stripe: Stripe
 ): Promise<void> {
@@ -290,31 +290,50 @@ export async function POST(request: Request) {
       }
 
       // =========================================================
-      // TRIAL ENDING SOON — 3 days before trial converts to paid
-      // Stripe fires this automatically; log it for email triggers.
+      // TRIAL ENDING SOON — Stripe fires 3 days before trial converts.
+      // Tell the user exactly when they will be charged and how much.
       // =========================================================
       case 'customer.subscription.trial_will_end': {
         const subscription = event.data.object as Stripe.Subscription;
         const stripeCustomerId = subscription.customer as string;
 
-        console.log(`[Stripe Webhook] Received trial_will_end for customer: ${stripeCustomerId}`);
+        console.log(`[Stripe Webhook] trial_will_end for customer: ${stripeCustomerId}`);
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          const trialEndDate = subscription.trial_end
-            ? new Date(subscription.trial_end * 1000).toISOString()
-            : null;
+          const trialEndTs  = subscription.trial_end ?? null;
+          const trialEndIso = trialEndTs ? new Date(trialEndTs * 1000).toISOString() : null;
+          const trialEndFmt = trialEndTs
+            ? new Date(trialEndTs * 1000).toLocaleDateString('en-US', {
+                month: 'long', day: 'numeric', year: 'numeric',
+              })
+            : 'soon';
+
+          // Resolve charge amount from the first subscription item
+          const unitAmount  = subscription.items.data[0]?.price?.unit_amount ?? 0;
+          const currency    = (subscription.items.data[0]?.price?.currency ?? 'usd').toUpperCase();
+          const amountFmt   = new Intl.NumberFormat('en-US', {
+            style: 'currency', currency,
+          }).format(unitAmount / 100);
+
           await updateUserAndOrg(uid, {
             trialEndingSoon: true,
-            trialEnd: trialEndDate,
+            trialEnd: trialEndIso,
           });
-          console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndDate}`);
-          
+
+          console.log(`[Stripe Webhook] Trial ending soon for user ${uid}, trial_end: ${trialEndIso}, charge: ${amountFmt}`);
+
           const userDoc = await adminDb.collection('users').doc(uid).get();
-          const email = userDoc.data()?.email;
+          const email   = userDoc.data()?.email;
           if (email) {
-            const subject = 'Your PaperWorking Trial is Ending Soon';
-            const html = '<p>Your trial will convert to a paid plan soon. You can manage your billing in settings.</p>';
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
+            const subject = `Your PaperWorking Trial Ends ${trialEndFmt}`;
+            const html = `
+              <p>Your 14-day free trial ends on <strong>${trialEndFmt}</strong>.</p>
+              <p>On that date your card on file will be charged <strong>${amountFmt}</strong> and your subscription will continue automatically.</p>
+              <p>If you'd like to cancel before being charged, you can do so at any time from your
+              <a href="${appUrl}/dashboard/settings/billing">billing settings</a>.</p>
+            `;
             sendStripeEmail(email, subject, html).catch(() => {});
           }
         }
@@ -322,26 +341,51 @@ export async function POST(request: Request) {
       }
 
       // =========================================================
-      // INVOICE PAID — Renewal confirmation (skip initial create)
+      // INVOICE PAID — Renewal confirmation.
+      //
+      // Fires for every paid invoice EXCEPT the initial subscription_create
+      // (already handled in checkout.session.completed). This includes:
+      //   • subscription_cycle  — trial-to-paid conversion OR monthly/annual renewal
+      //   • manual              — one-off invoices
+      //
+      // Trial conversion (first real charge on day 15) is emailed from
+      // customer.subscription.updated below. We detect it here by checking
+      // whether trial_end is within the last 24 h and skip the renewal email
+      // to avoid a duplicate "Subscription Renewed" message.
       // =========================================================
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
         const stripeCustomerId = invoice.customer as string;
 
-        // Skip the initial subscription creation invoice — already handled above
+        // Skip initial subscription creation — handled in checkout.session.completed
         if (invoice.billing_reason === 'subscription_create') break;
+
+        // Skip trial-conversion invoice — subscription.updated handles that email.
+        // Cast to any: the dahlia API version surfaces subscription on the
+        // parent object; using any avoids a brittle version-specific shape.
+        const invoiceAny = invoice as any;
+        const invoiceSubId: string | null = invoiceAny.subscription ?? invoiceAny.parent?.subscription_details?.subscription ?? null;
+        if (invoice.billing_reason === 'subscription_cycle' && invoiceSubId) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(invoiceSubId);
+            const trialEndedRecently =
+              sub.trial_end !== null &&
+              Date.now() / 1000 - sub.trial_end < 86_400; // within 24 h
+            if (trialEndedRecently) break;
+          } catch (e) {
+            console.warn('[Stripe Webhook] Could not check trial_end for dedup:', e);
+          }
+        }
 
         const uid = await resolveUidFromStripeCustomer(stripeCustomerId);
         if (uid) {
-          await updateUserAndOrg(uid, {
-            subscriptionStatus: 'active',
-          });
-          
+          await updateUserAndOrg(uid, { subscriptionStatus: 'active' });
+
           const userDoc = await adminDb.collection('users').doc(uid).get();
-          const email = userDoc.data()?.email;
+          const email   = userDoc.data()?.email;
           if (email) {
             const subject = 'Your PaperWorking Subscription Renewed';
-            const html = '<p>Your subscription has been successfully renewed. You can view your invoice in billing settings.</p>';
+            const html    = '<p>Your subscription has been successfully renewed. You can view your invoice in your billing settings.</p>';
             sendStripeEmail(email, subject, html).catch(() => {});
           }
         }
@@ -443,12 +487,39 @@ export async function POST(request: Request) {
 
           await updateUserAndOrg(uid, updateData);
 
-          // Detect trialing → active conversion (the North Star event)
+          // Detect trialing → active conversion (trial ended, card charged on day 15)
           const previousStatus = (event.data.previous_attributes as any)?.status;
           if (previousStatus === 'trialing' && mappedStatus === 'active') {
+            // Resolve charge amount for the "you were charged" email
+            const unitAmount = subscription.items.data[0]?.price?.unit_amount ?? 0;
+            const currency   = (subscription.items.data[0]?.price?.currency ?? 'usd').toUpperCase();
+            const amountFmt  = new Intl.NumberFormat('en-US', {
+              style: 'currency', currency,
+            }).format(unitAmount / 100);
+
+            // Mark conversion date in Firestore (used by invoice dedup logic)
+            await updateUserAndOrg(uid, { trialConvertedAt: FieldValue.serverTimestamp() });
+
+            // Send "your card was charged today" email
+            const userDoc2 = await adminDb.collection('users').doc(uid).get();
+            const email2   = userDoc2.data()?.email;
+            if (email2) {
+              const appUrl  = process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co';
+              const subject = 'Your PaperWorking Trial Has Ended — You\'ve Been Charged';
+              const html    = `
+                <p>Your 14-day free trial has ended.</p>
+                <p>Your card on file has been charged <strong>${amountFmt}</strong> for your
+                ${planFromMeta ?? 'PaperWorking'} subscription.</p>
+                <p>Your subscription will renew automatically each billing period.
+                You can manage or cancel at any time from your
+                <a href="${appUrl}/dashboard/settings/billing">billing settings</a>.</p>
+              `;
+              sendStripeEmail(email2, subject, html).catch(() => {});
+            }
+
+            // PostHog: trial_converted_to_paid
             const phKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
             if (phKey) {
-              // PostHog server-side event via REST API
               fetch('https://app.posthog.com/capture/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -456,10 +527,7 @@ export async function POST(request: Request) {
                   api_key: phKey,
                   event: 'trial_converted_to_paid',
                   distinct_id: uid,
-                  properties: {
-                    plan: planFromMeta ?? 'unknown',
-                    subscriptionId: subscription.id,
-                  },
+                  properties: { plan: planFromMeta ?? 'unknown', subscriptionId: subscription.id },
                 }),
               }).catch(() => { /* non-fatal */ });
             }

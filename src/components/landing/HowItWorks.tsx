@@ -686,7 +686,7 @@ export default function HowItWorks() {
               </span>
             </Link>
             <span className="text-[13px] text-on-surface-variant/50">
-              No credit card · 1 active deal free forever
+              Credit card required · Cancel before day 15 to avoid charge
             </span>
           </div>
 
@@ -790,7 +790,7 @@ export default function HowItWorks() {
 
           {/* Trust note */}
           <p className="font-jetbrains text-[11px] text-on-surface-variant/30 tracking-[0.04em] uppercase">
-            No credit card required · Free forever for 1 active deal
+            14 days free · Card required · Cancel anytime before day 15
           </p>
         </div>
       </section>

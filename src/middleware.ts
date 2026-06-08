@@ -53,6 +53,32 @@ export function middleware(request: NextRequest) {
   const hasSession = !!request.cookies.get(SESSION_COOKIE)?.value;
   const acct       = request.cookies.get(ACCT_COOKIE)?.value; // 'investor' | 'vendor'
 
+  const isDev = process.env.NODE_ENV === 'development' || 
+                request.nextUrl.hostname === 'localhost' || 
+                request.nextUrl.hostname === '127.0.0.1';
+
+  // ── Local Development Bypass ──────────────────────────
+  if (isDev && !hasSession && (pathname.startsWith('/dashboard') || pathname.startsWith('/vendor-portal') || pathname.startsWith('/onboarding') || pathname === '/login')) {
+    const url = request.nextUrl.clone();
+    if (pathname === '/login') {
+      url.pathname = '/dashboard/command-center';
+    }
+    const response = NextResponse.redirect(url);
+    response.cookies.set(SESSION_COOKIE, 'mock_session_token_123', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 14, // 14 days
+      httpOnly: false, // Must be accessible client-side by useAuth() check!
+    });
+    if (!acct) {
+      response.cookies.set(ACCT_COOKIE, 'investor', {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 14,
+        httpOnly: false,
+      });
+    }
+    return withNoCache(response);
+  }
+
   // ── Guest Portal — always public ──────────────────────
   if (pathname.startsWith('/invest')) {
     return withNoCache(nextWithHeader(request, pathname));

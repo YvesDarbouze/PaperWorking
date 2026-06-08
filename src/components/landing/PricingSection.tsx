@@ -238,52 +238,17 @@ function AnimatedPrice({ value }: { value: number }) {
   );
 }
 
-/* ─── Sub: Billing toggle ───────────────────────────── */
-function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v: boolean) => void }) {
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <div className="flex items-center gap-3">
-        <span className={`text-[13px] font-semibold transition-colors duration-200 ${
-          !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
-        }`}>
-          Monthly
-        </span>
-        <Switch
-          checked={isAnnual}
-          onChange={(e) => onToggle(e.target.checked)}
-          aria-label="Toggle annual billing"
-        />
-        <span className={`text-[13px] font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
-          isAnnual ? 'text-primary' : 'text-on-surface-variant'
-        }`}>
-          Annual
-          <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-            Save 20%
-          </span>
-        </span>
-      </div>
-
-      {/* Annual nudge — applies loss-aversion framing */}
-      <p className={`font-jetbrains text-[10px] tracking-[0.04em] transition-opacity duration-200 ${isAnnual ? 'text-primary/50' : 'text-tertiary/70'}`}>
-        {isAnnual
-          ? 'Annual billing active · Save up to $209/yr compared to monthly'
-          : 'Switch to annual → save up to $209/yr'}
-      </p>
-    </div>
-  );
-}
-
 /* ─── Sub: Pricing card ─────────────────────────────── */
-function PricingCard({ 
-  plan, 
-  isAnnual, 
-  onToggleAnnual, 
-  onSelect 
-}: { 
-  plan: Plan; 
-  isAnnual: boolean; 
-  onToggleAnnual: (val: boolean) => void; 
-  onSelect: (key: string) => void; 
+function PricingCard({
+  plan,
+  isAnnual,
+  onSelect,
+  onToggleAnnual
+}: {
+  plan: Plan;
+  isAnnual: boolean;
+  onSelect: (key: string) => void;
+  onToggleAnnual?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const displayPrice = isAnnual ? plan.annualMonthly : plan.monthlyPrice;
 
@@ -331,7 +296,7 @@ function PricingCard({
         ) : plan.isFree ? (
           <div>
             <p className="text-[26px] font-extrabold tracking-[-0.03em] text-on-surface">Free</p>
-            <p className="text-[11px] text-on-surface-variant mt-1">No credit card required</p>
+            <p className="text-[11px] text-on-surface-variant mt-1">1 active deal</p>
           </div>
         ) : (
           <div>
@@ -351,25 +316,6 @@ function PricingCard({
               )}
             </div>
 
-            {/* Toggle-switch inside column under price */}
-            <div className="mt-3 flex items-center justify-center gap-3 py-2 bg-surface-container/20 rounded-lg border border-outline-variant/15 w-full">
-              <span className={`text-[11px] font-semibold transition-colors duration-200 ${
-                !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
-              }`}>
-                Monthly
-              </span>
-              <Switch
-                checked={isAnnual}
-                onChange={(e) => { e.stopPropagation(); onToggleAnnual(e.target.checked); }}
-                aria-label="Toggle annual pricing"
-              />
-              <span className={`text-[11px] font-semibold transition-colors duration-200 flex items-center gap-1 ${
-                isAnnual ? 'text-primary' : 'text-on-surface-variant'
-              }`}>
-                Annual
-                <span className="bg-primary/10 text-primary px-1 rounded text-[8px] font-bold">20% Off</span>
-              </span>
-            </div>
           </div>
         )}
       </div>
@@ -836,6 +782,24 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </motion.p>
         </motion.div>
 
+        {/* ── Single billing toggle — one place, dead simple ── */}
+        <div className="flex items-center justify-center gap-3 pb-8">
+          <span className={`text-[13px] font-medium transition-colors duration-200 ${!isAnnual ? 'text-on-surface' : 'text-on-surface-variant/50'}`}>
+            Monthly
+          </span>
+          <Switch
+            checked={isAnnual}
+            onChange={(e) => setIsAnnual(e.target.checked)}
+            aria-label="Toggle annual billing"
+          />
+          <span className={`text-[13px] font-medium transition-colors duration-200 flex items-center gap-2 ${isAnnual ? 'text-on-surface' : 'text-on-surface-variant/50'}`}>
+            Annual
+            <span className="text-[10px] font-bold uppercase tracking-wide bg-primary/12 text-primary px-2 py-0.5 rounded-full">
+              Save 20%
+            </span>
+          </span>
+        </div>
+
         {/* ── 3-Tier Pricing Cards & Ratings Badge (Above the fold) ── */}
         <motion.div
           initial="hidden"
@@ -846,12 +810,11 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 items-start">
             {PLANS.filter(p => p.id !== 'institutional').map((plan) => (
-              <PricingCard 
-                key={plan.id} 
-                plan={plan} 
-                isAnnual={isAnnual} 
-                onToggleAnnual={setIsAnnual} 
-                onSelect={handleSelect} 
+              <PricingCard
+                key={plan.id}
+                plan={plan}
+                isAnnual={isAnnual}
+                onSelect={handleSelect}
               />
             ))}
           </div>

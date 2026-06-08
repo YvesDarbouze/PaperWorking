@@ -153,7 +153,7 @@ export default function LandingHero() {
             </Link>
             {/* Secondary option — visually quiet */}
             <span className="text-[13px] text-on-surface-variant/50">
-              No credit card · 1 deal free forever
+              Credit card required · Cancel before day 15 to avoid charge
             </span>
           </div>
 

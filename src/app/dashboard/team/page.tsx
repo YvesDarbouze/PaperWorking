@@ -4,15 +4,18 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useUserStore } from '@/store/userStore';
 import { useProjectStore } from '@/store/projectStore';
 import { useAuth } from '@/context/AuthContext';
-import { Shield, Users, UserCircle, Search, ArrowLeft, RefreshCw, XCircle, Settings, History } from 'lucide-react';
-import Link from 'next/link';
-import type { ProjectTeamMember } from '@/types/schema';
+import { useTheme } from '@/lib/utils/ThemeProvider';
+import { 
+  Shield, Users, UserCircle, Search, RefreshCw, XCircle, Settings, History, Plus, X, 
+  ChevronDown, Check, Mail, Info, AlertCircle, Sparkles, ExternalLink, Lock, UserCheck, Trash2
+} from 'lucide-react';
+import type { ProjectTeamMember, InternalRole } from '@/types/schema';
 import { usePermissions } from '@/hooks/usePermissions';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
    Team Directory & Access Management Terminal
-   (Premium Luminous Glass / Obsidian Bento Grid)
+   (Premium Minimalist Paper UI Design System)
    ═══════════════════════════════════════════════════════ */
 
 type UnifiedMemberType = 'Internal' | 'External';
@@ -25,24 +28,67 @@ interface UnifiedMember {
   type: UnifiedMemberType;
   status: 'active' | 'invited' | 'removed' | 'suspended';
   assignedProjects: string[];
+  lastActive?: string;
 }
+
+const ROLE_PERMISSIONS: Record<InternalRole, string> = {
+  CEO: 'Full control over organization properties, financials, billing, and team seats allocation.',
+  President: 'Full system access, deal pipelines configuration, and team member provisioning.',
+  CFO: 'Access to financial worksheets, underwriting inputs, cash flow targets, and closing distributions.',
+  COO: 'Access to project timelines, milestones checklist, general contractor tasks assignment, and operations.',
+  Admin: 'Manage user access levels, configure dashboard preferences, and edit settings.',
+  'Deal Lead': 'Underwrite individual properties, assign project-level action items, and manage deal pipeline.'
+};
 
 export default function TeamDirectoryPage() {
   const { profile } = useAuth();
-  const { teamMembers: internalMembers } = useUserStore();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
+  // Zustand Stores
+  const { 
+    teamMembers: internalMembers, 
+    accountTier, 
+    maxSeats, 
+    setAccountTier, 
+    addTeamMember, 
+    removeTeamMember, 
+    suspendTeamMember, 
+    updateMemberRole 
+  } = useUserStore();
+  
   const { projects, updateProjectTeam } = useProjectStore();
+  const { isLead: isAdmin } = usePermissions();
 
-  const [revokingEmail, setRevokingEmail] = useState<string | null>(null);
+  // Local States
   const [searchQuery, setSearchQuery] = useState('');
   const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
-  const { isLead: isAdmin } = usePermissions();
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [bulkEmailInput, setBulkEmailInput] = useState('');
+  const [selectedRole, setSelectedRole] = useState<InternalRole>('Deal Lead');
+  const [assignProject, setAssignProject] = useState<string>('');
+  const [assignTabOrTask, setAssignTabOrTask] = useState<string>('');
+  const [enableScopedInvite, setEnableScopedInvite] = useState(false);
+  const [hoveredRoleTooltip, setHoveredRoleTooltip] = useState<string | null>(null);
+
+  // Simulated active timestamps
+  const mockLastActiveTimes = useMemo(() => {
+    return {
+      CEO: 'Active 2m ago',
+      President: 'Active 15m ago',
+      CFO: 'Active 1h ago',
+      COO: 'Active 3h ago',
+      Admin: 'Active 12m ago',
+      'Deal Lead': 'Active 4h ago',
+    };
+  }, []);
 
   // Aggregate and merge all team members
   const unifiedTeam = useMemo(() => {
     const list: UnifiedMember[] = [];
     const seenEmails = new Set<string>();
 
-    // 1. Map Internal Members
+    // 1. Map Internal Members (Org-level)
     internalMembers.forEach(m => {
       if (m.status === 'removed') return;
       
@@ -55,10 +101,11 @@ export default function TeamDirectoryPage() {
         type: 'Internal',
         status: m.status,
         assignedProjects: m.assignedProjectIds || [],
+        lastActive: m.status === 'invited' ? 'Never' : (mockLastActiveTimes[m.internalRole] || 'Active 1d ago'),
       });
     });
 
-    // 2. Map External Collaborators (Vendors, Agents, etc)
+    // 2. Map External Collaborators (Vendors, Agents, etc from projects)
     projects.forEach(p => {
       if (!p.projectTeam) return;
 
@@ -82,17 +129,32 @@ export default function TeamDirectoryPage() {
             type: 'External',
             status: em.status,
             assignedProjects: [p.id],
+            lastActive: em.status === 'invited' ? 'Never' : 'Active 2d ago',
           });
         }
       });
     });
+
+    // If list is empty and user is on Team tier, we seed owner as the first member
+    if (list.length === 0 && profile?.email) {
+      list.push({
+        id: 'owner-id',
+        email: profile.email,
+        displayName: profile.displayName || profile.email.split('@')[0],
+        role: 'CEO',
+        type: 'Internal',
+        status: 'active',
+        assignedProjects: [],
+        lastActive: 'Online Now',
+      });
+    }
 
     // Sort: Internals first, then alphabetical by name
     return list.sort((a, b) => {
       if (a.type !== b.type) return a.type === 'Internal' ? -1 : 1;
       return a.displayName.localeCompare(b.displayName);
     });
-  }, [internalMembers, projects]);
+  }, [internalMembers, projects, profile, mockLastActiveTimes]);
 
   // Split active personnel vs pending invitations
   const activePersonnel = useMemo(() => {
@@ -112,298 +174,486 @@ export default function TeamDirectoryPage() {
   // Terminal simulated logs
   useEffect(() => {
     const initialLogs = [
-      `[${new Date().toLocaleTimeString()}] INFO Connection established to primary DB node.`,
-      `[${new Date().toLocaleTimeString()}] INFO Polling access scopes for namespace 'Team'...`,
-      `[${new Date().toLocaleTimeString()}] SEC Role verification successful for current operators.`,
-      `[${new Date().toLocaleTimeString()}] INFO System status: STABLE. Ready for commands.`
+      `[${new Date().toLocaleTimeString()}] INFO Connected to secure organization namespace.`,
+      `[${new Date().toLocaleTimeString()}] INFO Loaded ${unifiedTeam.length} identity access profiles.`,
+      `[${new Date().toLocaleTimeString()}] SEC Encryption standard: AES-256 enabled for team metadata.`,
+      `[${new Date().toLocaleTimeString()}] INFO Status: STABLE. Monitoring seat allocation.`
     ];
     setTerminalLogs(initialLogs);
-  }, []);
+  }, [unifiedTeam.length]);
 
-  const handleRevokeExternalAccess = async (email: string) => {
-    setRevokingEmail(email);
-    setTerminalLogs(prev => [
-      ...prev,
-      `[${new Date().toLocaleTimeString()}] WARN Initialized revocation sequence for collaborator: ${email}`
-    ]);
+  // Handle invitation submission
+  const handleSendInvites = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bulkEmailInput.trim()) {
+      toast.error("Please enter at least one email address.");
+      return;
+    }
 
-    try {
-      projects.forEach(p => {
-        if (!p.projectTeam) return;
-        
-        const hasMember = p.projectTeam.some(m => m.email.toLowerCase() === email.toLowerCase() && m.status !== 'removed');
-        
-        if (hasMember) {
-          const updatedTeam = p.projectTeam.map(m => 
-            m.email.toLowerCase() === email.toLowerCase() ? { ...m, status: 'removed' as const } : m
-          );
-          updateProjectTeam(p.id, updatedTeam);
-        }
-      });
+    const emails = bulkEmailInput
+      .split(/[\s,;\n]+/)
+      .map(e => e.trim().toLowerCase())
+      .filter(e => e.includes('@'));
+
+    if (emails.length === 0) {
+      toast.error("Please enter valid email addresses.");
+      return;
+    }
+
+    // Check capacity
+    const currentActiveCount = internalMembers.filter(m => m.status !== 'removed').length;
+    if (currentActiveCount + emails.length > maxSeats) {
+      toast.error(`Cannot invite ${emails.length} users. You have ${maxSeats - currentActiveCount} seats remaining on your current tier.`);
+      return;
+    }
+
+    emails.forEach(email => {
+      const newMember = {
+        id: Math.random().toString(36).substring(2, 9),
+        email,
+        displayName: email.split('@')[0],
+        internalRole: selectedRole,
+        invitedAt: new Date(),
+        status: 'invited' as const,
+        assignedProjectIds: assignProject ? [assignProject] : [],
+      };
       
-      toast.success(`Access revoked for ${email}`);
+      // Zustand store update
+      addTeamMember(newMember);
+
+      // System Log trigger
+      const scopeMsg = enableScopedInvite && assignProject 
+        ? `[Project Ref: ${assignProject}${assignTabOrTask ? ` • Tab: ${assignTabOrTask}` : ''}]` 
+        : `[Global Access]`;
+      
       setTerminalLogs(prev => [
         ...prev,
-        `[${new Date().toLocaleTimeString()}] SEC Revocation complete. Purging auth tokens for: ${email}`
+        `[${new Date().toLocaleTimeString()}] SEC Invite dispatched to: ${email}. Scoped permissions: ${scopeMsg}`
       ]);
-    } catch (err) {
-      console.error("Failed to revoke access:", err);
-      toast.error("Failed to revoke access.");
-    } finally {
-      setTimeout(() => setRevokingEmail(null), 500);
-    }
+    });
+
+    toast.success(`Sent ${emails.length} invitation(s) successfully!`);
+    setBulkEmailInput('');
+    setInviteModalOpen(false);
   };
 
+  const handleRevokeAccess = (memberId: string, email: string) => {
+    removeTeamMember(memberId);
+    toast.success(`Revoked access for ${email}`);
+    setTerminalLogs(prev => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] WARN Terminated session and revoked keys for collaborator: ${email}`
+    ]);
+  };
+
+  const handleToggleSuspend = (memberId: string, email: string, currentStatus: string) => {
+    const suspend = currentStatus !== 'suspended';
+    suspendTeamMember(memberId, suspend);
+    toast.success(suspend ? `Suspended ${email}` : `Reactivated ${email}`);
+    setTerminalLogs(prev => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] INFO Identity ${email} status modified to: ${suspend ? 'SUSPENDED' : 'ACTIVE'}`
+    ]);
+  };
+
+  const handleRoleChange = (memberId: string, role: InternalRole) => {
+    updateMemberRole(memberId, role);
+    toast.success(`Role updated to ${role}`);
+    setTerminalLogs(prev => [
+      ...prev,
+      `[${new Date().toLocaleTimeString()}] SEC Updated identity role mapping for ID ${memberId} to '${role}'`
+    ]);
+  };
+
+  const activeSeatsCount = internalMembers.filter(m => m.status !== 'removed').length;
+
   return (
-    <div className="min-h-full pb-28 md:pb-28 px-4 sm:px-6 max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen pb-20 px-4 sm:px-6 max-w-7xl mx-auto space-y-6 pt-4">
       
       {/* Page Header */}
-      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 relative z-10 pt-4">
+      <header className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
         <div>
-          <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-bold text-on-surface tracking-tight">Team Management</h2>
-            <div className="flex items-center gap-1.5 bg-primary/10 border border-primary/20 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-primary font-mono shadow-[0_0_10px_rgba(69,73,85,0.15)] uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              Node: US-EAST-01 • Stable
-            </div>
-          </div>
-          <p className="text-sm text-on-surface-variant mt-1">
-            Administer roles, monitor access scoping, and manage platform invitations across global nodes.
+          <h2 
+            className="text-[26px] font-bold text-neutral-900 dark:text-neutral-50 tracking-tight"
+            style={{ fontFamily: "'Montserrat', sans-serif" }}
+          >
+            Team Directory & Scopes
+          </h2>
+          <p 
+            className="text-xs text-neutral-500 dark:text-neutral-400 mt-1"
+            style={{ fontFamily: "'Roboto', sans-serif" }}
+          >
+            Manage operator permissions, provision collaboration credentials, and restrict marketplace credentials.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          {isAdmin && (
-            <Link 
-              href="/dashboard/settings/team"
-              className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2.5 rounded-xl flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all shadow-[0_0_15px_-3px_rgba(69, 73, 85,0.4)] cursor-pointer"
+          {accountTier === 'Team' && (
+            <button
+              onClick={() => setInviteModalOpen(true)}
+              className="bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-900 dark:hover:bg-neutral-100 font-medium text-[13px] px-4 py-2 rounded-md flex items-center gap-1.5 transition-all shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-900 dark:focus-visible:ring-neutral-50 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-[20px]">add</span>
-              Provision Access
-            </Link>
+              <Plus className="w-4 h-4" />
+              Invite Team User
+            </button>
           )}
         </div>
       </header>
 
-      {/* Bento Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Column: Active Personnel List (lg:col-span-8) */}
-        <section className="lg:col-span-8 flex flex-col gap-6">
-          <div className="bg-surface-container/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-white/20 to-transparent"></div>
+      {/* Tier & Scoping Control Panel Card */}
+      <section 
+        className="bg-white dark:bg-stone-900 rounded-lg border border-neutral-100 dark:border-neutral-800 shadow-sm shadow-neutral-100/50 dark:shadow-none p-6"
+        style={{ boxShadow: "0 2px 10px rgba(69, 73, 85, 0.02)" }}
+      >
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="space-y-2 max-w-xl">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500">
+                Subscription Tier
+              </span>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${
+                accountTier === 'Team' 
+                  ? 'bg-purple-50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900/50 text-purple-600 dark:text-purple-400' 
+                  : 'bg-neutral-50 dark:bg-neutral-800 border-neutral-100 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400'
+              }`}>
+                {accountTier} Active
+              </span>
+            </div>
             
-            {/* Header row with search */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <h3 className="font-headline-md text-[20px] text-on-surface flex items-center gap-2.5 font-bold">
-                <span className="material-symbols-outlined text-primary text-[22px]">badge</span>
-                Active Personnel
-              </h3>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                <input 
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search identities..." 
-                  className="bg-black/20 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg py-1.5 pl-9 pr-4 text-xs text-on-surface w-full sm:w-64 transition-all placeholder:text-on-surface-variant/40 outline-none"
-                />
-              </div>
-            </div>
+            <h3 
+              className="text-lg font-bold text-neutral-900 dark:text-neutral-50"
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
+              {accountTier === 'Team' ? 'Investment Team Workspace' : 'Investor Individual Plan'}
+            </h3>
+            
+            <p className="text-[12px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+              {accountTier === 'Team' 
+                ? 'Your account supports up to 10 team seats. Invited members are sandboxed to your projects and cannot create standalone deals. You can configure granular roles inline.' 
+                : 'Your current account is set up for a single operator. To collaborate with other deal underwriters, appraisers, or general contractors, upgrade to the Investment Team plan.'}
+            </p>
+          </div>
 
-            {/* Custom Table Row Layout */}
-            <div className="flex flex-col gap-1">
-              
-              {/* Header Row */}
-              <div className="grid grid-cols-12 gap-4 px-4 py-2 font-label-sm text-[10px] text-on-surface-variant uppercase tracking-wider border-b border-white/5 pb-3">
-                <div className="col-span-5 sm:col-span-4">Identity</div>
-                <div className="col-span-4 sm:col-span-3">Designation</div>
-                <div className="col-span-3 sm:col-span-2">State</div>
-                <div className="col-span-12 sm:col-span-3 text-left sm:text-right hidden sm:block">Access Scope</div>
-              </div>
-
-              {activePersonnel.length === 0 ? (
-                <div className="py-12 text-center text-on-surface-variant/50">
-                  <UserCircle className="w-10 h-10 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">No active personnel matching query.</p>
+          <div className="w-full md:w-auto flex flex-col items-stretch md:items-end gap-3 self-stretch md:self-auto justify-between border-t md:border-t-0 border-neutral-100 dark:border-neutral-800 pt-4 md:pt-0">
+            {accountTier === 'Team' ? (
+              <div className="space-y-1.5 w-full md:w-56">
+                <div className="flex justify-between text-[11px] font-medium text-neutral-600 dark:text-neutral-400">
+                  <span>Workspace Seat Capacity</span>
+                  <span className="font-mono">{activeSeatsCount} / 10 Seats Used</span>
                 </div>
-              ) : (
-                activePersonnel.map(member => {
-                  const initials = member.displayName
-                    .split(' ')
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .slice(0, 2) || member.email[0].toUpperCase();
-
-                  const isInternal = member.type === 'Internal';
-                  const isSuspended = member.status === 'suspended';
-
-                  return (
-                    <div 
-                      key={member.email} 
-                      className="grid grid-cols-12 gap-4 items-center px-4 py-3.5 rounded-xl hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/5 cursor-default group/row"
-                    >
-                      {/* Identity */}
-                      <div className="col-span-5 sm:col-span-4 flex items-center gap-3">
-                        <div 
-                          className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold border flex-shrink-0 transition-transform ${
-                            isInternal
-                              ? 'bg-primary/10 border-primary/20 text-primary shadow-[0_0_10px_rgba(69,73,85,0.1)]'
-                              : 'bg-white/5 border-white/10 text-on-surface-variant'
-                          }`}
-                        >
-                          {initials}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-label-md text-sm text-on-surface group-hover/row:text-primary transition-colors truncate font-semibold">
-                            {member.displayName}
-                          </p>
-                          <p className="text-[10px] text-on-surface-variant font-mono truncate">
-                            ID: AUTH-0{member.id.charCodeAt(member.id.length - 1) % 100 || '00'}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Designation / Role */}
-                      <div className="col-span-4 sm:col-span-3">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
-                          isInternal 
-                            ? 'bg-primary/10 border-primary/20 text-primary' 
-                            : 'bg-secondary-container/10 border-secondary-container/20 text-secondary'
-                        }`}>
-                          {member.role}
-                        </span>
-                      </div>
-
-                      {/* State */}
-                      <div className="col-span-3 sm:col-span-2">
-                        <div className="flex items-center gap-1.5">
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            isSuspended 
-                              ? 'bg-error shadow-[0_0_5px_rgba(255,180,171,0.8)] animate-pulse' 
-                              : 'bg-primary shadow-[0_0_5px_rgba(69,73,85,0.8)]'
-                          }`} />
-                          <span className="text-xs text-on-surface">{isSuspended ? 'Suspended' : 'Active'}</span>
-                        </div>
-                      </div>
-
-                      {/* Access Scope (Desktop view only, wraps down on mobile) */}
-                      <div className="col-span-12 sm:col-span-3 flex items-center justify-start sm:justify-end gap-2 mt-2 sm:mt-0">
-                        <div className="flex items-center gap-1">
-                          {isInternal ? (
-                            <>
-                              <span className="w-5 h-5 rounded bg-white/5 border border-white/5 flex items-center justify-center text-on-surface-variant text-[10px] font-bold font-mono" title="Global Scope">G</span>
-                              <span className="w-5 h-5 rounded bg-white/5 border border-white/5 flex items-center justify-center text-on-surface-variant text-[10px] font-bold font-mono" title="All Projects">A</span>
-                            </>
-                          ) : (
-                            member.assignedProjects.slice(0, 3).map((projId, index) => {
-                              const proj = projects.find(p => p.id === projId);
-                              const letter = proj?.propertyName?.[0]?.toUpperCase() || 'P';
-                              return (
-                                <span 
-                                  key={projId} 
-                                  className="w-5 h-5 rounded bg-white/5 border border-white/5 flex items-center justify-center text-on-surface-variant text-[10px] font-bold font-mono"
-                                  title={proj?.propertyName || 'Project Access'}
-                                >
-                                  {letter}
-                                </span>
-                              );
-                            })
-                          )}
-                          {member.assignedProjects.length > 3 && (
-                            <span className="text-[10px] text-on-surface-variant px-1 font-mono">+{member.assignedProjects.length - 3}</span>
-                          )}
-                        </div>
-
-                        {/* Revoke / Manage button actions */}
-                        <div className="flex items-center gap-1.5 ml-2 border-l border-white/10 pl-2">
-                          {member.type === 'External' ? (
-                            <button
-                              onClick={() => handleRevokeExternalAccess(member.email)}
-                              disabled={!isAdmin || revokingEmail === member.email}
-                              className="text-[10px] font-bold uppercase tracking-wider text-error hover:underline disabled:opacity-30 transition-all cursor-pointer"
-                              title="Revoke collaborator access"
-                            >
-                              {revokingEmail === member.email ? 'Revoking...' : 'Revoke'}
-                            </button>
-                          ) : (
-                            <Link
-                              href="/dashboard/settings/team"
-                              className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors"
-                              title="Configure internal user permissions"
-                            >
-                              Manage
-                            </Link>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-
-            {/* Load Additional Nodes */}
-            <div className="mt-4 pt-4 border-t border-white/5 flex justify-center">
-              <button 
-                onClick={() => toast.success('All available node operators loaded.')} 
-                className="font-label-md text-xs text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 bg-transparent border-none cursor-pointer"
+                <div className="h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-neutral-900 dark:bg-neutral-50 rounded-full transition-all duration-300"
+                    style={{ width: `${(activeSeatsCount / 10) * 100}%` }}
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    setAccountTier('Individual');
+                    toast.success("Downgraded to Individual. Team members purged.");
+                  }}
+                  className="text-[11px] font-semibold text-red-500 dark:text-red-400 hover:underline text-left mt-2 block cursor-pointer"
+                >
+                  Downgrade to Individual Tier
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setAccountTier('Team');
+                  toast.success("Upgraded to Investment Team Plan. 10 seats unlocked.");
+                }}
+                className="bg-neutral-950 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 font-semibold text-[13px] py-2 px-5 rounded-md flex items-center justify-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-neutral-900 cursor-pointer"
               >
-                Load Additional Nodes <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
+                Upgrade to Investment Team
               </button>
+            )}
+          </div>
+        </div>
+
+        {/* Warning Alerts / Info Badges */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex items-start gap-2.5 bg-neutral-50 dark:bg-neutral-800/40 p-3.5 rounded-md border border-neutral-100 dark:border-neutral-800">
+            <Info className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block">
+                Vendor Marketplace Policy
+              </span>
+              <p className="text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+                To list services on the Vendor Marketplace, operators must purchase and subscribe to their own independent account. Corporate accounts do not extend listing privileges to invited team seats.
+              </p>
             </div>
           </div>
-        </section>
 
-        {/* Right Column: Invitations & Live Logs (lg:col-span-4) */}
+          <div className="flex items-start gap-2.5 bg-neutral-50 dark:bg-neutral-800/40 p-3.5 rounded-md border border-neutral-100 dark:border-neutral-800">
+            <Lock className="w-4 h-4 text-neutral-400 dark:text-neutral-500 shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block">
+                Scoped Access Lock
+              </span>
+              <p className="text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+                Invited team members cannot create separate projects or organizations. They can only contribute to assets and folders under the inviter's organization workspace.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Roster Table */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left Column: Personnel Table (lg:col-span-8) */}
+        <div className="lg:col-span-8 bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-sm shadow-neutral-100/50 dark:shadow-none p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-neutral-500" />
+              <h3 
+                className="text-base font-bold text-neutral-900 dark:text-neutral-50"
+                style={{ fontFamily: "'Montserrat', sans-serif" }}
+              >
+                Roster
+              </h3>
+            </div>
+            
+            <div className="relative w-full sm:w-64">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <input 
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name, email, or role..." 
+                className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md pl-9 pr-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 placeholder:text-neutral-400"
+              />
+            </div>
+          </div>
+
+          <div className="overflow-x-auto relative min-h-[300px]">
+            <table className="w-full text-left border-collapse min-w-[650px]">
+              <thead>
+                <tr className="border-b border-neutral-100 dark:border-neutral-800 text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider">
+                  <th className="px-4 py-3">Member</th>
+                  <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Last Active</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800 text-[13px] text-neutral-700 dark:text-neutral-300">
+                {activePersonnel.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-neutral-400 dark:text-neutral-500">
+                      <UserCircle className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                      <p className="text-[12px]">No active operators matched your search.</p>
+                    </td>
+                  </tr>
+                ) : (
+                  activePersonnel.map(member => {
+                    const initials = member.displayName
+                      .split(' ')
+                      .map(n => n[0])
+                      .join('')
+                      .toUpperCase()
+                      .slice(0, 2) || member.email[0].toUpperCase();
+
+                    const isInternal = member.type === 'Internal';
+                    const isSuspended = member.status === 'suspended';
+                    const isCurrentUser = member.email === profile?.email;
+
+                    // Role badge styling
+                    let badgeClass = "bg-neutral-100 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400";
+                    if (isInternal) {
+                      if (member.role === 'CEO' || member.role === 'President' || member.role === 'Admin') {
+                        badgeClass = "bg-purple-50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900/50 text-purple-600 dark:text-purple-400";
+                      } else {
+                        badgeClass = "bg-blue-50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900/50 text-blue-600 dark:text-blue-400";
+                      }
+                    }
+
+                    return (
+                      <tr 
+                        key={member.email}
+                        className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors"
+                      >
+                        {/* Member Identity */}
+                        <td className="px-4 py-3.5">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-semibold text-[11px] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                              {initials}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-semibold text-neutral-900 dark:text-neutral-50 truncate leading-none mb-1">
+                                {member.displayName} {isCurrentUser && <span className="font-normal text-[10px] text-neutral-400 dark:text-neutral-500">(you)</span>}
+                              </p>
+                              <p className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono truncate leading-none">
+                                {member.email}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Inline Role Editing */}
+                        <td className="px-4 py-3.5">
+                          {isInternal && !isCurrentUser && isAdmin ? (
+                            <div className="relative inline-block select-wrapper">
+                              <select
+                                value={member.role}
+                                onChange={(e) => handleRoleChange(member.id, e.target.value as InternalRole)}
+                                onMouseEnter={() => setHoveredRoleTooltip(member.id)}
+                                onMouseLeave={() => setHoveredRoleTooltip(null)}
+                                className="appearance-none font-semibold text-[11px] uppercase tracking-wider pl-2 pr-6 py-0.5 rounded border focus:outline-none cursor-pointer focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 transition-colors bg-white dark:bg-stone-900 border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200"
+                              >
+                                <option value="CEO">CEO</option>
+                                <option value="President">President</option>
+                                <option value="CFO">CFO</option>
+                                <option value="COO">COO</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Deal Lead">Deal Lead</option>
+                              </select>
+                              <ChevronDown className="w-3 h-3 absolute right-1.5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+
+                              {/* Tooltip on hovered role select */}
+                              {hoveredRoleTooltip === member.id && (
+                                <div className="absolute left-0 bottom-full mb-1.5 w-64 bg-white dark:bg-stone-800 border border-neutral-100 dark:border-neutral-700 p-2.5 rounded shadow-lg z-50 text-[11px] text-neutral-500 dark:text-neutral-300">
+                                  <strong className="text-neutral-800 dark:text-neutral-100 block mb-0.5">{member.role} Role Permissions:</strong>
+                                  {ROLE_PERMISSIONS[member.role as InternalRole]}
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${badgeClass}`}>
+                                {member.role}
+                              </span>
+                              
+                              {isInternal && (
+                                <div className="group relative">
+                                  <Info className="w-3 h-3 text-neutral-400 hover:text-neutral-600 cursor-pointer" />
+                                  <div className="absolute left-0 bottom-full mb-1.5 w-56 bg-white dark:bg-stone-800 border border-neutral-100 dark:border-neutral-700 p-2 rounded shadow-md hidden group-hover:block z-50 text-[10px] text-neutral-500 dark:text-neutral-300 leading-normal">
+                                    {ROLE_PERMISSIONS[member.role as InternalRole] || 'Scoped collaborator permissions.'}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Status Column */}
+                        <td className="px-4 py-3.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              isSuspended ? 'bg-red-500' : 'bg-green-500'
+                            }`} />
+                            <span className="text-[12px] font-medium">
+                              {isSuspended ? 'Suspended' : 'Active'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Last Active */}
+                        <td className="px-4 py-3.5 font-mono text-[11px] text-neutral-400 dark:text-neutral-500">
+                          {member.lastActive}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-4 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-3">
+                            {!isCurrentUser && isAdmin && isInternal && (
+                              <>
+                                <button
+                                  onClick={() => handleToggleSuspend(member.id, member.email, member.status)}
+                                  className="text-[11px] font-semibold text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 cursor-pointer"
+                                >
+                                  {isSuspended ? 'Reactivate' : 'Suspend'}
+                                </button>
+                                <button
+                                  onClick={() => handleRevokeAccess(member.id, member.email)}
+                                  className="text-[11px] font-semibold text-red-500 hover:text-red-700 cursor-pointer"
+                                  title="Remove from organization"
+                                >
+                                  Remove
+                                </button>
+                              </>
+                            )}
+
+                            {!isInternal && isAdmin && (
+                              <button
+                                onClick={() => handleRevokeAccess(member.id, member.email)}
+                                className="text-[11px] font-semibold text-red-500 hover:text-red-700 cursor-pointer"
+                                title="Revoke collaborator access"
+                              >
+                                Revoke
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Right Column: Pending Invites & Audit logs (lg:col-span-4) */}
         <aside className="lg:col-span-4 flex flex-col gap-6">
           
           {/* Pending Invitations Card */}
-          <div className="bg-surface-container-low/50 backdrop-blur-md border border-white/5 rounded-2xl p-5 shadow-lg relative">
-            <h3 className="font-label-md text-sm text-on-surface mb-4 flex items-center gap-2 font-bold">
-              <span className="material-symbols-outlined text-tertiary text-[18px]">forward_to_inbox</span>
+          <div className="bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-sm shadow-neutral-100/50 dark:shadow-none p-5">
+            <h3 
+              className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-4 flex items-center gap-2"
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
+              <Mail className="w-4 h-4 text-neutral-500" />
               Pending Invitations
             </h3>
-            
-            <div className="flex flex-col gap-2.5">
+
+            <div className="space-y-3">
               {pendingInvitations.length === 0 ? (
-                <div className="py-8 text-center text-on-surface-variant/40 text-xs">
-                  No pending invitations sent.
+                <div className="text-center py-8 text-[12px] text-neutral-400 dark:text-neutral-500">
+                  No pending invites found.
                 </div>
               ) : (
                 pendingInvitations.map(invite => (
                   <div 
                     key={invite.email} 
-                    className="bg-surface-container rounded-xl p-3 border border-white/[0.02] flex items-center justify-between group hover:border-white/10 transition-colors"
+                    className="p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded border border-neutral-100 dark:border-neutral-800 flex items-center justify-between gap-3 group"
                   >
-                    <div className="min-w-0">
-                      <p className="font-label-sm text-xs text-on-surface truncate font-semibold">{invite.email}</p>
-                      <p className="text-[9px] text-on-surface-variant font-mono mt-0.5 uppercase tracking-wide">
-                        Role: {invite.role} • Invited
+                    <div className="min-w-0 space-y-0.5">
+                      <p className="text-xs font-semibold text-neutral-800 dark:text-neutral-100 truncate">
+                        {invite.email}
                       </p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-[9px] font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-1 rounded">
+                          {invite.role}
+                        </span>
+                        <span className="text-[9px] font-medium text-amber-600 dark:text-amber-500">
+                          Expires in 48h
+                        </span>
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+
+                    <div className="flex items-center gap-1 shrink-0">
                       <button 
                         onClick={() => {
-                          toast.success(`Invitation resent to ${invite.email}`);
+                          toast.success(`Registration email resent to ${invite.email}`);
                           setTerminalLogs(prev => [
                             ...prev,
-                            `[${new Date().toLocaleTimeString()}] INFO Resent registration link to collaborator: ${invite.email}`
+                            `[${new Date().toLocaleTimeString()}] INFO Resent registration scope link to collaborator: ${invite.email}`
                           ]);
                         }} 
-                        className="w-7 h-7 rounded bg-white/5 hover:bg-primary/10 hover:text-primary text-on-surface-variant flex items-center justify-center transition-colors border border-transparent hover:border-primary/20"
-                        title="Resend Invitation"
+                        className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors border border-transparent cursor-pointer"
+                        title="Resend Invite"
                       >
                         <RefreshCw className="w-3.5 h-3.5" />
                       </button>
                       <button 
-                        onClick={() => handleRevokeExternalAccess(invite.email)} 
-                        className="w-7 h-7 rounded bg-white/5 hover:bg-error/10 hover:text-error text-on-surface-variant flex items-center justify-center transition-colors border border-transparent hover:border-error/20"
-                        title="Revoke Invitation"
+                        onClick={() => handleRevokeAccess(invite.id, invite.email)} 
+                        className="p-1 rounded hover:bg-red-50 dark:hover:bg-red-950/20 text-neutral-500 hover:text-red-600 transition-colors border border-transparent cursor-pointer"
+                        title="Cancel Invitation"
                       >
-                        <XCircle className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
@@ -412,66 +662,167 @@ export default function TeamDirectoryPage() {
             </div>
           </div>
 
-          {/* Simulated Terminal Widget */}
-          <div className="bg-[#03080b] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex-1 min-h-[300px] flex flex-col relative font-mono">
-            
-            {/* Terminal Tab Header */}
-            <div className="bg-surface-container-low px-4 py-2 border-b border-white/5 flex items-center justify-between shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[16px]">code</span>
-                <span className="text-[11px] text-on-surface-variant font-medium">system_log.sh</span>
+          {/* Security & System Logs Console */}
+          <div className="bg-[#1c1917] dark:bg-black rounded-lg border border-neutral-800 shadow-xl p-4 min-h-[280px] flex flex-col font-mono text-[11px] leading-relaxed text-zinc-300">
+            <div className="flex justify-between items-center pb-2 mb-3 border-b border-zinc-800 shrink-0 text-zinc-500">
+              <div className="flex items-center gap-1.5">
+                <History className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Security Access Log</span>
               </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-white/10"></div>
-                <div className="w-2 h-2 rounded-full bg-white/10"></div>
-                <div className="w-2 h-2 rounded-full bg-white/10"></div>
-              </div>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             </div>
 
-            {/* Terminal Output */}
-            <div className="p-4 text-[11px] leading-relaxed text-primary/80 overflow-y-auto flex-1 h-[240px]">
-              {terminalLogs.map((log, idx) => {
-                let colorClass = "text-primary/70";
-                if (log.includes("WARN")) colorClass = "text-amber-400";
-                if (log.includes("SEC")) colorClass = "text-primary font-bold";
+            <div className="flex-1 overflow-y-auto space-y-1 h-[200px]">
+              {terminalLogs.map((log, index) => {
+                let statusClr = "text-zinc-400";
+                if (log.includes("WARN")) statusClr = "text-amber-400";
+                if (log.includes("SEC")) statusClr = "text-purple-400 font-semibold";
                 return (
-                  <p key={idx} className={`mb-1 break-all ${colorClass}`}>
+                  <p key={index} className={`break-all ${statusClr}`}>
                     {log}
                   </p>
                 );
               })}
-              <p className="flex items-center gap-1.5 mt-3 text-primary">
+              <p className="flex items-center gap-1 text-emerald-400 pt-2">
                 <span>admin@paperworking:~$</span>
-                <span className="w-1.5 h-3 bg-primary animate-pulse inline-block"></span>
+                <span className="w-1.5 h-3 bg-emerald-400 animate-pulse inline-block" />
               </p>
             </div>
           </div>
 
         </aside>
+      </section>
 
-      </div>
+      {/* Invite Modal Dialog Overlay */}
+      {inviteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div 
+            className="w-full max-w-lg bg-white dark:bg-stone-900 border border-neutral-100 dark:border-neutral-800 rounded-lg shadow-2xl p-6 relative animate-in fade-in zoom-in-95 duration-150"
+            style={{ fontFamily: "'Roboto', sans-serif" }}
+          >
+            {/* Modal Close Button */}
+            <button 
+              onClick={() => setInviteModalOpen(false)}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-100 focus-visible:ring-2 focus-visible:ring-neutral-900 rounded cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-      {/* Terminal System Status Footer */}
-      <footer className="mt-8 border-t border-white/5 pt-6 hidden lg:block">
-        <div className="grid grid-cols-4 gap-4">
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
-            <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Session Key</p>
-            <p className="text-xs text-primary font-mono font-semibold truncate">A9-F2-B4-E1-00-PW-SEC-KEY</p>
-          </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
-            <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Active Instances</p>
-            <p className="text-xs text-primary font-mono font-semibold">{unifiedTeam.filter(m => m.status === 'active').length} Operators Online</p>
-          </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
-            <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Data Sovereignty</p>
-            <p className="text-xs text-primary font-mono font-semibold">AES-256 E2EE Enabled</p>
-          </div>
-          <div className="glass-card p-3 rounded-xl border border-white/5 bg-[#0d0a0b]/40">
-            <p className="text-[9px] uppercase tracking-wider text-on-surface-variant font-mono font-bold mb-1">Last Audit</p>
-            <p className="text-xs text-primary font-mono font-semibold">{new Date().toISOString().slice(0,10).replace(/-/g,'.')} {new Date().toTimeString().slice(0,8)}</p>
+            {/* Modal Title */}
+            <h3 
+              className="text-[18px] font-bold text-neutral-900 dark:text-neutral-50 mb-1"
+              style={{ fontFamily: "'Montserrat', sans-serif" }}
+            >
+              Invite Operators & Collaborators
+            </h3>
+            
+            <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mb-4 leading-normal">
+              Enter email addresses to provision workspace credentials. Seats invited count towards your 10-operator cap.
+            </p>
+
+            <form onSubmit={handleSendInvites} className="space-y-4">
+              {/* Emails Input */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                  Email Addresses
+                </label>
+                <textarea
+                  value={bulkEmailInput}
+                  onChange={(e) => setBulkEmailInput(e.target.value)}
+                  placeholder="name@company.com, partner@fund.com (separated by commas or newlines)"
+                  rows={3}
+                  className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-neutral-900 dark:focus:ring-neutral-100 placeholder:text-neutral-400 resize-none"
+                />
+              </div>
+
+              {/* Initial Role Select */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                  Initial Role assignment
+                </label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value as InternalRole)}
+                  className="w-full bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-xs rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                >
+                  <option value="Deal Lead">Deal Lead (Analyst/Underwriter)</option>
+                  <option value="COO">COO (Operations & Task Manager)</option>
+                  <option value="CFO">CFO (Financials & Underwriting Approver)</option>
+                  <option value="Admin">Admin (Access Configurator)</option>
+                  <option value="President">President (Platform Executive)</option>
+                  <option value="CEO">CEO (Primary Operator)</option>
+                </select>
+              </div>
+
+              {/* Scoped Invite Option (Lead Investor feature) */}
+              <div className="border-t border-neutral-100 dark:border-neutral-800 pt-3 space-y-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="scoped-checkbox"
+                    checked={enableScopedInvite}
+                    onChange={(e) => setEnableScopedInvite(e.target.checked)}
+                    className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900 h-4 w-4 cursor-pointer"
+                  />
+                  <label htmlFor="scoped-checkbox" className="text-[12px] font-semibold text-neutral-700 dark:text-neutral-300 cursor-pointer">
+                    Apply direct task or project underwriting scope restriction
+                  </label>
+                </div>
+
+                {enableScopedInvite && (
+                  <div className="grid grid-cols-2 gap-3 p-3 bg-neutral-50 dark:bg-neutral-800/40 rounded border border-neutral-100 dark:border-neutral-800">
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        Restrict to Project
+                      </label>
+                      <select
+                        value={assignProject}
+                        onChange={(e) => setAssignProject(e.target.value)}
+                        className="w-full bg-white border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-[10px] rounded p-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                      >
+                        <option value="">Select Target Project</option>
+                        {projects.map(p => (
+                          <option key={p.id} value={p.id}>{p.propertyName}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        Assign to Tab or Task
+                      </label>
+                      <input
+                        type="text"
+                        value={assignTabOrTask}
+                        onChange={(e) => setAssignTabOrTask(e.target.value)}
+                        placeholder="e.g. Underwriting tab, Task ID"
+                        className="w-full bg-white border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700 text-[10px] rounded p-1.5 focus:outline-none focus:ring-1 focus:ring-neutral-900"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit CTA */}
+              <div className="flex justify-end gap-3 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+                <button
+                  type="button"
+                  onClick={() => setInviteModalOpen(false)}
+                  className="px-4 py-2 border border-neutral-200 dark:border-neutral-700 rounded-md text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-neutral-900 text-neutral-50 dark:bg-neutral-50 dark:text-neutral-900 hover:opacity-90 rounded-md text-xs font-semibold transition-all cursor-pointer"
+                >
+                  Send Invitations
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-      </footer>
+      )}
 
     </div>
   );

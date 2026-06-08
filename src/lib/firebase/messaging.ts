@@ -51,6 +51,37 @@ export async function requestPushPermissionAndGetToken(): Promise<string | null>
     });
     console.log('[FCM Client] Service Worker registered with scope:', registration.scope);
 
+    // Wait for the service worker registration to transition to 'activated' state if it isn't already
+    await new Promise<void>((resolve) => {
+      if (registration.active && registration.active.state === 'activated') {
+        resolve();
+        return;
+      }
+
+      const worker = registration.installing || registration.waiting || registration.active;
+      if (!worker) {
+        resolve();
+        return;
+      }
+
+      if (worker.state === 'activated') {
+        resolve();
+        return;
+      }
+
+      const stateChangeListener = () => {
+        if (worker.state === 'activated') {
+          worker.removeEventListener('statechange', stateChangeListener);
+          resolve();
+        } else if (worker.state === 'redundant') {
+          worker.removeEventListener('statechange', stateChangeListener);
+          resolve();
+        }
+      };
+
+      worker.addEventListener('statechange', stateChangeListener);
+    });
+
     // 4. Retrieve token from FCM
     const messagingClient = getClientMessaging();
     if (!messagingClient) return null;

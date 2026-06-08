@@ -1,10 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
+import { useAuth } from "@/context/AuthContext";
+import { useInboxFeed } from "@/hooks/useInboxFeed";
+import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { ActivePipeline } from "./ActivePipeline";
 import { TerminalAuditFeed } from "./TerminalAuditFeed";
 import { MarketHeatmap } from "./MarketHeatmap";
@@ -485,6 +488,429 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
   );
 }
 
+// ─── User Avatar & Profile Card ───────────────────────────────────────────────
+
+interface AvatarProps {
+  photoURL?: string | null;
+  displayName?: string | null;
+  email?: string | null;
+  size?: number;
+  isDark: boolean;
+}
+
+function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarProps) {
+  const [imgError, setImgError] = useState(false);
+
+  const initials = displayName
+    ? displayName.charAt(0).toUpperCase()
+    : email
+    ? email.charAt(0).toUpperCase()
+    : "U";
+
+  if (photoURL && !imgError) {
+    return (
+      <img
+        src={photoURL}
+        alt={displayName ?? "User avatar"}
+        width={size}
+        height={size}
+        onError={() => setImgError(true)}
+        className="rounded-full object-cover flex-shrink-0"
+        style={{ width: size, height: size }}
+        referrerPolicy="no-referrer"
+      />
+    );
+  }
+
+  return (
+    <span
+      className="rounded-full flex items-center justify-center flex-shrink-0 font-bold"
+      style={{
+        width: size,
+        height: size,
+        fontSize: size * 0.4,
+        background: isDark
+          ? "linear-gradient(135deg, rgba(69,73,85,0.8) 0%, rgba(110,116,128,0.6) 100%)"
+          : "linear-gradient(135deg, rgba(69,73,85,0.15) 0%, rgba(110,116,128,0.25) 100%)",
+        color: isDark ? "rgba(253,255,252,0.92)" : "rgba(69,73,85,0.9)",
+      }}
+    >
+      {initials}
+    </span>
+  );
+}
+
+function ProfileCard({ isDark }: { isDark: boolean }) {
+  const { user, profile } = useAuth();
+  const projects = useProjectStore((s) => s.projects);
+  const t = tokens(isDark);
+  
+  const activeCount = projects.filter(p => p.status !== 'Sold').length;
+  const pastCount = projects.filter(p => p.status === 'Sold').length;
+  
+  // Mock followers/following counts
+  const followersCount = 142;
+  const followingCount = 98;
+
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+      <div className="flex items-start gap-4">
+        {/* Avatar */}
+        <div className="relative">
+          <UserAvatar
+            photoURL={user?.photoURL}
+            displayName={profile?.displayName ?? user?.displayName}
+            email={user?.email}
+            size={64}
+            isDark={isDark}
+          />
+          {/* Active status pulse */}
+          <span className="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full ring-2 ring-white bg-[#5aaa3f]" />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <h2 className="text-[18px] font-bold truncate tracking-tight text-left" style={{ color: t.heading, fontFamily: "'Montserrat', sans-serif" }}>
+            {profile?.displayName || user?.displayName || "Real Estate Investor"}
+          </h2>
+          <p className="text-[12px] capitalize text-left" style={{ color: t.subtext }}>
+            {profile?.role || "Portfolio Manager"}
+          </p>
+          <div className="flex gap-4 mt-3">
+            <div className="text-center">
+              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{followersCount}</span>
+              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Followers</span>
+            </div>
+            <div className="text-center">
+              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{followingCount}</span>
+              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Following</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t" style={{ borderColor: t.divider }}>
+        <div className="p-3 rounded-lg border text-center" style={{ borderColor: t.panelBorder, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)" }}>
+          <span className="text-[20px] font-bold font-mono block" style={{ color: t.heading }}>{activeCount}</span>
+          <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Active Projects</span>
+        </div>
+        <div className="p-3 rounded-lg border text-center" style={{ borderColor: t.panelBorder, background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)" }}>
+          <span className="text-[20px] font-bold font-mono block" style={{ color: t.heading }}>{pastCount}</span>
+          <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Past Projects</span>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Earnings & Losses Card ───────────────────────────────────────────────────
+
+function EarningsLossesCard({ isDark, kpis }: { isDark: boolean; kpis: PortfolioKPIs }) {
+  const projects = useProjectStore((s) => s.projects);
+  const t = tokens(isDark);
+
+  const { totalCapital, totalValue, totalEquityProfit } = useMemo(() => {
+    let cap = 0;
+    let val = 0;
+    projects.forEach(p => {
+      const f = p.financials;
+      if (!f) return;
+      const purchasePrice = f.purchasePrice ?? f.targetPrice ?? 0;
+      const currentVal = f.estimatedCurrentValue ?? f.estimatedARV ?? purchasePrice;
+      const loanAmount = f.loanAmount ?? 0;
+      cap += (purchasePrice - loanAmount);
+      val += currentVal;
+    });
+    return {
+      totalCapital: cap,
+      totalValue: val,
+      totalEquityProfit: val - cap > 0 ? val - cap : 0
+    };
+  }, [projects]);
+
+  const profitVal = totalEquityProfit > 0 ? fmtCompact(totalEquityProfit) : "—";
+  const roiPct = totalCapital > 0 ? ((totalValue - totalCapital) / totalCapital * 100) : null;
+  const isLoss = totalValue < totalCapital;
+
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+            Portfolio Equity & Earnings
+          </span>
+          <span className="material-symbols-outlined text-[20px]" style={{ color: isLoss ? "#F06543" : "#5aaa3f" }}>
+            {isLoss ? "trending_down" : "trending_up"}
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Total Portfolio Value</span>
+            <span className="text-[2.2rem] font-bold block leading-tight font-mono text-left" style={{ color: t.heading }}>
+              {fmtCompact(totalValue)}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Capital Invested</span>
+              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: t.heading }}>
+                {fmtCompact(totalCapital)}
+              </span>
+            </div>
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-left block" style={{ color: t.muted }}>Net Equity Profit</span>
+              <span className="text-[16px] font-bold font-mono text-left block" style={{ color: isLoss ? "#F06543" : "#5aaa3f" }}>
+                {isLoss ? "-" : "+"}{profitVal}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 pt-4 border-t flex items-center justify-between" style={{ borderColor: t.divider }}>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Equity Growth ROI</span>
+          {roiPct !== null && (
+            <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
+              background: isLoss ? "rgba(240, 101, 67, 0.12)" : "rgba(90, 170, 63, 0.12)",
+              color: isLoss ? "#F06543" : "#5aaa3f"
+            }}>
+              {roiPct.toFixed(1)}%
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] uppercase tracking-wider" style={{ color: t.muted }}>Blended IRR</span>
+          <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded-full" style={{
+            background: "rgba(50, 121, 249, 0.12)",
+            color: "#3279F9"
+          }}>
+            {kpis.irr !== null ? `${kpis.irr.toFixed(1)}%` : "—"}
+          </span>
+        </div>
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Recent Messages Widget ───────────────────────────────────────────────────
+
+function RecentMessagesWidget({ isDark }: { isDark: boolean }) {
+  const { items, loading } = useInboxFeed();
+  const t = tokens(isDark);
+  
+  const recentMessages = useMemo(() => {
+    return items.slice(0, 3);
+  }, [items]);
+
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+      <div className="w-full">
+        <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "#3279F9" }}>
+              inbox
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+              Recent Messages
+            </span>
+          </div>
+          <Link href="/dashboard/inbox" className="text-[11px] font-semibold transition-opacity duration-150 hover:opacity-75" style={{ color: t.link }}>
+            View All →
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="py-8 text-center text-xs" style={{ color: t.muted }}>
+            Loading messages...
+          </div>
+        ) : recentMessages.length === 0 ? (
+          <div className="py-8 text-center text-xs" style={{ color: t.muted }}>
+            No recent messages.
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {recentMessages.map((msg) => (
+              <Link 
+                key={msg.id}
+                href={msg.deepLinkUrl || "/dashboard/inbox"} 
+                className="block p-3 rounded-lg border transition-all duration-150 hover:border-[#3279F9]/50 relative group text-left"
+                style={{
+                  borderColor: t.panelBorder,
+                  background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
+                }}
+              >
+                <div className="flex justify-between items-start gap-2 mb-1">
+                  <span className="text-[11px] font-bold truncate max-w-[120px]" style={{ color: t.heading }}>
+                    {msg.actor?.name || "System"}
+                  </span>
+                  <span className="text-[9px] font-mono whitespace-nowrap" style={{ color: t.muted }}>
+                    {new Date(msg.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+                <h4 className="text-[12px] font-semibold truncate" style={{ color: t.heading }}>
+                  {msg.title}
+                </h4>
+                <p className="text-[11px] truncate mt-0.5" style={{ color: t.subtext }}>
+                  {msg.body}
+                </p>
+                {!msg.read && (
+                  <span className="absolute top-2.5 right-2 w-1.5 h-1.5 rounded-full bg-[#3279F9]" />
+                )}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+// ─── Assigned Tasks Checklist ─────────────────────────────────────────────────
+
+function AssignedTasksChecklist({ isDark }: { isDark: boolean }) {
+  const projects = useProjectStore((s) => s.projects);
+  const updateProjectActionItems = useProjectStore((s) => s.updateProjectActionItems);
+  const { user, profile } = useAuth();
+  const t = tokens(isDark);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const currentUserEmail = profile?.email || user?.email || '';
+
+  const assignedTasks = useMemo(() => {
+    if (!currentUserEmail) return [];
+    const tasks: Array<{ projectId: string; propertyName: string; task: any }> = [];
+    projects.forEach((proj) => {
+      if (proj.actionItems && Array.isArray(proj.actionItems)) {
+        proj.actionItems.forEach((todo) => {
+          if (todo.assignee === currentUserEmail && !todo.completed) {
+            tasks.push({
+              projectId: proj.id,
+              propertyName: proj.propertyName || proj.name || 'Unnamed Project',
+              task: todo
+            });
+          }
+        });
+      }
+    });
+    return tasks;
+  }, [projects, currentUserEmail]);
+
+  const handleToggle = async (projectId: string, taskId: string) => {
+    if (!user || togglingId) return;
+    setTogglingId(taskId);
+
+    const deal = projects.find(p => p.id === projectId);
+    if (!deal) {
+      setTogglingId(null);
+      return;
+    }
+
+    const existingTodos = deal.actionItems || [];
+    const updatedTodos = existingTodos.map((todo: any) =>
+      todo.id === taskId ? { ...todo, completed: true } : todo
+    );
+
+    // Optimistically update store
+    updateProjectActionItems(projectId, updatedTodos);
+
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/projects/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idToken,
+          projectId,
+          todos: updatedTodos
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update task status');
+      }
+
+      const { useUIStore } = await import('@/store/uiStore');
+      useUIStore.getState().triggerSuccessfulAction('task_completed');
+    } catch (err) {
+      console.error('Failed to complete task:', err);
+      // Revert optimistic update
+      updateProjectActionItems(projectId, existingTodos);
+    } finally {
+      setTogglingId(null);
+    }
+  };
+
+  return (
+    <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
+      <div className="w-full">
+        <div className="flex justify-between items-center mb-4 border-b pb-3" style={{ borderColor: t.divider }}>
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]" style={{ color: "#5aaa3f" }}>
+              task_alt
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>
+              Assigned Tasks
+            </span>
+          </div>
+          <span className="text-[10px] font-mono bg-[#5aaa3f]/10 text-[#5aaa3f] px-2 py-0.5 rounded-full uppercase tracking-wider">
+            {assignedTasks.length} Pending
+          </span>
+        </div>
+
+        {assignedTasks.length === 0 ? (
+          <div className="py-12 text-center text-xs space-y-2" style={{ color: t.muted }}>
+            <span className="material-symbols-outlined text-[28px] opacity-40 block">
+              check_circle
+            </span>
+            <p>You're all caught up! No pending tasks assigned to you.</p>
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-[260px] overflow-y-auto custom-scrollbar pr-1">
+            {assignedTasks.map(({ projectId, propertyName, task }) => (
+              <div 
+                key={task.id}
+                className="flex items-start gap-3 p-3 rounded-lg border transition-colors hover:bg-neutral-50/5 relative text-left"
+                style={{
+                  borderColor: t.panelBorder,
+                  background: isDark ? "rgba(255,255,255,0.01)" : "rgba(0,0,0,0.01)"
+                }}
+              >
+                <button
+                  onClick={() => handleToggle(projectId, task.id)}
+                  disabled={togglingId === task.id}
+                  className="mt-0.5 shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900"
+                  aria-label={`Mark task ${task.label} as complete`}
+                >
+                  <span className="material-symbols-outlined text-[20px]" style={{ color: t.muted }}>
+                    {togglingId === task.id ? "hourglass_top" : "radio_button_unchecked"}
+                  </span>
+                </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h4 className="text-[13px] font-semibold text-left truncate" style={{ color: t.heading }}>
+                      {task.label}
+                    </h4>
+                    <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-[#7A9EAA]/10 text-[#7A9EAA] truncate max-w-[100px]" title={propertyName}>
+                      {propertyName}
+                    </span>
+                  </div>
+                  {task.description && (
+                    <p className="text-[11px] text-left mt-1 line-clamp-2" style={{ color: t.subtext }}>
+                      {task.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
 // ─── Empty state (no projects) ────────────────────────────────────────────────
 
 function EmptyPortfolio({ isDark }: { isDark: boolean }) {
@@ -523,6 +949,7 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
 // ─── CommandCenter ────────────────────────────────────────────────────────────
 
 export function CommandCenter() {
+  useAllDealsSync();
   const projects = useProjectStore((s) => s.projects);
   const ledgerItems = useProjectStore((s) => s.ledgerItems);
   const kpis     = usePortfolioKPIs(projects);
@@ -708,6 +1135,26 @@ export function CommandCenter() {
 
         {activeTab === 'overview' && (
           <>
+            {/* ══════════════════════════════════════════════════════════════════
+                Investor Profile & Earnings/Losses Summary Row
+            ══════════════════════════════════════════════════════════════════ */}
+            <section aria-label="Investor profile and portfolio performance" className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <ProfileCard isDark={isDark} />
+              <EarningsLossesCard isDark={isDark} kpis={kpis} />
+            </section>
+
+            {/* ══════════════════════════════════════════════════════════════════
+                Assigned Tasks & Recent Inbox Messages Row
+            ══════════════════════════════════════════════════════════════════ */}
+            <section aria-label="Tasks and messages" className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+              <div className="lg:col-span-2">
+                <AssignedTasksChecklist isDark={isDark} />
+              </div>
+              <div className="lg:col-span-1">
+                <RecentMessagesWidget isDark={isDark} />
+              </div>
+            </section>
+
             {/* ══════════════════════════════════════════════════════════════════
                 ZONE 3 — Action Center
                 Priority items needing immediate investor attention:

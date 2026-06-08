@@ -49,72 +49,72 @@ function statusColor(status: "good" | "warn" | "bad" | "neutral"): string {
 // ─── Tooltip definitions ───────────────────────────────────────────────────────
 
 interface TooltipDef {
-  formula: string;
-  description: string;
+  theData: string;
+  whyItMatters: string;
   benchmark: string;
   goodSign: string;
 }
 
 const TOOLTIPS: Record<string, TooltipDef> = {
   NOI: {
-    formula:     "NOI = Total Income − Operating Expenses",
-    description: "Net Operating Income isolates property earning power before financing. Higher NOI = stronger asset performance.",
-    benchmark:   "Target depends on asset class. $500+/mo per unit is a common starting threshold.",
-    goodSign:    "Rising NOI year-over-year signals rent growth and expense control.",
+    theData:      "Total Income − Operating Expenses (excludes mortgage and income taxes)",
+    whyItMatters: "Isolates the property's pure operational performance to gauge baseline earning power.",
+    benchmark:    "Target depends on asset class. $500+/mo per unit is a common starting threshold.",
+    goodSign:     "Rising NOI year-over-year signals rent growth and expense control.",
   },
   CAP_RATE: {
-    formula:     "Cap Rate = NOI ÷ Current Property Value",
-    description: "Cap Rate expresses the unleveraged yield of the property — what you'd earn with no debt. Higher = more yield, but also more risk.",
-    benchmark:   "6–10% is typical for residential. Below 4% signals overpriced or low-yield market.",
-    goodSign:    "Cap Rate above your target return threshold means the deal works without leverage.",
+    theData:      "NOI ÷ Current Property Value",
+    whyItMatters: "Assesses the baseline return on investment and risk level without factoring in your specific loan structure.",
+    benchmark:    "6–10% is typical for residential. Below 4% signals overpriced or low-yield market.",
+    goodSign:     "Cap Rate above your target return threshold means the deal works without leverage.",
   },
   COC: {
-    formula:     "CoC = Annual Pre-Tax Cash Flow ÷ Total Cash Invested",
-    description: "Cash-on-Cash measures the return on the actual dollars you put in. Unlike Cap Rate, it accounts for financing.",
-    benchmark:   "8–12% is a healthy range. Below 6% may not justify the risk vs. alternatives.",
-    goodSign:    "CoC above 10% with positive leverage means you're amplifying your equity return.",
+    theData:      "Annual Pre-Tax Cash Flow ÷ Total Cash Invested",
+    whyItMatters: "Measures the actual return you make on the money you put in, taking your specific mortgage terms into account.",
+    benchmark:    "8–12% is a healthy range. Below 6% may not justify the risk vs. alternatives.",
+    goodSign:     "CoC above 10% with positive leverage means you're amplifying your equity return.",
   },
   ROI: {
-    formula:     "ROI = Net Profit ÷ Total Investment Cost",
-    description: "ROI captures the total profitability of the investment including appreciation, cash flow, and equity paydown.",
-    benchmark:   "Long-term RE ROI historically averages 8–12% annualized. Above 15% is excellent.",
-    goodSign:    "A rising ROI trend confirms the asset is compounding wealth effectively.",
+    theData:      "Net Profit ÷ Total Investment Cost",
+    whyItMatters: "Evaluates the overall profitability of the deal, including long-term appreciation and principal paydown.",
+    benchmark:    "Long-term RE ROI historically averages 8–12% annualized. Above 15% is excellent.",
+    goodSign:     "A rising ROI trend confirms the asset is compounding wealth effectively.",
   },
   DSCR: {
-    formula:     "DSCR = NOI ÷ Total Annual Debt Service",
-    description: "Debt Service Coverage Ratio shows whether property income covers loan payments. Below 1.0 means the property loses money.",
-    benchmark:   "Lenders require ≥ 1.20. Green zone starts at 1.25. Below 1.0 is a red flag.",
-    goodSign:    "DSCR ≥ 1.25 means the property covers its debt with a 25% safety buffer.",
+    theData:      "NOI ÷ Total Debt Service (Annual Mortgage Payments)",
+    whyItMatters: "Lenders look for a DSCR above 1.25 to ensure the property generates enough income to safely cover its loan payments.",
+    benchmark:    "Lenders require ≥ 1.20. Green zone starts at 1.25. Below 1.0 is a red flag.",
+    goodSign:     "DSCR ≥ 1.25 means the property covers its debt with a 25% safety buffer.",
   },
   OER: {
-    formula:     "OER = Total Operating Expenses ÷ Gross Operating Income",
-    description: "Operating Expense Ratio measures what percentage of revenue is consumed by expenses. Lower is better.",
-    benchmark:   "35–45% is typical for well-run residential. Above 60% signals expense problems.",
-    goodSign:    "OER below 40% with stable rents indicates efficient operations and strong NOI margin.",
+    theData:      "Total Operating Expenses ÷ Gross Operating Income",
+    whyItMatters: "Highlights the cost-efficiency of the building; a high OER means a larger percentage of your income goes to maintenance and taxes.",
+    benchmark:    "35–45% is typical for well-run residential. Above 60% signals expense problems.",
+    goodSign:     "OER below 40% with stable rents indicates efficient operations and strong NOI margin.",
   },
   GRM: {
-    formula:     "GRM = Property Price ÷ Gross Annual Rental Income",
-    description: "Gross Rent Multiplier estimates how many years of rent it takes to pay back the purchase price. Lower is better.",
-    benchmark:   "GRM of 8–12 is common in mid-market. Below 8 is a strong deal; above 15 is pricey.",
-    goodSign:    "A falling GRM across your portfolio means you're buying income more efficiently.",
+    theData:      "Property Price ÷ Gross Annual Rental Income",
+    whyItMatters: "A quick screening tool that estimates how many years it would take for the property to pay for itself in gross income.",
+    benchmark:    "GRM of 8–12 is common in mid-market. Below 8 is a strong deal; above 15 is pricey.",
+    goodSign:     "A falling GRM across your portfolio means you're buying income more efficiently.",
   },
   PRICE_TO_RENT: {
-    formula:     "Price-to-Rent = Property Price ÷ Gross Annual Rent",
-    description: "Measures how many years of gross rent equal the purchase price. At the market level, use median home price ÷ median annual rent. Your dashboard shows the project-level ratio — identical to GRM numerically, but interpreted from a tenant's perspective: a high ratio means buying is expensive, so people rent instead.",
-    benchmark:   "Below 15: strong buy market — cheap to own, lower rental demand. 15–20: balanced. Above 20: strong rental market — people are priced out of buying, boosting landlord demand.",
-    goodSign:    "A high P/R in your target market means tenants can't afford to buy, keeping rental demand and your occupancy rates strong.",
+    theData:      "Median Home Price ÷ Average Annual Rent",
+    whyItMatters: "A high ratio indicates a better environment for renting out properties, as people are priced out of buying.",
+    benchmark:    "Below 15: strong buy market — cheap to own, lower rental demand. 15–20: balanced. Above 20: strong rental market — people are priced out of buying, boosting landlord demand.",
+    goodSign:     "A high P/R in your target market means tenants can't afford to buy, keeping rental demand and your occupancy rates strong.",
   },
   VACANCY: {
-    formula:     "Vacancy Rate = (1 − Occupied Days ÷ Total Hold Days) × 100",
-    description: "Vacancy Rate measures what percentage of your rentable space sits unoccupied or uncollected. Shows as the underwriting assumption (default 7%) until actual occupancy data is entered in the Hold phase.",
-    benchmark:   "5–7% is standard economic vacancy. Above 10% requires immediate leasing attention.",
-    goodSign:    "Falling vacancy with stable rents means strong demand in your target markets. Enter actual occupied/total days in your project to replace the assumption.",
+    theData:      "Percentage of time the property sits empty, uncollected, or between tenant turnover.",
+    whyItMatters: "Accurately forecasts cash flow disruptions and determines if a local market has high tenant churn.",
+    benchmark:    "5–7% is standard economic vacancy. Above 10% requires immediate leasing attention.",
+    goodSign:     "Falling vacancy with stable rents means strong demand in your target markets. Enter actual occupied/total days in your project to replace the assumption.",
   },
   DOM: {
-    formula:     "DOM = Days from Listing Date to Sale/Closing Date",
-    description: "Days on Market measures local market liquidity. Sourced from actual project listing history when available; falls back to the average DOM from your comparable sales comps. Fewer days = more demand, easier exit.",
-    benchmark:   "Under 30 days is a hot market. 30–60 is moderate. Over 90 days signals softness.",
-    goodSign:    "Low DOM in your target markets means faster exits and lower holding cost exposure. Add listing + closing dates to your project for exact figures.",
+    theData:      "How long similar properties in your target zip code spend listed for sale.",
+    whyItMatters: "Indicates local liquidity; high DOM means you may have more leverage to negotiate a discount.",
+    benchmark:    "Under 30 days is a hot market. 30–60 is moderate. Over 90 days signals softness.",
+    goodSign:     "Low DOM in your target markets means faster exits and lower holding cost exposure. Add listing + closing dates to your project for exact figures.",
   },
 };
 
@@ -178,10 +178,10 @@ function KPITooltip({ id, isDark }: { id: string; isDark: boolean }) {
               color: C.blue,
             }}
           >
-            {def.formula}
+            {def.theData}
           </p>
           <p className="text-[12px] leading-relaxed" style={{ color: textBd }}>
-            {def.description}
+            {def.whyItMatters}
           </p>
           <div className="flex gap-1.5">
             <span

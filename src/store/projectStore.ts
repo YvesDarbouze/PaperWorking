@@ -77,6 +77,7 @@ interface ProjectState {
   updateRehabModule: (projectId: string, updates: Partial<Project['rehab']>) => void;
   updateProjectTeam: (projectId: string, team: ProjectTeamMember[]) => void;
   updateInvestors: (projectId: string, investors: FractionalInvestor[]) => void;
+  updateProjectActionItems: (projectId: string, actionItems: any[]) => void;
 
   // Find & Fund Actions
   updateHistoricalProperties: (projectId: string, properties: HistoricalProperty[]) => void;
@@ -315,6 +316,18 @@ export const useProjectStore = create<ProjectState>()(
         const { projects, currentProject } = get();
         const updatedDeals = projects.map(d =>
           d.id === projectId ? { ...d, projectTeam: team } : d
+        );
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+      },
+
+      updateProjectActionItems: (projectId, actionItems) => {
+        const { projects, currentProject } = get();
+        const updatedDeals = projects.map(d =>
+          d.id === projectId ? { ...d, actionItems } : d
         );
         set({ projects: updatedDeals });
         if (currentProject?.id === projectId) {

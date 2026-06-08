@@ -80,6 +80,12 @@ const METRIC_CONFIG: Record<string, {
     sourceRoute: '/dashboard/intelligence/appreciation',
     sourceLabel: 'Appreciation Detail',
   },
+  PRICE_TO_RENT: {
+    formula: 'Price-to-Rent = Median Home Price ÷ Average Annual Rent',
+    description: 'Price-to-Rent Ratio compares home purchase prices to average rental rates. A high ratio indicates a better environment for renting out properties, as people are priced out of buying.',
+    sourceRoute: '/dashboard/insights',
+    sourceLabel: 'Insights Dashboard',
+  },
 };
 
 /** Convert a field path to a readable label */

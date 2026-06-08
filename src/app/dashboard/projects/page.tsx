@@ -7,6 +7,8 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 import { Plus, FolderX, RotateCcw } from 'lucide-react';
 import type { Project } from '@/types/schema';
 import { EmptyState } from '@/components/ui/empty-states/EmptyState';
+import { REILKanBan } from '@/components/projects/REILKanBan';
+import { useCreateProjectModal } from '@/store/createProjectModalStore';
 
 /* ── Strategy Theme Mapping ── */
 function getStrategyThemeConfig(strategy?: string) {
@@ -246,6 +248,10 @@ function FolderCard({ project, onClick }: { project: Project; onClick: () => voi
 export default function ProjectsPage() {
   const router = useRouter();
   const storeProjects = useProjectStore((state) => state.projects);
+  const { open: openCreateWizard } = useCreateProjectModal();
+
+  /* ── View mode ── */
+  const [viewMode, setViewMode] = useState<'kanban' | 'grid'>('kanban');
 
   /* ── Filters ── */
   const [search, setSearch] = useState('');
@@ -353,8 +359,8 @@ export default function ProjectsPage() {
     return data;
   }, [storeProjects, search, phaseFilter, strategyFilter, statusFilter, sortBy]);
 
-  const handleCreateProject = () => router.push('/dashboard/projects/new');
-  const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}/phase-${1}`);
+  const handleCreateProject = () => openCreateWizard();
+  const handleOpenProject = (id: string) => router.push(`/dashboard/projects/${id}/phase-1`);
 
   return (
     <div className="min-h-full pb-28 md:pb-28">
@@ -365,25 +371,57 @@ export default function ProjectsPage() {
             className="text-2xl font-bold tracking-tight"
             style={{ color: 'rgba(253,255,252,0.95)', letterSpacing: '-0.01em' }}
           >
-            Portfolio
+            Projects
           </h2>
           <p className="text-sm mt-1" style={{ color: 'rgba(253,255,252,0.45)' }}>
-            {storeProjects.length} project{storeProjects.length !== 1 ? 's' : ''} · track phase progression
+            {storeProjects.length} project{storeProjects.length !== 1 ? 's' : ''}
+            {viewMode === 'kanban' ? ' · REIL lifecycle board' : ' · grid view'}
           </p>
         </div>
-        <button
-          onClick={handleCreateProject}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
-          style={{
-            background: 'rgba(69,73,85,0.12)',
-            border: '1px solid rgba(69,73,85,0.3)',
-            color: '#454955',
-            boxShadow: '0 0 20px -8px rgba(69,73,85,0.4)',
-          }}
-        >
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          New Project
-        </button>
+
+        <div className="flex items-center gap-2">
+          {/* View mode toggle */}
+          <div
+            className="flex items-center p-1 rounded-xl"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+          >
+            {([
+              { mode: 'kanban' as const, icon: 'view_kanban',  label: 'Board' },
+              { mode: 'grid'   as const, icon: 'grid_view',    label: 'Grid'  },
+            ] as const).map(({ mode, icon, label }) => {
+              const active = viewMode === mode;
+              return (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all duration-150"
+                  style={{
+                    background: active ? 'rgba(69,73,85,0.25)' : 'transparent',
+                    color:      active ? 'rgba(253,255,252,0.90)' : 'rgba(253,255,252,0.40)',
+                    border:     active ? '1px solid rgba(255,255,255,0.10)' : '1px solid transparent',
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}>{icon}</span>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Create project */}
+          <button
+            onClick={handleCreateProject}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-95"
+            style={{
+              background: 'var(--color-primary)',
+              color: '#FDFFFC',
+              boxShadow: '0 4px 16px rgba(90,170,63,0.25)',
+            }}
+          >
+            <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
+            Create Project
+          </button>
+        </div>
       </div>
 
       {/* ── Search + Filters ── */}
@@ -486,8 +524,36 @@ export default function ProjectsPage() {
         )}
       </div>
 
+      {/* ── Kanban Board ── */}
+      {viewMode === 'kanban' && (
+        <div className="mb-8">
+          {storeProjects.length === 0 ? (
+            <div className="flex justify-center py-12">
+              <EmptyState
+                title="Your Portfolio is Empty."
+                description="Create your first project to start tracking deal phases, costs, and performance."
+                icon={FolderX}
+                action={{ label: "Create New Project", onClick: handleCreateProject, icon: Plus }}
+              />
+            </div>
+          ) : (
+            <REILKanBan
+              projects={filteredProjects}
+              onAdd={handleCreateProject}
+              renderCard={(project) => (
+                <FolderCard
+                  key={project.id}
+                  project={project}
+                  onClick={() => handleOpenProject(project.id)}
+                />
+              )}
+            />
+          )}
+        </div>
+      )}
+
       {/* ── Project Grid ── */}
-      {filteredProjects.length > 0 ? (
+      {viewMode === 'grid' && filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredProjects.map((project) => (
             <FolderCard
@@ -507,39 +573,30 @@ export default function ProjectsPage() {
             <p className="font-label-md text-sm text-on-surface-variant group-hover:text-primary transition-colors">Add New Project</p>
           </div>
         </div>
-      ) : storeProjects.length === 0 ? (
+      ) : viewMode === 'grid' && storeProjects.length === 0 ? (
         <div className="flex justify-center py-12">
           <EmptyState
             title="Your Portfolio is Empty."
             description="Create your first project to start tracking deal phases, costs, and performance."
             icon={FolderX}
-            action={{
-              label: "Create New Project",
-              onClick: handleCreateProject,
-              icon: Plus,
-            }}
+            action={{ label: "Create New Project", onClick: handleCreateProject, icon: Plus }}
           />
         </div>
-      ) : (
+      ) : viewMode === 'grid' ? (
         <div className="flex justify-center py-12">
           <EmptyState
             title="No projects found"
-            description="It looks like your search didn't match any properties. Adjust your filters or clear them to see your projects."
+            description="Adjust your filters or clear them to see your projects."
             icon={FolderX}
             action={{
               label: "Clear all filters",
-              onClick: () => {
-                setSearch('');
-                setPhaseFilter('');
-                setStrategyFilter('');
-                setStatusFilter('active');
-              },
+              onClick: () => { setSearch(''); setPhaseFilter(''); setStrategyFilter(''); setStatusFilter('active'); },
               icon: RotateCcw,
             }}
             variant="card"
           />
         </div>
-      )}
+      ) : null}
 
       {/* ── Terminal Stats Overlay ── */}
       {storeProjects.length > 0 && (

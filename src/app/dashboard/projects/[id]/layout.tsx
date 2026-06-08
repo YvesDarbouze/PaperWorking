@@ -15,7 +15,9 @@ import {
   FileDown,
   Share2,
   Archive,
+  ListChecks,
 } from 'lucide-react';
+import { PhaseTodoList } from '@/components/projects/PhaseTodoList';
 import {
   PhaseProgressTracker,
   PhaseProgressTrackerSkeleton,
@@ -531,6 +533,17 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
   );
 }
 
+// ─── Phase accent colors ──────────────────────────────────────────────────────
+// Maps project.currentPhase (1–4) to a subtle tinted canvas background and
+// the accent color used in the todo panel and phase indicators.
+
+const PHASE_ACCENT: Record<number, { color: string; canvasTint: string; label: string }> = {
+  1: { color: "#454955", canvasTint: "rgba(69,73,85,0.06)",    label: "Acquisition" },
+  2: { color: "#7A9EAA", canvasTint: "rgba(122,158,170,0.06)", label: "Purchase"    },
+  3: { color: "#ffac5a", canvasTint: "rgba(255,172,90,0.06)",  label: "Hold"        },
+  4: { color: "#5aaa3f", canvasTint: "rgba(90,170,63,0.06)",   label: "Exit"        },
+};
+
 /* ─── Root Layout Export ────────────────────────────────────── */
 export default function ProjectWorkspaceLayout({
   children,
@@ -542,6 +555,7 @@ export default function ProjectWorkspaceLayout({
 
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+  const [todoOpen, setTodoOpen] = useState(false);
 
   // Drill-down side sheet state
   const [selectedMetric, setSelectedMetric] = useState<{
@@ -573,11 +587,17 @@ export default function ProjectWorkspaceLayout({
 
   const { snapshots } = usePropertyMetricSnapshots(projectId, 'monthly');
 
+  const phase       = project?.currentPhase ?? 1;
+  const phaseAccent = PHASE_ACCENT[Math.min(Math.max(phase, 1), 4) as 1 | 2 | 3 | 4];
+
   return (
     <WorkspaceContext.Provider value={{ project, loading, refresh: fetchProject }}>
       <div
-        className="flex flex-col min-h-full"
-        style={{ background: 'var(--bg-canvas)' }}
+        className="flex flex-col min-h-full relative"
+        style={{
+          // Subtle phase-tinted canvas — radial glow from top-left + base surface
+          background: `radial-gradient(ellipse 80% 50% at 0% 0%, ${phaseAccent.canvasTint} 0%, transparent 65%), var(--bg-canvas)`,
+        }}
       >
         {/* Workspace Header Shell */}
         {loading || !project ? (
@@ -586,12 +606,79 @@ export default function ProjectWorkspaceLayout({
           <WorkspaceHeader project={project} onOpenMetric={handleOpenMetric} />
         )}
 
-        {/* Phase Content */}
-        <div className="flex-1 min-h-0">
-          <ProjectPipelineProvider>
-            {children}
-          </ProjectPipelineProvider>
+        {/* Phase Content + optional Todo sidebar */}
+        <div className="flex-1 min-h-0 flex">
+          <div className="flex-1 min-w-0">
+            <ProjectPipelineProvider>
+              {children}
+            </ProjectPipelineProvider>
+          </div>
+
+          {/* ── Phase Todo Panel (collapsible right sidebar) ── */}
+          {todoOpen && project && (
+            <div
+              className="hidden lg:flex flex-col w-[320px] flex-shrink-0 overflow-y-auto"
+              style={{
+                borderLeft: `1px solid ${phaseAccent.color}18`,
+                background: `rgba(8,14,19,0.70)`,
+                backdropFilter: "blur(20px)",
+              }}
+            >
+              {/* Panel header */}
+              <div
+                className="flex items-center justify-between px-5 py-4 sticky top-0"
+                style={{
+                  borderBottom: `1px solid ${phaseAccent.color}20`,
+                  background: `rgba(8,14,19,0.90)`,
+                  backdropFilter: "blur(12px)",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: phaseAccent.color }}
+                  />
+                  <span className="text-[12px] font-bold uppercase tracking-widest" style={{ color: "rgba(253,255,252,0.55)", letterSpacing: "0.08em" }}>
+                    {phaseAccent.label} Checklist
+                  </span>
+                </div>
+                <button
+                  onClick={() => setTodoOpen(false)}
+                  className="flex items-center justify-center w-6 h-6 rounded-md transition-opacity hover:opacity-70"
+                  style={{ color: "rgba(253,255,252,0.35)" }}
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+              </div>
+
+              {/* Panel body */}
+              <div className="px-5 py-5">
+                <PhaseTodoList
+                  phase={phase}
+                  phaseColor={phaseAccent.color}
+                  projectId={project.id}
+                />
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* ── Floating todo toggle button ── */}
+        {project && !todoOpen && (
+          <button
+            onClick={() => setTodoOpen(true)}
+            className="hidden lg:flex fixed right-6 bottom-8 items-center gap-2 px-4 py-2.5 rounded-xl z-30 shadow-xl transition-all duration-200 hover:opacity-90 active:scale-[0.97]"
+            style={{
+              background: phaseAccent.color,
+              color: "#FDFFFC",
+              boxShadow: `0 8px 24px ${phaseAccent.color}40`,
+            }}
+            aria-label="Open phase checklist"
+          >
+            <ListChecks className="w-4 h-4" />
+            <span className="text-[12px] font-semibold">{phaseAccent.label} Checklist</span>
+          </button>
+        )}
 
         {/* Metric Insights Drill Down Side Sheet */}
         {selectedMetric && (
@@ -612,10 +699,7 @@ export default function ProjectWorkspaceLayout({
                 case 'DSCR': val = s.dscr ?? 0; break;
                 case 'OCCUPANCY': val = s.occupancyRate ?? 0; break;
               }
-              return {
-                date: s.period,
-                value: val,
-              };
+              return { date: s.period, value: val };
             })}
           />
         )}

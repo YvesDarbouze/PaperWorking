@@ -47,6 +47,7 @@ export const BENCHMARKS: Record<string, MetricThresholds> = {
   OCCUPANCY: { goodMin: 90, warningMin: 80 },
   OER: { goodMax: 40, warningMax: 55 },
   APPRECIATION: { goodMin: 3, goodMax: 5, warningMin: 0 },
+  PRICE_TO_RENT: { goodMax: 15, warningMax: 20 },
 };
 
 // Phase mapping for the 10 core metrics
@@ -54,6 +55,7 @@ export const METRIC_PHASE_REQUIREMENTS: Record<string, { phase: number; name: st
   CAP_RATE: { phase: 1, name: 'Acquisition' },
   GRM: { phase: 1, name: 'Acquisition' },
   APPRECIATION: { phase: 1, name: 'Acquisition' },
+  PRICE_TO_RENT: { phase: 1, name: 'Acquisition' },
   DSCR: { phase: 2, name: 'Fund' },
   COC: { phase: 2, name: 'Fund' },
   NOI: { phase: 3, name: 'Hold' },

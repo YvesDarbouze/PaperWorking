@@ -76,28 +76,29 @@ function ToggleSwitch({ enabled, disabled, onToggle }: { enabled: boolean; disab
   if (disabled) {
     return (
       <div 
-        className="flex items-center justify-center w-10 h-5.5 rounded-full bg-pw-glass-bg border border-pw-border/50 cursor-not-allowed"
+        className="flex items-center justify-center w-9 h-5 rounded-full bg-surface-container border border-outline-variant/30 cursor-not-allowed flex-shrink-0"
         title="Mandatory channel for this category."
       >
-        <span className="material-symbols-outlined text-[10px] text-pw-muted select-none">lock</span>
+        <span className="material-symbols-outlined text-[10px] text-on-surface-variant/40 select-none">lock</span>
       </div>
     );
   }
 
   return (
     <button
+      type="button"
       onClick={onToggle}
       className={`
-        relative inline-flex h-5.5 w-10 items-center rounded-full transition-all cursor-pointer flex-shrink-0 focus:outline-none border
-        ${enabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
+        relative inline-flex w-9 h-5 rounded-full transition-all duration-200 cursor-pointer flex-shrink-0 focus:outline-none items-center p-[2px]
+        ${enabled ? 'bg-on-background' : 'bg-[var(--color-outline)]'}
       `}
       role="switch"
       aria-checked={enabled}
     >
       <span
         className={`
-          inline-block h-3.5 w-3.5 transform rounded-full transition-transform duration-300 shadow-sm
-          ${enabled ? 'translate-x-5 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
+          inline-block w-4 h-4 transform rounded-full transition-transform duration-200 shadow-sm ease-in-out
+          ${enabled ? 'translate-x-4 bg-background' : 'translate-x-0 bg-white'}
         `}
       />
     </button>

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import { ActivePipeline } from "./ActivePipeline";
@@ -16,6 +17,8 @@ import {
   computeNOIComponents,
 } from "@/lib/metrics/reiMetrics";
 import type { Project } from "@/types/schema";
+
+const InsightsTab = dynamic(() => import("@/components/portfolio/InsightsTab"), { ssr: false });
 
 // ─── Portfolio KPI hook ───────────────────────────────────────────────────────
 
@@ -521,10 +524,12 @@ function EmptyPortfolio({ isDark }: { isDark: boolean }) {
 
 export function CommandCenter() {
   const projects = useProjectStore((s) => s.projects);
+  const ledgerItems = useProjectStore((s) => s.ledgerItems);
   const kpis     = usePortfolioKPIs(projects);
   const { theme } = useTheme();
   const isDark    = theme === "dark";
   const t         = tokens(isDark);
+  const [activeTab, setActiveTab] = useState<'overview' | 'assets' | 'transactions' | 'insights'>('overview');
 
   const irrVal = fmtPct(kpis.irr);
   const emVal  = kpis.equityMultiple !== null ? kpis.equityMultiple.toFixed(2) : "—";
@@ -673,32 +678,133 @@ export function CommandCenter() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 3 — Action Center
-            Priority items needing immediate investor attention:
-            contingency deadlines, pending signatures, vendor approvals,
-            phase-gate blockers. Surfaces critical items BEFORE the pipeline.
-        ══════════════════════════════════════════════════════════════════ */}
-        <section aria-label="Action center">
-          <SectionHeading
-            title="Action Center"
-            href="/dashboard/projects"
-            linkLabel="All projects"
-            isDark={isDark}
-          />
-          {kpis.activeCount === 0 ? (
-            <EmptyPortfolio isDark={isDark} />
-          ) : (
-            <NeedsAttentionFeed />
-          )}
-        </section>
+        {/* Tabs Navigation */}
+        <div className="flex border-b" style={{ borderColor: t.divider }}>
+          {([
+            { id: 'overview', name: 'Overview', icon: 'space_dashboard' },
+            { id: 'assets', name: 'Assets', icon: 'folder' },
+            { id: 'transactions', name: 'Transactions', icon: 'payments' },
+            { id: 'insights', name: 'Insights', icon: 'monitoring' }
+          ] as const).map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="flex items-center gap-2 px-5 py-3 border-b-2 font-semibold text-[13px] capitalize transition-all duration-150 focus:outline-none -mb-px"
+                style={{
+                  borderColor: isActive ? '#3279F9' : 'transparent',
+                  color: isActive ? t.heading : t.subtext,
+                }}
+              >
+                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}>
+                  {tab.icon}
+                </span>
+                {tab.name}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 4 — Active Pipeline + Top Performers
-            Pipeline: 8/12 cols — full kanban-style deal list with phase state.
-            Top Performers: 4/12 cols — highest-return assets for quick context.
-        ══════════════════════════════════════════════════════════════════ */}
-        {kpis.activeCount > 0 && (
+        {activeTab === 'overview' && (
+          <>
+            {/* ══════════════════════════════════════════════════════════════════
+                ZONE 3 — Action Center
+                Priority items needing immediate investor attention:
+                contingency deadlines, pending signatures, vendor approvals,
+                phase-gate blockers. Surfaces critical items BEFORE the pipeline.
+            ══════════════════════════════════════════════════════════════════ */}
+            <section aria-label="Action center">
+              <SectionHeading
+                title="Action Center"
+                href="/dashboard/projects"
+                linkLabel="All projects"
+                isDark={isDark}
+              />
+              {kpis.activeCount === 0 ? (
+                <EmptyPortfolio isDark={isDark} />
+              ) : (
+                <NeedsAttentionFeed />
+              )}
+            </section>
+
+            {/* ══════════════════════════════════════════════════════════════════
+                ZONE 4 — Active Pipeline + Top Performers
+                Pipeline: 8/12 cols — full kanban-style deal list with phase state.
+                Top Performers: 4/12 cols — highest-return assets for quick context.
+            ══════════════════════════════════════════════════════════════════ */}
+            {kpis.activeCount > 0 && (
+              <section
+                aria-label="Active deal pipeline"
+                className="grid grid-cols-1 lg:grid-cols-12 gap-5"
+              >
+                <div className="lg:col-span-8">
+                  <SectionHeading
+                    title="Active Pipeline"
+                    href="/dashboard/projects"
+                    linkLabel="Manage"
+                    isDark={isDark}
+                  />
+                  {/* Phase legend */}
+                  <div className="flex flex-wrap items-center gap-4 mb-3">
+                    {PHASE_LEGEND.map(({ label, color }) => (
+                      <span
+                        key={label}
+                        className="flex items-center gap-1.5 text-[11px]"
+                        style={{ color: t.muted }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                  <ActivePipeline />
+                </div>
+
+                <div className="lg:col-span-4">
+                  <SectionHeading title="Top Performers" isDark={isDark} />
+                  <TopPerformersWidget />
+                </div>
+              </section>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════════
+                ZONE 5 — Marketplace Heatmap + Recent Activity
+                Heatmap: 2/3 — posted deal opportunities + market sourcing.
+                Activity: 1/3 — files, messages, team events, project updates.
+            ══════════════════════════════════════════════════════════════════ */}
+            <section
+              aria-label="Marketplace and activity"
+              className="grid grid-cols-1 lg:grid-cols-3 gap-5"
+            >
+              <div className="lg:col-span-2 flex flex-col">
+                <SectionHeading
+                  title="Marketplace Heatmap"
+                  href="/dashboard/insights"
+                  linkLabel="Browse opportunities"
+                  isDark={isDark}
+                />
+                <div className="flex-1 min-h-[280px]">
+                  <MarketHeatmap />
+                </div>
+              </div>
+
+              <div className="lg:col-span-1 flex flex-col">
+                <SectionHeading
+                  title="Recent Activity"
+                  href="/dashboard/inbox"
+                  linkLabel="Inbox"
+                  isDark={isDark}
+                />
+                <div className="flex-1">
+                  <RecentActivityFeed isDark={isDark} />
+                </div>
+              </div>
+            </section>
+          </>
+        )}
+
+        {activeTab === 'assets' && (
           <section
             aria-label="Active deal pipeline"
             className="grid grid-cols-1 lg:grid-cols-12 gap-5"
@@ -733,39 +839,84 @@ export function CommandCenter() {
           </section>
         )}
 
-        {/* ══════════════════════════════════════════════════════════════════
-            ZONE 5 — Marketplace Heatmap + Recent Activity
-            Heatmap: 2/3 — posted deal opportunities + market sourcing.
-            Activity: 1/3 — files, messages, team events, project updates.
-        ══════════════════════════════════════════════════════════════════ */}
-        <section
-          aria-label="Marketplace and activity"
-          className="grid grid-cols-1 lg:grid-cols-3 gap-5"
-        >
-          <div className="lg:col-span-2 flex flex-col">
-            <SectionHeading
-              title="Marketplace Heatmap"
-              href="/dashboard/insights"
-              linkLabel="Browse opportunities"
-              isDark={isDark}
-            />
-            <div className="flex-1 min-h-[280px]">
-              <MarketHeatmap />
-            </div>
-          </div>
+        {activeTab === 'transactions' && (
+          <section
+            aria-label="Portfolio Transactions"
+            className="grid grid-cols-1 lg:grid-cols-3 gap-5"
+          >
+            <div className="lg:col-span-2 flex flex-col">
+              <SectionHeading title="Transactions Ledger" isDark={isDark} />
+              <Panel isDark={isDark} className="p-5 flex-1 overflow-x-auto">
+                {(() => {
+                  const allTx = projects.flatMap((deal) => {
+                    const items = ledgerItems[deal.id] || [];
+                    return items.map((item) => ({
+                      dealId: deal.id,
+                      propertyName: deal.propertyName,
+                      ...item,
+                    }));
+                  });
 
-          <div className="lg:col-span-1 flex flex-col">
-            <SectionHeading
-              title="Recent Activity"
-              href="/dashboard/inbox"
-              linkLabel="Inbox"
-              isDark={isDark}
-            />
-            <div className="flex-1">
-              <RecentActivityFeed isDark={isDark} />
+                  if (allTx.length === 0) {
+                    return (
+                      <div className="text-center py-12 text-sm" style={{ color: t.subtext }}>
+                        No transactions found in portfolio.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <table className="w-full text-left border-collapse min-w-[500px]">
+                      <thead>
+                        <tr className="border-b" style={{ borderColor: t.divider }}>
+                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Property</th>
+                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Category</th>
+                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider" style={{ color: t.subtext }}>Description</th>
+                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider text-right" style={{ color: t.subtext }}>Amount</th>
+                          <th className="py-2.5 text-[11px] font-bold uppercase tracking-wider text-right" style={{ color: t.subtext }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y" style={{ borderColor: t.divider }}>
+                        {allTx.map((tx) => (
+                          <tr key={tx.id} className="hover:bg-white/5 transition-colors duration-150">
+                            <td className="py-3 text-[13px] font-semibold" style={{ color: t.heading }}>{tx.propertyName}</td>
+                            <td className="py-3 text-[13px]" style={{ color: t.subtext }}>{tx.category || "General"}</td>
+                            <td className="py-3 text-[13px]" style={{ color: t.subtext }}>{tx.description}</td>
+                            <td className="py-3 text-[13px] text-right font-medium tabular-nums" style={{ color: t.heading }}>{fmtCompact(tx.amount)}</td>
+                            <td className="py-3 text-right">
+                              <span
+                                className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                                style={{
+                                  background: tx.status === "Approved" ? "rgba(90, 170, 63, 0.15)" : "rgba(240, 101, 67, 0.15)",
+                                  color: tx.status === "Approved" ? "#5aaa3f" : "#F06543",
+                                }}
+                              >
+                                {tx.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  );
+                })()}
+              </Panel>
             </div>
-          </div>
-        </section>
+            <div className="lg:col-span-1 flex flex-col">
+              <SectionHeading title="Recent Activity" isDark={isDark} />
+              <div className="flex-1">
+                <RecentActivityFeed isDark={isDark} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeTab === 'insights' && (
+          <section aria-label="Portfolio Yield Insights" className="space-y-4">
+            <SectionHeading title="Yield Analytics & Performance" isDark={isDark} />
+            <InsightsTab />
+          </section>
+        )}
 
       </div>
     </div>

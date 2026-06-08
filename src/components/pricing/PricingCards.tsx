@@ -2,6 +2,8 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import { Check, X, Star } from 'lucide-react';
+import { Switch } from '@/components/ui/Switch';
+
 
 interface PricingCardsProps {
   isAnnual: boolean;
@@ -172,32 +174,27 @@ export default function PricingCards({
 }: PricingCardsProps) {
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
-      {/* ── Billing Toggle ── */}
+      {/* ── Billing Toggle-Switch ── */}
       <div className="flex justify-center mb-8">
-        <div className="flex items-center p-1 bg-phase-1">
-          <button
-            onClick={() => onToggleAnnual(false)}
-            className={`px-6 py-2.5 text-sm font-medium transition-all ${
-              !isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
-            }`}
-          >
+        <div className="flex items-center gap-3 py-2 px-4 bg-surface-container/20 rounded-full border border-outline-variant/30">
+          <span className={`text-sm font-semibold transition-colors duration-200 ${
+            !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
+          }`}>
             Monthly
-          </button>
-          <button
-            onClick={() => onToggleAnnual(true)}
-            className={`flex items-center px-6 py-2.5 text-sm font-medium transition-all ${
-              isAnnual
-                ? 'bg-white shadow-sm text-phase-4'
-                : 'text-phase-3 hover:text-phase-4'
-            }`}
-          >
+          </span>
+          <Switch
+            checked={isAnnual}
+            onChange={(e) => onToggleAnnual(e.target.checked)}
+            aria-label="Toggle annual pricing"
+          />
+          <span className={`text-sm font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
+            isAnnual ? 'text-primary' : 'text-on-surface-variant'
+          }`}>
             Annual
-            <span className="ml-2 text-xs uppercase tracking-wider text-phase-4 font-bold bg-dashboard border border-phase-1 px-2 py-0.5">
+            <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
               Save 20%
             </span>
-          </button>
+          </span>
         </div>
       </div>
 

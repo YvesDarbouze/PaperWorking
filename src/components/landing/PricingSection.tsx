@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Switch } from '@/components/ui/Switch';
 
 /* ═══════════════════════════════════════════════════════
    PricingSection — Behavioral-Economics Redesign
@@ -241,28 +242,25 @@ function AnimatedPrice({ value }: { value: number }) {
 function BillingToggle({ isAnnual, onToggle }: { isAnnual: boolean; onToggle: (v: boolean) => void }) {
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="inline-flex items-center p-1 glass-panel rounded-full border border-outline-variant">
-        <button
-          type="button"
-          onClick={() => onToggle(false)}
-          className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all duration-200 ${
-            !isAnnual ? 'bg-surface-bright border border-outline-variant text-on-surface' : 'text-on-surface-variant hover:text-on-surface'
-          }`}
-        >
+      <div className="flex items-center gap-3">
+        <span className={`text-[13px] font-semibold transition-colors duration-200 ${
+          !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
+        }`}>
           Monthly
-        </button>
-        <button
-          type="button"
-          onClick={() => onToggle(true)}
-          className={`px-5 py-2 rounded-full text-[13px] font-semibold flex items-center gap-2 transition-all duration-200 ${
-            isAnnual ? 'bg-surface-bright border border-outline-variant text-primary' : 'text-on-surface-variant hover:text-on-surface'
-          }`}
-        >
+        </span>
+        <Switch
+          checked={isAnnual}
+          onChange={(e) => onToggle(e.target.checked)}
+          aria-label="Toggle annual billing"
+        />
+        <span className={`text-[13px] font-semibold transition-colors duration-200 flex items-center gap-1.5 ${
+          isAnnual ? 'text-primary' : 'text-on-surface-variant'
+        }`}>
           Annual
           <span className="bg-primary/15 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
             Save 20%
           </span>
-        </button>
+        </span>
       </div>
 
       {/* Annual nudge — applies loss-aversion framing */}
@@ -353,29 +351,24 @@ function PricingCard({
               )}
             </div>
 
-            {/* Toggle inside column under price */}
-            <div className="mt-3">
-              <div className="inline-flex items-center p-0.5 bg-surface-container/60 rounded-lg border border-outline-variant/30 w-full">
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onToggleAnnual(false); }}
-                  className={`flex-1 py-1 text-[11px] font-semibold rounded-md transition-all ${
-                    !isAnnual ? 'bg-surface-bright text-on-surface shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  Monthly
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); onToggleAnnual(true); }}
-                  className={`flex-1 py-1 text-[11px] font-semibold rounded-md transition-all flex items-center justify-center gap-1 ${
-                    isAnnual ? 'bg-surface-bright text-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'
-                  }`}
-                >
-                  Annual
-                  <span className="bg-primary/10 text-primary px-1 rounded text-[8px] font-bold">20% Off</span>
-                </button>
-              </div>
+            {/* Toggle-switch inside column under price */}
+            <div className="mt-3 flex items-center justify-center gap-3 py-2 bg-surface-container/20 rounded-lg border border-outline-variant/15 w-full">
+              <span className={`text-[11px] font-semibold transition-colors duration-200 ${
+                !isAnnual ? 'text-on-surface' : 'text-on-surface-variant'
+              }`}>
+                Monthly
+              </span>
+              <Switch
+                checked={isAnnual}
+                onChange={(e) => { e.stopPropagation(); onToggleAnnual(e.target.checked); }}
+                aria-label="Toggle annual pricing"
+              />
+              <span className={`text-[11px] font-semibold transition-colors duration-200 flex items-center gap-1 ${
+                isAnnual ? 'text-primary' : 'text-on-surface-variant'
+              }`}>
+                Annual
+                <span className="bg-primary/10 text-primary px-1 rounded text-[8px] font-bold">20% Off</span>
+              </span>
             </div>
           </div>
         )}
@@ -893,32 +886,6 @@ export default function PricingSection({ onSelectPlan }: { onSelectPlan?: (plan:
           </motion.div>
         </motion.div>
 
-        {/* ── Institutional Banner ── */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-40px' }}
-          variants={fadeUp}
-          className="max-w-7xl mx-auto px-6 lg:px-8 pb-10"
-        >
-          <div className="glass-panel border border-outline-variant rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-            <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
-            <div className="text-center md:text-left relative z-10">
-              <h4 className="text-[16px] font-bold text-on-surface">Institutional Custom Plans</h4>
-              <p className="text-[13px] text-on-surface-variant mt-1.5 max-w-2xl">
-                Looking for custom integrations, white-labeling, REST API webhooks, or unlimited team seats? 
-                Contact our team for custom Institutional plans.
-              </p>
-            </div>
-            <Link
-              href="/contact"
-              className="luminous-button px-6 py-3 rounded-lg font-semibold text-[13px] whitespace-nowrap relative z-10"
-            >
-              Talk to our team
-            </Link>
-          </div>
-        </motion.div>
 
         {/* ── Integration Logo Strip ── */}
         <IntegrationLogoStrip />

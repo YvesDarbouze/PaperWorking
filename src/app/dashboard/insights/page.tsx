@@ -3,6 +3,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { KPIInsightsDashboard } from '@/components/insights/KPIInsightsDashboard';
+import { StressTestProvider, RiskStressTester, useStressTest } from '@/components/insights/RiskStressTester';
+import InsightsDashboard from '@/components/insights/InsightsDashboard';
+import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
+import { InsightsEngineInputs } from '@/lib/services/insightsEngine';
+import type { Project } from '@/types/schema';
 import { 
   Calendar, 
   BarChart3, 
@@ -69,6 +74,7 @@ const LONG_TERM_METRICS: MetricInfo[] = [
   { id: 'APPRECIATION', name: 'Annualized Appreciation', formula: 'Appreciation = CAGR of Property Value', phase: 'Acquisition (Phase 1)', description: 'Annualized rate of value compounding relative to acquisition cost basis.' },
   { id: 'DSCR', name: 'Debt Service Coverage Ratio', formula: 'DSCR = NOI / Annual Debt Service', phase: 'Fund (Phase 2)', description: 'Measures property ability to cover its debt payments; B2B underwriting benchmark.' },
   { id: 'GRM', name: 'Gross Rent Multiplier', formula: 'GRM = Purchase Price / Gross Annual Rent', phase: 'Acquisition (Phase 1)', description: 'Simple screening tool to check value relative to gross potential income.' },
+  { id: 'PRICE_TO_RENT', name: 'Price-to-Rent Ratio', formula: 'P/R = Median Home Price / Average Annual Rent', phase: 'Acquisition (Phase 1)', description: 'Price-to-Rent Ratio compares home purchase prices to average rental rates. A high ratio indicates a better environment for renting out properties, as people are priced out of buying.' },
   { id: 'IRR', name: 'Internal Rate of Return', formula: 'IRR = Solve NPV = 0 for cash flows', phase: 'Exit (Phase 4)', description: 'Overall yield over hold duration factoring exit liquidation.' },
 ];
 
@@ -80,8 +86,8 @@ export default function InsightsPage() {
   const clearDeal = useProjectStore((s) => s.clearDeal);
   const { user, profile } = useAuth();
 
-  // ── View: KPI Overview (new) | Deep Analysis (legacy) ──────────────────────
-  const [view, setView] = useState<'kpi' | 'analysis'>('kpi');
+  // ── View: KPI Overview (new) | Deep Analysis (legacy) | Stress Simulator (new) ──────────────────────
+  const [view, setView] = useState<'kpi' | 'analysis' | 'stress-test'>('kpi');
 
   const [granularity, setGranularity] = useState<Granularity>('month');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -121,6 +127,10 @@ export default function InsightsPage() {
     }
     return filteredProjects;
   }, [currentProject, filteredProjects]);
+
+  const selectedInputs = useMemo(() => {
+    return getInputsFromProjects(focusedProjects);
+  }, [focusedProjects]);
 
   const filteredProjectsForDropdown = filteredProjects;
 
@@ -239,6 +249,7 @@ export default function InsightsPage() {
       case 'DSCR': return 'dscr';
       case 'LTV': return 'ltv';
       case 'GRM': return 'grm';
+      case 'PRICE_TO_RENT': return 'grm';
       case 'OER': return 'oer';
       case 'OCCUPANCY': return 'occupancy';
       case 'IRR': return 'irr';
@@ -421,6 +432,10 @@ export default function InsightsPage() {
             val = actuals.grossRentMultiplier;
             formatted = val !== null ? `${val.toFixed(2)}` : '—';
             break;
+          case 'PRICE_TO_RENT':
+            val = actuals.grossRentMultiplier;
+            formatted = val !== null ? `${val.toFixed(1)}` : '—';
+            break;
           case 'IRR':
             val = actuals.irr;
             formatted = val !== null ? `${val.toFixed(2)}%` : '—';
@@ -479,11 +494,15 @@ export default function InsightsPage() {
           val = latest.grossRentMultiplier;
           formatted = val !== null ? `${val.toFixed(2)}` : '—';
           break;
+        case 'PRICE_TO_RENT':
+          val = latest.grossRentMultiplier;
+          formatted = val !== null ? `${val.toFixed(1)}` : '—';
+          break;
         case 'IRR':
           val = latest.irr;
           formatted = val !== null ? `${val.toFixed(2)}%` : '—';
           break;
-      }
+        }
 
       const colorClass = getBenchmarkColorClass(metricId, val);
       return { isLocked: false, isMissing: val === null, value: formatted, colorClass };
@@ -709,9 +728,9 @@ export default function InsightsPage() {
           borderColor: "rgba(255,255,255,0.07)",
         }}
       >
-        {(["kpi", "analysis"] as const).map((v) => {
-          const label = v === "kpi" ? "KPI Overview" : "Deep Analysis";
-          const icon  = v === "kpi" ? "monitoring"   : "analytics";
+        {(["kpi", "analysis", "stress-test"] as const).map((v) => {
+          const label = v === "kpi" ? "KPI Overview" : v === "analysis" ? "Deep Analysis" : "Stress Simulator";
+          const icon  = v === "kpi" ? "monitoring"   : v === "analysis" ? "analytics" : "tune";
           const active = view === v;
           return (
             <button
@@ -898,7 +917,7 @@ export default function InsightsPage() {
                     Portfolio Scorecard
                   </h2>
                   <p className="text-xs text-[#9E9DA0] font-extralight tracking-wider uppercase">
-                    10 core financial & operational metrics across the REIL investment lifecycle
+                    11 core financial & operational metrics across the REIL investment lifecycle
                   </p>
                 </div>
               </div>
@@ -1508,8 +1527,245 @@ export default function InsightsPage() {
       </div>
       </div>
       )}
+
+      {/* ── Stress Simulator tab (new content) ────────────────────────────────── */}
+      {view === "stress-test" && (
+        <StressTestProvider key={currentProject?.id || 'portfolio'} initialInputs={selectedInputs}>
+          <div className="p-5 lg:p-6 space-y-6">
+            
+            {/* Global Controls Toolbar for Stress Tester */}
+            <div className="w-full rounded-2xl border border-white/10 p-4 shadow-2xl backdrop-blur-[20px]"
+              style={{ background: 'rgba(30, 27, 32, 0.7)' }}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-4 relative z-10 font-hanken">
+                <div className="flex flex-wrap items-center gap-4">
+                  {/* Phase Filter */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Phase:</span>
+                    <select
+                      value={globalPhaseFilter}
+                      onChange={(e) => setGlobalPhaseFilter(e.target.value as 'all' | 'Acquisition' | 'Fund' | 'Hold' | 'Exit')}
+                      className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-xs rounded-lg px-3 py-1.5 focus:border-[#454955] focus:outline-none font-light"
+                    >
+                      <option value="all">All Phases</option>
+                      <option value="Acquisition">Acquisition (Phase 1)</option>
+                      <option value="Fund">Fund (Phase 2)</option>
+                      <option value="Hold">Hold (Phase 3)</option>
+                      <option value="Exit">Exit (Phase 4)</option>
+                    </select>
+                  </div>
+
+                  {/* Market / Strategy Filter */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Strategy:</span>
+                    <select
+                      value={globalStrategyFilter}
+                      onChange={(e) => setGlobalStrategyFilter(e.target.value as 'all' | 'LTR' | 'STR')}
+                      className="bg-[#161318] border border-white/10 text-[#C0BEC2] text-xs rounded-lg px-3 py-1.5 focus:border-[#454955] focus:outline-none font-light"
+                    >
+                      <option value="all">All Strategies</option>
+                      <option value="LTR">Long-Term Rental (LTR)</option>
+                      <option value="STR">Short-Term Rental (STR)</option>
+                    </select>
+                  </div>
+                  
+                  {/* Single-Project Focus mode selector */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-[#6B6870] uppercase tracking-wider font-semibold">Focus Mode:</span>
+                    <div className="relative">
+                      <button
+                        onClick={() => setIsProjectDropdownOpen(!isProjectDropdownOpen)}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-[#161318] border border-white/10 rounded-lg text-xs font-light text-[#C0BEC2] hover:text-white transition-all duration-200"
+                      >
+                        <span className="max-w-[150px] truncate">{currentProject ? currentProject.propertyName : 'All Projects (Roll-up)'}</span>
+                        <ChevronDown className="w-3.5 h-3.5 text-[#6B6870]" />
+                      </button>
+                      {isProjectDropdownOpen && (
+                        <div className="absolute left-0 mt-1 w-60 rounded-xl border border-white/10 bg-[#161318] p-1.5 shadow-2xl z-30 space-y-0.5">
+                          <button
+                            onClick={() => {
+                              clearDeal();
+                              setIsProjectDropdownOpen(false);
+                            }}
+                            className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-[#C0BEC2] hover:text-white hover:bg-white/5"
+                          >
+                            <span>All Projects (Roll-up)</span>
+                            {!currentProject && <Check className="w-3.5 h-3.5 text-[#6E7480]" />}
+                          </button>
+                          {filteredProjectsForDropdown.map((p) => (
+                            <button
+                              key={p.id}
+                              onClick={() => {
+                                setDeal(p);
+                                setIsProjectDropdownOpen(false);
+                              }}
+                              className="flex items-center justify-between w-full px-3 py-1.5 rounded-lg text-left text-xs text-[#C0BEC2] hover:text-white hover:bg-white/5"
+                            >
+                              <span className="truncate">{p.propertyName ?? p.name}</span>
+                              {currentProject?.id === p.id && <Check className="w-3.5 h-3.5 text-[#6E7480]" />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Empty state if no projects match */}
+            {filteredProjects.length === 0 ? (
+              <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-400/95 text-xs font-light flex items-center gap-2 relative z-10 font-hanken">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                No projects in the portfolio match the selected phase and strategy filters. Reset your filters to load underwriting diagnostics.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                {/* Simulator Sidebar */}
+                <div className="lg:col-span-1">
+                  <RiskStressTester />
+                </div>
+                
+                {/* Dynamic Charts Dashboard */}
+                <div className="lg:col-span-3 rounded-2xl border border-white/10 p-6 shadow-2xl backdrop-blur-[20px] relative overflow-hidden"
+                  style={{ background: 'rgba(30, 27, 32, 0.7)' }}
+                >
+                  <div className="absolute -top-40 -left-40 w-80 h-80 bg-[#454955]/10 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+                  
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-white/5 relative z-10 mb-6">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-3xl font-light tracking-tight text-white font-hanken">
+                          Underwriting Stress Test Simulator
+                        </h1>
+                        <span className="text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Interactive Simulation
+                        </span>
+                      </div>
+                      <p className="text-sm text-[#9E9DA0] font-extralight tracking-wide font-hanken">
+                        Adjust sliders to model worst-case vacancies, opex shocks, rate hikes, and tax spikes.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="relative z-10">
+                    <StressTestDashboardContent />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </StressTestProvider>
+      )}
     </div>
   );
+}
+
+// ─── Stress Simulator Inner Wrapper ───
+function StressTestDashboardContent() {
+  const { result } = useStressTest();
+  return <InsightsDashboard data={result} />;
+}
+
+// ─── Default fallback inputs for Stress Tester ───
+const DEFAULT_INPUTS: InsightsEngineInputs = {
+  purchasePrice: 300000,
+  rehabBudget: 30000,
+  downPayment: 60000,
+  interestRate: 6.0,
+  amortizationTerm: 30,
+  grossScheduledIncome: 36000,
+  operatingExpenses: 12000,
+  vacancyRate: 5.0,
+  marketData: {
+    daysOnMarket: 45,
+    medianHomePrice: 320000,
+    averageRent: 2200
+  }
+};
+
+// ─── Project mapper helper for Stress Tester ───
+function getInputsFromProjects(projectsList: Project[]): InsightsEngineInputs {
+  if (projectsList.length === 0) {
+    return DEFAULT_INPUTS;
+  }
+  
+  let totalPurchasePrice = 0;
+  let totalRehabBudget = 0;
+  let totalDownPayment = 0;
+  let totalLoanAmount = 0;
+  let weightedInterestRateSum = 0;
+  let totalAmortizationTerm = 0;
+  let totalGrossScheduledIncome = 0;
+  let totalOperatingExpenses = 0;
+  let totalVacancyRate = 0;
+  
+  let totalDaysOnMarket = 0;
+  let domCount = 0;
+  let totalMedianHomePrice = 0;
+  let totalAverageRent = 0;
+  let validCount = 0;
+
+  for (const p of projectsList) {
+    const f = p.financials;
+    if (!f) continue;
+
+    const purchasePrice = f.purchasePrice || f.targetPurchasePrice || f.targetPrice || 0;
+    const rehabBudget = f.rehabBudget || f.projectedRehabCost || f.rehabActual || 0;
+    const loanAmount = f.loanAmount ?? Math.max(0, purchasePrice - (f.financingCashInvested ?? 0));
+    const downPayment = Math.max(0, purchasePrice - loanAmount);
+    
+    totalPurchasePrice += purchasePrice;
+    totalRehabBudget += rehabBudget;
+    totalDownPayment += downPayment;
+    totalLoanAmount += loanAmount;
+    
+    weightedInterestRateSum += (f.loanInterestRate ?? 6.0) * loanAmount;
+    totalAmortizationTerm += f.loanTermYears ?? f.amortizationYears ?? 30;
+    
+    const monthlyGrossRent = f.monthlyGrossRent ?? f.projectedMonthlyRent ?? f.projectedRent ?? 0;
+    const otherMonthlyIncome = f.otherMonthlyIncome ?? ((f.grossIncomeParking ?? 0) + (f.grossIncomeLaundry ?? 0));
+    totalGrossScheduledIncome += (monthlyGrossRent + otherMonthlyIncome) * 12;
+    
+    const noiComp = computeNOIComponents(f, p.strategyType, p.currentPhase);
+    totalOperatingExpenses += noiComp.totalOperatingExpenses;
+    
+    totalVacancyRate += f.vacancyRatePercent ?? f.vacancyRate ?? 7.0;
+    
+    if (f.comparableSales && f.comparableSales.length > 0) {
+      totalDaysOnMarket += f.comparableSales.reduce((a, b) => a + b.daysOnMarket, 0) / f.comparableSales.length;
+      domCount++;
+    }
+    
+    totalMedianHomePrice += f.estimatedCurrentValue || f.estimatedARV || purchasePrice || 0;
+    totalAverageRent += monthlyGrossRent;
+    validCount++;
+  }
+
+  if (validCount === 0) {
+    return DEFAULT_INPUTS;
+  }
+
+  const interestRate = totalLoanAmount > 0 
+    ? weightedInterestRateSum / totalLoanAmount 
+    : 6.0;
+
+  return {
+    purchasePrice: totalPurchasePrice || 300000,
+    rehabBudget: totalRehabBudget || 30000,
+    downPayment: totalDownPayment || 60000,
+    interestRate,
+    amortizationTerm: Math.round(totalAmortizationTerm / validCount),
+    grossScheduledIncome: totalGrossScheduledIncome || 36000,
+    operatingExpenses: totalOperatingExpenses || 12000,
+    vacancyRate: totalVacancyRate / validCount,
+    marketData: {
+      daysOnMarket: domCount > 0 ? Math.round(totalDaysOnMarket / domCount) : 45,
+      medianHomePrice: totalMedianHomePrice / validCount || 320000,
+      averageRent: totalAverageRent / validCount || 2200
+    }
+  };
 }
 
 // Helper to translate phase number to label

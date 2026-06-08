@@ -250,7 +250,7 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         let res = `<div class="font-plus-jakarta text-xs font-light text-[#9E9DA0] mb-1">${arr[0].axisValue}</div>`;
         arr.forEach((p) => {
           let valStr = String(p.value);
-          if (p.seriesName === 'DSCR' || p.seriesName === 'GRM') {
+          if (p.seriesName === 'DSCR' || p.seriesName === 'GRM' || p.seriesName === 'Price-to-Rent') {
             valStr = p.value.toFixed(2);
           } else {
             valStr = p.value.toFixed(2) + '%';
@@ -269,13 +269,14 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
       }
     },
     legend: {
-      data: ['Cap Rate', 'CoC Return', 'Appreciation', 'DSCR', 'GRM', 'IRR'],
+      data: ['Cap Rate', 'CoC Return', 'Appreciation', 'DSCR', 'GRM', 'Price-to-Rent', 'IRR'],
       selected: {
         'Cap Rate': true,
         'CoC Return': true,
         'Appreciation': false,
         'DSCR': true,
         'GRM': false,
+        'Price-to-Rent': false,
         'IRR': false,
       },
       textStyle: { color: '#9E9DA0', fontSize: 10, fontFamily: 'var(--font-plus-jakarta)' },
@@ -381,6 +382,17 @@ export function LongTermTrendChart({ snapshots }: ChartProps) {
         smooth: true,
         lineStyle: { width: 2, color: '#f43f5e' },
         itemStyle: { color: '#f43f5e' },
+        symbol: 'circle',
+        symbolSize: 6,
+      },
+      {
+        name: 'Price-to-Rent',
+        type: 'line',
+        yAxisIndex: 1,
+        data: grmData,
+        smooth: true,
+        lineStyle: { width: 2, color: '#10b981' },
+        itemStyle: { color: '#10b981' },
         symbol: 'circle',
         symbolSize: 6,
       },

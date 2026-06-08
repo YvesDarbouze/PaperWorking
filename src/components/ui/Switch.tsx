@@ -23,7 +23,7 @@ const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
     return (
       <label
         className={cn(
-          "relative inline-flex items-center cursor-pointer select-none align-middle",
+          "relative inline-flex items-center cursor-pointer select-none align-middle flex-shrink-0",
           disabled && "opacity-[0.38] cursor-not-allowed pointer-events-none",
           className
         )}
@@ -39,22 +39,19 @@ const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
         />
         <span
           className={cn(
-            "w-9 h-5 rounded-full border transition-all duration-200 flex items-center p-0.5",
-            "bg-[var(--pw-glass-bg)] border-[var(--pw-border)] backdrop-blur-[20px]",
-            "peer-hover:border-[var(--color-outline)]",
-            "peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-brand-primary)] peer-focus-visible:ring-offset-2",
+            "w-9 h-5 rounded-full transition-all duration-200 flex items-center p-[2px] relative",
             activeChecked 
-              ? "bg-[var(--color-brand-primary)] border-[var(--color-brand-primary)]" 
-              : "border-[var(--pw-border)]",
+              ? "bg-on-background" 
+              : "bg-[var(--color-outline)]",
             disabled && "opacity-[0.38]"
           )}
         >
           <span
             className={cn(
-              "w-3.5 h-3.5 rounded-full shadow-sm transition-transform duration-200",
+              "w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out",
               activeChecked 
-                ? "translate-x-4 bg-[var(--color-on-primary)]" 
-                : "translate-x-0 bg-[var(--color-outline)]"
+                ? "translate-x-4 bg-background" 
+                : "translate-x-0 bg-white"
             )}
           />
         </span>

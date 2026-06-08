@@ -99,22 +99,22 @@ const TOOLTIPS: Record<string, TooltipDef> = {
     goodSign:    "A falling GRM across your portfolio means you're buying income more efficiently.",
   },
   PRICE_TO_RENT: {
-    formula:     "Price-to-Rent = Median Home Price ÷ Average Annual Rent",
-    description: "Price-to-Rent Ratio indicates whether buying or renting is cheaper in a market. Guides acquisition strategy.",
-    benchmark:   "Below 15: strong buy market. 15–20: moderate. Above 20: rental may not pencil.",
-    goodSign:    "Why it matters: A high ratio indicates a better environment for renting out properties, as people are priced out of buying.",
+    formula:     "Price-to-Rent = Property Price ÷ Gross Annual Rent",
+    description: "Measures how many years of gross rent equal the purchase price. At the market level, use median home price ÷ median annual rent. Your dashboard shows the project-level ratio — identical to GRM numerically, but interpreted from a tenant's perspective: a high ratio means buying is expensive, so people rent instead.",
+    benchmark:   "Below 15: strong buy market — cheap to own, lower rental demand. 15–20: balanced. Above 20: strong rental market — people are priced out of buying, boosting landlord demand.",
+    goodSign:    "A high P/R in your target market means tenants can't afford to buy, keeping rental demand and your occupancy rates strong.",
   },
   VACANCY: {
-    formula:     "Vacancy Rate = Vacant Units ÷ Total Units × 100",
-    description: "Vacancy Rate measures what percentage of your rentable space sits unoccupied. High vacancy kills cash flow.",
+    formula:     "Vacancy Rate = (1 − Occupied Days ÷ Total Hold Days) × 100",
+    description: "Vacancy Rate measures what percentage of your rentable space sits unoccupied or uncollected. Shows as the underwriting assumption (default 7%) until actual occupancy data is entered in the Hold phase.",
     benchmark:   "5–7% is standard economic vacancy. Above 10% requires immediate leasing attention.",
-    goodSign:    "Falling vacancy with stable rents means strong demand in your target markets.",
+    goodSign:    "Falling vacancy with stable rents means strong demand in your target markets. Enter actual occupied/total days in your project to replace the assumption.",
   },
   DOM: {
-    formula:     "DOM = Days from Listing Date to Sale/Lease Date",
-    description: "Days on Market measures local market liquidity. Fewer days = more demand, easier exit.",
+    formula:     "DOM = Days from Listing Date to Sale/Closing Date",
+    description: "Days on Market measures local market liquidity. Sourced from actual project listing history when available; falls back to the average DOM from your comparable sales comps. Fewer days = more demand, easier exit.",
     benchmark:   "Under 30 days is a hot market. 30–60 is moderate. Over 90 days signals softness.",
-    goodSign:    "Low DOM in your target markets means faster exits and lower holding cost exposure.",
+    goodSign:    "Low DOM in your target markets means faster exits and lower holding cost exposure. Add listing + closing dates to your project for exact figures.",
   },
 };
 
@@ -950,20 +950,31 @@ function usePortfolioInsights(projects: Project[]): PortfolioInsights {
         sumGrossRent += annualRent;
       }
 
-      // Vacancy: weight by gross rent
+      // Vacancy: weight by gross rent; unit-weight fallback for projects with assumption but no income yet
       if (noiComp.grossRentalIncome > 0) {
         vacancyWeighted += m.vacancyRate * noiComp.grossRentalIncome;
         vacancyWeight   += noiComp.grossRentalIncome;
+      } else if (m.vacancyRate > 0) {
+        vacancyWeighted += m.vacancyRate;
+        vacancyWeight   += 1;
       }
 
-      // DOM — use listing-to-sale if available
+      // DOM — prefer actual listing-to-sale dates; fall back to comparable sales market data
       const fAny = f as any;
-      if (fAny.listingDate && (fAny.closingDate || fAny.actualClosingDate)) {
+      if (fAny.listingDate && (fAny.closingDate || fAny.actualClosingDate || fAny.soldDate)) {
         const start = new Date(fAny.listingDate as string);
-        const end   = new Date((fAny.closingDate || fAny.actualClosingDate) as string);
+        const end   = new Date((fAny.closingDate || fAny.actualClosingDate || fAny.soldDate) as string);
         if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
           const days = Math.max(0, Math.round((end.getTime() - start.getTime()) / 86_400_000));
           domTotal += days;
+          domCount++;
+        }
+      } else if (f.comparableSales && f.comparableSales.length > 0) {
+        const compDoms = (f.comparableSales as Array<{ daysOnMarket: number }>)
+          .map(c => c.daysOnMarket)
+          .filter(d => d > 0);
+        if (compDoms.length > 0) {
+          domTotal += compDoms.reduce((a, b) => a + b, 0) / compDoms.length;
           domCount++;
         }
       }
@@ -1318,8 +1329,367 @@ export function KPIInsightsDashboard() {
               </KPICard>
             </div>
           </div>
+
+          {/* ── Section 4: Data Coverage — REIL Input Map ───────────────── */}
+          <SectionLabel label="Formula → Input Mapping" isDark={isDark} />
+          <DataCoveragePanel projects={projects} ins={ins} isDark={isDark} />
         </>
       )}
     </div>
+  );
+}
+
+// ─── Data Coverage Panel ───────────────────────────────────────────────────────
+// Shows each metric, its formula inputs, the REIL wizard step that collects them,
+// and whether the current project data satisfies that requirement.
+
+interface DataCoverageRow {
+  metric:      string;
+  formula:     string;
+  reilStep:    string;
+  phase:       string;
+  inputs:      string[];
+  status:      "live" | "assumption" | "missing";
+  statusNote:  string;
+}
+
+function DataCoveragePanel({
+  projects,
+  ins,
+  isDark,
+}: {
+  projects: Project[];
+  ins: PortfolioInsights;
+  isDark: boolean;
+}) {
+  const headingColor = isDark ? "rgba(253,255,252,0.90)" : "#0d0a0b";
+  const subColor     = isDark ? "rgba(253,255,252,0.40)" : "rgba(69,73,85,0.55)";
+  const borderColor  = isDark ? "rgba(230, 234, 240, 0.10)" : "rgba(33, 34, 38, 0.10)";
+  const cardBg       = isDark ? "rgba(30,27,34,0.50)" : "#FFFFFF";
+
+  // Derive per-field coverage by inspecting the first project's financials
+  const hasRent      = projects.some(p => (p.financials?.monthlyGrossRent ?? p.financials?.projectedMonthlyRent) != null);
+  const hasOpEx      = projects.some(p =>
+    (p.financials?.holdingCostTaxes ?? p.financials?.holdingCostInsurance ?? p.financials?.propertyManagementFeePercent) != null
+  );
+  const hasValue     = projects.some(p => (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice) != null && (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice)! > 0);
+  const hasLoan      = projects.some(p => (p.financials?.loanAmount ?? 0) > 0);
+  const hasRate      = projects.some(p => (p.financials?.loanInterestRate ?? 0) > 0);
+  const hasCashInv   = ins.weightedCoC !== null;
+  const hasVacancy   = projects.some(p => p.financials?.vacancyRatePercent != null);
+  const hasOccupied  = projects.some(p => p.financials?.daysOccupied != null && p.financials?.totalHoldDays != null);
+  const hasDomDates  = projects.some(p => (p.financials as any)?.listingDate && ((p.financials as any)?.soldDate ?? (p.financials as any)?.closingDate));
+  const hasComps     = projects.some(p => (p.financials?.comparableSales ?? []).length > 0);
+  const hasPurchase  = projects.some(p => (p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0) > 0);
+
+  const rows: DataCoverageRow[] = [
+    {
+      metric:     "Net Operating Income",
+      formula:    "Total Income − Operating Expenses",
+      reilStep:   "Property → Hold",
+      phase:      "Phase 1+",
+      inputs:     ["Monthly Gross Rent", "Vacancy Rate %", "Taxes / Insurance / Utilities", "Property Mgmt Fee", "Maintenance Reserve"],
+      status:     ins.totalNOI !== null && hasRent && hasOpEx ? "live" : hasRent ? "assumption" : "missing",
+      statusNote: ins.totalNOI !== null && hasRent && hasOpEx
+        ? "All income + expense inputs present — computing live."
+        : hasRent
+        ? "Rent found; add operating expense breakdown for a precise NOI."
+        : "Enter Monthly Gross Rent in the project to unlock NOI.",
+    },
+    {
+      metric:     "Capitalization Rate",
+      formula:    "NOI ÷ Current Property Value",
+      reilStep:   "Property",
+      phase:      "Phase 1",
+      inputs:     ["Estimated ARV / Current Value", "NOI (see above)"],
+      status:     ins.weightedCapRate !== null ? "live" : hasValue ? "assumption" : "missing",
+      statusNote: ins.weightedCapRate !== null
+        ? "Computing from NOI and estimated property value."
+        : "Set Estimated ARV or Current Value in the project financials.",
+    },
+    {
+      metric:     "Cash-on-Cash Return",
+      formula:    "Annual Cash Flow ÷ Total Cash Invested",
+      reilStep:   "Ownership → Terms",
+      phase:      "Phase 2",
+      inputs:     ["Loan Amount", "Interest Rate", "Loan Term (years)", "Down Payment / Cash Invested"],
+      status:     hasCashInv ? "live" : hasLoan ? "assumption" : "missing",
+      statusNote: hasCashInv
+        ? "Loan details found — computing leveraged cash-on-cash return."
+        : hasLoan
+        ? "Loan amount found; add interest rate and term to compute debt service."
+        : "Enter loan details in the project to unlock CoC Return.",
+    },
+    {
+      metric:     "Return on Investment",
+      formula:    "Net Profit ÷ Total Investment Cost",
+      reilStep:   "Property → Exit (tracked over time)",
+      phase:      "Phase 1+",
+      inputs:     ["Purchase Price", "Rehab Cost", "Annual Cash Flow", "Appreciation (estimated or realized)"],
+      status:     hasPurchase ? "live" : "missing",
+      statusNote: hasPurchase
+        ? "Showing blended ROI (CoC Return + annualized appreciation) as the trend builds over time."
+        : "Enter Purchase Price and hold timeline data to compute ROI.",
+    },
+    {
+      metric:     "Debt Service Coverage Ratio",
+      formula:    "NOI ÷ Annual Debt Service",
+      reilStep:   "Terms",
+      phase:      "Phase 2",
+      inputs:     ["Loan Amount", "Interest Rate", "Loan Term (years)"],
+      status:     ins.portfolioDSCR !== null ? "live" : hasLoan && hasRate ? "assumption" : "missing",
+      statusNote: ins.portfolioDSCR !== null
+        ? "DSCR is live — lender underwriting benchmark active."
+        : hasLoan && hasRate
+        ? "Loan + rate found; NOI is needed to compute DSCR ratio."
+        : "Enter Loan Amount and Interest Rate in the project to unlock DSCR.",
+    },
+    {
+      metric:     "Vacancy Rate",
+      formula:    "Vacant Days ÷ Total Hold Days × 100",
+      reilStep:   "Property (assumption) → Hold (actuals)",
+      phase:      "Phase 1 assumption / Phase 3 actuals",
+      inputs:     ["Vacancy Rate % (assumption, default 7%)", "Occupied Days + Total Hold Days (actual)"],
+      status:     hasOccupied ? "live" : hasVacancy || ins.avgVacancyRate !== null ? "assumption" : "missing",
+      statusNote: hasOccupied
+        ? "Using actual occupied / total hold day data."
+        : ins.avgVacancyRate !== null
+        ? "Showing underwriting assumption (default 7%). Set Vacancy Rate % in the project or enter actual hold-phase occupancy to refine."
+        : "No vacancy data. Defaulting to 7% economic vacancy assumption.",
+    },
+    {
+      metric:     "Operating Expense Ratio",
+      formula:    "Total Operating Expenses ÷ Gross Operating Income",
+      reilStep:   "Property",
+      phase:      "Phase 1+",
+      inputs:     ["Monthly Gross Rent", "Taxes / Insurance / Utilities", "Property Mgmt Fee", "Maintenance Reserve", "HOA"],
+      status:     ins.weightedOER !== null ? "live" : hasRent || hasOpEx ? "assumption" : "missing",
+      statusNote: ins.weightedOER !== null
+        ? "OER computing from income and expense breakdown."
+        : "Enter income and at least one expense line to compute OER.",
+    },
+    {
+      metric:     "Gross Rent Multiplier",
+      formula:    "Property Price ÷ Gross Annual Rent",
+      reilStep:   "Property",
+      phase:      "Phase 1",
+      inputs:     ["Purchase Price (or Target Price)", "Monthly Gross Rent"],
+      status:     ins.weightedGRM !== null ? "live" : hasPurchase || hasRent ? "assumption" : "missing",
+      statusNote: ins.weightedGRM !== null
+        ? "GRM computing — use this to screen deals quickly against market comps."
+        : "Enter Purchase Price and Monthly Rent to compute GRM.",
+    },
+    {
+      metric:     "Days on Market",
+      formula:    "Listing Date → Closing Date (actual) or Avg of Comparable Sales",
+      reilStep:   "Property (comps) → Exit (actuals)",
+      phase:      "Phase 1 via comps / Phase 4 actuals",
+      inputs:     ["Listing Date + Closing Date (actual)", "OR: Comparable Sales DOM (market proxy)"],
+      status:     ins.avgDOM !== null ? (hasDomDates ? "live" : "assumption") : hasComps ? "assumption" : "missing",
+      statusNote: hasDomDates
+        ? "Using actual listing-to-close date range."
+        : hasComps
+        ? "Sourced from comparable sales comps. Add Listing Date + Closing Date to the project for exact figures."
+        : "No DOM data yet. Add comparable sales comps to your project, or enter listing and closing dates in the Exit phase.",
+    },
+    {
+      metric:     "Price-to-Rent Ratio",
+      formula:    "Property Price ÷ Gross Annual Rent (project-level proxy)",
+      reilStep:   "Property",
+      phase:      "Phase 1",
+      inputs:     ["Purchase Price", "Monthly Gross Rent", "(Ideal: Market Median Price + Market Avg Rent for true market P/R)"],
+      status:     ins.priceToRent !== null ? "live" : hasPurchase || hasRent ? "assumption" : "missing",
+      statusNote: ins.priceToRent !== null
+        ? "Showing project-level P/R (same formula as GRM). A high value signals a strong rental demand market."
+        : "Enter Purchase Price and Monthly Rent. For true market-level P/R, use your market's median home price ÷ median annual rent.",
+    },
+  ];
+
+  const statusConfig = {
+    live:       { dot: C.green, label: "Live",       text: isDark ? C.green  : "#2d7a2d" },
+    assumption: { dot: C.amber, label: "Assumption", text: isDark ? C.amber  : "#b36800" },
+    missing:    { dot: C.red,   label: "Missing",    text: isDark ? C.red    : "#c0392b" },
+  } as const;
+
+  return (
+    <article
+      className="rounded-xl overflow-hidden"
+      style={{
+        background: cardBg,
+        border: `1px solid ${borderColor}`,
+        backdropFilter: isDark ? "blur(20px)" : undefined,
+        boxShadow: isDark ? "0 4px 20px rgba(0,0,0,0.25)" : "0 2px 10px rgba(0,0,0,0.05)",
+      }}
+    >
+      {/* Header */}
+      <div
+        className="px-5 py-4 flex items-start gap-3"
+        style={{ borderBottom: `1px solid ${borderColor}` }}
+      >
+        <div
+          className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+          style={{ background: isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.07)" }}
+        >
+          <span
+            className="material-symbols-outlined text-[18px]"
+            style={{ color: C.blue, fontVariationSettings: "'FILL' 0" }}
+          >
+            schema
+          </span>
+        </div>
+        <div>
+          <h2 className="text-[14px] font-bold" style={{ color: headingColor }}>
+            REIL Wizard → Metric Input Map
+          </h2>
+          <p className="text-[12px] mt-0.5 leading-snug" style={{ color: subColor }}>
+            Every KPI above is derived from specific fields in your project. Use this map to know exactly what to fill in — and why — during the REIL creation flow.
+          </p>
+        </div>
+        <div className="ml-auto flex items-center gap-3 shrink-0">
+          {(["live", "assumption", "missing"] as const).map(s => (
+            <div key={s} className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full" style={{ background: statusConfig[s].dot }} />
+              <span className="text-[10px] font-semibold uppercase" style={{ color: subColor, letterSpacing: "0.07em" }}>
+                {statusConfig[s].label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr style={{ borderBottom: `1px solid ${borderColor}` }}>
+              {["Metric", "Formula", "REIL Step", "Phase Gate", "Required Inputs", "Status"].map(h => (
+                <th
+                  key={h}
+                  className="px-4 py-3 text-[10px] font-bold uppercase"
+                  style={{ color: subColor, letterSpacing: "0.08em", whiteSpace: "nowrap" }}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => {
+              const cfg = statusConfig[row.status];
+              return (
+                <tr
+                  key={row.metric}
+                  style={{
+                    borderBottom: i < rows.length - 1 ? `1px solid ${borderColor}` : undefined,
+                    background: i % 2 === 0
+                      ? isDark ? "rgba(255,255,255,0.015)" : "rgba(69,73,85,0.025)"
+                      : "transparent",
+                  }}
+                >
+                  {/* Metric */}
+                  <td className="px-4 py-3 align-top">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: cfg.dot }} />
+                      <span className="text-[12px] font-semibold" style={{ color: headingColor, whiteSpace: "nowrap" }}>
+                        {row.metric}
+                      </span>
+                    </div>
+                  </td>
+
+                  {/* Formula */}
+                  <td className="px-4 py-3 align-top">
+                    <span
+                      className="text-[11px] font-mono px-2 py-0.5 rounded"
+                      style={{
+                        background: isDark ? "rgba(122,158,170,0.12)" : "rgba(122,158,170,0.12)",
+                        color: C.blue,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {row.formula}
+                    </span>
+                  </td>
+
+                  {/* REIL Step */}
+                  <td className="px-4 py-3 align-top">
+                    <span className="text-[11px]" style={{ color: subColor, whiteSpace: "nowrap" }}>
+                      {row.reilStep}
+                    </span>
+                  </td>
+
+                  {/* Phase Gate */}
+                  <td className="px-4 py-3 align-top">
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 rounded-full"
+                      style={{
+                        background: isDark ? "rgba(255,255,255,0.06)" : "rgba(69,73,85,0.07)",
+                        color: subColor,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {row.phase}
+                    </span>
+                  </td>
+
+                  {/* Required Inputs */}
+                  <td className="px-4 py-3 align-top max-w-[260px]">
+                    <ul className="space-y-0.5">
+                      {row.inputs.map(inp => (
+                        <li key={inp} className="flex items-start gap-1.5">
+                          <span className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ background: subColor }} />
+                          <span className="text-[11px]" style={{ color: subColor }}>
+                            {inp}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3 align-top min-w-[180px]">
+                    <div className="space-y-1">
+                      <span
+                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
+                        style={{
+                          background: `${cfg.dot}18`,
+                          color: cfg.text,
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: cfg.dot }} />
+                        {cfg.label}
+                      </span>
+                      <p className="text-[11px] leading-relaxed" style={{ color: subColor }}>
+                        {row.statusNote}
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer CTA */}
+      <div
+        className="px-5 py-4 flex items-center justify-between gap-4"
+        style={{ borderTop: `1px solid ${borderColor}` }}
+      >
+        <p className="text-[12px]" style={{ color: subColor }}>
+          Missing inputs? Fill them in during the project creation flow or directly inside the project workspace.
+        </p>
+        <Link
+          href="/dashboard/projects/new"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-[12px] font-semibold shrink-0"
+          style={{ background: C.slate, color: "#FDFFFC" }}
+        >
+          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 0" }}>
+            add
+          </span>
+          New REIL Project
+        </Link>
+      </div>
+    </article>
   );
 }

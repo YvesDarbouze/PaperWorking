@@ -65,3 +65,34 @@ Uppercase label: **ACCOUNT**
 Last updated: 2026-06-06 v3
 <!-- END:global-navigation-contract -->
 
+<!-- BEGIN:mock-conversion-rules -->
+# 🔌 Mock Conversion & Integration Rules
+
+You are converting mocked features in PaperWorking into real implementations. Apply these rules to every feature prompt that follows.
+
+## Vendor-Agnostic & Mock-Fallback Pattern (Mandatory)
+Never call an external vendor SDK directly from a component. For each integration:
+1. Define a typed provider interface.
+2. Implement the real adapter.
+3. Refactor the existing mock into a `MockAdapter` that satisfies the same interface.
+4. Select the active adapter via an env flag (e.g. `ESIGN_PROVIDER=docusign|mock`).
+
+This keeps the app runnable without credentials and lets vendors be swapped easily.
+
+## Definition of Done
+Every feature must satisfy all of these constraints:
+- **Provider Interface + Real/Mock Adapters**: Keyed and selected via environment variables.
+- **Server-Side Only Secrets**: All third-party API keys and SDK calls must live in Next.js API routes or Server Actions; never leak them to client bundles.
+- **Auth Guard**: Every server endpoint must verify the caller's Firebase ID token before acting.
+- **Persistence**: Real results and status changes are written to Firestore (named collections/paths), not just local React component state.
+- **Async & Webhooks**: For any provider resolving asynchronously (signing, OCR, etc.), implement the callback/webhook route and reconcile statuses. Do not fake completion with a client-side timer.
+- **UI States**: Replace every `setTimeout` or `alert` with real API calls, and handle loading, success, error, and empty states explicitly.
+- **Idempotency & Errors**: Handle retries, network failures, and partial failures. Surface actionable error messages to the user.
+- **Env Documentation**: Document every new environment variable inside `.env.example` with a clear comment.
+- **Telemetry**: Emit a PostHog event on success/failure.
+- **Tests**: Unit-test the adapter logic against the mock and a stubbed real adapter. The existing test suite must still pass completely.
+
+Verify current SDK/API specifics against each vendor's official docs at implementation time rather than assuming.
+<!-- END:mock-conversion-rules -->
+
+

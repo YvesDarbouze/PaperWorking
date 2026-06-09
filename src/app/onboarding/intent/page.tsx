@@ -90,13 +90,18 @@ export default function OnboardingIntentPage() {
       }, { merge: true });
 
       // Fire the event (best-effort)
-      fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'onboarding_intent_selected',
-          properties: { intent: option.id, phase: option.phase },
-        }),
+      user.getIdToken().then((idToken: string) => {
+        fetch('/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            event: 'onboarding_intent_selected',
+            properties: { intent: option.id, phase: option.phase },
+          }),
+        }).catch(() => {});
       }).catch(() => {});
 
       // Navigate
@@ -121,14 +126,22 @@ export default function OnboardingIntentPage() {
       }, { merge: true });
 
       // Fire the event (best-effort)
-      await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event: 'onboarding_intent_selected',
-          properties: { intent: 'first_investment', phase: 1 },
-        }),
-      }).catch(() => {});
+      try {
+        const idToken = await user.getIdToken();
+        await fetch('/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            event: 'onboarding_intent_selected',
+            properties: { intent: 'first_investment', phase: 1 },
+          }),
+        });
+      } catch (e) {
+        // Non-fatal
+      }
     } catch {
       // Non-fatal
     }

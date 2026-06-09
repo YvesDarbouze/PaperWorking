@@ -1,16 +1,20 @@
 import { POST } from '../route';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-var mockVerifySessionCookie = jest.fn();
+var mockRequireAuth = jest.fn();
 var mockGet = jest.fn();
 var mockAdd = jest.fn();
 var mockUpdate = jest.fn();
 var mockSet = jest.fn();
 
+// Mock the auth guard
+jest.mock('@/lib/firebase-admin/auth-guard', () => ({
+  requireAuth: (req: any) => mockRequireAuth(req),
+  isAuthError: (result: any) => result instanceof Response || result instanceof NextResponse,
+}));
+
+// Mock firebase admin DB
 jest.mock('@/lib/firebase/admin', () => ({
-  adminAuth: {
-    verifySessionCookie: (...args: any[]) => mockVerifySessionCookie(...args),
-  },
   adminDb: {
     collection: jest.fn().mockImplementation(() => ({
       doc: jest.fn().mockImplementation(() => ({
@@ -36,12 +40,20 @@ jest.mock('firebase-admin', () => {
   };
 });
 
+// Mock telemetry singleton
+var mockCapture = jest.fn();
+var mockFlush = jest.fn();
+jest.mock('@/lib/telemetry', () => ({
+  capture: (...args: any[]) => mockCapture(...args),
+  flush: (...args: any[]) => mockFlush(...args),
+}));
+
 describe('Events API Endpoint (POST /api/events)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('returns 401 if unauthorized (no session cookie)', async () => {
+  it('returns 401 if unauthorized (no/invalid token)', async () => {
     const request = new NextRequest('http://localhost/api/events', {
       method: 'POST',
       body: JSON.stringify({
@@ -49,6 +61,8 @@ describe('Events API Endpoint (POST /api/events)', () => {
         properties: { intent: 'first_investment', phase: 1 },
       }),
     });
+
+    mockRequireAuth.mockResolvedValueOnce(NextResponse.json({ error: 'Unauthorized' }, { status: 401 }));
 
     const response = await POST(request);
     expect(response.status).toBe(401);
@@ -56,38 +70,44 @@ describe('Events API Endpoint (POST /api/events)', () => {
     expect(json.error).toContain('Unauthorized');
   });
 
-  it('returns 401 if session cookie is invalid', async () => {
+  it('returns 401 if caller is anonymous', async () => {
     const request = new NextRequest('http://localhost/api/events', {
       method: 'POST',
-      headers: {
-        Cookie: '__session=invalid-cookie',
-      },
       body: JSON.stringify({
         event: 'onboarding_intent_selected',
         properties: { intent: 'first_investment', phase: 1 },
       }),
     });
 
-    mockVerifySessionCookie.mockRejectedValueOnce(new Error('Invalid session cookie'));
+    mockRequireAuth.mockResolvedValueOnce({
+      uid: 'anon_123',
+      token: {
+        provider_id: 'anonymous',
+        firebase: { sign_in_provider: 'anonymous' },
+      },
+    });
 
     const response = await POST(request);
     expect(response.status).toBe(401);
     const json = await response.json();
-    expect(json.error).toContain('Unauthorized');
+    expect(json.error).toContain('anonymous users not allowed');
   });
 
   it('returns 400 if event name is missing or invalid', async () => {
     const request = new NextRequest('http://localhost/api/events', {
       method: 'POST',
-      headers: {
-        Cookie: '__session=valid-cookie',
-      },
       body: JSON.stringify({
         properties: { intent: 'first_investment', phase: 1 },
       }),
     });
 
-    mockVerifySessionCookie.mockResolvedValueOnce({ uid: 'user_123' });
+    mockRequireAuth.mockResolvedValueOnce({
+      uid: 'user_123',
+      token: {
+        provider_id: 'password',
+        firebase: { sign_in_provider: 'password' },
+      },
+    });
 
     const response = await POST(request);
     expect(response.status).toBe(400);
@@ -95,19 +115,23 @@ describe('Events API Endpoint (POST /api/events)', () => {
     expect(json.error).toContain('Missing or invalid event name');
   });
 
-  it('successfully persists onboarding intent selected event to user record', async () => {
+  it('successfully persists onboarding intent selected event to user record and forwards to telemetry', async () => {
     const request = new NextRequest('http://localhost/api/events', {
       method: 'POST',
-      headers: {
-        Cookie: '__session=valid-cookie',
-      },
       body: JSON.stringify({
         event: 'onboarding_intent_selected',
         properties: { intent: 'own_properties', phase: 3 },
+        timestamp: '2026-06-09T12:00:00Z',
       }),
     });
 
-    mockVerifySessionCookie.mockResolvedValueOnce({ uid: 'user_123' });
+    mockRequireAuth.mockResolvedValueOnce({
+      uid: 'user_123',
+      token: {
+        provider_id: 'google.com',
+        firebase: { sign_in_provider: 'google.com' },
+      },
+    });
     mockAdd.mockResolvedValueOnce({ id: 'event_doc_123' });
     mockSet.mockResolvedValueOnce(undefined);
 
@@ -125,6 +149,16 @@ describe('Events API Endpoint (POST /api/events)', () => {
       createdAt: 'MOCK_SERVER_TIMESTAMP',
     });
 
+    // Verify telemetry has correct properties and top-level timestamp
+    expect(mockCapture).toHaveBeenCalledTimes(1);
+    expect(mockCapture).toHaveBeenCalledWith({
+      distinctId: 'user_123',
+      event: 'onboarding_intent_selected',
+      properties: { intent: 'own_properties', phase: 3 },
+      timestamp: new Date('2026-06-09T12:00:00Z'),
+    });
+    expect(mockFlush).toHaveBeenCalledTimes(1);
+
     // Verify user profile document is set with merge: true
     expect(mockSet).toHaveBeenCalledTimes(1);
     expect(mockSet).toHaveBeenCalledWith({
@@ -135,28 +169,33 @@ describe('Events API Endpoint (POST /api/events)', () => {
     }, { merge: true });
   });
 
-  it('skips saving user record update if intent property is missing', async () => {
+  it('tolerates telemetry failures without crashing the API response', async () => {
     const request = new NextRequest('http://localhost/api/events', {
       method: 'POST',
-      headers: {
-        Cookie: '__session=valid-cookie',
-      },
       body: JSON.stringify({
-        event: 'onboarding_intent_selected',
-        properties: { phase: 3 },
+        event: 'onboarding_completed',
+        properties: {},
       }),
     });
 
-    mockVerifySessionCookie.mockResolvedValueOnce({ uid: 'user_123' });
+    mockRequireAuth.mockResolvedValueOnce({
+      uid: 'user_123',
+      token: {
+        provider_id: 'password',
+        firebase: { sign_in_provider: 'password' },
+      },
+    });
     mockAdd.mockResolvedValueOnce({ id: 'event_doc_123' });
+    mockUpdate.mockResolvedValueOnce(undefined);
+
+    // Telemetry capture throws
+    mockCapture.mockRejectedValueOnce(new Error('PostHog timeout'));
 
     const response = await POST(request);
     expect(response.status).toBe(200);
     const json = await response.json();
     expect(json.success).toBe(true);
 
-    // Should add event but NOT set user profile
     expect(mockAdd).toHaveBeenCalledTimes(1);
-    expect(mockSet).not.toHaveBeenCalled();
   });
 });

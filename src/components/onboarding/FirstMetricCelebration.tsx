@@ -49,14 +49,21 @@ export function FirstMetricCelebration({
     }
 
     // Fire event
-    fetch('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event: 'onboarding_celebration_dismissed',
-        properties: {},
-      }),
-    }).catch(() => {});
+    if (user) {
+      user.getIdToken().then((idToken: string) => {
+        fetch('/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${idToken}`
+          },
+          body: JSON.stringify({
+            event: 'onboarding_celebration_dismissed',
+            properties: {},
+          }),
+        }).catch(() => {});
+      }).catch(() => {});
+    }
 
     setTimeout(() => {
       onDismiss?.();

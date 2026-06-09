@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { adminDb } from '@/lib/firebase/admin';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import * as admin from 'firebase-admin';
 import telemetry from '@/lib/telemetry';
 
@@ -14,7 +15,7 @@ import telemetry from '@/lib/telemetry';
    2. Stubbed for PostHog (console.log until integrated)
    3. Trigger side-effects (email sends, profile updates)
    
-   Auth: Requires valid Firebase session cookie.
+   Auth: Requires valid Firebase ID token in Authorization header.
    ═══════════════════════════════════════════════════════ */
 
 // Recognized milestone events
@@ -36,22 +37,17 @@ interface EventPayload {
 
 export async function POST(request: NextRequest) {
   try {
-    // ── Auth: verify session cookie ──
-    const sessionCookie = request.cookies.get('__session')?.value;
-    if (!sessionCookie) {
-      return NextResponse.json(
-        { error: 'Unauthorized — no session' },
-        { status: 401 }
-      );
+    // ── Auth: verify Firebase ID token on the request ──
+    const auth = await requireAuth(request);
+    if (isAuthError(auth)) {
+      return auth;
     }
+    const { uid, token } = auth;
 
-    let uid: string;
-    try {
-      const decoded = await adminAuth.verifySessionCookie(sessionCookie, true);
-      uid = decoded.uid;
-    } catch {
+    // Reject anonymous callers
+    if (token.provider_id === 'anonymous' || token.firebase?.sign_in_provider === 'anonymous') {
       return NextResponse.json(
-        { error: 'Unauthorized — invalid session' },
+        { error: 'Unauthorized — anonymous users not allowed' },
         { status: 401 }
       );
     }
@@ -79,7 +75,8 @@ export async function POST(request: NextRequest) {
       await telemetry.capture({
         distinctId: uid,
         event,
-        properties: { ...sanitizedProperties, $timestamp: timestamp || new Date().toISOString() },
+        properties: sanitizedProperties,
+        timestamp: timestamp ? new Date(timestamp) : new Date(),
       });
       await telemetry.flush();
     } catch (telemetryErr) {

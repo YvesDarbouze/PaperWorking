@@ -15,6 +15,7 @@ import { SettlementLedger } from '@/components/project/SettlementLedger';
 import { RentalOperationsLedger } from '@/components/project/RentalOperationsLedger';
 import { ListingCRMTracker } from '@/components/project/ListingCRMTracker';
 import { MarketingListingLedger } from '@/components/project/MarketingListingLedger';
+import PhotographyUploadManager from '@/components/exit/PhotographyUploadManager';
 import { TotalAllInCostCard } from '@/components/project/TotalAllInCostCard';
 import { NetRealizedProfitCard } from '@/components/project/NetRealizedProfitCard';
 import { DocumentVault } from '@/components/project/DocumentVault';
@@ -588,6 +589,8 @@ export default function Phase4WorkspacePage() {
                   isSaving={isSaving}
                   isLocked={project.locked}
                 />
+
+                <PhotographyUploadManager projectId={projectId} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <ListingCRMTracker

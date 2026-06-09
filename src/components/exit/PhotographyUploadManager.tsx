@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Camera, Upload, Image as ImageIcon, Trash2, Eye, Film, CheckCircle } from 'lucide-react';
+import { Camera, Image as ImageIcon, Trash2, Eye, Film } from 'lucide-react';
 import toast from 'react-hot-toast';
+import FileDropzone from '@/components/shared/FileDropzone';
 
 /* ═══════════════════════════════════════════════════════
    Photography Upload Manager — Phase 4 Module
@@ -15,7 +16,7 @@ interface PhotoAsset {
   name: string;
   type: 'Photo' | 'Video' | '3D Tour';
   room: string;
-  url: string; // Placeholder URL
+  url: string; // Firebase Storage or placeholder URL
   uploaded: boolean;
 }
 
@@ -33,17 +34,16 @@ const TYPE_ICONS: Record<PhotoAsset['type'], React.ReactNode> = {
   '3D Tour': <Eye className="w-4 h-4" />,
 };
 
-export default function PhotographyUploadManager() {
+interface Props {
+  projectId: string;
+}
+
+export default function PhotographyUploadManager({ projectId }: Props) {
   const [assets, setAssets] = useState<PhotoAsset[]>(SAMPLE_ASSETS);
 
   const uploadedCount = assets.filter(a => a.uploaded).length;
   const photoCount = assets.filter(a => a.type === 'Photo' && a.uploaded).length;
   const videoCount = assets.filter(a => a.type === 'Video' && a.uploaded).length;
-
-  const handleUploadSimulate = (id: string) => {
-    setAssets(assets.map(a => a.id === id ? { ...a, uploaded: true } : a));
-    toast.success('Asset uploaded & queued for MLS syndication', { style: { background: 'var(--pw-black)', color: 'var(--pw-white)' } });
-  };
 
   const handleRemove = (id: string) => {
     setAssets(assets.filter(a => a.id !== id));
@@ -94,14 +94,21 @@ export default function PhotographyUploadManager() {
         <div className="grid grid-cols-3 gap-2 mb-5">
           {assets.filter(a => a.uploaded && a.url).map(asset => (
             <div key={asset.id} className="relative group overflow-hidden border border-pw-border aspect-video">
-              <img
-                src={asset.url}
-                alt={asset.room}
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
-                loading="lazy"
-              />
+              {asset.type === 'Photo' && asset.url.startsWith('http') ? (
+                <img
+                  src={asset.url}
+                  alt={asset.room}
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full bg-pw-glass-bg/30 flex flex-col items-center justify-center text-text-secondary gap-1 p-2">
+                  {TYPE_ICONS[asset.type]}
+                  <span className="text-[9px] font-semibold truncate max-w-full">{asset.name}</span>
+                </div>
+              )}
               <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-pw-black/90 to-transparent p-2">
-                <p className="text-xs text-pw-white font-medium">{asset.room}</p>
+                <p className="text-xs text-pw-white font-medium">{asset.room || 'General'}</p>
               </div>
               <button
                 onClick={() => handleRemove(asset.id)}
@@ -115,22 +122,65 @@ export default function PhotographyUploadManager() {
       )}
 
       {/* Pending Upload Items */}
-      <div className="space-y-2">
+      <div className="space-y-4">
         {assets.filter(a => !a.uploaded).map(asset => (
-          <div key={asset.id} className="flex items-center justify-between p-3 border border-pw-border bg-pw-glass-bg/20 group">
-            <div className="flex items-center space-x-3">
-              <span className="text-pw-accent">{TYPE_ICONS[asset.type]}</span>
+          <div key={asset.id} className="p-4 border border-pw-border bg-pw-glass-bg/20 rounded-xl space-y-3">
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <p className="text-sm text-text-primary">{asset.name || 'Untitled Asset'}</p>
-                <p className="text-xs text-text-secondary">{asset.type} · {asset.room || 'Unassigned'}</p>
+                <label className="text-[10px] uppercase font-bold text-text-secondary">Type</label>
+                <select
+                  value={asset.type}
+                  onChange={e => setAssets(assets.map(a => a.id === asset.id ? { ...a, type: e.target.value as any } : a))}
+                  className="w-full mt-1 text-xs border border-pw-border rounded px-2.5 py-1.5 bg-pw-glass-bg text-text-primary focus:outline-none"
+                >
+                  <option value="Photo">Photo</option>
+                  <option value="Video">Video</option>
+                  <option value="3D Tour">3D Tour</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] uppercase font-bold text-text-secondary">Room / Area</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Kitchen, Exterior"
+                  value={asset.room}
+                  onChange={e => setAssets(assets.map(a => a.id === asset.id ? { ...a, room: e.target.value } : a))}
+                  className="w-full mt-1 text-xs border border-pw-border rounded px-2.5 py-1.5 bg-pw-glass-bg text-text-primary focus:outline-none"
+                />
               </div>
             </div>
-            <button
-              onClick={() => handleUploadSimulate(asset.id)}
-              className="flex items-center gap-1 pw-btn pw-btn--primary pw-btn--sm text-[9px] font-black uppercase tracking-wider py-1 px-3"
-            >
-              <Upload className="w-3 h-3" /> Upload
-            </button>
+
+            <FileDropzone
+              projectId={projectId}
+              path="photography"
+              accept={
+                asset.type === 'Photo'
+                  ? ['image/jpeg', 'image/png', 'image/webp']
+                  : asset.type === 'Video'
+                  ? ['video/mp4', 'video/quicktime']
+                  : ['application/pdf', 'image/jpeg', 'image/png']
+              }
+              maxSize={asset.type === 'Video' ? 50 * 1024 * 1024 : 10 * 1024 * 1024}
+              label={`Upload ${asset.type}`}
+              onUploadComplete={(res) => {
+                setAssets(assets.map(a => a.id === asset.id ? { 
+                  ...a, 
+                  name: res.storagePath.split('/').pop() || asset.room || 'Asset',
+                  url: res.downloadUrl, 
+                  uploaded: true 
+                } : a));
+                toast.success('Asset uploaded successfully');
+              }}
+            />
+
+            <div className="flex justify-end">
+              <button
+                onClick={() => handleRemove(asset.id)}
+                className="text-xs text-color-error hover:text-color-error/80 flex items-center gap-1"
+              >
+                <Trash2 className="w-3.5 h-3.5" /> Discard
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -138,9 +188,9 @@ export default function PhotographyUploadManager() {
       {/* Add Asset Button */}
       <button
         onClick={handleAddAsset}
-        className="mt-4 w-full flex items-center justify-center gap-2 py-3 border border-dashed border-pw-border text-xs text-text-secondary hover:text-text-primary hover:border-pw-accent transition"
+        className="mt-4 w-full flex items-center justify-center gap-2 py-3 border border-dashed border-pw-border text-xs text-text-secondary hover:text-text-primary hover:border-pw-accent transition cursor-pointer"
       >
-        <Upload className="w-3 h-3" /> Add Media Asset
+        <ImageIcon className="w-3.5 h-3.5" /> Add Media Asset
       </button>
     </div>
   );

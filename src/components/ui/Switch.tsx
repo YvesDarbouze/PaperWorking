@@ -39,17 +39,19 @@ const Switch = React.forwardRef<HTMLInputElement, SwitchProps>(
         />
         <span
           className={cn(
-            "w-9 h-5 rounded-full transition-all duration-200 flex items-center p-[2px] relative",
+            "w-9 h-5 rounded-full transition-all duration-200 flex items-center p-[2px] relative border",
             activeChecked
-              ? "bg-primary"
-              : "bg-on-surface/20",
+              ? "bg-primary border-primary"
+              : "bg-transparent border-on-surface/40",
             disabled && "opacity-[0.38]"
           )}
         >
           <span
             className={cn(
-              "w-4 h-4 rounded-full shadow-sm transition-transform duration-200 ease-in-out bg-white",
-              activeChecked ? "translate-x-4" : "translate-x-0"
+              "w-4 h-4 rounded-full transition-transform duration-200 ease-in-out",
+              activeChecked
+                ? "translate-x-4 bg-white shadow-sm"
+                : "translate-x-0 bg-on-surface/50"
             )}
           />
         </span>

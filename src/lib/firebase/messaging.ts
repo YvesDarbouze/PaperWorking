@@ -58,28 +58,80 @@ export async function requestPushPermissionAndGetToken(): Promise<string | null>
         return;
       }
 
-      const worker = registration.installing || registration.waiting || registration.active;
-      if (!worker) {
-        resolve();
-        return;
-      }
+      const isActivated = () => registration.active && registration.active.state === 'activated';
 
-      if (worker.state === 'activated') {
-        resolve();
-        return;
-      }
+      let resolved = false;
+      let checkInterval: any = null;
+      let timeoutId: any = null;
 
-      const stateChangeListener = () => {
-        if (worker.state === 'activated') {
-          worker.removeEventListener('statechange', stateChangeListener);
-          resolve();
-        } else if (worker.state === 'redundant') {
-          worker.removeEventListener('statechange', stateChangeListener);
-          resolve();
+      const finish = () => {
+        if (resolved) return;
+        resolved = true;
+
+        if (checkInterval) clearInterval(checkInterval);
+        if (timeoutId) clearTimeout(timeoutId);
+
+        registration.removeEventListener('updatefound', onUpdateFound);
+        if (registration.installing) {
+          registration.installing.removeEventListener('statechange', onStateChange);
+        }
+        if (registration.waiting) {
+          registration.waiting.removeEventListener('statechange', onStateChange);
+        }
+        if (registration.active) {
+          registration.active.removeEventListener('statechange', onStateChange);
+        }
+
+        resolve();
+      };
+
+      const onStateChange = () => {
+        if (isActivated()) {
+          finish();
         }
       };
 
-      worker.addEventListener('statechange', stateChangeListener);
+      const onUpdateFound = () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', onStateChange);
+        }
+        if (isActivated()) {
+          finish();
+        }
+      };
+
+      registration.addEventListener('updatefound', onUpdateFound);
+
+      if (registration.installing) {
+        registration.installing.addEventListener('statechange', onStateChange);
+      }
+      if (registration.waiting) {
+        registration.waiting.addEventListener('statechange', onStateChange);
+      }
+      if (registration.active) {
+        registration.active.addEventListener('statechange', onStateChange);
+      }
+
+      // Polling fallback to ensure we catch the activation status in all scenarios
+      checkInterval = setInterval(() => {
+        if (registration.installing) {
+          registration.installing.addEventListener('statechange', onStateChange);
+        }
+        if (registration.waiting) {
+          registration.waiting.addEventListener('statechange', onStateChange);
+        }
+        if (registration.active) {
+          registration.active.addEventListener('statechange', onStateChange);
+        }
+
+        if (isActivated()) {
+          finish();
+        }
+      }, 50);
+
+      // Bounded safety timeout (10 seconds) to prevent hanging the promise indefinitely
+      timeoutId = setTimeout(finish, 10000);
     });
 
     // 4. Retrieve token from FCM

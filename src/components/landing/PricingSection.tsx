@@ -59,8 +59,8 @@ const PLANS: Plan[] = [
     annualMonthly: 41,
     isFree: false,
     isCustom: false,
-    highlighted: true,
-    badge: 'Most Popular',
+    highlighted: false,
+    badge: undefined,
     features: [
       { label: 'Project Management of the REIL' },
       { label: 'Full metric visualization of REI data' },
@@ -83,7 +83,8 @@ const PLANS: Plan[] = [
     annualMonthly: 83,
     isFree: false,
     isCustom: false,
-    highlighted: false,
+    highlighted: true,
+    badge: 'Most Popular',
     features: [
       { label: 'Allows 10 accounts working on one team' },
       { label: 'Assign & assume tasks via Lead Investor' },
@@ -243,12 +244,10 @@ function PricingCard({
   plan,
   isAnnual,
   onSelect,
-  onToggleAnnual
 }: {
   plan: Plan;
   isAnnual: boolean;
   onSelect: (key: string) => void;
-  onToggleAnnual?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const displayPrice = isAnnual ? plan.annualMonthly : plan.monthlyPrice;
 
@@ -279,43 +278,37 @@ function PricingCard({
       )}
 
       {/* Plan header */}
-      <div className={`pb-4 border-b border-outline-variant ${plan.badge ? 'mt-2' : ''}`}>
-        <h3 className={`text-[17px] font-bold tracking-[-0.01em] mb-1 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
+      <div className={`pb-5 border-b border-outline-variant ${plan.badge ? 'mt-2' : ''}`}>
+        <h3 className={`text-[22px] font-bold tracking-[-0.02em] mb-1.5 ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
           {plan.name}
         </h3>
-        <p className="text-[11px] font-normal text-on-surface-variant leading-tight">{plan.persona}</p>
+        <p className="text-[12px] font-normal text-on-surface-variant/70 leading-snug">{plan.persona}</p>
       </div>
 
-      {/* Price */}
-      <div className="py-4 border-b border-outline-variant">
+      {/* Price — hero of the card, should be impossible to miss */}
+      <div className="py-5 border-b border-outline-variant">
         {plan.isCustom ? (
           <div>
-            <p className="text-[26px] font-extrabold tracking-[-0.03em] text-on-surface">Custom</p>
-            <p className="text-[11px] text-on-surface-variant mt-1">Contact us for a quote</p>
+            <p className="text-[52px] font-black tracking-[-0.04em] leading-none text-on-surface">Custom</p>
+            <p className="text-[12px] text-on-surface-variant/60 mt-2">Contact us for a quote</p>
           </div>
         ) : plan.isFree ? (
           <div>
-            <p className="text-[26px] font-extrabold tracking-[-0.03em] text-on-surface">Free</p>
-            <p className="text-[11px] text-on-surface-variant mt-1">1 active deal</p>
+            <p className="text-[52px] font-black tracking-[-0.04em] leading-none text-on-surface">Free</p>
+            <p className="text-[12px] text-on-surface-variant/60 mt-2">1 active deal</p>
           </div>
         ) : (
           <div>
-            <div className="flex items-baseline gap-1">
-              <span className={`font-extrabold text-[30px] tracking-[-0.035em] font-tabular ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
+            <div className="flex items-start gap-1">
+              <span className="text-[18px] font-semibold text-on-surface-variant/60 mt-3 leading-none">$</span>
+              <span className={`font-black text-[64px] leading-none tracking-[-0.04em] font-tabular ${plan.highlighted ? 'text-primary' : 'text-on-surface'}`}>
                 <AnimatedPrice value={displayPrice!} />
               </span>
-              <span className="text-[12px] text-on-surface-variant">/mo</span>
+              <span className="text-[13px] font-medium text-on-surface-variant/60 mt-3.5 leading-none">/mo</span>
             </div>
-            <div className="h-4 mt-0.5">
-              {isAnnual ? (
-                <p className={`text-[11px] ${plan.highlighted ? 'text-primary/70' : 'text-on-surface-variant'}`}>
-                  Billed ${plan.annualPrice}/yr
-                </p>
-              ) : (
-                <p className="text-[11px] text-on-surface-variant">Billed monthly</p>
-              )}
-            </div>
-
+            <p className={`text-[12px] mt-1.5 ${plan.highlighted ? 'text-primary/60' : 'text-on-surface-variant/50'}`}>
+              {isAnnual ? `Billed $${plan.annualPrice}/yr` : 'Billed monthly'}
+            </p>
           </div>
         )}
       </div>

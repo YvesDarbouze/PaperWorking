@@ -24,13 +24,13 @@ function getStripe() {
  * Creates a Stripe Checkout Session for subscription sign-up.
  * Supports guest checkout (no auth required) and authenticated checkout.
  *
- * Body: { plan, billingInterval?, userId?, userEmail?, idToken? }
+ * Body: { plan, billingInterval?, userEmail?, idToken? }
  * Returns: { url: string }
  */
 export async function POST(request: Request) {
   try {
     const stripe = getStripe();
-    const { plan, billingInterval = 'monthly', userId, userEmail, idToken } = await request.json();
+    const { plan, billingInterval = 'monthly', userEmail, idToken } = await request.json();
 
     if (!plan) {
       return NextResponse.json({ error: 'Missing required `plan` field.' }, { status: 400 });
@@ -47,13 +47,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // ── Auth Verification (optional — guest checkout allowed) ──
-    if (idToken && userId) {
+    // ── Auth Verification & Identity Derivation ──
+    let verifiedUserId: string | undefined = undefined;
+    if (idToken) {
       try {
-        const decoded = await adminAuth.verifyIdToken(idToken);
-        if (decoded.uid !== userId) {
-          return NextResponse.json({ error: 'Token / user mismatch.' }, { status: 401 });
-        }
+        const decoded = await adminAuth.verifyIdToken(idToken, true);
+        verifiedUserId = decoded.uid;
       } catch {
         return NextResponse.json({ error: 'Invalid auth token.' }, { status: 401 });
       }
@@ -88,7 +87,7 @@ export async function POST(request: Request) {
       success_url: `${appUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/pricing`,
       customer_email: userEmail ?? undefined,
-      client_reference_id: userId ?? undefined,
+      client_reference_id: verifiedUserId ?? undefined,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
       automatic_tax: { enabled: true },
@@ -114,14 +113,14 @@ export async function POST(request: Request) {
         },
 
         metadata: {
-          userId: userId || 'guest',
+          userId: verifiedUserId || 'guest',
           plan: canonicalPlan,
           planId,
         },
       } as any,
 
       metadata: {
-        userId: userId || 'guest',
+        userId: verifiedUserId || 'guest',
         plan: canonicalPlan,
         planId,
         billingInterval: interval,

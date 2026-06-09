@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Shield, CheckCircle, Clock, AlertTriangle, Search, FileText, Link as LinkIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { auth } from '@/lib/firebase/config';
 import { useProjectStore } from '@/store/projectStore';
 
 /* ═══════════════════════════════════════════════════════
@@ -47,12 +48,18 @@ export default function TitleSearchClearance() {
     toast.loading('Contacting title registry...', { id: 'title-search' });
     
     try {
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        throw new Error('You must be signed in to perform this search.');
+      }
+
       const response = await fetch('/api/closing/title-search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          idToken: token,
           projectId: currentProject?.id || 'unknown-project',
           propertyAddress: currentProject?.propertyName
         }),
@@ -77,9 +84,9 @@ export default function TitleSearchClearance() {
       }
 
       toast.success('Title search completed successfully', { id: 'title-search' });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Title search failed:', error);
-      toast.error('Failed to run title search. Please try again.', { id: 'title-search' });
+      toast.error(error.message || 'Failed to run title search. Please try again.', { id: 'title-search' });
     } finally {
       setSearching(false);
     }

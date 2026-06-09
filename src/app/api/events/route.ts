@@ -67,23 +67,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Real PostHog Telemetry Integration ──
-    await telemetry.capture({
-      distinctId: uid,
-      event,
-      properties: { ...properties, $timestamp: timestamp || new Date().toISOString() },
-    });
-    await telemetry.flush();
+    // Ensure all user attribution fields in properties are derived from verified auth token
+    const sanitizedProperties = { ...properties };
+    delete sanitizedProperties.distinctId;
+    delete sanitizedProperties.uid;
+    delete sanitizedProperties.userId;
+    delete sanitizedProperties.untrustedUid;
 
-    // ── Log to Firestore ──
-    const eventDoc = {
-      uid,
-      event,
-      properties,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    };
+    // ── Real PostHog Telemetry Integration (Failure-Isolated) ──
+    try {
+      await telemetry.capture({
+        distinctId: uid,
+        event,
+        properties: { ...sanitizedProperties, $timestamp: timestamp || new Date().toISOString() },
+      });
+      await telemetry.flush();
+    } catch (telemetryErr) {
+      console.error('[Events API] Telemetry capture/flush failed:', telemetryErr);
+    }
 
-    await adminDb.collection('events').add(eventDoc);
+    // ── Log to Firestore (Failure-Isolated) ──
+    try {
+      const eventDoc = {
+        uid,
+        event,
+        properties: sanitizedProperties,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      };
+      await adminDb.collection('events').add(eventDoc);
+    } catch (dbErr) {
+      console.error('[Events API] Firestore event logging failed:', dbErr);
+    }
 
     // ── Milestone side-effects ──
     if (MILESTONE_EVENTS.has(event)) {
@@ -106,7 +120,7 @@ export async function POST(request: NextRequest) {
         }
 
         case 'first_metric_lit': {
-          // Mark the first metric timestamp on the user profile
+          // Mark the first milestone timestamp on the user profile
           await userRef.update({
             firstMetricLit: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),

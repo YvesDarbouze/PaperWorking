@@ -20,13 +20,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Optional: Authenticate the user if idToken is provided
-    if (body.idToken) {
-       try {
-         await adminAuth.verifyIdToken(body.idToken);
-       } catch (e) {
-         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-       }
+    // Enforce Authentication — Real actions must be guarded
+    if (!body.idToken) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized — missing auth token' },
+        { status: 401 }
+      );
+    }
+
+    try {
+      await adminAuth.verifyIdToken(body.idToken, true);
+    } catch (e) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized — invalid token' },
+        { status: 401 }
+      );
     }
 
     // Call the "real" service layer

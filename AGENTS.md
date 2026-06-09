@@ -93,6 +93,15 @@ Every feature must satisfy all of these constraints:
 - **Tests**: Unit-test the adapter logic against the mock and a stubbed real adapter. The existing test suite must still pass completely.
 
 Verify current SDK/API specifics against each vendor's official docs at implementation time rather than assuming.
+
+## Security & Correctness Acceptance (Prompts 3–11)
+For every integration prompt (Prompts 3–11), the agent must demonstrate (not just claim):
+
+The server endpoint rejects an unauthenticated/forged request — show a request with no/invalid token, or a spoofed identifier, being refused. The acting identity is derived from the token.
+No third-party secret appears in the client bundle — show the key is only referenced server-side.
+A provider failure does not break the user's action — show the core operation succeeding (or failing gracefully with an actionable error) when the external call throws.
+For async features, status comes from a verified webhook/poll, demonstrated end-to-end — never a client timer.
+Confirm tsc clean and the full suite green, and state explicitly which of the above were verified by hand, since tests don't cover them.
 <!-- END:mock-conversion-rules -->
 
 

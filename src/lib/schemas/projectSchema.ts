@@ -333,7 +333,7 @@ export const projectFinancialsSchema = z.object({
   })).optional(),
   leadSource: z.enum([
     'Wholesaler', 'MLS', 'REO', 'Direct Mail',
-    'Auction', 'Probate', 'Driving for Dollars', 'Referral',
+    'Auction', 'Probate', 'Driving for Dollars', 'Referral', 'Manual',
   ]).optional(),
   sellerMotivation: z.string().optional(),
   /** Earnest Money Deposit in USD dollars */

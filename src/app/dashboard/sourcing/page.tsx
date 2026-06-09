@@ -105,7 +105,7 @@ export default function SourcingDashboard() {
                   leads.map((lead) => (
                     <tr key={lead.id} className="hover:bg-white/5 transition-colors">
                       <td className="p-4 text-text-primary font-medium">{lead.address || lead.propertyName}</td>
-                      <td className="p-4 text-text-secondary">PropStream</td>
+                      <td className="p-4 text-text-secondary">{lead.financials?.leadSource || 'PropStream'}</td>
                       <td className="p-4">
                         <span className="border border-white/10 bg-white/5 px-2 py-1 rounded text-xs text-text-secondary">
                           {lead.financials?.rehabBudget ? 'v2' : 'v1'}

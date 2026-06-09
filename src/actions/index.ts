@@ -149,6 +149,8 @@ export async function createNewDeal(idToken: string, rawDealData: any) {
     financials: {
       purchasePrice: rawDealData.purchasePrice || 0,
       estimatedARV: rawDealData.estimatedARV || 0,
+      leadSource: rawDealData.leadSource || 'Referral',
+      costs: [],
       // ... default zeroes omitted for brevity
     }
   };

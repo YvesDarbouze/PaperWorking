@@ -91,7 +91,14 @@ export default function AnalyticsWidget({ projects }: AnalyticsWidgetProps) {
     <div className="glass-card rounded-3xl p-6 h-full flex flex-col relative overflow-visible">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">Analytics</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="font-headline-md text-headline-md text-on-surface tracking-tight">Analytics</h2>
+            {(!projects || projects.length === 0) && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-white/5 border border-white/10 text-white/40">
+                Demo
+              </span>
+            )}
+          </div>
           <p className="font-body-sm text-body-sm text-on-surface-variant opacity-80">Productivity analytics</p>
         </div>
         <div className="flex items-center gap-3">

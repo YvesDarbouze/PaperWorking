@@ -136,7 +136,7 @@ function FeatureAdoption() {
   ];
 
   return (
-    <ChartCard title="Feature Adoption Rate">
+    <ChartCard title="Feature Adoption Rate (Demo)">
       <div className="space-y-2.5">
         {features.map((f) => (
           <div key={f.name} className="flex items-center gap-3">
@@ -225,7 +225,7 @@ function TopRegions() {
   ];
 
   return (
-    <ChartCard title="Top Regions by Activity">
+    <ChartCard title="Top Regions by Activity (Demo)">
       <div className="overflow-hidden border border-white/5 rounded-xl glass-card">
         <table className="w-full text-sm border-collapse">
           <thead className="bg-surface-container-highest/50 backdrop-blur-md border-b border-white/5">

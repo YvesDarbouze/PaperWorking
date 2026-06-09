@@ -5,6 +5,7 @@ import ReactECharts from 'echarts-for-react';
 import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useProjectStore } from '@/store/projectStore';
 import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
@@ -113,6 +114,38 @@ export default function IRRIntelligencePage() {
   const [assumptions, setAssumptions] = useState<IRRAssumptions | null>(null);
   const handleAssumptionsChange = useCallback((v: IRRAssumptions) => setAssumptions(v), []);
 
+  const handleExportCSV = useCallback(() => {
+    try {
+      const headers = ['Variable', 'Base Case', 'Bear Case', 'Bull Case', 'IRR Impact'];
+      const rows = DEMO_SENSITIVITY.map(row => [
+        row.variable,
+        row.base,
+        row.bear,
+        row.bull,
+        row.irrImpact
+      ]);
+      
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(e => e.map(val => `"${val.replace(/"/g, '""')}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `irr_sensitivity_analysis.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('IRR Sensitivity CSV exported successfully!');
+    } catch (err) {
+      console.error('Failed to export CSV:', err);
+      toast.error('Failed to export CSV. Please try again.');
+    }
+  }, []);
+
   /* ── Portfolio-derived defaults ── */
   const portfolioDefaults = useMemo(() => {
     const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
@@ -209,7 +242,10 @@ export default function IRRIntelligencePage() {
               </button>
             ))}
           </div>
-          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2">
+          <button 
+            onClick={handleExportCSV}
+            className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2"
+          >
             <Download className="w-4 h-4" />
             Export
           </button>

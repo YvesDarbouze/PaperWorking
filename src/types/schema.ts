@@ -848,7 +848,8 @@ export type LeadSource =
   | 'Auction'
   | 'Probate'
   | 'Driving for Dollars'
-  | 'Referral';
+  | 'Referral'
+  | 'Manual';
 
 export interface ComparableSale {
   id: string;

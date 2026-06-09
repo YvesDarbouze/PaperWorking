@@ -8071,6 +8071,12 @@
       "skillPath": "skills/gsap-utils/SKILL.md",
       "computedHash": "36943f0cd68caebff81a92db0f98539cffef944a7aefe4be912630fbfd869879"
     },
+    "gstack": {
+      "source": "garrytan/gstack",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "11ec899a4922b93bda8841b05c48266f70a674c68215b88e56ee0f853b9e1f86"
+    },
     "guidance": {
       "source": "TerminalSkills/skills",
       "sourceType": "github",

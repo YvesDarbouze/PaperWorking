@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth, adminDb } from '@/lib/firebase/admin';
 import * as admin from 'firebase-admin';
+import telemetry from '@/lib/telemetry';
 
 /* ═══════════════════════════════════════════════════════
    Events API — POST /api/events
@@ -66,12 +67,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── PostHog stub (swap for real SDK later) ──
-    console.log('[PostHog Stub]', {
+    // ── Real PostHog Telemetry Integration ──
+    await telemetry.capture({
       distinctId: uid,
       event,
       properties: { ...properties, $timestamp: timestamp || new Date().toISOString() },
     });
+    await telemetry.flush();
 
     // ── Log to Firestore ──
     const eventDoc = {

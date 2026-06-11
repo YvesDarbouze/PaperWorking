@@ -29,6 +29,11 @@ import {
 } from '@/lib/utils/taxService';
 import toast from 'react-hot-toast';
 import { useTheme } from '@/lib/utils/ThemeProvider';
+import {
+  computeAllScenarioIRRs,
+  type ScenarioAssumptions,
+  type ScenarioResult,
+} from '@/lib/projections/scenarioIRR';
 
 type PeriodTab = 'Monthly' | 'Quarterly' | 'Yearly' | 'Overall';
 type ScopeTab = 'Property' | 'My Share';
@@ -175,12 +180,14 @@ function IRRScenario({
   holdYears,
   capExit,
   active,
+  assumptions,
 }: {
   label: string;
   irr: string;
   holdYears: string;
   capExit: string;
   active?: boolean;
+  assumptions?: ScenarioAssumptions;
 }) {
   return (
     <div
@@ -204,6 +211,16 @@ function IRRScenario({
           {capExit}
         </span>
       </div>
+      {assumptions && (
+        <div className="mt-2 pt-2 border-t border-[var(--color-outline-variant)] grid grid-cols-2 gap-x-3 gap-y-0.5">
+          <span className="text-[10px] text-[var(--color-on-surface-variant)]">
+            Rent growth: {assumptions.rentGrowthPct}%/yr
+          </span>
+          <span className="text-[10px] text-[var(--color-on-surface-variant)]">
+            Vacancy: {assumptions.vacancyPct}%
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -513,12 +530,8 @@ export default function ReportsPage() {
         minute: '2-digit',
       });
     }
-    return new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  }, [lastSyncedDate, now]);
+    return 'Never';
+  }, [lastSyncedDate]);
 
   const [period, setPeriod] = useState<PeriodTab>('Quarterly');
   const [scope, setScope]   = useState<ScopeTab>('Property');
@@ -624,18 +637,20 @@ export default function ReportsPage() {
 
   const totalOpex = portfolioFinancials.opExpenses;
 
-  /* ── IRR scenarios — computed from CoC return ── */
-  const irrScenarios = useMemo(() => {
-    const hasCoCReturn = projects.some((p) => (p.financials?.cashOnCashReturn ?? 0) > 0);
-    if (hasCoCReturn) {
-      const baseIRR = projects.find((p) => (p.financials?.cashOnCashReturn ?? 0) > 0)?.financials?.cashOnCashReturn ?? 0;
-      return [
-        { label: 'Conservative', irr: `${(baseIRR * 0.78).toFixed(1)}%`, holdYears: 'Hold 10y', capExit: `Cap Exit ${(baseIRR * 0.35).toFixed(1)}%`, active: false },
-        { label: 'Target (Current)', irr: `${baseIRR.toFixed(1)}%`, holdYears: 'Hold 7y', capExit: `Cap Exit ${(baseIRR * 0.32).toFixed(1)}%`, active: true },
-        { label: 'Aggressive', irr: `${(baseIRR * 1.22).toFixed(1)}%`, holdYears: 'Hold 3y', capExit: `Cap Exit ${(baseIRR * 0.30).toFixed(1)}%`, active: false },
-      ];
-    }
-    return null; // No data available
+  /* ── IRR scenarios — modeled from real cash-flow projections ── */
+  const irrScenarios = useMemo((): ScenarioResult[] | null => {
+    // Find the first project with both purchasePrice and monthly rent — the
+    // minimum inputs required by projectScenarioCashFlows.
+    const baseProject = projects.find((p) => {
+      const f = p.financials;
+      if (!f) return false;
+      const pp = f.purchasePrice || (f as any).targetPurchasePrice;
+      const rent = f.monthlyGrossRent ?? f.projectedMonthlyRent ?? (f as any).projectedRent;
+      return pp && rent;
+    });
+    if (!baseProject) return null;
+
+    return computeAllScenarioIRRs(baseProject);
   }, [projects]);
 
   /* ── Tax alerts — derive from tax report ── */
@@ -1065,7 +1080,15 @@ export default function ReportsPage() {
           {irrScenarios ? (
             <div className="space-y-3">
               {irrScenarios.map((s) => (
-                <IRRScenario key={s.label} {...s} />
+                <IRRScenario
+                  key={s.label}
+                  label={s.label}
+                  irr={s.irr}
+                  holdYears={s.holdYears}
+                  capExit={s.capExit}
+                  active={s.active}
+                  assumptions={s.assumptions}
+                />
               ))}
             </div>
           ) : (

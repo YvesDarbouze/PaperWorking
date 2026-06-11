@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getAuth } from 'firebase/auth';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
 
@@ -78,11 +78,30 @@ const BASE_SERVICES: ConnectedService[] = [
 export default function GeneralSettingsPage() {
   const { profile } = useAuth();
 
-  // ─── Regional ──────────────────────────────────────────
-  const [timezone, setTimezone] = useState(
-    () => profile?.timezone ?? 'America/New_York'
-  );
+  // ─── Regional preferences ──────────────────────────────
+  // `timezone`      — current input value (may differ from what's saved)
+  // `savedTimezone` — last value confirmed written to Firestore (rollback target)
+  const [timezone, setTimezone]           = useState('America/New_York');
+  const [savedTimezone, setSavedTimezone] = useState('America/New_York');
+  const [prefsLoading, setPrefsLoading]   = useState(true);
   const [language] = useState('en');
+
+  // Load preferences from users/{uid} on mount — survives refresh & device change
+  useEffect(() => {
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) { setPrefsLoading(false); return; }
+    getDoc(doc(db, 'users', currentUser.uid))
+      .then((snap) => {
+        if (snap.exists()) {
+          const tz = snap.data().timezone ?? 'America/New_York';
+          setTimezone(tz);
+          setSavedTimezone(tz);
+        }
+      })
+      .catch((err) => console.warn('[settings/prefs] load error:', err))
+      .finally(() => setPrefsLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount; getAuth().currentUser is stable
 
   // ─── Connected Services ────────────────────────────────
   const [services, setServices] = useState<ConnectedService[]>(BASE_SERVICES);
@@ -138,13 +157,20 @@ export default function GeneralSettingsPage() {
       toast.error('Not signed in.');
       return;
     }
+
+    // Capture rollback target before the write
+    const rollbackTo = savedTimezone;
     setSaving(true);
+
     try {
-      // Write timezone directly to the user's Firestore profile doc
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        timezone,
-        updatedAt: serverTimestamp(),
-      });
+      // Merge into users/{uid} — creates the doc if it doesn't exist yet
+      await setDoc(
+        doc(db, 'users', currentUser.uid),
+        { timezone, updatedAt: serverTimestamp() },
+        { merge: true }
+      );
+      // Write confirmed — update the rollback anchor
+      setSavedTimezone(timezone);
       setSaved(true);
       toast.success('Preferences saved.', {
         icon: '✓',
@@ -152,7 +178,11 @@ export default function GeneralSettingsPage() {
       });
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to save preferences.');
+      // Roll back to last confirmed value so the UI reflects reality
+      setTimezone(rollbackTo);
+      toast.error(`Preferences not saved: ${err?.message ?? 'write failed'}`, {
+        style: { background: '#0d0d0d', color: '#fff' },
+      });
     } finally {
       setSaving(false);
     }
@@ -267,7 +297,8 @@ export default function GeneralSettingsPage() {
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-pointer"
+                  disabled={prefsLoading}
+                  className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {TIMEZONES.map((tz) => (
                     <option key={tz.value} value={tz.value} className="bg-[#161318] text-pw-black">
@@ -310,7 +341,7 @@ export default function GeneralSettingsPage() {
             <div className="flex items-center gap-4 pt-2">
               <button
                 onClick={handleSavePreferences}
-                disabled={saving}
+                disabled={saving || prefsLoading}
                 className="luminous-button inline-flex items-center justify-center gap-2 font-semibold text-sm uppercase tracking-wider px-8 py-3 rounded-xl disabled:opacity-50 cursor-pointer transition-all"
               >
                 {saving ? (
@@ -318,7 +349,7 @@ export default function GeneralSettingsPage() {
                 ) : (
                   <span className="material-symbols-outlined text-sm select-none">save</span>
                 )}
-                {saving ? 'Saving…' : 'Save Preferences'}
+                {prefsLoading ? 'Loading…' : saving ? 'Saving…' : 'Save Preferences'}
               </button>
               {saved && (
                 <span className="text-sm text-pw-primary flex items-center gap-1.5 animate-pulse">

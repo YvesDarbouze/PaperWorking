@@ -522,6 +522,10 @@ model ReilProject {
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   createdById        String
+  lastSyncedAt       DateTime?
+  valueSyncedAt      DateTime?
+  rentSyncedAt       DateTime?
+  marketSyncedAt     DateTime?
 
   createdBy       AppUser               @relation(fields: [createdById], references: [id])
   propertyFacts   ReilPropertyFacts?
@@ -530,27 +534,42 @@ model ReilProject {
   statusEvents    StatusEvent[]
   collaborators   ProjectCollaborator[]
   fieldAssignments FieldAssignment[]
+  valuationSnapshots ReilValuationSnapshot[]
 
   @@index([createdById])
   @@index([acquisitionStatus])
 }
 
 model ReilPropertyFacts {
-  id                 String      @id @default(uuid())
-  projectId          String      @unique
-  photoUrl           String?
-  beds               Int?
-  baths              Float?
-  sqft               Int?
-  yearBuilt          Int?
-  lotSqft            Int?
-  propertyType       String?
-  listPriceCents     BigInt?
-  estRentCents       BigInt?
-  lastSoldPriceCents BigInt?
-  lastSoldDate       DateTime?
-  sourceProvider     String?
-  fetchedAt          DateTime?
+  id                      String      @id @default(uuid())
+  projectId               String      @unique
+  photoUrl                String?
+  beds                    Int?
+  baths                   Float?
+  sqft                    Int?
+  yearBuilt               Int?
+  lotSqft                 Int?
+  propertyType            String?
+  listPriceCents          BigInt?
+  estRentCents            BigInt?
+  lastSoldPriceCents      BigInt?
+  lastSoldDate            DateTime?
+  // ── Tax & HOA (Prompt 2) ───────────────────────────────────
+  annualPropertyTaxCents  BigInt?     // Most recent annual property tax (cents)
+  taxAssessedValueCents   BigInt?     // Most recent assessed value (cents)
+  taxYear                 Int?        // Year of the tax/assessment figure
+  hoaMonthlyCents         BigInt?     // Monthly HOA fee (cents)
+  taxSource               String?     // e.g. 'rentcast' — provenance label
+  // ── Rent AVM (Prompt 3) ────────────────────────────────────
+  estRentLowCents         BigInt?     // Rent estimate low bound
+  estRentHighCents        BigInt?     // Rent estimate high bound
+  // ── Value AVM (Prompt 4) ───────────────────────────────────
+  avmPriceCents           BigInt?     // AVM value estimate
+  avmPriceLowCents        BigInt?     // AVM value estimate low bound
+  avmPriceHighCents       BigInt?     // AVM value estimate high bound
+  // ── Meta ───────────────────────────────────────────────────
+  sourceProvider          String?
+  fetchedAt               DateTime?
 
   project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
@@ -559,16 +578,37 @@ model ReilComp {
   id             String      @id @default(uuid())
   projectId      String
   addressLine    String
-  soldPriceCents BigInt
-  soldDate       DateTime
+  soldPriceCents BigInt?
+  soldDate       DateTime?
   beds           Int?
   baths          Float?
   sqft           Int?
   distanceMiles  Float?
+  // ── Rent & Value comps additions (Prompts 3 & 4) ───────────
+  compType       String      @default("SALE") // "SALE" or "RENTAL"
+  priceCents     BigInt?     // Unified price (rent or sale price)
+  correlation    Float?      // 0-1 similarity score from RentCast
+  daysOnMarket   Int?        // DOM
+  status         String?     // e.g. "Sold", "Active", "Rented"
+  listedDate     DateTime?   // When listed
 
   project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+}
+
+model ReilValuationSnapshot {
+  id              String   @id @default(uuid())
+  projectId       String
+  valueCents      BigInt       // AVM point estimate
+  valueLowCents   BigInt       // Range low
+  valueHighCents  BigInt       // Range high
+  source          String       // "rentcast"
+  fetchedAt       DateTime     // When the AVM was fetched
+  createdAt       DateTime @default(now())
+
+  project ReilProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  @@index([projectId, fetchedAt])
 }
 
 model ReilPurchaseTerms {

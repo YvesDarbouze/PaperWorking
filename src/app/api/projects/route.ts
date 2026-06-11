@@ -4,6 +4,7 @@ import { adminDb } from '@/lib/firebase/admin';
 import { z } from 'zod';
 import { canCreateProject } from '@/lib/entitlements/server';
 import { clearDashboardCache } from '@/lib/cache/dashboardCache';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/projects — Create a new project (Draft or Active)
@@ -210,6 +211,19 @@ export async function POST(request: NextRequest) {
 
     // 7. Clear dashboard cache
     clearDashboardCache(organizationId);
+
+    // 8. Emit activity event — failure-isolated, never blocks the response
+    const actorName = auth.token.name || auth.token.email || 'Unknown';
+    logOrgActivity({
+      organizationId,
+      type: 'deal_created',
+      actorId: uid,
+      actorName,
+      summary: `Added "${data.propertyName || data.address || 'new project'}" to the portfolio`,
+      targetRef: `projects/${projectRef.id}`,
+      projectId: projectRef.id,
+      projectName: data.propertyName || data.address,
+    });
 
     return NextResponse.json(
       {

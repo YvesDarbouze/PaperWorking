@@ -55,6 +55,7 @@ interface ProjectMetrics {
 // ─── Store Interface ─────────────────────────────────────────
 interface ProjectState {
   projects: Project[];
+  projectsSynced: boolean; // true once the first Firestore snapshot has fired
   currentProject: Project | null;
   ledgerItems: Record<string, LedgerItem[]>; // projectId -> items
   metrics: ProjectMetrics;
@@ -73,6 +74,7 @@ interface ProjectState {
 
   // Cross-Panel Financial Dispatch
   updateProjectFinancials: (projectId: string, updates: Partial<ProjectFinancials>) => void;
+  updateProjectExit: (projectId: string, updates: Partial<Project['exit']>) => void;
   updateClosingRoom: (projectId: string, updates: Partial<Project['closingRoom']>) => void;
   updateRehabModule: (projectId: string, updates: Partial<Project['rehab']>) => void;
   updateProjectTeam: (projectId: string, team: ProjectTeamMember[]) => void;
@@ -164,6 +166,7 @@ export const useProjectStore = create<ProjectState>()(
   persist(
     (set, get) => ({
       projects: [],
+      projectsSynced: false,
       currentProject: null,
       ledgerItems: {},
       metrics: initialMetrics,
@@ -178,7 +181,7 @@ export const useProjectStore = create<ProjectState>()(
 
       // ─── Portfolio Actions ───────────────────────────────
       setDeals: (projects) => {
-        set({ projects });
+        set({ projects, projectsSynced: true });
         const { currentProject } = get();
         if (currentProject) {
           const u = projects.find(d => d.id === currentProject.id);
@@ -212,6 +215,7 @@ export const useProjectStore = create<ProjectState>()(
       clearStore: () => {
         set({
           projects: [],
+          projectsSynced: false,
           currentProject: null,
           ledgerItems: {},
           metrics: initialMetrics,
@@ -241,6 +245,30 @@ export const useProjectStore = create<ProjectState>()(
                 ...d.financials,
                 ...updates
               }
+            };
+          }
+          return d;
+        });
+
+        set({ projects: updatedDeals });
+        if (currentProject?.id === projectId) {
+          const u = updatedDeals.find(d => d.id === projectId);
+          if (u) set({ currentProject: u });
+        }
+        get().recalculateMetrics();
+      },
+
+      updateProjectExit: (projectId, updates) => {
+        const { projects, currentProject } = get();
+
+        const updatedDeals = projects.map(d => {
+          if (d.id === projectId) {
+            return {
+              ...d,
+              exit: {
+                ...d.exit,
+                ...updates
+              } as Project['exit']
             };
           }
           return d;

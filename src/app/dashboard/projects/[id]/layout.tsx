@@ -539,7 +539,7 @@ function WorkspaceHeader({ project, onOpenMetric }: { project: Project; onOpenMe
 
 const PHASE_ACCENT: Record<number, { color: string; canvasTint: string; label: string }> = {
   1: { color: "#454955", canvasTint: "rgba(69,73,85,0.06)",    label: "Acquisition" },
-  2: { color: "#7A9EAA", canvasTint: "rgba(122,158,170,0.06)", label: "Purchase"    },
+  2: { color: "#7A9EAA", canvasTint: "rgba(122,158,170,0.06)", label: "Closing"     },
   3: { color: "#ffac5a", canvasTint: "rgba(255,172,90,0.06)",  label: "Hold"        },
   4: { color: "#5aaa3f", canvasTint: "rgba(90,170,63,0.06)",   label: "Exit"        },
 };

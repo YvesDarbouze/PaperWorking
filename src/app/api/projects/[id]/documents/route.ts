@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb, adminStorage } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 
 /* ═══════════════════════════════════════════════════════
    POST /api/projects/[id]/documents
@@ -173,6 +174,22 @@ export async function POST(
       const folderRef = adminDb.collection('projectFolders').doc(folderId);
       await folderRef.update({ fileCount: FieldValue.increment(1) }).catch(() => {
         // Folder may not exist yet — non-critical
+      });
+    }
+
+    // Emit activity event — failure-isolated, never blocks the response
+    if (projectData.organizationId) {
+      const actorName = auth.token.name || auth.token.email || 'Unknown';
+      const projectLabel = projectData.propertyName || projectData.address || projectId;
+      logOrgActivity({
+        organizationId: projectData.organizationId,
+        type: 'doc_uploaded',
+        actorId: uid,
+        actorName,
+        summary: `Uploaded "${file.name}" to ${projectLabel}`,
+        targetRef: `projects/${projectId}/documents/${docId}`,
+        projectId,
+        projectName: projectLabel,
       });
     }
 

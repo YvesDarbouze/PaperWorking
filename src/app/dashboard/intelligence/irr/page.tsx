@@ -28,7 +28,7 @@ const DEMO_SCENARIOS = [
   { label: '3-Year Hold', actual: 8.2,  projected: 12.4 },
   { label: '5-Year Hold', actual: 12.1, projected: 18.4 },
   { label: '7-Year Hold', actual: 15.8, projected: 22.7 },
-  { label: '10-Year Hold', actual: 0,   projected: 26.1 },
+  { label: '10-Year Hold', actual: 19.5,  projected: 26.1 },
 ];
 
 const DEMO_SENSITIVITY = [
@@ -173,7 +173,7 @@ export default function IRRIntelligencePage() {
   /* ── Scenario card inputs (derived from interactive or defaults) ── */
   const scenarioInputs = useMemo(() => ({
     totalCashInvested: assumptions?.totalCashInvested ?? portfolioDefaults.totalCashInvested,
-    annualCashFlow: assumptions?.annualCashFlow ?? -4443.31,
+    annualCashFlow: assumptions?.annualCashFlow ?? 5052,
     purchasePrice: assumptions?.purchasePrice ?? portfolioDefaults.purchasePrice,
     loanAmount: assumptions?.loanAmount ?? portfolioDefaults.loanAmount,
     loanRate: assumptions?.loanRate ?? portfolioDefaults.loanRate,

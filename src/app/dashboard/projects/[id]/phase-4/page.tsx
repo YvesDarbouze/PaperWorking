@@ -32,6 +32,8 @@ import { computeAppreciationMetric } from '@/lib/metrics/computeAppreciation';
 import { computeCoCMetric } from '@/lib/metrics/computeCoC';
 import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
+import { ValuationHistory } from '@/components/project/ValuationHistory';
+
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-4 — Closing & Exit Workspace
@@ -764,8 +766,12 @@ export default function Phase4WorkspacePage() {
               </button>
             </div>
 
+            {/* Live Valuation History (AVM) timeline */}
+            <ValuationHistory projectId={projectId} />
+
             {/* ── Tax Snapshot Card ── */}
             {taxEstimate && (
+
               <div className="glass-card rounded-xl p-5 space-y-3">
                 <h4 className="text-[14px] leading-[16px] tracking-[0.02em] font-semibold text-[#9E9DA0] flex items-center gap-2">
                   <span className="material-symbols-outlined text-[#7A9EAA]">receipt_long</span>

@@ -67,6 +67,8 @@ export default function BillingSettingsPage() {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethodData | null>(null);
   const [pmLoading, setPmLoading]         = useState(false);
   const [pmFetched, setPmFetched]         = useState(false);
+  const [rentcastUsage, setRentcastUsage] = useState<{ count: number; limit: number } | null>(null);
+  const [usageLoading, setUsageLoading] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -74,6 +76,7 @@ export default function BillingSettingsPage() {
     setInvoicesLoading(true);
     setSubscriptionLoading(true);
     setPmLoading(true);
+    setUsageLoading(true);
     
     user.getIdToken().then((idToken: string) => {
       fetch('/api/stripe/invoices', {
@@ -105,6 +108,18 @@ export default function BillingSettingsPage() {
         .then((data) => { if (data.paymentMethod) setPaymentMethod(data.paymentMethod); })
         .catch(() => {})
         .finally(() => { setPmLoading(false); setPmFetched(true); });
+
+      fetch('/api/admin/rentcast-usage', {
+        headers: { 'Authorization': `Bearer ${idToken}` },
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.success) {
+            setRentcastUsage({ count: data.count, limit: data.limit });
+          }
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setUsageLoading(false));
     });
   }, [user]);
 
@@ -402,6 +417,51 @@ export default function BillingSettingsPage() {
                 {statusBadge.label}
               </span>
             </div>
+          </div>
+        </section>
+
+        {/* ━━━ RentCast API Call Volume (col-span-4) ━━━ */}
+        <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between">
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <h4 className="font-headline-md text-headline-md text-pw-black">API Usage</h4>
+              <span className="material-symbols-outlined text-pw-muted text-xl select-none">api</span>
+            </div>
+
+            {usageLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <span className="material-symbols-outlined animate-spin text-xl text-pw-muted select-none">progress_activity</span>
+              </div>
+            ) : rentcastUsage ? (
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs font-semibold text-pw-muted uppercase tracking-wider mb-1">RentCast API Volume</p>
+                  <p className="text-2xl font-bold text-pw-black">
+                    <span className="text-pw-primary font-extrabold">{rentcastUsage.count}</span>
+                    <span className="text-sm text-pw-muted font-normal"> / {rentcastUsage.limit} calls</span>
+                  </p>
+                  <p className="font-body-sm text-body-sm text-pw-muted mt-1 leading-relaxed">
+                    Safety threshold to limit automated/sourcing API spend.
+                  </p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="h-2 w-full rounded-full bg-pw-glass-bg overflow-hidden shadow-inner">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      rentcastUsage.count >= rentcastUsage.limit * 0.8
+                        ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                        : rentcastUsage.count >= rentcastUsage.limit * 0.5
+                        ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                        : 'bg-pw-primary shadow-[0_0_8px_rgba(50,121,249,0.5)]'
+                    }`}
+                    style={{ width: `${Math.min((rentcastUsage.count / rentcastUsage.limit) * 100, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-pw-muted">Usage data currently unavailable.</p>
+            )}
           </div>
         </section>
 

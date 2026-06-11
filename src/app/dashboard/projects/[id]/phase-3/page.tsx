@@ -28,6 +28,8 @@ import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import toast from 'react-hot-toast';
 import { ProjectAtAGlanceSidebar } from '@/components/project/ProjectAtAGlanceSidebar';
+import { ValuationHistory } from '@/components/project/ValuationHistory';
+
 
 
 /* ═══════════════════════════════════════════════════════════════
@@ -630,6 +632,10 @@ export default function Phase3RehabPage() {
                 </div>
               </div>
             </section>
+
+            {/* Live Valuation History (AVM) timeline */}
+            <ValuationHistory projectId={projectId} />
+
 
             {/* ── Live Project Metrics (Stitch schema: 2×2 grid + structured readouts) ── */}
             <section className="space-y-4">

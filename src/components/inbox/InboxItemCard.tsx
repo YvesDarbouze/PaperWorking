@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { Checkbox } from '../ui';
 import { Notification, NotificationType } from '@/types/notification';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
+import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
 
 /* ═══════════════════════════════════════════════════════
    InboxItemCard — Individual notification card renderer
@@ -161,8 +163,10 @@ export default function InboxItemCard({
   onSelect
 }: InboxItemCardProps) {
   const router = useRouter();
+  const { user } = useAuth();
   const [imageError, setImageError] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const cat = getCategoryInfo(item.type);
 
@@ -432,17 +436,39 @@ export default function InboxItemCard({
 
             <div className="flex gap-2 justify-end">
               <button
+                disabled={isExecuting}
                 onClick={async (e) => {
                   e.stopPropagation();
-                  if (!item.read) await onMarkRead(item.id);
-                  // Trigger action success
-                  toast.success('Approved successfully.', {
-                    icon: '✓',
-                    style: { background: '#0d0a0b', color: '#9E9DA0', border: '1px solid rgba(69, 73, 85,0.2)' }
+                  if (!user) {
+                    toast.error('Not authenticated');
+                    return;
+                  }
+                  setIsExecuting(true);
+                  const actionPromise = (async () => {
+                    const idToken = await user.getIdToken();
+                    const res = await executeInboxAction(item, idToken, user.email || '');
+                    if (res.success) {
+                      if (!item.read) await onMarkRead(item.id);
+                    }
+                    return res.message;
+                  })();
+
+                  toast.promise(actionPromise, {
+                    loading: 'Executing action...',
+                    success: (msg) => msg,
+                    error: (err) => err.message || 'Failed to execute action.',
                   });
-                  setIsExpanded(false);
+
+                  try {
+                    await actionPromise;
+                    setIsExpanded(false);
+                  } catch (err) {
+                    console.error('[InboxItemCard] Action error:', err);
+                  } finally {
+                    setIsExecuting(false);
+                  }
                 }}
-                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-97 transition-all luminous-glow"
+                className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-97 transition-all luminous-glow disabled:opacity-50"
               >
                 {item.type === 'VENDOR_BID' ? 'Approve Bid' : item.type === 'RECEIPT_APPROVAL' ? 'Approve Receipt' : 'Accept'}
               </button>

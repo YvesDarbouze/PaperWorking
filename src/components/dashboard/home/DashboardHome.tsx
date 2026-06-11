@@ -391,6 +391,13 @@ export default function DashboardHome() {
           </ErrorBoundary>
         )}
 
+        {/* ── Analytics Widget — real metric history from snapshots ── */}
+        {!isGuest && (
+          <ErrorBoundary name="Analytics Widget">
+            <AnalyticsWidget />
+          </ErrorBoundary>
+        )}
+
         {/* ── Portfolio Overview: Phase Distribution + ROI Heatmap ── */}
         {!isGuest && portfolioProjects.length >= 2 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

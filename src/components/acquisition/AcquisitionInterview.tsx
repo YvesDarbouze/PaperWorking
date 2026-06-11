@@ -6,6 +6,7 @@ import { projectsService } from '@/lib/firebase/projects';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-hot-toast';
 import { ChevronLeft, ChevronRight, CheckCircle, Info, Calendar, AlertCircle, CircleDot } from 'lucide-react';
+import { RentEstimateCard } from './steps/RentEstimateCard';
 
 interface AcquisitionInterviewProps {
   deal: Project;
@@ -41,6 +42,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
       // Projected underwriting (new acquisition path)
       targetPrice: deal.financials?.targetPrice || deal.financials?.purchasePrice || '',
       projectedRent: deal.financials?.projectedRent || deal.financials?.projectedMonthlyRent || deal.financials?.monthlyGrossRent || '',
+      projectedMonthlyRentSource: deal.financials?.projectedMonthlyRentSource || '',
       estimatedARV: deal.financials?.estimatedARV || deal.financials?.arv || '',
       projectedSalePrice: deal.financials?.projectedSalePrice || '',
       projectedOpex: deal.financials?.projectedOpex || '',
@@ -98,6 +100,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
         startingPhase: deal.currentPhase || 1,
         targetPrice: deal.financials?.targetPrice || deal.financials?.purchasePrice || '',
         projectedRent: deal.financials?.projectedRent || deal.financials?.projectedMonthlyRent || deal.financials?.monthlyGrossRent || '',
+        projectedMonthlyRentSource: deal.financials?.projectedMonthlyRentSource || '',
         estimatedARV: deal.financials?.estimatedARV || deal.financials?.arv || '',
         projectedSalePrice: deal.financials?.projectedSalePrice || '',
         projectedOpex: deal.financials?.projectedOpex || '',
@@ -584,6 +587,7 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
             : (toNum(formData.financials.targetPrice) ?? deal.financials?.purchasePrice ?? 0),
           projectedRent: toNum(formData.financials.projectedRent),
           projectedMonthlyRent: toNum(formData.financials.projectedRent),
+          projectedMonthlyRentSource: formData.financials.projectedMonthlyRentSource || undefined,
           estimatedARV: toNum(formData.financials.estimatedARV) ?? deal.financials?.estimatedARV ?? 0,
           arv: toNum(formData.financials.estimatedARV),
           projectedSalePrice: toNum(formData.financials.projectedSalePrice),
@@ -668,6 +672,19 @@ export default function AcquisitionInterview({ deal }: AcquisitionInterviewProps
           </select>
         );
       case 'currency':
+        if (activeQuestion.id === 'projectedRent') {
+          return (
+            <RentEstimateCard
+              projectId={deal.id}
+              value={value}
+              onChange={(val, source) => {
+                updateValue(activeQuestion.field, val);
+                updateValue('financials.projectedMonthlyRentSource', source);
+              }}
+              initialSource={formData.financials.projectedMonthlyRentSource}
+            />
+          );
+        }
         return (
           <div className="relative w-full max-w-lg">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-medium text-text-secondary">$</span>

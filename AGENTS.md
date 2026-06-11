@@ -104,4 +104,16 @@ For async features, status comes from a verified webhook/poll, demonstrated end-
 Confirm tsc clean and the full suite green, and state explicitly which of the above were verified by hand, since tests don't cover them.
 <!-- END:mock-conversion-rules -->
 
+<!-- BEGIN:rentcast-integration-rules -->
+# RentCast API Integration Rules
+We are integrating the RentCast API (https://api.rentcast.io/v1) as PaperWorking's primary live property-data provider. Key facts from its documentation:
+- Auth: X-Api-Key header. The key is server-side only — never in client bundles.
+- Rate limit: 20 requests/second. Billing is per request, so unnecessary calls cost real money.
+- Endpoints we use: /properties (property records incl. attributes, last sale, tax assessments), /avm/value (value estimate + sale comparables), /avm/rent/long-term (rent estimate + rental comparables), /markets (zip-level sale & rental statistics with ~12 months history), /listings/sale and /listings/rental (active listings).
+- AVM responses include the estimate, a low/high range, the subject property, and comparables each carrying price, distance, daysOnMarket, correlation (0–1 similarity), listedDate, and status.
+- AVM accuracy: pass the full address and let lookupSubjectAttributes default to true; tune maxRadius, daysOld, compCount only when needed.
 
+Caching is mandatory. Every RentCast response is cached in Firestore with fetchedAt and a per-endpoint TTL.
+Estimates are AVMs, not appraisals — display the range, not just the point value, and label the source.
+Zillow policy: partner-gated... No Zillow code beyond keeping provider interfaces adapter-ready.
+<!-- END:rentcast-integration-rules -->

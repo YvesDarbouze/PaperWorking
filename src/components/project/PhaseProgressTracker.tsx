@@ -54,7 +54,7 @@ export const PHASE_STEPS: PhaseStep[] = [
   },
   {
     index: 1, number: 2,
-    label: 'Purchase',    sublabel: 'Closing & Docs',
+    label: 'Closing',     sublabel: 'Closing & Docs',
     path: 'phase-2',
     phaseKey: 'Phase 2: Acquisition',
   },
@@ -309,9 +309,9 @@ export function PhaseProgressTracker({
           },
           {
             index: 1, number: 2,
-            label: 'Transaction', sublabel: 'Closing & Docs',
+            label: 'Closing',     sublabel: 'Closing & Docs',
             path: 'phase-2',
-            phaseKey: 'Phase 2: Transaction',
+            phaseKey: 'Phase 2: Closing',
           },
           {
             index: 2, number: 3,
@@ -336,9 +336,9 @@ export function PhaseProgressTracker({
           },
           {
             index: 1, number: 2,
-            label: 'Transaction', sublabel: 'Closing & Docs',
+            label: 'Closing',     sublabel: 'Closing & Docs',
             path: 'phase-2',
-            phaseKey: 'Phase 2: Transaction',
+            phaseKey: 'Phase 2: Closing',
           },
           {
             index: 2, number: 3,

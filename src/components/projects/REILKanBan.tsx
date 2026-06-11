@@ -27,7 +27,7 @@ export const REIL_PHASES = [
   {
     phase:       2,
     key:         "purchase",
-    label:       "Purchase",
+    label:       "Closing",
     icon:        "account_balance",
     color:       "#7A9EAA",
     colorAlpha:  "rgba(122,158,170,",

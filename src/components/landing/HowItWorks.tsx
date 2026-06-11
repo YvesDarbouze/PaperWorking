@@ -348,7 +348,7 @@ const STEPS: StepData[] = [
   {
     id: 'step-02',
     num: '02',
-    phase: 'Transaction',
+    phase: 'Closing',
     icon: 'gavel',
     headline: "Never blow a contingency. Not once.",
     detail: "Your inspection window, financing deadline, and earnest money date don't care about your inbox. PaperWorking watches every one and fires alerts before your deposit becomes non-refundable.",

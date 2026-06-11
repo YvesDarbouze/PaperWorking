@@ -529,6 +529,7 @@ export type PhaseStatus =
   | 'Phase 4: Realized'
   | 'Phase 1: Acquisition'
   | 'Phase 2: Transaction'
+  | 'Phase 2: Closing'
   | 'Phase 3: Rehab'
   | 'Phase 4: Hold / Exit';
 
@@ -690,6 +691,7 @@ export interface Project {
   organizationId: string; // REQUIRED: Maps project to exactly one tenant for B2B data isolation
   propertyName: string;
   address: string;
+  zip?: string;
   phase?: string;
   name?: string;
   numberOfUnits?: number;
@@ -733,7 +735,16 @@ export interface Project {
   rehab?: ProjectRehab;
   holdCost?: ProjectHoldCost;
   exit?: ProjectExit;
-
+  
+  propertyFacts?: {
+    beds?: number;
+    baths?: number;
+    sqft?: number;
+    propertyType?: string;
+    estRentCents?: number;
+    listPriceCents?: number;
+    [key: string]: any;
+  };
 
   actionItems?: any[]; // Persistent storage for ProjectTodoList tasks
 
@@ -741,6 +752,10 @@ export interface Project {
   settlementDocuments?: SettlementDocument[]; // HUD-1, Closing Disclosures
 
   locked?: boolean; // Global read-only lock after closure
+  lastSyncedAt?: string | Date;
+  valueSyncedAt?: string | Date;
+  rentSyncedAt?: string | Date;
+  marketSyncedAt?: string | Date;
   createdAt: Date;
   updatedAt: Date;
   lastPhaseTransitionAt?: Date; // Phase 6: Tracks time spent in a specific lifecycle state
@@ -983,6 +998,8 @@ export interface ProjectFinancials {
   longTermMortgagePayment?: number; // per month
   occupancyRate?: number;
   grossRentMultiplier?: number;
+  projectedMonthlyRentSource?: string;
+
 
   // Deal Calculator Detailed Fields
   grossIncomeBaseRent?: number;
@@ -1096,6 +1113,9 @@ export interface ProjectFinancials {
   realizedNetProceeds?: number;           // Derived: salePrice - allSellCosts
   realizedROI?: number;                   // Derived: netProfit / totalCashInvested * 100
   taxEstimateSnapshot?: TaxEstimate;      // Frozen tax estimate at time of sale finalization
+
+  // Phase 2 Closing Cost Model — per-line overrides (keyed by ClosingCostLine.id)
+  closingCostOverrides?: Record<string, number>;
 }
 
 export interface ExitAssets {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import { adminDb } from '@/lib/firebase/admin';
 import { clearDashboardCache } from '@/lib/cache/dashboardCache';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 
 /* ═══════════════════════════════════════════════════════════════
    PATCH /api/projects/[id] — Update project fields
@@ -90,7 +91,15 @@ export async function PATCH(
       // Clear dashboard cache inside transaction on success
       clearDashboardCache(targetOrgId);
 
-      return { success: true };
+      return {
+        success: true,
+        orgId: targetOrgId,
+        projectName: projectData?.propertyName || projectData?.address || projectId,
+        prevStatus: projectData?.status,
+        nextStatus: topLevelUpdates.status,
+        prevPhase: projectData?.phaseStatus,
+        nextPhase: topLevelUpdates.phaseStatus,
+      };
     });
 
     if ('error' in transactionResult) {
@@ -98,6 +107,27 @@ export async function PATCH(
         { error: transactionResult.error },
         { status: transactionResult.status }
       );
+    }
+
+    // Emit phase_change activity when status or phaseStatus actually changed
+    const { orgId, projectName, prevStatus, nextStatus, prevPhase, nextPhase } = transactionResult;
+    const statusChanged = nextStatus && nextStatus !== prevStatus;
+    const phaseChanged = nextPhase && nextPhase !== prevPhase;
+    if (orgId && (statusChanged || phaseChanged)) {
+      const actorName = auth.token.name || auth.token.email || 'Unknown';
+      const changeLabel = phaseChanged
+        ? `moved to ${nextPhase}`
+        : `status changed to "${nextStatus}"`;
+      logOrgActivity({
+        organizationId: orgId,
+        type: 'phase_change',
+        actorId: uid,
+        actorName,
+        summary: `${projectName} — ${changeLabel}`,
+        targetRef: `projects/${projectId}`,
+        projectId,
+        projectName,
+      });
     }
 
     // 4. Return updated snapshot after successful transaction

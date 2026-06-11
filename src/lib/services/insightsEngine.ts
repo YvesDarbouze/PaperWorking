@@ -20,6 +20,8 @@ export interface InsightsEngineInputs {
     daysOnMarket: number;
     medianHomePrice: number;
     averageRent: number;       // monthly rent
+    source?: string;
+    asOf?: string;
   };
 }
 
@@ -29,6 +31,7 @@ export interface ShortTermMetrics {
   cashOnCash: number;
   grm: number;
   oer: number;
+  vacancyRate: number;
 }
 
 export interface LongTermMetrics {
@@ -42,6 +45,8 @@ export interface LongTermMetrics {
 export interface MarketInsights {
   daysOnMarket: number;
   priceToRentRatio: number;
+  source?: string;
+  asOf?: string;
 }
 
 export interface InsightsEngineResult {
@@ -271,7 +276,8 @@ export const InsightsEngine = {
         capRate: yr1CapRate,
         cashOnCash: yr1CoC,
         grm: yr1GRM,
-        oer: yr1OER
+        oer: yr1OER,
+        vacancyRate
       },
       longTerm: {
         years,
@@ -282,7 +288,9 @@ export const InsightsEngine = {
       },
       marketInsights: {
         daysOnMarket: marketData.daysOnMarket,
-        priceToRentRatio
+        priceToRentRatio,
+        source: marketData.source,
+        asOf: marketData.asOf
       }
     };
   }

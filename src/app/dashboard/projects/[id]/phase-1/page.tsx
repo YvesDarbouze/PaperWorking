@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useWorkspaceProject } from '@/app/dashboard/projects/[id]/layout';
 import { usePipelineData } from '@/context/ProjectPipelineContext';
 import ProjectCalculator from '@/components/project/ProjectCalculator';
+import { MarketContextPanel } from '@/components/project/MarketContextPanel';
 import { PhaseExplainerVideo } from '@/components/project/PhaseExplainerVideo';
 import { PhaseLockedBanner } from '@/components/project/PhaseLockedBanner';
 import ConversationalForm from '@/components/conversational/ConversationalForm';
@@ -13,7 +14,7 @@ import type { QuestionDef, FormAnswers } from '@/components/conversational/types
 import { projectsService } from '@/lib/firebase/deals';
 import toast from 'react-hot-toast';
 import type { Phase1Snapshot, LoanStatus, PurchaseReadinessItem } from '@/types/schema';
-import { CrowdfundingTracker, type Investor } from '@/components/project/CrowdfundingTracker';
+import { CrowdfundingTracker } from '@/components/project/CrowdfundingTracker';
 import LOIGenerator from '@/components/project/LOIGenerator';
 import { LoanProcessingPipeline } from '@/components/project/LoanProcessingPipeline';
 import { ProjectAnalyzer } from '@/components/project/ProjectAnalyzer';
@@ -145,7 +146,7 @@ export default function Phase1WorkspacePage() {
   const { isPhaseComplete, snapshots, phase1Live } = usePipelineData();
   const phase1Locked = isPhaseComplete('phase-1');
   const [advancing, setAdvancing] = useState(false);
-  const [investors, setInvestors]     = useState<Investor[]>([]);
+  const [totalRaisedCents, setTotalRaisedCents] = useState(0);
   const [postingToMarketplace, setPostingToMarketplace] = useState(false);
 
   // ── Syndicate Invite Modal ────────────────────────────
@@ -228,7 +229,6 @@ export default function Phase1WorkspacePage() {
 
   /* ── Validation for Phase 1 Lock ── */
   const targetRaiseCents = project?.financials?.projectedRehabCost ?? 0;
-  const totalRaisedCents = investors.reduce((sum, inv) => sum + inv.amountCents, 0);
   const isFullyFunded = targetRaiseCents > 0 && totalRaisedCents >= targetRaiseCents;
 
   const currentOfferStatus = project?.financials?.offerStatus;
@@ -788,7 +788,18 @@ export default function Phase1WorkspacePage() {
 
               {/* Expanded: ConversationalForm or ProjectCalculator */}
               {expandedTask === 'financials' && (
-                <div className="animate-in fade-in slide-in-from-top-1 duration-200 pt-2">
+                <div className="animate-in fade-in slide-in-from-top-1 duration-200 pt-2 space-y-4">
+                  {project.zip && (
+                    <MarketContextPanel
+                      zipCode={project.zip}
+                      beds={project.propertyFacts?.beds}
+                      propertyType={project.propertyFacts?.propertyType}
+                      projectRent={project.propertyFacts?.estRentCents ? Number(project.propertyFacts.estRentCents) / 100 : undefined}
+                      projectPrice={phase1Live.purchasePrice ? Number(phase1Live.purchasePrice) / 100 : (project.financials?.purchasePrice ? Number(project.financials.purchasePrice) / 100 : undefined)}
+                      projectSqft={project.propertyFacts?.sqft}
+                    />
+                  )}
+
                   {phase1Locked ? (
                     <ProjectCalculator
                       phaseColor={PHASE_COLOR}
@@ -855,9 +866,10 @@ export default function Phase1WorkspacePage() {
               {expandedTask === 'capital' && (
                 <div className="animate-in fade-in slide-in-from-top-1 duration-200 space-y-3">
                   <CrowdfundingTracker
+                    projectId={projectId}
                     targetCents={project.financials?.projectedRehabCost ?? 0}
                     phaseColor={PHASE_COLOR}
-                    onChange={setInvestors}
+                    onTotalChange={setTotalRaisedCents}
                   />
                   <div className="flex flex-col gap-2">
                     <button

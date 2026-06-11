@@ -222,10 +222,29 @@ function TrajectoryChart({
 
 export default function LTVIntelligencePage() {
   useAllDealsSync();
-  useProjectStore((s) => s.projects);
+  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
   const { snapshots } = usePortfolioMetricSnapshots('monthly');
+
+  const propertiesTableData = useMemo(() => {
+    const validProjects = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
+    if (validProjects.length > 0) {
+      return validProjects.map((p) => {
+        const value = p.financials?.arv ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0;
+        const loan = p.financials?.loanAmount ?? 0;
+        const ltv = value > 0 ? (loan / value) * 100 : 0;
+        return {
+          address: p.address || p.propertyName || 'Unknown Property',
+          value,
+          loan,
+          ltv,
+          status: ltv < 65 ? 'Safe' : ltv < 80 ? 'Target' : 'High Risk',
+        };
+      });
+    }
+    return DEMO_PROPERTIES;
+  }, [projects]);
 
   const { isUsingDemoData, currentLtv, ltvChange, chartLabels, loanSeries, valueSeries, splitIndex } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
@@ -344,9 +363,9 @@ export default function LTVIntelligencePage() {
             <div className="space-y-3">
               {[
                 { label: 'Avg LTV',        value: `${currentLtv.toFixed(1)}%` },
-                { label: 'Total Loan',     value: fmtDollar(DEMO_LOAN_BALANCE[DEMO_LOAN_BALANCE.length - 1]) },
-                { label: 'Total Value',    value: fmtDollar(DEMO_PROPERTY_VALUE[DEMO_PROPERTY_VALUE.length - 1]) },
-                { label: 'Implied Equity', value: fmtDollar(DEMO_PROPERTY_VALUE[DEMO_PROPERTY_VALUE.length - 1] - DEMO_LOAN_BALANCE[DEMO_LOAN_BALANCE.length - 1]) },
+                { label: 'Total Loan',     value: fmtDollar(loanSeries[splitIndex] ?? 0) },
+                { label: 'Total Value',    value: fmtDollar(valueSeries[splitIndex] ?? 0) },
+                { label: 'Implied Equity', value: fmtDollar(Math.max(0, (valueSeries[splitIndex] ?? 0) - (loanSeries[splitIndex] ?? 0))) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
                   <span className="text-xs text-[#6B6870]">{item.label}</span>
@@ -395,7 +414,7 @@ export default function LTVIntelligencePage() {
             LTV by Property
           </span>
           <span className="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">
-            {DEMO_PROPERTIES.length} properties
+            {propertiesTableData.length} properties
           </span>
         </div>
 
@@ -411,7 +430,7 @@ export default function LTVIntelligencePage() {
               </tr>
             </thead>
             <tbody>
-              {DEMO_PROPERTIES.map((prop) => {
+              {propertiesTableData.map((prop) => {
                 const color = ltvStatusColor(prop.ltv);
                 const label = ltvStatusLabel(prop.ltv);
                 return (

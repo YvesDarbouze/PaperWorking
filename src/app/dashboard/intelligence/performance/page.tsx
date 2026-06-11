@@ -146,7 +146,7 @@ export default function PortfolioPerformancePage() {
     const last = vals[vals.length - 1] ?? 0;
     const first = vals[0] ?? last;
     const roi = first > 0 ? ((last - first) / first) * 100 : 0;
-    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 1, isUsingDemoData: false };
+    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 0, isUsingDemoData: false };
   }, [snapshots, projects, period]);
 
   const kpis = useMemo(() => {

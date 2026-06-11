@@ -86,7 +86,7 @@ function getPhaseProgressInfo(project: Project) {
 
   const phaseNames = {
     1: 'Acquisition',
-    2: 'Purchase',
+    2: 'Closing',
     3: 'Hold',
     4: 'Exit',
   };
@@ -474,7 +474,7 @@ export default function ProjectsPage() {
         {[
           { value: '', label: 'All Phases' },
           { value: '1', label: 'Acquisition', color: '#454955' },
-          { value: '2', label: 'Transaction',  color: '#7A9EAA' },
+          { value: '2', label: 'Closing',      color: '#7A9EAA' },
           { value: '3', label: 'Rehab',        color: '#ffac5a' },
           { value: '4', label: 'Hold / Exit',  color: '#5aaa3f' },
         ].map(({ value, label, color }) => (

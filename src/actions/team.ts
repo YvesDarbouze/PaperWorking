@@ -172,6 +172,94 @@ export async function persistTeamInvite(member: OrgTeamMember): Promise<void> {
 }
 
 /**
+ * Resends a pending team invitation, extending its expiry and queueing a new email/notification.
+ */
+export async function resendTeamInvite(email: string): Promise<void> {
+  const callerUid = await getCallerUid();
+
+  const userSnap = await adminDb.collection('users').doc(callerUid).get();
+  const userData = userSnap.data();
+
+  if (!userData) throw new Error('User profile not found.');
+  if (userData.role !== 'Lead Investor' && userData.role !== 'Admin') {
+    throw new Error('Only Lead Investors and Admins may resend team invitations.');
+  }
+
+  const organizationId: string = userData.organizationId;
+  if (!organizationId) throw new Error('Organization not found for this account.');
+
+  const invitesSnap = await adminDb.collection('teamInvitations')
+    .where('organizationId', '==', organizationId)
+    .where('email', '==', email.toLowerCase())
+    .where('status', '==', 'pending')
+    .limit(1)
+    .get();
+
+  if (invitesSnap.empty) {
+    throw new Error('No pending invitation found for this email.');
+  }
+
+  const inviteDoc = invitesSnap.docs[0];
+  const inviteData = inviteDoc.data() as TeamInvitation;
+
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  const token = crypto.randomBytes(32).toString('hex');
+
+  await inviteDoc.ref.update({
+    token,
+    expiresAt,
+    day3ReminderSent: false,
+    day6ReminderSent: false,
+    createdAt: now,
+  });
+
+  await logAuditAction(
+    organizationId,
+    callerUid,
+    userData.displayName || userData.email,
+    'MEMBER_INVITED',
+    { role: inviteData.role, resent: true },
+    undefined,
+    inviteData.email
+  );
+
+  const inviteeSnap = await adminDb.collection('users').where('email', '==', inviteData.email).limit(1).get();
+  if (!inviteeSnap.empty) {
+    const inviteeDoc = inviteeSnap.docs[0];
+    await NotificationService.createNotification({
+      recipientId: inviteeDoc.id,
+      type: 'TEAM_INVITE',
+      actor: { uid: callerUid, name: userData.displayName || userData.email },
+      objectReference: {
+        organizationId: inviteData.organizationId,
+        organizationName: inviteData.organizationName,
+      },
+      deepLinkUrl: `/invite/team?token=${token}`,
+      expiresAt,
+    });
+  } else {
+    await adminDb.collection('queued_emails').add({
+      recipientEmail: inviteData.email,
+      status: 'pending',
+      isBatchable: false,
+      type: 'TEAM_INVITE',
+      actorName: userData.displayName || userData.email,
+      deepLinkUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/invite/team?token=${token}`,
+      sendEmail: true,
+      sendPush: false,
+      title: `${escapeHtml(userData.displayName || userData.email)} invited you to join team ${escapeHtml(inviteData.organizationName)}`,
+      body: `You have been invited to join the organization '${inviteData.organizationName}'. Click to accept the invitation.`,
+      subject: `${escapeHtml(userData.displayName || userData.email)} invited you to join team ${escapeHtml(inviteData.organizationName)}`,
+      html: `<p>${escapeHtml(userData.displayName || userData.email)} invited you to join team ${escapeHtml(inviteData.organizationName)}.</p><a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://paperworking.co'}/invite/team?token=${token}">Accept Invitation</a>`,
+      createdAt: FieldValue.serverTimestamp(),
+      retryCount: 0,
+      expiresAt,
+    });
+  }
+}
+
+/**
  * Accepts a tokenized team invitation.
  */
 export async function acceptTeamInvitation(token: string): Promise<void> {

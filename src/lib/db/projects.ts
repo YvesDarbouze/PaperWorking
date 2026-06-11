@@ -87,6 +87,21 @@ export async function updateProject(id: string, data: UpdateProjectInput) {
   });
 }
 
+export async function updateProjectSync(
+  projectId: string,
+  data: {
+    lastSyncedAt?: Date;
+    valueSyncedAt?: Date;
+    rentSyncedAt?: Date;
+    marketSyncedAt?: Date;
+  }
+) {
+  return prisma.reilProject.update({
+    where: { id: projectId },
+    data,
+  });
+}
+
 export async function listProjectsForUser(userId: string) {
   return prisma.reilProject.findMany({
     where: {
@@ -161,20 +176,34 @@ export async function getPurchaseTerms(projectId: string) {
 // ─── Property enrichment ──────────────────────────────────────────────────────
 
 export interface UpsertPropertyFactsInput {
-  projectId:          string;
-  photoUrl?:          string | null;
-  beds?:              number | null;
-  baths?:             number | null;
-  sqft?:              number | null;
-  yearBuilt?:         number | null;
-  lotSqft?:           number | null;
-  propertyType?:      string | null;
-  listPriceCents?:    bigint | null;
-  estRentCents?:      bigint | null;
-  lastSoldPriceCents?: bigint | null;
-  lastSoldDate?:      Date | null;
-  sourceProvider:     string;
-  fetchedAt:          Date;
+  projectId:               string;
+  photoUrl?:               string | null;
+  beds?:                   number | null;
+  baths?:                  number | null;
+  sqft?:                   number | null;
+  yearBuilt?:              number | null;
+  lotSqft?:                number | null;
+  propertyType?:           string | null;
+  listPriceCents?:         bigint | null;
+  estRentCents?:           bigint | null;
+  lastSoldPriceCents?:     bigint | null;
+  lastSoldDate?:           Date | null;
+  // Tax & HOA (Prompt 2)
+  annualPropertyTaxCents?: bigint | null;
+  taxAssessedValueCents?:  bigint | null;
+  taxYear?:                number | null;
+  hoaMonthlyCents?:        bigint | null;
+  taxSource?:              string | null;
+  // Rent AVM (Prompt 3)
+  estRentLowCents?:        bigint | null;
+  estRentHighCents?:       bigint | null;
+  // Value AVM (Prompt 4)
+  avmPriceCents?:          bigint | null;
+  avmPriceLowCents?:       bigint | null;
+  avmPriceHighCents?:      bigint | null;
+  // Meta
+  sourceProvider:          string;
+  fetchedAt:               Date;
 }
 
 export async function upsertPropertyFacts(input: UpsertPropertyFactsInput) {
@@ -182,38 +211,88 @@ export async function upsertPropertyFacts(input: UpsertPropertyFactsInput) {
     where:  { projectId: input.projectId },
     create: { ...input },
     update: {
-      photoUrl:           input.photoUrl,
-      beds:               input.beds,
-      baths:              input.baths,
-      sqft:               input.sqft,
-      yearBuilt:          input.yearBuilt,
-      lotSqft:            input.lotSqft,
-      propertyType:       input.propertyType,
-      listPriceCents:     input.listPriceCents,
-      estRentCents:       input.estRentCents,
-      lastSoldPriceCents: input.lastSoldPriceCents,
-      lastSoldDate:       input.lastSoldDate,
-      sourceProvider:     input.sourceProvider,
-      fetchedAt:          input.fetchedAt,
+      photoUrl:               input.photoUrl,
+      beds:                   input.beds,
+      baths:                  input.baths,
+      sqft:                   input.sqft,
+      yearBuilt:              input.yearBuilt,
+      lotSqft:                input.lotSqft,
+      propertyType:           input.propertyType,
+      listPriceCents:         input.listPriceCents,
+      estRentCents:           input.estRentCents,
+      lastSoldPriceCents:     input.lastSoldPriceCents,
+      lastSoldDate:           input.lastSoldDate,
+      annualPropertyTaxCents: input.annualPropertyTaxCents,
+      taxAssessedValueCents:  input.taxAssessedValueCents,
+      taxYear:                input.taxYear,
+      hoaMonthlyCents:        input.hoaMonthlyCents,
+      taxSource:              input.taxSource,
+      estRentLowCents:        input.estRentLowCents,
+      estRentHighCents:       input.estRentHighCents,
+      avmPriceCents:          input.avmPriceCents,
+      avmPriceLowCents:       input.avmPriceLowCents,
+      avmPriceHighCents:      input.avmPriceHighCents,
+      sourceProvider:         input.sourceProvider,
+      fetchedAt:              input.fetchedAt,
     },
   });
 }
 
+export interface CompInput {
+  addressLine: string;
+  soldPriceCents?: bigint | null;
+  soldDate?: Date | null;
+  beds?: number | null;
+  baths?: number | null;
+  sqft?: number | null;
+  distanceMiles?: number | null;
+  compType?: string;
+  priceCents?: bigint | null;
+  correlation?: number | null;
+  daysOnMarket?: number | null;
+  status?: string | null;
+  listedDate?: Date | null;
+}
+
 export async function replaceComps(
   projectId: string,
-  comps: Array<{
-    addressLine: string;
-    soldPriceCents: bigint;
-    soldDate: Date;
-    beds?: number | null;
-    baths?: number | null;
-    sqft?: number | null;
-    distanceMiles?: number | null;
-  }>,
+  comps: CompInput[],
 ) {
-  await prisma.reilComp.deleteMany({ where: { projectId } });
+  await prisma.reilComp.deleteMany({ where: { projectId, compType: "SALE" } });
   return prisma.reilComp.createMany({
-    data: comps.map(c => ({ projectId, ...c })),
+    data: comps.map(c => ({ projectId, compType: "SALE", ...c })),
+  });
+}
+
+export async function replaceRentalComps(
+  projectId: string,
+  comps: CompInput[],
+) {
+  await prisma.reilComp.deleteMany({ where: { projectId, compType: "RENTAL" } });
+  return prisma.reilComp.createMany({
+    data: comps.map(c => ({ projectId, compType: "RENTAL", ...c })),
+  });
+}
+
+export interface ValuationSnapshotInput {
+  projectId:      string;
+  valueCents:     bigint;
+  valueLowCents:  bigint;
+  valueHighCents: bigint;
+  source:         string;
+  fetchedAt:      Date;
+}
+
+export async function appendValuationSnapshot(input: ValuationSnapshotInput) {
+  return prisma.reilValuationSnapshot.create({
+    data: input,
+  });
+}
+
+export async function getValuationSnapshots(projectId: string) {
+  return prisma.reilValuationSnapshot.findMany({
+    where: { projectId },
+    orderBy: { fetchedAt: "desc" },
   });
 }
 

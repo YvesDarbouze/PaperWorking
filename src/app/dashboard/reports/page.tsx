@@ -480,7 +480,7 @@ function downloadPDFViaPrint(title: string, csvContent: string) {
 export default function ReportsPage() {
   useAllDealsSync();
   const router = useRouter();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const expenseColors = isDark
@@ -488,6 +488,37 @@ export default function ReportsPage() {
     : ['#3279F9', '#45474D', '#7A5500', '#EFF2F7'];
 
   const projects = useProjectStore((s) => s.projects);
+  const now = useMemo(() => new Date(), []);
+
+  const lastSyncedDate = useMemo(() => {
+    let latest: Date | null = null;
+    for (const p of projects) {
+      if (p.lastSyncedAt) {
+        const d = new Date(p.lastSyncedAt);
+        if (!latest || d.getTime() > latest.getTime()) {
+          latest = d;
+        }
+      }
+    }
+    return latest;
+  }, [projects]);
+
+  const lastSyncStr = useMemo(() => {
+    if (lastSyncedDate) {
+      return lastSyncedDate.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      });
+    }
+    return new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }, [lastSyncedDate, now]);
 
   const [period, setPeriod] = useState<PeriodTab>('Quarterly');
   const [scope, setScope]   = useState<ScopeTab>('Property');
@@ -720,21 +751,45 @@ export default function ReportsPage() {
   /* ── Button Handlers ── */
 
   // Sync Now — re-trigger data sync by forcing store update
-  const handleSyncNow = useCallback(() => {
+  const handleSyncNow = useCallback(async () => {
+    if (!user) {
+      toast.error('User session not found.');
+      return;
+    }
     setSyncing(true);
-    // Force re-fetch by temporarily clearing and re-setting projects
-    const currentProjects = useProjectStore.getState().projects;
-    useProjectStore.getState().setDeals([...currentProjects]);
-    useProjectStore.getState().recalculateMetrics();
-    toast.success('Metrics refreshed', {
-      icon: '🔄',
-      style: { background: '#111', color: '#fff', border: '1px solid #333' },
-    });
-    setTimeout(() => setSyncing(false), 1000);
-  }, []);
+    try {
+      const idToken = await user.getIdToken();
+      const res = await fetch('/api/reil/cron/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to refresh data');
+      }
+
+      const data = await res.json();
+      toast.success(`Sync completed! Refreshed ${data.refreshed} projects.`, {
+        icon: '🔄',
+        style: { background: '#111', color: '#fff', border: '1px solid #333' },
+      });
+      
+      // Force store refresh
+      const currentProjects = useProjectStore.getState().projects;
+      useProjectStore.getState().setDeals([...currentProjects]);
+      useProjectStore.getState().recalculateMetrics();
+    } catch (err) {
+      console.error('[Sync Now] Failed to refresh data', err);
+      toast.error('Sync failed. Please try again.');
+    } finally {
+      setSyncing(false);
+    }
+  }, [user]);
 
   // Tax report period bounds
-  const now = new Date();
   const yearStart = new Date(now.getFullYear(), 0, 1);
   const q1End = new Date(now.getFullYear(), 2, 31);
 
@@ -1148,7 +1203,7 @@ export default function ReportsPage() {
               <div className="flex items-center justify-between text-xs">
                 <span className="text-[var(--color-on-surface-variant)]">Last sync</span>
                 <span className="text-[var(--color-on-surface)] font-semibold tabular-nums">
-                  {new Date(now.getFullYear(), now.getMonth(), 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  {lastSyncStr}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">

@@ -42,9 +42,9 @@ interface FullscreenLifecycleViewProps {
 
 import { PHASE_BACKGROUNDS } from '@/lib/constants/phaseMessages';
 
-const PHASES = [
+export const PHASES = [
   { id: 1, title: 'Acquisition', bg: '#F2F2F2' },
-  { id: 2, title: 'Purchase', bg: '#CCCCCC' },
+  { id: 2, title: 'Closing', bg: '#CCCCCC' },
   { id: 3, title: 'Hold', bg: '#A5A5A5' },
   { id: 4, title: 'Exit', bg: '#595959' },
 ];
@@ -138,12 +138,12 @@ export default function FullscreenLifecycleView({ projectId, onExit }: Fullscree
                         }
 
                         if (missing.length > 0) {
-                           toast.error(`Cannot advance to Purchase. Missing: ${missing.join(', ')}`);
+                           toast.error(`Cannot advance to Closing. Missing: ${missing.join(', ')}`);
                            return;
                         }
                      }
 
-                     // Phase 2 Purchase Gating
+                     // Phase 2 Closing Gating
                      if (deal.currentPhase === 2 || deal.status === 'Under Contract') {
                         const missingP2: string[] = [];
                         if (!deal.financials?.purchasePrice || deal.financials.purchasePrice <= 0)

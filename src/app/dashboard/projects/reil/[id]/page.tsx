@@ -9,6 +9,7 @@ import {
   OWNERSHIP_STRUCTURE_LABELS,
   type AcquisitionStatus,
 } from "@/lib/enums";
+import { MarketContextPanel } from "@/components/project/MarketContextPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -320,6 +321,18 @@ export default function ReilProjectDetailPage({ params }: PageProps) {
             })}
           </div>
         </section>
+
+        {/* Market Context Panel */}
+        {project.zip && (
+          <MarketContextPanel
+            zipCode={project.zip}
+            beds={facts?.beds}
+            propertyType={facts?.propertyType}
+            projectRent={facts?.estRentCents ? Number(facts.estRentCents) / 100 : undefined}
+            projectPrice={terms?.acceptedPriceCents ? Number(terms.acceptedPriceCents) / 100 : (terms?.offerMadeCents ? Number(terms.offerMadeCents) / 100 : (facts?.listPriceCents ? Number(facts.listPriceCents) / 100 : undefined))}
+            projectSqft={facts?.sqft}
+          />
+        )}
 
         {/* ── Data sections ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

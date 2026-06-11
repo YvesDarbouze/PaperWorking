@@ -5,6 +5,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { UserPlus, X, Briefcase, Scale, Landmark, Building } from 'lucide-react';
 import type { ProjectTeamMember, ProjectRole } from '@/types/schema';
 import toast from 'react-hot-toast';
+import { projectsService } from '@/lib/firebase/projects';
 
 /* ═══════════════════════════════════════════════════════
    ProjectTeamManager — Per-Deal Team Assignment
@@ -50,8 +51,18 @@ export default function ProjectTeamManager({ projectId }: Props) {
       status: 'invited',
     };
 
-    updateProjectTeam(projectId, [...team, newMember]);
-    toast.success(`${role} invited: ${newMember.displayName}`);
+    const updatedTeam = [...team, newMember];
+    updateProjectTeam(projectId, updatedTeam);
+
+    toast.promise(
+      projectsService.updateProject(projectId, { projectTeam: updatedTeam }),
+      {
+        loading: 'Inviting deal team member...',
+        success: `${role} invited: ${newMember.displayName}`,
+        error: (err: any) => err.message || 'Failed to update deal team.',
+      }
+    );
+
     setInviteEmail('');
     setInviteName('');
     setEditingRole(null);
@@ -62,7 +73,15 @@ export default function ProjectTeamManager({ projectId }: Props) {
       m.id === memberId ? { ...m, status: 'removed' as const } : m
     );
     updateProjectTeam(projectId, updated);
-    toast.success('Team member removed.');
+
+    toast.promise(
+      projectsService.updateProject(projectId, { projectTeam: updated }),
+      {
+        loading: 'Removing deal team member...',
+        success: 'Team member removed.',
+        error: (err: any) => err.message || 'Failed to update deal team.',
+      }
+    );
   };
 
   return (

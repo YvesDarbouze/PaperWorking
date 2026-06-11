@@ -30,31 +30,11 @@ import {
   Landmark
 } from 'lucide-react';
 import { InsightsEngineResult } from '@/lib/services/insightsEngine';
-
-// Default mock data matching the insightsEngine format for standalone rendering
-const defaultMockData: InsightsEngineResult = {
-  shortTerm: {
-    noi: 22200,
-    capRate: 7.4,
-    cashOnCash: 5.48,
-    grm: 8.33,
-    oer: 35.09
-  },
-  longTerm: {
-    years: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    noi: [22200, 22926, 23676, 24452, 25254, 26083, 26940, 27827, 28744, 29693],
-    cashFlow: [4932.96, 5658.96, 6408.96, 7184.96, 7986.96, 8815.96, 9672.96, 10559.96, 11476.96, 12425.96],
-    cumulativeRoi: [5.48, 12.35, 19.82, 27.93, 36.71, 46.21, 56.46, 67.51, 79.4, 92.19],
-    dscr: [1.286, 1.328, 1.371, 1.416, 1.463, 1.511, 1.56, 1.612, 1.665, 1.72]
-  },
-  marketInsights: {
-    daysOnMarket: 45,
-    priceToRentRatio: 12.1
-  }
-};
+import { REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
 
 interface InsightsDashboardProps {
   data?: InsightsEngineResult;
+  missingFields?: string[];
 }
 
 // ── Donut Gauge Sub-component ──
@@ -141,7 +121,32 @@ function CustomTooltip({ active, payload, label, valueFormatter }: CustomTooltip
   return null;
 }
 
-export default function InsightsDashboard({ data = defaultMockData }: InsightsDashboardProps) {
+export default function InsightsDashboard({ data, missingFields }: InsightsDashboardProps) {
+  if (!data) {
+    const fields = missingFields ?? REQUIRED_INSIGHTS_FIELDS;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 px-6 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
+          <AlertCircle className="w-6 h-6 text-[#9E9DA0]" />
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-sm font-semibold text-white">Projections unavailable</p>
+          <p className="text-xs text-[#9E9DA0] font-light max-w-xs">
+            Enter the following inputs to generate a 10-year pro-forma:
+          </p>
+        </div>
+        <ul className="space-y-1">
+          {fields.map((f) => (
+            <li key={f} className="flex items-center gap-2 text-xs text-[#9E9DA0]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#9E9DA0]/50 flex-shrink-0" />
+              {f}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
   const { shortTerm, longTerm, marketInsights } = data;
 
   // ── Short-Term color thresholds ──
@@ -166,7 +171,7 @@ export default function InsightsDashboard({ data = defaultMockData }: InsightsDa
       : '#f43f5e'; // crimson
 
   // Vacancy Rate: below 5% green, 5%-10% amber, 10%+ red
-  const vacancyRate = Math.round((100 - (shortTerm.noi + shortTerm.oer ? 93 : 95)) * 100) / 100; // Mock placeholder if vacancy rate is missing in shortTerm node
+  const vacancyRate = shortTerm.vacancyRate ?? 0;
   const displayVacancy = vacancyRate;
   const vacancyColor = displayVacancy < 5
     ? '#10b981' // emerald
@@ -398,6 +403,12 @@ export default function InsightsDashboard({ data = defaultMockData }: InsightsDa
                 </>
               )}
             </p>
+            {(marketInsights as any).source && (
+              <p className="text-[9px] text-[#6E7480]/80 mt-2 font-mono tracking-wider uppercase">
+                Source: {(marketInsights as any).source}
+                {(marketInsights as any).asOf ? ` · As of ${new Date((marketInsights as any).asOf).toLocaleDateString()}` : ""}
+              </p>
+            )}
           </div>
 
           {/* Price-to-Rent Ratio Card */}

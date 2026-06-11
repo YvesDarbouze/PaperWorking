@@ -157,7 +157,7 @@ const COMP_ROWS: { category: string; rows: CompRow[] }[] = [
     ],
   },
   {
-    category: 'Transaction',
+    category: 'Closing',
     rows: [
       { label: 'Contingency Deadline Tracker', vendor: true, investor: true, team: true, inst: true },
       { label: 'Earnest Money Alerts', vendor: false, investor: true, team: true, inst: true },

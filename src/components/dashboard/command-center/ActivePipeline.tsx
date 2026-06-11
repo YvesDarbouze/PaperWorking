@@ -16,7 +16,7 @@ const LANES = [
     emptyLabel: "No deals in sourcing",
   },
   {
-    phase: "Transaction",
+    phase: "Closing",
     phaseKey: 2,
     icon: "receipt_long",
     accentColor: "#7A9EAA",

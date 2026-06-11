@@ -5,8 +5,11 @@ import Link from 'next/link';
 import { KPIInsightsDashboard } from '@/components/insights/KPIInsightsDashboard';
 import { StressTestProvider, RiskStressTester, useStressTest } from '@/components/insights/RiskStressTester';
 import InsightsDashboard from '@/components/insights/InsightsDashboard';
+import { useQuery } from '@tanstack/react-query';
+import { MarketContextPanel } from '@/components/project/MarketContextPanel';
 import { computeNOIComponents } from '@/lib/metrics/reiMetrics';
-import { InsightsEngineInputs } from '@/lib/services/insightsEngine';
+import { InsightsEngineInputs, InsightsEngine } from '@/lib/services/insightsEngine';
+import { projectToInsightsInputs, REQUIRED_INSIGHTS_FIELDS } from '@/lib/projections/projectionEngine';
 import type { Project } from '@/types/schema';
 import { 
   Calendar, 
@@ -86,8 +89,11 @@ export default function InsightsPage() {
   const clearDeal = useProjectStore((s) => s.clearDeal);
   const { user, profile } = useAuth();
 
-  // ── View: KPI Overview (new) | Deep Analysis (legacy) | Stress Simulator (new) ──────────────────────
-  const [view, setView] = useState<'kpi' | 'analysis' | 'stress-test'>('kpi');
+  // ── View: KPI Overview | Deep Analysis | Stress Simulator | Projections ─────────────────────────────
+  const [view, setView] = useState<'kpi' | 'analysis' | 'stress-test' | 'projections'>('kpi');
+
+  // ── Per-project projections state ─────────────────────────────────────────
+  const [projectionProjectId, setProjectionProjectId] = useState<string>('');
 
   const [granularity, setGranularity] = useState<Granularity>('month');
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -728,9 +734,9 @@ export default function InsightsPage() {
           borderColor: "rgba(255,255,255,0.07)",
         }}
       >
-        {(["kpi", "analysis", "stress-test"] as const).map((v) => {
-          const label = v === "kpi" ? "KPI Overview" : v === "analysis" ? "Deep Analysis" : "Stress Simulator";
-          const icon  = v === "kpi" ? "monitoring"   : v === "analysis" ? "analytics" : "tune";
+        {(["kpi", "analysis", "stress-test", "projections"] as const).map((v) => {
+          const label = v === "kpi" ? "KPI Overview" : v === "analysis" ? "Deep Analysis" : v === "stress-test" ? "Stress Simulator" : "Projections";
+          const icon  = v === "kpi" ? "monitoring"   : v === "analysis" ? "analytics" : v === "stress-test" ? "tune" : "trending_up";
           const active = view === v;
           return (
             <button
@@ -1658,6 +1664,11 @@ export default function InsightsPage() {
           </div>
         </StressTestProvider>
       )}
+
+      {/* ── Projections tab ──────────────────────────────────────────────────── */}
+      {view === "projections" && (
+        <ProjectionsTabContent projects={projects} />
+      )}
     </div>
   );
 }
@@ -1777,4 +1788,111 @@ function getPhaseName(phaseNum: number): string {
     case 4: return 'Exit';
     default: return `Phase ${phaseNum}`;
   }
+}
+
+// ─── Per-project Projections Tab ────────────────────────────────────────────
+function ProjectionsTabContent({ projects }: { projects: Project[] }) {
+  const [selectedId, setSelectedId] = React.useState<string>(projects[0]?.id ?? '');
+  const { user } = useAuth();
+
+  const selectedProject = projects.find((p) => p.id === selectedId) ?? null;
+  const zipCode = selectedProject?.zip || "";
+
+  // Fetch zip-level market stats
+  const { data: marketStats } = useQuery({
+    queryKey: ["market-stats-insights", zipCode],
+    queryFn: async () => {
+      const token = await user?.getIdToken();
+      if (!token || !zipCode) throw new Error("Not ready");
+      const res = await fetch(`/api/reil/market-stats?zipCode=${zipCode}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch market stats");
+      const data = await res.json();
+      return data.stats;
+    },
+    enabled: !!zipCode && !!user,
+  });
+
+  const inputs = selectedProject ? projectToInsightsInputs(selectedProject) : null;
+
+  // Override placeholder days on market using fetched zip statistics
+  if (inputs && marketStats?.saleData) {
+    const saleData = marketStats.saleData;
+    if (saleData.medianDaysOnMarket !== undefined) {
+      inputs.marketData.daysOnMarket = saleData.medianDaysOnMarket;
+    }
+    if (saleData.medianPrice !== undefined) {
+      inputs.marketData.medianHomePrice = saleData.medianPrice;
+    }
+    inputs.marketData.source = marketStats.sourceProvider || "RentCast API";
+    inputs.marketData.asOf = marketStats.fetchedAt 
+      ? new Date(marketStats.fetchedAt).toISOString()
+      : new Date().toISOString();
+  }
+
+  const result = inputs ? InsightsEngine.calculate(inputs) : undefined;
+
+  if (projects.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 px-6 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
+          <span className="material-symbols-outlined text-[#9E9DA0] text-2xl">folder_open</span>
+        </div>
+        <p className="text-sm font-semibold text-white">No projects yet</p>
+        <p className="text-xs text-[#9E9DA0] font-light max-w-xs">
+          Add a project with underwriting inputs to see its 10-year pro-forma projections.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 space-y-6">
+      {/* Project selector */}
+      <div className="flex items-center gap-3">
+        <label className="text-xs font-semibold text-[#9E9DA0] whitespace-nowrap">
+          Project
+        </label>
+        <select
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+          className="flex-1 max-w-xs text-xs font-medium rounded-xl px-3 py-2 cursor-pointer transition-colors"
+          style={{
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            color: 'rgba(253,255,252,0.85)',
+          }}
+        >
+          {projects.map((p) => (
+            <option key={p.id} value={p.id} style={{ background: '#121014' }}>
+              {p.propertyName || p.address || p.id}
+            </option>
+          ))}
+        </select>
+        {selectedProject && (
+          <span className="text-[10px] font-mono text-[#9E9DA0] bg-white/[0.04] border border-white/[0.06] px-2 py-1 rounded-lg">
+            {selectedProject.phaseStatus ?? `Phase ${selectedProject.currentPhase ?? 1}`}
+          </span>
+        )}
+      </div>
+
+      {/* Market Context Panel */}
+      {selectedProject && (
+        <MarketContextPanel
+          zipCode={selectedProject.zip || ""}
+          beds={selectedProject.propertyFacts?.beds}
+          propertyType={selectedProject.propertyFacts?.propertyType}
+          projectRent={selectedProject.propertyFacts?.estRentCents ? Number(selectedProject.propertyFacts.estRentCents) / 100 : undefined}
+          projectPrice={selectedProject.financials?.purchasePrice ? Number(selectedProject.financials.purchasePrice) / 100 : undefined}
+        />
+      )}
+
+      {/* Dashboard — real data or gate */}
+      <InsightsDashboard
+        data={result}
+        missingFields={result ? undefined : REQUIRED_INSIGHTS_FIELDS}
+      />
+    </div>
+  );
 }

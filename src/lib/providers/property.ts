@@ -12,34 +12,86 @@
 // placeId/address hash so the UI is fully populated without credentials.
 
 export interface PropertyFacts {
-  photoUrl?:           string;
-  beds?:               number;
-  baths?:              number;
-  sqft?:               number;
-  yearBuilt?:          number;
-  lotSqft?:            number;
-  propertyType?:       string;
-  listPriceCents?:     number;
-  estRentCents?:       number;
-  lastSoldPriceCents?: number;
-  lastSoldDate?:       Date;
-  sourceProvider:      string;
-  fetchedAt:           Date;
+  photoUrl?:              string;
+  beds?:                  number;
+  baths?:                 number;
+  sqft?:                  number;
+  yearBuilt?:             number;
+  lotSqft?:               number;
+  propertyType?:          string;
+  listPriceCents?:        number;
+  estRentCents?:          number;
+  lastSoldPriceCents?:    number;
+  lastSoldDate?:          Date;
+  // ─── Tax & HOA (Prompt 2) ───────────────────────────────────────────────
+  annualPropertyTaxCents?:  number;  // Most recent annual property tax (cents)
+  taxAssessedValueCents?:   number;  // Most recent assessed value (cents)
+  taxYear?:                 number;  // Year of the tax/assessment figure
+  hoaMonthlyCents?:         number;  // Monthly HOA fee (cents), if any
+  taxSource?:               string;  // e.g. 'rentcast' — so UI can label provenance
+  // ─── Rent AVM (Prompt 3) ────────────────────────────────────────────────
+  estRentLowCents?:         number;  // Rent estimate low bound
+  estRentHighCents?:        number;  // Rent estimate high bound
+  // ─── Value AVM (Prompt 4) ───────────────────────────────────────────────
+  avmPriceCents?:           number;  // AVM value estimate
+  avmPriceLowCents?:        number;  // AVM value estimate low bound
+  avmPriceHighCents?:       number;  // AVM value estimate high bound
+  // ─── Meta ───────────────────────────────────────────────────────────────
+  sourceProvider:           string;
+  fetchedAt:                Date;
 }
 
 export interface Comp {
   addressLine:    string;
-  soldPriceCents: number;
-  soldDate:       Date;
+  soldPriceCents?: number | null; // Keep optional for rental compatibility
+  soldDate?:       Date | null;    // Keep optional for rental compatibility
   beds?:          number;
   baths?:         number;
   sqft?:          number;
   distanceMiles?: number;
+  // Enriched comp fields (Prompt 4)
+  compType?:      string;
+  priceCents?:    number;
+  correlation?:   number;
+  daysOnMarket?:  number;
+  status?:        string;
+  listedDate?:    Date;
+}
+
+export interface RentalComp {
+  addressLine:    string;
+  rentPriceCents: number;
+  distanceMiles?: number;
+  daysOnMarket?:  number;
+  correlation?:   number;
+  status?:        string;
+  beds?:          number;
+  baths?:         number;
+  sqft?:          number;
+  listedDate?:    Date;
+}
+
+export interface ValueEstimate {
+  priceCents:     number;
+  priceLowCents:  number;
+  priceHighCents: number;
+  source:         string;
+  fetchedAt:      Date;
 }
 
 export interface PropertyDataProvider {
   getFacts(addressOrPlaceId: string): Promise<PropertyFacts>;
   getComps(addressOrPlaceId: string): Promise<Comp[]>;
+  getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]>;
+  getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate>;
+}
+
+export class PropertyNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PropertyNotFoundError';
+    Object.setPrototypeOf(this, PropertyNotFoundError.prototype);
+  }
 }
 
 export type PropertyProviderType = "mock" | "rentcast" | "attom" | "mashvisor";
@@ -103,6 +155,16 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       estRentCents:       estRent * 100,
       lastSoldPriceCents: lastSold * 100,
       lastSoldDate:       new Date(Date.now() - daysAgo * 86_400_000),
+      annualPropertyTaxCents: Math.round(listPrice * 0.015) * 100,
+      taxAssessedValueCents:  Math.round(listPrice * 0.85) * 100,
+      taxYear:            new Date().getFullYear() - 1,
+      hoaMonthlyCents:    (h % 3 === 0) ? seeded(h + 9, 50, 350) * 100 : undefined,
+      taxSource:          'mock',
+      estRentLowCents:    Math.round(estRent * 0.9) * 100,
+      estRentHighCents:   Math.round(estRent * 1.1) * 100,
+      avmPriceCents:      listPrice * 100,
+      avmPriceLowCents:   Math.round(listPrice * 0.95) * 100,
+      avmPriceHighCents:  Math.round(listPrice * 1.05) * 100,
       sourceProvider:     "MockPropertyProvider v1",
       fetchedAt:          new Date(),
     };
@@ -122,6 +184,7 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       const baths  = seeded(sh + 4, 1, 4);
       const sqft   = seeded(sh + 5, 850, 3_000);
       const dist   = (seeded(sh + 6, 10, 200)) / 100; // 0.10–2.00 miles
+      const corr   = (seeded(sh + 7, 75, 99)) / 100;
 
       return {
         addressLine:    `${num} ${street}`,
@@ -131,52 +194,281 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
         baths:          baths + 0.5 * (sh % 2),
         sqft,
         distanceMiles:  parseFloat(dist.toFixed(2)),
+        compType:       "SALE",
+        priceCents:     price * 100,
+        correlation:    corr,
+        daysOnMarket:   days,
+        status:         "Sold",
+        listedDate:     new Date(Date.now() - days * 86_400_000),
       };
     });
   }
+
+  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
+    await new Promise(r => setTimeout(r, 400));
+    const h = hashCode(addressOrPlaceId);
+
+    return Array.from({ length: 6 }, (_, i) => {
+      const sh = h + i * 239;
+      const num    = seeded(sh,     100, 4_999);
+      const street = COMP_STREETS[(sh) % COMP_STREETS.length];
+      const rent   = seeded(sh + 1, 1_200, 4_500);
+      const days   = seeded(sh + 2, 5, 120);
+      const beds   = seeded(sh + 3, 2, 5);
+      const baths  = seeded(sh + 4, 1, 4);
+      const sqft   = seeded(sh + 5, 850, 3_000);
+      const dist   = (seeded(sh + 6, 10, 200)) / 100;
+      const corr   = (seeded(sh + 7, 75, 99)) / 100;
+
+      return {
+        addressLine:    `${num} ${street}`,
+        rentPriceCents: rent * 100,
+        distanceMiles:  parseFloat(dist.toFixed(2)),
+        daysOnMarket:   days,
+        correlation:    corr,
+        status:         "Rented",
+        beds,
+        baths:          baths + 0.5 * (sh % 2),
+        sqft,
+        listedDate:     new Date(Date.now() - days * 86_400_000),
+      };
+    });
+  }
+
+  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
+    await new Promise(r => setTimeout(r, 300));
+    const h = hashCode(addressOrPlaceId);
+    const price = seeded(h, 250_000, 1_200_000);
+    return {
+      priceCents: price * 100,
+      priceLowCents: Math.round(price * 0.95) * 100,
+      priceHighCents: Math.round(price * 1.05) * 100,
+      source: "mock",
+      fetchedAt: new Date(),
+    };
+  }
 }
 
-// ─── RentCast Provider Skeleton ───────────────────────────────────────────────
-
 export class RentCastPropertyProvider implements PropertyDataProvider {
-  private readonly apiKey: string;
+  private client: import('@/lib/providers/rentcast').RentCastClient;
 
   constructor(apiKey: string) {
-    this.apiKey = apiKey;
+    const { RentCastClient } = require('@/lib/providers/rentcast');
+    this.client = new RentCastClient(apiKey);
+  }
+
+  private async getRentEstimateWithWidening(address: string, maxRadius = 5, daysOld = 180): Promise<any> {
+    const { logger } = require('@/lib/logger');
+    try {
+      return await this.client.getRentEstimate({ address, maxRadius, daysOld });
+    } catch (err) {
+      const isCompError = err instanceof Error && (
+        err.message.toLowerCase().includes('comp') ||
+        err.message.toLowerCase().includes('insufficient') ||
+        err.message.toLowerCase().includes('comparables')
+      );
+      if (isCompError) {
+        if (maxRadius === 5 && daysOld === 180) {
+          logger.warn(`[RentCast Property Provider] Not enough comps at 5mi/180d, retrying at 10mi/365d...`);
+          return this.getRentEstimateWithWidening(address, 10, 365);
+        } else if (maxRadius === 10 && daysOld === 365) {
+          logger.warn(`[RentCast Property Provider] Not enough comps at 10mi/365d, retrying at 15mi/730d...`);
+          return this.getRentEstimateWithWidening(address, 15, 730);
+        }
+      }
+      throw err;
+    }
+  }
+
+  private async getValueEstimateWithWidening(address: string, maxRadius = 5, daysOld = 180): Promise<any> {
+    const { logger } = require('@/lib/logger');
+    try {
+      return await this.client.getValueEstimate({ address, maxRadius, daysOld });
+    } catch (err) {
+      const isCompError = err instanceof Error && (
+        err.message.toLowerCase().includes('comp') ||
+        err.message.toLowerCase().includes('insufficient') ||
+        err.message.toLowerCase().includes('comparables')
+      );
+      if (isCompError) {
+        if (maxRadius === 5 && daysOld === 180) {
+          logger.warn(`[RentCast Property Provider] Not enough comps at 5mi/180d, retrying at 10mi/365d...`);
+          return this.getValueEstimateWithWidening(address, 10, 365);
+        } else if (maxRadius === 10 && daysOld === 365) {
+          logger.warn(`[RentCast Property Provider] Not enough comps at 10mi/365d, retrying at 15mi/730d...`);
+          return this.getValueEstimateWithWidening(address, 15, 730);
+        }
+      }
+      throw err;
+    }
   }
 
   async getFacts(addressOrPlaceId: string): Promise<PropertyFacts> {
-    console.log(`📡 [RentCast] Fetching facts for: ${addressOrPlaceId}`);
-    
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.rentcast.io/v1/properties/AVM
-    // Headers: { 'X-Api-Key': this.apiKey }
-    // Params: { address: addressOrPlaceId }
-    
-    const mock = new MockPropertyDataProvider();
-    const facts = await mock.getFacts(addressOrPlaceId);
-    facts.sourceProvider = "RentCast AVM (Skeleton)";
-    return facts;
+    try {
+      // Fire /properties, getRentEstimate, and getValueEstimate in parallel
+      const [propResult, rentResult, valueResult] = await Promise.allSettled([
+        this.client.getProperties({ address: addressOrPlaceId }),
+        this.getRentEstimateWithWidening(addressOrPlaceId),
+        this.getValueEstimateWithWidening(addressOrPlaceId),
+      ]);
+
+      const properties = propResult.status === 'fulfilled' ? propResult.value : null;
+      const rentData   = rentResult.status === 'fulfilled' ? rentResult.value : null;
+      const valueData  = valueResult.status === 'fulfilled' ? valueResult.value : null;
+
+      const subject = (properties && properties.length > 0) ? properties[0] : null;
+
+      if (!subject) {
+        throw new PropertyNotFoundError(`No property record found for: ${addressOrPlaceId}`);
+      }
+
+      // ── Extract last sale from history ──────────────────────────────────────
+      let lastSoldPrice: number | undefined;
+      let lastSoldDate: Date | undefined;
+      if (subject.history && typeof subject.history === 'object') {
+        const saleEntries = Object.values(subject.history)
+          .filter((h) => h.event === 'Sale' && h.price)
+          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        if (saleEntries.length > 0) {
+          lastSoldPrice = saleEntries[0].price;
+          lastSoldDate = new Date(saleEntries[0].date);
+        }
+      }
+      if (!lastSoldDate && subject.lastSaleDate) {
+        lastSoldDate = new Date(subject.lastSaleDate);
+      }
+
+      // ── Extract most recent tax assessment & property tax ───────────────────
+      let annualPropertyTaxCents: number | undefined;
+      let taxAssessedValueCents: number | undefined;
+      let taxYear: number | undefined;
+
+      if (subject.propertyTaxes && typeof subject.propertyTaxes === 'object') {
+        const taxEntries = Object.values(subject.propertyTaxes)
+          .sort((a, b) => b.year - a.year);
+        if (taxEntries.length > 0) {
+          annualPropertyTaxCents = Math.round(taxEntries[0].total * 100);
+          taxYear = taxEntries[0].year;
+        }
+      }
+
+      if (subject.taxAssessments && typeof subject.taxAssessments === 'object') {
+        const assessEntries = Object.values(subject.taxAssessments)
+          .sort((a, b) => b.year - a.year);
+        if (assessEntries.length > 0) {
+          taxAssessedValueCents = Math.round(assessEntries[0].value * 100);
+          if (!taxYear) taxYear = assessEntries[0].year;
+        }
+      }
+
+      // ── HOA ────────────────────────────────────────────────────────────────
+      const hoaMonthlyCents = subject.hoa?.fee
+        ? Math.round(subject.hoa.fee * 100)
+        : undefined;
+
+      return {
+        photoUrl: undefined,
+        beds:               subject.bedrooms  || undefined,
+        baths:              subject.bathrooms || undefined,
+        sqft:               subject.squareFootage || undefined,
+        yearBuilt:          subject.yearBuilt || undefined,
+        lotSqft:            subject.lotSize   || undefined,
+        propertyType:       subject.propertyType || undefined,
+        listPriceCents:     undefined,
+        estRentCents:       rentData?.rent ? Math.round(rentData.rent * 100) : undefined,
+        lastSoldPriceCents: lastSoldPrice ? Math.round(lastSoldPrice * 100) : undefined,
+        lastSoldDate,
+        annualPropertyTaxCents,
+        taxAssessedValueCents,
+        taxYear,
+        hoaMonthlyCents,
+        taxSource:          'rentcast',
+        estRentLowCents:    rentData?.rentRangeLow ? Math.round(rentData.rentRangeLow * 100) : undefined,
+        estRentHighCents:   rentData?.rentRangeHigh ? Math.round(rentData.rentRangeHigh * 100) : undefined,
+        avmPriceCents:      valueData?.price ? Math.round(valueData.price * 100) : undefined,
+        avmPriceLowCents:   valueData?.priceRangeLow ? Math.round(valueData.priceRangeLow * 100) : undefined,
+        avmPriceHighCents:  valueData?.priceRangeHigh ? Math.round(valueData.priceRangeHigh * 100) : undefined,
+        sourceProvider:     'RentCast API',
+        fetchedAt:          new Date(),
+      };
+    } catch (err: any) {
+      if (err?.name === 'RentCastNotFoundError' || err?.code === 'not_found' || err instanceof PropertyNotFoundError) {
+        throw new PropertyNotFoundError(`No property record found for: ${addressOrPlaceId}`);
+      }
+      throw err;
+    }
   }
 
   async getComps(addressOrPlaceId: string): Promise<Comp[]> {
-    console.log(`📡 [RentCast] Fetching comps for: ${addressOrPlaceId}`);
-    
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.rentcast.io/v1/comps/rental or GET https://api.rentcast.io/v1/comps/sale
-    // Headers: { 'X-Api-Key': this.apiKey }
-    // Params: { address: addressOrPlaceId, radius: 2, limit: 10 }
-    
-    const mock = new MockPropertyDataProvider();
-    const comps = await mock.getComps(addressOrPlaceId);
-    return comps.map(c => ({
-      ...c,
-      addressLine: `${c.addressLine} (RentCast Comp)`,
-    }));
+    try {
+      const valueData = await this.getValueEstimateWithWidening(addressOrPlaceId);
+      if (!valueData) return [];
+      const comparables = valueData.comparables || [];
+
+      return comparables.map((c: any) => ({
+        addressLine:    c.formattedAddress || 'Unknown Address',
+        soldPriceCents: c.price ? Math.round(c.price * 100) : null,
+        soldDate:       c.listedDate ? new Date(c.listedDate) : null,
+        beds:           c.bedrooms  || undefined,
+        baths:          c.bathrooms || undefined,
+        sqft:           c.squareFootage || undefined,
+        distanceMiles:  c.distance,
+        compType:       "SALE",
+        priceCents:     c.price ? Math.round(c.price * 100) : undefined,
+        correlation:    c.correlation,
+        daysOnMarket:   c.daysOnMarket || undefined,
+        status:         c.status || 'Sold',
+        listedDate:     c.listedDate ? new Date(c.listedDate) : undefined,
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
+    try {
+      const rentData = await this.getRentEstimateWithWidening(addressOrPlaceId);
+      if (!rentData) return [];
+      const comparables = rentData.comparables || [];
+
+      return comparables.map((c: any) => ({
+        addressLine:    c.formattedAddress || 'Unknown Address',
+        rentPriceCents: c.price ? Math.round(c.price * 100) : 0,
+        distanceMiles:  c.distance,
+        daysOnMarket:   c.daysOnMarket || undefined,
+        correlation:    c.correlation,
+        status:         c.status || 'Rented',
+        beds:           c.bedrooms || undefined,
+        baths:          c.bathrooms || undefined,
+        sqft:           c.squareFootage || undefined,
+        listedDate:     c.listedDate ? new Date(c.listedDate) : undefined,
+      }));
+    } catch {
+      return [];
+    }
+  }
+
+  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
+    try {
+      const valueData = await this.getValueEstimateWithWidening(addressOrPlaceId);
+      if (!valueData) {
+        throw new PropertyNotFoundError(`Could not generate value estimate for: ${addressOrPlaceId}`);
+      }
+      return {
+        priceCents:     Math.round(valueData.price * 100),
+        priceLowCents:  Math.round(valueData.priceRangeLow * 100),
+        priceHighCents: Math.round(valueData.priceRangeHigh * 100),
+        source:         'rentcast',
+        fetchedAt:      new Date(),
+      };
+    } catch (err: any) {
+      if (err?.name === 'RentCastNotFoundError' || err?.code === 'not_found' || err instanceof PropertyNotFoundError) {
+        throw new PropertyNotFoundError(`Could not generate value estimate for: ${addressOrPlaceId}`);
+      }
+      throw err;
+    }
   }
 }
-
-// ─── ATTOM Provider Skeleton ──────────────────────────────────────────────────
 
 export class AttomPropertyProvider implements PropertyDataProvider {
   private readonly apiKey: string;
@@ -187,12 +479,6 @@ export class AttomPropertyProvider implements PropertyDataProvider {
 
   async getFacts(addressOrPlaceId: string): Promise<PropertyFacts> {
     console.log(`📡 [ATTOM] Fetching facts for: ${addressOrPlaceId}`);
-
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/detail
-    // Headers: { 'apikey': this.apiKey, 'Accept': 'application/json' }
-    // Params: { address1: addressOrPlaceId }
-
     const mock = new MockPropertyDataProvider();
     const facts = await mock.getFacts(addressOrPlaceId);
     facts.sourceProvider = "ATTOM Property API (Skeleton)";
@@ -201,12 +487,6 @@ export class AttomPropertyProvider implements PropertyDataProvider {
 
   async getComps(addressOrPlaceId: string): Promise<Comp[]> {
     console.log(`📡 [ATTOM] Fetching comps for: ${addressOrPlaceId}`);
-
-    // SKELETON INTEGRATION DETAIL:
-    // Endpoint: GET https://api.gateway.attomdata.com/propertyapi/v1.0.0/salescomparison/detail
-    // Headers: { 'apikey': this.apiKey, 'Accept': 'application/json' }
-    // Params: { address1: addressOrPlaceId }
-
     const mock = new MockPropertyDataProvider();
     const comps = await mock.getComps(addressOrPlaceId);
     return comps.map(c => ({
@@ -214,9 +494,17 @@ export class AttomPropertyProvider implements PropertyDataProvider {
       addressLine: `${c.addressLine} (ATTOM Comp)`,
     }));
   }
-}
 
-// ─── Mashvisor Provider Skeleton ──────────────────────────────────────────────
+  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
+    const mock = new MockPropertyDataProvider();
+    return mock.getRentalComps(addressOrPlaceId);
+  }
+
+  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
+    const mock = new MockPropertyDataProvider();
+    return mock.getValueEstimate(addressOrPlaceId);
+  }
+}
 
 export class MashvisorPropertyProvider implements PropertyDataProvider {
   private readonly apiKey: string;
@@ -253,6 +541,16 @@ export class MashvisorPropertyProvider implements PropertyDataProvider {
       ...c,
       addressLine: `${c.addressLine} (Mashvisor Comp)`,
     }));
+  }
+
+  async getRentalComps(addressOrPlaceId: string): Promise<RentalComp[]> {
+    const mock = new MockPropertyDataProvider();
+    return mock.getRentalComps(addressOrPlaceId);
+  }
+
+  async getValueEstimate(addressOrPlaceId: string): Promise<ValueEstimate> {
+    const mock = new MockPropertyDataProvider();
+    return mock.getValueEstimate(addressOrPlaceId);
   }
 }
 

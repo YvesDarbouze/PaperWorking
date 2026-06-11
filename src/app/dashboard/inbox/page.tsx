@@ -12,6 +12,7 @@ import InboxFeed from '@/components/inbox/InboxFeed';
 import ThreadDetail from '@/components/inbox/ThreadDetail';
 import ComposeEmailModal from '@/components/inbox/ComposeEmailModal';
 import toast from 'react-hot-toast';
+import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
 
 /* ═══════════════════════════════════════════════════════
    Inbox — Unified Notification Center
@@ -142,9 +143,39 @@ function InboxNotificationCenter() {
   // The existing implementation used `activeThread` for thread views. Let's merge notification and thread details if possible, or just focus on the activeThread / activeNotification.
 
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
+  const [isExecutingAction, setIsExecutingAction] = useState(false);
 
   // If we have an active thread from URL, use that, otherwise use selected notification
   const selectedItem = items.find(item => item.id === selectedNotificationId) || null;
+
+  const handleExecuteAction = async () => {
+    if (!user || !selectedItem) return;
+    setIsExecutingAction(true);
+    const actionPromise = (async () => {
+      const idToken = await user.getIdToken();
+      const res = await executeInboxAction(selectedItem, idToken, user.email || '');
+      if (res.success) {
+        if (!selectedItem.read) {
+          await markAsRead(selectedItem.id);
+        }
+      }
+      return res.message;
+    })();
+
+    toast.promise(actionPromise, {
+      loading: 'Executing action...',
+      success: (msg) => msg,
+      error: (err) => err.message || 'Action execution failed.',
+    });
+
+    try {
+      await actionPromise;
+    } catch (err) {
+      console.error('[Inbox] Action execution error:', err);
+    } finally {
+      setIsExecutingAction(false);
+    }
+  };
 
   return (
     <>
@@ -333,8 +364,9 @@ function InboxNotificationCenter() {
                     <div className="flex items-center justify-center gap-4 py-8">
                       {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE'].includes(selectedItem.type) ? (
                         <button 
-                          onClick={() => toast.success('Action executed.')}
-                          className="px-8 py-3 bg-[#454955] text-[#0d0a0b] font-bold rounded-full luminous-glow flex items-center gap-2 hover:brightness-110 transition-all"
+                          disabled={isExecutingAction}
+                          onClick={handleExecuteAction}
+                          className="px-8 py-3 bg-[#454955] text-[#0d0a0b] font-bold rounded-full luminous-glow flex items-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
                         >
                           <span className="material-symbols-outlined">edit_square</span>
                           EXECUTE ACTION

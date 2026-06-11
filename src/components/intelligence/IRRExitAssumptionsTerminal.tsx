@@ -165,7 +165,7 @@ export function IRRExitAssumptionsTerminal({
   className = '',
 }: IRRExitAssumptionsTerminalProps) {
   const [cashInvested, setCashInvested] = useState(defaults.totalCashInvested ?? 60000);
-  const [annualCF, setAnnualCF] = useState(defaults.annualCashFlow ?? -4443.31);
+  const [annualCF, setAnnualCF] = useState(defaults.annualCashFlow ?? 5052);
   const [holdYears, setHoldYears] = useState(defaults.holdYears ?? 5);
   const [purchasePrice, setPurchasePrice] = useState(defaults.purchasePrice ?? 279000);
   const [appreciation, setAppreciation] = useState(defaults.appreciationPercent ?? 3);

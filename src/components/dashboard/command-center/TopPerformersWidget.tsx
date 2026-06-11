@@ -30,7 +30,7 @@ const PHASE_COLORS: Record<number, string> = {
 
 const PHASE_LABELS: Record<number, string> = {
   1: "Acquisition",
-  2: "Transaction",
+  2: "Closing",
   3: "Rehab",
   4: "Hold / Exit",
 };

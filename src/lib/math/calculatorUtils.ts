@@ -215,7 +215,7 @@ export function calculateEquityPayout(deal: Project | undefined) {
   let calculationStatus = 'No Deal Selected';
   let payouts: { investorId: string; name: string; equityPercentage: number; amount: number }[] = [];
 
-  if (!deal) return { isSold, targetProfit, calculationStatus, payouts };
+  if (!deal) return { isSold, targetProfit, calculationStatus, payouts, investors: [] };
 
   if (deal.status === 'Sold') {
     isSold = true;

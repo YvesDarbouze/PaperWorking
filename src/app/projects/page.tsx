@@ -5,7 +5,7 @@ import React, { useState } from "react";
 export default function ProjectsPage() {
   const [filter, setFilter] = useState("All");
 
-  const filters = ["All", "Acquisition", "Purchase", "Hold", "Exit"];
+  const filters = ["All", "Acquisition", "Closing", "Hold", "Exit"];
 
   const projects = [
     {
@@ -26,7 +26,7 @@ export default function ProjectsPage() {
       location: "Austin, TX",
       strategy: "Rental",
       ownership: "100.00%",
-      phase: "Purchase",
+      phase: "Closing",
       phaseDetails: "Closing",
       progress: 90,
       color: "secondary",

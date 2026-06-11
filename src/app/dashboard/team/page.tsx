@@ -637,11 +637,21 @@ export default function TeamDirectoryPage() {
                     <div className="flex items-center gap-1 shrink-0">
                       <button 
                         onClick={() => {
-                          toast.success(`Registration email resent to ${invite.email}`);
-                          setTerminalLogs(prev => [
-                            ...prev,
-                            `[${new Date().toLocaleTimeString()}] INFO Resent registration scope link to collaborator: ${invite.email}`
-                          ]);
+                          toast.promise(
+                            (async () => {
+                              const { resendTeamInvite } = await import('@/actions/team');
+                              await resendTeamInvite(invite.email);
+                              setTerminalLogs(prev => [
+                                ...prev,
+                                `[${new Date().toLocaleTimeString()}] INFO Resent registration scope link to collaborator: ${invite.email}`
+                              ]);
+                            })(),
+                            {
+                              loading: `Resending invitation to ${invite.email}...`,
+                              success: `Registration email resent to ${invite.email}`,
+                              error: (err: any) => err.message || `Failed to resend invitation to ${invite.email}`,
+                            }
+                          );
                         }} 
                         className="p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors border border-transparent cursor-pointer"
                         title="Resend Invite"

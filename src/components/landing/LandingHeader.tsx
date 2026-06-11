@@ -19,7 +19,7 @@ import { useTheme } from '@/lib/utils/ThemeProvider';
 
 const HOW_IT_WORKS_ITEMS = [
   { icon: 'search_home', title: 'Acquisition', subtitle: 'Source deals and secure capital.' },
-  { icon: 'verified_user', title: 'Transaction', subtitle: 'Contracts, title and compliance.' },
+  { icon: 'verified_user', title: 'Closing', subtitle: 'Contracts, title and compliance.' },
   { icon: 'construction', title: 'Rehab', subtitle: 'Budgets, bids and contractor tracking.' },
   { icon: 'account_balance', title: 'Hold & Exit', subtitle: 'NOI tracking and ROI reporting.' },
 ];

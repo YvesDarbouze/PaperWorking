@@ -7,6 +7,52 @@ import { parseDate } from '@/lib/metrics/helpers';
 
 export const dynamic = 'force-dynamic';
 
+// ── Pure sparkline builder — exported for unit testing ──────────────────────
+export interface SparklineMetric {
+  sparkline: number[];
+  delta: number;
+  changePercent: number;
+  insufficientData: boolean;
+}
+
+/**
+ * Builds a sparkline metric from an array of raw monthly snapshots.
+ *
+ * @param rawSnapshots  Firestore snapshot documents for the org, already
+ *                      filtered to `periodType === 'monthly'`.
+ * @param currentValue  The live value to compare the prior period against.
+ * @param sumFn         Extracts the per-snapshot value for a given period.
+ */
+export function buildSparklineMetric(
+  rawSnapshots: { period: string; [key: string]: any }[],
+  currentValue: number,
+  sumFn: (snap: any) => number
+): SparklineMetric {
+  const byPeriod: Record<string, any[]> = {};
+  for (const s of rawSnapshots) {
+    if (!byPeriod[s.period]) byPeriod[s.period] = [];
+    byPeriod[s.period].push(s);
+  }
+  const sortedPeriods = Object.keys(byPeriod).sort();
+
+  const sparkline = sortedPeriods.map((period) =>
+    Math.round(byPeriod[period].reduce((acc, s) => acc + sumFn(s), 0))
+  );
+
+  const insufficientData = sparkline.length < 2;
+
+  const prevValue = insufficientData ? 0 : sparkline[sparkline.length - 2];
+  const delta     = insufficientData ? 0 : currentValue - prevValue;
+  const changePercent = prevValue > 0 ? (delta / prevValue) * 100 : 0;
+
+  return {
+    sparkline,
+    delta: Math.round(delta),
+    changePercent: Math.round(changePercent * 100) / 100,
+    insufficientData,
+  };
+}
+
 export async function GET(request: NextRequest) {
   try {
     // 1. Authenticate
@@ -62,12 +108,23 @@ export async function GET(request: NextRequest) {
     let currentMonthCF = 0;
     const phaseCounts = {
       'Acquisition': 0,
-      'Transaction': 0,
+      'Closing': 0,
       'Rehab': 0,
       'Hold / Exit': 0,
     };
 
-    const projectCalculations = activeProjects.map(p => {
+    const projectCalculations = await Promise.all(activeProjects.map(async p => {
+      const ledgerSnap = await adminDb
+        .collection('projects')
+        .doc(p.id)
+        .collection('ledgerItems')
+        .get();
+
+      const ledgerItems = ledgerSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as any[];
+
       const assetMetrics = deriveAllMetrics(
         p.financials || {},
         undefined,
@@ -76,24 +133,26 @@ export async function GET(request: NextRequest) {
         p.createdAt
       );
       
-      const projectMetrics = deriveAllProjectMetrics(p, 0, []);
-
-      // Accumulate monthly NOI and Cash Flow
-      currentMonthNOI += (assetMetrics.noi || 0) / 12;
-      currentMonthCF += assetMetrics.monthlyCashFlow || 0;
-
-      // Track phases
-      const phaseNum = p.currentPhase ?? 1;
-      if (phaseNum === 1) phaseCounts['Acquisition']++;
-      else if (phaseNum === 2) phaseCounts['Transaction']++;
-      else if (phaseNum === 3) phaseCounts['Rehab']++;
-      else if (phaseNum === 4) phaseCounts['Hold / Exit']++;
+      const projectMetrics = deriveAllProjectMetrics(p, 0, ledgerItems);
 
       return {
         project: p,
         assetMetrics,
         projectMetrics,
       };
+    }));
+
+    // Accumulate monthly NOI and Cash Flow and track phases
+    projectCalculations.forEach(({ project, assetMetrics }) => {
+      currentMonthNOI += (assetMetrics.noi || 0) / 12;
+      currentMonthCF += assetMetrics.monthlyCashFlow || 0;
+
+      // Track phases
+      const phaseNum = project.currentPhase ?? 1;
+      if (phaseNum === 1) phaseCounts['Acquisition']++;
+      else if (phaseNum === 2) phaseCounts['Closing']++;
+      else if (phaseNum === 3) phaseCounts['Rehab']++;
+      else if (phaseNum === 4) phaseCounts['Hold / Exit']++;
     });
 
     // Fetch snapshots for historical trend
@@ -102,51 +161,19 @@ export async function GET(request: NextRequest) {
       .where('periodType', '==', 'monthly')
       .get();
 
-    const rawSnapshots = snapshotsSnap.docs.map(d => d.data());
-    // Group snapshots by period
-    const snapshotsByPeriod: Record<string, any[]> = {};
-    rawSnapshots.forEach(s => {
-      if (!snapshotsByPeriod[s.period]) snapshotsByPeriod[s.period] = [];
-      snapshotsByPeriod[s.period].push(s);
-    });
+    const rawSnapshots = snapshotsSnap.docs.map(d => d.data()) as { period: string; [key: string]: any }[];
 
-    const sortedPeriods = Object.keys(snapshotsByPeriod).sort();
-    
-    // Sparkline construction for NOI
-    let noiSparkline = sortedPeriods.map(period => {
-      const periodSnaps = snapshotsByPeriod[period];
-      const sumNoi = periodSnaps.reduce((acc, curr) => acc + ((curr.noi || 0) / 12), 0);
-      return Math.round(sumNoi);
-    });
+    const noiMetric = buildSparklineMetric(
+      rawSnapshots,
+      currentMonthNOI,
+      (s) => (s.noi || 0) / 12
+    );
 
-    // Sparkline construction for Cash Flow
-    let cfSparkline = sortedPeriods.map(period => {
-      const periodSnaps = snapshotsByPeriod[period];
-      const sumCf = periodSnaps.reduce((acc, curr) => acc + (curr.monthlyCashFlow || 0), 0);
-      return Math.round(sumCf);
-    });
-
-    // Make sure we have at least 6 points for sparkline visual appeal
-    if (noiSparkline.length < 6) {
-      const baseNOI = Math.round(currentMonthNOI);
-      const points = [0.95, 0.97, 0.96, 0.98, 0.99, 1.0];
-      noiSparkline = points.map(f => Math.round(baseNOI * f));
-    }
-    if (cfSparkline.length < 6) {
-      const baseCF = Math.round(currentMonthCF);
-      const points = [0.94, 0.96, 0.95, 0.97, 0.99, 1.0];
-      cfSparkline = points.map(f => Math.round(baseCF * f));
-    }
-
-    // Deltas: compare with the prior point in sparkline or fallback to -2% to +5% variation
-    const prevNOI = noiSparkline.length >= 2 ? noiSparkline[noiSparkline.length - 2] : currentMonthNOI * 0.97;
-    const prevCF = cfSparkline.length >= 2 ? cfSparkline[cfSparkline.length - 2] : currentMonthCF * 0.96;
-
-    const noiDelta = currentMonthNOI - prevNOI;
-    const cfDelta = currentMonthCF - prevCF;
-    
-    const noiChangePct = prevNOI > 0 ? (noiDelta / prevNOI) * 100 : 0;
-    const cfChangePct = prevCF > 0 ? (cfDelta / prevCF) * 100 : 0;
+    const cfMetric = buildSparklineMetric(
+      rawSnapshots,
+      currentMonthCF,
+      (s) => s.monthlyCashFlow || 0
+    );
 
     // Attention Feed Construction
     const attentionFeed: any[] = [];
@@ -181,7 +208,7 @@ export async function GET(request: NextRequest) {
             projectId: project.id,
             propertyName: project.propertyName,
             type: 'due_date',
-            message: `Purchase transaction scheduled to close in ${daysLeft} days (${closeDate.toLocaleDateString()}).`,
+            message: `Closing scheduled to complete in ${daysLeft} days (${closeDate.toLocaleDateString()}).`,
             severity: 'alert',
           });
         }
@@ -268,15 +295,17 @@ export async function GET(request: NextRequest) {
     const payload = {
       noi: {
         current: Math.round(currentMonthNOI),
-        delta: Math.round(noiDelta),
-        changePercent: Math.round(noiChangePct * 100) / 100,
-        sparkline: noiSparkline,
+        delta: noiMetric.delta,
+        changePercent: noiMetric.changePercent,
+        sparkline: noiMetric.sparkline,
+        insufficientData: noiMetric.insufficientData,
       },
       cashFlow: {
         current: Math.round(currentMonthCF),
-        delta: Math.round(cfDelta),
-        changePercent: Math.round(cfChangePct * 100) / 100,
-        sparkline: cfSparkline,
+        delta: cfMetric.delta,
+        changePercent: cfMetric.changePercent,
+        sparkline: cfMetric.sparkline,
+        insufficientData: cfMetric.insufficientData,
       },
       activeProjects: {
         count: activeProjects.length,

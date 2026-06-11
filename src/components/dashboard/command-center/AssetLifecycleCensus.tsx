@@ -8,7 +8,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
  *
  * Shows project distribution across 4 REIL phases with a donut chart.
  * Center label shows total project count.
- * Phase colors match PHASE_LEGEND: Acquisition=#454955, Transaction=#7A9EAA, Rehab=#ffac5a, Hold=#5aaa3f
+ * Phase colors match PHASE_LEGEND: Acquisition=#454955, Closing=#7A9EAA, Rehab=#ffac5a, Hold=#5aaa3f
  */
 
 interface PhaseData {
@@ -19,7 +19,7 @@ interface PhaseData {
 
 const PHASE_DATA: PhaseData[] = [
   { name: "Acquisition", value: 2, color: "#454955" },
-  { name: "Transaction", value: 1, color: "#7A9EAA" },
+  { name: "Closing",     value: 1, color: "#7A9EAA" },
   { name: "Rehab",       value: 2, color: "#ffac5a" },
   { name: "Hold / Exit", value: 1, color: "#5aaa3f" },
 ];

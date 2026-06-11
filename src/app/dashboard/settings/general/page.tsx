@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getAuth } from 'firebase/auth';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
 
 /* ═══════════════════════════════════════════════════════
@@ -31,15 +34,20 @@ interface ConnectedService {
   id: string;
   name: string;
   iconName: string;
+  /** true = always on (platform service, no user OAuth needed) */
+  platform?: boolean;
   connected: boolean;
   description: string;
+  /** Set by status API; shown below the description */
+  detail?: string;
 }
 
-const SERVICES: ConnectedService[] = [
+const BASE_SERVICES: ConnectedService[] = [
   {
     id: 'firebase',
     name: 'Firebase',
     iconName: 'cloud_done',
+    platform: true,
     connected: true,
     description: 'Authentication, Firestore database, and cloud storage.',
   },
@@ -47,6 +55,7 @@ const SERVICES: ConnectedService[] = [
     id: 'stripe',
     name: 'Stripe',
     iconName: 'payments',
+    platform: true,
     connected: true,
     description: 'Subscription billing and payment processing.',
   },
@@ -69,15 +78,51 @@ const SERVICES: ConnectedService[] = [
 export default function GeneralSettingsPage() {
   const { profile } = useAuth();
 
-
-
   // ─── Regional ──────────────────────────────────────────
-  const [timezone, setTimezone] = useState('America/New_York');
+  const [timezone, setTimezone] = useState(
+    () => profile?.timezone ?? 'America/New_York'
+  );
   const [language] = useState('en');
 
   // ─── Connected Services ────────────────────────────────
-  const [services, setServices] = useState<ConnectedService[]>(SERVICES);
+  const [services, setServices] = useState<ConnectedService[]>(BASE_SERVICES);
   const [connectingId, setConnectingId] = useState<string | null>(null);
+
+  // Load real connection status from Firestore on mount
+  const loadStatus = useCallback(async () => {
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) return;
+    try {
+      const token = await currentUser.getIdToken();
+      const res   = await fetch('/api/integrations/status', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const data = await res.json() as {
+        google_drive: { connected: boolean; email: string | null };
+        mls:          { connected: boolean; provider: string | null };
+      };
+      setServices((prev) =>
+        prev.map((s) => {
+          if (s.id === 'google-drive') {
+            return {
+              ...s,
+              connected: data.google_drive.connected,
+              detail:    data.google_drive.email ?? undefined,
+            };
+          }
+          if (s.id === 'mls') {
+            return { ...s, connected: data.mls.connected };
+          }
+          return s;
+        })
+      );
+    } catch (err) {
+      console.warn('[settings/general] status load error:', err);
+    }
+  }, []);
+
+  useEffect(() => { loadStatus(); }, [loadStatus]);
 
   // ─── Danger Zone ───────────────────────────────────────
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -85,32 +130,104 @@ export default function GeneralSettingsPage() {
 
   // ─── Save Preferences ──────────────────────────────────
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved]   = useState(false);
 
   const handleSavePreferences = async () => {
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) {
+      toast.error('Not signed in.');
+      return;
+    }
     setSaving(true);
-    // Simulate API call — in production this writes to Firestore
-    await new Promise((r) => setTimeout(r, 600));
-    setSaving(false);
-    setSaved(true);
-    toast.success('Preferences saved.', {
-      icon: '✓',
-      style: { background: '#0d0d0d', color: '#fff' },
-    });
-    setTimeout(() => setSaved(false), 3000);
+    try {
+      // Write timezone directly to the user's Firestore profile doc
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        timezone,
+        updatedAt: serverTimestamp(),
+      });
+      setSaved(true);
+      toast.success('Preferences saved.', {
+        icon: '✓',
+        style: { background: '#0d0d0d', color: '#fff' },
+      });
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to save preferences.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleConnect = async (serviceId: string) => {
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) { toast.error('Not signed in.'); return; }
+
     setConnectingId(serviceId);
-    // Simulate OAuth/connection flow
-    await new Promise((r) => setTimeout(r, 1200));
-    setServices((prev) =>
-      prev.map((s) => (s.id === serviceId ? { ...s, connected: true } : s))
-    );
-    setConnectingId(null);
-    toast.success(`Service connected successfully.`, {
-      style: { background: '#0d0d0d', color: '#fff' },
-    });
+    try {
+      const token = await currentUser.getIdToken();
+
+      if (serviceId === 'google-drive') {
+        // 1. Get the OAuth URL from the server (token-authed)
+        const authRes = await fetch('/api/integrations/google-drive/authorize', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!authRes.ok) {
+          const body = await authRes.json().catch(() => ({}));
+          throw new Error(body.error ?? `Server error ${authRes.status}`);
+        }
+        const { authUrl } = await authRes.json() as { authUrl: string };
+
+        // 2. Open consent popup and wait for the callback page to post a message
+        await new Promise<void>((resolve, reject) => {
+          const popup = window.open(authUrl, 'google-drive-oauth', 'width=520,height=640,left=200,top=100');
+          if (!popup) {
+            reject(new Error('Popup blocked. Please allow popups for this site and try again.'));
+            return;
+          }
+          const handler = (event: MessageEvent) => {
+            if (event.origin !== window.location.origin) return;
+            const msg = event.data as { type?: string; success?: boolean; error?: string };
+            if (msg?.type !== 'google-drive-connected') return;
+            window.removeEventListener('message', handler);
+            if (msg.success) resolve();
+            else reject(new Error(msg.error ?? 'Connection failed'));
+          };
+          window.addEventListener('message', handler);
+          // Fallback: close listener if popup closes without posting
+          const poll = setInterval(() => {
+            if (popup.closed) {
+              clearInterval(poll);
+              window.removeEventListener('message', handler);
+              reject(new Error('Popup closed before completing authorization.'));
+            }
+          }, 500);
+        });
+
+      } else if (serviceId === 'mls') {
+        const res = await fetch('/api/integrations/mls/connect', {
+          method:  'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.detail ?? body.error ?? `Server error ${res.status}`);
+        }
+      } else {
+        throw new Error(`No connect handler for service: ${serviceId}`);
+      }
+
+      // Reload statuses from Firestore after successful connect
+      await loadStatus();
+      toast.success('Service connected successfully.', {
+        style: { background: '#0d0d0d', color: '#fff' },
+      });
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Connection failed.', {
+        style: { background: '#0d0d0d', color: '#fff' },
+      });
+    } finally {
+      setConnectingId(null);
+    }
   };
 
   const handleDeleteAccount = () => {
@@ -290,11 +407,16 @@ export default function GeneralSettingsPage() {
                   <div>
                     <p className="text-sm font-semibold text-pw-black">{service.name}</p>
                     <p className="text-xs text-pw-muted mt-0.5 max-w-[200px]">{service.description}</p>
+                    {service.detail && (
+                      <p className="text-[10px] text-pw-primary/70 mt-1 font-mono truncate max-w-[200px]">
+                        {service.detail}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {service.connected ? (
+                  {service.connected || service.platform ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-pw-primary/10 text-pw-primary text-[10px] font-bold border border-pw-primary/20 uppercase tracking-wider">
                       <span className="w-1.5 h-1.5 rounded-full bg-pw-primary" />
                       Connected

@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import NetEngine from '@/components/exit/NetEngine';
 import PhaseBadge from '../ui/PhaseBadge';
 import { Switch } from '../ui';
+import { projectsService } from '@/lib/firebase/projects';
 
 interface ExitStrategyBoardProps {
   projectId: string;
@@ -43,43 +44,79 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
 
   if (!currentProject) return null;
 
-  const handleUpdateListing = () => {
-    const updatedDeals = projects.map(d => {
-      if (d.id === currentProject.id) {
-         return {
-           ...d,
-           status: 'Listed' as any,
-           exitAssets: {
-             ...d.exitAssets,
-             mlsListingLink: mlsLink,
-             stagingImages: [],
-           }
-         };
-      }
-      return d;
-    });
-    setDeals(updatedDeals);
-    toast.success('Property pushed to ACTIVE LISTING status!', { icon: '🏡', style: { background: '#333', color: '#fff' }});
+  const handleUpdateListing = async () => {
+    try {
+      const updates = {
+        status: 'Listed' as any,
+        exitAssets: {
+          ...currentProject.exitAssets,
+          mlsListingLink: mlsLink,
+          stagingImages: currentProject.exitAssets?.stagingImages || [],
+        }
+      };
+
+      // 1. Persist to Firestore backend
+      await projectsService.updateProject(currentProject.id, updates);
+
+      // 2. Update client store
+      const updatedDeals = projects.map(d => {
+        if (d.id === currentProject.id) {
+           return {
+             ...d,
+             ...updates
+           };
+        }
+        return d;
+      });
+      setDeals(updatedDeals);
+      toast.success('Property pushed to ACTIVE LISTING status!', { icon: '🏡', style: { background: '#333', color: '#fff' }});
+    } catch (err: any) {
+      console.error('[ExitStrategyBoard] Failed to update listing:', err);
+      toast.error('Failed to update listing: ' + (err.message || 'Unknown error'));
+    }
   };
 
-  const handleExecuteSale = () => {
-    updateProjectFinancials(currentProject.id, {
-       actualSalePrice: Number(actualSale),
-       buyersAgentCommission: Number(buyerComm),
-       sellersAgentCommission: Number(sellerComm),
-       finalClosingCosts: Number(closingCosts),
-       soldDate: new Date()
-    });
-    
-    // Globally move status to Sold (or 'Refinanced' logically, mapped to Sold locally)
-    const updatedDeals = projects.map(d => {
-       if (d.id === currentProject.id) {
-          return { ...d, status: 'Sold' as any };
-       }
-       return d;
-    });
-    setDeals(updatedDeals);
-    toast.success(isBrrrr ? 'REFINANCE EXECUTED! Assets moved to holding portfolio.' : 'SALE EXECUTED! The Net Engine has recorded the transaction.', { icon: '💰', style: { background: '#3f7d20', color: '#fff' }});
+  const handleExecuteSale = async () => {
+    try {
+      const financialUpdates = {
+        actualSalePrice: Number(actualSale),
+        buyersAgentCommission: Number(buyerComm),
+        sellersAgentCommission: Number(sellerComm),
+        finalClosingCosts: Number(closingCosts),
+        soldDate: new Date()
+      };
+
+      const statusUpdates = {
+        status: 'Sold' as any,
+        financials: {
+          ...currentProject.financials,
+          ...financialUpdates
+        }
+      };
+
+      // 1. Persist to Firestore backend
+      await projectsService.updateProject(currentProject.id, statusUpdates);
+
+      // 2. Update client store
+      const updatedDeals = projects.map(d => {
+         if (d.id === currentProject.id) {
+            return {
+              ...d,
+              status: 'Sold' as any,
+              financials: {
+                ...d.financials,
+                ...financialUpdates
+              }
+            };
+         }
+         return d;
+      });
+      setDeals(updatedDeals);
+      toast.success(isBrrrr ? 'REFINANCE EXECUTED! Assets moved to holding portfolio.' : 'SALE EXECUTED! The Net Engine has recorded the transaction.', { icon: '💰', style: { background: '#3f7d20', color: '#fff' }});
+    } catch (err: any) {
+      console.error('[ExitStrategyBoard] Failed to execute sale:', err);
+      toast.error('Failed to execute sale: ' + (err.message || 'Unknown error'));
+    }
   };
 
   return (

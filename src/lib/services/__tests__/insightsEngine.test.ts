@@ -46,7 +46,10 @@ describe('InsightsEngine Real Estate Calculation Engine', () => {
     // OER = (OpEx / EGI) * 100 = (12,000 / 34,200) * 100 = 35.09%
     expect(shortTerm.oer).toBe(35.09);
 
-    // 5. Cash-on-Cash Return (CoC)
+    // 5. Vacancy Rate
+    expect(shortTerm.vacancyRate).toBe(5.0);
+
+    // 6. Cash-on-Cash Return (CoC)
     // Loan Amount = 300,000 - 60,000 = 240,000
     // Monthly payment (amortized at 6.0% for 30 years):
     // r = 0.06 / 12 = 0.005

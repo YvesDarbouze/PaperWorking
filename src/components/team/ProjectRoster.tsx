@@ -9,6 +9,7 @@ import {
 import type { ProjectTeamMember, ProjectRole, ExternalAccessPermission } from '@/types/schema';
 import AccessGateToggle from './AccessGateToggle';
 import toast from 'react-hot-toast';
+import { projectsService } from '@/lib/firebase/projects';
 
 /* ═══════════════════════════════════════════════════════
    ProjectRoster — 8-Slot External Stakeholder Directory
@@ -108,8 +109,18 @@ export default function ProjectRoster({ projectId }: Props) {
       status: 'invited',
     };
 
-    updateProjectTeam(projectId, [...team, newMember]);
-    toast.success(`${role} invited: ${newMember.displayName}`);
+    const updatedTeam = [...team, newMember];
+    updateProjectTeam(projectId, updatedTeam);
+
+    toast.promise(
+      projectsService.updateProject(projectId, { projectTeam: updatedTeam }),
+      {
+        loading: 'Inviting deal team member...',
+        success: `${role} invited: ${newMember.displayName}`,
+        error: (err: any) => err.message || 'Failed to update deal team.',
+      }
+    );
+
     setInviteEmail('');
     setInviteName('');
     setEditingRole(null);
@@ -120,7 +131,15 @@ export default function ProjectRoster({ projectId }: Props) {
       m.id === memberId ? { ...m, status: 'removed' as const } : m
     );
     updateProjectTeam(projectId, updated);
-    toast.success('Stakeholder removed from deal.');
+
+    toast.promise(
+      projectsService.updateProject(projectId, { projectTeam: updated }),
+      {
+        loading: 'Removing deal team member...',
+        success: 'Team member removed.',
+        error: (err: any) => err.message || 'Failed to update deal team.',
+      }
+    );
   };
 
   const handlePermissionChange = (memberId: string, permissions: ExternalAccessPermission) => {
@@ -128,6 +147,15 @@ export default function ProjectRoster({ projectId }: Props) {
       m.id === memberId ? { ...m, permissions } : m
     );
     updateProjectTeam(projectId, updated);
+
+    toast.promise(
+      projectsService.updateProject(projectId, { projectTeam: updated }),
+      {
+        loading: 'Updating permissions...',
+        success: 'Permissions updated.',
+        error: (err: any) => err.message || 'Failed to update permissions.',
+      }
+    );
   };
 
   return (

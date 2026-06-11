@@ -3,10 +3,11 @@ import { ApplicationUser } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
+import { pingDigitalRegistry, verifyClosingDocuments } from '@/lib/web3RegistryHooks';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import ESignAction from '@/components/shared/ESignAction';
 import { usePermissions } from '@/hooks/usePermissions';
+import { uploadFile } from '@/lib/storage/uploadService';
 
 
 interface ClosingRoomProps {
@@ -24,6 +25,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
     const [isSearchingLawyers, setIsSearchingLawyers] = useState(false);
     const [isSigned, setIsSigned] = useState(false);
+    const [isVerifyingDocs, setIsVerifyingDocs] = useState(false);
 
     useEffect(() => {
       if (!deal) return;
@@ -76,8 +78,54 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
     };
 
-    const handleFileUpload = () => {
-        toast('Document upload — Firebase Storage integration pending.', { icon: '📎' });
+    const [uploadingField, setUploadingField] = useState<'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl' | null>(null);
+
+    const handleFileUpload = async (field: 'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl', file: File) => {
+        setUploadingField(field);
+        const toastId = toast.loading(`Uploading ${file.name}...`);
+        try {
+            const res = await uploadFile({
+                file,
+                path: 'closing_docs',
+                projectId: deal.id,
+            });
+            updateClosingRoom(deal.id, {
+                [field]: res.downloadUrl
+            });
+            toast.success('Document uploaded successfully!', { id: toastId });
+        } catch (err: any) {
+            console.error('[ClosingRoomModal] Upload failed:', err);
+            toast.error(`Upload failed: ${err.message || 'Unknown error'}`, { id: toastId });
+        } finally {
+            setUploadingField(null);
+        }
+    };
+
+    const handleLawyerVerification = async () => {
+        const { titleInsuranceUrl, closingDisclosureUrl, wiringInstructionsUrl } = closingRoom;
+        if (!titleInsuranceUrl || !closingDisclosureUrl || !wiringInstructionsUrl) {
+            toast.error('All three required documents must be uploaded before legal verification.');
+            return;
+        }
+
+        setIsVerifyingDocs(true);
+        const toastId = toast.loading('Running legal audits and generating cryptographic signatures...', { id: 'legal-verify' });
+        try {
+            const result = await verifyClosingDocuments(deal.id, {
+                titleInsuranceUrl,
+                closingDisclosureUrl,
+                wiringInstructionsUrl
+            });
+            updateClosingRoom(deal.id, { 
+                lawyerVerified: true,
+                blockchainTxHash: closingRoom.blockchainTxHash || result.verificationTxHash
+            });
+            toast.success('Documents verified and signed by attorney!', { id: 'legal-verify' });
+        } catch (err: any) {
+            toast.error(err.message || 'Legal verification failed.', { id: 'legal-verify' });
+        } finally {
+            setIsVerifyingDocs(false);
+        }
     };
 
     const DocsComplete = closingRoom.titleInsuranceUrl && closingRoom.closingDisclosureUrl && closingRoom.wiringInstructionsUrl;
@@ -167,17 +215,15 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             )}
 
-                            {/* Demo Lawyer Verification Action */}
+                            {/* Real Lawyer Verification Action */}
                             {closingRoom.assignedLawyerUid && !closingRoom.lawyerVerified && (
                                 <div className="mt-4 pt-4 border-t border-pw-border">
                                    <button 
-                                      onClick={() => {
-                                        toast.success('Lawyer verified the transaction.', { icon: '🧑‍⚖️' });
-                                        updateClosingRoom(deal.id, { lawyerVerified: true });
-                                      }}
-                                      className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition"
+                                      onClick={handleLawyerVerification}
+                                      disabled={isVerifyingDocs}
+                                      className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition disabled:opacity-50"
                                    >
-                                      Verify Document (Demo)
+                                      {isVerifyingDocs ? 'Running Legal Audits...' : 'Verify & Sign Closing Documents'}
                                    </button>
                                 </div>
                             )}
@@ -200,21 +246,24 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                            title="1. Title Insurance"
                            description="Scan of the abstract and insurance policy."
                            isUploaded={!!closingRoom.titleInsuranceUrl}
-                           onUpload={handleFileUpload}
+                           onUpload={(file) => handleFileUpload('titleInsuranceUrl', file)}
+                           isUploading={uploadingField === 'titleInsuranceUrl'}
                         />
 
                         <DocumentZone 
                            title="2. Closing Disclosure (CD)"
                            description="Standardized HUD-1 or final CD statements."
                            isUploaded={!!closingRoom.closingDisclosureUrl}
-                           onUpload={handleFileUpload}
+                           onUpload={(file) => handleFileUpload('closingDisclosureUrl', file)}
+                           isUploading={uploadingField === 'closingDisclosureUrl'}
                         />
 
                         <DocumentZone 
                            title="3. Wiring Instructions"
                            description="Verified ABA routing and transfer accounts."
                            isUploaded={!!closingRoom.wiringInstructionsUrl}
-                           onUpload={handleFileUpload}
+                           onUpload={(file) => handleFileUpload('wiringInstructionsUrl', file)}
+                           isUploading={uploadingField === 'wiringInstructionsUrl'}
                         />
 
                         {(!DocsComplete || !closingRoom.lawyerVerified) && (
@@ -242,7 +291,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                         signeeRole={role}
                                         isSigned={isSigned}
                                         onSigned={() => setIsSigned(true)}
-                                     />
+                                      />
                                  </div>
                              </div>
                         )}
@@ -255,7 +304,32 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     );
 }
 
-function DocumentZone({ title, description, isUploaded, onUpload }: { title: string, description: string, isUploaded: boolean, onUpload: () => void }) {
+function DocumentZone({ 
+    title, 
+    description, 
+    isUploaded, 
+    onUpload, 
+    isUploading 
+}: { 
+    title: string; 
+    description: string; 
+    isUploaded: boolean; 
+    onUpload: (file: File) => void; 
+    isUploading: boolean; 
+}) {
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            onUpload(file);
+        }
+    };
+
     return (
         <div className={`p-4 border border-dashed rounded-2xl transition-colors ${isUploaded ? 'border-green-300 bg-green-500/10' : 'border-pw-border hover:border-pw-muted bg-pw-glass-bg/30'}`}>
             <div className="flex justify-between items-center">
@@ -268,11 +342,24 @@ function DocumentZone({ title, description, isUploaded, onUpload }: { title: str
                         <CheckCircle className="w-3 h-3 mr-1" /> PDF Attached
                     </div>
                 ) : (
-                    <button onClick={onUpload} className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill flex items-center gap-1">
-                        <UploadCloud className="w-3 h-3" /> Upload
-                    </button>
+                    <>
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            accept=".pdf,.doc,.docx"
+                            className="hidden" 
+                        />
+                        <button 
+                            onClick={handleButtonClick} 
+                            disabled={isUploading}
+                            className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill flex items-center gap-1 disabled:opacity-50"
+                        >
+                            {isUploading ? 'Uploading...' : <><UploadCloud className="w-3 h-3" /> Upload</>}
+                        </button>
+                    </>
                 )}
             </div>
         </div>
-    )
+    );
 }

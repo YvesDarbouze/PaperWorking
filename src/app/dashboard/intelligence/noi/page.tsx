@@ -171,6 +171,7 @@ export default function NOIIntelligencePage() {
     grossRent,
     otherIncome,
     opExpenses,
+    vacancyRate,
   } = useMemo(() => {
     if (snapshots && snapshots.length >= 2) {
       const sorted = [...snapshots]
@@ -182,8 +183,15 @@ export default function NOIIntelligencePage() {
       const prev    = noiVals[noiVals.length - 2];
       const pctChg  = prev !== 0 ? ((last - prev) / Math.abs(prev)) * 100 : 0;
       const latestSnap = sorted[sorted.length - 1];
-      const gr  = latestSnap.grossRentalIncome ?? DEMO_GROSS_RENT;
-      const oe  = latestSnap.totalOperatingExpenses ?? DEMO_OP_EXP;
+      const vr = latestSnap.vacancyRate ?? 0;
+      // Convert monthly snapshot metrics to annual basis to prevent units mismatch with annual NOI
+      const gr = (latestSnap.grossRentalIncome ?? 0) * 12;
+      const oe = (latestSnap.totalOperatingExpenses ?? 0) * 12;
+      const vacLoss = Math.round(gr * (vr / 100));
+      
+      // Derive otherIncome dynamically to reconcile the NOI formula: NOI = GrossRent + Other - Vacancy - OpEx
+      const derivedOther = Math.max(0, Math.round(last - gr + vacLoss + oe));
+
       return {
         isUsingDemoData: false,
         currentNoi: last,
@@ -191,8 +199,9 @@ export default function NOIIntelligencePage() {
         trendValues: noiVals,
         trendLabels: labels,
         grossRent: gr,
-        otherIncome: DEMO_OTHER_INC,
+        otherIncome: derivedOther,
         opExpenses: oe,
+        vacancyRate: vr,
       };
     }
     return {
@@ -204,6 +213,7 @@ export default function NOIIntelligencePage() {
       grossRent: DEMO_GROSS_RENT,
       otherIncome: DEMO_OTHER_INC,
       opExpenses: DEMO_OP_EXP,
+      vacancyRate: 0,
     };
   }, [snapshots]);
 

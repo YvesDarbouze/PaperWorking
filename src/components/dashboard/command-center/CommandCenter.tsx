@@ -3,9 +3,12 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { collection, doc, query, orderBy, limit, onSnapshot, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
 import { useProjectStore } from "@/store/projectStore";
 import { useTheme } from "@/lib/utils/ThemeProvider";
 import { useAuth } from "@/context/AuthContext";
+import { useTenant } from "@/context/TenantContext";
 import { useInboxFeed } from "@/hooks/useInboxFeed";
 import { useAllDealsSync } from "@/hooks/useAllProjectsSync";
 import { ActivePipeline } from "./ActivePipeline";
@@ -364,24 +367,106 @@ function Panel({
 
 const PHASE_LEGEND = [
   { label: "Acquisition", color: "#454955" },
-  { label: "Transaction", color: "#7A9EAA" },
+  { label: "Closing",     color: "#7A9EAA" },
   { label: "Rehab",       color: "#ffac5a" },
   { label: "Hold / Exit", color: "#5aaa3f" },
 ];
 
 // ─── Recent Activity Feed ─────────────────────────────────────────────────────
 
-const ACTIVITY_ITEMS = [
-  { icon: "upload_file",       label: "Document uploaded",   sub: "123 Main St · Closing Docs",    time: "2m",  accent: "#7A9EAA" },
-  { icon: "group_add",         label: "Team invite accepted", sub: "Sarah K. joined the workspace", time: "14m", accent: "#3f7d20" },
-  { icon: "edit_note",         label: "Project updated",      sub: "456 Oak Ave · Phase 2",         time: "1h",  accent: "#3279F9" },
-  { icon: "mark_email_unread", label: "New message",          sub: "Vendor quote · ABC Roofing",    time: "3h",  accent: "#ffac5a" },
-  { icon: "task_alt",          label: "Task completed",       sub: "Title search · 789 Pine St",    time: "1d",  accent: "#3f7d20" },
-  { icon: "request_quote",     label: "Deal invite received", sub: "Crowdfund opportunity · $50K",  time: "2d",  accent: "#C4A35A" },
-] as const;
+interface RecentActivityEvent {
+  id: string;
+  type: string;
+  actorName: string;
+  description: string;
+  projectName?: string;
+  createdAt: Date;
+}
+
+function activityIcon(type: string): string {
+  switch (type) {
+    case "doc_uploaded":   return "upload_file";
+    case "member_joined":  return "group_add";
+    case "phase_change":   return "edit_note";
+    case "deal_created":   return "add_home";
+    case "deal_sold":      return "sell";
+    case "ledger_item":    return "receipt_long";
+    default:               return "history";
+  }
+}
+
+function activityLabel(type: string): string {
+  switch (type) {
+    case "doc_uploaded":   return "Document uploaded";
+    case "member_joined":  return "Team member joined";
+    case "phase_change":   return "Status updated";
+    case "deal_created":   return "Deal added";
+    case "deal_sold":      return "Deal sold";
+    case "ledger_item":    return "Ledger entry";
+    default:               return "Activity";
+  }
+}
+
+function formatRelativeTime(date: Date): string {
+  const diffMs = Date.now() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+  if (diffSec < 60)  return "just now";
+  if (diffMin < 60)  return `${diffMin}m`;
+  if (diffHour < 24) return `${diffHour}h`;
+  return `${diffDay}d`;
+}
+
+function useRecentActivity(orgId: string | null | undefined) {
+  const [events, setEvents] = useState<RecentActivityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!orgId || orgId === "org_placeholder") {
+      setLoading(false);
+      return;
+    }
+    const q = query(
+      collection(db, "organizations", orgId, "activity"),
+      orderBy("createdAt", "desc"),
+      limit(8)
+    );
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        setEvents(
+          snap.docs.map((doc) => {
+            const d = doc.data();
+            return {
+              id: doc.id,
+              type: d.type ?? "activity",
+              actorName: d.actorName ?? "System",
+              description: d.description ?? d.summary ?? "",
+              projectName: d.projectName ?? undefined,
+              createdAt:
+                d.createdAt instanceof Timestamp
+                  ? d.createdAt.toDate()
+                  : new Date(),
+            };
+          })
+        );
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
+    return () => unsub();
+  }, [orgId]);
+
+  return { events, loading };
+}
 
 function RecentActivityFeed({ isDark }: { isDark: boolean }) {
   const t = tokens(isDark);
+  const { activeTenantId } = useTenant();
+  const { events, loading } = useRecentActivity(activeTenantId);
+
   return (
     <Panel isDark={isDark} className="h-full flex flex-col">
       {/* Header */}
@@ -412,78 +497,123 @@ function RecentActivityFeed({ isDark }: { isDark: boolean }) {
         </Link>
       </div>
 
-      {/* Items */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
-        {ACTIVITY_ITEMS.map((item, i) => (
-          <div
-            key={i}
-            className="flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 cursor-default relative overflow-hidden group"
-            style={{
-              borderColor: t.divider,
-              background: "transparent",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = "#3279F9";
-              e.currentTarget.style.boxShadow = isDark
-                ? "0 4px 20px rgba(0,0,0,0.35)"
-                : "0 2px 10px rgba(0,0,0,0.04)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = t.divider;
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          >
-            {/* Hover glass overlay effect */}
+      {/* Loading skeleton */}
+      {loading && (
+        <div className="flex-1 p-3 space-y-2">
+          {[0, 1, 2, 3].map((i) => (
             <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-              style={{
-                background: isDark
-                  ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)"
-                  : "linear-gradient(135deg, rgba(50, 121, 249, 0.02) 0%, rgba(50, 121, 249, 0.01) 100%)",
-                backdropFilter: "blur(4px)",
-                WebkitBackdropFilter: "blur(4px)",
-              }}
-            />
+              key={i}
+              className="flex items-start gap-3 px-3 py-2.5 rounded-lg border animate-pulse"
+              style={{ borderColor: t.divider }}
+            >
+              <div
+                className="w-7 h-7 rounded-md flex-shrink-0"
+                style={{ background: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }}
+              />
+              <div className="flex-1 space-y-1.5 py-0.5">
+                <div
+                  className="h-2.5 rounded"
+                  style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }}
+                />
+                <div
+                  className="h-2 rounded w-3/4"
+                  style={{ background: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)" }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
-            {/* Custom Outline-styled Icon badge */}
+      {/* Empty state */}
+      {!loading && events.length === 0 && (
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 px-4 text-center">
+          <span
+            className="material-symbols-outlined text-[32px]"
+            style={{ color: t.muted, fontVariationSettings: "'FILL' 0, 'wght' 300" }}
+          >
+            history
+          </span>
+          <p className="text-[11px] font-medium" style={{ color: t.subtext }}>
+            No activity yet
+          </p>
+          <p className="text-[10px]" style={{ color: t.muted }}>
+            Actions appear here in real time
+          </p>
+        </div>
+      )}
+
+      {/* Live event list */}
+      {!loading && events.length > 0 && (
+        <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+          {events.map((event) => (
             <div
-              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 border z-10"
-              style={{
-                background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
-                borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+              key={event.id}
+              className="flex items-start gap-3 px-3 py-2.5 rounded-lg border transition-all duration-200 cursor-default relative overflow-hidden group"
+              style={{ borderColor: t.divider, background: "transparent" }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#3279F9";
+                e.currentTarget.style.boxShadow = isDark
+                  ? "0 4px 20px rgba(0,0,0,0.35)"
+                  : "0 2px 10px rgba(0,0,0,0.04)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = t.divider;
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <span
-                className="material-symbols-outlined text-[13px]"
+              {/* Hover glass overlay */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
                 style={{
-                  color: isDark ? "rgba(253,255,252,0.8)" : "rgba(69,73,85,0.8)",
-                  fontVariationSettings: "'FILL' 0, 'wght' 300"
+                  background: isDark
+                    ? "linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.01) 100%)"
+                    : "linear-gradient(135deg, rgba(50,121,249,0.02) 0%, rgba(50,121,249,0.01) 100%)",
+                  backdropFilter: "blur(4px)",
+                  WebkitBackdropFilter: "blur(4px)",
+                }}
+              />
+
+              {/* Icon badge */}
+              <div
+                className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 border z-10"
+                style={{
+                  background: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)",
+                  borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
                 }}
               >
-                {item.icon}
+                <span
+                  className="material-symbols-outlined text-[13px]"
+                  style={{
+                    color: isDark ? "rgba(253,255,252,0.8)" : "rgba(69,73,85,0.8)",
+                    fontVariationSettings: "'FILL' 0, 'wght' 300",
+                  }}
+                >
+                  {activityIcon(event.type)}
+                </span>
+              </div>
+
+              <div className="flex-1 min-w-0 z-10 text-left">
+                <p
+                  className="text-[12px] font-semibold truncate leading-snug"
+                  style={{ color: t.heading }}
+                >
+                  {activityLabel(event.type)}
+                </p>
+                <p className="text-[10px] truncate mt-0.5" style={{ color: t.muted }}>
+                  {event.description}
+                </p>
+              </div>
+              <span
+                className="text-[9px] shrink-0 mt-0.5 tabular-nums z-10"
+                style={{ color: t.muted, fontWeight: 500 }}
+              >
+                {formatRelativeTime(event.createdAt)}
               </span>
             </div>
-
-            <div className="flex-1 min-w-0 z-10 text-left">
-              <p
-                className="text-[12px] font-semibold truncate leading-snug"
-                style={{ color: t.heading }}
-              >
-                {item.label}
-              </p>
-              <p className="text-[10px] truncate mt-0.5" style={{ color: t.muted }}>
-                {item.sub}
-              </p>
-            </div>
-            <span
-              className="text-[9px] shrink-0 mt-0.5 tabular-nums z-10"
-              style={{ color: t.muted, fontWeight: 500 }}
-            >
-              {item.time}
-            </span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </Panel>
   );
 }
@@ -542,15 +672,27 @@ function UserAvatar({ photoURL, displayName, email, size = 32, isDark }: AvatarP
 
 function ProfileCard({ isDark }: { isDark: boolean }) {
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const projects = useProjectStore((s) => s.projects);
   const t = tokens(isDark);
-  
+  const [teamCount, setTeamCount] = useState<number>(1);
+
   const activeCount = projects.filter(p => p.status !== 'Sold').length;
-  const pastCount = projects.filter(p => p.status === 'Sold').length;
-  
-  // Mock followers/following counts
-  const followersCount = 142;
-  const followingCount = 98;
+  const pastCount   = projects.filter(p => p.status === 'Sold').length;
+
+  // Live team member count from the org document
+  useEffect(() => {
+    if (!activeTenantId || activeTenantId === 'org_placeholder') return;
+    const orgRef = doc(db, 'organizations', activeTenantId);
+    const unsub = onSnapshot(orgRef, (snap) => {
+      if (snap.exists()) {
+        const members: { status?: string }[] = snap.data()?.teamMembers ?? [];
+        const active = members.filter((m) => m.status === 'active' || !m.status).length;
+        setTeamCount(Math.max(1, active));
+      }
+    });
+    return () => unsub();
+  }, [activeTenantId]);
 
   return (
     <Panel isDark={isDark} className="p-6 flex flex-col justify-between h-full">
@@ -567,7 +709,7 @@ function ProfileCard({ isDark }: { isDark: boolean }) {
           {/* Active status pulse */}
           <span className="absolute bottom-0 right-0 block h-3.5 w-3.5 rounded-full ring-2 ring-white bg-[#5aaa3f]" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <h2 className="text-[18px] font-bold truncate tracking-tight text-left" style={{ color: t.heading, fontFamily: "'Montserrat', sans-serif" }}>
             {profile?.displayName || user?.displayName || "Real Estate Investor"}
@@ -577,12 +719,12 @@ function ProfileCard({ isDark }: { isDark: boolean }) {
           </p>
           <div className="flex gap-4 mt-3">
             <div className="text-center">
-              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{followersCount}</span>
-              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Followers</span>
+              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{teamCount}</span>
+              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Team</span>
             </div>
             <div className="text-center">
-              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{followingCount}</span>
-              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Following</span>
+              <span className="block text-[14px] font-bold font-mono" style={{ color: t.heading }}>{projects.length}</span>
+              <span className="text-[10px] uppercase tracking-wider block" style={{ color: t.muted }}>Deals</span>
             </div>
           </div>
         </div>

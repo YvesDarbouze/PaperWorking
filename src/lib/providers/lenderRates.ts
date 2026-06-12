@@ -87,8 +87,9 @@ export class FirestoreRateAdapter implements LenderRateProvider {
 
   private async getDb() {
     if (this.db !== undefined) return this.db;
+    if (typeof window !== 'undefined') return null;
     try {
-      const { adminDb } = require('@/lib/firebase/admin');
+      const { adminDb } = eval('require')('@/lib/firebase/admin');
       return adminDb;
     } catch {
       return null;

@@ -1,203 +1,424 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  PlusCircle, Trash2, Landmark, ChevronDown, ChevronUp,
+  DollarSign, Percent, Clock,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+import { auth } from '@/lib/firebase/config';
 import { useProjectStore } from '@/store/projectStore';
-import { Landmark, Wallet, Users, Plus, Check, ChevronDown } from 'lucide-react';
+import type { CapitalSource, FundingCategory, FundingSourceStatus } from '@/types/schema';
 
 /* ═══════════════════════════════════════════════════════
-   Funding Source Tracker — Phase 1 Module
-   Tracks Hard Money, Traditional, and Private funding sources.
+   Funding Source Tracker
+
+   Per-project record of funding sources (lenders, private
+   money, etc.). State lives in Firestore under
+   projects/{projectId}.financials.capitalStack and is
+   shared across all project members.
+
+   Key invariants:
+   • No pre-seeded fictional entries — a new project starts empty.
+   • A new project starts with an empty list and an
+     honest prompt to add sources.
+   • Every change is persisted to Firestore immediately.
+   • Totals shown here agree with the rest of the app
+     because they all read from the same capitalStack field.
    ═══════════════════════════════════════════════════════ */
 
-type FundingType = 'Hard Money' | 'Traditional' | 'Private';
-
-interface FundingSource {
-  id: string;
-  type: FundingType;
-  lenderName: string;
-  amount: number;
-  interestRate: number;
-  term: string;
-  status: 'Pre-Approved' | 'Applied' | 'Approved' | 'Funded';
-}
-
-const FUNDING_ICONS: Record<FundingType, React.ReactNode> = {
-  'Hard Money': <Wallet className="w-4 h-4" />,
-  'Traditional': <Landmark className="w-4 h-4" />,
-  'Private': <Users className="w-4 h-4" />,
-};
-
-const STATUS_STYLES: Record<FundingSource['status'], string> = {
-  'Pre-Approved': 'bg-blue-50 text-blue-700 border-blue-200',
-  'Applied': 'bg-yellow-50 text-yellow-700 border-yellow-200',
-  'Approved': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  'Funded': 'bg-gray-900 text-white border-gray-900',
-};
-
-const INITIAL_SOURCES: FundingSource[] = [
-  { id: '1', type: 'Hard Money', lenderName: 'Kiavi', amount: 200000, interestRate: 10.5, term: '12 months', status: 'Pre-Approved' },
-  { id: '2', type: 'Traditional', lenderName: 'Wells Fargo', amount: 180000, interestRate: 7.25, term: '30 years', status: 'Applied' },
+const CATEGORIES: FundingCategory[] = [
+  'Hard Money Loans',
+  'Private Money',
+  'Conventional Financing',
 ];
 
-export default function FundingSourceTracker() {
-  const currentProject = useProjectStore(state => state.currentProject);
-  const [sources, setSources] = useState<FundingSource[]>(INITIAL_SOURCES);
-  const [showAdd, setShowAdd] = useState(false);
-  const [newType, setNewType] = useState<FundingType>('Hard Money');
+const STATUSES: FundingSourceStatus[] = [
+  'Exploring', 'Pre-Approved', 'Applied', 'Approved', 'Funded', 'Declined',
+];
 
-  const totalFunding = sources.reduce((s, f) => s + f.amount, 0);
-  const purchasePrice = currentProject?.financials?.purchasePrice || 0;
-  const gap = Math.max(0, purchasePrice - totalFunding);
+const STATUS_COLORS: Record<FundingSourceStatus, string> = {
+  Exploring:    'bg-gray-100 text-gray-600',
+  'Pre-Approved': 'bg-blue-50 text-blue-700',
+  Applied:      'bg-yellow-50 text-yellow-700',
+  Approved:     'bg-emerald-50 text-emerald-700',
+  Funded:       'bg-green-100 text-green-800',
+  Declined:     'bg-red-50 text-red-600',
+};
 
-  const handleAddSource = () => {
-    setSources([
-      ...sources,
-      {
-        id: Math.random().toString(36).slice(2, 8),
-        type: newType,
-        lenderName: '',
-        amount: 0,
-        interestRate: 0,
-        term: '',
-        status: 'Applied',
-      },
-    ]);
-    setShowAdd(false);
-  };
+function fmt(n: number): string {
+  if (!n) return '$0';
+  return '$' + n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
 
-  const updateSource = (id: string, field: keyof FundingSource, value: string | number) => {
-    setSources(sources.map(s => s.id === id ? { ...s, [field]: value } : s));
-  };
+// ── Single funding source row ─────────────────────────────
+function SourceRow({
+  source,
+  onUpdate,
+  onRemove,
+  disabled,
+}: {
+  source: CapitalSource;
+  onUpdate: (id: string, patch: Partial<CapitalSource>) => void;
+  onRemove: (id: string) => void;
+  disabled?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  const statusColor = STATUS_COLORS[source.status ?? 'Exploring'];
 
   return (
-    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center space-x-2">
-          <Landmark className="w-5 h-5 text-text-primary" />
-          <h3 className="text-lg font-medium tracking-tight text-text-primary">Funding Sources</h3>
+    <div className="rounded-xl border border-border-accent bg-bg-surface overflow-hidden">
+      {/* Collapsed row */}
+      <div className="flex items-center gap-3 p-3">
+        <Landmark className="w-4 h-4 text-text-secondary flex-shrink-0" />
+
+        <div className="flex-1 min-w-0">
+          <input
+            value={source.lenderName ?? ''}
+            onChange={(e) => onUpdate(source.id, { lenderName: e.target.value })}
+            placeholder="Lender / Source name"
+            disabled={disabled}
+            className="w-full bg-transparent text-sm font-medium text-text-primary
+              placeholder:text-text-secondary focus:outline-none"
+            aria-label="Lender name"
+          />
+          <p className="text-[11px] text-text-secondary mt-0.5">
+            {source.category}
+          </p>
         </div>
-        <button
-          onClick={() => setShowAdd(!showAdd)}
-          className="flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-bg-primary text-text-primary rounded-md hover:bg-gray-200 transition"
-        >
-          <Plus className="w-3 h-3" /> Add Source
-        </button>
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Status badge */}
+          {!disabled ? (
+            <select
+              value={source.status ?? 'Exploring'}
+              onChange={(e) =>
+                onUpdate(source.id, { status: e.target.value as FundingSourceStatus })
+              }
+              className={`text-[10px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0.5 border-0 cursor-pointer focus:outline-none ${statusColor}`}
+              aria-label="Funding status"
+            >
+              {STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <span className={`text-[10px] font-bold uppercase tracking-wider rounded-md px-1.5 py-0.5 ${statusColor}`}>
+              {source.status ?? 'Exploring'}
+            </span>
+          )}
+
+          <span className="text-sm font-semibold text-text-primary tabular-nums">
+            {fmt(source.amount)}
+          </span>
+
+          {!disabled && (
+            <>
+              <button
+                onClick={() => setExpanded((p) => !p)}
+                className="p-1 rounded text-text-secondary hover:text-text-primary transition"
+                aria-label={expanded ? 'Collapse' : 'Expand'}
+              >
+                {expanded ? (
+                  <ChevronUp className="w-3.5 h-3.5" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5" />
+                )}
+              </button>
+              <button
+                onClick={() => onRemove(source.id)}
+                className="p-1 rounded text-text-secondary hover:text-red-500 transition"
+                aria-label="Remove source"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Funding Gap Indicator */}
-      {purchasePrice > 0 && (
-        <div className="mb-5 p-3 rounded-lg bg-bg-primary border border-border-accent">
-          <div className="flex justify-between text-xs text-text-secondary mb-1.5">
-            <span>Funding Coverage</span>
-            <span>
-              ${totalFunding.toLocaleString()} / ${purchasePrice.toLocaleString()}
-              {gap > 0 && <span className="text-red-500 ml-1">(Gap: ${gap.toLocaleString()})</span>}
-            </span>
+      {/* Expanded detail form */}
+      {expanded && !disabled && (
+        <div className="border-t border-border-accent px-3 pb-3 pt-3 grid grid-cols-2 gap-3">
+          {/* Category */}
+          <div>
+            <label className="text-[10px] text-text-secondary uppercase tracking-wider mb-1 block">
+              Category
+            </label>
+            <select
+              value={source.category}
+              onChange={(e) => onUpdate(source.id, { category: e.target.value as FundingCategory })}
+              className="w-full text-xs rounded-md border border-border-accent bg-bg-primary text-text-primary px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-1.5">
-            <div
-              className={`h-1.5 rounded-full transition-all ${
-                totalFunding >= purchasePrice ? 'bg-emerald-500' : totalFunding / purchasePrice > 0.7 ? 'bg-yellow-400' : 'bg-red-400'
-              }`}
-              style={{ width: `${Math.min(100, (totalFunding / Math.max(1, purchasePrice)) * 100)}%` }}
+
+          {/* Amount */}
+          <div>
+            <label className="text-[10px] text-text-secondary uppercase tracking-wider mb-1 block flex items-center gap-1">
+              <DollarSign className="w-3 h-3" /> Amount
+            </label>
+            <input
+              type="number"
+              value={source.amount || ''}
+              onChange={(e) => onUpdate(source.id, { amount: parseFloat(e.target.value) || 0 })}
+              placeholder="0"
+              className="w-full text-xs rounded-md border border-border-accent bg-bg-primary text-text-primary px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Interest Rate */}
+          <div>
+            <label className="text-[10px] text-text-secondary uppercase tracking-wider mb-1 block flex items-center gap-1">
+              <Percent className="w-3 h-3" /> Rate %
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={source.interestRate || ''}
+              onChange={(e) => onUpdate(source.id, { interestRate: parseFloat(e.target.value) || 0 })}
+              placeholder="0.0"
+              className="w-full text-xs rounded-md border border-border-accent bg-bg-primary text-text-primary px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Term */}
+          <div>
+            <label className="text-[10px] text-text-secondary uppercase tracking-wider mb-1 block flex items-center gap-1">
+              <Clock className="w-3 h-3" /> Term (months)
+            </label>
+            <input
+              type="number"
+              value={source.termMonths || ''}
+              onChange={(e) => onUpdate(source.id, { termMonths: parseInt(e.target.value) || 0 })}
+              placeholder="12"
+              className="w-full text-xs rounded-md border border-border-accent bg-bg-primary text-text-primary px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="col-span-2">
+            <label className="text-[10px] text-text-secondary uppercase tracking-wider mb-1 block">
+              Notes
+            </label>
+            <textarea
+              value={source.notes ?? ''}
+              onChange={(e) => onUpdate(source.id, { notes: e.target.value })}
+              placeholder="Optional notes…"
+              rows={2}
+              className="w-full text-xs rounded-md border border-border-accent bg-bg-primary text-text-primary px-2 py-1 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
       )}
+    </div>
+  );
+}
 
-      {/* Add Source Dropdown */}
-      {showAdd && (
-        <div className="mb-4 p-4 border border-border-accent rounded-lg bg-bg-primary flex items-center gap-3">
-          <select
-            value={newType}
-            onChange={(e) => setNewType(e.target.value as FundingType)}
-            className="text-sm border border-border-accent rounded-md px-3 py-1.5 focus:ring-1 focus:ring-gray-400 focus:outline-none"
-          >
-            <option value="Hard Money">Hard Money</option>
-            <option value="Traditional">Traditional</option>
-            <option value="Private">Private</option>
-          </select>
-          <button
-            onClick={handleAddSource}
-            className="px-4 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-md hover:bg-gray-800 transition"
-          >
-            Create
-          </button>
-          <button
-            onClick={() => setShowAdd(false)}
-            className="px-3 py-1.5 text-xs text-text-secondary hover:text-text-primary"
-          >
-            Cancel
-          </button>
+// ── Main Component ────────────────────────────────────────
+interface FundingSourceTrackerProps {
+  projectId?: string;
+}
+
+export default function FundingSourceTracker({ projectId: projectIdProp }: FundingSourceTrackerProps) {
+  const currentProject = useProjectStore((s) => s.currentProject);
+  const updateProjectFinancials = useProjectStore((s) => s.updateProjectFinancials);
+
+  const projectId = projectIdProp ?? currentProject?.id;
+
+  // ── Seed from Firestore via Zustand store ─────────────────
+  const storedSources = currentProject?.financials?.capitalStack;
+  const [sources, setSources] = useState<CapitalSource[]>(storedSources ?? []);
+  const [saving, setSaving] = useState(false);
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Re-seed when project changes
+  useEffect(() => {
+    setSources(currentProject?.financials?.capitalStack ?? []);
+  }, [currentProject?.id]);
+
+  // ── Debounced persist to Firestore via API ────────────────
+  const persist = useCallback(
+    (updatedSources: CapitalSource[]) => {
+      if (!projectId) return;
+
+      // Debounce: wait 600ms after last keystroke before saving
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = setTimeout(async () => {
+        setSaving(true);
+        try {
+          const token = await auth.currentUser?.getIdToken();
+          if (!token) {
+            toast.error('You must be signed in to save funding sources.');
+            return;
+          }
+
+          const res = await fetch(`/api/projects/${projectId}/funding-sources`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ sources: updatedSources }),
+          });
+
+          const result = await res.json();
+          if (!result.success) throw new Error(result.error || 'Save failed');
+
+          // Keep Zustand in sync (mirrors Firestore)
+          updateProjectFinancials(projectId, { capitalStack: updatedSources });
+        } catch (err: any) {
+          console.error('[FundingSourceTracker] persist failed:', err);
+          toast.error(err.message || 'Failed to save funding source.');
+          // Roll back
+          setSources(currentProject?.financials?.capitalStack ?? []);
+        } finally {
+          setSaving(false);
+        }
+      }, 600);
+    },
+    [projectId, updateProjectFinancials, currentProject]
+  );
+
+  const handleAdd = () => {
+    const newSource: CapitalSource = {
+      id: `fs-${Date.now()}`,
+      category: 'Hard Money Loans',
+      amount: 0,
+      interestRate: 0,
+      status: 'Exploring',
+    };
+    const updated = [...sources, newSource];
+    setSources(updated);
+    persist(updated);
+  };
+
+  const handleUpdate = (id: string, patch: Partial<CapitalSource>) => {
+    const updated = sources.map((s) => (s.id === id ? { ...s, ...patch } : s));
+    setSources(updated);
+    persist(updated);
+  };
+
+  const handleRemove = (id: string) => {
+    const updated = sources.filter((s) => s.id !== id);
+    setSources(updated);
+    persist(updated);
+  };
+
+  // ── Totals (agree with ProjectCalculator which reads same field) ──
+  const totalCommitted = sources
+    .filter((s) => s.status === 'Approved' || s.status === 'Funded')
+    .reduce((acc, s) => acc + (s.amount || 0), 0);
+  const totalPipeline = sources.reduce((acc, s) => acc + (s.amount || 0), 0);
+
+  const isLocked = !projectId;
+
+  return (
+    <div className="bg-bg-surface rounded-xl shadow-sm border border-border-accent p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center space-x-2">
+          <Landmark className="w-5 h-5 text-text-primary" />
+          <h3 className="text-lg font-medium tracking-tight text-text-primary">
+            Funding Sources
+          </h3>
         </div>
+        <div className="flex items-center gap-2">
+          {saving && (
+            <span className="text-xs text-text-secondary animate-pulse">Saving…</span>
+          )}
+          {!isLocked && (
+            <button
+              onClick={handleAdd}
+              className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 transition"
+              aria-label="Add funding source"
+            >
+              <PlusCircle className="w-4 h-4" />
+              Add Source
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* No project context */}
+      {isLocked && (
+        <p className="text-sm text-text-secondary text-center py-4">
+          Open a project to manage its funding sources.
+        </p>
       )}
 
-      {/* Source List */}
-      <div className="space-y-3">
-        {sources.map((src) => (
-          <div key={src.id} className="p-4 border border-border-accent rounded-lg hover:bg-bg-primary transition">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-bg-primary flex items-center justify-center text-text-secondary">
-                  {FUNDING_ICONS[src.type]}
-                </div>
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-wider text-text-secondary">{src.type}</p>
-                  <input
-                    type="text"
-                    defaultValue={src.lenderName}
-                    placeholder="Lender name..."
-                    onChange={(e) => updateSource(src.id, 'lenderName', e.target.value)}
-                    className="text-sm font-medium text-text-primary bg-transparent border-none p-0 focus:ring-0 w-full"
-                  />
-                </div>
-              </div>
-              <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${STATUS_STYLES[src.status]}`}>
-                {src.status}
-              </span>
+      {!isLocked && (
+        <>
+          {/* Empty state */}
+          {sources.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Landmark className="w-10 h-10 text-text-secondary/30 mb-3" />
+              <p className="text-sm font-medium text-text-secondary">
+                No funding sources yet
+              </p>
+              <p className="text-xs text-text-secondary/70 mt-1 mb-4">
+                Add your actual lenders, private money contacts, or loan commitments.
+              </p>
+              <button
+                onClick={handleAdd}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg
+                  bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+              >
+                <PlusCircle className="w-4 h-4" />
+                Add First Source
+              </button>
             </div>
+          )}
 
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Amount</label>
-                <input
-                  type="number"
-                  defaultValue={src.amount}
-                  onChange={(e) => updateSource(src.id, 'amount', Number(e.target.value))}
-                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
+          {/* Source list */}
+          {sources.length > 0 && (
+            <div className="space-y-2">
+              {sources.map((source) => (
+                <SourceRow
+                  key={source.id}
+                  source={source}
+                  onUpdate={handleUpdate}
+                  onRemove={handleRemove}
+                  disabled={saving}
                 />
+              ))}
+            </div>
+          )}
+
+          {/* Totals footer */}
+          {sources.length > 0 && (
+            <div className="mt-5 pt-4 border-t border-border-accent grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-[10px] text-text-secondary uppercase tracking-wider mb-1">
+                  Approved / Funded
+                </p>
+                <p className="text-lg font-bold text-emerald-600 tabular-nums">
+                  {fmt(totalCommitted)}
+                </p>
               </div>
               <div>
-                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.1"
-                  defaultValue={src.interestRate}
-                  onChange={(e) => updateSource(src.id, 'interestRate', Number(e.target.value))}
-                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-text-secondary uppercase tracking-wider block mb-0.5">Term</label>
-                <input
-                  type="text"
-                  defaultValue={src.term}
-                  placeholder="12 months"
-                  onChange={(e) => updateSource(src.id, 'term', e.target.value)}
-                  className="text-sm font-medium text-text-primary bg-bg-primary border border-border-accent rounded px-2 py-1 w-full focus:ring-1 focus:ring-gray-400 focus:outline-none"
-                />
+                <p className="text-[10px] text-text-secondary uppercase tracking-wider mb-1">
+                  Total Pipeline
+                </p>
+                <p className="text-lg font-bold text-text-primary tabular-nums">
+                  {fmt(totalPipeline)}
+                </p>
               </div>
             </div>
-          </div>
-        ))}
+          )}
 
-        {sources.length === 0 && (
-          <div className="p-8 text-center text-text-secondary border-2 border-dashed border-border-accent rounded-lg">
-            <Wallet className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">No funding sources tracked yet.</p>
-          </div>
-        )}
-      </div>
+          <p className="mt-4 text-[11px] text-text-secondary">
+            Changes save automatically and are visible to all project members.
+          </p>
+        </>
+      )}
     </div>
   );
 }

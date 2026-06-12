@@ -6,8 +6,7 @@ import { ArrowUpRight, Download, RefreshCw, TrendingUp } from 'lucide-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { usePortfolioInputs } from '@/lib/intelligence/selectors';
 
 /* ═══════════════════════════════════════════════════════════════
    Portfolio Performance — Stitch screen fb4ad4ea62b54d83bc36f9f7ec327872
@@ -22,8 +21,8 @@ const PERIOD_MAP: Record<Period, 'monthly' | 'quarterly' | 'annual' | 'monthly'>
   M: 'monthly', Q: 'quarterly', Y: 'annual', All: 'monthly',
 };
 
-const DEMO_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const DEMO_VALUES = [920000, 940000, 910000, 970000, 985000, 1020000, 1050000, 1080000, 1100000, 1150000, 1190000, 1240000];
+const defaultMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const defaultValues = [920000, 940000, 910000, 970000, 985000, 1020000, 1050000, 1080000, 1100000, 1150000, 1190000, 1240000];
 
 function PerformanceChart({ labels, values }: { labels: string[]; values: number[] }) {
   const option = {
@@ -125,17 +124,41 @@ function EmptyState() {
 
 export default function PortfolioPerformancePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
   const [scope, setScope]   = useState<Scope>('Property');
   const [period, setPeriod] = useState<Period>('Y');
-  const { snapshots, loading } = usePortfolioMetricSnapshots(PERIOD_MAP[period]);
+
+  const portfolioInputsResult = usePortfolioInputs({
+    scope: scope === 'My Share' ? 'myShare' : 'property',
+    periodType: PERIOD_MAP[period],
+  });
 
   const { labels, values, totalValue, roiPct, hasData, isUsingDemoData } = useMemo(() => {
+    // Rule 4: demo data ONLY when no projects at all
+    if (portfolioInputsResult.status === 'insufficient') {
+      return { labels: defaultMonths, values: defaultValues, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
+    }
+
+    if (portfolioInputsResult.status !== 'ready') {
+      return { labels: defaultMonths, values: defaultValues, totalValue: 0, roiPct: 0, hasData: false, isUsingDemoData: false };
+    }
+
+    const { snapshots, projects } = portfolioInputsResult.data;
     if (!snapshots || snapshots.length === 0) {
       const totalCost = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
-      if (totalCost === 0) return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
+      if (totalCost === 0) {
+        // No projects with any financial data — treat as demo
+        return { labels: defaultMonths, values: defaultValues, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
+      }
+      // Rule 4: Real projects exist; show real figures, just no historical chart yet
       const totalArv = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? 0), 0);
-      return { labels: DEMO_MONTHS, values: DEMO_VALUES, totalValue: totalArv, roiPct: totalCost > 0 ? ((totalArv - totalCost) / totalCost) * 100 : 14.2, hasData: true, isUsingDemoData: true };
+      return {
+        labels: [],
+        values: [],
+        totalValue: totalArv,
+        roiPct: totalCost > 0 ? ((totalArv - totalCost) / totalCost) * 100 : 0,
+        hasData: true,
+        isUsingDemoData: false,  // ←← RULE 4: real projects ⇒ not demo mode
+      };
     }
 
     const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -147,23 +170,35 @@ export default function PortfolioPerformancePage() {
     const first = vals[0] ?? last;
     const roi = first > 0 ? ((last - first) / first) * 100 : 0;
     return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 0, isUsingDemoData: false };
-  }, [snapshots, projects, period]);
+  }, [portfolioInputsResult, period]);
 
   const kpis = useMemo(() => {
-    const totalArv    = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? 0), 0);
+    if (portfolioInputsResult.status !== 'ready') {
+      return {
+        assets:  2_100_000,
+        equity:  760_000,
+        debt:    1_340_000,
+        deals:   4,
+      };
+    }
+    const { projects } = portfolioInputsResult.data;
+    const totalArv    = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? (0)), 0);
     const totalEquity = projects.reduce((s, p) => {
-      const arv  = p.financials?.arv ?? p.financials?.purchasePrice ?? 0;
+      const arv  = p.financials?.arv ?? p.financials?.purchasePrice ?? (0);
       const loan = p.financials?.loanAmount ?? arv * 0.65;
       return s + Math.max(0, arv - loan);
     }, 0);
-    const totalDebt = projects.reduce((s, p) => s + (p.financials?.loanAmount ?? 0), 0);
+    const totalDebt = projects.reduce((s, p) => s + (p.financials?.loanAmount ?? (0)), 0);
     return {
-      assets:  totalArv  > 0 ? totalArv  : 2_100_000,
-      equity:  totalEquity > 0 ? totalEquity : 760_000,
-      debt:    totalDebt > 0 ? totalDebt  : 1_340_000,
-      deals:   projects.length > 0 ? projects.length : 4,
+      assets:  totalArv  > 0 ? totalArv  : 0,
+      equity:  totalEquity > 0 ? totalEquity : 0,
+      debt:    totalDebt > 0 ? totalDebt  : 0,
+      deals:   projects.length,
     };
-  }, [projects]);
+  }, [portfolioInputsResult]);
+
+  const loading = portfolioInputsResult.status === 'loading';
+  const isInsufficient = portfolioInputsResult.status === 'insufficient';
 
   const fmt = (v: number) =>
     v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(2)}M` : `$${(v / 1000).toFixed(0)}k`;
@@ -244,7 +279,7 @@ export default function PortfolioPerformancePage() {
       {/* Main Chart Panel */}
       {loading ? (
         <LoadingSkeleton />
-      ) : !hasData && projects.length === 0 ? (
+      ) : isInsufficient ? (
         <EmptyState />
       ) : (
         <div

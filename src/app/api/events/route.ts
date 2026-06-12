@@ -3,6 +3,9 @@ import { adminDb } from '@/lib/firebase/admin';
 import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import * as admin from 'firebase-admin';
 import telemetry from '@/lib/telemetry';
+import { CommunicationEngine } from '@/lib/engine/CommunicationEngine';
+import { generateFirstMetricEmail } from '@/lib/emails/templates/FirstMetricEmail';
+import { generateSecondProjectEmail } from '@/lib/emails/templates/SecondProjectEmail';
 
 /* ═══════════════════════════════════════════════════════
    Events API — POST /api/events
@@ -12,7 +15,7 @@ import telemetry from '@/lib/telemetry';
    
    Events are:
    1. Logged to Firestore (events collection)
-   2. Stubbed for PostHog (console.log until integrated)
+   2. Forwarded to PostHog telemetry (failure-isolated)
    3. Trigger side-effects (email sends, profile updates)
    
    Auth: Requires valid Firebase ID token in Authorization header.
@@ -33,6 +36,78 @@ interface EventPayload {
   event: string;
   properties?: Record<string, unknown>;
   timestamp?: string;
+}
+
+// ─── Milestone email helper ─────────────────────────────────
+//
+// Dispatches a milestone email with full idempotency and audit trail.
+// Contract:
+//   • Never throws — any failure is caught and logged.
+//   • Returns false without sending if the milestone was already sent.
+//   • Marks the milestone as sent AFTER a successful dispatch.
+//   • Writes an audit doc to `milestoneEmailSends/{uid}_{milestone}`.
+//
+async function sendMilestoneEmail(opts: {
+  uid: string;
+  milestone: string;
+  idempotencyField: string;
+  to: string;
+  subject: string;
+  html: string;
+  displayName: string;
+}): Promise<boolean> {
+  const { uid, milestone, idempotencyField, to, subject, html, displayName } = opts;
+  const userRef = adminDb.collection('users').doc(uid);
+
+  try {
+    // ── Idempotency guard ──────────────────────────────────
+    const userSnap = await userRef.get();
+    if (userSnap.data()?.[idempotencyField] === true) {
+      console.log(`[Events] Milestone email already sent: ${milestone} for ${uid}`);
+      return false;
+    }
+
+    // ── Dispatch via CommunicationEngine (Resend / mock) ──
+    const { id: providerMessageId, mock } = await CommunicationEngine.sendRawEmail(
+      [to],
+      subject,
+      html,
+    );
+
+    // ── Mark sent on user doc ──────────────────────────────
+    await userRef.set(
+      {
+        [idempotencyField]: true,
+        [`${idempotencyField}At`]: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true },
+    );
+
+    // ── Audit trail ───────────────────────────────────────
+    // Doc ID is deterministic so it can never be duplicated.
+    const auditRef = adminDb
+      .collection('milestoneEmailSends')
+      .doc(`${uid}_${milestone}`);
+    await auditRef.set({
+      uid,
+      milestone,
+      to,
+      displayName,
+      providerMessageId,
+      mock,
+      sentAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    console.log(
+      `[Events] Milestone email sent: ${milestone} → ${to}` +
+        (mock ? ' (mocked — no RESEND_API_KEY)' : ''),
+    );
+    return true;
+  } catch (err) {
+    // Email failure MUST NOT break event ingestion.
+    console.error(`[Events] Milestone email failed for ${milestone}/${uid}:`, err);
+    return false;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -117,20 +192,75 @@ export async function POST(request: NextRequest) {
         }
 
         case 'first_metric_lit': {
-          // Mark the first milestone timestamp on the user profile
           await userRef.update({
             firstMetricLit: admin.firestore.FieldValue.serverTimestamp(),
             updatedAt: admin.firestore.FieldValue.serverTimestamp(),
           });
 
-          // TODO: Trigger FirstMetricEmail via email service
-          console.log(`[Events] Milestone: first_metric_lit for user ${uid}`);
+          // ── Send FirstMetricEmail (failure-isolated, idempotent) ──
+          {
+            const userSnap = await userRef.get();
+            const userData = userSnap.data() ?? {};
+            const userEmail: string = userData.email || token.email || '';
+            const displayName: string = userData.displayName || token.name || 'there';
+
+            if (userEmail) {
+              const projectName = String(sanitizedProperties.projectName ?? 'Your Project');
+              const metricName  = String(sanitizedProperties.metricName  ?? 'First Metric');
+              const metricValue = String(sanitizedProperties.metricValue ?? '—');
+              const projectUrl  = String(sanitizedProperties.projectUrl  ?? '/dashboard');
+
+              const { subject, html } = generateFirstMetricEmail({
+                displayName,
+                projectName,
+                metricName,
+                metricValue,
+                projectUrl,
+              });
+
+              await sendMilestoneEmail({
+                uid,
+                milestone: 'first_metric_lit',
+                idempotencyField: 'firstMetricEmailSent',
+                to: userEmail,
+                subject,
+                html,
+                displayName,
+              });
+            }
+          }
           break;
         }
 
         case 'second_project_created': {
-          // TODO: Trigger SecondProjectEmail via email service
-          console.log(`[Events] Milestone: second_project_created for user ${uid}`);
+          // ── Send SecondProjectEmail (failure-isolated, idempotent) ──
+          {
+            const userSnap = await userRef.get();
+            const userData = userSnap.data() ?? {};
+            const userEmail: string = userData.email || token.email || '';
+            const displayName: string = userData.displayName || token.name || 'there';
+
+            if (userEmail) {
+              const projectName   = String(sanitizedProperties.projectName   ?? 'Your Project');
+              const totalProjects = Number(sanitizedProperties.totalProjects ?? 2);
+
+              const { subject, html } = generateSecondProjectEmail({
+                displayName,
+                projectName,
+                totalProjects,
+              });
+
+              await sendMilestoneEmail({
+                uid,
+                milestone: 'second_project_created',
+                idempotencyField: 'secondProjectEmailSent',
+                to: userEmail,
+                subject,
+                html,
+                displayName,
+              });
+            }
+          }
           break;
         }
 

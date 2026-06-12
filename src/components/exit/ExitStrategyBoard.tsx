@@ -7,6 +7,8 @@ import PhaseBadge from '../ui/PhaseBadge';
 import { Switch } from '../ui';
 import { projectsService } from '@/lib/firebase/projects';
 
+import { useAuth } from '@/context/AuthContext';
+
 interface ExitStrategyBoardProps {
   projectId: string;
   onClose: () => void;
@@ -16,6 +18,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
   const projects = useProjectStore(state => state.projects);
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
   const setDeals = useProjectStore(state => state.setDeals);
+  const { user } = useAuth();
 
   const currentProject = projects.find(d => d.id === projectId);
 
@@ -52,6 +55,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
           ...currentProject.exitAssets,
           mlsListingLink: mlsLink,
           stagingImages: currentProject.exitAssets?.stagingImages || [],
+          mlsListingStatus: 'pending_integration' as const,
         }
       };
 
@@ -69,7 +73,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
         return d;
       });
       setDeals(updatedDeals);
-      toast.success('Property pushed to ACTIVE LISTING status!', { icon: '🏡', style: { background: '#333', color: '#fff' }});
+      toast.success('Listing updates saved (Awaiting MLS connection)', { icon: '🏡', style: { background: '#333', color: '#fff' }});
     } catch (err: any) {
       console.error('[ExitStrategyBoard] Failed to update listing:', err);
       toast.error('Failed to update listing: ' + (err.message || 'Unknown error'));
@@ -78,36 +82,48 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
 
   const handleExecuteSale = async () => {
     try {
+      if (!user) {
+        toast.error('You must be logged in to execute a sale.');
+        return;
+      }
+
+      const token = typeof user.getIdToken === 'function' ? await user.getIdToken() : '';
+
       const financialUpdates = {
         actualSalePrice: Number(actualSale),
         buyersAgentCommission: Number(buyerComm),
         sellersAgentCommission: Number(sellerComm),
         finalClosingCosts: Number(closingCosts),
-        soldDate: new Date()
+        soldDate: new Date().toISOString()
       };
 
-      const statusUpdates = {
-        status: 'Sold' as any,
-        financials: {
-          ...currentProject.financials,
-          ...financialUpdates
-        }
-      };
+      const response = await fetch(`/api/projects/${currentProject.id}/exit`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          realized: true,
+          status: 'Sold',
+          financials: financialUpdates
+        })
+      });
 
-      // 1. Persist to Firestore backend
-      await projectsService.updateProject(currentProject.id, statusUpdates);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server returned ${response.status}`);
+      }
 
-      // 2. Update client store
+      const result = await response.json();
+      if (!result.success || !result.project) {
+        throw new Error(result.error || 'Invalid response from server');
+      }
+
+      // 2. Update client store only on successful API response
       const updatedDeals = projects.map(d => {
          if (d.id === currentProject.id) {
-            return {
-              ...d,
-              status: 'Sold' as any,
-              financials: {
-                ...d.financials,
-                ...financialUpdates
-              }
-            };
+            return result.project;
          }
          return d;
       });
@@ -166,7 +182,7 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                     </div>
                     
                     <button onClick={handleUpdateListing} className="w-full pw-btn pw-btn--secondary font-black text-xs py-3 uppercase tracking-widest">
-                       Push Updates to MLS
+                       Save Listing Updates
                     </button>
                  </div>
               </div>
@@ -226,16 +242,22 @@ export default function ExitStrategyBoard({ projectId, onClose }: ExitStrategyBo
                {/* MLS / Listing Live Preview Pane */}
                {currentProject.status === 'Listed' || currentProject.status === 'Sold' ? (
                   <div className="mt-6 border border-pw-border bg-[url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80')] bg-cover bg-center h-48 relative overflow-hidden group">
-                     <div className="absolute inset-0 bg-bg-primary/70 group-hover:bg-bg-primary/50 transition duration-500 flex flex-col items-center justify-center">
+                     <div className="absolute inset-0 bg-bg-primary/70 group-hover:bg-bg-primary/50 transition duration-500 flex flex-col items-center justify-center p-4 text-center">
                         <div className="bg-bg-surface/80 backdrop-blur-md px-6 py-3 border border-pw-border flex items-center space-x-3 mb-2">
                            <CheckCircle className={`w-4 h-4 text-pw-accent`} />
-                           <span className="font-black text-text-primary tracking-widest uppercase text-xs">Property is {currentProject.status}</span>
+                           <span className="font-black text-text-primary tracking-widest uppercase text-xs">
+                             {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? 'Listing Saved (Awaiting MLS Connection)' : `Property is ${currentProject.status}`}
+                           </span>
                         </div>
-                        {currentProject.exitAssets?.mlsListingLink && (
+                        {currentProject.exitAssets?.mlsListingStatus === 'pending_integration' ? (
+                           <p className="text-[10px] text-text-secondary uppercase tracking-wider max-w-sm mt-1">
+                             Your changes have been saved. Listing updates will syndicate automatically once the partner MLS integration is active.
+                           </p>
+                         ) : currentProject.exitAssets?.mlsListingLink ? (
                           <a href={currentProject.exitAssets.mlsListingLink} target="_blank" rel="noopener noreferrer" className="text-xs text-pw-accent hover:underline flex items-center transition">
                             View Staging MLS <ExternalLink className="w-3 h-3 ml-1" />
                           </a>
-                        )}
+                        ) : null}
                      </div>
                   </div>
                ) : (

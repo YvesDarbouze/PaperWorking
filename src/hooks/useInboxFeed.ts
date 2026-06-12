@@ -70,6 +70,7 @@ export interface UseInboxFeedReturn {
   activeTab: InboxTabType;
   setActiveTab: (tab: InboxTabType) => void;
   markAsRead: (id: string) => Promise<void>;
+  markAsUnread: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   archiveItem: (id: string) => Promise<void>;
   deleteItem: (id: string) => Promise<void>;
@@ -186,6 +187,30 @@ export function useInboxFeed(): UseInboxFeedReturn {
       }
     },
     [uid, contextMarkAsRead]
+  );
+
+  // Optimistic Mark Single Item as Unread (re-badges the notification)
+  const markAsUnread = useCallback(
+    async (id: string) => {
+      if (!uid) return;
+
+      const targetItem = notificationsRef.current.find((item) => item.id === id);
+      if (!targetItem) return;
+
+      // Optimistically update UI
+      setNotifications((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, read: false } : item))
+      );
+
+      try {
+        // Persist read:false directly — NotificationContext doesn't expose markAsUnread
+        await updateDoc(doc(db, 'notifications', id), { read: false });
+      } catch (err) {
+        console.error('[useInboxFeed] markAsUnread error:', err);
+        setNotifications(notificationsRef.current);
+      }
+    },
+    [uid]
   );
 
   // Optimistic Mark All as Read
@@ -305,6 +330,7 @@ export function useInboxFeed(): UseInboxFeedReturn {
     activeTab,
     setActiveTab,
     markAsRead,
+    markAsUnread,
     markAllRead,
     archiveItem,
     deleteItem,

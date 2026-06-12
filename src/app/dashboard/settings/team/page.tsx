@@ -300,6 +300,9 @@ export default function TeamManagementPage() {
         displayName:        displayName.trim() || email.trim(),
         internalRole:       role,
         assignedProjectIds: [],
+        scopedProjectIds:   [],
+        isScoped:           false,
+        scope:              'tenant',
         invitedAt:          new Date(),
         status:             'invited',
       };

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useId, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectStore } from '@/store/projectStore';
 import { ComparableSale, LeadSource, Project } from '@/types/schema';
+import { useDealSync } from '@/hooks/useProjectSync';
 
 /* ═══════════════════════════════════════════════════════
    PRO-ANALYSIS TERMINAL — Deal Analyzer
@@ -275,45 +276,112 @@ interface FlipInputs {
   investorExpenses: number;
 }
 
+// ── Props Interface ──────────────────────────────────────
+export interface DealAnalyzerProps {
+  projectId?: string;
+  initialValues?: {
+    rental?: Partial<RentalInputs>;
+    flip?: Partial<FlipInputs>;
+    mode?: 'rental' | 'flip';
+    arv?: number;
+    rehabEst?: number;
+    fixedCosts?: number;
+    leadSource?: LeadSource | '';
+    sellerMotivation?: string;
+    emdAmount?: number;
+    emdGoHardDate?: string;
+  };
+}
+
 // ── Main Component ───────────────────────────────────────
 
-export default function DealAnalyzer() {
+export default function DealAnalyzer({ projectId, initialValues }: DealAnalyzerProps = {}) {
+  // Unconditionally call useDealSync, which handles empty/null projectId gracefully.
+  useDealSync(projectId ?? '');
+
   const currentProject = useProjectStore(state => state.currentProject);
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
   const addProject = useProjectStore(state => state.addProject);
   const uid = useId();
 
   // ── Mode Toggle ──
-  const [mode, setMode] = useState<'rental' | 'flip'>('rental');
+  const [mode, setMode] = useState<'rental' | 'flip'>(initialValues?.mode ?? 'rental');
 
   // ── Original MAO state (preserved from Phase 1 sourcing) ──
-  const [arv, setArv] = useState(0);
-  const [rehabEst, setRehabEst] = useState(0);
-  const [fixedCosts, setFixedCosts] = useState(0);
+  const [arv, setArv] = useState(initialValues?.arv ?? 0);
+  const [rehabEst, setRehabEst] = useState(initialValues?.rehabEst ?? 0);
+  const [fixedCosts, setFixedCosts] = useState(initialValues?.fixedCosts ?? 0);
   const [comps, setComps] = useState<ComparableSale[]>([]);
-  const [leadSource, setLeadSource] = useState<LeadSource | ''>('');
-  const [sellerMotivation, setSellerMotivation] = useState('');
-  const [emdAmount, setEmdAmount] = useState(0);
-  const [emdGoHardDate, setEmdGoHardDate] = useState('');
+  const [leadSource, setLeadSource] = useState<LeadSource | ''>(initialValues?.leadSource ?? '');
+  const [sellerMotivation, setSellerMotivation] = useState(initialValues?.sellerMotivation ?? '');
+  const [emdAmount, setEmdAmount] = useState(initialValues?.emdAmount ?? 0);
+  const [emdGoHardDate, setEmdGoHardDate] = useState(initialValues?.emdGoHardDate ?? '');
 
-  // ── Rental Mode State ──
+  // ── Rental Mode State — zeroed; seeded from project in useEffect ──
+  // NOTE: values here are intentionally 0 / empty so that opening the analyzer
+  // on a new project starts blank, never showing fictional numbers.
   const [rental, setRental] = useState<RentalInputs>({
-    purchasePrice: 450000, closingCosts: 9000, downPaymentPercent: 20,
-    interestRate: 6.5, loanTermYears: 30, monthlyRent: 3500,
-    otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
-    monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
-    monthlyHOA: 0, monthlyUtilities: 0,
-    percentageOfOwnership: 100, priceOfSale: 550000, investorExpenses: 0,
+    purchasePrice: initialValues?.rental?.purchasePrice ?? 0,
+    closingCosts: initialValues?.rental?.closingCosts ?? 0,
+    downPaymentPercent: initialValues?.rental?.downPaymentPercent ?? 20,
+    interestRate: initialValues?.rental?.interestRate ?? 0,
+    loanTermYears: initialValues?.rental?.loanTermYears ?? 30,
+    monthlyRent: initialValues?.rental?.monthlyRent ?? 0,
+    otherIncome: initialValues?.rental?.otherIncome ?? 0,
+    vacancyRate: initialValues?.rental?.vacancyRate ?? 5,
+    monthlyTaxes: initialValues?.rental?.monthlyTaxes ?? 0,
+    monthlyInsurance: initialValues?.rental?.monthlyInsurance ?? 0,
+    monthlyMaintenance: initialValues?.rental?.monthlyMaintenance ?? 0,
+    propertyMgmtPercent: initialValues?.rental?.propertyMgmtPercent ?? 8,
+    monthlyHOA: initialValues?.rental?.monthlyHOA ?? 0,
+    monthlyUtilities: initialValues?.rental?.monthlyUtilities ?? 0,
+    percentageOfOwnership: initialValues?.rental?.percentageOfOwnership ?? 100,
+    priceOfSale: initialValues?.rental?.priceOfSale ?? 0,
+    investorExpenses: initialValues?.rental?.investorExpenses ?? 0,
   });
 
-  // ── Flip Mode State ──
+  // ── Flip Mode State — zeroed; seeded from project in useEffect ──
   const [flip, setFlip] = useState<FlipInputs>({
-    purchasePrice: 325000, rehabCost: 65000, arv: 485000,
-    loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
-    monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
-    monthlyOther: 100, costOfSalePercent: 6.0,
-    percentageOfOwnership: 100, investorExpenses: 0,
+    purchasePrice: initialValues?.flip?.purchasePrice ?? 0,
+    rehabCost: initialValues?.flip?.rehabCost ?? 0,
+    arv: initialValues?.flip?.arv ?? 0,
+    loanAmount: initialValues?.flip?.loanAmount ?? 0,
+    interestRate: initialValues?.flip?.interestRate ?? 0,
+    loanMonths: initialValues?.flip?.loanMonths ?? 12,
+    monthlyTaxes: initialValues?.flip?.monthlyTaxes ?? 0,
+    monthlyInsurance: initialValues?.flip?.monthlyInsurance ?? 0,
+    monthlyUtilities: initialValues?.flip?.monthlyUtilities ?? 0,
+    monthlyOther: initialValues?.flip?.monthlyOther ?? 0,
+    costOfSalePercent: initialValues?.flip?.costOfSalePercent ?? 6.0,
+    percentageOfOwnership: initialValues?.flip?.percentageOfOwnership ?? 100,
+    investorExpenses: initialValues?.flip?.investorExpenses ?? 0,
   });
+
+  // Synchronize when initialValues changes
+  useEffect(() => {
+    if (initialValues) {
+      if (initialValues.arv !== undefined) setArv(initialValues.arv);
+      if (initialValues.rehabEst !== undefined) setRehabEst(initialValues.rehabEst);
+      if (initialValues.fixedCosts !== undefined) setFixedCosts(initialValues.fixedCosts);
+      if (initialValues.leadSource !== undefined) setLeadSource(initialValues.leadSource);
+      if (initialValues.sellerMotivation !== undefined) setSellerMotivation(initialValues.sellerMotivation);
+      if (initialValues.emdAmount !== undefined) setEmdAmount(initialValues.emdAmount);
+      if (initialValues.emdGoHardDate !== undefined) setEmdGoHardDate(initialValues.emdGoHardDate);
+      if (initialValues.rental) {
+        setRental(prev => ({ ...prev, ...initialValues.rental }));
+      }
+      if (initialValues.flip) {
+        setFlip(prev => ({ ...prev, ...initialValues.flip }));
+      }
+      if (initialValues.mode) {
+        setMode(initialValues.mode);
+      }
+    }
+  }, [initialValues]);
+
+  // Tracks whether the user has adjusted any what-if field since last project load
+  const [underwritingDirty, setUnderwritingDirty] = useState(false);
+  const [isSavingUnderwriting, setIsSavingUnderwriting] = useState(false);
 
   // ── Rental step (for stepper visual) ──
   const [rentalStep] = useState(1);
@@ -334,28 +402,31 @@ export default function DealAnalyzer() {
         ? new Date(f.emdGoHardDate).toISOString().split('T')[0]
         : ''
     );
-    // Sync rental inputs from financials
+    // Seed rental inputs from project financials.
+    // Fields with no stored value start at 0 — explicitly absent, never fictional.
     setRental(prev => ({
       ...prev,
-      purchasePrice: f.purchasePrice || prev.purchasePrice,
-      monthlyRent: f.monthlyGrossRent || f.projectedMonthlyRent || prev.monthlyRent,
-      otherIncome: f.otherMonthlyIncome || prev.otherIncome,
-      vacancyRate: f.vacancyRatePercent ?? f.vacancyRate ?? prev.vacancyRate,
-      interestRate: f.loanInterestRate || prev.interestRate,
-      loanTermYears: f.loanTermYears || prev.loanTermYears,
-      monthlyTaxes: f.operatingExpenseTaxes || prev.monthlyTaxes,
-      monthlyInsurance: f.operatingExpenseInsurance || prev.monthlyInsurance,
-      propertyMgmtPercent: f.propertyManagementFeePercent || prev.propertyMgmtPercent,
+      purchasePrice: f.purchasePrice ?? 0,
+      monthlyRent: f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0,
+      otherIncome: f.otherMonthlyIncome ?? 0,
+      vacancyRate: f.vacancyRatePercent ?? f.vacancyRate ?? 5,
+      interestRate: f.loanInterestRate ?? 0,
+      loanTermYears: f.loanTermYears ?? 30,
+      monthlyTaxes: f.operatingExpenseTaxes ?? 0,
+      monthlyInsurance: f.operatingExpenseInsurance ?? 0,
+      propertyMgmtPercent: f.propertyManagementFeePercent ?? 8,
     }));
-    // Sync flip inputs from financials
+    // Seed flip inputs from project financials.
     setFlip(prev => ({
       ...prev,
-      purchasePrice: f.purchasePrice || prev.purchasePrice,
-      rehabCost: f.projectedRehabCost || prev.rehabCost,
-      arv: f.estimatedARV || prev.arv,
-      loanAmount: f.loanAmount || prev.loanAmount,
-      interestRate: f.loanInterestRate || prev.interestRate,
+      purchasePrice: f.purchasePrice ?? 0,
+      rehabCost: f.projectedRehabCost ?? 0,
+      arv: f.estimatedARV ?? 0,
+      loanAmount: f.loanAmount ?? 0,
+      interestRate: f.loanInterestRate ?? 0,
     }));
+    // Clear dirty flag when we re-seed from a (possibly different) project
+    setUnderwritingDirty(false);
   }, [currentProject?.id]);
 
   const isLocked = currentProject?.isClearToClose ?? false;
@@ -519,25 +590,91 @@ export default function DealAnalyzer() {
   };
 
   const handleReset = () => {
+    // Re-seed from current project's stored financials (not fictional defaults)
+    if (!currentProject) return;
+    const f = currentProject.financials;
     if (mode === 'rental') {
-      setRental({
-        purchasePrice: 450000, closingCosts: 9000, downPaymentPercent: 20,
-        interestRate: 6.5, loanTermYears: 30, monthlyRent: 3500,
-        otherIncome: 100, vacancyRate: 5, monthlyTaxes: 450,
-        monthlyInsurance: 120, monthlyMaintenance: 175, propertyMgmtPercent: 8,
-        monthlyHOA: 0, monthlyUtilities: 0,
-        percentageOfOwnership: 100, priceOfSale: 550000, investorExpenses: 0,
-      });
+      setRental(prev => ({
+        ...prev,
+        purchasePrice: f.purchasePrice ?? 0,
+        monthlyRent: f.monthlyGrossRent ?? f.projectedMonthlyRent ?? 0,
+        otherIncome: f.otherMonthlyIncome ?? 0,
+        interestRate: f.loanInterestRate ?? 0,
+        loanTermYears: f.loanTermYears ?? 30,
+        monthlyTaxes: f.operatingExpenseTaxes ?? 0,
+        monthlyInsurance: f.operatingExpenseInsurance ?? 0,
+        propertyMgmtPercent: f.propertyManagementFeePercent ?? 8,
+      }));
     } else {
-      setFlip({
-        purchasePrice: 325000, rehabCost: 65000, arv: 485000,
-        loanAmount: 275000, interestRate: 9.5, loanMonths: 6,
-        monthlyTaxes: 350, monthlyInsurance: 180, monthlyUtilities: 250,
-        monthlyOther: 100, costOfSalePercent: 6.0,
-        percentageOfOwnership: 100, investorExpenses: 0,
-      });
+      setFlip(prev => ({
+        ...prev,
+        purchasePrice: f.purchasePrice ?? 0,
+        rehabCost: f.projectedRehabCost ?? 0,
+        arv: f.estimatedARV ?? 0,
+        loanAmount: f.loanAmount ?? 0,
+        interestRate: f.loanInterestRate ?? 0,
+      }));
     }
+    setUnderwritingDirty(false);
   };
+
+  /** Explicit save of what-if underwriting inputs to project record.
+   *  Must be triggered by user action — never by auto-save. */
+  const handleSaveUnderwriting = useCallback(async () => {
+    if (!currentProject || isLocked) return;
+    setIsSavingUnderwriting(true);
+    try {
+      const patch =
+        mode === 'rental'
+          ? {
+              financials: {
+                ...currentProject.financials,
+                purchasePrice: rental.purchasePrice,
+                projectedMonthlyRent: rental.monthlyRent,
+                otherMonthlyIncome: rental.otherIncome,
+                vacancyRatePercent: rental.vacancyRate,
+                loanInterestRate: rental.interestRate,
+                loanTermYears: rental.loanTermYears,
+                operatingExpenseTaxes: rental.monthlyTaxes,
+                operatingExpenseInsurance: rental.monthlyInsurance,
+                propertyManagementFeePercent: rental.propertyMgmtPercent,
+              },
+            }
+          : {
+              financials: {
+                ...currentProject.financials,
+                purchasePrice: flip.purchasePrice,
+                projectedRehabCost: flip.rehabCost,
+                estimatedARV: flip.arv,
+                loanAmount: flip.loanAmount,
+                loanInterestRate: flip.interestRate,
+              },
+            };
+      // Write to Firestore via projectsService
+      const { projectsService } = await import('@/lib/firebase/deals');
+      await projectsService.updateProject(currentProject.id, patch);
+      // Sync Zustand
+      updateProjectFinancials(currentProject.id, patch.financials);
+      setUnderwritingDirty(false);
+    } catch (err) {
+      console.error('[DealAnalyzer] save underwriting failed:', err);
+    } finally {
+      setIsSavingUnderwriting(false);
+    }
+  }, [currentProject, mode, rental, flip, isLocked, updateProjectFinancials]);
+
+  /** Helper: update rental state and mark dirty */
+  const updateRental = useCallback(<K extends keyof RentalInputs>(key: K, val: RentalInputs[K]) => {
+    setRental(p => ({ ...p, [key]: val }));
+    setUnderwritingDirty(true);
+  }, []);
+
+  /** Helper: update flip state and mark dirty */
+  const updateFlip = useCallback(<K extends keyof FlipInputs>(key: K, val: FlipInputs[K]) => {
+    setFlip(p => ({ ...p, [key]: val }));
+    setUnderwritingDirty(true);
+  }, []);
+
 
   // ═══ RENDER ════════════════════════════════════════════
 
@@ -635,53 +772,53 @@ export default function DealAnalyzer() {
               {/* Purchase Group */}
               <AccordionSection icon="payments" title="Purchase" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassCurrencyInput label="Purchase Price" value={rental.purchasePrice} onChange={v => setRental(p => ({ ...p, purchasePrice: v }))} />
-                  <GlassCurrencyInput label="Closing Costs" value={rental.closingCosts} onChange={v => setRental(p => ({ ...p, closingCosts: v }))} />
+                  <GlassCurrencyInput label="Purchase Price" value={rental.purchasePrice} onChange={v => updateRental('purchasePrice', v)} />
+                  <GlassCurrencyInput label="Closing Costs" value={rental.closingCosts} onChange={v => updateRental('closingCosts', v)} />
                 </div>
               </AccordionSection>
 
               {/* Financing Group */}
               <AccordionSection icon="account_balance" title="Financing" defaultOpen={false}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassCurrencyInput label="Down Payment" value={rental.downPaymentPercent} onChange={v => setRental(p => ({ ...p, downPaymentPercent: v }))} prefix="" suffix="%" isPercentage step="1" />
+                  <GlassCurrencyInput label="Down Payment" value={rental.downPaymentPercent} onChange={v => updateRental('downPaymentPercent', v)} prefix="" suffix="%" isPercentage step="1" />
                   <div className="space-y-2">
                     <label className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-on-surface-variant)' }}>Loan Amount (Auto)</label>
                     <div className="glass-input w-full rounded-xl py-3 px-4 font-mono text-[15px] font-bold opacity-50 cursor-not-allowed" style={{ color: 'var(--color-on-surface-variant)' }}>
                       ${rentalMetrics.loanAmount.toLocaleString()}
                     </div>
                   </div>
-                  <GlassCurrencyInput label="Interest Rate" value={rental.interestRate} onChange={v => setRental(p => ({ ...p, interestRate: v }))} prefix="" suffix="%" isPercentage step="0.1" />
-                  <GlassCurrencyInput label="Loan Term" value={rental.loanTermYears} onChange={v => setRental(p => ({ ...p, loanTermYears: v }))} prefix="" suffix="YRS" isPercentage />
+                  <GlassCurrencyInput label="Interest Rate" value={rental.interestRate} onChange={v => updateRental('interestRate', v)} prefix="" suffix="%" isPercentage step="0.1" />
+                  <GlassCurrencyInput label="Loan Term" value={rental.loanTermYears} onChange={v => updateRental('loanTermYears', v)} prefix="" suffix="YRS" isPercentage />
                 </div>
               </AccordionSection>
 
               {/* Income Group */}
               <AccordionSection icon="trending_up" title="Income" defaultOpen={false}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <GlassCurrencyInput label="Monthly Rent" value={rental.monthlyRent} onChange={v => setRental(p => ({ ...p, monthlyRent: v }))} />
-                  <GlassCurrencyInput label="Other Income" value={rental.otherIncome} onChange={v => setRental(p => ({ ...p, otherIncome: v }))} />
-                  <GlassCurrencyInput label="Vacancy Rate" value={rental.vacancyRate} onChange={v => setRental(p => ({ ...p, vacancyRate: v }))} prefix="" suffix="%" isPercentage />
+                  <GlassCurrencyInput label="Monthly Rent" value={rental.monthlyRent} onChange={v => updateRental('monthlyRent', v)} />
+                  <GlassCurrencyInput label="Other Income" value={rental.otherIncome} onChange={v => updateRental('otherIncome', v)} />
+                  <GlassCurrencyInput label="Vacancy Rate" value={rental.vacancyRate} onChange={v => updateRental('vacancyRate', v)} prefix="" suffix="%" isPercentage />
                 </div>
               </AccordionSection>
 
               {/* Operating Expenses Group */}
               <AccordionSection icon="receipt_long" title="Operating Expenses" defaultOpen={false}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <GlassCurrencyInput label="Taxes /mo" value={rental.monthlyTaxes} onChange={v => setRental(p => ({ ...p, monthlyTaxes: v }))} />
-                  <GlassCurrencyInput label="Insurance /mo" value={rental.monthlyInsurance} onChange={v => setRental(p => ({ ...p, monthlyInsurance: v }))} />
-                  <GlassCurrencyInput label="Maintenance /mo" value={rental.monthlyMaintenance} onChange={v => setRental(p => ({ ...p, monthlyMaintenance: v }))} />
-                  <GlassCurrencyInput label="Property Mngmt" value={rental.propertyMgmtPercent} onChange={v => setRental(p => ({ ...p, propertyMgmtPercent: v }))} prefix="" suffix="%" isPercentage />
-                  <GlassCurrencyInput label="HOA /mo" value={rental.monthlyHOA} onChange={v => setRental(p => ({ ...p, monthlyHOA: v }))} />
-                  <GlassCurrencyInput label="Utilities /mo" value={rental.monthlyUtilities} onChange={v => setRental(p => ({ ...p, monthlyUtilities: v }))} />
+                  <GlassCurrencyInput label="Taxes /mo" value={rental.monthlyTaxes} onChange={v => updateRental('monthlyTaxes', v)} />
+                  <GlassCurrencyInput label="Insurance /mo" value={rental.monthlyInsurance} onChange={v => updateRental('monthlyInsurance', v)} />
+                  <GlassCurrencyInput label="Maintenance /mo" value={rental.monthlyMaintenance} onChange={v => updateRental('monthlyMaintenance', v)} />
+                  <GlassCurrencyInput label="Property Mngmt" value={rental.propertyMgmtPercent} onChange={v => updateRental('propertyMgmtPercent', v)} prefix="" suffix="%" isPercentage />
+                  <GlassCurrencyInput label="HOA /mo" value={rental.monthlyHOA} onChange={v => updateRental('monthlyHOA', v)} />
+                  <GlassCurrencyInput label="Utilities /mo" value={rental.monthlyUtilities} onChange={v => updateRental('monthlyUtilities', v)} />
                 </div>
               </AccordionSection>
 
               {/* Equity & Exit Strategy Group */}
               <AccordionSection icon="real_estate_agent" title="Equity & Exit Strategy" defaultOpen={false}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <GlassCurrencyInput label="Ownership %" value={rental.percentageOfOwnership} onChange={v => setRental(p => ({ ...p, percentageOfOwnership: v }))} prefix="" suffix="%" isPercentage step="1" />
-                  <GlassCurrencyInput label="Price of Sale (Exit)" value={rental.priceOfSale} onChange={v => setRental(p => ({ ...p, priceOfSale: v }))} />
-                  <GlassCurrencyInput label="Investor Expenses /mo" value={rental.investorExpenses} onChange={v => setRental(p => ({ ...p, investorExpenses: v }))} hint="E.g. Asset Mgmt Fees" />
+                  <GlassCurrencyInput label="Ownership %" value={rental.percentageOfOwnership} onChange={v => updateRental('percentageOfOwnership', v)} prefix="" suffix="%" isPercentage step="1" />
+                  <GlassCurrencyInput label="Price of Sale (Exit)" value={rental.priceOfSale} onChange={v => updateRental('priceOfSale', v)} />
+                  <GlassCurrencyInput label="Investor Expenses /mo" value={rental.investorExpenses} onChange={v => updateRental('investorExpenses', v)} hint="E.g. Asset Mgmt Fees" />
                 </div>
               </AccordionSection>
             </div>
@@ -693,28 +830,28 @@ export default function DealAnalyzer() {
               {/* Purchase & Rehab */}
               <AccordionSection icon="home_work" title="Purchase & Rehab" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <GlassCurrencyInput label="Purchase Price" value={flip.purchasePrice} onChange={v => setFlip(p => ({ ...p, purchasePrice: v }))} placeholder="325000" />
-                  <GlassCurrencyInput label="Rehab Cost" value={flip.rehabCost} onChange={v => setFlip(p => ({ ...p, rehabCost: v }))} placeholder="65000" />
-                  <GlassCurrencyInput label="After-Repair Value" value={flip.arv} onChange={v => setFlip(p => ({ ...p, arv: v }))} placeholder="485000" />
+                  <GlassCurrencyInput label="Purchase Price" value={flip.purchasePrice} onChange={v => updateFlip('purchasePrice', v)} placeholder="325000" />
+                  <GlassCurrencyInput label="Rehab Cost" value={flip.rehabCost} onChange={v => updateFlip('rehabCost', v)} placeholder="65000" />
+                  <GlassCurrencyInput label="After-Repair Value" value={flip.arv} onChange={v => updateFlip('arv', v)} placeholder="485000" />
                 </div>
               </AccordionSection>
 
               {/* Financing */}
               <AccordionSection icon="account_balance" title="Financing" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <GlassCurrencyInput label="Loan Amount" value={flip.loanAmount} onChange={v => setFlip(p => ({ ...p, loanAmount: v }))} />
-                  <GlassCurrencyInput label="Interest Rate" value={flip.interestRate} onChange={v => setFlip(p => ({ ...p, interestRate: v }))} prefix="" suffix="%" isPercentage step="0.1" />
-                  <GlassCurrencyInput label="Length (Months)" value={flip.loanMonths} onChange={v => setFlip(p => ({ ...p, loanMonths: v }))} prefix="" isPercentage />
+                  <GlassCurrencyInput label="Loan Amount" value={flip.loanAmount} onChange={v => updateFlip('loanAmount', v)} />
+                  <GlassCurrencyInput label="Interest Rate" value={flip.interestRate} onChange={v => updateFlip('interestRate', v)} prefix="" suffix="%" isPercentage step="0.1" />
+                  <GlassCurrencyInput label="Length (Months)" value={flip.loanMonths} onChange={v => updateFlip('loanMonths', v)} prefix="" isPercentage />
                 </div>
               </AccordionSection>
 
               {/* Monthly Holding Costs */}
               <AccordionSection icon="payments" title="Monthly Holding Costs" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassCurrencyInput label="Property Taxes" value={flip.monthlyTaxes} onChange={v => setFlip(p => ({ ...p, monthlyTaxes: v }))} />
-                  <GlassCurrencyInput label="Insurance (Vacant Policy)" value={flip.monthlyInsurance} onChange={v => setFlip(p => ({ ...p, monthlyInsurance: v }))} />
-                  <GlassCurrencyInput label="Utilities" value={flip.monthlyUtilities} onChange={v => setFlip(p => ({ ...p, monthlyUtilities: v }))} />
-                  <GlassCurrencyInput label="Other Expenses" value={flip.monthlyOther} onChange={v => setFlip(p => ({ ...p, monthlyOther: v }))} />
+                  <GlassCurrencyInput label="Property Taxes" value={flip.monthlyTaxes} onChange={v => updateFlip('monthlyTaxes', v)} />
+                  <GlassCurrencyInput label="Insurance (Vacant Policy)" value={flip.monthlyInsurance} onChange={v => updateFlip('monthlyInsurance', v)} />
+                  <GlassCurrencyInput label="Utilities" value={flip.monthlyUtilities} onChange={v => updateFlip('monthlyUtilities', v)} />
+                  <GlassCurrencyInput label="Other Expenses" value={flip.monthlyOther} onChange={v => updateFlip('monthlyOther', v)} />
                 </div>
               </AccordionSection>
 
@@ -724,7 +861,7 @@ export default function DealAnalyzer() {
                   <GlassCurrencyInput
                     label="Cost of Sale (Percentage)"
                     value={flip.costOfSalePercent}
-                    onChange={v => setFlip(p => ({ ...p, costOfSalePercent: v }))}
+                    onChange={v => updateFlip('costOfSalePercent', v)}
                     prefix=""
                     suffix="%"
                     isPercentage
@@ -737,8 +874,8 @@ export default function DealAnalyzer() {
               {/* Equity & Exit Strategy Group */}
               <AccordionSection icon="real_estate_agent" title="Equity & Exit Strategy" defaultOpen={true}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <GlassCurrencyInput label="Ownership %" value={flip.percentageOfOwnership} onChange={v => setFlip(p => ({ ...p, percentageOfOwnership: v }))} prefix="" suffix="%" isPercentage step="1" />
-                  <GlassCurrencyInput label="Investor Expenses" value={flip.investorExpenses} onChange={v => setFlip(p => ({ ...p, investorExpenses: v }))} hint="E.g. Capital Sourcing Fees" />
+                  <GlassCurrencyInput label="Ownership %" value={flip.percentageOfOwnership} onChange={v => updateFlip('percentageOfOwnership', v)} prefix="" suffix="%" isPercentage step="1" />
+                  <GlassCurrencyInput label="Investor Expenses" value={flip.investorExpenses} onChange={v => updateFlip('investorExpenses', v)} hint="E.g. Capital Sourcing Fees" />
                 </div>
               </AccordionSection>
             </div>
@@ -753,6 +890,22 @@ export default function DealAnalyzer() {
               <span className="material-symbols-outlined text-[18px]">save</span>
               Save as Project
             </button>
+            {currentProject && underwritingDirty && !isLocked && (
+              <button
+                onClick={handleSaveUnderwriting}
+                disabled={isSavingUnderwriting}
+                className="px-6 py-4 text-sm font-semibold uppercase tracking-widest rounded-xl transition-colors flex items-center gap-2"
+                style={{
+                  background: 'var(--color-primary)',
+                  color: 'var(--color-on-primary)',
+                  opacity: isSavingUnderwriting ? 0.7 : 1,
+                }}
+                title="Save these what-if inputs to the project's underwriting record"
+              >
+                <span className="material-symbols-outlined text-[16px]">drive_file_rename_outline</span>
+                {isSavingUnderwriting ? 'Saving…' : 'Save to Project'}
+              </button>
+            )}
             <button
               onClick={handleReset}
               className="px-8 py-4 text-sm font-semibold uppercase tracking-widest rounded-xl transition-colors"
@@ -875,6 +1028,18 @@ export default function DealAnalyzer() {
                   <span className="material-symbols-outlined text-[18px]">save</span>
                   Save as Project
                 </button>
+                {currentProject && underwritingDirty && !isLocked && (
+                  <button
+                    onClick={handleSaveUnderwriting}
+                    disabled={isSavingUnderwriting}
+                    className="w-full py-3 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-colors rounded-xl"
+                    style={{ background: 'var(--color-primary)', color: 'var(--color-on-primary)', opacity: isSavingUnderwriting ? 0.7 : 1 }}
+                    title="Save these what-if inputs to the project's underwriting record"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">drive_file_rename_outline</span>
+                    {isSavingUnderwriting ? 'Saving…' : 'Save to Project'}
+                  </button>
+                )}
                 <button
                   onClick={handleReset}
                   className="w-full py-2 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-colors"
@@ -884,6 +1049,7 @@ export default function DealAnalyzer() {
                   Reset Analysis
                 </button>
               </div>
+
             </div>
           )}
 

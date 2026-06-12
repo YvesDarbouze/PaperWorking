@@ -97,6 +97,19 @@ export function middleware(request: NextRequest) {
     return withNoCache(nextWithHeader(request, pathname));
   }
 
+  // ── Projects ───────────────────────────────────────────
+  if (pathname.startsWith('/projects')) {
+    if (!hasSession) {
+      const url = new URL('/login', request.url);
+      url.searchParams.set('redirectTo', request.nextUrl.pathname + request.nextUrl.search);
+      return withNoCache(NextResponse.redirect(url));
+    }
+    if (acct === 'vendor') {
+      return withNoCache(NextResponse.redirect(new URL('/vendor-portal', request.url)));
+    }
+    return withNoCache(nextWithHeader(request, pathname));
+  }
+
   // ── Dashboard ──────────────────────────────────────────
   if (pathname.startsWith('/dashboard')) {
     if (!hasSession) {
@@ -127,6 +140,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/dashboard/:path*',
+    '/projects/:path*',
     '/vendor-portal/:path*',
     '/onboarding/:path*',
     '/login',

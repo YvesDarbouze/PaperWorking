@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Search,
   MapPin,
@@ -189,11 +189,28 @@ function VendorCard({
   );
 }
 
-export default function MarketplacePage() {
+function mapTypeParamToCategory(type: string | null): FilterCategory {
+  if (!type) return 'All';
+  const t = type.toLowerCase();
+  if (t === 'lender') return 'Lenders';
+  if (t === 'inspector') return 'Inspectors';
+  if (t === 'lawyer' || t === 'attorney') return 'Attorneys';
+  if (t === 'contractor') return 'Contractors';
+  if (t === 'property manager') return 'Property Managers';
+  if (t === 'listing agent' || t === 'agent') return 'Agents';
+  return 'All';
+}
+
+function MarketplaceContent() {
   /* ── Preserved Firestore / data hooks ── */
   useAllDealsSync();
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const typeParam = searchParams.get('type');
+  const projectIdParam = searchParams.get('projectId');
+  const cityParam = searchParams.get('city');
+
   const { profile, user } = useAuth();
   const projects = useProjectStore((state) => state.projects);
   const hasActiveSub = isSubscriptionActive(profile);
@@ -202,6 +219,17 @@ export default function MarketplacePage() {
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
+
+  // Sync state from query parameters on mount or when parameters change
+  useEffect(() => {
+    if (typeParam) {
+      setActiveFilter(mapTypeParamToCategory(typeParam));
+    }
+    if (cityParam) {
+      setSearchInput(cityParam);
+      setSearchQuery(cityParam);
+    }
+  }, [typeParam, cityParam]);
 
   /* ── Vendor data state (preserved from original) ── */
   const [vendors, setVendors] = useState<VendorProfile[]>([]);
@@ -423,6 +451,7 @@ export default function MarketplacePage() {
       <VendorRequestModal
         isOpen={isQuoteModalOpen}
         vendor={selectedVendor}
+        projectId={projectIdParam || undefined}
         onClose={() => {
           setIsQuoteModalOpen(false);
           setSelectedVendor(null);
@@ -462,5 +491,22 @@ export default function MarketplacePage() {
         }}
       />
     </div>
+  );
+}
+
+export default function MarketplacePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#0d0a0b]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-2 rounded-full animate-spin border-[#454955] border-t-transparent" />
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#9E9DA0]">
+            Loading Marketplace…
+          </p>
+        </div>
+      </div>
+    }>
+      <MarketplaceContent />
+    </Suspense>
   );
 }

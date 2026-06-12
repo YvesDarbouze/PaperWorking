@@ -18,6 +18,7 @@ export interface TaxPLResult {
   totalGrossIncome: number;
 
   // Deductible Operating Expenses
+  advertising: number;       // Schedule E Line 5
   propertyTaxes: number;
   insurance: number;
   utilities: number;
@@ -233,6 +234,74 @@ export function calculateMortgageAmortization(
 }
 
 /**
+ * Computes exact depreciation months allowed in the period under IRS mid-month convention.
+ * Total recovery period is 27.5 years (330 months).
+ */
+export function getDepreciationMonthsInPeriod(
+  placedInServiceDate: Date,
+  soldDate: Date | null,
+  periodStart: Date,
+  periodEnd: Date
+): number {
+  const startYear = placedInServiceDate.getFullYear();
+  const startMonth = placedInServiceDate.getMonth(); // 0-11
+  
+  const soldYear = soldDate ? soldDate.getFullYear() : null;
+  const soldMonth = soldDate ? soldDate.getMonth() : null;
+
+  // IRS rule: if placed in service and sold in the same tax year, no depreciation is allowed
+  if (soldYear !== null && soldYear === startYear) {
+    return 0;
+  }
+
+  let totalDepreciationMonths = 0;
+
+  // Iterate month-by-month over the target periodStart to periodEnd
+  let current = new Date(periodStart.getFullYear(), periodStart.getMonth(), 1);
+  const end = new Date(periodEnd.getFullYear(), periodEnd.getMonth(), 1);
+
+  while (current <= end) {
+    const curYear = current.getFullYear();
+    const curMonth = current.getMonth();
+
+    // Compute calendar months since placed in service
+    const m = (curYear - startYear) * 12 + (curMonth - startMonth);
+
+    if (m >= 0 && m <= 330) {
+      // Determine if this month is active for depreciation
+      if (soldYear !== null && soldMonth !== null) {
+        const s = (soldYear - startYear) * 12 + (soldMonth - startMonth);
+        if (m > s) {
+          current.setMonth(current.getMonth() + 1);
+          continue;
+        }
+        if (m === s) {
+          // Month of sale gets 0.5 months of depreciation
+          totalDepreciationMonths += 0.5;
+          current.setMonth(current.getMonth() + 1);
+          continue;
+        }
+      }
+
+      // Regular month logic
+      if (m === 0) {
+        // Placed in service month gets 0.5 months of depreciation
+        totalDepreciationMonths += 0.5;
+      } else if (m === 330) {
+        // Last month gets 0.5 months of depreciation
+        totalDepreciationMonths += 0.5;
+      } else {
+        totalDepreciationMonths += 1.0;
+      }
+    }
+
+    current.setMonth(current.getMonth() + 1);
+  }
+
+  return totalDepreciationMonths;
+}
+
+/**
  * Calculates a complete Tax PL Result for a single Project in a target date range.
  */
 export function calculateProjectTaxReport(
@@ -258,6 +327,7 @@ export function calculateProjectTaxReport(
       otherIncome: 0,
       saleProceeds: 0,
       totalGrossIncome: 0,
+      advertising: 0,
       propertyTaxes: 0,
       insurance: 0,
       utilities: 0,
@@ -295,6 +365,8 @@ export function calculateProjectTaxReport(
   const totalGrossIncome = rentalIncome + otherIncome + saleProceeds;
 
   // 2. Deductible Operating Expenses Allocation
+  // Advertising: prorated from annualAdvertisingExpense; fall back to rentalMarketingCost (one-time)
+  const advertising = Math.round(((f.annualAdvertisingExpense ?? f.rentalMarketingCost ?? 0) * (activeMonths / 12)) * 100) / 100;
   const propertyTaxes = (f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * activeMonths;
   const insurance = (f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * activeMonths;
   const utilities = (f.holdingCostUtilities ?? 0) * activeMonths;
@@ -327,9 +399,9 @@ export function calculateProjectTaxReport(
   const mortgageInterest = amortization.interest;
   const mortgagePrincipal = amortization.principal;
 
-  const totalDeductibleExpenses = propertyTaxes + insurance + utilities + propertyManagement + repairsMaintenance + hoaFees + mortgageInterest;
+  const totalDeductibleExpenses = advertising + propertyTaxes + insurance + utilities + propertyManagement + repairsMaintenance + hoaFees + mortgageInterest;
 
-  const netOperatingResult = rentalIncome + otherIncome - (propertyTaxes + insurance + utilities + propertyManagement + repairsMaintenance + hoaFees);
+  const netOperatingResult = rentalIncome + otherIncome - (advertising + propertyTaxes + insurance + utilities + propertyManagement + repairsMaintenance + hoaFees);
   const netTaxableResult = netOperatingResult - mortgageInterest;
 
   // 3. Capitalized Rehab Allocation
@@ -346,13 +418,24 @@ export function calculateProjectTaxReport(
   }
 
   // 4. Straight-line Depreciation Estimate (27.5-Yr)
-  // Depreciate 80% improvement value of the purchasePrice + acquisition costs
+  // Depreciate building basis only using straight-line 27.5-year method.
+  // Derives split from assessed land/improvement values, falling back to 80/20 building/land split.
   const acquisitionBasis = (f.purchasePrice ?? 0) + (f.fixedAcquisitionCosts ?? 0);
-  const depreciableBasis = acquisitionBasis * 0.8;
+  let buildingRatio = 0.8;
+  if (f.taxAssessedLandValue && f.taxAssessedImprovementValue) {
+    const totalAssessed = f.taxAssessedLandValue + f.taxAssessedImprovementValue;
+    if (totalAssessed > 0) {
+      buildingRatio = f.taxAssessedImprovementValue / totalAssessed;
+    }
+  }
+  const depreciableBasis = acquisitionBasis * buildingRatio;
   const annualDepreciation = depreciableBasis / 27.5;
   const monthlyDepreciation = annualDepreciation / 12;
+
+  const placedInServiceDate = parseDateSafe(f.placedInServiceDate) || acqDate || parseDateSafe(project.createdAt) || new Date();
+  const depMonths = getDepreciationMonthsInPeriod(placedInServiceDate, soldDate, periodStart, periodEnd);
   const depreciationEstimate = project.strategyType === 'Rent' || project.strategyType === 'Buy & Hold'
-    ? monthlyDepreciation * activeMonths
+    ? monthlyDepreciation * depMonths
     : 0;
 
   // 5. Realized Gain/Loss on Sale (Exit Phase)
@@ -392,6 +475,7 @@ export function calculateProjectTaxReport(
     otherIncome: Math.round(otherIncome * 100) / 100,
     saleProceeds: Math.round(saleProceeds * 100) / 100,
     totalGrossIncome: Math.round(totalGrossIncome * 100) / 100,
+    advertising: Math.round(advertising * 100) / 100,
     propertyTaxes: Math.round(propertyTaxes * 100) / 100,
     insurance: Math.round(insurance * 100) / 100,
     utilities: Math.round(utilities * 100) / 100,
@@ -427,6 +511,7 @@ export function aggregatePortfolioTaxReport(results: TaxPLResult[]): Omit<TaxPLR
     otherIncome: Math.round(sumField('otherIncome') * 100) / 100,
     saleProceeds: Math.round(sumField('saleProceeds') * 100) / 100,
     totalGrossIncome: Math.round(sumField('totalGrossIncome') * 100) / 100,
+    advertising: Math.round(sumField('advertising') * 100) / 100,
     propertyTaxes: Math.round(sumField('propertyTaxes') * 100) / 100,
     insurance: Math.round(sumField('insurance') * 100) / 100,
     utilities: Math.round(sumField('utilities') * 100) / 100,

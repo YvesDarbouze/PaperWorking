@@ -14,6 +14,8 @@ import {
   sendSignInLinkToEmail,
   isSignInWithEmailLink,
   signInWithEmailLink,
+  getMultiFactorResolver,
+  MultiFactorResolver,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
@@ -21,9 +23,11 @@ import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
 import { getTokenExpiryMinutes } from '@/lib/auth/sessionService';
 import SessionExpiredModal from '@/components/auth/SessionExpiredModal';
+import MFAChallengeModal from '@/components/auth/MFAChallengeModal';
 import posthog from 'posthog-js';
 import { useProjectStore } from '@/store/projectStore';
 import { usePropertyStore } from '@/store/propertyStore';
+import { useUserStore } from '@/store/userStore';
 
 /* ═══════════════════════════════════════════════════════
    PaperWorking — AuthContext (Phase 3.0)
@@ -60,6 +64,12 @@ interface AuthContextType {
    *  token has less than 5 minutes of lifetime remaining. Call this on every
    *  hard layout mount to catch near-expiry tokens during SPA navigation. */
   refreshSession: () => Promise<void>;
+  /** Present when a sign-in triggered the MFA challenge step. */
+  mfaResolver: MultiFactorResolver | null;
+  /** Called by MFAChallengeModal once the TOTP code is verified. */
+  resolveMFASignIn: () => void;
+  /** Called by MFAChallengeModal when the user cancels the challenge. */
+  cancelMFAChallenge: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -234,6 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [sessionReady, setSessionReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionExpiredVisible, setSessionExpiredVisible] = useState(false);
+  const [mfaResolver, setMfaResolver] = useState<MultiFactorResolver | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Ref mirror of isAuthenticating so onAuthStateChanged (a stale closure)
   // can read the current value without being recreated on every render.
@@ -243,6 +254,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // from IndexedDB on hard refresh. Without this guard every hard refresh wipes
   // in-memory store state before the real user event arrives.
   const hasFirstAuthEventFiredRef = useRef(false);
+
+  // 1. Hydrate useUserStore for mock or demo sessions
+  useEffect(() => {
+    const isMock = typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123');
+    const isDemo = typeof window !== 'undefined' && window.location.pathname.startsWith('/demo');
+    if (isMock || isDemo) {
+      useUserStore.setState({
+        accountTier: 'Team',
+        maxSeats: 10,
+        hasActiveSubscription: true,
+      });
+    }
+  }, []);
 
   // 2. Listen to auth state changes + sync session cookie
   useEffect(() => {
@@ -284,7 +308,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const docRef = doc(db, 'users', firebaseUser.uid);
         profileUnsubscribe = onSnapshot(docRef, (snap) => {
-          if (snap.exists()) setProfile(snap.data() as UserProfile);
+          if (snap.exists()) {
+            const profileData = snap.data() as UserProfile;
+            setProfile(profileData);
+
+            // Authoritatively hydrate the Zustand store
+            const plan = profileData.subscriptionPlan ?? 'None';
+            const tier = plan === 'Team' ? 'Team' : 'Individual';
+            const hasActiveSub =
+              profileData.subscriptionStatus === 'active' ||
+              profileData.subscriptionStatus === 'trialing';
+
+            useUserStore.setState({
+              accountTier: tier,
+              maxSeats: tier === 'Team' ? 10 : 1,
+              hasActiveSubscription: hasActiveSub,
+            });
+          }
         });
 
         // Start token refresh interval — keeps __session cookie valid
@@ -315,6 +355,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (hasFirstAuthEventFiredRef.current) {
           useProjectStore.getState().clearStore();
           usePropertyStore.getState().clearStore();
+          useUserStore.setState({
+            accountTier: 'Individual',
+            teamMembers: [],
+            maxSeats: 1,
+            hasActiveSubscription: false,
+          });
         }
         hasFirstAuthEventFiredRef.current = true;
       }
@@ -406,6 +452,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const resolveMFASignIn = () => {
+    // Called by MFAChallengeModal after resolveSignIn() succeeds.
+    // onAuthStateChanged fires with the signed-in user and handles
+    // syncSessionCookie + setSessionReady — no duplication needed here.
+    setMfaResolver(null);
+  };
+
+  const cancelMFAChallenge = async () => {
+    setMfaResolver(null);
+    // Sign out any partially-authenticated Firebase state so the login
+    // form can be retried cleanly.
+    await deauthOnCookieFailure();
+  };
+
   const login = async (email: string, password: string) => {
     setError(null);
     useProjectStore.getState().clearStore();
@@ -419,10 +479,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(loggedInUser);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        // MFA challenge — store the resolver and show the challenge modal.
+        // Do NOT throw: the login page must not treat this as an error.
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -525,10 +591,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -550,10 +620,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await syncSessionCookie(result.user);
       setSessionReady(true);
     } catch (err: any) {
-      setError(getAuthErrorMessage(err.code));
-      setSessionReady(false);
-      await deauthOnCookieFailure();
-      throw err;
+      if (err.code === 'auth/multi-factor-auth-required') {
+        setMfaResolver(getMultiFactorResolver(auth, err));
+      } else {
+        setError(getAuthErrorMessage(err.code));
+        setSessionReady(false);
+        await deauthOnCookieFailure();
+        throw err;
+      }
     } finally {
       syncLockRef.current = false;
       setIsAuthenticating(false);
@@ -663,13 +737,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         resetPassword,
         clearError,
         refreshSession,
+        mfaResolver,
+        resolveMFASignIn,
+        cancelMFAChallenge,
       }}
     >
       {children}
-      {/* H-3: Session-expired modal — shown when the token refresh interval
-          encounters a fatal auth error (revoked token, disabled account, etc.) */}
+      {/* H-3: Session-expired modal */}
       {sessionExpiredVisible && (
         <SessionExpiredModal onDismiss={() => setSessionExpiredVisible(false)} />
+      )}
+      {/* MFA challenge — shown when any sign-in method requires a TOTP second factor */}
+      {mfaResolver && (
+        <MFAChallengeModal
+          resolver={mfaResolver}
+          onResolved={resolveMFASignIn}
+          onCancel={cancelMFAChallenge}
+        />
       )}
     </AuthContext.Provider>
   );

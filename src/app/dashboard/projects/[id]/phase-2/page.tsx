@@ -12,6 +12,7 @@ import { ProjectVendorsList } from '@/components/project/ProjectVendorsList';
 import { DueDiligenceChecklist } from '@/components/project/DueDiligenceChecklist';
 import { InspectionTracker } from '@/components/project/InspectionTracker';
 import { ContingencyTracker } from '@/components/project/ContingencyTracker';
+import TitleSearchClearance from '@/components/closing/TitleSearchClearance';
 import { DocumentVault } from '@/components/project/DocumentVault';
 import { ClosingCostsLedger } from '@/components/project/ClosingCostsLedger';
 import { ClearToCloseMilestone } from '@/components/project/ClearToCloseMilestone';
@@ -28,9 +29,10 @@ import { MetricReadout } from '@/components/metrics/MetricReadout';
 import type { MetricResult } from '@/lib/metrics/types';
 import { LenderRatesAdmin } from '@/components/phase2/LenderRatesAdmin';
 import { ClosingCostSidebar } from '@/components/phase2/ClosingCostSidebar';
+import { PropertyMapTile } from '@/components/project/PropertyMapTile';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
-import { DEFAULT_RATES, parseRatesDoc, isRateStale, type LenderRate } from '@/lib/providers/lenderRates';
+import { parseRatesDoc, isRateStale, type LenderRate } from '@/lib/providers/lenderRates';
 import { type ClosingCostOverrides } from '@/lib/math/closingCosts';
 import { useAuth } from '@/context/AuthContext';
 
@@ -74,8 +76,11 @@ export default function Phase2AcquisitionPage() {
   const [selectedLender, setSelectedLender] = useState<string>('NEO');
   const [showManualCDForm, setShowManualCDForm] = useState(false);
 
-  /* ── Live lender rates from Firestore ── */
-  const [lenderRates, setLenderRates] = useState<LenderRate[]>(DEFAULT_RATES);
+  /* ── Live lender rates from Firestore ──────────────────────────────────────
+     null  = loading (first snapshot not yet received)
+     []    = loaded, no rates configured in Firestore
+     [...] = loaded, real admin-maintained rates                               */
+  const [lenderRates, setLenderRates] = useState<LenderRate[] | null>(null);
 
   /* ── Closing cost per-line overrides ── */
   const [closingCostOverrides, setClosingCostOverrides] = useState<ClosingCostOverrides>({});
@@ -85,24 +90,70 @@ export default function Phase2AcquisitionPage() {
     const unsub = onSnapshot(ref, (snap) => {
       if (snap.exists()) {
         const parsed = parseRatesDoc(snap.data()!);
-        setLenderRates(parsed.length > 0 ? parsed : DEFAULT_RATES);
+        // parsed is [] when the doc exists but has no rates array — honest empty
+        setLenderRates(parsed);
       } else {
-        setLenderRates(DEFAULT_RATES);
+        // Doc doesn't exist yet — admin has not configured rates
+        setLenderRates([]);
       }
     }, (err) => {
       console.warn('[Phase2] lenderRates snapshot error:', err);
+      // On error, set empty rather than fictional fallback so UI shows honest state
+      setLenderRates([]);
     });
     return unsub;
   }, []);
 
+
   /* ── Admin check for rate editing ── */
-  const { profile } = useAuth();
+  const { profile, user: authUser } = useAuth();
   const isRateAdmin = profile?.orgRole === 'Lead Investor' || profile?.orgRole === 'Admin';
+
+  /* ── Closing ledger export ── */
+  const [exportingFormat, setExportingFormat] = useState<'csv' | 'pdf' | null>(null);
+
+  const handleExportLedger = async (format: 'csv' | 'pdf') => {
+    if (!authUser) { toast.error('Not authenticated'); return; }
+    if (exportingFormat) return;
+    setExportingFormat(format);
+    try {
+      const token = await authUser.getIdToken();
+      const res = await fetch(
+        `/api/reil/projects/${projectId}/closing-ledger/export?format=${format}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? `Export failed (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const address = (project?.address ?? projectId)
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .toLowerCase()
+        .slice(0, 60);
+      const date = new Date().toISOString().split('T')[0];
+      a.href = url;
+      a.download = `closing-ledger-${address}-${date}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Closing ledger exported as ${format.toUpperCase()}.`);
+      try {
+        const posthog = (await import('posthog-js')).default;
+        posthog.capture('closing_ledger_exported', { projectId, format });
+      } catch { /* non-fatal */ }
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Export failed');
+    } finally {
+      setExportingFormat(null);
+    }
+  };
 
   const selectLender = async (lenderId: string) => {
     setSelectedLender(lenderId);
     if (!project) return;
-    const rate = lenderRates.find((r) => r.id === lenderId)?.interestRate ?? 0;
+    const rate = (lenderRates ?? []).find((r) => r.id === lenderId)?.interestRate ?? 0;
     const currentFinancials = project.financials || {};
     try {
       await projectsService.updateProject(projectId, {
@@ -499,107 +550,137 @@ export default function Phase2AcquisitionPage() {
                   <span className="material-symbols-outlined text-primary text-[20px]">account_balance</span>
                   Lender Selection
                 </h3>
-                {isRateAdmin && (
+                {/* Admin edit button — only shown when rates are loaded (not null) */}
+                {isRateAdmin && lenderRates !== null && (
                   <LenderRatesAdmin rates={lenderRates} phaseColor={PHASE_COLOR} />
                 )}
               </div>
 
-              {/* Stale rates banner */}
-              {lenderRates.some((r) => isRateStale(r.asOf)) && (
-                <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] bg-amber-500/10 border border-amber-500/25 text-amber-400">
-                  <span className="material-symbols-outlined text-[14px]">warning</span>
-                  Rates may be stale — last updated over {30} days ago.
-                  {isRateAdmin && ' Use Edit Rates to refresh.'}
+              {/* ── Loading state: Firestore snapshot not yet received ── */}
+              {lenderRates === null && (
+                <div className="flex items-center gap-2 py-8 text-on-surface-variant/50 text-xs">
+                  <span className="material-symbols-outlined text-[16px] animate-spin" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400" }}>progress_activity</span>
+                  Loading lender rates…
                 </div>
               )}
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="text-on-surface-variant/60 border-b border-white/5 uppercase tracking-wider text-[10px]">
-                      <th className="py-2.5">Parameter</th>
-                      {lenderRates.map((r, i) => (
-                        <th key={r.id} className="py-2.5 text-center">
-                          {r.name}
-                          {i === 0 && <span className="ml-1 opacity-50">(Primary)</span>}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5 text-on-surface font-mono">
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-3 font-sans text-xs">Interest Rate</td>
-                      {lenderRates.map((r, i) => (
-                        <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                          {r.interestRate.toFixed(3)}%
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-3 font-sans text-xs">Points/Credits</td>
-                      {lenderRates.map((r, i) => (
-                        <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                          {r.points % 1 === 0 ? r.points.toFixed(1) : r.points} Pt{r.points !== 1 ? 's' : ''}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-3 font-sans text-xs">Lender Fees</td>
-                      {lenderRates.map((r, i) => (
-                        <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                          ${(r.lenderFeesCents / 100).toLocaleString('en-US', { minimumFractionDigits: 0 })}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-3 font-sans text-xs">Monthly P&amp;I</td>
-                      {lenderRates.map((r, i) => {
-                        const loanAmt   = project?.financials?.loanAmount ?? 0;
-                        const loanTermM = (project?.financials?.loanTermYears ?? 30) * 12;
-                        const annualDS  = computeAnnualDebtService(loanAmt, r.interestRate, loanTermM);
-                        const monthlyPI = annualDS > 0 ? Math.round(annualDS / 12) : null;
-                        return (
-                          <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
-                            {monthlyPI ? `$${monthlyPI.toLocaleString()}/mo` : '—'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    {/* asOf row */}
-                    <tr className="hover:bg-white/[0.02]">
-                      <td className="py-2 font-sans text-[10px] text-on-surface-variant/50">Rates as of</td>
-                      {lenderRates.map((r) => {
-                        const stale  = isRateStale(r.asOf);
-                        const never  = r.asOf.getTime() === 0;
-                        const label  = never ? 'Not set' : r.asOf.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                        return (
-                          <td key={r.id} className={`py-2 text-center text-[10px] font-mono ${stale ? 'text-amber-400' : 'text-on-surface-variant/50'}`}>
-                            {label}
-                            {stale && !never && ' ⚠'}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {/* ── Empty state: Firestore doc absent — no rates configured ── */}
+              {lenderRates !== null && lenderRates.length === 0 && (
+                <div className="py-8 flex flex-col items-center gap-3 text-center">
+                  <span className="material-symbols-outlined text-[36px] text-on-surface-variant/30" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>account_balance</span>
+                  <p className="text-sm font-semibold text-on-surface-variant/70">Lender rates not configured</p>
+                  <p className="text-[11px] text-on-surface-variant/50 max-w-xs">
+                    {isRateAdmin
+                      ? 'Use \'Edit Rates\' above to add lender options. Rates are maintained by Lead Investors and Admins.'
+                      : 'Rates have not been configured yet. A Lead Investor or Admin must set them before lender selection is available.'}
+                  </p>
+                </div>
+              )}
+
+              {/* ── Populated state: real admin-maintained rates from Firestore ── */}
+              {lenderRates !== null && lenderRates.length > 0 && (
+                <>
+                  {/* Stale rates banner */}
+                  {lenderRates.some((r) => isRateStale(r.asOf)) && (
+                    <div className="mb-4 flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-[0.1em] bg-amber-500/10 border border-amber-500/25 text-amber-400">
+                      <span className="material-symbols-outlined text-[14px]">warning</span>
+                      Rates may be stale — last updated over {30} days ago.
+                      {isRateAdmin && ' Use Edit Rates to refresh.'}
+                    </div>
+                  )}
+
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="text-on-surface-variant/60 border-b border-white/5 uppercase tracking-wider text-[10px]">
+                          <th className="py-2.5">Parameter</th>
+                          {lenderRates.map((r, i) => (
+                            <th key={r.id} className="py-2.5 text-center">
+                              {r.name}
+                              {i === 0 && <span className="ml-1 opacity-50">(Primary)</span>}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5 text-on-surface font-mono">
+                        <tr className="hover:bg-white/[0.02]">
+                          <td className="py-3 font-sans text-xs">Interest Rate</td>
+                          {lenderRates.map((r, i) => (
+                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                              {r.interestRate.toFixed(3)}%
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="hover:bg-white/[0.02]">
+                          <td className="py-3 font-sans text-xs">Points/Credits</td>
+                          {lenderRates.map((r, i) => (
+                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                              {r.points % 1 === 0 ? r.points.toFixed(1) : r.points} Pt{r.points !== 1 ? 's' : ''}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="hover:bg-white/[0.02]">
+                          <td className="py-3 font-sans text-xs">Lender Fees</td>
+                          {lenderRates.map((r, i) => (
+                            <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                              ${(r.lenderFeesCents / 100).toLocaleString('en-US', { minimumFractionDigits: 0 })}
+                            </td>
+                          ))}
+                        </tr>
+                        <tr className="hover:bg-white/[0.02]">
+                          <td className="py-3 font-sans text-xs">Monthly P&amp;I</td>
+                          {lenderRates.map((r, i) => {
+                            const loanAmt   = project?.financials?.loanAmount ?? 0;
+                            const loanTermM = (project?.financials?.loanTermYears ?? 30) * 12;
+                            const annualDS  = computeAnnualDebtService(loanAmt, r.interestRate, loanTermM);
+                            const monthlyPI = annualDS > 0 ? Math.round(annualDS / 12) : null;
+                            return (
+                              <td key={r.id} className={`py-3 text-center font-bold ${i === 0 ? 'text-primary' : 'text-on-surface-variant/80'}`}>
+                                {monthlyPI ? `$${monthlyPI.toLocaleString()}/mo` : '—'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                        {/* asOf row — shows the real admin-maintained as-of date */}
+                        <tr className="hover:bg-white/[0.02]">
+                          <td className="py-2 font-sans text-[10px] text-on-surface-variant/50">Rates as of</td>
+                          {lenderRates.map((r) => {
+                            const stale  = isRateStale(r.asOf);
+                            const never  = r.asOf.getTime() === 0;
+                            const label  = never ? 'Not set' : r.asOf.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            return (
+                              <td key={r.id} className={`py-2 text-center text-[10px] font-mono ${stale ? 'text-amber-400' : 'text-on-surface-variant/50'}`}>
+                                {label}
+                                {stale && !never && ' ⚠'}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
 
-            <div className="flex gap-3 mt-6 border-t border-white/5 pt-4">
-              {lenderRates.map((r) => (
-                <button
-                  key={r.id}
-                  onClick={() => selectLender(r.id)}
-                  className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
-                    selectedLender === r.id
-                      ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(69,73,85,0.25)]'
-                      : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
-                  }`}
-                >
-                  Select {r.name} ({r.interestRate.toFixed(3)}%)
-                </button>
-              ))}
-            </div>
+            {/* Select lender buttons — only shown when rates are available */}
+            {lenderRates !== null && lenderRates.length > 0 && (
+              <div className="flex gap-3 mt-6 border-t border-white/5 pt-4">
+                {lenderRates.map((r) => (
+                  <button
+                    key={r.id}
+                    onClick={() => selectLender(r.id)}
+                    className={`flex-1 py-2.5 rounded-xl font-label-md text-xs font-bold transition-all border ${
+                      selectedLender === r.id
+                        ? 'bg-primary/25 border-primary/45 text-primary shadow-[0_0_15px_-3px_rgba(69,73,85,0.25)]'
+                        : 'bg-white/5 border-white/5 hover:border-white/10 text-on-surface-variant'
+                    }`}
+                  >
+                    Select {r.name} ({r.interestRate.toFixed(3)}%)
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right Column: Live Cost Basis Sidebar & Minimap (md:col-span-5) */}
@@ -610,7 +691,7 @@ export default function Phase2AcquisitionPage() {
                 purchasePrice: project.financials?.purchasePrice,
                 loanAmount: project.financials?.loanAmount,
                 loanInterestRate: project.financials?.loanInterestRate,
-                loanOriginationPoints: lenderRates.find((r) => r.id === selectedLender)?.points,
+                loanOriginationPoints: (lenderRates ?? []).find((r) => r.id === selectedLender)?.points,
               }}
               overrides={closingCostOverrides}
               purchasePrice={costMetrics.purchasePrice}
@@ -620,38 +701,18 @@ export default function Phase2AcquisitionPage() {
                   financials: { ...project.financials, closingCostOverrides: next },
                 });
               }}
-              onExport={() => toast.success('Closing ledger exported successfully to CSV.')}
+              onExport={handleExportLedger}
+              exportingFormat={exportingFormat}
               phaseColor={PHASE_COLOR}
             />
 
-            {/* Map Backdrop Widget */}
-            <div className="bg-[#0d0a0b]/60 relative h-32 overflow-hidden rounded-2xl border border-white/10 shadow-lg group">
-              {/* Mock map graphic with grid lines and marker */}
-              <div className="absolute inset-0 opacity-25 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-              {/* Map road lines using simple SVG */}
-              <svg className="absolute inset-0 w-full h-full opacity-15 stroke-white" strokeWidth="1.5">
-                <line x1="0" y1="40" x2="300" y2="40" />
-                <line x1="0" y1="90" x2="300" y2="90" />
-                <line x1="120" y1="0" x2="120" y2="150" />
-                <line x1="220" y1="0" x2="220" y2="150" />
-              </svg>
-              <div className="absolute top-1/2 left-1/3 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center">
-                <span className="material-symbols-outlined text-primary text-2xl animate-bounce">location_on</span>
-                <span className="w-2.5 h-1 bg-black/60 rounded-full blur-[1px] mt-0.5"></span>
-              </div>
-              
-              {/* Dark Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-              
-              {/* Status Indicator */}
-              <div className="absolute bottom-3 left-4 flex flex-col gap-0.5">
-                <span className="text-[10px] font-mono text-on-surface-variant/80 uppercase tracking-widest">Property Location</span>
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(69,73,85,0.8)]"></span>
-                  In Final Diligence
-                </span>
-              </div>
-            </div>
+            {/* Map Backdrop Widget — real project location */}
+            <PropertyMapTile
+              projectId={projectId}
+              address={project?.address}
+              phaseColor={PHASE_COLOR}
+            />
+
           </div>
         </section>
 
@@ -685,11 +746,8 @@ export default function Phase2AcquisitionPage() {
           <div className="glass-card p-4 rounded-xl space-y-2">
             <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#9E9DA0]/70 mb-2">Find Service Providers</p>
             {[
-              { label: 'Home Inspector', type: 'inspector' },
-              { label: 'Title Company', type: 'title-company' },
-              { label: 'Real Estate Attorney', type: 'attorney' },
-              { label: 'Insurance Agent', type: 'insurance-agent' },
-              { label: 'Surveyor', type: 'surveyor' },
+              { label: 'Home Inspector', type: 'Inspector' },
+              { label: 'Real Estate Attorney', type: 'Lawyer' },
             ].map((vendor) => {
               const city = (project?.address && typeof project.address === 'object'
                 ? (project.address as any)?.city
@@ -699,7 +757,7 @@ export default function Phase2AcquisitionPage() {
               return (
                 <a
                   key={vendor.type}
-                  href={`/dashboard/marketplace?type=${vendor.type}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                  href={`/dashboard/marketplace?type=${vendor.type}&projectId=${projectId}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
                   className="flex items-center justify-between p-2.5 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 transition-all group"
                 >
                   <span className="text-[12px] font-medium text-[#9E9DA0] group-hover:text-[#9E9DA0] transition-colors">
@@ -710,6 +768,14 @@ export default function Phase2AcquisitionPage() {
               );
             })}
           </div>
+        </section>
+
+        {/* ── Title Search Clearance ── */}
+        <section className="space-y-4">
+          <h2 className="text-[24px] leading-[32px] font-semibold text-[#9E9DA0]">
+            Title Clearance
+          </h2>
+          <TitleSearchClearance projectId={projectId} />
         </section>
 
         {/* ── Inspection Tracker ── */}
@@ -836,11 +902,9 @@ export default function Phase2AcquisitionPage() {
             Team & Vendors
           </h2>
           <AcquisitionTeamAssembly
+            projectId={projectId}
             teamMembers={teamMembers}
-            onTeamMembersChange={(newTeamMembers) => {
-              setTeamMembers(newTeamMembers);
-              handleImmediateSave({ projectTeam: newTeamMembers });
-            }}
+            onRefresh={refresh}
           />
           <ProjectVendorsList projectId={projectId} />
         </section>

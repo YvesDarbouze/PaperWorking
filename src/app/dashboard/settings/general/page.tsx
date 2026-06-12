@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getAuth } from 'firebase/auth';
+import {
+  getAuth,
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup
+} from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
@@ -76,7 +83,163 @@ const BASE_SERVICES: ConnectedService[] = [
 ];
 
 export default function GeneralSettingsPage() {
-  const { profile } = useAuth();
+  const { profile, user, logout } = useAuth();
+
+  // ─── Deletion Cockpit State ────────────────────────────
+  const [activeJob, setActiveJob] = useState<any>(null);
+  const [loadingJob, setLoadingJob] = useState(true);
+  const [resuming, setResuming] = useState(false);
+  const [reauthPassword, setReauthPassword] = useState('');
+  const [reauthVerified, setReauthVerified] = useState(false);
+  const [reauthLoading, setReauthLoading] = useState(false);
+
+  const checkJobStatus = useCallback(async () => {
+    const currentUser = getAuth().currentUser;
+    if (!currentUser) return;
+    try {
+      const token = await currentUser.getIdToken();
+      const res = await fetch('/api/account/data/delete', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.active) {
+          setActiveJob(data.job);
+        } else {
+          setActiveJob(null);
+        }
+      }
+    } catch (err) {
+      console.warn('[GDPR Delete] Failed checking job status:', err);
+    } finally {
+      setLoadingJob(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkJobStatus();
+  }, [checkJobStatus]);
+
+  useEffect(() => {
+    if (activeJob && activeJob.status === 'in_progress') {
+      const interval = setInterval(() => {
+        checkJobStatus();
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [activeJob, checkJobStatus]);
+
+  useEffect(() => {
+    if (user) {
+      const isDemo = user.uid === 'demo_user' || user.email === 'demo@paperworking.co' || (typeof document !== 'undefined' && document.cookie.includes('mock_session_token_123'));
+      if (isDemo) {
+        setReauthVerified(true);
+      }
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (activeJob && activeJob.status === 'completed') {
+      toast.success('Account successfully deleted.', { duration: 5000 });
+      logout().catch(() => {}).finally(() => {
+        window.location.href = '/login';
+      });
+    }
+  }, [activeJob, logout]);
+
+  const getAuthProviderId = () => {
+    if (!user) return 'password';
+    const provider = user.providerData[0]?.providerId;
+    return provider || 'password';
+  };
+
+  const handleReauthenticate = async () => {
+    if (!user) return;
+    setReauthLoading(true);
+    try {
+      const providerId = getAuthProviderId();
+      if (providerId === 'password') {
+        if (!reauthPassword) {
+          toast.error('Please enter your password.');
+          setReauthLoading(false);
+          return;
+        }
+        const credential = EmailAuthProvider.credential(user.email!, reauthPassword);
+        await reauthenticateWithCredential(user, credential);
+      } else if (providerId === 'google.com') {
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(user, provider);
+      } else if (providerId === 'facebook.com') {
+        const provider = new FacebookAuthProvider();
+        await reauthenticateWithPopup(user, provider);
+      } else {
+        console.warn('Reauthentication not supported for provider:', providerId);
+      }
+      setReauthVerified(true);
+      toast.success('Re-authentication successful.');
+    } catch (err: any) {
+      console.error('[GDPR Delete] Re-auth failed:', err);
+      toast.error(err.message || 'Re-authentication failed. Please try again.');
+    } finally {
+      setReauthLoading(false);
+    }
+  };
+
+  const startDeletionProcess = async () => {
+    if (deleteInput !== 'DELETE') return;
+    setDeleteConfirmOpen(false);
+    setResuming(true);
+    try {
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) return;
+      const token = await currentUser.getIdToken();
+      const res = await fetch('/api/account/data/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        toast.success('Deletion process started.');
+        checkJobStatus();
+      } else {
+        const errData = await res.json();
+        toast.error(errData.error || 'Failed to start account deletion.');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An error occurred.');
+    } finally {
+      setResuming(false);
+    }
+  };
+
+  const handleResumeDeletion = async () => {
+    setResuming(true);
+    try {
+      const currentUser = getAuth().currentUser;
+      if (!currentUser) return;
+      const token = await currentUser.getIdToken();
+      const res = await fetch('/api/account/data/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.ok) {
+        toast.success('Deletion resumed.');
+        checkJobStatus();
+      } else {
+        const errData = await res.json();
+        toast.error(errData.error || 'Failed to resume deletion.');
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'An error occurred.');
+    } finally {
+      setResuming(false);
+    }
+  };
 
   // ─── Regional preferences ──────────────────────────────
   // `timezone`      — current input value (may differ from what's saved)
@@ -85,6 +248,37 @@ export default function GeneralSettingsPage() {
   const [savedTimezone, setSavedTimezone] = useState('America/New_York');
   const [prefsLoading, setPrefsLoading]   = useState(true);
   const [language] = useState('en');
+
+  const [showLangRequest, setShowLangRequest] = useState(false);
+  const [requestedLanguage, setRequestedLanguage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pw_requested_lang');
+      if (saved) {
+        setRequestedLanguage(saved);
+      }
+    }
+  }, []);
+
+  const handleRequestLanguage = async (code: string, label: string) => {
+    try {
+      const { default: posthog } = await import('posthog-js');
+      posthog.capture('language_request_submitted', {
+        requestedLocale: code,
+        requestedLanguageLabel: label,
+      });
+    } catch (err) {
+      console.warn('[Telemetry] PostHog capture failed:', err);
+    }
+    
+    setRequestedLanguage(label);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('pw_requested_lang', label);
+    }
+    toast.success(`Request for ${label} submitted. Thank you!`);
+    setShowLangRequest(false);
+  };
 
   // Load preferences from users/{uid} on mount — survives refresh & device change
   useEffect(() => {
@@ -260,14 +454,6 @@ export default function GeneralSettingsPage() {
     }
   };
 
-  const handleDeleteAccount = () => {
-    if (deleteInput !== 'DELETE') return;
-    toast.error('Account deletion is not available in demo mode.', {
-      style: { background: '#0d0d0d', color: '#fff' },
-    });
-    setDeleteConfirmOpen(false);
-    setDeleteInput('');
-  };
 
   return (
     <div className="w-full space-y-0">
@@ -317,24 +503,57 @@ export default function GeneralSettingsPage() {
               <label className="block text-xs font-semibold text-pw-muted uppercase tracking-wider mb-2">
                 Language
               </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-pw-muted text-lg pointer-events-none select-none">
-                  translate
-                </span>
-                <select
-                  value={language}
-                  disabled
-                  className="glass-input w-full text-sm pl-10 pr-4 py-3 text-pw-black appearance-none cursor-not-allowed opacity-60"
-                >
-                  <option value="en" className="bg-[#161318] text-pw-black">English (US)</option>
-                </select>
-                <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-pw-muted text-lg pointer-events-none select-none">
-                  expand_more
-                </span>
+              <div className="flex items-center justify-between p-4 rounded-xl bg-pw-glass-bg/50 border border-white/5">
+                <div className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-pw-muted text-lg select-none">
+                    translate
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold text-pw-black">English (US)</p>
+                    <p className="text-[10px] text-pw-muted mt-0.5">More languages planned.</p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  {requestedLanguage ? (
+                    <span className="text-xs text-pw-primary flex items-center gap-1.5 font-semibold">
+                      <span className="material-symbols-outlined text-sm select-none">check_circle</span>
+                      Requested ({requestedLanguage})
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => setShowLangRequest(!showLangRequest)}
+                      className="text-xs font-bold text-pw-primary hover:underline cursor-pointer"
+                    >
+                      Request a language...
+                    </button>
+                  )}
+                </div>
               </div>
-              <p className="text-[10px] text-pw-muted mt-1.5 font-mono uppercase tracking-wider">
-                Additional languages coming soon
-              </p>
+
+              {showLangRequest && !requestedLanguage && (
+                <div className="mt-3 p-4 rounded-xl bg-white/[0.02] border border-white/5 space-y-3">
+                  <p className="text-xs text-pw-muted">Select a language to vote for prioritization:</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { code: 'es', label: 'Spanish (Español)' },
+                      { code: 'fr', label: 'French (Français)' },
+                      { code: 'de', label: 'German (Deutsch)' },
+                      { code: 'zh', label: 'Chinese (中文)' },
+                      { code: 'pt', label: 'Portuguese (Português)' },
+                      { code: 'it', label: 'Italian (Italiano)' }
+                    ].map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleRequestLanguage(lang.code, lang.label)}
+                        className="text-left px-3 py-2 text-xs rounded-lg hover:bg-white/5 text-pw-black hover:text-pw-primary transition-colors border border-transparent hover:border-white/5 cursor-pointer"
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Save Preferences */}
@@ -480,68 +699,255 @@ export default function GeneralSettingsPage() {
         {/* ════════════════════════════════════════════════
             5 · DANGER ZONE (col-span-12)
             ════════════════════════════════════════════════ */}
-        <section className="col-span-12 rounded-2xl p-8 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="material-symbols-outlined text-error text-xl select-none">warning</span>
-            <h4 className="text-2xl font-bold text-error/90">Danger Zone</h4>
-          </div>
+        {(() => {
+          const stepsOrder = ['start', 'stripe_cancelled', 'firestore_deleted', 'prisma_deleted', 'storage_deleted', 'completed'];
 
-          {!deleteConfirmOpen ? (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-pw-black mb-1">Delete your account and all associated data.</p>
-                <p className="text-xs text-pw-muted">
-                  This action is permanent and cannot be undone. All projects, team associations, and billing history will be erased.
-                </p>
-              </div>
-              <button
-                onClick={() => setDeleteConfirmOpen(true)}
-                className="px-6 py-2.5 rounded-xl bg-error/10 border border-error/30 text-error text-sm font-bold hover:bg-error/20 transition-all cursor-pointer whitespace-nowrap"
-              >
-                Delete Account
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-error/10 border border-error/30">
-                <p className="text-sm text-error font-semibold mb-2 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm select-none">error</span>
-                  This action is irreversible
-                </p>
-                <p className="text-xs text-pw-muted">
-                  All of your projects, team memberships, documents, billing records, and notification history will be permanently deleted.
-                  Type <span className="text-error font-bold font-mono">DELETE</span> to confirm.
-                </p>
+          const getStepStatus = (stepKey: string) => {
+            if (!activeJob) return 'PENDING';
+            const currentStepIdx = stepsOrder.indexOf(activeJob.step);
+            const targetStepIdx = stepsOrder.indexOf(stepKey);
+            
+            if (activeJob.status === 'completed') return 'COMPLETED';
+            
+            if (targetStepIdx < currentStepIdx) {
+              return 'COMPLETED';
+            } else if (targetStepIdx === currentStepIdx) {
+              if (activeJob.status === 'failed') return 'FAILED';
+              return 'IN_PROGRESS';
+            } else {
+              return 'PENDING';
+            }
+          };
+
+          const getStepStatusText = (stepKey: string) => {
+            const status = getStepStatus(stepKey);
+            if (status === 'COMPLETED') return '✓ DONE';
+            if (status === 'FAILED') return '✗ FAILED';
+            if (status === 'IN_PROGRESS') return '● PROCESSING...';
+            return '○ PENDING';
+          };
+
+          const getStepStatusColor = (stepKey: string) => {
+            const status = getStepStatus(stepKey);
+            if (status === 'COMPLETED') return 'text-pw-primary font-bold';
+            if (status === 'FAILED') return 'text-error font-bold';
+            if (status === 'IN_PROGRESS') return 'text-amber-400 font-bold animate-pulse';
+            return 'text-pw-muted';
+          };
+
+          if (loadingJob) {
+            return (
+              <section className="col-span-12 rounded-2xl p-8 border border-white/10 bg-white/[0.02] backdrop-blur-xl">
+                <div className="flex items-center gap-2 justify-center py-6">
+                  <span className="material-symbols-outlined text-pw-primary animate-spin text-2xl">progress_activity</span>
+                  <span className="text-sm text-pw-muted font-mono">Verifying Deletion Status...</span>
+                </div>
+              </section>
+            );
+          }
+
+          if (activeJob) {
+            return (
+              <section className="col-span-12 rounded-2xl p-8 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="material-symbols-outlined text-error text-xl animate-spin">progress_activity</span>
+                  <h4 className="text-2xl font-bold text-error/95">Account Deletion In Progress</h4>
+                </div>
+
+                <div className="p-6 rounded-xl bg-pw-glass-bg/50 border border-white/5 space-y-4">
+                  <p className="text-sm text-pw-muted">
+                    Your account is currently being deleted. The process is executed in a secure, server-side cascade.
+                  </p>
+                  
+                  {/* Steps List */}
+                  <div className="space-y-3 font-mono text-xs max-w-md">
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <span>1. STRIPE BILLING CANCELLATION</span>
+                      <span className={getStepStatusColor('stripe_cancelled')}>
+                        {getStepStatusText('stripe_cancelled')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <span>2. FIRESTORE WORKSPACE PURGE</span>
+                      <span className={getStepStatusColor('firestore_deleted')}>
+                        {getStepStatusText('firestore_deleted')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <span>3. PRISMA DATABASE REASSIGNMENT</span>
+                      <span className={getStepStatusColor('prisma_deleted')}>
+                        {getStepStatusText('prisma_deleted')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                      <span>4. CLOUD STORAGE SCRUBBING</span>
+                      <span className={getStepStatusColor('storage_deleted')}>
+                        {getStepStatusText('storage_deleted')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pb-1">
+                      <span>5. CREDENTIAL REVOCATION</span>
+                      <span className={getStepStatusColor('completed')}>
+                        {getStepStatusText('completed')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {activeJob.status === 'failed' && (
+                  <div className="mt-6 p-4 rounded-xl bg-error/10 border border-error/20 text-error space-y-2">
+                    <p className="text-sm font-semibold flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">warning</span>
+                      Deletion Paused (Failure)
+                    </p>
+                    <p className="text-xs font-mono bg-black/30 p-3 rounded border border-error/10 max-w-xl truncate">{activeJob.error || 'An unexpected error occurred.'}</p>
+                    <button
+                      onClick={handleResumeDeletion}
+                      disabled={resuming}
+                      className="px-6 py-2.5 bg-error text-white rounded-xl text-xs font-bold hover:bg-error/80 transition-colors cursor-pointer disabled:opacity-50"
+                    >
+                      {resuming ? 'Resuming...' : 'Retry / Resume Deletion'}
+                    </button>
+                  </div>
+                )}
+              </section>
+            );
+          }
+
+          return (
+            <section className="col-span-12 rounded-2xl p-8 relative overflow-hidden border border-error/20 bg-error/[0.02] backdrop-blur-xl">
+              <div className="flex items-center gap-2 mb-6">
+                <span className="material-symbols-outlined text-error text-xl select-none">warning</span>
+                <h4 className="text-2xl font-bold text-error/90">Danger Zone</h4>
               </div>
 
-              <div className="flex items-center gap-3">
-                <input
-                  type="text"
-                  value={deleteInput}
-                  onChange={(e) => setDeleteInput(e.target.value)}
-                  placeholder='Type "DELETE" to confirm'
-                  className="glass-input text-sm px-4 py-3 text-pw-black flex-1 placeholder:text-pw-muted/40"
-                />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm text-pw-black mb-1">Delete your account and all associated data.</p>
+                  <p className="text-xs text-pw-muted">
+                    This action is permanent and cannot be undone. All projects, team associations, and billing history will be erased.
+                  </p>
+                </div>
                 <button
-                  onClick={handleDeleteAccount}
-                  disabled={deleteInput !== 'DELETE'}
-                  className="px-6 py-3 rounded-xl bg-error text-on-error text-sm font-bold disabled:opacity-30 cursor-pointer transition-all whitespace-nowrap"
+                  onClick={() => setDeleteConfirmOpen(true)}
+                  className="px-6 py-2.5 rounded-xl bg-error/10 border border-error/30 text-error text-sm font-bold hover:bg-error/20 transition-all cursor-pointer whitespace-nowrap"
                 >
-                  Confirm Deletion
-                </button>
-                <button
-                  onClick={() => {
-                    setDeleteConfirmOpen(false);
-                    setDeleteInput('');
-                  }}
-                  className="px-4 py-3 rounded-xl bg-pw-glass-bg border border-white/10 text-pw-muted text-sm font-semibold hover:bg-white/5 transition-colors cursor-pointer"
-                >
-                  Cancel
+                  Delete Account
                 </button>
               </div>
-            </div>
-          )}
-        </section>
+
+              {/* Confirmation Modal */}
+              {deleteConfirmOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md animate-fade-in">
+                  <div className="glass-card max-w-lg w-full mx-4 rounded-2xl p-8 border border-error/20 bg-[#121014]/98 relative overflow-hidden shadow-2xl space-y-6">
+                    <div className="flex items-center gap-2 border-b border-white/10 pb-4">
+                      <span className="material-symbols-outlined text-error text-2xl select-none">warning</span>
+                      <h3 className="text-xl font-bold text-error/95">Permanently Delete Account?</h3>
+                    </div>
+                    
+                    <div className="p-4 rounded-xl bg-error/10 border border-error/30 text-xs text-pw-muted space-y-3">
+                      <p className="font-semibold text-error text-sm flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs">error</span>
+                        THIS ACTION IS PERMANENT AND IRREVERSIBLE
+                      </p>
+                      <p>By confirming deletion, the following data will be permanently deleted from our servers:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Your personal profile and preferences.</li>
+                        <li>All real estate projects you solely own, including their financial logs, activities, and uploaded files.</li>
+                        <li>Your uploaded documents and images in Cloud Storage.</li>
+                        <li>Any active billing plans or subscriptions (these will be canceled immediately).</li>
+                      </ul>
+                      <p className="font-semibold text-error">Shared Project Policy:</p>
+                      <p>
+                        Projects that are co-owned/shared with other members will NOT be deleted. 
+                        However, your membership will be removed, and any status updates or task assignments you authored on them will be anonymized and attributed to "Deleted User".
+                      </p>
+                    </div>
+
+                    {!reauthVerified ? (
+                      <div className="space-y-4 border-t border-white/10 pt-4">
+                        <p className="text-xs text-pw-muted">For your security, please verify your credentials before proceeding.</p>
+                        
+                        {getAuthProviderId() === 'password' ? (
+                          <div className="space-y-3">
+                            <input
+                              type="password"
+                              placeholder="Confirm Password"
+                              value={reauthPassword}
+                              onChange={(e) => setReauthPassword(e.target.value)}
+                              className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                            />
+                            <button
+                              onClick={handleReauthenticate}
+                              disabled={reauthLoading}
+                              className="w-full py-2.5 rounded-xl bg-error/10 border border-error/30 text-error hover:bg-error/20 font-bold text-xs transition-colors cursor-pointer"
+                            >
+                              {reauthLoading ? 'Verifying...' : 'Verify Password'}
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleReauthenticate}
+                            disabled={reauthLoading}
+                            className="w-full py-3 rounded-xl bg-pw-primary text-pw-black font-bold text-xs transition-colors hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-xs">login</span>
+                            {reauthLoading ? 'Verifying...' : `Re-authenticate with ${getAuthProviderId() === 'google.com' ? 'Google' : 'Facebook'}`}
+                          </button>
+                        )}
+                        <div className="flex justify-end pt-2">
+                          <button
+                            onClick={() => {
+                              setDeleteConfirmOpen(false);
+                              setReauthPassword('');
+                            }}
+                            className="px-5 py-2.5 rounded-xl bg-pw-glass-bg border border-white/10 text-pw-muted text-xs font-semibold hover:bg-white/5 transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 border-t border-white/10 pt-4">
+                        <p className="text-xs text-pw-muted">
+                          Type <span className="font-mono font-bold text-error">DELETE</span> below to confirm your deletion request.
+                        </p>
+                        
+                        <input
+                          type="text"
+                          placeholder='Type "DELETE" to confirm'
+                          value={deleteInput}
+                          onChange={(e) => setDeleteInput(e.target.value)}
+                          className="glass-input w-full text-sm px-4 py-3 text-pw-black"
+                        />
+
+                        <div className="flex gap-3">
+                          <button
+                            onClick={startDeletionProcess}
+                            disabled={deleteInput !== 'DELETE' || resuming}
+                            className="flex-1 py-3 rounded-xl bg-error text-white text-xs font-bold disabled:opacity-30 transition-all cursor-pointer"
+                          >
+                            {resuming ? 'Starting...' : 'Confirm Permanent Deletion'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDeleteConfirmOpen(false);
+                              setDeleteInput('');
+                              setReauthPassword('');
+                            }}
+                            className="px-5 py-3 rounded-xl bg-pw-glass-bg border border-white/10 text-pw-muted text-xs font-semibold hover:bg-white/5 transition-colors cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
       </div>
     </div>

@@ -179,8 +179,14 @@ export interface OrgTeamMember {
   customPermissions?: Permission[];
   scope?: 'tenant' | 'project';
   assignedProjectIds: string[]; // Projects this member leads (Project Lead only)
+  /** Authoritative scoped project list set at invite time — enforced server-side */
+  scopedProjectIds?: string[];
+  /** true when the member was invited with explicit project-scope restrictions */
+  isScoped?: boolean;
   invitedAt: Date;
   status: 'active' | 'invited' | 'removed' | 'suspended';
+  /** ISO string from users/{uid}/sessions sub-collection; null = no recorded session */
+  lastSeenAt?: string | null;
 }
 
 // 1.5. Organization Schema
@@ -315,7 +321,13 @@ export interface TeamInvitation {
   day3ReminderSent?: boolean;
   day6ReminderSent?: boolean;
   invitedToTaskId?: string;
+  /** @deprecated use scopedProjectIds */
   invitedToProjectId?: string;
+  /** Authoritative scoped project list — written at invite time */
+  scopedProjectIds?: string[];
+  /** true when an explicit project-scope restriction was configured */
+  isScoped?: boolean;
+  lastSentAt?: Date;
 }
 
 // ── Find & Fund Module Types ──────────────────────────
@@ -845,6 +857,23 @@ export interface InspectionItem {
   loggedBy?: string; // UID
 }
 
+// ── Title Search Checklist ─────────────────────────────────────
+// Promoted from TitleSearchClearance.tsx to allow Firestore persistence + type-sharing.
+export type ClearanceStatus = 'Pending' | 'In Review' | 'Cleared' | 'Issue Found';
+
+export interface TitleCheckItem {
+  id: string;
+  name: string;
+  status: ClearanceStatus;
+  notes?: string;
+  /** UID of the team member who last set this to Cleared / Issue Found */
+  clearedByUid?: string;
+  /** Display name of that member */
+  clearedByName?: string;
+  /** ISO 8601 timestamp when the status was last changed to a terminal state */
+  clearedAt?: string;
+}
+
 export interface ClosingRoom {
   titleInsuranceUrl: string | null;
   closingDisclosureUrl: string | null;
@@ -853,6 +882,12 @@ export interface ClosingRoom {
   lawyerVerified: boolean;
   blockchainTxHash: string | null;
   chainOfTitleStatus: 'pending' | 'verified' | 'failed';
+  verifiedByUid?: string | null;
+  verifiedByName?: string | null;
+  verifiedAt?: string | null;
+  verifiedRole?: string | null;
+  /** Per-check title clearance status, persisted to Firestore, attributed per member */
+  titleChecks?: TitleCheckItem[];
 }
 
 export type LeadSource =
@@ -883,12 +918,18 @@ export interface DistressedIndicators {
 }
 
 export type FundingCategory = 'Hard Money Loans' | 'Private Money' | 'Conventional Financing';
+export type FundingSourceStatus = 'Exploring' | 'Pre-Approved' | 'Applied' | 'Approved' | 'Funded' | 'Declined';
 
 export interface CapitalSource {
   id: string;
   category: FundingCategory;
   amount: number;
   interestRate: number; // e.g., 12 for 12%
+  // Optional enrichment fields (added by FundingSourceTracker)
+  lenderName?: string;
+  termMonths?: number;
+  status?: FundingSourceStatus;
+  notes?: string;
 }
 
 // ── R3 Hold Agent — Rehab Tier Classification ─────────────
@@ -1116,11 +1157,18 @@ export interface ProjectFinancials {
 
   // Phase 2 Closing Cost Model — per-line overrides (keyed by ClosingCostLine.id)
   closingCostOverrides?: Record<string, number>;
+
+  // Schedule E Depreciation & Tax
+  taxAssessedLandValue?: number;
+  taxAssessedImprovementValue?: number;
+  placedInServiceDate?: string;
+  annualAdvertisingExpense?: number;     // Recurring advertising / vacancy-listing costs (Schedule E Line 5)
 }
 
 export interface ExitAssets {
   stagingImages?: string[];
   mlsListingLink?: string;
+  mlsListingStatus?: 'pending_integration' | 'syndicated' | 'failed' | 'draft';
 }
 
 // Updating Project Model to include Exit Assets

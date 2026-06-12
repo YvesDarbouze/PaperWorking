@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { GRMTriageTerminal } from '@/components/intelligence/GRMTriageTerminal';
 import { GRMComparisonCard } from '@/components/intelligence/GRMComparisonCard';
 
@@ -18,7 +17,7 @@ import { GRMComparisonCard } from '@/components/intelligence/GRMComparisonCard';
    Bottom: GRM by Property table
    ═══════════════════════════════════════════════════════════════ */
 
-const DEMO_PROPERTIES = [
+const defaultProperties = [
   { address: '421 Oak St, Brooklyn',      value: 485000,  annualRent: 52800, grm: 9.2,  marketGRM: 10.5, signal: 'Buy'    },
   { address: '1248 Oakwood Ave, Queens',  value: 620000,  annualRent: 59400, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
   { address: '77 Prospect Heights, BK',   value: 890000,  annualRent: 72000, grm: 12.4, marketGRM: 10.5, signal: 'Review' },
@@ -32,7 +31,7 @@ const SIGNAL_STYLES: Record<string, string> = {
   Review: 'bg-amber-400/10 border-amber-400/20 text-amber-400',
 };
 
-function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES }) {
+function GroupedBarChart({ properties, whatIfGRM }: { properties: typeof defaultProperties; whatIfGRM?: number | null }) {
   const labels = properties.map((p) => p.address.split(',')[0]);
   const option = {
     backgroundColor: 'transparent',
@@ -78,6 +77,17 @@ function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES })
           fontSize: 9,
           formatter: (p: any) => `${p.value}x`,
         },
+        markLine: whatIfGRM != null && isFinite(whatIfGRM) && whatIfGRM > 0 ? {
+          silent: true,
+          symbol: ['none', 'none'],
+          data: [
+            {
+              yAxis: Number(whatIfGRM.toFixed(1)),
+              lineStyle: { color: '#fb923c', type: 'dashed', width: 2 },
+              label: { show: true, position: 'insideEndTop', color: '#fb923c', fontSize: 10, formatter: `What-If (${whatIfGRM.toFixed(1)}x)` }
+            }
+          ]
+        } : undefined
       },
       {
         name: 'Market GRM',
@@ -103,36 +113,72 @@ function GroupedBarChart({ properties }: { properties: typeof DEMO_PROPERTIES })
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
+type Period = 'Quarter' | 'Year' | 'All Time';
+type Scope = 'Property' | 'My Share';
+
 export default function GRMIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+  const [period, setPeriod] = useState<Period>('Year');
+  const [scope, setScope]   = useState<Scope>('Property');
+
+  const grmCurrentResult = useMetricCurrent('GRM', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const grmSeriesResult = useMetricSeries('GRM', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
 
   /* ── Interactive state from GRMTriageTerminal ── */
   const [triageGRM, setTriageGRM] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialGRMRef = useRef<number | null>(null);
+
+  const handleValuesChange = useCallback((values: any) => {
+    if (initialGRMRef.current === null) {
+      initialGRMRef.current = values.grm;
+    } else if (Math.abs(values.grm - initialGRMRef.current) > 0.01) {
+      setHasInteracted(true);
+    }
+    setTriageGRM(values.grm);
+  }, []);
+
+  const whatIfGRM = useMemo(() => {
+    if (hasInteracted && triageGRM > 0) {
+      return triageGRM;
+    }
+    return null;
+  }, [hasInteracted, triageGRM]);
 
   const { isUsingDemoData, currentGRM, grmChange } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
-      const vals   = sorted.map((s) => s.grossRentMultiplier ?? 0).filter(Boolean);
+    if (
+      grmSeriesResult.status === 'ready' &&
+      grmCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(-12);
+      const vals   = sorted.map((s) => s.grossRentMultiplier ?? (0)).filter(Boolean);
       if (vals.length >= 2) {
-        const last = vals[vals.length - 1];
-        const prev = vals[vals.length - 2];
+        const last = grmCurrentResult.data;
+        const prev = vals[vals.length - 2] ?? last;
         return { isUsingDemoData: false, currentGRM: last, grmChange: last - prev };
       }
     }
     return { isUsingDemoData: true, currentGRM: 9.2, grmChange: -0.3 };
-  }, [snapshots, projects]);
+  }, [grmSeriesResult, grmCurrentResult, portfolioInputsResult]);
 
   const isDecreasing = grmChange < 0;
 
   const propertyRows = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projects = portfolioInputsResult.data.projects;
     const withData = projects.filter((p) => p.financials?.grossRentMultiplier ?? p.financials?.purchasePrice);
     if (withData.length >= 3) {
       return withData.slice(0, 5).map((p) => {
-        const grm = p.financials?.grossRentMultiplier ?? 0;
-        const annualRent = (p.financials?.monthlyGrossRent ?? 0) * 12;
-        const value = p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0;
+        const grm = p.financials?.grossRentMultiplier ?? (0);
+        const annualRent = (p.financials?.monthlyGrossRent ?? (0)) * 12;
+        const value = p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? (0);
         const signal = grm < 9.5 ? 'Buy' : grm < 11 ? 'Hold' : 'Review';
         return {
           address: p.address || p.propertyName || 'Unknown',
@@ -144,22 +190,31 @@ export default function GRMIntelligencePage() {
         };
       });
     }
-    return DEMO_PROPERTIES;
-  }, [projects]);
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   /* ── Deals for GRMComparisonCard ── */
   const comparisonDeals = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return [
+        { id: '1', address: '421 Oak St, Brooklyn', propertyPrice: 485000, grossAnnualRent: 52800 },
+        { id: '2', address: '1248 Oakwood Ave, Queens', propertyPrice: 620000, grossAnnualRent: 59400 },
+        { id: '3', address: '77 Prospect Heights, BK', propertyPrice: 890000, grossAnnualRent: 72000 },
+        { id: '4', address: '310 Atlantic Ave, Brooklyn', propertyPrice: 340000, grossAnnualRent: 40800 },
+      ];
+    }
+    const projects = portfolioInputsResult.data.projects;
     const withData = projects.filter((p) => {
-      const price = p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0;
-      const rent = (p.financials?.monthlyGrossRent ?? 0) * 12;
+      const price = p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? (0);
+      const rent = (p.financials?.monthlyGrossRent ?? (0)) * 12;
       return price > 0 && rent > 0;
     });
     if (withData.length >= 2) {
       return withData.slice(0, 6).map((p) => ({
         id: p.id || p.address || 'unknown',
         address: p.address || p.propertyName || 'Unknown',
-        propertyPrice: p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? 0,
-        grossAnnualRent: (p.financials?.monthlyGrossRent ?? 0) * 12,
+        propertyPrice: p.financials?.purchasePrice ?? p.financials?.targetPurchasePrice ?? (0),
+        grossAnnualRent: (p.financials?.monthlyGrossRent ?? (0)) * 12,
         grm: p.financials?.grossRentMultiplier,
       }));
     }
@@ -169,18 +224,22 @@ export default function GRMIntelligencePage() {
       { id: '3', address: '77 Prospect Heights, BK', propertyPrice: 890000, grossAnnualRent: 72000 },
       { id: '4', address: '310 Atlantic Ave, Brooklyn', propertyPrice: 340000, grossAnnualRent: 40800 },
     ];
-  }, [projects]);
+  }, [portfolioInputsResult]);
 
   /* ── Portfolio-derived defaults for triage ── */
   const portfolioDefaults = useMemo(() => {
-    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
+    if (portfolioInputsResult.status !== 'ready') {
+      return { price: 0, rent: 0 }; // honest: no data yet
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? (0)) > 0);
     if (withPrice.length > 0) {
-      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? 0), 0) / withPrice.length;
-      const avgRent = withPrice.reduce((s, p) => s + (p.financials?.monthlyGrossRent ?? 0), 0) / withPrice.length;
+      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? (0)), 0) / withPrice.length;
+      const avgRent = withPrice.reduce((s, p) => s + (p.financials?.monthlyGrossRent ?? (0)), 0) / withPrice.length;
       return { price: Math.round(avgPrice), rent: Math.round(avgRent) };
     }
-    return { price: 279000, rent: 1950 }; // seed
-  }, [projects]);
+    return { price: 0, rent: 0 }; // honest: no priced projects yet
+  }, [portfolioInputsResult]);
 
   const contextMetrics = [
     { label: 'Current Value',  value: '$485k' },
@@ -220,11 +279,34 @@ export default function GRMIntelligencePage() {
             <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Current GRM</span>
 
             {/* Big number */}
-            <div className="flex items-baseline gap-3">
-              <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
-                {currentGRM.toFixed(1)}
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="text-5xl font-bold tabular-nums tracking-tighter transition-all" style={{ color: whatIfGRM != null ? '#fb923c' : '#6E7480' }}>
+                {(whatIfGRM ?? currentGRM).toFixed(1)}
               </span>
               <span className="text-[#6B6870] text-sm">x</span>
+              {whatIfGRM != null && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                  WHAT-IF
+                </span>
+              )}
+            </div>
+
+            {/* Indicator row */}
+            <div className="flex items-center gap-2">
+              {whatIfGRM != null ? (
+                <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                </div>
+              ) : (
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+                </div>
+              )}
+              <span className="text-xs text-[#6B6870]">
+                Lower is better (Market: 10.5x)
+              </span>
             </div>
 
             {/* Change indicator */}
@@ -264,7 +346,7 @@ export default function GRMIntelligencePage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Portfolio vs Market GRM</span>
             </div>
-            <GroupedBarChart properties={propertyRows} />
+            <GroupedBarChart properties={propertyRows} whatIfGRM={whatIfGRM} />
             <p className="text-[10px] text-slate-600 mt-2">Bars below market GRM represent alpha — buying at a discount to market rent multiples.</p>
           </div>
         </div>
@@ -281,7 +363,7 @@ export default function GRMIntelligencePage() {
           defaultMonthlyRent={portfolioDefaults.rent}
           marketGRM={10.5}
           maxAcceptableGRM={13}
-          onValuesChange={(values) => setTriageGRM(values.grm)}
+          onValuesChange={handleValuesChange}
         />
       </div>
 

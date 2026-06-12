@@ -34,8 +34,10 @@ interface ClosingCostSidebarProps {
   purchasePrice: number;
   /** Called whenever overrides change; parent persists to Firestore */
   onOverridesChange: (next: ClosingCostOverrides) => void;
-  /** Export button callback */
-  onExport?: () => void;
+  /** Export button callback — receives the requested format */
+  onExport?: (format: 'csv' | 'pdf') => void;
+  /** Which format is currently exporting (disables both buttons) */
+  exportingFormat?: 'csv' | 'pdf' | null;
   phaseColor?: string;
 }
 
@@ -147,6 +149,7 @@ export function ClosingCostSidebar({
   purchasePrice,
   onOverridesChange,
   onExport,
+  exportingFormat = null,
   phaseColor = '#7A9EAA',
 }: ClosingCostSidebarProps) {
   const [editingId, setEditingId]   = useState<string | null>(null);
@@ -236,12 +239,26 @@ export function ClosingCostSidebar({
         </div>
       </div>
 
-      <button
-        onClick={onExport}
-        className="mt-6 w-full py-2.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-on-surface font-label-md text-xs font-semibold transition-all active:scale-97 text-center"
-      >
-        Export Closing Ledger
-      </button>
+      <div className="mt-6 flex gap-2">
+        {(['csv', 'pdf'] as const).map((fmt) => {
+          const busy = exportingFormat === fmt;
+          const disabled = exportingFormat !== null;
+          return (
+            <button
+              key={fmt}
+              onClick={() => !disabled && onExport?.(fmt)}
+              disabled={disabled}
+              className={`flex-1 py-2.5 rounded-xl border font-label-md text-xs font-semibold transition-all text-center ${
+                disabled
+                  ? 'border-white/5 bg-white/[0.03] text-on-surface/40 cursor-not-allowed'
+                  : 'border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-on-surface active:scale-97'
+              }`}
+            >
+              {busy ? '…' : `Export ${fmt.toUpperCase()}`}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

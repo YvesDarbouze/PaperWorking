@@ -84,12 +84,20 @@ export function createDefaultState(): MockState {
 /**
  * Intercepts network calls to provide a reliable, hermetic testing environment
  */
-export async function setupMocks(page: Page, state: MockState) {
-  // Set session cookie to bypass middleware redirect
+export async function setupMocks(page: Page, state: MockState, options?: { allowAuthRefreshes?: boolean }) {
+  // Set session cookie to bypass middleware redirect.
+  // __e2e_test=1 disables OnboardingRedirectGuard client-side redirect so
+  // Playwright can navigate dashboard routes without Firebase auth state.
   await page.context().addCookies([
     {
       name: '__session',
       value: 'mock_session_token_123',
+      domain: 'localhost',
+      path: '/',
+    },
+    {
+      name: '__e2e_test',
+      value: '1',
       domain: 'localhost',
       path: '/',
     },
@@ -182,7 +190,7 @@ export async function setupMocks(page: Page, state: MockState) {
   });
 
   // 5. Mock Projects operations
-  await page.route('/api/projects', async (route) => {
+  await page.route(/\/api\/(reil\/)?projects$/, async (route) => {
     const method = route.request().method();
     if (method === 'GET') {
       await route.fulfill({
@@ -232,9 +240,9 @@ export async function setupMocks(page: Page, state: MockState) {
     }
   });
 
-  await page.route('/api/projects/*', async (route) => {
-    const url = route.request().url();
-    const projectId = url.split('/').pop() || '';
+  await page.route(/\/api\/(reil\/)?projects\/([^\/]+)$/, async (route) => {
+    const parsedUrl = new URL(route.request().url());
+    const projectId = parsedUrl.pathname.split('/').pop() || '';
     const method = route.request().method();
 
     if (method === 'GET') {
@@ -363,4 +371,105 @@ export async function setupMocks(page: Page, state: MockState) {
       },
     });
   });
+
+  // 10. Mock Portfolio metric snapshot endpoint (used by usePortfolioMetricSnapshots)
+  await page.route('/api/reports/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: {
+        snapshots: [],
+        period: 'monthly',
+        generatedAt: new Date().toISOString(),
+      },
+    });
+  });
+
+  // 11. Mock REIL / RentCast property data endpoints (server-side data enrichment)
+  await page.route('/api/reil/projects/*/property', async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: {
+        success: true,
+        data: {
+          estimatedValue: 350000,
+          rentEstimate: 2800,
+          comparables: [],
+          fetchedAt: new Date().toISOString(),
+        },
+      },
+    });
+  });
+
+  // 12. Mock team members / invitations (used by project workspace headers)
+  await page.route('/api/team/**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: { members: [{ uid: 'user_123', email: 'testuser@paperworking.com', role: 'owner' }] },
+    });
+  });
+
+  // 13. Mock address autocomplete (used by acquisition wizard address step)
+  await page.route('/api/address/autocomplete*', async (route) => {
+    await route.fulfill({
+      status: 200,
+      json: {
+        suggestions: [
+          { placeId: 'place_1', description: '123 Main St, Los Angeles, CA 90001' },
+          { placeId: 'place_2', description: '456 Oak Ave, San Diego, CA 92101' },
+        ],
+      },
+    });
+  });
+
+  // 14. Absorb Firebase Auth REST calls — respond with a network error so the SDK
+  //     treats the user as signed out (null). This prevents the OnboardingRedirectGuard
+  //     from seeing a partial user object that could trigger a /onboarding/intent redirect.
+  //     We do NOT return a valid token response here because a spoofed idToken causes
+  //     Firebase SDK to attempt Firestore reads as a fake uid, which then returns empty
+  //     docs that make the profile appear to exist (with no onboardingIntent) → redirect.
+  if (!options?.allowAuthRefreshes) {
+    await page.route('**/securetoken.googleapis.com/**', async (route) => {
+      await route.abort('failed');
+    });
+  }
+
+  // 15. Absorb Firestore gRPC-web calls — return empty responses so onSnapshot listeners
+  //     see "no data" and don't trigger profile-driven redirects.
+  await page.route('**/firestore.googleapis.com/**', async (route) => {
+    await route.abort('failed');
+  });
+}
+
+/**
+ * Navigate to a dashboard route with E2E-safe handling.
+ *
+ * With __e2e_test=1 cookie set, OnboardingRedirectGuard is disabled and this
+ * is a straightforward goto. The 1.5s settle wait gives React time to mount
+ * and any residual client-side navigation to complete before assertions begin.
+ *
+ * If (despite the cookie) we end up on the onboarding page, the fallback
+ * clicks "Skip for now" and re-navigates. This is belt-and-suspenders insurance
+ * against future changes to the guard logic.
+ */
+export async function safeGoto(page: import('@playwright/test').Page, path: string) {
+  await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+  // Allow React hydration to complete (auth state, route guards, layout mounts).
+  // 2500ms is generous: parallel workers under CPU pressure can delay hydration
+  // to ~2s. Client-rendered elements (EmptyState, Zustand-driven UI) won't
+  // appear until hydration is done.
+  await page.waitForTimeout(2500);
+
+  // Fallback: if a redirect still happened, attempt to navigate back
+  if (page.url().includes('/onboarding')) {
+    // Try clicking Skip (requires Firebase user — may be a no-op in test env)
+    const skipBtn = page.locator('button').filter({ hasText: /skip for now/i }).first();
+    if (await skipBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await skipBtn.click();
+      await page.waitForURL('**/dashboard**', { timeout: 8000 }).catch(() => {});
+    }
+    // Force navigation to the target regardless
+    await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(1000);
+  }
 }

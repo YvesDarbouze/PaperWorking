@@ -234,8 +234,84 @@ describe('Tax Reporting & CPA Export Service', () => {
 
       // Depreciation: straight line over 27.5 yrs of 80% basis (405,000 * 0.8 = 324,000)
       // Annual dep = 324,000 / 27.5 = 11,781.82
-      // Monthly dep = 981.82. Q1 dep (3 months) = 2,945.45
-      expect(report.depreciationEstimate).toBeCloseTo(2945.45, 0);
+      // Monthly dep = 981.82. Under IRS mid-month convention, January (month 0) gets 0.5 months,
+      // February gets 1.0, and March gets 1.0, totaling 2.5 months.
+      // Q1 dep (2.5 months) = 2,454.55
+      expect(report.depreciationEstimate).toBeCloseTo(2454.55, 0);
+    });
+
+    it('should use assessed land vs improvement values to calculate building/land split ratio', () => {
+      const assessedProject = {
+        id: 'proj-assessed',
+        propertyName: 'Assessed Property',
+        strategyType: 'Rent',
+        currentPhase: 3,
+        status: 'Active',
+        financials: {
+          purchasePrice: 500000,
+          fixedAcquisitionCosts: 10000, // Basis = 510,000
+          acquisitionDate: '2025-01-01',
+          placedInServiceDate: '2025-01-01',
+          taxAssessedLandValue: 150000, // 30% land
+          taxAssessedImprovementValue: 350000, // 70% building -> ratio = 350/500 = 0.7
+        }
+      } as unknown as Project;
+
+      const report = calculateProjectTaxReport(assessedProject, new Date(2025, 0, 1), new Date(2025, 11, 31));
+      
+      // Basis = 510,000 * 0.7 = 357,000
+      // Annual dep = 357,000 / 27.5 = 12,981.82
+      // Monthly dep = 1,081.82
+      // For full year (Jan to Dec): Jan gets 0.5, Feb-Dec gets 11.0. Total = 11.5 months
+      // Depreciation = 11.5 * 1081.82 = 12,440.91
+      expect(report.depreciationEstimate).toBeCloseTo(12440.91, 0);
+    });
+
+    it('should prorate depreciation using IRS mid-month convention for placement month and sold month', () => {
+      const prorationProject = {
+        id: 'proj-prorate',
+        propertyName: 'Prorate Property',
+        strategyType: 'Rent',
+        currentPhase: 4,
+        status: 'Sold',
+        financials: {
+          purchasePrice: 200000, // Basis = 200,000, fallback split 80% building = 160,000
+          acquisitionDate: '2025-03-10',
+          placedInServiceDate: '2025-03-15', // Placed in March 2025 (month 2)
+          soldDate: '2026-10-20', // Sold in October 2026 (month 19)
+        }
+      } as unknown as Project;
+
+      // Evaluate from 2025-01-01 to 2026-12-31 (two tax years)
+      const report = calculateProjectTaxReport(prorationProject, new Date(2025, 0, 1), new Date(2026, 11, 31));
+
+      // Basis = 160,000 / 27.5 = 5,818.18 per year
+      // Monthly dep = 484.85
+      // Months active for depreciation:
+      // Year 1 (2025): March gets 0.5, April to December gets 9.0 -> 9.5 months
+      // Year 2 (2026): January to September gets 9.0, October gets 0.5 -> 9.5 months
+      // Total = 19.0 months
+      // Depreciation = 19.0 * 484.85 = 9212.12
+      expect(report.depreciationEstimate).toBeCloseTo(9212.12, 0);
+    });
+
+    it('should allow zero depreciation if property is placed in service and sold in the same tax year', () => {
+      const sameYearProject = {
+        id: 'proj-same-year',
+        propertyName: 'Same Year Property',
+        strategyType: 'Rent',
+        currentPhase: 4,
+        status: 'Sold',
+        financials: {
+          purchasePrice: 200000,
+          acquisitionDate: '2025-02-10',
+          placedInServiceDate: '2025-03-15',
+          soldDate: '2025-08-20', // Same year: 2025
+        }
+      } as unknown as Project;
+
+      const report = calculateProjectTaxReport(sameYearProject, new Date(2025, 0, 1), new Date(2025, 11, 31));
+      expect(report.depreciationEstimate).toBe(0);
     });
 
     it('should calculate gains correctly upon property exit (Sale)', () => {
@@ -290,6 +366,7 @@ describe('Tax Reporting & CPA Export Service', () => {
           otherIncome: 300,
           saleProceeds: 0,
           totalGrossIncome: 6300,
+          advertising: 0,
           propertyTaxes: 500,
           insurance: 200,
           utilities: 100,
@@ -317,6 +394,7 @@ describe('Tax Reporting & CPA Export Service', () => {
           otherIncome: 100,
           saleProceeds: 250000,
           totalGrossIncome: 254100,
+          advertising: 0,
           propertyTaxes: 400,
           insurance: 150,
           utilities: 0,

@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, AlertCircle, Copy, Check } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import toast from 'react-hot-toast';
 
 const contactSchema = z.object({
   displayName: z.string().min(1, 'Name is required'),
@@ -17,41 +19,48 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 interface AcquisitionTeamAssemblyProps {
+  projectId: string;
   teamMembers: ProjectTeamMember[];
-  onTeamMembersChange: (members: ProjectTeamMember[]) => void;
+  onRefresh: () => void;
 }
 
 const REQUIRED_ROLES: ProjectRole[] = ['Real Estate Attorney', 'Title Company/Escrow Officer'];
 
-export function AcquisitionTeamAssembly({ teamMembers, onTeamMembersChange }: AcquisitionTeamAssemblyProps) {
+export function AcquisitionTeamAssembly({ projectId, teamMembers, onRefresh }: AcquisitionTeamAssemblyProps) {
+  const { user } = useAuth();
 
-  const getMemberByRole = (role: ProjectRole) => teamMembers.find(m => m.projectRole === role);
+  const getMemberByRole = (role: ProjectRole) => teamMembers.find(m => m.projectRole === role && m.status !== 'removed');
 
-  const handleSaveMember = (role: ProjectRole, data: ContactFormData) => {
-    const existingIndex = teamMembers.findIndex(m => m.projectRole === role);
-    const updatedMembers = [...teamMembers];
-
-    const updatedMember: ProjectTeamMember = {
-      ...(existingIndex >= 0 ? updatedMembers[existingIndex] : {
-        id: crypto.randomUUID(),
-        projectRole: role,
-        permissions: { canView: true, canUpload: false, canComment: false },
-        assignedAt: new Date(),
-        status: 'active',
-      }),
-      displayName: data.displayName,
-      firm: data.firm,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-    };
-
-    if (existingIndex >= 0) {
-      updatedMembers[existingIndex] = updatedMember;
-    } else {
-      updatedMembers.push(updatedMember);
+  const handleSaveMember = async (role: ProjectRole, data: ContactFormData) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
     }
 
-    onTeamMembersChange(updatedMembers);
+    const existingMember = teamMembers.find(m => m.projectRole === role && m.status !== 'removed');
+    const actionType = existingMember ? 'update_member' : 'add';
+
+    const toastId = toast.loading('Saving contact details...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, actionType, {
+        email: data.email,
+        displayName: data.displayName,
+        projectRole: role,
+        phoneNumber: data.phoneNumber,
+        firm: data.firm,
+        memberId: existingMember?.id,
+        permissions: { canView: true, canUpload: false, canComment: false },
+      });
+
+      if (res.success) {
+        toast.success(`Saved contact for ${role}`, { id: toastId });
+        onRefresh();
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update team member.', { id: toastId });
+    }
   };
 
   return (

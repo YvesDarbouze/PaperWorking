@@ -109,6 +109,8 @@ export async function POST(req: NextRequest, { params }: Params) {
     // Tax & HOA (Prompt 2)
     annualPropertyTaxCents: typeof facts.annualPropertyTaxCents === "number" ? BigInt(Math.round(facts.annualPropertyTaxCents)) : null,
     taxAssessedValueCents:  typeof facts.taxAssessedValueCents === "number" ? BigInt(Math.round(facts.taxAssessedValueCents)) : null,
+    taxAssessedLandValCents: typeof facts.taxAssessedLandValCents === "number" ? BigInt(Math.round(facts.taxAssessedLandValCents)) : null,
+    taxAssessedImprovementsValCents: typeof facts.taxAssessedImprovementsValCents === "number" ? BigInt(Math.round(facts.taxAssessedImprovementsValCents)) : null,
     taxYear:                facts.taxYear ?? null,
     hoaMonthlyCents:        typeof facts.hoaMonthlyCents === "number" ? BigInt(Math.round(facts.hoaMonthlyCents)) : null,
     taxSource:              facts.taxSource ?? null,
@@ -212,6 +214,36 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
   }
 
+  // ── Seed assessed land and improvement values into Firestore (Prompt 18) ─────
+  if (facts.taxAssessedValueCents) {
+    try {
+      const { adminDb } = await import("@/lib/firebase/admin");
+      const projectRef = adminDb.collection("projects").doc(id);
+      const snap = await projectRef.get();
+      if (snap.exists) {
+        const existing = snap.data();
+        const financials = existing?.financials ?? {};
+        const updates: Record<string, any> = {};
+        if (financials.taxAssessedLandValue === undefined || financials.taxAssessedLandValue === null) {
+          if (facts.taxAssessedLandValCents) {
+            updates["financials.taxAssessedLandValue"] = Math.round(facts.taxAssessedLandValCents / 100);
+          }
+        }
+        if (financials.taxAssessedImprovementValue === undefined || financials.taxAssessedImprovementValue === null) {
+          if (facts.taxAssessedImprovementsValCents) {
+            updates["financials.taxAssessedImprovementValue"] = Math.round(facts.taxAssessedImprovementsValCents / 100);
+          }
+        }
+        if (Object.keys(updates).length > 0) {
+          await projectRef.update(updates);
+          logger.info("[Property Route] Seeded assessed values to Firestore", { projectId: id, updates });
+        }
+      }
+    } catch (err) {
+      logger.warn("[Property Route] Failed to seed assessed values (non-fatal)", { projectId: id, err });
+    }
+  }
+
   // ── Seed Rent estimate default into underwriting (Prompt 3) ────────────────
   if (facts.estRentCents) {
     try {
@@ -278,7 +310,32 @@ export async function POST(req: NextRequest, { params }: Params) {
       },
     });
     await telemetry.flush();
-  } catch { /* telemetry failures are non-fatal */ }
+  } catch (err) {
+    logger.warn("[Property Route] Failed to emit telemetry success (non-fatal)", { projectId: id });
+  }
+
+  // ── Update sync timestamps ──────────────────────────────────────────────────
+  try {
+    const prismaModule = await import("@/lib/prisma");
+    await prismaModule.default.reilProject.update({
+      where: { id },
+      data: {
+        lastSyncedAt: facts.fetchedAt,
+        valueSyncedAt: facts.fetchedAt,
+        rentSyncedAt: facts.fetchedAt,
+      },
+    });
+
+    const { adminDb } = await import("@/lib/firebase/admin");
+    const projectRef = adminDb.collection("projects").doc(id);
+    await projectRef.update({
+      lastSyncedAt: facts.fetchedAt.toISOString(),
+      valueSyncedAt: facts.fetchedAt.toISOString(),
+      rentSyncedAt: facts.fetchedAt.toISOString(),
+    });
+  } catch (err) {
+    logger.warn("[Property Route] Failed to update sync timestamps (non-fatal)", { projectId: id, err });
+  }
 
   return NextResponse.json({
     facts: savedFacts,

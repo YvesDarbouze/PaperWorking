@@ -6,10 +6,10 @@ import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { DealTermsClosingForm } from '@/components/intelligence/DealTermsClosingForm';
 import { CapRateIntelligenceCard } from '@/components/intelligence/CapRateIntelligenceCard';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Cap Rate Intelligence — Stitch screen: c822dbb6ed384087a6d2f5a645a61a25
@@ -21,11 +21,11 @@ import { CapRateIntelligenceCard } from '@/components/intelligence/CapRateIntell
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_TREND = [4.8, 5.1, 4.9, 5.3, 5.6, 5.2, 5.7, 5.85];
-const DEMO_MONTHS = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const DEMO_TARGET = [5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5];
+const defaultTrend = [4.8, 5.1, 4.9, 5.3, 5.6, 5.2, 5.7, 5.85];
+const defaultMonths = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultTarget = [5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5];
 
-const DEMO_PROPERTIES = [
+const defaultProperties = [
   { address: '421 Oak St, Brooklyn',   capRate: 6.42, value: '$1.2M',  change: +0.18, rank: 1 },
   { address: '1248 Oakwood Ave',        capRate: 5.85, value: '$850k',  change: +0.12, rank: 2 },
   { address: '77 Prospect Heights',     capRate: 5.21, value: '$2.1M',  change: -0.08, rank: 3 },
@@ -145,69 +145,89 @@ function CapRateGauge({ value }: { value: number }) {
 
 export default function CapRateIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  /* ── Portfolio NOI & Purchase Price (derived from store) ── */
-  const portfolioNoi = useMemo(() => {
+  const capCurrentResult = useMetricCurrent('CAP_RATE', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const capSeriesResult = useMetricSeries('CAP_RATE', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+
+  // Rule 2+3: derive NOI from deriveAllMetrics — no hardcoded seeds
+  const { portfolioNoi, portfolioPurchasePrice } = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return { portfolioNoi: 0, portfolioPurchasePrice: 0 };
+    }
+    const snapshots = portfolioInputsResult.data.snapshots;
+    const projects  = portfolioInputsResult.data.projects;
+    // Prefer latest snapshot NOI (most recent), then fall back to derived
     if (snapshots && snapshots.length > 0) {
       const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
       const latestNoi = sorted[sorted.length - 1]?.noi;
-      if (latestNoi && latestNoi > 0) return latestNoi;
+      if (latestNoi && latestNoi > 0) {
+        const totalPrice = projects.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
+        return { portfolioNoi: latestNoi, portfolioPurchasePrice: totalPrice };
+      }
     }
-    const withNoi = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
-    if (withNoi.length > 0) {
-      return withNoi.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
-    }
-    return 12486; // seed
-  }, [snapshots, projects]);
-
-  const portfolioPurchasePrice = useMemo(() => {
     const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
-    if (withPrice.length > 0) {
-      return withPrice.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
-    }
-    return 279000; // seed
-  }, [projects]);
+    const totalNoi = withPrice.reduce((sum, p) => {
+      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      return sum + d.noi;
+    }, 0);
+    const totalPrice = withPrice.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
+    // Rule 3: if no data, return 0 (honest), not a seed
+    return { portfolioNoi: Math.round(totalNoi), portfolioPurchasePrice: totalPrice };
+  }, [portfolioInputsResult]);
 
   /* ── Interactive state for form ↔ gauge reactivity ── */
   const [interactivePurchasePrice, setInteractivePurchasePrice] = useState(0);
 
+  // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentCapRate, capRateChange, trendValues, trendLabels } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-8);
+    if (portfolioInputsResult.status === 'insufficient') {
+      return { isUsingDemoData: true, currentCapRate: 5.85, capRateChange: 0.12, trendValues: defaultTrend, trendLabels: defaultMonths };
+    }
+    if (
+      capSeriesResult.status === 'ready' &&
+      capCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(-8);
       const vals   = sorted.map((s) => s.capRate ?? 0);
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last   = vals[vals.length - 1] ?? 0;
-      const prev   = vals[vals.length - 2] ?? 0;
+      const last   = capCurrentResult.data;
+      const prev   = vals[vals.length - 2] ?? last;
       return { isUsingDemoData: false, currentCapRate: last, capRateChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    const hasCapRate = projects.some((p) => (p.financials?.capRate ?? 0) > 0);
-    if (hasCapRate) {
-      const avg = projects.reduce((s, p) => s + (p.financials?.capRate ?? 0), 0) / projects.filter((p) => (p.financials?.capRate ?? 0) > 0).length;
-      return { isUsingDemoData: true, currentCapRate: avg, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
+    // Projects exist but no snapshot history — use live selector if ready
+    if (capCurrentResult.status === 'ready') {
+      return { isUsingDemoData: false, currentCapRate: capCurrentResult.data, capRateChange: 0, trendValues: [], trendLabels: [] };
     }
-    return { isUsingDemoData: true, currentCapRate: 5.85, capRateChange: 0.12, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
-  }, [snapshots, projects]);
+    return { isUsingDemoData: false, currentCapRate: 0, capRateChange: 0, trendValues: [], trendLabels: [] };
+  }, [capSeriesResult, capCurrentResult, portfolioInputsResult]);
 
   const propertyRankings = useMemo(() => {
-    const withCapRate = projects.filter((p) => (p.financials?.capRate ?? 0) > 0);
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withCapRate = projects.filter((p) => (p.financials?.capRate ?? (0)) > 0);
     if (withCapRate.length > 0) {
       return withCapRate
-        .sort((a, b) => (b.financials?.capRate ?? 0) - (a.financials?.capRate ?? 0))
+        .sort((a, b) => (b.financials?.capRate ?? (0)) - (a.financials?.capRate ?? (0)))
         .slice(0, 5)
         .map((p, i) => ({
           address: p.address || p.propertyName || 'Unknown',
-          capRate: p.financials?.capRate ?? 0,
+          capRate: p.financials?.capRate ?? (0),
           value: p.financials?.estimatedARV ? `$${((p.financials.estimatedARV) / 1000).toFixed(0)}k` : '--',
           change: 0,
           rank: i + 1,
         }));
     }
-    return DEMO_PROPERTIES;
-  }, [projects]);
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -303,7 +323,7 @@ export default function CapRateIntelligencePage() {
             <div className="flex items-center justify-between mb-4">
               <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Historical Trend Analysis</span>
             </div>
-            <TrendChart values={trendValues} labels={trendLabels} target={DEMO_TARGET} />
+            <TrendChart values={trendValues} labels={trendLabels} target={defaultTarget} />
           </div>
 
           {/* Property Rankings */}

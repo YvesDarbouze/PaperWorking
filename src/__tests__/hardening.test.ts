@@ -1,4 +1,4 @@
-import { pingBlockchainTitleRegistry } from '../lib/web3/titleVerify';
+// pingBlockchainTitleRegistry was a setTimeout simulation — removed along with titleVerify.ts.
 import { pingDigitalRegistry } from '../lib/web3RegistryHooks';
 import { PHASE_STEPS } from '../components/project/PhaseProgressTracker';
 import { REIL_PHASES } from '../components/projects/REILKanBan';
@@ -7,14 +7,8 @@ import { isValidTransition } from '../lib/services/projectStateMachine';
 
 describe('Hardening and Safety Checks', () => {
   describe('registry-integrity', () => {
-    it('pingBlockchainTitleRegistry resolves with valid txHash starting with 0x and valid length', async () => {
-      const result = await pingBlockchainTitleRegistry('123 Main St');
-      expect(result.success).toBe(true);
-      expect(result.txHash).toBeDefined();
-      expect(result.txHash.startsWith('0x')).toBe(true);
-      expect(result.txHash.length).toBe(42); // 0x + 40 hex chars (20 bytes)
-      expect(result.timestamp).toBeInstanceOf(Date);
-    });
+    // pingBlockchainTitleRegistry removed — it was a documented simulation.
+    // See: src/__tests__/titleChecks.test.ts for real title-clearance regression tests.
 
     it('pingDigitalRegistry resolves with verified status and valid txHash format', async () => {
       const result = await pingDigitalRegistry('456 Oak Ave');

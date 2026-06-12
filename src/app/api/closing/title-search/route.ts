@@ -1,105 +1,116 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pingBlockchainTitleRegistry } from '@/lib/web3/titleVerify';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { adminDb } from '@/lib/firebase/admin';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
+import type { TitleCheckItem, ClearanceStatus } from '@/types/schema';
+import { FieldValue } from 'firebase-admin/firestore';
+
+/* ═══════════════════════════════════════════════════════
+   POST /api/closing/title-search
+
+   Persists the title-search checklist for a project to
+   Firestore. Called whenever a team member updates any
+   individual check's status or notes.
+
+   The blockchain simulation in the title module has been
+   removed — that was a setTimeout faker producing no real
+   data. Check states are now set manually by the closing
+   team and persisted here.
+   ═══════════════════════════════════════════════════════ */
 
 interface TitleSearchRequest {
-  idToken?: string;
   projectId: string;
-  propertyAddress?: string;
-  borrowerName?: string;
+  organizationId?: string;
+  projectName?: string;
+  checks: TitleCheckItem[];
+}
+
+/** Derive the aggregate chainOfTitleStatus from the individual checks */
+function deriveChainStatus(
+  checks: TitleCheckItem[]
+): 'pending' | 'verified' | 'failed' {
+  if (checks.some((c) => c.status === 'Issue Found')) return 'failed';
+  if (checks.every((c) => c.status === 'Cleared')) return 'verified';
+  return 'pending';
 }
 
 export async function POST(req: NextRequest) {
+  // ── Auth ──────────────────────────────────────────────────
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+  const { uid } = auth;
+  const actorName =
+    (auth as any).token?.name || (auth as any).token?.email || 'Unknown';
+
+  let body: TitleSearchRequest;
   try {
-    const body: TitleSearchRequest = await req.json();
-    
-    if (!body.propertyAddress) {
-      return NextResponse.json(
-        { success: false, error: 'Property address is required for title search' },
-        { status: 400 }
-      );
-    }
-
-    // Enforce Authentication — Real actions must be guarded
-    if (!body.idToken) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized — missing auth token' },
-        { status: 401 }
-      );
-    }
-
-    try {
-      await adminAuth.verifyIdToken(body.idToken, true);
-    } catch (e) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized — invalid token' },
-        { status: 401 }
-      );
-    }
-
-    // Call the "real" service layer
-    const verification = await pingBlockchainTitleRegistry(body.propertyAddress);
-    
-    let searchId = `TS-${verification.txHash.substring(2, 10).toUpperCase()}`;
-
-    // Generate dynamic findings based on the blockchain verification result
-    const findings = [
-      {
-        id: 'ownership',
-        name: 'Chain of Ownership Verification',
-        status: verification.success ? 'Cleared' : 'In Review',
-        detail: `Clear chain verified for ${body.propertyAddress}. Blockchain TxHash: ${verification.txHash}`
-      },
-      {
-        id: 'liens',
-        name: 'Outstanding Liens & Judgments',
-        status: 'Cleared',
-        detail: 'No active liens or judgments found against property or owner recorded on-chain.'
-      },
-      {
-        id: 'taxes',
-        name: 'Property Tax Clearance',
-        status: 'Cleared',
-        detail: 'Taxes current. Next installment due Q4.'
-      },
-      {
-        id: 'easements',
-        name: 'Easements & Encumbrances',
-        status: 'Cleared',
-        detail: 'Standard utility easements identified. No encroachments.'
-      },
-      {
-        id: 'survey',
-        name: 'Survey / Boundary Confirmation',
-        status: 'Cleared',
-        detail: 'Matches plat map recorded dynamically.'
-      },
-      {
-        id: 'hoa',
-        name: 'HOA/Condo Special Assessments',
-        status: 'Cleared',
-        detail: 'No active HOA/COA associated with parcel.'
-      }
-    ];
-
-    console.log(`[AUDIT] Title search performed for Project: ${body.projectId}, Address: ${body.propertyAddress}, Tx: ${verification.txHash}`);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        searchId,
-        timestamp: verification.timestamp.toISOString(),
-        status: verification.success ? "COMPLETED" : "FAILED",
-        txHash: verification.txHash,
-        findings
-      }
-    });
-
-  } catch (error: any) {
-    console.error('Title Search API Error:', error);
+    body = await req.json();
+  } catch {
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to complete title search' },
+      { success: false, error: 'Invalid JSON body' },
+      { status: 400 }
+    );
+  }
+
+  const { projectId, organizationId, projectName, checks } = body;
+
+  if (!projectId) {
+    return NextResponse.json(
+      { success: false, error: 'projectId is required' },
+      { status: 400 }
+    );
+  }
+  if (!Array.isArray(checks)) {
+    return NextResponse.json(
+      { success: false, error: 'checks must be an array' },
+      { status: 400 }
+    );
+  }
+
+  // ── Derive aggregate status ──────────────────────────────
+  const chainOfTitleStatus = deriveChainStatus(checks);
+
+  // ── Persist to Firestore ─────────────────────────────────
+  try {
+    await adminDb
+      .collection('projects')
+      .doc(projectId)
+      .update({
+        'closingRoom.titleChecks': checks,
+        'closingRoom.chainOfTitleStatus': chainOfTitleStatus,
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+  } catch (err: any) {
+    console.error('[title-search] Firestore write failed:', err);
+    return NextResponse.json(
+      { success: false, error: 'Failed to persist title checks' },
       { status: 500 }
     );
   }
+
+  // ── Activity log (fire-and-forget) ───────────────────────
+  if (organizationId) {
+    logOrgActivity({
+      organizationId,
+      type: 'doc_uploaded',
+      actorId: uid,
+      actorName,
+      summary: `Title clearance checklist updated for ${projectName || projectId}`,
+      targetRef: `projects/${projectId}`,
+      projectId,
+      projectName,
+    }).catch((e) =>
+      console.warn('[title-search] Activity log failed (non-fatal):', e)
+    );
+  }
+
+  return NextResponse.json({
+    success: true,
+    data: {
+      projectId,
+      chainOfTitleStatus,
+      checks,
+      updatedAt: new Date().toISOString(),
+    },
+  });
 }

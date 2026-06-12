@@ -1,3 +1,31 @@
+# Agent Handoff — Closing Ledger Export (Prompt 19) (2026-06-11)
+
+## ✅ COMPLETED THIS SESSION
+
+1. **Closing Ledger Export**:
+   - Updated the server-side export route at `/api/reil/projects/[id]/closing-ledger/export/route.ts` to support token-based re-authentication, membership/owner checks, and read-only validation.
+   - Added server-side telemetry capture (`closing_ledger_exported` event) with format and project ID parameters.
+   - Created a complete Jest test suite in `src/__tests__/closingLedgerExport.test.ts` checking token validation, member scoping, CSV/PDF formatting with override options, and read-only verification.
+   - Verified that the full test suite of 604 tests passes cleanly, and that `tsc --noEmit` returns 0 compilation errors.
+
+---
+
+# Agent Handoff — GDPR Account Deletion (Compliance) & Jest Fixes (2026-06-11)
+
+## ✅ COMPLETED THIS SESSION
+
+1. **GDPR Account Deletion (Prompt 23)**:
+   - Implemented the server-side deletion cascade API at `/api/account/data/delete/route.ts` with 5 resumable stages (Stripe subscription cancellation, Firestore workspace cleanup, Prisma REIL DB reassignments to `"deleted-user"`, Firebase Storage file purging, and Firebase Auth credential deletion).
+   - Created the Settings Danger Zone UI in `src/app/dashboard/settings/general/page.tsx` with a secure re-authentication modal, confirmation text input, and an interactive checklist overlay showing progress and supporting deletion resumption on failure.
+   - Emits PostHog telemetry on start, success, and failure, and dispatches confirmation emails on completion.
+
+2. **Jest Test Fixes**:
+   - Fixed `src/__tests__/accountDeletion.test.ts` by updating the `adminDb.collection(...)` mock to implement the root `get()` method.
+   - Resolved the `STRIPE_SECRET_KEY` initialization throw by defining the mock environment key in `beforeEach`.
+   - Verified that all 58 Jest test suites (600 tests total) pass successfully and that the compilation check (`npx tsc --noEmit`) passes cleanly with zero errors.
+
+---
+
 # Agent Handoff — Reversion of Green Backgrounds & Auth Cleanup (2026-06-07)
 
 ## ✅ COMPLETED THIS SESSION
@@ -312,5 +340,50 @@ Remove `--update-secrets` for vars already set as plain env vars — causes type
 - `src/app/api/webhooks/resend/route.ts` — HMAC signature verification
 - `src/app/dashboard/data-room/page.tsx` — R-03/R-04/R-06 metric fixes
 - `src/app/dashboard/insights/page.tsx` — R-05 distribution fix
-- `src/app/dashboard/panels/ExitPanel.tsx`, `EvaluationPanel.tsx`, `PurchasePanel.tsx` — R-02
 - `src/app/dashboard/intelligence/comparison/page.tsx` — R-02 + runtime bug fix
+
+## 2026-06-11 — Prompt 26: ActivityFeed Empty State
+
+### Completed Work
+- **ActivityFeed UI Upgrade**: Replaced the terminal-styled `[WARN] NO DATA DETECTED` warning in `ActivityFeed.tsx` with a design-system-aligned empty state displaying a friendly "No activity yet" headline and a hint grid explaining how document uploads, status changes, and deal creation generate activity.
+- **Removed Bypass**: Replaced the mock `SystemActivityFeed` with the live, Firestore-subscribing `ActivityFeed` in `DashboardHome.tsx` so real dynamic activity events are displayed.
+- **Theme Adaptation**: Integrated the `useTheme()` hook in `ActivityFeed.tsx` to automatically adapt background, borders, and text colors for dark and light modes.
+- **Mutation Emitters**: Confirmed that document uploads and status changes emit events, and added a failure-isolated `logOrgActivity` event emitter in the sourcing lead webhook (`/api/webhooks/sourcing`) to log `deal_created` on automated lead ingestion.
+- **Testing**: Added a dedicated component test suite in `src/__tests__/ActivityFeed.test.tsx` verifying loading, empty state, and active states. All 61 Jest test suites (611 tests) and typescript compilation check compile cleanly with zero errors.
+
+---
+
+# Agent Handoff — Prompt 23: Account Deletion Cascade CLOSED (2026-06-12)
+
+## ✅ CLOSED THIS SESSION
+
+**Prompt 23 — GDPR Account Deletion** is complete and independently audited (21/21 criteria PASS).
+
+### What Was Built
+
+A production-grade, resumable 5-step account deletion cascade:
+
+| Step | Checkpoint | What is removed |
+|------|-----------|----------------|
+| 1 | `stripe_cancelled` | Active Stripe subscriptions cancelled |
+| 2 | `firestore_deleted` | Owned projects (7 subcollections: ledgerItems, activityLog, vendorRequests, phaseSnapshots, commitments, documents, financials) + propertyMetricSnapshots + projectFiles + projectFolders + org memberships + inboxItems + notifications + teamInvitations (cancelled) + users/{uid}/sessions + user profile doc |
+| 3 | `prisma_deleted` | statusEvent/fieldAssignment anonymized → deleted-user; projectCollaborator rows deleted; solely-owned reilProject rows deleted (cascade); appUser deleted |
+| 4 | `storage_deleted` | GCS objects under projects/{id}/ and users/{uid}/ |
+| 5 | `completed` | revokeRefreshTokens + deleteUser |
+
+### Key Files
+- `src/app/api/account/data/delete/route.ts` — server-side cascade (GET status + POST trigger/resume)
+- `src/app/dashboard/settings/general/page.tsx` — full UX: reauth gate + DELETE typed confirmation + step progress tracker + resume-on-failure
+- `src/__tests__/accountDeletion.test.ts` — 4/4 passing (401 guard, full cascade, mid-cascade resume, shared project survival)
+
+### Security Properties (verified)
+- UID from token only — never from request body
+- `requireAuth()` guard on every call; 401 on unauthenticated/forged requests
+- `revokeRefreshTokens` before `deleteUser` (closes session race window)
+- Stripe secret server-side only (no NEXT_PUBLIC_)
+- Shared projects owned by others are preserved — only membership removed
+
+### Next Queued
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
+

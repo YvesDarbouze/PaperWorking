@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { OccupancyCollectionTerminal } from '@/components/intelligence/OccupancyCollectionTerminal';
-import type { OccupancyValues } from '@/components/intelligence/OccupancyCollectionTerminal';
+import type { OccupancyValues, UnitOccupancy } from '@/components/intelligence/OccupancyCollectionTerminal';
 
 /* ═══════════════════════════════════════════════════════════════
    Occupancy Intelligence Page
@@ -18,10 +17,10 @@ import type { OccupancyValues } from '@/components/intelligence/OccupancyCollect
    Bottom: Vacancy Risk Analysis table
    ═══════════════════════════════════════════════════════════════ */
 
-const DEMO_MONTHS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const DEMO_OCCUPANCY = [88, 89, 90, 91, 90, 92, 91, 92, 93, 93, 94, 94.2];
+const defaultMonths = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultOccupancy = [88, 89, 90, 91, 90, 92, 91, 92, 93, 93, 94, 94.2];
 
-const DEMO_PROPERTIES = [
+const defaultProperties = [
   { address: '421 Oak St, Brooklyn',       units: 12, occupied: 12, leaseRisk: 'Low'    },
   { address: '1248 Oakwood Ave, Queens',   units: 8,  occupied: 7,  leaseRisk: 'Medium' },
   { address: '77 Prospect Heights, BK',    units: 16, occupied: 14, leaseRisk: 'Low'    },
@@ -35,7 +34,16 @@ const RISK_STYLES: Record<string, string> = {
   High:   'bg-red-400/10 border-red-400/20 text-red-400',
 };
 
-function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupancyPcts: number[] }) {
+function StackedBarChart({ months, occupancyPcts, whatIfOccupancyRate }: { months: string[]; occupancyPcts: number[]; whatIfOccupancyRate?: number | null }) {
+  const markLineData: object[] = [];
+  if (whatIfOccupancyRate != null && isFinite(whatIfOccupancyRate) && whatIfOccupancyRate > 0) {
+    markLineData.push({
+      yAxis: Number(whatIfOccupancyRate.toFixed(1)),
+      lineStyle: { color: '#fb923c', type: 'dashed', width: 2 },
+      label: { show: true, position: 'insideEndTop', color: '#fb923c', fontSize: 10, formatter: `What-If (${whatIfOccupancyRate.toFixed(1)}%)` }
+    });
+  }
+
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -83,6 +91,11 @@ function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupanc
         })),
         barMaxWidth: 32,
         itemStyle: { borderRadius: [0, 0, 0, 0] },
+        markLine: markLineData.length > 0 ? {
+          silent: true,
+          symbol: ['none', 'none'],
+          data: markLineData,
+        } : undefined,
       },
       {
         name: 'Vacant',
@@ -100,11 +113,12 @@ function StackedBarChart({ months, occupancyPcts }: { months: string[]; occupanc
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
-function SmallDonut({ occupiedPct }: { occupiedPct: number }) {
+function SmallDonut({ occupiedPct, whatIfActive }: { occupiedPct: number; whatIfActive?: boolean }) {
   const r = 32;
   const circ = 2 * Math.PI * r;
   const stroke = circ * (occupiedPct / 100);
   const gap = circ - stroke;
+  const color = whatIfActive ? '#fb923c' : '#454955';
   return (
     <svg width={80} height={80} viewBox="0 0 80 80">
       <circle cx="40" cy="40" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="10" />
@@ -113,13 +127,14 @@ function SmallDonut({ occupiedPct }: { occupiedPct: number }) {
         cy="40"
         r={r}
         fill="none"
-        stroke="#454955"
+        stroke={color}
         strokeWidth="10"
         strokeDasharray={`${stroke} ${gap}`}
         strokeLinecap="round"
         transform="rotate(-90 40 40)"
+        className="transition-all duration-500"
       />
-      <text x="40" y="43" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#454955">
+      <text x="40" y="43" textAnchor="middle" fontSize="12" fontWeight="bold" fill={color} className="transition-all">
         {occupiedPct.toFixed(0)}%
       </text>
     </svg>
@@ -128,22 +143,75 @@ function SmallDonut({ occupiedPct }: { occupiedPct: number }) {
 
 export default function OccupancyIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+  const occupancyCurrentResult = useMetricCurrent('OCCUPANCY');
+  const occupancySeriesResult = useMetricSeries('OCCUPANCY');
+  const portfolioInputsResult = usePortfolioInputs();
 
   /* ── Reactive state from Collection Terminal ── */
   const [collectedValues, setCollectedValues] = useState<OccupancyValues | null>(null);
-  const handleCollectionChange = useCallback((v: OccupancyValues) => setCollectedValues(v), []);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialOccRef = useRef<number | null>(null);
+
+  const handleCollectionChange = useCallback((v: OccupancyValues) => {
+    if (initialOccRef.current === null) {
+      initialOccRef.current = v.occupancyRate;
+    } else if (Math.abs(v.occupancyRate - initialOccRef.current) > 0.01) {
+      setHasInteracted(true);
+    }
+    setCollectedValues(v);
+  }, []);
+
+  const portfolioDefaults = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return { totalDays: 365 };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const units: UnitOccupancy[] = [];
+    projects.forEach((p, idx) => {
+      const uCount = p.numberOfUnits ?? 0;
+      if (uCount > 0) {
+        const oCount = p.occupiedUnits ?? uCount;
+        for (let i = 0; i < uCount; i++) {
+          const isOccupied = i < oCount;
+          units.push({
+            id: `${p.id || idx}-${i}`,
+            unitLabel: `${p.propertyName || 'Property'} - Unit ${i+1}`,
+            tenantName: isOccupied ? 'Tenant' : '',
+            baseStart: isOccupied ? '2025-06-01' : '',
+            leaseStart: isOccupied ? '2025-06-01' : '',
+            leaseEnd: isOccupied ? '2026-05-31' : '',
+            vacantDays: isOccupied ? 0 : 365,
+            status: isOccupied ? 'occupied' : 'vacant',
+          } as any);
+        }
+      }
+    });
+    return {
+      units: units.length > 0 ? units : undefined,
+      totalDays: 365,
+    };
+  }, [portfolioInputsResult]);
 
   const { isUsingDemoData, currentOcc, occChange, occupiedUnits, totalUnits, trendPcts, trendMonths } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
-      const pcts   = sorted.map((s) => (s.occupancyRate ?? 0) * 100);
+    if (
+      occupancySeriesResult.status === 'ready' &&
+      occupancyCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(-12);
+      const pcts = sorted.map((s) => {
+        const rate = s.occupancyRate ?? (0);
+        return rate <= (1) ? rate * 100 : rate;
+      });
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last   = pcts[pcts.length - 1] ?? 94.2;
-      const prev   = pcts[pcts.length - 2] ?? 93;
-      const occ    = sorted[sorted.length - 1]?.occupiedUnits ?? 47;
-      const tot    = sorted[sorted.length - 1]?.numberOfUnits ?? 50;
+      const last = occupancyCurrentResult.data;
+      const prev = pcts[pcts.length - 2] ?? last;
+      const lastSnap = sorted[sorted.length - 1];
+      const occ = lastSnap?.occupiedUnits ?? (0);
+      const tot = lastSnap?.numberOfUnits ?? (0);
       return {
         isUsingDemoData: false,
         currentOcc: last,
@@ -154,32 +222,56 @@ export default function OccupancyIntelligencePage() {
         trendMonths: labels,
       };
     }
-    const totalU = projects.reduce((s, p) => s + (p.numberOfUnits ?? 0), 0) || 50;
-    const occupiedU = Math.round(totalU * 0.942);
+
+    const totalU = portfolioInputsResult.status === 'ready'
+      ? portfolioInputsResult.data.projects.reduce((s, p) => s + (p.numberOfUnits ?? (0)), 0)
+      : (50);
+    const totalUOr50 = totalU || (50);
+    const occupiedU = Math.round(totalUOr50 * 0.942);
+
     return {
       isUsingDemoData: true,
-      currentOcc: collectedValues?.occupancyRate ?? 94.2,
-      occChange: 1.8,
+      currentOcc: collectedValues?.occupancyRate ?? (94.2),
+      occChange: (1.8),
       occupiedUnits: collectedValues?.occupiedUnitCount ?? occupiedU,
-      totalUnits: collectedValues?.totalUnitCount ?? totalU,
-      trendPcts: DEMO_OCCUPANCY,
-      trendMonths: DEMO_MONTHS,
+      totalUnits: collectedValues?.totalUnitCount ?? totalUOr50,
+      trendPcts: defaultOccupancy,
+      trendMonths: defaultMonths,
     };
-  }, [snapshots, projects, collectedValues]);
+  }, [occupancySeriesResult, occupancyCurrentResult, portfolioInputsResult, collectedValues]);
+
+  const whatIfOccupancy = useMemo(() => {
+    if (hasInteracted && collectedValues) {
+      return {
+        occupancyRate: collectedValues.occupancyRate,
+        occupiedUnitCount: collectedValues.occupiedUnitCount,
+        totalUnitCount: collectedValues.totalUnitCount,
+      };
+    }
+    return null;
+  }, [hasInteracted, collectedValues]);
+
+  const displayOcc = whatIfOccupancy?.occupancyRate ?? currentOcc;
+  const displayOccupied = whatIfOccupancy?.occupiedUnitCount ?? occupiedUnits;
+  const displayTotal = whatIfOccupancy?.totalUnitCount ?? totalUnits;
 
   const propertyRows = useMemo(() => {
-    const withUnits = projects.filter((p) => (p.numberOfUnits ?? 0) > 0);
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projectsList = portfolioInputsResult.data.projects;
+    const withUnits = projectsList.filter((p) => (p.numberOfUnits ?? (0)) > 0);
     if (withUnits.length >= 3) {
       return withUnits.slice(0, 5).map((p) => {
-        const units = p.numberOfUnits ?? 0;
+        const units = p.numberOfUnits ?? (0);
         const occ   = p.occupiedUnits ?? units;
-        const vRate = units > 0 ? ((units - occ) / units) * 100 : 0;
-        const risk  = vRate === 0 ? 'Low' : vRate < 15 ? 'Medium' : 'High';
+        const vRate = units > (0) ? ((units - occ) / units) * 100 : (0);
+        const risk  = vRate === (0) ? 'Low' : vRate < (15) ? 'Medium' : 'High';
         return { address: p.address || p.propertyName || 'Unknown', units, occupied: occ, leaseRisk: risk };
       });
     }
-    return DEMO_PROPERTIES;
-  }, [projects]);
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -213,23 +305,37 @@ export default function OccupancyIntelligencePage() {
 
             {/* Big number + donut row */}
             <div className="flex items-center gap-4">
-              <SmallDonut occupiedPct={currentOcc} />
+              <SmallDonut occupiedPct={displayOcc} whatIfActive={whatIfOccupancy != null} />
               <div>
-                <div className="text-4xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
-                  {currentOcc.toFixed(1)}%
+                <div className="flex items-center gap-2">
+                  <div className="text-4xl font-bold tabular-nums tracking-tighter transition-all" style={{ color: whatIfOccupancy != null ? '#fb923c' : '#6E7480' }}>
+                    {displayOcc.toFixed(1)}%
+                  </div>
+                  {whatIfOccupancy != null && (
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                      WHAT-IF
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-1 mt-1 text-sm font-bold text-[#6E7480]">
-                  <ArrowUpRight className="w-4 h-4" />
-                  +{occChange.toFixed(1)}% vs Last Month
-                </div>
+                {whatIfOccupancy != null ? (
+                  <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5 mt-1 self-start">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                    <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 mt-1 text-sm font-bold text-[#6E7480]">
+                    <ArrowUpRight className="w-4 h-4" />
+                    +{occChange.toFixed(1)}% vs Last Month
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Occupied / Total */}
             <div className="px-3 py-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#6B6870] mb-1">Units</p>
-              <p className="text-xl font-bold text-white tabular-nums">
-                {occupiedUnits} <span className="text-[#6B6870] font-normal text-sm">of</span> {totalUnits} units occupied
+              <p className="text-xl font-bold tabular-nums transition-all" style={{ color: whatIfOccupancy != null ? '#fb923c' : '#ffffff' }}>
+                {displayOccupied} <span className="text-[#6B6870] font-normal text-sm">of</span> {displayTotal} units occupied
               </p>
             </div>
 
@@ -237,17 +343,20 @@ export default function OccupancyIntelligencePage() {
             <div className="space-y-2">
               <div className="flex justify-between text-[10px] text-[#6B6870]">
                 <span>Occupancy Rate</span>
-                <span className="text-[#6E7480] font-bold">{currentOcc.toFixed(1)}%</span>
+                <span className="font-bold transition-all" style={{ color: whatIfOccupancy != null ? '#fb923c' : '#6E7480' }}>{displayOcc.toFixed(1)}%</span>
               </div>
               <div className="h-2 rounded-full bg-white/[0.06] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[#6E7480] transition-all"
-                  style={{ width: `${currentOcc}%` }}
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${displayOcc}%`,
+                    backgroundColor: whatIfOccupancy != null ? '#fb923c' : '#6E7480',
+                  }}
                 />
               </div>
               <div className="flex justify-between text-[9px] text-slate-600">
                 <span>0%</span>
-                <span>Vacant: {(100 - currentOcc).toFixed(1)}%</span>
+                <span>Vacant: {(100 - displayOcc).toFixed(1)}%</span>
                 <span>100%</span>
               </div>
             </div>
@@ -260,13 +369,14 @@ export default function OccupancyIntelligencePage() {
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B6870]">Occupancy by Month</span>
             </div>
-            <StackedBarChart months={trendMonths} occupancyPcts={trendPcts} />
+            <StackedBarChart months={trendMonths} occupancyPcts={trendPcts} whatIfOccupancyRate={whatIfOccupancy?.occupancyRate} />
           </div>
         </div>
       </div>
 
       {/* ── Occupancy Collection Terminal ── */}
       <OccupancyCollectionTerminal
+        defaults={portfolioDefaults}
         onValuesChange={handleCollectionChange}
       />
 

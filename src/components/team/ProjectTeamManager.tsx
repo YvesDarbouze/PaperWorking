@@ -5,7 +5,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { UserPlus, X, Briefcase, Scale, Landmark, Building } from 'lucide-react';
 import type { ProjectTeamMember, ProjectRole } from '@/types/schema';
 import toast from 'react-hot-toast';
-import { projectsService } from '@/lib/firebase/projects';
+import { useAuth } from '@/context/AuthContext';
 
 /* ═══════════════════════════════════════════════════════
    ProjectTeamManager — Per-Deal Team Assignment
@@ -30,6 +30,7 @@ export default function ProjectTeamManager({ projectId }: Props) {
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
   const updateProjectTeam = useProjectStore((s) => s.updateProjectTeam);
   const team = currentProject?.projectTeam || [];
+  const { user } = useAuth();
 
   const [editingRole, setEditingRole] = useState<ProjectRole | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
@@ -38,50 +39,65 @@ export default function ProjectTeamManager({ projectId }: Props) {
   const getMemberForRole = (role: ProjectRole) =>
     team.find((m) => m.projectRole === role && m.status !== 'removed');
 
-  const handleAssign = (role: ProjectRole) => {
+  const handleAssign = async (role: ProjectRole) => {
     if (!inviteEmail.trim()) return;
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
 
-    const newMember: ProjectTeamMember = {
-      id: `tm_${Date.now()}`,
-      email: inviteEmail.trim(),
-      displayName: inviteName.trim() || inviteEmail.split('@')[0],
-      projectRole: role,
-      permissions: { canView: true, canUpload: false, canComment: false },
-      assignedAt: new Date(),
-      status: 'invited',
-    };
+    const name = inviteName.trim() || inviteEmail.split('@')[0];
+    const email = inviteEmail.trim();
 
-    const updatedTeam = [...team, newMember];
-    updateProjectTeam(projectId, updatedTeam);
+    const toastId = toast.loading('Inviting deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'add', {
+        email,
+        displayName: name,
+        projectRole: role,
+        permissions: { canView: true, canUpload: false, canComment: false },
+      });
 
-    toast.promise(
-      projectsService.updateProject(projectId, { projectTeam: updatedTeam }),
-      {
-        loading: 'Inviting deal team member...',
-        success: `${role} invited: ${newMember.displayName}`,
-        error: (err: any) => err.message || 'Failed to update deal team.',
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success(`${role} invited: ${name}`, { id: toastId });
       }
-    );
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
 
     setInviteEmail('');
     setInviteName('');
     setEditingRole(null);
   };
 
-  const handleRemove = (memberId: string) => {
-    const updated = team.map((m) =>
-      m.id === memberId ? { ...m, status: 'removed' as const } : m
-    );
-    updateProjectTeam(projectId, updated);
+  const handleRemove = async (memberId: string) => {
+    if (!user) {
+      toast.error('Not authenticated');
+      return;
+    }
 
-    toast.promise(
-      projectsService.updateProject(projectId, { projectTeam: updated }),
-      {
-        loading: 'Removing deal team member...',
-        success: 'Team member removed.',
-        error: (err: any) => err.message || 'Failed to update deal team.',
+    const member = team.find(m => m.id === memberId);
+    if (!member) return;
+
+    const toastId = toast.loading('Removing deal team member...');
+    try {
+      const idToken = await user.getIdToken();
+      const { mutateProjectTeam } = await import('@/actions');
+      const res = await mutateProjectTeam(idToken, projectId, 'remove', {
+        email: member.email,
+        memberId,
+      });
+
+      if (res.success && res.projectTeam) {
+        updateProjectTeam(projectId, res.projectTeam);
+        toast.success('Team member removed.', { id: toastId });
       }
-    );
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update deal team.', { id: toastId });
+    }
   };
 
   return (

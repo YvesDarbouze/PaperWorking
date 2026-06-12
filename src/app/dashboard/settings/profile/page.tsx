@@ -2,10 +2,13 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useMFA } from '@/hooks/useMFA';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { db } from '@/lib/firebase/config';
 import toast from 'react-hot-toast';
+import MFAEnrollmentModal from '@/components/auth/MFAEnrollmentModal';
+import MFAUnenrollModal from '@/components/auth/MFAUnenrollModal';
 
 /* ═══════════════════════════════════════════════════════
    Profile & Security Settings (Luminous Glass Terminal)
@@ -33,8 +36,10 @@ export default function ProfileSettingsPage() {
   const [pwdError, setPwdError]       = useState<string | null>(null);
   const [pwdSuccess, setPwdSuccess]   = useState(false);
 
-  // ─── 2FA State ────────────────────────────────────────
-  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  // ─── 2FA — enrollment state read from Firebase enrolled factors ──
+  const { isMFAEnabled, totpFactor, refresh: refreshMFA } = useMFA();
+  const [showEnrollModal, setShowEnrollModal]   = useState(false);
+  const [showUnenrollModal, setShowUnenrollModal] = useState(false);
 
   // ─── Avatar ───────────────────────────────────────────
   const initials = `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase() || 'U';
@@ -361,26 +366,41 @@ export default function ProfileSettingsPage() {
             <div>
               <p className="text-sm font-semibold text-pw-black mb-0.5">Two-Factor Auth</p>
               <p className="text-xs text-pw-muted">
-                {twoFAEnabled ? 'Enhanced protection active' : 'Add an extra shield layer'}
+                {isMFAEnabled ? 'TOTP authenticator active' : 'Add an extra layer of protection'}
               </p>
             </div>
             <button
-              onClick={() => setTwoFAEnabled(!twoFAEnabled)}
+              onClick={() => isMFAEnabled ? setShowUnenrollModal(true) : setShowEnrollModal(true)}
               className={`
                 relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border
-                ${twoFAEnabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
+                ${isMFAEnabled ? 'bg-pw-primary/20 border-pw-primary/40' : 'bg-pw-glass-bg border-pw-border'}
               `}
               role="switch"
-              aria-checked={twoFAEnabled}
+              aria-checked={isMFAEnabled}
             >
               <span
                 className={`
                   inline-block h-4 w-4 transform rounded-full transition-all duration-300 shadow-sm
-                  ${twoFAEnabled ? 'translate-x-6 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
+                  ${isMFAEnabled ? 'translate-x-6 bg-pw-primary' : 'translate-x-1 bg-pw-muted'}
                 `}
               />
             </button>
           </div>
+
+          {/* MFA modals */}
+          {showEnrollModal && (
+            <MFAEnrollmentModal
+              onClose={() => setShowEnrollModal(false)}
+              onEnrolled={async () => { await refreshMFA(); toast.success('Two-factor authentication enabled.'); }}
+            />
+          )}
+          {showUnenrollModal && totpFactor && (
+            <MFAUnenrollModal
+              totpFactor={totpFactor}
+              onClose={() => setShowUnenrollModal(false)}
+              onUnenrolled={async () => { await refreshMFA(); toast.success('Two-factor authentication disabled.'); }}
+            />
+          )}
 
           {/* ── Change Password ── */}
           <div className="border-b border-white/10 pb-3 mb-5">
@@ -603,6 +623,27 @@ export default function ProfileSettingsPage() {
             </div>
           )}
         </section>
+
+        {/* ─── Modals ─── */}
+        {showEnrollModal && (
+          <MFAEnrollmentModal
+            onClose={() => setShowEnrollModal(false)}
+            onEnrolled={() => {
+              setShowEnrollModal(false);
+              refreshMFA();
+            }}
+          />
+        )}
+        {showUnenrollModal && totpFactor && (
+          <MFAUnenrollModal
+            totpFactor={totpFactor}
+            onClose={() => setShowUnenrollModal(false)}
+            onUnenrolled={() => {
+              setShowUnenrollModal(false);
+              refreshMFA();
+            }}
+          />
+        )}
 
       </div>
     </div>

@@ -19,16 +19,25 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Cap workers so the Next.js dev server isn't overwhelmed.
+   * Under heavy parallelism (8+ workers) React hydration is delayed past
+   * click-timeout windows because the dev server queues JS bundle requests.
+   * 3 local workers keeps the server responsive while still running in parallel.
+   * CI uses 1 worker for determinism. */
+  workers: process.env.CI ? 1 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'list',
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Collect trace on every failure — viewable in the HTML report via trace viewer. */
+    trace: 'retain-on-failure',
+    /* Screenshot on failure for rapid triage without needing the full trace. */
+    screenshot: 'only-on-failure',
     /* Run headless */
     headless: true,
   },

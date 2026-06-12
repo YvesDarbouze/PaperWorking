@@ -1,5 +1,5 @@
 import { adminDb } from '@/lib/firebase/admin';
-import { DealAnalyzerTerminal } from '@/components/intelligence/DealAnalyzerTerminal';
+import DealAnalyzer from '@/components/evaluation/DealAnalyzer';
 import { notFound } from 'next/navigation';
 import { Project } from '@/types/schema';
 
@@ -19,7 +19,7 @@ export default async function ProjectAnalyzerPage({ params }: { params: Promise<
     if (docSnap.exists) {
       projectData = docSnap.data() as Partial<Project>;
     } else {
-      console.warn(`Project ${id} not found. Using fallback mock data.`);
+      console.warn(`Project ${id} not found.`);
     }
   } catch (error) {
     console.error('Error fetching project data:', error);
@@ -27,27 +27,36 @@ export default async function ProjectAnalyzerPage({ params }: { params: Promise<
 
   const financials = projectData?.financials;
   
-  // 10 Core REI Data Points
-  // If the Firestore schema is not fully established yet, we set up the data fetching
-  // structure with a robust fallback/mock that matches the exact shape expected by the component.
-  const hydratedData = {
-    purchasePrice: financials?.purchasePrice ?? 325000,
-    arv: (financials?.estimatedARV || financials?.arv) ?? 485000,
-    rehabCost: (financials?.rehabBudget || financials?.actualRehabCost) ?? 65000,
-    loanAmount: 275000, // To be added to schema
-    interestRate: 7.5,  // To be added to schema
-    loanTermYears: 30,  // To be added to schema
-    monthlyRent: financials?.actualRentalIncome ?? 2800,
-    vacancyRatePct: 5,  // To be added to schema
-    monthlyTaxes: 350,  // To be added to schema
-    monthlyInsurance: 180, // To be added to schema
-    monthlyMaintenance: 150, // To be added to schema
-    propertyMgmtPct: 8, // To be added to schema
+  // Map real values or leave them undefined so they show up as empty or clearly marked assumptions.
+  const initialValues = {
+    rental: {
+      purchasePrice: financials?.purchasePrice,
+      monthlyRent: financials?.monthlyGrossRent ?? financials?.projectedMonthlyRent,
+      otherIncome: financials?.otherMonthlyIncome,
+      vacancyRate: financials?.vacancyRatePercent ?? financials?.vacancyRate,
+      interestRate: financials?.loanInterestRate,
+      loanTermYears: financials?.loanTermYears,
+      monthlyTaxes: financials?.operatingExpenseTaxes,
+      monthlyInsurance: financials?.operatingExpenseInsurance,
+      propertyMgmtPercent: financials?.propertyManagementFeePercent,
+      monthlyHOA: financials?.monthlyHOA,
+    },
+    flip: {
+      purchasePrice: financials?.purchasePrice,
+      rehabCost: financials?.projectedRehabCost ?? financials?.rehabBudget,
+      arv: financials?.estimatedARV ?? financials?.arv,
+      loanAmount: financials?.loanAmount,
+      interestRate: financials?.loanInterestRate,
+    },
+    mode: projectData?.strategyType === 'Fix & Flip' || projectData?.strategyType === 'Sell' ? 'flip' as const : 'rental' as const,
+    arv: financials?.estimatedARV ?? financials?.arv,
+    rehabEst: financials?.projectedRehabCost ?? financials?.rehabBudget,
+    fixedCosts: financials?.fixedAcquisitionCosts,
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen bg-[#0d0a0b]">
-      <DealAnalyzerTerminal data={hydratedData} />
+    <div className="flex flex-col w-full min-h-screen bg-[#0d0a0b] p-6 lg:p-8">
+      <DealAnalyzer projectId={id} initialValues={initialValues} />
     </div>
   );
 }

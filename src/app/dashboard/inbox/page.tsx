@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Search, Plus, Loader2, CheckCheck, ArrowLeft, Settings } from 'lucide-react';
 import { useInboxFeed } from '@/hooks/useInboxFeed';
@@ -32,6 +32,86 @@ import { executeInboxAction } from '@/lib/services/inboxActionExecutor';
    └──────────────────────────────────────────────┘
    ═══════════════════════════════════════════════════════ */
 
+/* ── Notification detail MoreMenu ───────────────────────
+   Renders a ⋮ button in the reading pane header with three
+   real, persisted actions. No action is rendered without
+   an onClick handler.
+   ─────────────────────────────────────────────────────── */
+interface NotifMoreMenuProps {
+  item: import('@/types/notification').Notification;
+  onMarkUnread: () => void;
+  onArchive: () => void;
+  onDelete: () => void;
+}
+
+function NotifMoreMenu({ item, onMarkUnread, onArchive, onDelete }: NotifMoreMenuProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        id="notif-more-menu-trigger"
+        onClick={() => setOpen((v) => !v)}
+        className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors"
+        aria-label="Notification actions"
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
+      </button>
+
+      {open && (
+        <div
+          id="notif-more-menu"
+          role="menu"
+          className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-white/10 bg-[#161318] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)] z-50 py-1 overflow-hidden"
+        >
+          <button
+            id="notif-menu-mark-unread"
+            role="menuitem"
+            onClick={() => { onMarkUnread(); setOpen(false); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+          >
+            <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>
+              {item.read ? 'mark_email_unread' : 'drafts'}
+            </span>
+            {item.read ? 'Mark as Unread' : 'Mark as Read'}
+          </button>
+          <div className="my-1 border-t border-white/5" />
+          <button
+            id="notif-menu-archive"
+            role="menuitem"
+            onClick={() => { onArchive(); setOpen(false); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+          >
+            <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
+            Archive
+          </button>
+          <button
+            id="notif-menu-delete"
+            role="menuitem"
+            onClick={() => { onDelete(); setOpen(false); }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-white/5 text-red-400/80 hover:text-red-400 transition-colors text-left"
+          >
+            <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
+            Delete
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function InboxNotificationCenter() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -49,6 +129,7 @@ function InboxNotificationCenter() {
     activeTab,
     setActiveTab,
     markAsRead,
+    markAsUnread,
     markAllRead,
     archiveItem,
     deleteItem,
@@ -62,6 +143,7 @@ function InboxNotificationCenter() {
   const {
     threads,
     markAsRead: markThreadAsRead,
+    markAsUnread: markThreadAsUnread,
   } = useInboxThreads();
 
   const threadId = searchParams.get('threadId') || searchParams.get('thread') || null;
@@ -137,13 +219,20 @@ function InboxNotificationCenter() {
     });
   };
 
-  // Make selection state explicitly available to the feed if we want to drive the right pane
-  // Right now, threadId is used to find activeThread. 
-  // We can also let users click notifications to view details in the right pane.
-  // The existing implementation used `activeThread` for thread views. Let's merge notification and thread details if possible, or just focus on the activeThread / activeNotification.
-
   const [selectedNotificationId, setSelectedNotificationId] = useState<string | null>(null);
   const [isExecutingAction, setIsExecutingAction] = useState(false);
+
+  /* ── Auto-mark-as-read when a notification is selected ── */
+  // Mirrors the thread-view pattern above (markThreadAsRead on unreadCount change).
+  useEffect(() => {
+    if (selectedNotificationId) {
+      const item = items.find((n) => n.id === selectedNotificationId);
+      if (item && !item.read) {
+        markAsRead(selectedNotificationId);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedNotificationId]);
 
   // If we have an active thread from URL, use that, otherwise use selected notification
   const selectedItem = items.find(item => item.id === selectedNotificationId) || null;
@@ -262,6 +351,7 @@ function InboxNotificationCenter() {
               projectName={activeProjectName}
               onSendReply={handleSendReply}
               onBack={() => router.push('/dashboard/inbox')}
+              onMarkThreadUnread={() => markThreadAsUnread(activeThread.projectId)}
             />
           ) : selectedItem ? (
             <div className="flex-1 overflow-y-auto z-10 flex flex-col">
@@ -281,17 +371,28 @@ function InboxNotificationCenter() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => archiveItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
-                    </button>
-                    <button onClick={() => deleteItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
-                    </button>
-                    <button className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
-                    </button>
-                  </div>
+                   <div className="flex gap-2">
+                     <button onClick={() => archiveItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors" title="Archive">
+                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>archive</span>
+                     </button>
+                     <button onClick={() => deleteItem(selectedItem.id)} className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors" title="Delete">
+                       <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>delete</span>
+                     </button>
+                     <NotifMoreMenu
+                       item={selectedItem}
+                       onMarkUnread={() => {
+                         selectedItem.read ? markAsUnread(selectedItem.id) : markAsRead(selectedItem.id);
+                       }}
+                       onArchive={() => {
+                         archiveItem(selectedItem.id);
+                         setSelectedNotificationId(null);
+                       }}
+                       onDelete={() => {
+                         deleteItem(selectedItem.id);
+                         setSelectedNotificationId(null);
+                       }}
+                     />
+                   </div>
                 </div>
 
                 {/* Message Content */}
@@ -362,7 +463,7 @@ function InboxNotificationCenter() {
 
                     {/* Action Bar */}
                     <div className="flex items-center justify-center gap-4 py-8">
-                      {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE'].includes(selectedItem.type) ? (
+                      {['VENDOR_BID', 'RECEIPT_APPROVAL', 'INVEST_INVITE', 'TEAM_INVITE', 'TEAM_INVITE_REMINDER'].includes(selectedItem.type) ? (
                         <button 
                           disabled={isExecutingAction}
                           onClick={handleExecuteAction}

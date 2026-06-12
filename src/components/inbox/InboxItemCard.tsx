@@ -175,8 +175,7 @@ export default function InboxItemCard({
     'RECEIPT_APPROVAL',
     'INVEST_INVITE',
     'TEAM_INVITE',
-    'TEAM_INVITE_REMINDER',
-    'VENDOR_LEAD'
+    'TEAM_INVITE_REMINDER'
   ].includes(item.type);
 
   const handleClick = (e: React.MouseEvent) => {

@@ -6,8 +6,7 @@ import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 
 /* ═══════════════════════════════════════════════════════════════
    LTV Risk Analysis Page
@@ -20,21 +19,21 @@ import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_LTV = 68.5;
-const DEMO_LTV_CHANGE = -1.2;
+const default_LTV = 68.5;
+const default_LTV_CHANGE = -1.2;
 
-// Demo trajectory: loan balance decreasing, property value appreciating — 12 periods
-const DEMO_MONTHS_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const DEMO_LOAN_BALANCE   = [275000, 272000, 269000, 266000, 263000, 260000, 257000, 254000, 251000, 248000, 245000, 242000];
-const DEMO_PROPERTY_VALUE = [485000, 491000, 497000, 503000, 509000, 516000, 522000, 528000, 533000, 538000, 542000, 545000];
+// Default trajectory: loan balance decreasing, property value appreciating — 12 periods
+const default_MONTHS_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const default_LOAN_BALANCE   = [275000, 272000, 269000, 266000, 263000, 260000, 257000, 254000, 251000, 248000, 245000, 242000];
+const default_PROPERTY_VALUE = [485000, 491000, 497000, 503000, 509000, 516000, 522000, 528000, 533000, 538000, 542000, 545000];
 
 // Projection data — 12 more months ahead
-const DEMO_PROJ_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr',
-                          'May+1', 'Jun+1', 'Jul+1', 'Aug+1', 'Sep+1', 'Oct+1', 'Nov+1', 'Dec+1', 'Jan+2', 'Feb+2', 'Mar+2', 'Apr+2'];
-const DEMO_LOAN_PROJ   = [...DEMO_LOAN_BALANCE,  239000, 236000, 233000, 230000, 227000, 224000, 221000, 218000, 215000, 213000, 211000, 210000];
-const DEMO_VALUE_PROJ  = [...DEMO_PROPERTY_VALUE, 549000, 554000, 559000, 564000, 569000, 575000, 581000, 587000, 592000, 597000, 602000, 607000];
+const default_PROJ_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr',
+                             'May+1', 'Jun+1', 'Jul+1', 'Aug+1', 'Sep+1', 'Oct+1', 'Nov+1', 'Dec+1', 'Jan+2', 'Feb+2', 'Mar+2', 'Apr+2'];
+const default_LOAN_PROJ   = [...default_LOAN_BALANCE,  239000, 236000, 233000, 230000, 227000, 224000, 221000, 218000, 215000, 213000, 211000, 210000];
+const default_VALUE_PROJ  = [...default_PROPERTY_VALUE, 549000, 554000, 559000, 564000, 569000, 575000, 581000, 587000, 592000, 597000, 602000, 607000];
 
-const DEMO_PROPERTIES = [
+const default_PROPERTIES = [
   { address: '421 Oak St, Brooklyn',  value: 545000, loan: 320000, ltv: 58.7, status: 'Safe'     },
   { address: '1248 Oakwood Ave',       value: 420000, loan: 287900, ltv: 68.5, status: 'Target'   },
   { address: '77 Prospect Heights',    value: 890000, loan: 712000, ltv: 80.0, status: 'Target'   },
@@ -220,19 +219,49 @@ function TrajectoryChart({
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <ArrowUpRight className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate LTV Risk analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function LTVIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+
+  // Rule 5: scope threaded consistently to all three selectors
+  const selectorScope = scope === 'My Share' ? 'myShare' : 'property';
+  const ltvSeriesResult = useMetricSeries('LTV', undefined, { scope: selectorScope });
+  const ltvCurrentResult = useMetricCurrent('LTV', { scope: selectorScope });
+  const portfolioInputsResult = usePortfolioInputs({ scope: selectorScope });
 
   const propertiesTableData = useMemo(() => {
-    const validProjects = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
+    if (portfolioInputsResult.status !== 'ready') {
+      return default_PROPERTIES;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const validProjects = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
     if (validProjects.length > 0) {
       return validProjects.map((p) => {
-        const value = p.financials?.arv ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0;
-        const loan = p.financials?.loanAmount ?? 0;
+        const value = p.financials?.arv ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? (0);
+        const loan = p.financials?.loanAmount ?? (0);
         const ltv = value > 0 ? (loan / value) * 100 : 0;
         return {
           address: p.address || p.propertyName || 'Unknown Property',
@@ -243,11 +272,24 @@ export default function LTVIntelligencePage() {
         };
       });
     }
-    return DEMO_PROPERTIES;
-  }, [projects]);
+    return default_PROPERTIES;
+  }, [portfolioInputsResult]);
 
   const { isUsingDemoData, currentLtv, ltvChange, chartLabels, loanSeries, valueSeries, splitIndex } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
+    // Rule 4: demo ONLY when no projects at all
+    if (portfolioInputsResult.status === 'insufficient') {
+      return {
+        isUsingDemoData: true,
+        currentLtv: default_LTV,
+        ltvChange: default_LTV_CHANGE,
+        chartLabels: default_PROJ_LABELS,
+        loanSeries: default_LOAN_PROJ,
+        valueSeries: default_VALUE_PROJ,
+        splitIndex: default_LOAN_BALANCE.length - 1,
+      };
+    }
+    if (ltvSeriesResult.status === 'ready' && ltvCurrentResult.status === 'ready' && portfolioInputsResult.status === 'ready') {
+      const snapshots = portfolioInputsResult.data.snapshots;
       const sorted = [...snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
         .slice(-12);
@@ -255,8 +297,8 @@ export default function LTVIntelligencePage() {
       const loanVals = sorted.map((s) => s.loanAmount ?? 0);
       const valVals  = sorted.map((s) => s.propertyValue ?? 0);
       const labels   = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last = ltvVals[ltvVals.length - 1];
-      const prev = ltvVals[ltvVals.length - 2];
+      const last = ltvCurrentResult.data;
+      const prev = ltvVals[ltvVals.length - 2] ?? last;
       return {
         isUsingDemoData: false,
         currentLtv: last,
@@ -267,22 +309,58 @@ export default function LTVIntelligencePage() {
         splitIndex: sorted.length - 1,
       };
     }
+    // Projects exist, selectors loading or insufficient history — show live current
+    if (ltvCurrentResult.status === 'ready') {
+      return {
+        isUsingDemoData: false,
+        currentLtv: ltvCurrentResult.data,
+        ltvChange: 0,
+        chartLabels: [],
+        loanSeries: [],
+        valueSeries: [],
+        splitIndex: 0,
+      };
+    }
     return {
-      isUsingDemoData: true,
-      currentLtv: DEMO_LTV,
-      ltvChange: DEMO_LTV_CHANGE,
-      chartLabels: DEMO_PROJ_LABELS,
-      loanSeries: DEMO_LOAN_PROJ,
-      valueSeries: DEMO_VALUE_PROJ,
-      splitIndex: DEMO_LOAN_BALANCE.length - 1,
+      isUsingDemoData: false,
+      currentLtv: 0,
+      ltvChange: 0,
+      chartLabels: [],
+      loanSeries: [],
+      valueSeries: [],
+      splitIndex: 0,
     };
-  }, [snapshots]);
+  }, [ltvSeriesResult, ltvCurrentResult, portfolioInputsResult]);
 
   const fmtDollar = (n: number) => `$${n.toLocaleString()}`;
   const ltvStatusLabel = (ltv: number) =>
     ltv < 65 ? 'Safe' : ltv < 80 ? 'Target' : 'High Risk';
   const ltvStatusColor = (ltv: number) =>
     ltv < 65 ? '#454955' : ltv < 80 ? '#f59e0b' : '#F06543';
+
+  if (ltvCurrentResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading LTV data...</p>
+      </div>
+    );
+  }
+
+  if (portfolioInputsResult.status === 'insufficient') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">LTV Risk Analysis</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">LTV Risk Analysis</h1>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -363,9 +441,9 @@ export default function LTVIntelligencePage() {
             <div className="space-y-3">
               {[
                 { label: 'Avg LTV',        value: `${currentLtv.toFixed(1)}%` },
-                { label: 'Total Loan',     value: fmtDollar(loanSeries[splitIndex] ?? 0) },
-                { label: 'Total Value',    value: fmtDollar(valueSeries[splitIndex] ?? 0) },
-                { label: 'Implied Equity', value: fmtDollar(Math.max(0, (valueSeries[splitIndex] ?? 0) - (loanSeries[splitIndex] ?? 0))) },
+                { label: 'Total Loan',     value: fmtDollar(loanSeries[splitIndex] ?? (0)) },
+                { label: 'Total Value',    value: fmtDollar(valueSeries[splitIndex] ?? (0)) },
+                { label: 'Implied Equity', value: fmtDollar(Math.max(0, (valueSeries[splitIndex] ?? (0)) - (loanSeries[splitIndex] ?? (0)))) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
                   <span className="text-xs text-[#6B6870]">{item.label}</span>

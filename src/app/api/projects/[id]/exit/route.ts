@@ -62,6 +62,7 @@ const exitFinancialsSchema = z.object({
 const exitBodySchema = z.object({
   financials: exitFinancialsSchema.optional(),
   realized: z.boolean().optional(),
+  status: z.string().optional(),
 }).passthrough();
 
 export async function PATCH(
@@ -188,8 +189,9 @@ export async function PATCH(
       updatePayload.financials = mergedFinancials;
     }
 
-    // 6. Update Firestore
-    await dealRef.update(updatePayload);
+    // 6. Update Firestore with tracking
+    const { updateProjectWithTracking } = await import('@/lib/firebase/projectWriteWrapper');
+    await updateProjectWithTracking(projectId, uid, updatePayload, 'manual');
 
     // 7. Return updated project snapshot
     const updatedSnap = await dealRef.get();

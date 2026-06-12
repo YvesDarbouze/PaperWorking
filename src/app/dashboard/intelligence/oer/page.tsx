@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowDownRight, ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { ExpenseRatioCollectionTerminal } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
 import type { ExpenseRatioValues } from '@/components/intelligence/ExpenseRatioCollectionTerminal';
 
@@ -18,8 +17,8 @@ import type { ExpenseRatioValues } from '@/components/intelligence/ExpenseRatioC
    Bottom: Expense breakdown horizontal bar
    ═══════════════════════════════════════════════════════════════ */
 
-const DEMO_TREND = [42.1, 41.5, 40.8, 39.9, 39.2, 38.8, 38.5, 38.2];
-const DEMO_MONTHS = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultTrend = [42.1, 41.5, 40.8, 39.9, 39.2, 38.8, 38.5, 38.2];
+const defaultMonths = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 const EXPENSE_CATEGORIES = [
   { name: 'Property Taxes', pct: 12, color: '#454955' },
@@ -29,7 +28,27 @@ const EXPENSE_CATEGORIES = [
   { name: 'Other',          pct: 2,  color: '#94a3b8' },
 ];
 
-function TrendChart({ values, labels }: { values: number[]; labels: string[] }) {
+function TrendChart({ values, labels, whatIfOER }: { values: number[]; labels: string[]; whatIfOER?: number | null }) {
+  const markLineData = [
+    {
+      yAxis: 35,
+      lineStyle: { color: '#454955', type: 'dashed', width: 1, opacity: 0.5 },
+      label: { formatter: 'Excellent <35%', color: '#454955', fontSize: 9 },
+    },
+    {
+      yAxis: 45,
+      lineStyle: { color: '#fb923c', type: 'dashed', width: 1, opacity: 0.5 },
+      label: { formatter: 'Review >45%', color: '#fb923c', fontSize: 9 },
+    },
+  ];
+  if (whatIfOER != null && isFinite(whatIfOER) && whatIfOER > 0) {
+    markLineData.push({
+      yAxis: Number(whatIfOER.toFixed(1)),
+      lineStyle: { color: '#fb923c', type: 'solid', width: 2, opacity: 1 },
+      label: { formatter: `What-If (${whatIfOER.toFixed(1)}%)`, color: '#fb923c', fontSize: 10, fontWeight: 'bold' } as any,
+    });
+  }
+
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -94,18 +113,7 @@ function TrendChart({ values, labels }: { values: number[]; labels: string[] }) 
         markLine: {
           silent: true,
           symbol: ['none', 'none'],
-          data: [
-            {
-              yAxis: 35,
-              lineStyle: { color: '#454955', type: 'dashed', width: 1, opacity: 0.5 },
-              label: { formatter: 'Excellent <35%', color: '#454955', fontSize: 9 },
-            },
-            {
-              yAxis: 45,
-              lineStyle: { color: '#fb923c', type: 'dashed', width: 1, opacity: 0.5 },
-              label: { formatter: 'Review >45%', color: '#fb923c', fontSize: 9 },
-            },
-          ],
+          data: markLineData,
         },
         markArea: {
           silent: true,
@@ -178,35 +186,76 @@ function ExpenseChart() {
 
 export default function OERIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+  const oerCurrentResult = useMetricCurrent('OER');
+  const oerSeriesResult = useMetricSeries('OER');
+  const portfolioInputsResult = usePortfolioInputs();
 
   /* ── Reactive state from Collection Terminal ── */
   const [collectedValues, setCollectedValues] = useState<ExpenseRatioValues | null>(null);
-  const handleCollectionChange = useCallback((v: ExpenseRatioValues) => setCollectedValues(v), []);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialOERRef = useRef<number | null>(null);
+
+  const handleCollectionChange = useCallback((v: ExpenseRatioValues) => {
+    if (initialOERRef.current === null) {
+      initialOERRef.current = v.expenseRatio;
+    } else if (Math.abs(v.expenseRatio - initialOERRef.current) > 0.01) {
+      setHasInteracted(true);
+    }
+    setCollectedValues(v);
+  }, []);
+
+  const whatIfOER = useMemo(() => {
+    if (hasInteracted && collectedValues) {
+      return collectedValues.expenseRatio;
+    }
+    return null;
+  }, [hasInteracted, collectedValues]);
+
+  const portfolioDefaults = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return { grossMonthlyRent: 1950 };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withRent = projects.filter(p => (p.financials?.monthlyGrossRent ?? 0) > 0);
+    const avgRent = withRent.length > 0
+      ? withRent.reduce((s, p) => s + (p.financials?.monthlyGrossRent ?? 0), 0) / withRent.length
+      : 1950;
+    return {
+      grossMonthlyRent: Math.round(avgRent),
+    };
+  }, [portfolioInputsResult]);
 
   const { isUsingDemoData, currentOER, oerChange, trendValues, trendLabels } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
-      const vals   = sorted.map((s) => s.oer ?? 0);
+    if (
+      oerSeriesResult.status === 'ready' &&
+      oerCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
+        .sort((a, b) => a.date.getTime() - b.date.getTime())
+        .slice(-12);
+      const vals   = sorted.map((s) => s.oer ?? (0));
       const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last   = vals[vals.length - 1] ?? 0;
-      const prev   = vals[vals.length - 2] ?? 0;
+      const last   = oerCurrentResult.data;
+      const prev   = vals[vals.length - 2] ?? last;
       return { isUsingDemoData: false, currentOER: last, oerChange: last - prev, trendValues: vals, trendLabels: labels };
     }
     // Use collected values if available, otherwise demo
-    const oer = collectedValues?.expenseRatio ?? 38.2;
-    return { isUsingDemoData: true, currentOER: oer, oerChange: -0.8, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
-  }, [snapshots, projects, collectedValues]);
+    const oer = collectedValues?.expenseRatio ?? (38.2);
+    return { isUsingDemoData: true, currentOER: oer, oerChange: -(0.8), trendValues: defaultTrend, trendLabels: defaultMonths };
+  }, [oerSeriesResult, oerCurrentResult, portfolioInputsResult, collectedValues]);
 
-  const zone = currentOER < 35
+  const displayOER = whatIfOER ?? currentOER;
+
+  const zone = displayOER < 35
     ? { label: 'Excellent', color: '#454955', bg: 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]' }
-    : currentOER <= 45
+    : displayOER <= 45
     ? { label: 'Efficient', color: '#454955', bg: 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]' }
     : { label: 'Review', color: '#F06543', bg: 'bg-red-400/10 border-red-400/20 text-red-400' };
 
   // Position marker on gradient bar (0% = left = good, 100% = right = bad)
-  const markerPct = Math.min(Math.max(((currentOER - 25) / 35) * 100, 0), 100);
+  const markerPct = Math.min(Math.max(((displayOER - 25) / 35) * 100, 0), 100);
 
   const isDecreasing = oerChange < 0;
 
@@ -247,10 +296,30 @@ export default function OERIntelligencePage() {
             </div>
 
             {/* Big number */}
-            <div className="flex items-end gap-3">
-              <span className="text-5xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
-                {currentOER.toFixed(1)}%
+            <div className="flex items-baseline gap-3 mb-2">
+              <span className="text-5xl font-bold tabular-nums tracking-tighter transition-all" style={{ color: whatIfOER != null ? '#fb923c' : '#6E7480' }}>
+                {displayOER.toFixed(1)}%
               </span>
+              {whatIfOER != null && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                  WHAT-IF
+                </span>
+              )}
+            </div>
+
+            {/* Indicator row */}
+            <div className="flex items-center gap-2">
+              {whatIfOER != null ? (
+                <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                </div>
+              ) : (
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+                </div>
+              )}
             </div>
 
             {/* Change indicator */}
@@ -305,13 +374,14 @@ export default function OERIntelligencePage() {
                 <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-[#6E7480]/30 inline-block border-t border-dashed border-[#6E7480]/50" /> 35% Target</span>
               </div>
             </div>
-            <TrendChart values={trendValues} labels={trendLabels} />
+            <TrendChart values={trendValues} labels={trendLabels} whatIfOER={whatIfOER} />
           </div>
         </div>
       </div>
 
       {/* ── Expense Ratio Collection Terminal ── */}
       <ExpenseRatioCollectionTerminal
+        defaults={portfolioDefaults}
         onValuesChange={handleCollectionChange}
       />
 

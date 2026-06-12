@@ -64,10 +64,10 @@ describe('Lender Rates Provider Abstraction & Adapters', () => {
   });
 
   describe('FirestoreRateAdapter', () => {
-    it('falls back to DEFAULT_RATES when db is missing or collection throws', async () => {
+    it('returns [] when db is missing or collection throws', async () => {
       const provider = new FirestoreRateAdapter(null);
       const rates = await provider.getRates();
-      expect(rates).toEqual(DEFAULT_RATES);
+      expect(rates).toEqual([]);
     });
 
     it('successfully queries mock firestore if db is provided', async () => {

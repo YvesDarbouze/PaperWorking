@@ -7,8 +7,7 @@ import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { NOIWaterfallHero } from '@/components/intelligence/NOIWaterfallHero';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 
 /* ═══════════════════════════════════════════════════════════════
    NOI Detail — Trend & Composition Page
@@ -21,16 +20,16 @@ import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_NOI        = 482910;
-const DEMO_NOI_CHANGE = 12.4;
+const defaultNoi        = 482910;
+const defaultNoiChange = 12.4;
 
-const DEMO_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const DEMO_NOI_TREND = [398000, 411000, 419000, 428000, 435000, 441000, 448000, 455000, 461000, 469000, 476000, 482910];
+const defaultLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultNoiTrend = [398000, 411000, 419000, 428000, 435000, 441000, 448000, 455000, 461000, 469000, 476000, 482910];
 
 // Composition values
-const DEMO_GROSS_RENT  = 612000;
-const DEMO_OTHER_INC   = 48000;
-const DEMO_OP_EXP      = 177090;
+const defaultGrossRent  = 612000;
+const defaultOtherInc   = 48000;
+const defaultOpExp      = 177090;
 // NOI = 612000 + 48000 - 177090 = 482910
 
 /* ── NOI Composition Stacked Horizontal Bars ── */
@@ -157,10 +156,12 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
 
 export default function NOIIntelligencePage() {
   useAllDealsSync();
-  useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+
+  const noiCurrentResult = useMetricCurrent('NOI', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const noiSeriesResult = useMetricSeries('NOI', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
 
   const {
     isUsingDemoData,
@@ -173,24 +174,44 @@ export default function NOIIntelligencePage() {
     opExpenses,
     vacancyRate,
   } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots]
+    // Rule 4: demo ONLY when no projects at all
+    if (portfolioInputsResult.status === 'insufficient') {
+      return {
+        isUsingDemoData: true,
+        currentNoi: defaultNoi,
+        noiChange: defaultNoiChange,
+        trendValues: defaultNoiTrend,
+        trendLabels: defaultLabels,
+        grossRent: defaultGrossRent,
+        otherIncome: defaultOtherInc,
+        opExpenses: defaultOpExp,
+        vacancyRate: 0,
+      };
+    }
+    if (
+      noiSeriesResult.status === 'ready' &&
+      noiCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
         .slice(-12);
       const noiVals = sorted.map((s) => s.noi ?? 0);
       const labels  = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last    = noiVals[noiVals.length - 1];
-      const prev    = noiVals[noiVals.length - 2];
+      const last    = noiCurrentResult.data;
+      const prev    = noiVals[noiVals.length - 2] ?? last;
       const pctChg  = prev !== 0 ? ((last - prev) / Math.abs(prev)) * 100 : 0;
       const latestSnap = sorted[sorted.length - 1];
       const vr = latestSnap.vacancyRate ?? 0;
-      // Convert monthly snapshot metrics to annual basis to prevent units mismatch with annual NOI
       const gr = (latestSnap.grossRentalIncome ?? 0) * 12;
       const oe = (latestSnap.totalOperatingExpenses ?? 0) * 12;
-      const vacLoss = Math.round(gr * (vr / 100));
-      
-      // Derive otherIncome dynamically to reconcile the NOI formula: NOI = GrossRent + Other - Vacancy - OpEx
-      const derivedOther = Math.max(0, Math.round(last - gr + vacLoss + oe));
+
+      // Rule 2: otherIncome from snapshot: grossOperatingIncome - grossRentalIncome
+      // gives the "other income" component stored in the snapshot; honest 0 if not tracked.
+      // grossOperatingIncome = grossRentalIncome + otherIncome (per snapshotService.ts line 144)
+      const goi = (latestSnap.grossOperatingIncome ?? 0) * 12;
+      const oi  = Math.max(0, goi - gr);   // honest 0 when grossOperatingIncome not stored
 
       return {
         isUsingDemoData: false,
@@ -199,23 +220,37 @@ export default function NOIIntelligencePage() {
         trendValues: noiVals,
         trendLabels: labels,
         grossRent: gr,
-        otherIncome: derivedOther,
+        otherIncome: oi,  // honest 0 if not stored, not a back-calculated fiction
         opExpenses: oe,
         vacancyRate: vr,
       };
     }
+    // Projects exist but no history yet — show live NOI without chart
+    if (noiCurrentResult.status === 'ready') {
+      return {
+        isUsingDemoData: false,
+        currentNoi: noiCurrentResult.data,
+        noiChange: 0,
+        trendValues: [],
+        trendLabels: [],
+        grossRent: 0,
+        otherIncome: 0,
+        opExpenses: 0,
+        vacancyRate: 0,
+      };
+    }
     return {
-      isUsingDemoData: true,
-      currentNoi: DEMO_NOI,
-      noiChange: DEMO_NOI_CHANGE,
-      trendValues: DEMO_NOI_TREND,
-      trendLabels: DEMO_LABELS,
-      grossRent: DEMO_GROSS_RENT,
-      otherIncome: DEMO_OTHER_INC,
-      opExpenses: DEMO_OP_EXP,
+      isUsingDemoData: false,
+      currentNoi: 0,
+      noiChange: 0,
+      trendValues: [],
+      trendLabels: [],
+      grossRent: 0,
+      otherIncome: 0,
+      opExpenses: 0,
       vacancyRate: 0,
     };
-  }, [snapshots]);
+  }, [noiSeriesResult, noiCurrentResult, portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
 

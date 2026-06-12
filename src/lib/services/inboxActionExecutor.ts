@@ -93,6 +93,13 @@ export async function executeInboxAction(
       const amount = parseFloat(amountStr.replace(/[^0-9.]/g, '')) || 0;
       
       const currentCosts = projectData.financials?.costs || [];
+      
+      // Idempotency check: already approved?
+      const alreadyApproved = currentCosts.some((cost: any) => cost.amount === amount && cost.approved === true);
+      if (alreadyApproved) {
+        return { success: true, message: 'Receipt cost entry already approved.' };
+      }
+
       let foundCost = false;
       const updatedCosts = currentCosts.map((cost: any) => {
         if (cost.amount === amount && (cost.status === 'Pending Triage' || !cost.approved)) {
@@ -164,6 +171,18 @@ export async function executeInboxAction(
     }
 
     return { success: true, message: 'Invitation accepted successfully.' };
+
+  } else if (item.type === 'TEAM_INVITE' || item.type === 'TEAM_INVITE_REMINDER') {
+    const tokenMatch = item.deepLinkUrl?.match(/[?&]token=([^&]+)/);
+    const token = tokenMatch ? tokenMatch[1] : null;
+    
+    if (!token) {
+      throw new Error('Could not resolve invitation token from notification.');
+    }
+
+    const { acceptTeamInvitation } = await import('@/actions/team');
+    await acceptTeamInvitation(token);
+    return { success: true, message: 'Team invitation accepted successfully.' };
   }
 
   throw new Error('Unsupported action execution type.');

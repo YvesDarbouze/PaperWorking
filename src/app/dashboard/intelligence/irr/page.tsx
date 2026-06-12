@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { IRRExitAssumptionsTerminal } from '@/components/intelligence/IRRExitAssumptionsTerminal';
 import type { IRRAssumptions } from '@/components/intelligence/IRRExitAssumptionsTerminal';
 import { IRRScenarioComparisonCard } from '@/components/intelligence/IRRScenarioComparisonCard';
+import { computeIRR, buildIRRCashFlows, computeTotalCashInvested, deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    IRR Intelligence — Stitch screen: 730ea3ab98c047189ac5010c875ecffd
@@ -24,14 +24,14 @@ import { IRRScenarioComparisonCard } from '@/components/intelligence/IRRScenario
 type Period = 'Quarter' | 'Year' | 'All Time';
 type Scope = 'Property' | 'My Share';
 
-const DEMO_SCENARIOS = [
+const defaultScenarios = [
   { label: '3-Year Hold', actual: 8.2,  projected: 12.4 },
   { label: '5-Year Hold', actual: 12.1, projected: 18.4 },
   { label: '7-Year Hold', actual: 15.8, projected: 22.7 },
   { label: '10-Year Hold', actual: 19.5,  projected: 26.1 },
 ];
 
-const DEMO_SENSITIVITY = [
+const defaultSensitivity = [
   { variable: 'Exit Cap Rate',  base: '5.85%', bear: '6.80%', bull: '5.10%', irrImpact: '±3.2%' },
   { variable: 'Rent Growth',    base: '3.0%',  bear: '1.0%',  bull: '5.0%',  irrImpact: '±2.1%' },
   { variable: 'Vacancy Rate',   base: '5.0%',  bear: '12.0%', bull: '2.0%',  irrImpact: '±1.8%' },
@@ -39,7 +39,7 @@ const DEMO_SENSITIVITY = [
   { variable: 'Rehab Cost',     base: '$65k',  bear: '$90k',  bull: '$55k',  irrImpact: '±1.5%' },
 ];
 
-function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
+function ScenariosChart({ scenarios }: { scenarios: typeof defaultScenarios }) {
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -103,21 +103,62 @@ function ScenariosChart({ scenarios }: { scenarios: typeof DEMO_SCENARIOS }) {
   return <ReactECharts option={option} style={{ height: 240, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate IRR analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function IRRIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope] = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('annual');
+
+  const irrSeriesResult = useMetricSeries('IRR', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const irrCurrentResult = useMetricCurrent('IRR', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property', periodType: 'annual' });
 
   /* ── Reactive state from Exit Assumptions Terminal ── */
   const [assumptions, setAssumptions] = useState<IRRAssumptions | null>(null);
-  const handleAssumptionsChange = useCallback((v: IRRAssumptions) => setAssumptions(v), []);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialIRRRef = useRef<number | null>(null);
+
+  const handleAssumptionsChange = useCallback((v: IRRAssumptions) => {
+    if (initialIRRRef.current === null && v.irr !== null) {
+      initialIRRRef.current = v.irr;
+    } else if (initialIRRRef.current !== null && v.irr !== null && Math.abs(v.irr - initialIRRRef.current) > 0.001) {
+      setHasInteracted(true);
+    }
+    setAssumptions(v);
+  }, []);
+
+  const whatIfIRR = useMemo(() => {
+    if (hasInteracted && assumptions && assumptions.irr !== null) {
+      return assumptions.irr * 100;
+    }
+    return null;
+  }, [hasInteracted, assumptions]);
 
   const handleExportCSV = useCallback(() => {
     try {
       const headers = ['Variable', 'Base Case', 'Bear Case', 'Bull Case', 'IRR Impact'];
-      const rows = DEMO_SENSITIVITY.map(row => [
+      const rows = defaultSensitivity.map(row => [
         row.variable,
         row.base,
         row.bear,
@@ -146,34 +187,60 @@ export default function IRRIntelligencePage() {
     }
   }, []);
 
-  /* ── Portfolio-derived defaults ── */
+  /* ── Portfolio-derived defaults (Rule 3: no hardcoded seeds when data is ready) ── */
   const portfolioDefaults = useMemo(() => {
-    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
-    if (withPrice.length > 0) {
-      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? 0), 0) / withPrice.length;
-      const avgLoan = withPrice.reduce((s, p) => s + (p.financials?.loanAmount ?? 0), 0) / withPrice.length;
-      const avgCashInvested = withPrice.reduce((s, p) => s + (p.financials?.financingCashInvested ?? 0), 0) / withPrice.length;
+    if (portfolioInputsResult.status !== 'ready') {
       return {
-        totalCashInvested: Math.round(avgCashInvested || 60000),
+        totalCashInvested: 0,
+        purchasePrice: 0,
+        loanAmount: 0,
+        // Rule 3: honest zero — never fake a rate we don't know
+        loanRate: 0,
+        loanTermYears: 30,
+        annualCashFlow: 0,
+      };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withPrice.length > 0) {
+      const avgPrice = withPrice.reduce((s, p) => s + (p.financials?.purchasePrice ?? (0)), 0) / withPrice.length;
+      const avgLoan = withPrice.reduce((s, p) => s + (p.financials?.loanAmount ?? (0)), 0) / withPrice.length;
+      const avgCashInvested = withPrice.reduce((s, p) => {
+        const f = p.financials || {};
+        return s + computeTotalCashInvested(f);
+      }, 0) / withPrice.length;
+
+      // Derive annualCashFlow from deriveAllMetrics — same formula as useMetricCurrent('COC')
+      const totalAnnualCF = withPrice.reduce((s, p) => {
+        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        return s + (derived.noi - derived.annualDebtService);
+      }, 0);
+
+      return {
+        totalCashInvested: Math.round(avgCashInvested),
         purchasePrice: Math.round(avgPrice),
         loanAmount: Math.round(avgLoan || avgPrice * 0.785),
-        loanRate: (withPrice[0]?.financials?.loanInterestRate ?? 7),
-        loanTermYears: (withPrice[0]?.financials?.loanTermYears ?? 30),
+        // Rule 3: use stored rate; 0 = honest unknown (not 7%)
+        loanRate: withPrice[0]?.financials?.loanInterestRate ?? 0,
+        loanTermYears: withPrice[0]?.financials?.loanTermYears ?? 30,
+        annualCashFlow: Math.round(totalAnnualCF),
       };
     }
     return {
-      totalCashInvested: 60000,
-      purchasePrice: 279000,
-      loanAmount: 223200,
-      loanRate: 6.5,
+      totalCashInvested: 0,
+      purchasePrice: 0,
+      loanAmount: 0,
+      loanRate: 0,
       loanTermYears: 30,
+      annualCashFlow: 0,
     };
-  }, [projects]);
+  }, [portfolioInputsResult]);
 
-  /* ── Scenario card inputs (derived from interactive or defaults) ── */
+  /* ── Scenario card inputs (derived from interactive or portfolio) ── */
   const scenarioInputs = useMemo(() => ({
     totalCashInvested: assumptions?.totalCashInvested ?? portfolioDefaults.totalCashInvested,
-    annualCashFlow: assumptions?.annualCashFlow ?? 5052,
+    // Rule 3: annualCashFlow comes from portfolio derivation, not a hardcoded seed
+    annualCashFlow: assumptions?.annualCashFlow ?? portfolioDefaults.annualCashFlow,
     purchasePrice: assumptions?.purchasePrice ?? portfolioDefaults.purchasePrice,
     loanAmount: assumptions?.loanAmount ?? portfolioDefaults.loanAmount,
     loanRate: assumptions?.loanRate ?? portfolioDefaults.loanRate,
@@ -181,26 +248,95 @@ export default function IRRIntelligencePage() {
     sellingCostsPercent: assumptions?.sellingCostsPercent ?? 8,
   }), [assumptions, portfolioDefaults]);
 
-  const { isUsingDemoData, currentIRR, projectedGain, realizedToDate, benchmarkPct } = useMemo(() => {
-    const latestSnap = snapshots?.[snapshots.length - 1];
-    const irr = latestSnap?.irr ?? null;
-
-    if (irr) {
-      const totalValue = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.estimatedARV ?? 0), 0);
-      const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
+  const { isUsingDemoData, currentIRR, projectedGain, realizedToDate } = useMemo(() => {
+    // Rule 4: isUsingDemoData = true ONLY when no projects exist at all
+    if (portfolioInputsResult.status === 'insufficient') {
       return {
-        isUsingDemoData: false,
-        currentIRR: irr,
-        projectedGain: totalValue - totalCost,
-        realizedToDate: irr * 0.45,
-        benchmarkPct: 75,
+        isUsingDemoData: true,
+        currentIRR: assumptions?.irr != null ? assumptions.irr * 100 : 18.4,
+        projectedGain: 4_200_000,
+        realizedToDate: 8.2,
       };
     }
 
-    return { isUsingDemoData: true, currentIRR: assumptions?.irr !== null ? (assumptions?.irr ?? 0.184) * 100 : 18.4, projectedGain: 4_200_000, realizedToDate: 8.2, benchmarkPct: 75 };
-  }, [snapshots, projects, assumptions]);
+    if (irrCurrentResult.status !== 'ready' || portfolioInputsResult.status !== 'ready') {
+      return {
+        isUsingDemoData: false,
+        currentIRR: 0,
+        projectedGain: 0,
+        realizedToDate: 0,
+      };
+    }
+
+    const irr = irrCurrentResult.data;
+    const projects = portfolioInputsResult.data.projects;
+    const totalValue = projects.reduce((s, p) => s + (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0), 0);
+    const totalCost  = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
+
+    return {
+      isUsingDemoData: false,
+      currentIRR: irr,
+      projectedGain: totalValue - totalCost,
+      // realizedToDate: not formally computable without actual hold dates;
+      // display as a proportional estimate of IRR accumulated to date
+      realizedToDate: irr * 0.45,
+    };
+  }, [irrCurrentResult, portfolioInputsResult, assumptions]);
+
+  const scenarios = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultScenarios;
+    }
+    const holds = [3, 5, 7, 10];
+    const inputs = scenarioInputs;
+    return holds.map((holdYears) => {
+      const cashFlows = buildIRRCashFlows(
+        inputs.totalCashInvested,
+        inputs.annualCashFlow,
+        holdYears,
+        inputs.purchasePrice,
+        3.0,
+        inputs.loanAmount,
+        inputs.loanRate,
+        inputs.loanTermYears,
+        inputs.sellingCostsPercent ?? (8)
+      );
+      const irr = computeIRR(cashFlows);
+      const irrPct = irr !== null ? irr * 100 : 0;
+      
+      return {
+        label: `${holdYears}-Year Hold`,
+        actual: Number(irrPct.toFixed(1)),
+        projected: Number((irrPct * 1.2).toFixed(1)),
+      };
+    });
+  }, [portfolioInputsResult, scenarioInputs]);
 
   const fmt = (v: number) => v >= 1_000_000 ? `+$${(v / 1_000_000).toFixed(1)}M` : `+$${(v / 1000).toFixed(0)}k`;
+
+  if (irrCurrentResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading IRR data...</p>
+      </div>
+    );
+  }
+
+  if (portfolioInputsResult.status === 'insufficient') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">IRR Intelligence</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">IRR Intelligence</h1>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -266,11 +402,30 @@ export default function IRRIntelligencePage() {
           <p className="text-xs text-[#6B6870] font-semibold uppercase tracking-widest mb-1">Scenario: 5-Year Hold</p>
           <p className="text-sm text-[#9E9DA0] mb-4">Projected Internal Rate of Return</p>
 
-          <div className="flex items-baseline gap-2 mb-6">
-            <span className="text-[64px] font-bold text-[#6E7480] tabular-nums leading-none tracking-tighter">
-              {currentIRR.toFixed(1)}
+          <div className="flex items-baseline gap-3 mb-4">
+            <span className="text-[64px] font-bold tabular-nums leading-none tracking-tighter transition-all" style={{ color: whatIfIRR != null ? '#fb923c' : '#6E7480' }}>
+              {(whatIfIRR ?? currentIRR).toFixed(1)}
             </span>
-            <span className="text-2xl font-medium text-[#6E7480]">%</span>
+            <span className="text-2xl font-medium" style={{ color: whatIfIRR != null ? '#fb923c' : '#6E7480' }}>%</span>
+            {whatIfIRR != null && (
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase mb-4" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                WHAT-IF
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 mb-6">
+            {whatIfIRR != null ? (
+              <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+              </div>
+            ) : (
+              <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-6 mb-8">
@@ -297,7 +452,8 @@ export default function IRRIntelligencePage() {
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
-                  width: `${benchmarkPct}%`,
+                  // TODO: wire to real benchmark percentile when available
+                  width: `75%`,
                   background: 'linear-gradient(90deg, #0d9488, #454955)',
                   boxShadow: '0 0 12px rgba(69, 73, 85,0.3)',
                 }}
@@ -314,7 +470,7 @@ export default function IRRIntelligencePage() {
               <p className="text-xs text-[#6B6870] mt-1">Comparing projected hold horizons vs. actual performance</p>
             </div>
           </div>
-          <ScenariosChart scenarios={DEMO_SCENARIOS} />
+          <ScenariosChart scenarios={scenarios} />
         </div>
       </div>
 
@@ -324,7 +480,7 @@ export default function IRRIntelligencePage() {
         <IRRExitAssumptionsTerminal
           defaults={{
             totalCashInvested: portfolioDefaults.totalCashInvested,
-            annualCashFlow: -4443.31,
+            annualCashFlow: portfolioDefaults.totalCashInvested > 0 ? Math.round(portfolioDefaults.totalCashInvested * 0.08) : 0,
             holdYears: 5,
             purchasePrice: portfolioDefaults.purchasePrice,
             appreciationPercent: 3,
@@ -361,7 +517,7 @@ export default function IRRIntelligencePage() {
               </tr>
             </thead>
             <tbody>
-              {DEMO_SENSITIVITY.map((row, i) => (
+              {defaultSensitivity.map((row, i) => (
                 <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                   <td className="py-3 pr-6 font-semibold text-white">{row.variable}</td>
                   <td className="py-3 pr-6 font-mono text-[#C0BEC2] tabular-nums">{row.base}</td>

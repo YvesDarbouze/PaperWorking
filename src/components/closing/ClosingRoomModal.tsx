@@ -3,12 +3,13 @@ import { ApplicationUser } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pingDigitalRegistry, verifyClosingDocuments } from '@/lib/web3RegistryHooks';
+import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import ESignAction from '@/components/shared/ESignAction';
 import { usePermissions } from '@/hooks/usePermissions';
 import { uploadFile } from '@/lib/storage/uploadService';
-
+import { useAuth } from '@/context/AuthContext';
+import { projectsService } from '@/lib/firebase/deals';
 
 interface ClosingRoomProps {
     projectId: string;
@@ -20,12 +21,14 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const updateClosingRoom = useProjectStore(state => state.updateClosingRoom);
     const deal = projects.find(d => d.id === projectId);
     const { role } = usePermissions();
+    const { user, profile } = useAuth();
 
     const [isPinging, setIsPinging] = useState(false);
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
     const [isSearchingLawyers, setIsSearchingLawyers] = useState(false);
     const [isSigned, setIsSigned] = useState(false);
     const [isVerifyingDocs, setIsVerifyingDocs] = useState(false);
+    const [uploadingField, setUploadingField] = useState<'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl' | null>(null);
 
     useEffect(() => {
       if (!deal) return;
@@ -35,7 +38,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         const stateMatch = deal.address.match(/,\s*([A-Z]{2})(?:\s+\d{5})?/i);
         const stateCode = stateMatch ? stateMatch[1].toUpperCase() : 'NY';
         try {
-          const res = await fetch(`/api/lawyers?state=${stateCode}`);
+          const token = user && typeof user.getIdToken === 'function' ? await user.getIdToken() : '';
+          const res = await fetch(`/api/lawyers?state=${stateCode}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const data = await res.json();
           setMatchingLawyers(data.lawyers ?? []);
@@ -51,6 +59,21 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
 
     if (!deal) return null;
 
+    const isMember = user ? !!(deal.members && user.uid in deal.members) : false;
+
+    if (!isMember) {
+        return (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-md p-4">
+                <div className="bg-pw-glass-bg border border-pw-border backdrop-blur-[20px] rounded-2xl shadow-2xl w-full max-w-md p-6 flex flex-col items-center text-center">
+                    <AlertTriangle className="w-12 h-12 text-red-500 mb-4 animate-bounce" />
+                    <h2 className="text-xl font-bold text-pw-black mb-2">Access Denied</h2>
+                    <p className="text-sm text-pw-muted mb-6">You must be a member of this project to access the Closing Room.</p>
+                    <button onClick={onClose} className="pw-btn pw-btn--primary pw-btn--pill px-6 py-2">Close</button>
+                </div>
+            </div>
+        );
+    }
+
     const closingRoom = deal.closingRoom || {
         titleInsuranceUrl: null,
         closingDisclosureUrl: null,
@@ -58,29 +81,43 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         assignedLawyerUid: null,
         lawyerVerified: false,
         blockchainTxHash: null,
-        chainOfTitleStatus: 'pending'
+        chainOfTitleStatus: 'pending',
+        verifiedByUid: null,
+        verifiedByName: null,
+        verifiedAt: null,
+        verifiedRole: null
     };
 
     const handleWeb3Ping = async () => {
+        if (!isMember) return;
         setIsPinging(true);
         toast.loading('Verifying title on chain...', { id: 'web3' });
         try {
             const res = await pingDigitalRegistry(deal.address);
-            updateClosingRoom(deal.id, {
+            const updates = {
                 chainOfTitleStatus: res.chainOfTitleStatus,
                 blockchainTxHash: res.blockchainTxHash
+            };
+            await projectsService.updateProject(deal.id, {
+                closingRoom: {
+                    ...closingRoom,
+                    ...updates
+                }
             });
+            updateClosingRoom(deal.id, updates);
             toast.success(`Title Registry Verified! Hash: ${res.blockchainTxHash?.slice(0,10)}...`, { id: 'web3' });
-        } catch {
+        } catch (err: any) {
             toast.error('Failed to communicate with title nodes', { id: 'web3' });
         } finally {
             setIsPinging(false);
         }
     };
 
-    const [uploadingField, setUploadingField] = useState<'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl' | null>(null);
-
     const handleFileUpload = async (field: 'titleInsuranceUrl' | 'closingDisclosureUrl' | 'wiringInstructionsUrl', file: File) => {
+        if (!isMember) {
+            toast.error('Access denied. You are not a member of this project.');
+            return;
+        }
         setUploadingField(field);
         const toastId = toast.loading(`Uploading ${file.name}...`);
         try {
@@ -88,6 +125,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                 file,
                 path: 'closing_docs',
                 projectId: deal.id,
+            });
+            await projectsService.updateProject(deal.id, {
+                closingRoom: {
+                    ...closingRoom,
+                    [field]: res.downloadUrl
+                }
             });
             updateClosingRoom(deal.id, {
                 [field]: res.downloadUrl
@@ -101,7 +144,8 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
     };
 
-    const handleLawyerVerification = async () => {
+    const handleDocumentAttestation = async () => {
+        if (!isMember) return;
         const { titleInsuranceUrl, closingDisclosureUrl, wiringInstructionsUrl } = closingRoom;
         if (!titleInsuranceUrl || !closingDisclosureUrl || !wiringInstructionsUrl) {
             toast.error('All three required documents must be uploaded before legal verification.');
@@ -109,22 +153,47 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         }
 
         setIsVerifyingDocs(true);
-        const toastId = toast.loading('Running legal audits and generating cryptographic signatures...', { id: 'legal-verify' });
+        const toastId = toast.loading('Recording review attestation...', { id: 'legal-verify' });
         try {
-            const result = await verifyClosingDocuments(deal.id, {
-                titleInsuranceUrl,
-                closingDisclosureUrl,
-                wiringInstructionsUrl
-            });
-            updateClosingRoom(deal.id, { 
+            const reviewerName = profile?.displayName || user?.displayName || user?.email || 'Unknown Reviewer';
+            const reviewerRole = profile?.role || role || 'Project Member';
+            const timestamp = new Date().toISOString();
+
+            const updates = { 
                 lawyerVerified: true,
-                blockchainTxHash: closingRoom.blockchainTxHash || result.verificationTxHash
+                verifiedByUid: user?.uid || null,
+                verifiedByName: reviewerName,
+                verifiedAt: timestamp,
+                verifiedRole: reviewerRole
+            };
+            await projectsService.updateProject(deal.id, {
+                closingRoom: {
+                    ...closingRoom,
+                    ...updates
+                }
             });
-            toast.success('Documents verified and signed by attorney!', { id: 'legal-verify' });
+            updateClosingRoom(deal.id, updates);
+            toast.success('Document review successfully attested!', { id: 'legal-verify' });
         } catch (err: any) {
-            toast.error(err.message || 'Legal verification failed.', { id: 'legal-verify' });
+            toast.error(err.message || 'Failed to record review attestation.', { id: 'legal-verify' });
         } finally {
             setIsVerifyingDocs(false);
+        }
+    };
+
+    const handleUpdateClosingRoom = async (updates: Partial<typeof closingRoom>) => {
+        if (!isMember) return;
+        try {
+            await projectsService.updateProject(deal.id, {
+                closingRoom: {
+                    ...closingRoom,
+                    ...updates
+                }
+            });
+            updateClosingRoom(deal.id, updates);
+        } catch (err: any) {
+            console.error('[ClosingRoomModal] Update failed:', err);
+            toast.error(`Update failed: ${err.message || 'Unknown error'}`);
         }
     };
 
@@ -191,7 +260,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 <div className="bg-blue-500/10 border border-blue-500/30 p-4 rounded-2xl">
                                     <div className="flex justify-between items-center mb-2">
                                         <p className="font-medium text-blue-400 text-sm">Lawyer Assigned</p>
-                                        <button onClick={() => updateClosingRoom(deal.id, { assignedLawyerUid: null, lawyerVerified: false })} className="text-xs text-blue-400 hover:underline">Change</button>
+                                        <button onClick={() => handleUpdateClosingRoom({ assignedLawyerUid: null, lawyerVerified: false })} className="text-xs text-blue-400 hover:underline">Change</button>
                                     </div>
                                     <p className="text-sm text-pw-black">{matchingLawyers.find(l => l.uid === closingRoom.assignedLawyerUid)?.displayName || 'Unknown Attorney'}</p>
                                 </div>
@@ -207,7 +276,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                             {matchingLawyers.map(l => (
                                                 <div key={l.uid} className="flex justify-between items-center p-2 bg-pw-glass-bg/40 rounded-xl border border-pw-border shadow-sm">
                                                     <p className="text-sm text-pw-black">{l.displayName}</p>
-                                                    <button onClick={() => updateClosingRoom(deal.id, {assignedLawyerUid: l.uid})} className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill">Assign</button>
+                                                    <button onClick={() => handleUpdateClosingRoom({ assignedLawyerUid: l.uid })} className="pw-btn pw-btn--secondary pw-btn--sm pw-btn--pill">Assign</button>
                                                 </div>
                                             ))}
                                         </div>
@@ -215,25 +284,36 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 </div>
                             )}
 
-                            {/* Real Lawyer Verification Action */}
-                            {closingRoom.assignedLawyerUid && !closingRoom.lawyerVerified && (
-                                <div className="mt-4 pt-4 border-t border-pw-border">
-                                   <button 
-                                      onClick={handleLawyerVerification}
-                                      disabled={isVerifyingDocs}
-                                      className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition disabled:opacity-50"
-                                   >
-                                      {isVerifyingDocs ? 'Running Legal Audits...' : 'Verify & Sign Closing Documents'}
-                                   </button>
-                                </div>
-                            )}
-                            
-                            {closingRoom.lawyerVerified && (
-                                 <div className="mt-3 flex items-center text-green-500 text-sm font-medium">
-                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                     Approved by Legal
+                            {/* Real Document Review Attestation Action */}
+                             {closingRoom.assignedLawyerUid && !closingRoom.lawyerVerified && (
+                                 <div className="mt-4 pt-4 border-t border-pw-border">
+                                    <button 
+                                       onClick={handleDocumentAttestation}
+                                       disabled={isVerifyingDocs}
+                                       className="pw-btn pw-btn--primary pw-btn--pill w-full py-2 text-sm font-medium transition disabled:opacity-50"
+                                    >
+                                       {isVerifyingDocs ? 'Recording Review Attestation...' : 'Attest Document Review'}
+                                    </button>
                                  </div>
-                            )}
+                             )}
+                             
+                             {closingRoom.lawyerVerified && (
+                                  <div className="mt-3 flex flex-col gap-1 text-green-500 text-sm font-medium bg-green-500/10 border border-green-500/30 p-3 rounded-2xl">
+                                      <div className="flex items-center">
+                                          <CheckCircle className="w-4 h-4 mr-2" />
+                                          Reviewed & Approved
+                                      </div>
+                                      {closingRoom.verifiedByName ? (
+                                          <p className="text-xs text-pw-muted mt-1">
+                                              Attested by {closingRoom.verifiedByName} ({closingRoom.verifiedRole || 'Project Member'}) on {new Date(closingRoom.verifiedAt || '').toLocaleString()}
+                                          </p>
+                                      ) : (
+                                          <p className="text-xs text-pw-muted mt-1">
+                                              Approved by Legal
+                                          </p>
+                                      )}
+                                  </div>
+                             )}
                         </div>
 
                     </div>
@@ -271,7 +351,7 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                 <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                                 <div className="text-sm">
                                     <p className="font-medium mb-1">Acquisition Blocked</p>
-                                    <p className="opacity-90">You cannot proceed to the Renovation phase until all documents are uploaded and verified by the assigned Real Estate Attorney.</p>
+                                    <p className="opacity-90">You cannot proceed to the Renovation phase until all documents are uploaded and approved by the assigned Real Estate Attorney.</p>
                                 </div>
                             </div>
                         )}

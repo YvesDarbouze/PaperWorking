@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { AppreciationCollectionTerminal } from '@/components/intelligence/AppreciationCollectionTerminal';
 import type { AppreciationValues } from '@/components/intelligence/AppreciationCollectionTerminal';
 
@@ -22,26 +21,26 @@ import type { AppreciationValues } from '@/components/intelligence/AppreciationC
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_APPRECIATION   = 12.5;
-const DEMO_CURRENT_VALUE  = 545500;
-const DEMO_ORIGINAL_BASIS = 485000;
-const DEMO_UNREALIZED_GAIN = DEMO_CURRENT_VALUE - DEMO_ORIGINAL_BASIS; // 60500
+const defaultAppreciation   = 12.5;
+const defaultCurrentValue  = 545500;
+const defaultOriginalBasis = 485000;
+const defaultUnrealizedGain = defaultCurrentValue - defaultOriginalBasis; // 60500
 
-const DEMO_MONTHS_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultMonthsLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 // Portfolio value: ascending from purchase price to current estimated value
-const DEMO_PORTFOLIO_VALUE = [
+const defaultPortfolioValue = [
   485000, 490200, 496000, 502500, 508800, 515000,
   520200, 525800, 531000, 536500, 541200, 545500,
 ];
 
 // Market baseline: flatter appreciation (~5% annual = ~0.4%/month)
-const DEMO_MARKET_BASELINE = [
+const defaultMarketBaseline = [
   485000, 487000, 489000, 491000, 493000, 495000,
   497000, 499000, 501000, 503000, 505000, 507000,
 ];
 
-const DEMO_PROPERTIES = [
+const defaultProperties = [
   { address: '421 Oak St, Brooklyn', purchase: 485000, current: 545500, gain: 60500,  gainPct: 12.5, yoy: 12.5 },
   { address: '1248 Oakwood Ave',      purchase: 320000, current: 368000, gain: 48000,  gainPct: 15.0, yoy: 15.0 },
   { address: '77 Prospect Heights',   purchase: 820000, current: 890000, gain: 70000,  gainPct: 8.5,  yoy:  8.5 },
@@ -53,12 +52,76 @@ function AppreciationChart({
   labels,
   portfolioData,
   baselineData,
+  whatIfData,
 }: {
   labels: string[];
   portfolioData: number[];
   baselineData: number[];
+  whatIfData?: number[] | null;
 }) {
   // Shaded area between the two lines represents alpha generated
+  const seriesList = [
+    {
+      name: 'Portfolio Value',
+      type: 'line',
+      data: portfolioData,
+      smooth: true,
+      lineStyle: { width: 2.5, color: '#454955' },
+      itemStyle: { color: '#454955' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(69, 73, 85,0.22)' },
+            { offset: 1, color: 'rgba(69, 73, 85,0.03)' },
+          ],
+        },
+      },
+      symbol: 'none',
+      symbolSize: 7,
+    },
+    {
+      name: 'Market Baseline',
+      type: 'line',
+      data: baselineData,
+      smooth: true,
+      lineStyle: { width: 1.8, color: 'rgba(148,163,184,0.55)', type: 'dashed' },
+      itemStyle: { color: 'rgba(148,163,184,0.55)' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(148,163,184,0.08)' },
+            { offset: 1, color: 'transparent' },
+          ],
+        },
+      },
+      symbol: 'none',
+    },
+  ];
+
+  if (whatIfData) {
+    seriesList.push({
+      name: 'Hypothetical Value',
+      type: 'line',
+      data: whatIfData,
+      smooth: true,
+      lineStyle: { width: 2.5, color: '#fb923c', type: 'dashed' },
+      itemStyle: { color: '#fb923c' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(251, 146, 60, 0.15)' },
+            { offset: 1, color: 'transparent' },
+          ],
+        },
+      },
+      symbol: 'none',
+      symbolSize: 7,
+    } as any);
+  }
+
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -97,59 +160,62 @@ function AppreciationChart({
       },
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } },
     },
-    series: [
-      {
-        name: 'Portfolio Value',
-        type: 'line',
-        data: portfolioData,
-        smooth: true,
-        lineStyle: { width: 2.5, color: '#454955' },
-        itemStyle: { color: '#454955' },
-        areaStyle: {
-          color: {
-            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(69, 73, 85,0.22)' },
-              { offset: 1, color: 'rgba(69, 73, 85,0.03)' },
-            ],
-          },
-        },
-        symbol: 'none',
-        symbolSize: 7,
-      },
-      {
-        name: 'Market Baseline',
-        type: 'line',
-        data: baselineData,
-        smooth: true,
-        lineStyle: { width: 1.8, color: 'rgba(148,163,184,0.55)', type: 'dashed' },
-        itemStyle: { color: 'rgba(148,163,184,0.55)' },
-        areaStyle: {
-          color: {
-            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-            colorStops: [
-              { offset: 0, color: 'rgba(148,163,184,0.08)' },
-              { offset: 1, color: 'transparent' },
-            ],
-          },
-        },
-        symbol: 'none',
-      },
-    ],
+    series: seriesList,
   };
   return <ReactECharts option={option} style={{ height: 280, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
 export default function AppreciationIntelligencePage() {
   useAllDealsSync();
-  useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+
+  const appCurrentResult = useMetricCurrent('APPRECIATION', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const appSeriesResult = useMetricSeries('APPRECIATION', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
 
   /* ── Reactive state from Collection Terminal ── */
   const [collectedValues, setCollectedValues] = useState<AppreciationValues | null>(null);
-  const handleCollectionChange = useCallback((v: AppreciationValues) => setCollectedValues(v), []);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialAppRef = useRef<number | null>(null);
+
+  const handleCollectionChange = useCallback((v: AppreciationValues) => {
+    if (initialAppRef.current === null) {
+      initialAppRef.current = v.annualizedRate;
+    } else if (Math.abs(v.annualizedRate - initialAppRef.current) > 0.01) {
+      setHasInteracted(true);
+    }
+    setCollectedValues(v);
+  }, []);
+
+  const portfolioDefaults = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return {
+        purchasePrice: defaultOriginalBasis,
+        acquisitionCosts: 0,
+        currentEstimate: defaultCurrentValue,
+        holdYears: 5,
+      };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withEquity.length > 0) {
+      const totalPurchase = withEquity.reduce((sum, p) => sum + (p.financials?.purchasePrice ?? 0), 0);
+      const totalCurrent = withEquity.reduce((sum, p) => sum + (p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? 0), 0);
+      return {
+        purchasePrice: Math.round(totalPurchase),
+        acquisitionCosts: 0,
+        currentEstimate: Math.round(totalCurrent),
+        holdYears: 5,
+      };
+    }
+    return {
+      purchasePrice: defaultOriginalBasis,
+      acquisitionCosts: 0,
+      currentEstimate: defaultCurrentValue,
+      holdYears: 5,
+    };
+  }, [portfolioInputsResult]);
 
   const {
     isUsingDemoData,
@@ -162,16 +228,21 @@ export default function AppreciationIntelligencePage() {
     portfolioSeries,
     baselineSeries,
   } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots]
+    if (
+      appSeriesResult.status === 'ready' &&
+      appCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
         .slice(-12);
-      const appVals  = sorted.map((s) => s.appreciation ?? 0);
-      const valVals  = sorted.map((s) => s.propertyValue ?? 0);
+      const appVals  = sorted.map((s) => s.appreciation ?? (0));
+      const valVals  = sorted.map((s) => s.propertyValue ?? (0));
       const labels   = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const lastApp  = appVals[appVals.length - 1];
-      const lastVal  = valVals[valVals.length - 1];
-      const firstVal = valVals[0];
+      const lastApp  = appCurrentResult.data;
+      const lastVal  = valVals[valVals.length - 1] ?? (0);
+      const firstVal = valVals[0] ?? (0);
       const gain     = lastVal - firstVal;
       // Baseline = linear appreciation at 5% annual
       const baselineVals = valVals.map((_, i) => {
@@ -191,23 +262,79 @@ export default function AppreciationIntelligencePage() {
     }
     return {
       isUsingDemoData: true,
-      appreciationRate: collectedValues?.annualizedRate ?? DEMO_APPRECIATION,
-      currentValue: collectedValues?.currentEstimate ?? DEMO_CURRENT_VALUE,
-      originalBasis: collectedValues?.totalBasis ?? DEMO_ORIGINAL_BASIS,
-      unrealizedGain: collectedValues?.totalGain ?? DEMO_UNREALIZED_GAIN,
-      annualRate: collectedValues?.annualizedRate ?? DEMO_APPRECIATION,
-      chartLabels: DEMO_MONTHS_LABELS,
-      portfolioSeries: DEMO_PORTFOLIO_VALUE,
-      baselineSeries: DEMO_MARKET_BASELINE,
+      appreciationRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      currentValue: collectedValues?.currentEstimate ?? defaultCurrentValue,
+      originalBasis: collectedValues?.totalBasis ?? defaultOriginalBasis,
+      unrealizedGain: collectedValues?.totalGain ?? defaultUnrealizedGain,
+      annualRate: collectedValues?.annualizedRate ?? defaultAppreciation,
+      chartLabels: defaultMonthsLabels,
+      portfolioSeries: defaultPortfolioValue,
+      baselineSeries: defaultMarketBaseline,
     };
-  }, [snapshots, collectedValues]);
+  }, [appSeriesResult, appCurrentResult, portfolioInputsResult, collectedValues]);
+
+  const whatIfApp = useMemo(() => {
+    if (hasInteracted && collectedValues) {
+      return {
+        appreciationRate: collectedValues.annualizedRate,
+        currentValue: collectedValues.currentEstimate,
+        originalBasis: collectedValues.totalBasis,
+        unrealizedGain: collectedValues.totalGain,
+      };
+    }
+    return null;
+  }, [hasInteracted, collectedValues]);
+
+  const displayAppreciationRate = whatIfApp?.appreciationRate ?? appreciationRate;
+  const displayCurrentValue = whatIfApp?.currentValue ?? currentValue;
+  const displayOriginalBasis = whatIfApp?.originalBasis ?? originalBasis;
+  const displayUnrealizedGain = whatIfApp?.unrealizedGain ?? unrealizedGain;
+
+  const whatIfPortfolioSeries = useMemo(() => {
+    if (!whatIfApp) return null;
+    const pts = portfolioSeries.length;
+    const firstVal = whatIfApp.originalBasis;
+    const lastVal = whatIfApp.currentValue;
+    const trajectory = [];
+    for (let i = 0; i < pts; i++) {
+      const t = i / (pts - 1 || 1);
+      const val = firstVal + (lastVal - firstVal) * t;
+      trajectory.push(Math.round(val));
+    }
+    return trajectory;
+  }, [whatIfApp, portfolioSeries]);
+
+  const propertiesTableData = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withEquity.length > 0) {
+      return withEquity.map((p) => {
+        const purchase = p.financials?.purchasePrice ?? (0);
+        const current = p.financials?.estimatedCurrentValue ?? p.financials?.estimatedARV ?? purchase;
+        const gain = current - purchase;
+        const gainPct = purchase > 0 ? (gain / purchase) * 100 : 0;
+        return {
+          address: p.address || p.propertyName || 'Unknown Property',
+          purchase,
+          current,
+          gain,
+          gainPct,
+          yoy: gainPct,
+        };
+      });
+    }
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
   const fmtPct = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
 
   // Alpha = portfolio appreciation vs market baseline
-  const alphaVsPct = ((currentValue - (baselineSeries[baselineSeries.length - 1] ?? currentValue)) / (baselineSeries[baselineSeries.length - 1] ?? currentValue) * 100);
-  const alphaDollar = currentValue - (baselineSeries[baselineSeries.length - 1] ?? currentValue);
+  const alphaVsPct = ((displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue)) / (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue) * 100);
+  const alphaDollar = displayCurrentValue - (baselineSeries[baselineSeries.length - 1] ?? displayCurrentValue);
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -273,15 +400,30 @@ export default function AppreciationIntelligencePage() {
             </div>
 
             <div className="flex items-baseline gap-3 mb-3">
-              <span className="text-6xl font-bold text-[#6E7480] tabular-nums tracking-tighter leading-none">
-                {fmtPct(appreciationRate)}
+              <span className="text-6xl font-bold tabular-nums tracking-tighter leading-none" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
+                {fmtPct(displayAppreciationRate)}
               </span>
+              {whatIfApp != null && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                  WHAT-IF
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-1 text-[#6E7480] text-sm font-bold">
-                <ArrowUpRight className="w-4 h-4" />
-                {fmt(Math.abs(unrealizedGain))} Unrealized Gain
+              {whatIfApp != null ? (
+                <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                </div>
+              ) : (
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+                </div>
+              )}
+              <div className="text-sm font-bold" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
+                {fmt(Math.abs(displayUnrealizedGain))} Unrealized Gain
               </div>
             </div>
 
@@ -290,7 +432,7 @@ export default function AppreciationIntelligencePage() {
               <div className="pt-3 border-t border-white/[0.06]">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-[#6B6870]">Alpha vs Market</span>
-                  <span className="text-xs font-bold text-[#6E7480] tabular-nums">
+                  <span className="text-xs font-bold tabular-nums" style={{ color: whatIfApp != null ? '#fb923c' : '#6E7480' }}>
                     +{fmtPct(alphaVsPct)} · +{fmt(alphaDollar)}
                   </span>
                 </div>
@@ -307,27 +449,23 @@ export default function AppreciationIntelligencePage() {
               {[
                 {
                   label: 'Current Value',
-                  value: fmt(currentValue),
-                  color: '#454955',
-                  change: null,
+                  value: fmt(displayCurrentValue),
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
                 },
                 {
                   label: 'Original Basis',
-                  value: fmt(originalBasis),
-                  color: '#9E9DA0',
-                  change: null,
+                  value: fmt(displayOriginalBasis),
+                  color: whatIfApp != null ? '#fb923c' : '#9E9DA0',
                 },
                 {
                   label: 'Unrealized Gain',
-                  value: `+${fmt(Math.abs(unrealizedGain))}`,
-                  color: '#454955',
-                  change: null,
+                  value: `+${fmt(Math.abs(displayUnrealizedGain))}`,
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
                 },
                 {
                   label: 'Annual Apprec. Rate',
-                  value: `${annualRate.toFixed(1)}%`,
-                  color: '#454955',
-                  change: null,
+                  value: `${displayAppreciationRate.toFixed(1)}%`,
+                  color: whatIfApp != null ? '#fb923c' : '#454955',
                 },
               ].map((kpi) => (
                 <div key={kpi.label} className="flex items-center justify-between py-2 border-b border-white/[0.04]">
@@ -369,6 +507,7 @@ export default function AppreciationIntelligencePage() {
               labels={chartLabels}
               portfolioData={portfolioSeries}
               baselineData={baselineSeries}
+              whatIfData={whatIfPortfolioSeries}
             />
 
             {/* Alpha callout */}
@@ -396,6 +535,7 @@ export default function AppreciationIntelligencePage() {
 
       {/* ── Appreciation Collection Terminal ── */}
       <AppreciationCollectionTerminal
+        defaults={portfolioDefaults}
         onValuesChange={handleCollectionChange}
       />
 
@@ -406,7 +546,7 @@ export default function AppreciationIntelligencePage() {
             Value by Property
           </span>
           <span className="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">
-            {DEMO_PROPERTIES.length} properties
+            {propertiesTableData.length} properties
           </span>
         </div>
 
@@ -423,7 +563,7 @@ export default function AppreciationIntelligencePage() {
               </tr>
             </thead>
             <tbody>
-              {DEMO_PROPERTIES.map((prop) => (
+              {propertiesTableData.map((prop) => (
                 <tr key={prop.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                   <td className="py-3 px-3 font-semibold text-white">{prop.address}</td>
                   <td className="py-3 px-3 text-right text-[#9E9DA0] tabular-nums">{fmt(prop.purchase)}</td>

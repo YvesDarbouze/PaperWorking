@@ -1,17 +1,19 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from 'react';
+import { getTeamMembers } from '@/actions/getTeamMembers';
 import { useUserStore } from '@/store/userStore';
 import { useProjectStore } from '@/store/projectStore';
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/lib/utils/ThemeProvider';
 import { 
-  Shield, Users, UserCircle, Search, RefreshCw, XCircle, Settings, History, Plus, X, 
+  Shield, Users, UserCircle, Search, RefreshCw, XCircle, Settings, Plus, X, 
   ChevronDown, Check, Mail, Info, AlertCircle, Sparkles, ExternalLink, Lock, UserCheck, Trash2
 } from 'lucide-react';
 import type { ProjectTeamMember, InternalRole } from '@/types/schema';
 import { usePermissions } from '@/hooks/usePermissions';
 import toast from 'react-hot-toast';
+import { useBilling } from '@/hooks/useBilling';
 
 /* ═══════════════════════════════════════════════════════
    Team Directory & Access Management Terminal
@@ -29,6 +31,7 @@ interface UnifiedMember {
   status: 'active' | 'invited' | 'removed' | 'suspended';
   assignedProjects: string[];
   lastActive?: string;
+  invitedAt?: Date | string;
 }
 
 const ROLE_PERMISSIONS: Record<InternalRole, string> = {
@@ -40,6 +43,19 @@ const ROLE_PERMISSIONS: Record<InternalRole, string> = {
   'Deal Lead': 'Underwrite individual properties, assign project-level action items, and manage deal pipeline.'
 };
 
+/**
+ * Convert a lastSeenAt ISO timestamp into a human-readable time-ago string.
+ * Returns '—' when no timestamp is available (honest empty state — never invented).
+ */
+function formatLastActive(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const ms = Date.now() - new Date(iso).getTime();
+  if (ms < 60_000)     return 'Active just now';
+  if (ms < 3_600_000)  return `Active ${Math.floor(ms / 60_000)}m ago`;
+  if (ms < 86_400_000) return `Active ${Math.floor(ms / 3_600_000)}h ago`;
+  return `Active ${Math.floor(ms / 86_400_000)}d ago`;
+}
+
 export default function TeamDirectoryPage() {
   const { profile } = useAuth();
   const { theme } = useTheme();
@@ -50,7 +66,6 @@ export default function TeamDirectoryPage() {
     teamMembers: internalMembers, 
     accountTier, 
     maxSeats, 
-    setAccountTier, 
     addTeamMember, 
     removeTeamMember, 
     suspendTeamMember, 
@@ -60,9 +75,34 @@ export default function TeamDirectoryPage() {
   const { projects, updateProjectTeam } = useProjectStore();
   const { isLead: isAdmin } = usePermissions();
 
+  const { isSubscribed, openPortal, startCheckout, isLoading: billingLoading } = useBilling();
+  const [pendingTier, setPendingTier] = useState<'Individual' | 'Team' | null>(null);
+
+  const handleTierChange = async (targetTier: 'Individual' | 'Team') => {
+    if (targetTier === accountTier) return;
+
+    setPendingTier(targetTier);
+    const toastId = toast.loading(
+      isSubscribed
+        ? 'Redirecting to Stripe Billing Portal...'
+        : `Opening checkout for ${targetTier === 'Team' ? 'Investment Team' : 'Investor'} plan...`
+    );
+
+    try {
+      if (isSubscribed) {
+        await openPortal();
+      } else {
+        await startCheckout(targetTier === 'Team' ? 'Investment Team' : 'Investor');
+      }
+    } catch (err: any) {
+      toast.dismiss(toastId);
+      toast.error(err.message || 'Failed to initiate plan change.');
+      setPendingTier(null);
+    }
+  };
+
   // Local States
   const [searchQuery, setSearchQuery] = useState('');
-  const [terminalLogs, setTerminalLogs] = useState<string[]>([]);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [bulkEmailInput, setBulkEmailInput] = useState('');
   const [selectedRole, setSelectedRole] = useState<InternalRole>('Deal Lead');
@@ -71,16 +111,22 @@ export default function TeamDirectoryPage() {
   const [enableScopedInvite, setEnableScopedInvite] = useState(false);
   const [hoveredRoleTooltip, setHoveredRoleTooltip] = useState<string | null>(null);
 
-  // Simulated active timestamps
-  const mockLastActiveTimes = useMemo(() => {
-    return {
-      CEO: 'Active 2m ago',
-      President: 'Active 15m ago',
-      CFO: 'Active 1h ago',
-      COO: 'Active 3h ago',
-      Admin: 'Active 12m ago',
-      'Deal Lead': 'Active 4h ago',
-    };
+  // Real last-seen timestamps keyed by uid or lowercased email.
+  // Populated from users/{uid}/sessions sub-collection via getTeamMembers().
+  const [memberActivity, setMemberActivity] = useState<Record<string, string | null>>({});
+
+  useEffect(() => {
+    getTeamMembers().then((result) => {
+      const map: Record<string, string | null> = {};
+      result.members.forEach((m) => {
+        const uid = (m as any).uid as string | undefined;
+        if (uid) map[uid] = (m as any).lastSeenAt ?? null;
+        map[m.email.toLowerCase()] = (m as any).lastSeenAt ?? null;
+      });
+      setMemberActivity(map);
+    }).catch(() => {
+      // Non-fatal: team page degrades to showing '—' for all members
+    });
   }, []);
 
   // Aggregate and merge all team members
@@ -101,7 +147,10 @@ export default function TeamDirectoryPage() {
         type: 'Internal',
         status: m.status,
         assignedProjects: m.assignedProjectIds || [],
-        lastActive: m.status === 'invited' ? 'Never' : (mockLastActiveTimes[m.internalRole] || 'Active 1d ago'),
+        lastActive: m.status === 'invited'
+          ? '—'
+          : formatLastActive(memberActivity[(m as any).uid ?? ''] ?? memberActivity[m.email.toLowerCase()]),
+        invitedAt: m.invitedAt,
       });
     });
 
@@ -129,7 +178,9 @@ export default function TeamDirectoryPage() {
             type: 'External',
             status: em.status,
             assignedProjects: [p.id],
-            lastActive: em.status === 'invited' ? 'Never' : 'Active 2d ago',
+            lastActive: em.status === 'invited'
+              ? '—'
+              : formatLastActive(memberActivity[em.email.toLowerCase()]),
           });
         }
       });
@@ -145,7 +196,7 @@ export default function TeamDirectoryPage() {
         type: 'Internal',
         status: 'active',
         assignedProjects: [],
-        lastActive: 'Online Now',
+        lastActive: formatLastActive(memberActivity[profile.uid ?? ''] ?? memberActivity[profile.email.toLowerCase()]),
       });
     }
 
@@ -154,7 +205,7 @@ export default function TeamDirectoryPage() {
       if (a.type !== b.type) return a.type === 'Internal' ? -1 : 1;
       return a.displayName.localeCompare(b.displayName);
     });
-  }, [internalMembers, projects, profile, mockLastActiveTimes]);
+  }, [internalMembers, projects, profile, memberActivity]);
 
   // Split active personnel vs pending invitations
   const activePersonnel = useMemo(() => {
@@ -171,19 +222,10 @@ export default function TeamDirectoryPage() {
     return unifiedTeam.filter(member => member.status === 'invited');
   }, [unifiedTeam]);
 
-  // Terminal simulated logs
-  useEffect(() => {
-    const initialLogs = [
-      `[${new Date().toLocaleTimeString()}] INFO Connected to secure organization namespace.`,
-      `[${new Date().toLocaleTimeString()}] INFO Loaded ${unifiedTeam.length} identity access profiles.`,
-      `[${new Date().toLocaleTimeString()}] SEC Encryption standard: AES-256 enabled for team metadata.`,
-      `[${new Date().toLocaleTimeString()}] INFO Status: STABLE. Monitoring seat allocation.`
-    ];
-    setTerminalLogs(initialLogs);
-  }, [unifiedTeam.length]);
+
 
   // Handle invitation submission
-  const handleSendInvites = (e: React.FormEvent) => {
+  const handleSendInvites = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bulkEmailInput.trim()) {
       toast.error("Please enter at least one email address.");
@@ -207,62 +249,85 @@ export default function TeamDirectoryPage() {
       return;
     }
 
-    emails.forEach(email => {
-      const newMember = {
+    // Validate scoped invite: a project must be selected when scope is enabled
+    if (enableScopedInvite && !assignProject) {
+      toast.error("Please select a project for the scoped invite, or disable the restriction.");
+      return;
+    }
+
+    const scopedProjectIds = enableScopedInvite && assignProject ? [assignProject] : [];
+    const isScoped = scopedProjectIds.length > 0;
+
+    const toastId = toast.loading(`Sending ${emails.length} invitation(s)…`);
+
+    const { persistTeamInvite } = await import('@/actions/team');
+
+    let sent = 0;
+    let failed = 0;
+
+    for (const email of emails) {
+      const optimisticMember = {
         id: Math.random().toString(36).substring(2, 9),
         email,
         displayName: email.split('@')[0],
         internalRole: selectedRole,
         invitedAt: new Date(),
         status: 'invited' as const,
-        assignedProjectIds: assignProject ? [assignProject] : [],
+        assignedProjectIds: scopedProjectIds,
+        scopedProjectIds,
+        isScoped,
+        scope: isScoped ? ('project' as const) : ('tenant' as const),
       };
-      
-      // Zustand store update
-      addTeamMember(newMember);
 
-      // System Log trigger
-      const scopeMsg = enableScopedInvite && assignProject 
-        ? `[Project Ref: ${assignProject}${assignTabOrTask ? ` • Tab: ${assignTabOrTask}` : ''}]` 
-        : `[Global Access]`;
-      
-      setTerminalLogs(prev => [
-        ...prev,
-        `[${new Date().toLocaleTimeString()}] SEC Invite dispatched to: ${email}. Scoped permissions: ${scopeMsg}`
-      ]);
-    });
+      // Optimistic Zustand update — immediately visible in the team list
+      addTeamMember(optimisticMember);
 
-    toast.success(`Sent ${emails.length} invitation(s) successfully!`);
+      try {
+        // Server action: persists the tokenised invite with scope to Firestore
+        await persistTeamInvite(optimisticMember);
+        sent++;
+      } catch (err: unknown) {
+        failed++;
+        const message = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`[Team] Failed to invite ${email}:`, message);
+        toast.error(`Failed to invite ${email}: ${message}`);
+      }
+    }
+
+    toast.dismiss(toastId);
+
+    if (sent > 0) {
+      toast.success(
+        isScoped
+          ? `Sent ${sent} scoped invitation(s) — restricted to "${projects.find(p => p.id === assignProject)?.propertyName ?? assignProject}".`
+          : `Sent ${sent} invitation(s) successfully!`
+      );
+    }
+    if (failed > 0) {
+      toast.error(`${failed} invitation(s) failed. Check above for details.`);
+    }
+
     setBulkEmailInput('');
+    setEnableScopedInvite(false);
+    setAssignProject('');
+    setAssignTabOrTask('');
     setInviteModalOpen(false);
   };
 
   const handleRevokeAccess = (memberId: string, email: string) => {
     removeTeamMember(memberId);
     toast.success(`Revoked access for ${email}`);
-    setTerminalLogs(prev => [
-      ...prev,
-      `[${new Date().toLocaleTimeString()}] WARN Terminated session and revoked keys for collaborator: ${email}`
-    ]);
   };
 
   const handleToggleSuspend = (memberId: string, email: string, currentStatus: string) => {
     const suspend = currentStatus !== 'suspended';
     suspendTeamMember(memberId, suspend);
     toast.success(suspend ? `Suspended ${email}` : `Reactivated ${email}`);
-    setTerminalLogs(prev => [
-      ...prev,
-      `[${new Date().toLocaleTimeString()}] INFO Identity ${email} status modified to: ${suspend ? 'SUSPENDED' : 'ACTIVE'}`
-    ]);
   };
 
   const handleRoleChange = (memberId: string, role: InternalRole) => {
     updateMemberRole(memberId, role);
     toast.success(`Role updated to ${role}`);
-    setTerminalLogs(prev => [
-      ...prev,
-      `[${new Date().toLocaleTimeString()}] SEC Updated identity role mapping for ID ${memberId} to '${role}'`
-    ]);
   };
 
   const activeSeatsCount = internalMembers.filter(m => m.status !== 'removed').length;
@@ -348,25 +413,25 @@ export default function TeamDirectoryPage() {
                   />
                 </div>
                 <button
-                  onClick={() => {
-                    setAccountTier('Individual');
-                    toast.success("Downgraded to Individual. Team members purged.");
-                  }}
-                  className="text-[11px] font-semibold text-red-500 dark:text-red-400 hover:underline text-left mt-2 block cursor-pointer"
+                  onClick={() => handleTierChange('Individual')}
+                  disabled={billingLoading || pendingTier !== null}
+                  className="text-[11px] font-semibold text-red-500 dark:text-red-400 hover:underline text-left mt-2 block disabled:opacity-55 disabled:no-underline disabled:cursor-not-allowed cursor-pointer"
                 >
-                  Downgrade to Individual Tier
+                  {pendingTier === 'Individual' && billingLoading ? 'Downgrading...' : 'Downgrade to Individual Tier'}
                 </button>
               </div>
             ) : (
               <button
-                onClick={() => {
-                  setAccountTier('Team');
-                  toast.success("Upgraded to Investment Team Plan. 10 seats unlocked.");
-                }}
-                className="bg-neutral-950 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 font-semibold text-[13px] py-2 px-5 rounded-md flex items-center justify-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-neutral-900 cursor-pointer"
+                onClick={() => handleTierChange('Team')}
+                disabled={billingLoading || pendingTier !== null}
+                className="bg-neutral-950 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 disabled:opacity-55 disabled:cursor-not-allowed font-semibold text-[13px] py-2 px-5 rounded-md flex items-center justify-center gap-1.5 transition-all focus-visible:ring-2 focus-visible:ring-neutral-900 cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
-                Upgrade to Investment Team
+                {pendingTier === 'Team' && billingLoading ? (
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
+                )}
+                {pendingTier === 'Team' && billingLoading ? 'Upgrading...' : 'Upgrade to Investment Team'}
               </button>
             )}
           </div>
@@ -628,6 +693,11 @@ export default function TeamDirectoryPage() {
                         <span className="text-[9px] font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-500 px-1 rounded">
                           {invite.role}
                         </span>
+                        {invite.invitedAt && (
+                          <span className="text-[9px] text-neutral-400 dark:text-neutral-500 font-medium">
+                            Sent {new Date(invite.invitedAt).toLocaleDateString()} {new Date(invite.invitedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        )}
                         <span className="text-[9px] font-medium text-amber-600 dark:text-amber-500">
                           Expires in 48h
                         </span>
@@ -641,10 +711,16 @@ export default function TeamDirectoryPage() {
                             (async () => {
                               const { resendTeamInvite } = await import('@/actions/team');
                               await resendTeamInvite(invite.email);
-                              setTerminalLogs(prev => [
-                                ...prev,
-                                `[${new Date().toLocaleTimeString()}] INFO Resent registration scope link to collaborator: ${invite.email}`
-                              ]);
+
+                              // Update Zustand store locally to reflect resend time
+                              useUserStore.setState((state) => ({
+                                teamMembers: state.teamMembers.map((m) =>
+                                  m.email.toLowerCase() === invite.email.toLowerCase()
+                                    ? { ...m, invitedAt: new Date() }
+                                    : m
+                                ),
+                              }));
+
                             })(),
                             {
                               loading: `Resending invitation to ${invite.email}...`,
@@ -672,33 +748,7 @@ export default function TeamDirectoryPage() {
             </div>
           </div>
 
-          {/* Security & System Logs Console */}
-          <div className="bg-[#1c1917] dark:bg-black rounded-lg border border-neutral-800 shadow-xl p-4 min-h-[280px] flex flex-col font-mono text-[11px] leading-relaxed text-zinc-300">
-            <div className="flex justify-between items-center pb-2 mb-3 border-b border-zinc-800 shrink-0 text-zinc-500">
-              <div className="flex items-center gap-1.5">
-                <History className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-wider">Security Access Log</span>
-              </div>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            </div>
 
-            <div className="flex-1 overflow-y-auto space-y-1 h-[200px]">
-              {terminalLogs.map((log, index) => {
-                let statusClr = "text-zinc-400";
-                if (log.includes("WARN")) statusClr = "text-amber-400";
-                if (log.includes("SEC")) statusClr = "text-purple-400 font-semibold";
-                return (
-                  <p key={index} className={`break-all ${statusClr}`}>
-                    {log}
-                  </p>
-                );
-              })}
-              <p className="flex items-center gap-1 text-emerald-400 pt-2">
-                <span>admin@paperworking:~$</span>
-                <span className="w-1.5 h-3 bg-emerald-400 animate-pulse inline-block" />
-              </p>
-            </div>
-          </div>
 
         </aside>
       </section>

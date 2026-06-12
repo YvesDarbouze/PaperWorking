@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import ReactECharts from 'echarts-for-react';
@@ -17,6 +17,7 @@ import {
   X,
   AlertCircle,
   Loader2,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
@@ -26,7 +27,9 @@ import {
   calculateProjectTaxReport,
   aggregatePortfolioTaxReport,
   TaxPLResult,
+  parseDateSafe,
 } from '@/lib/utils/taxService';
+import { projectsService } from '@/lib/firebase/projects';
 import toast from 'react-hot-toast';
 import { useTheme } from '@/lib/utils/ThemeProvider';
 import {
@@ -279,6 +282,259 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
+interface CategorizedExpenses {
+  advertising: number;
+  insurance: number;
+  repairs: number;
+  taxes: number;
+  utilities: number;
+  management: number;
+  depreciation: number;
+}
+
+function getCategorizedExpenses(
+  project: any,
+  ledgers: any[],
+  taxYear: number,
+  scale: number,
+  grossRent: number
+): CategorizedExpenses {
+  const f = project.financials || {};
+  const yearStart = new Date(taxYear, 0, 1).getTime();
+  const yearEnd = new Date(taxYear, 11, 31, 23, 59, 59, 999).getTime();
+
+  const isInYear = (dateStr: any) => {
+    const d = parseDateSafe(dateStr);
+    if (!d) return false;
+    const time = d.getTime();
+    return time >= yearStart && time <= yearEnd;
+  };
+
+  const yearLedgers = ledgers.filter(
+    (item: any) => item.status === 'Approved' && isInYear(item.createdAt)
+  );
+
+  const legacyCosts = f.costs || [];
+  const yearLegacy = legacyCosts.filter(
+    (item: any) => item.approved && isInYear(item.createdAt)
+  );
+
+  const allItems = [...yearLedgers, ...yearLegacy];
+
+  const rxAdvertising = /advertis|market|listing fee/i;
+  const rxInsurance = /insur|policy/i;
+  const rxRepairs = /repair|mainten|fix|plumb|electr/i;
+  const rxTaxes = /tax|assessor/i;
+  const rxUtilities = /utilit|water|sewer/i;
+  const rxManagement = /mgmt|management/i;
+
+  let actualAdv = 0;
+  let actualIns = 0;
+  let actualRep = 0;
+  let actualTax = 0;
+  let actualUtil = 0;
+  let actualMgmt = 0;
+
+  allItems.forEach((item) => {
+    const desc = (item.description || item.name || '').toLowerCase();
+    const amount = (item.amount ?? 0) * scale;
+
+    if (rxAdvertising.test(desc)) {
+      actualAdv += amount;
+    } else if (rxInsurance.test(desc)) {
+      actualIns += amount;
+    } else if (rxRepairs.test(desc)) {
+      actualRep += amount;
+    } else if (rxTaxes.test(desc)) {
+      actualTax += amount;
+    } else if (rxUtilities.test(desc)) {
+      actualUtil += amount;
+    } else if (rxManagement.test(desc)) {
+      actualMgmt += amount;
+    }
+  });
+
+  const fallbackIns = ((f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * 12) * scale;
+  const fallbackRep = ((f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) * 12) * scale;
+  const fallbackTax = ((f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * 12) * scale;
+  const fallbackUtil = ((f.holdingCostUtilities ?? 0) * 12) * scale;
+
+  let fallbackMgmt = 0;
+  if (f.propertyManagementFeePercent != null) {
+    fallbackMgmt = grossRent * (f.propertyManagementFeePercent / 100);
+  } else {
+    fallbackMgmt = ((f.propertyManagementFee ?? 0) * 12) * scale;
+  }
+
+  // Fallback to annualAdvertisingExpense (user-entered) when no ledger items match
+  const fallbackAdv = (f.annualAdvertisingExpense ?? f.rentalMarketingCost ?? 0) * scale;
+  const advertising = actualAdv > 0 ? actualAdv : fallbackAdv;
+  const insurance = actualIns > 0 ? actualIns : fallbackIns;
+  const repairs = actualRep > 0 ? actualRep : fallbackRep;
+  const taxes = actualTax > 0 ? actualTax : fallbackTax;
+  const utilities = actualUtil > 0 ? actualUtil : fallbackUtil;
+  const management = actualMgmt > 0 ? actualMgmt : fallbackMgmt;
+
+  // Use calculateProjectTaxReport for unified depreciation logic
+  const report = calculateProjectTaxReport(project, new Date(taxYear, 0, 1), new Date(taxYear, 11, 31));
+  const depreciation = (report.depreciationEstimate ?? 0) * scale;
+
+  return {
+    advertising,
+    insurance,
+    repairs,
+    taxes,
+    utilities,
+    management,
+    depreciation,
+  };
+}
+
+function ComparativeDepreciationCard({ projects }: { projects: any[] }) {
+  const propA = projects[0] || {
+    propertyName: 'Standard Asset (80/20 Fallback)',
+    financials: {
+      purchasePrice: 350000,
+      taxAssessedLandValue: 70000,
+      taxAssessedImprovementValue: 280000,
+      placedInServiceDate: '2025-01-01',
+    }
+  };
+
+  const propB = projects[1] || {
+    propertyName: 'Premium Land Asset (70/30 Split)',
+    financials: {
+      purchasePrice: 500000,
+      taxAssessedLandValue: 150000,
+      taxAssessedImprovementValue: 350000,
+      placedInServiceDate: '2025-01-01',
+    }
+  };
+
+  const getPropDetails = (p: any) => {
+    const f = p.financials || {};
+    const price = f.purchasePrice || 300000;
+    const acqCosts = f.fixedAcquisitionCosts || 0;
+    const basis = price + acqCosts;
+
+    const landVal = f.taxAssessedLandValue ?? 0;
+    const impVal = f.taxAssessedImprovementValue ?? 0;
+    const totalAssessed = landVal + impVal;
+
+    let landPct = 0.20;
+    let buildingPct = 0.80;
+
+    if (totalAssessed > 0) {
+      landPct = landVal / totalAssessed;
+      buildingPct = impVal / totalAssessed;
+    }
+
+    const landValue = basis * landPct;
+    const depreciableBasis = basis * buildingPct;
+    const annualDepr = depreciableBasis / 27.5;
+
+    return {
+      name: p.propertyName || p.address || 'Example Asset',
+      basis,
+      landPct: landPct * 100,
+      landValue,
+      buildingPct: buildingPct * 100,
+      depreciableBasis,
+      annualDepr,
+    };
+  };
+
+  const a = getPropDetails(propA);
+  const b = getPropDetails(propB);
+
+  const fmt = (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Property A Column */}
+        <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
+          <div className="truncate text-xs font-bold text-[var(--color-on-surface)]" title={a.name}>
+            {a.name}
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] text-[var(--color-on-surface-variant)] uppercase tracking-wider block">Acquisition Basis</span>
+            <span className="text-lg font-extrabold text-[var(--color-on-surface)] tabular-nums">{fmt(a.basis)}</span>
+          </div>
+          <div className="space-y-2 border-t border-[var(--color-outline-variant)] pt-2 text-xs">
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--color-on-surface-variant)]">Land Split ({a.landPct.toFixed(0)}%)</span>
+              <span className="font-semibold tabular-nums text-amber-500">{fmt(a.landValue)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--color-on-surface-variant)]">Building Basis ({a.buildingPct.toFixed(0)}%)</span>
+              <span className="font-semibold tabular-nums text-[var(--color-primary)]">{fmt(a.depreciableBasis)}</span>
+            </div>
+            <div className="flex justify-between items-center border-t border-[var(--color-outline-variant)] pt-2">
+              <span className="text-[var(--color-on-surface-variant)] font-medium">Annual Deduction</span>
+              <span className="font-bold tabular-nums text-[var(--color-primary)]">{fmt(a.annualDepr)}/yr</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Property B Column */}
+        <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] flex flex-col gap-3">
+          <div className="truncate text-xs font-bold text-[var(--color-on-surface)]" title={b.name}>
+            {b.name}
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] text-[var(--color-on-surface-variant)] uppercase tracking-wider block">Acquisition Basis</span>
+            <span className="text-lg font-extrabold text-[var(--color-on-surface)] tabular-nums">{fmt(b.basis)}</span>
+          </div>
+          <div className="space-y-2 border-t border-[var(--color-outline-variant)] pt-2 text-xs">
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--color-on-surface-variant)]">Land Split ({b.landPct.toFixed(0)}%)</span>
+              <span className="font-semibold tabular-nums text-amber-500">{fmt(b.landValue)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-[var(--color-on-surface-variant)]">Building Basis ({b.buildingPct.toFixed(0)}%)</span>
+              <span className="font-semibold tabular-nums text-[var(--color-primary)]">{fmt(b.depreciableBasis)}</span>
+            </div>
+            <div className="flex justify-between items-center border-t border-[var(--color-outline-variant)] pt-2">
+              <span className="text-[var(--color-on-surface-variant)] font-medium">Annual Deduction</span>
+              <span className="font-bold tabular-nums text-[var(--color-primary)]">{fmt(b.annualDepr)}/yr</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Visual basis ratio comparison bars */}
+      <div className="p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)] space-y-3">
+        <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block">Basis Allocation Visualizer</span>
+        <div className="space-y-2.5">
+          {/* Bar A */}
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-[var(--color-on-surface-variant)]">
+              <span className="truncate max-w-[150px]">{a.name}</span>
+              <span>Building: {a.buildingPct.toFixed(0)}% | Land: {a.landPct.toFixed(0)}%</span>
+            </div>
+            <div className="h-2.5 w-full rounded-full bg-[var(--color-surface-container-high)] flex overflow-hidden">
+              <div style={{ width: `${a.buildingPct}%` }} className="h-full bg-[var(--color-primary)] animate-all duration-500" />
+              <div style={{ width: `${a.landPct}%` }} className="h-full bg-amber-500 animate-all duration-500" />
+            </div>
+          </div>
+          {/* Bar B */}
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-[var(--color-on-surface-variant)]">
+              <span className="truncate max-w-[150px]">{b.name}</span>
+              <span>Building: {b.buildingPct.toFixed(0)}% | Land: {b.landPct.toFixed(0)}%</span>
+            </div>
+            <div className="h-2.5 w-full rounded-full bg-[var(--color-surface-container-high)] flex overflow-hidden">
+              <div style={{ width: `${b.buildingPct}%` }} className="h-full bg-[var(--color-primary)] animate-all duration-500" />
+              <div style={{ width: `${b.landPct}%` }} className="h-full bg-amber-500 animate-all duration-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Tax Report Row ── */
 function TaxReportRow({
   title,
@@ -505,7 +761,72 @@ export default function ReportsPage() {
     : ['#3279F9', '#45474D', '#7A5500', '#EFF2F7'];
 
   const projects = useProjectStore((s) => s.projects);
+  const ledgerItemsMap = useProjectStore((s) => s.ledgerItems);
+  const updateProjectFinancials = useProjectStore((s) => s.updateProjectFinancials);
+
+  const [selectedTaxProject, setSelectedTaxProject] = useState<any | null>(null);
+  const [landValueInput, setLandValueInput] = useState('');
+  const [improvementValueInput, setImprovementValueInput] = useState('');
+  const [placedInServiceInput, setPlacedInServiceInput] = useState('');
+  const [advertisingInput, setAdvertisingInput] = useState('');
+  const [isSavingTaxSettings, setIsSavingTaxSettings] = useState(false);
+
+  const handleOpenTaxSettings = (proj: any) => {
+    setSelectedTaxProject(proj);
+    setLandValueInput(proj.financials?.taxAssessedLandValue?.toString() || '');
+    setImprovementValueInput(proj.financials?.taxAssessedImprovementValue?.toString() || '');
+    setAdvertisingInput(proj.financials?.annualAdvertisingExpense?.toString() || '');
+    const serviceDate = proj.financials?.placedInServiceDate;
+    if (serviceDate) {
+      setPlacedInServiceInput(new Date(serviceDate).toISOString().split('T')[0]);
+    } else {
+      setPlacedInServiceInput('');
+    }
+  };
+
+  const handleSaveTaxSettings = async () => {
+    if (!selectedTaxProject) return;
+    setIsSavingTaxSettings(true);
+    try {
+      const landVal = parseFloat(landValueInput) || 0;
+      const impVal = parseFloat(improvementValueInput) || 0;
+      const advVal = parseFloat(advertisingInput) || 0;
+      const dateVal = placedInServiceInput ? new Date(placedInServiceInput).toISOString() : undefined;
+
+      // 1. Update store
+      updateProjectFinancials(selectedTaxProject.id, {
+        taxAssessedLandValue: landVal,
+        taxAssessedImprovementValue: impVal,
+        placedInServiceDate: dateVal,
+        annualAdvertisingExpense: advVal,
+      });
+
+      // 2. Persist to Firestore
+      const projToUpdate = projects.find((p) => p.id === selectedTaxProject.id);
+      if (projToUpdate) {
+        const updatedFinancials = {
+          ...projToUpdate.financials,
+          taxAssessedLandValue: landVal,
+          taxAssessedImprovementValue: impVal,
+          placedInServiceDate: dateVal,
+          annualAdvertisingExpense: advVal,
+        };
+        await projectsService.updateProject(selectedTaxProject.id, {
+          financials: updatedFinancials
+        });
+      }
+      toast.success('Tax settings updated successfully');
+      setSelectedTaxProject(null);
+    } catch (err) {
+      console.error('[handleSaveTaxSettings] Error:', err);
+      toast.error('Failed to update tax settings');
+    } finally {
+      setIsSavingTaxSettings(false);
+    }
+  };
+
   const now = useMemo(() => new Date(), []);
+  const [localLastSynced, setLocalLastSynced] = useState<Date | null>(null);
 
   const lastSyncedDate = useMemo(() => {
     let latest: Date | null = null;
@@ -520,9 +841,13 @@ export default function ReportsPage() {
     return latest;
   }, [projects]);
 
+  // Prefer the optimistic local timestamp set immediately on sync success;
+  // fall back to the Firestore-derived value once the snapshot propagates.
+  const effectiveLastSynced = localLastSynced ?? lastSyncedDate;
+
   const lastSyncStr = useMemo(() => {
-    if (lastSyncedDate) {
-      return lastSyncedDate.toLocaleString('en-US', {
+    if (effectiveLastSynced) {
+      return effectiveLastSynced.toLocaleString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -530,8 +855,16 @@ export default function ReportsPage() {
         minute: '2-digit',
       });
     }
-    return 'Never';
-  }, [lastSyncedDate]);
+    return 'Never synced';
+  }, [effectiveLastSynced]);
+
+  // Next eligible refresh = last sync + 7 days (matches the 7-day TTL in the cron route).
+  // Shown as an estimate, not a scheduled event.
+  const nextSyncStr = useMemo(() => {
+    if (!effectiveLastSynced) return 'Next manual sync';
+    const next = new Date(effectiveLastSynced.getTime() + 7 * 24 * 60 * 60 * 1000);
+    return next.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }, [effectiveLastSynced]);
 
   const [period, setPeriod] = useState<PeriodTab>('Quarterly');
   const [scope, setScope]   = useState<ScopeTab>('Property');
@@ -546,7 +879,56 @@ export default function ReportsPage() {
   });
 
   const apiPeriodType = period === 'Monthly' ? 'monthly' : period === 'Quarterly' ? 'quarterly' : period === 'Yearly' ? 'annual' : 'monthly';
+  // Route only accepts monthly/quarterly/yearly; Overall has no API analogue
+  const reportApiPeriod = period === 'Monthly' ? 'monthly' : period === 'Quarterly' ? 'quarterly' : period === 'Yearly' ? 'yearly' : null;
   const scopeParam = scope === 'My Share' ? 'myShare' : 'property';
+
+  // Period ledger — fetched from /api/reports/[period]
+  type PeriodLedgerTx = { date: string; label: string; category: string; amount: number; projectId: string; project: string };
+  type PeriodLedger = {
+    totals: { totalTransactions: number; totalExpenses: number; totalRevenue: number; netFlow: number };
+    transactions: PeriodLedgerTx[];
+    count: number;
+    page: number;
+    pages: number;
+    periodStart: string;
+    periodEnd: string;
+  };
+  const [periodLedger, setPeriodLedger] = useState<PeriodLedger | null>(null);
+  const [ledgerLoading, setLedgerLoading] = useState(false);
+  const [ledgerError, setLedgerError] = useState<string | null>(null);
+
+  const orgId = profile?.organizationId || profile?.personalOrganizationId;
+
+  useEffect(() => {
+    if (!reportApiPeriod || !orgId || !user) {
+      setPeriodLedger(null);
+      return;
+    }
+    let cancelled = false;
+    setLedgerLoading(true);
+    setLedgerError(null);
+    (async () => {
+      try {
+        const idToken = await user.getIdToken();
+        const res = await fetch(
+          `/api/reports/${reportApiPeriod}?organizationId=${encodeURIComponent(orgId)}`,
+          { headers: { Authorization: `Bearer ${idToken}` } }
+        );
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body.error || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        if (!cancelled) setPeriodLedger(data);
+      } catch (err: any) {
+        if (!cancelled) setLedgerError(err.message || 'Failed to load period ledger');
+      } finally {
+        if (!cancelled) setLedgerLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [reportApiPeriod, orgId, user]);
 
   // Pass scope + projects into the hook so it applies ownershipPercentage scaling
   const { snapshots, loading } = usePortfolioMetricSnapshots(apiPeriodType, projects, scopeParam as 'property' | 'myShare');
@@ -787,14 +1169,14 @@ export default function ReportsPage() {
       }
 
       const data = await res.json();
+      const syncedAt = new Date();
+      setLocalLastSynced(syncedAt);
       toast.success(`Sync completed! Refreshed ${data.refreshed} projects.`, {
         icon: '🔄',
         style: { background: '#111', color: '#fff', border: '1px solid #333' },
       });
-      
-      // Force store refresh
-      const currentProjects = useProjectStore.getState().projects;
-      useProjectStore.getState().setDeals([...currentProjects]);
+      // Trigger metric recalculation; the Firestore onSnapshot will update
+      // lastSyncedAt on individual project records as it propagates.
       useProjectStore.getState().recalculateMetrics();
     } catch (err) {
       console.error('[Sync Now] Failed to refresh data', err);
@@ -1153,6 +1535,126 @@ export default function ReportsPage() {
         </div>
       </div>
 
+      {/* ── Period Ledger: transaction-level detail ── */}
+      <div
+        className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
+        style={{ background: 'var(--bg-surface)' }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
+            Period Ledger
+          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-semibold text-[var(--color-primary)] bg-[var(--color-primary-container)] border border-[var(--color-outline-variant)] rounded px-2 py-0.5 uppercase tracking-widest">
+              {period}
+            </span>
+            {periodLedger && (
+              <span className="text-[10px] text-[var(--color-on-surface-variant)]">
+                {periodLedger.count} transaction{periodLedger.count !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Loading skeleton */}
+        {ledgerLoading && (
+          <div className="space-y-2">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-8 rounded-lg bg-[var(--color-surface-container-high)] animate-pulse" />
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
+        {!ledgerLoading && ledgerError && (
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-[var(--color-outline-variant)] bg-[var(--color-surface-container-low)]">
+            <AlertCircle className="w-4 h-4 text-[var(--color-error)] flex-shrink-0" />
+            <p className="text-sm text-[var(--color-on-surface-variant)]">{ledgerError}</p>
+          </div>
+        )}
+
+        {/* No period selected (Overall) */}
+        {!ledgerLoading && !ledgerError && !reportApiPeriod && (
+          <p className="text-sm text-[var(--color-on-surface-variant)] py-4 text-center">
+            Select Monthly, Quarterly, or Yearly to see transaction-level detail.
+          </p>
+        )}
+
+        {/* Empty period — honest empty shape */}
+        {!ledgerLoading && !ledgerError && reportApiPeriod && periodLedger && periodLedger.count === 0 && (
+          <div className="flex flex-col items-center justify-center py-8 gap-2">
+            <FileText className="w-8 h-8 text-[var(--color-on-surface-variant)] opacity-40" />
+            <p className="text-sm text-[var(--color-on-surface-variant)]">No approved transactions in this period.</p>
+            <p className="text-xs text-[var(--color-on-surface-variant)] opacity-70">
+              Approved ledger items and legacy cost entries will appear here once added.
+            </p>
+          </div>
+        )}
+
+        {/* Transactions table */}
+        {!ledgerLoading && !ledgerError && periodLedger && periodLedger.count > 0 && (
+          <>
+            <div className="overflow-x-auto -mx-1">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-[var(--color-surface-container-high)]">
+                    {['Date', 'Project', 'Category', 'Description', 'Amount'].map((h) => (
+                      <th
+                        key={h}
+                        className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap text-[var(--color-on-surface-variant)]"
+                        style={{ fontSize: '10px' }}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {periodLedger.transactions.map((tx, idx) => {
+                    const fmtAmt = (v: number) =>
+                      v >= 0
+                        ? `$${v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                        : `-$${Math.abs(v).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    const txDate = new Date(tx.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    return (
+                      <tr
+                        key={`${tx.projectId}-${tx.date}-${idx}`}
+                        className={`border-b border-[var(--color-outline-variant)] last:border-0 ${idx % 2 === 1 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
+                      >
+                        <td className="px-3 py-2 tabular-nums text-[var(--color-on-surface-variant)] whitespace-nowrap">{txDate}</td>
+                        <td className="px-3 py-2 font-semibold text-[var(--color-on-surface)] max-w-[160px] truncate">{tx.project}</td>
+                        <td className="px-3 py-2 text-[var(--color-on-surface-variant)] whitespace-nowrap">{tx.category}</td>
+                        <td className="px-3 py-2 text-[var(--color-on-surface)] max-w-[240px] truncate">{tx.label}</td>
+                        <td className="px-3 py-2 tabular-nums font-semibold text-right text-[var(--color-on-surface)] whitespace-nowrap">{fmtAmt(tx.amount)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="bg-[var(--color-surface-container-low)] border-t-2 border-[var(--color-outline-variant)]">
+                    <td colSpan={4} className="px-3 py-2.5 font-bold text-[var(--color-on-surface)] text-[11px] uppercase tracking-widest">
+                      Period Total
+                      {periodLedger.pages > 1 && (
+                        <span className="ml-2 font-normal text-[var(--color-on-surface-variant)] normal-case tracking-normal text-[10px]">
+                          (page {periodLedger.page ?? 1} of {periodLedger.pages})
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5 tabular-nums font-bold text-right text-[var(--color-on-surface)] whitespace-nowrap">
+                      ${periodLedger.totals.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+            <p className="text-[10px] text-[var(--color-on-surface-variant)] mt-3">
+              Showing {periodLedger.transactions.length} of {periodLedger.count} approved transactions.
+              Totals reflect the full period regardless of page.
+            </p>
+          </>
+        )}
+      </div>
+
       {/* ── Tax Intelligence: P&L Reports + Automation ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
@@ -1230,9 +1732,9 @@ export default function ReportsPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[var(--color-on-surface-variant)]">Next sync</span>
-                <span className="text-[var(--color-primary)] font-semibold tabular-nums">
-                  {new Date(now.getFullYear(), now.getMonth() + 1, 1).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                <span className="text-[var(--color-on-surface-variant)]">Next eligible sync</span>
+                <span className={`font-semibold tabular-nums ${effectiveLastSynced ? 'text-[var(--color-primary)]' : 'text-[var(--color-on-surface-variant)]'}`}>
+                  {nextSyncStr}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
@@ -1306,7 +1808,7 @@ export default function ReportsPage() {
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-[var(--color-surface-container-high)]">
-                {['Property', 'Gross Rent', 'Advertising', 'Insurance', 'Repairs', 'Taxes', 'Utilities', 'Depreciation', 'Total Expenses', 'Net Income'].map((h) => (
+                {['Property', 'Gross Rent', 'Advertising', 'Insurance', 'Management', 'Repairs', 'Taxes', 'Utilities', 'Depreciation', 'Total Expenses', 'Net Income'].map((h) => (
                   <th
                     key={h}
                     className="px-3 py-2.5 text-left font-bold uppercase tracking-widest whitespace-nowrap text-[var(--color-on-surface-variant)]"
@@ -1318,41 +1820,54 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {projectsWithFinancials.length > 0 ? projectsWithFinancials.map((p, i) => {
+              {projectsWithFinancials.length > 0 ? projectsWithFinancials.map((p, idx) => {
                 const f = p.financials;
                 const scale = scope === 'My Share' ? ((f.ownershipPercentage ?? 100) / 100) : 1;
                 const grossRent = ((f.monthlyGrossRent ?? 0) * 12) * scale;
-                const insurance = ((f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * 12) * scale;
-                const repairs = ((f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) * 12) * scale;
-                const taxes = ((f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * 12) * scale;
-                const utilities = ((f.holdingCostUtilities ?? 0) * 12) * scale;
-                const purchasePrice = (f.purchasePrice ?? 0) * scale;
-                const depreciation = purchasePrice > 0 ? Math.round((purchasePrice * 0.85) / 27.5) : 0;
-                const advertising = 0; // placeholder — not tracked yet
-                const totalExpenses = insurance + repairs + taxes + utilities + depreciation + advertising;
+                const ledgers = ledgerItemsMap[p.id] || [];
+                const expenses = getCategorizedExpenses(p, ledgers, taxYear, scale, grossRent);
+
+                const totalExpenses =
+                  expenses.advertising +
+                  expenses.insurance +
+                  expenses.management +
+                  expenses.repairs +
+                  expenses.taxes +
+                  expenses.utilities +
+                  expenses.depreciation;
                 const netIncome = grossRent - totalExpenses;
                 const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
 
                 return (
                   <tr
                     key={p.id}
-                    className={`border-b border-[var(--color-outline-variant)] last:border-0 ${i % 2 === 1 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
+                    className={`border-b border-[var(--color-outline-variant)] last:border-0 ${idx % 2 === 1 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
                   >
-                    <td className="px-3 py-2.5 font-semibold text-[var(--color-on-surface)] whitespace-nowrap truncate max-w-[180px]">{p.propertyName || p.address || 'Unnamed'}</td>
+                    <td className="px-3 py-2.5 font-semibold text-[var(--color-on-surface)] whitespace-nowrap truncate max-w-[200px] flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleOpenTaxSettings(p)}
+                        className="p-1 rounded hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-all flex-shrink-0"
+                        title="Edit Tax Allocation Settings"
+                      >
+                        <Settings className="w-3.5 h-3.5" />
+                      </button>
+                      <span className="truncate">{p.propertyName || p.address || 'Unnamed'}</span>
+                    </td>
                     <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(grossRent)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">{fmt(advertising)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(insurance)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(repairs)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(taxes)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(utilities)}</td>
-                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-primary)]">{fmt(depreciation)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">{fmt(expenses.advertising)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(expenses.insurance)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(expenses.management)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(expenses.repairs)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(expenses.taxes)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)]">{fmt(expenses.utilities)}</td>
+                    <td className="px-3 py-2.5 tabular-nums text-[var(--color-primary)]">{fmt(expenses.depreciation)}</td>
                     <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface)] font-semibold">{fmt(totalExpenses)}</td>
                     <td className={`px-3 py-2.5 tabular-nums font-bold ${netIncome >= 0 ? 'text-[var(--color-primary)]' : 'text-[var(--color-error)]'}`}>{fmt(netIncome)}</td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan={10} className="px-3 py-8 text-center text-[var(--color-on-surface-variant)] text-xs">
+                  <td colSpan={11} className="px-3 py-8 text-center text-[var(--color-on-surface-variant)] text-xs">
                     No properties with financial data for {taxYear}.
                   </td>
                 </tr>
@@ -1363,27 +1878,34 @@ export default function ReportsPage() {
               <tfoot>
                 <tr className="bg-[var(--color-surface-container-low)] border-t border-[var(--color-outline-variant)]">
                   {(() => {
-                    let tGross = 0, tIns = 0, tRepairs = 0, tTaxes = 0, tUtils = 0, tDepr = 0, tTotal = 0, tNet = 0;
+                    let tGross = 0, tAdv = 0, tIns = 0, tMgmt = 0, tRepairs = 0, tTaxes = 0, tUtils = 0, tDepr = 0, tTotal = 0, tNet = 0;
                     projectsWithFinancials.forEach((p) => {
                       const f = p.financials;
                       const s = scope === 'My Share' ? ((f.ownershipPercentage ?? 100) / 100) : 1;
                       const gr = ((f.monthlyGrossRent ?? 0) * 12) * s;
-                      const ins = ((f.holdingCostInsurance ?? f.operatingExpenseInsurance ?? 0) * 12) * s;
-                      const rep = ((f.monthlyMaintenanceReserve ?? f.maintenanceReserves ?? 0) * 12) * s;
-                      const tax = ((f.holdingCostTaxes ?? f.operatingExpenseTaxes ?? 0) * 12) * s;
-                      const utl = ((f.holdingCostUtilities ?? 0) * 12) * s;
-                      const pp = (f.purchasePrice ?? 0) * s;
-                      const dep = pp > 0 ? Math.round((pp * 0.85) / 27.5) : 0;
-                      const tot = ins + rep + tax + utl + dep;
-                      tGross += gr; tIns += ins; tRepairs += rep; tTaxes += tax; tUtils += utl; tDepr += dep; tTotal += tot; tNet += gr - tot;
+                      const ledgers = ledgerItemsMap[p.id] || [];
+                      const exp = getCategorizedExpenses(p, ledgers, taxYear, s, gr);
+                      const tot = exp.advertising + exp.insurance + exp.management + exp.repairs + exp.taxes + exp.utilities + exp.depreciation;
+                      
+                      tGross += gr;
+                      tAdv += exp.advertising;
+                      tIns += exp.insurance;
+                      tMgmt += exp.management;
+                      tRepairs += exp.repairs;
+                      tTaxes += exp.taxes;
+                      tUtils += exp.utilities;
+                      tDepr += exp.depreciation;
+                      tTotal += tot;
+                      tNet += gr - tot;
                     });
                     const fmt = (v: number) => v >= 0 ? `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : `-$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
                     return (
                       <>
                         <td className="px-3 py-2.5 font-bold text-[var(--color-on-surface)] text-[11px] uppercase tracking-widest">Totals</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tGross)}</td>
-                        <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">$0</td>
+                        <td className="px-3 py-2.5 tabular-nums text-[var(--color-on-surface-variant)]">{fmt(tAdv)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tIns)}</td>
+                        <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tMgmt)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tRepairs)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tTaxes)}</td>
                         <td className="px-3 py-2.5 tabular-nums font-bold text-[var(--color-on-surface)]">{fmt(tUtils)}</td>
@@ -1398,85 +1920,32 @@ export default function ReportsPage() {
             )}
           </table>
         </div>
+
+        {/* Schedule E Tax Disclaimer */}
+        <div className="mt-4 flex items-start gap-3 px-4 py-3 rounded-lg border border-amber-500/30 bg-amber-500/5">
+          <AlertCircle className="w-4 h-4 flex-shrink-0 text-amber-500 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="text-xs font-bold text-amber-500 uppercase tracking-widest">Estimates Only — Not Tax Advice</p>
+            <p className="text-[11px] text-[var(--color-on-surface-variant)] leading-relaxed">
+              These figures are automated estimates for planning purposes only. Depreciation uses county-assessed land/improvement allocations
+              where entered, falling back to an 80/20 building ratio when assessor data is absent. Actual Schedule E figures depend on your
+              specific tax elections, cost-segregation studies, and filing status. Consult a qualified tax professional or CPA before filing.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* ── Depreciation Schedule + Capital Gains Calculator ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
-        {/* Depreciation Schedule — 27.5 year straight-line */}
+        {/* Depreciation Comparison Bento Card */}
         <div
           className="rounded-2xl border border-[var(--color-outline-variant)] p-6"
           style={{ background: 'var(--bg-surface)' }}
         >
-          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Depreciation Schedule</span>
-          <p className="text-[11px] text-[var(--color-on-surface-variant)] mb-4">27.5-year straight-line for residential (land excluded at 15%)</p>
-
-          {projectsWithFinancials.length > 0 ? (() => {
-            // Use first property with purchase price as example
-            const exampleProject = projectsWithFinancials.find((p) => (p.financials.purchasePrice ?? 0) > 0);
-            if (!exampleProject) return <p className="text-xs text-[var(--color-on-surface-variant)]">No properties with purchase price data.</p>;
-            const pp = exampleProject.financials.purchasePrice ?? 0;
-            const depreciableBasis = Math.round(pp * 0.85); // exclude 15% land
-            const annualDepreciation = Math.round(depreciableBasis / 27.5);
-            const rows: { year: number; beginVal: number; depr: number; endVal: number }[] = [];
-
-            for (let y = 1; y <= 28; y++) {
-              const beginVal = Math.max(0, depreciableBasis - annualDepreciation * (y - 1));
-              const depr = Math.min(annualDepreciation, beginVal);
-              const endVal = Math.max(0, beginVal - depr);
-              if (y <= 5 || y >= 27) {
-                rows.push({ year: y, beginVal, depr, endVal });
-              }
-            }
-
-            const fmt = (v: number) => `$${v.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-
-            return (
-              <>
-                <div className="text-[11px] text-[var(--color-on-surface-variant)] mb-3">
-                  Based on: <span className="text-[var(--color-on-surface)] font-semibold">{exampleProject.propertyName || exampleProject.address}</span> — {fmt(pp)} purchase, {fmt(depreciableBasis)} depreciable basis
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="bg-[var(--color-surface-container-high)]">
-                        {['Year', 'Beginning Value', 'Depreciation', 'Ending Value'].map((h) => (
-                          <th key={h} className="px-3 py-2 text-left font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]" style={{ fontSize: '10px' }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map((r, i) => (
-                        <React.Fragment key={r.year}>
-                          {/* Insert ellipsis row between year 5 and year 27 */}
-                          {i > 0 && rows[i - 1].year === 5 && r.year === 27 && (
-                            <tr>
-                              <td colSpan={4} className="px-3 py-1.5 text-center text-[var(--color-on-surface-variant)] text-[11px]">⋮ Years 6–26 ⋮</td>
-                            </tr>
-                          )}
-                          <tr
-                            className={`border-b border-[var(--color-outline-variant)] last:border-0 ${r.year % 2 === 0 ? 'bg-[var(--color-surface-container-lowest)]' : 'bg-transparent'}`}
-                          >
-                            <td className="px-3 py-2 tabular-nums font-semibold text-[var(--color-on-surface)]">{r.year}</td>
-                            <td className="px-3 py-2 tabular-nums text-[var(--color-on-surface)]">{fmt(r.beginVal)}</td>
-                            <td className="px-3 py-2 tabular-nums text-[var(--color-primary)]">{fmt(r.depr)}</td>
-                            <td className="px-3 py-2 tabular-nums text-[var(--color-on-surface)]">{fmt(r.endVal)}</td>
-                          </tr>
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mt-3 text-[11px] text-[var(--color-on-surface-variant)]">
-                  Annual deduction: <span className="text-[var(--color-primary)] font-semibold">{fmt(annualDepreciation)}</span> /yr for 27.5 years
-                </div>
-              </>
-            );
-          })() : (
-            <div className="flex items-center justify-center py-8">
-              <p className="text-xs text-[var(--color-on-surface-variant)]">Add properties with purchase prices to see depreciation schedules.</p>
-            </div>
-          )}
+          <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)] block mb-1">Depreciation Comparison</span>
+          <p className="text-[11px] text-[var(--color-on-surface-variant)] mb-4">27.5-year straight-line residential (assessed land split vs. 80/20 building fallback)</p>
+          <ComparativeDepreciationCard projects={projectsWithFinancials} />
         </div>
 
         {/* Capital Gains Calculator */}
@@ -1632,6 +2101,124 @@ export default function ReportsPage() {
           {scope === 'My Share' && ' Metrics scaled by your ownership percentage.'}
         </p>
       </div>
+
+      {/* ── Tax Settings Modal ── */}
+      {selectedTaxProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedTaxProject(null)}>
+          <div
+            className="w-full max-w-md rounded-2xl border border-[var(--color-outline-variant)] bg-[var(--bg-surface)] p-6 overflow-hidden shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setSelectedTaxProject(null)}
+              className="absolute top-4 right-4 p-1 rounded-lg hover:bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] transition-all"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <span className="text-xs font-bold uppercase tracking-widest text-[var(--color-primary)] block mb-1">Tax Allocation Settings</span>
+            <h3 className="text-base font-bold text-[var(--color-on-surface)] truncate mb-4">
+              {selectedTaxProject.propertyName || selectedTaxProject.address || 'Property'}
+            </h3>
+
+            <div className="space-y-4">
+              {/* Land Value */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
+                  Assessed Land Value (USD)
+                </label>
+                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                  <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
+                  <input
+                    type="number"
+                    value={landValueInput}
+                    onChange={(e) => setLandValueInput(e.target.value)}
+                    placeholder="e.g. 50000"
+                    className="w-full bg-transparent px-2 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Improvement Value */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
+                  Assessed Improvement/Building Value (USD)
+                </label>
+                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                  <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
+                  <input
+                    type="number"
+                    value={improvementValueInput}
+                    onChange={(e) => setImprovementValueInput(e.target.value)}
+                    placeholder="e.g. 200000"
+                    className="w-full bg-transparent px-2 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Annual Advertising Expense */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
+                  Annual Advertising Expense (USD) — Schedule E Line 5
+                </label>
+                <div className="flex items-center rounded-lg bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] focus-within:border-[var(--color-primary)] transition-all">
+                  <span className="pl-3 pr-1 text-xs text-[var(--color-on-surface-variant)] font-medium">$</span>
+                  <input
+                    type="number"
+                    value={advertisingInput}
+                    onChange={(e) => setAdvertisingInput(e.target.value)}
+                    placeholder="e.g. 600"
+                    className="w-full bg-transparent px-2 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none"
+                  />
+                </div>
+                <p className="text-[10px] text-[var(--color-on-surface-variant)]">Vacancy listings, marketing ads, and tenant-placement fees paid per year.</p>
+              </div>
+
+              {/* Placed in Service Date */}
+              <div className="space-y-1.5">
+                <label className="block text-[10px] font-bold uppercase tracking-widest text-[var(--color-on-surface-variant)]">
+                  Placed In Service Date
+                </label>
+                <input
+                  type="date"
+                  value={placedInServiceInput}
+                  onChange={(e) => setPlacedInServiceInput(e.target.value)}
+                  className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)] rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] font-medium outline-none focus:border-[var(--color-primary)] transition-all"
+                />
+              </div>
+
+              {/* Info Alert on ratio */}
+              {parseFloat(landValueInput) > 0 && parseFloat(improvementValueInput) > 0 && (
+                <div className="p-3 rounded-lg bg-[var(--color-surface-container-high)] border border-[var(--color-outline-variant)] text-[11px] text-[var(--color-on-surface-variant)]">
+                  <span className="font-semibold text-[var(--color-on-surface)]">Building Basis Ratio: </span>
+                  {Math.round((parseFloat(improvementValueInput) / (parseFloat(landValueInput) + parseFloat(improvementValueInput))) * 100)}% 
+                  <span className="ml-2 font-semibold text-[var(--color-on-surface)]">Land Ratio: </span>
+                  {Math.round((parseFloat(landValueInput) / (parseFloat(landValueInput) + parseFloat(improvementValueInput))) * 100)}%
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 mt-6 border-t border-[var(--color-outline-variant)] pt-4">
+              <button
+                type="button"
+                onClick={() => setSelectedTaxProject(null)}
+                className="px-4 py-2 rounded-lg border border-[var(--color-outline-variant)] text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] text-xs font-semibold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isSavingTaxSettings}
+                onClick={handleSaveTaxSettings}
+                className="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-container)] hover:text-[var(--color-primary)] text-xs font-semibold transition-all flex items-center gap-1.5 disabled:opacity-50"
+              >
+                {isSavingTaxSettings && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {isSavingTaxSettings ? 'Saving...' : 'Save Allocation'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

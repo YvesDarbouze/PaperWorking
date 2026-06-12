@@ -36,7 +36,7 @@ interface UserState {
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
-  hasActiveSubscription: true,
+  hasActiveSubscription: false,
   orgRole: 'Lead Investor',
 
   // Account Tier defaults
@@ -47,12 +47,11 @@ export const useUserStore = create<UserState>((set, get) => ({
   setOrgRole: (role) => set({ orgRole: role }),
 
   // ─── Account Tier Actions ─────────────────────────────
-  setAccountTier: (tier) => set({
-    accountTier: tier,
-    maxSeats: tier === 'Team' ? 10 : 1,
-    // Clear team members when downgrading to Individual
-    ...(tier === 'Individual' ? { teamMembers: [] } : {}),
-  }),
+  setAccountTier: (tier) => {
+    console.warn(
+      `[userStore] setAccountTier('${tier}') is deprecated. Plan changes must route through Stripe. Direct client modifications are ignored.`
+    );
+  },
 
   addTeamMember: (member) => {
     const { teamMembers, maxSeats, accountTier } = get();

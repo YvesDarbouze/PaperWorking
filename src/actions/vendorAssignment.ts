@@ -23,6 +23,8 @@ interface VerifiedUser {
   displayName: string;
   email: string;
   memberships?: Record<string, unknown>;
+  /** Written by acceptTeamInvitation for scoped members */
+  membershipScopes?: Record<string, { isScoped: boolean; scopedProjectIds: string[] }>;
   [key: string]: unknown;
 }
 
@@ -44,15 +46,38 @@ async function verifyActionAuth(idToken: string): Promise<VerifiedUser> {
 }
 
 // ── Project access check (mirrors API vendors/request pattern) ──
+/**
+ * Returns true when the caller is a member of the target organisation
+ * AND (for scoped members) the specific project is within their allowed list.
+ *
+ * @param profile    Resolved VerifiedUser from Firestore.
+ * @param targetOrgId Organisation that owns the project.
+ * @param projectId  The specific project being accessed.
+ */
 function hasProjectAccess(
   profile: VerifiedUser,
-  targetOrgId: string | undefined
+  targetOrgId: string | undefined,
+  projectId?: string
 ): boolean {
   if (!targetOrgId) return false;
-  if (profile.personalOrganizationId === targetOrgId) return true;
-  if (profile.organizationId === targetOrgId) return true;
-  if (profile.memberships && profile.memberships[targetOrgId]) return true;
-  return false;
+
+  // Owners and direct org members pass the org check
+  const orgMember =
+    profile.personalOrganizationId === targetOrgId ||
+    profile.organizationId === targetOrgId ||
+    (profile.memberships != null && Boolean(profile.memberships[targetOrgId]));
+
+  if (!orgMember) return false;
+
+  // Second gate: scoped membership — only applies to team members, not owners
+  if (projectId && profile.membershipScopes) {
+    const scope = profile.membershipScopes[targetOrgId];
+    if (scope?.isScoped) {
+      return Array.isArray(scope.scopedProjectIds) && scope.scopedProjectIds.includes(projectId);
+    }
+  }
+
+  return true;
 }
 
 /* ──────────────────────────────────────────────────────
@@ -65,7 +90,9 @@ export async function assignVendorToProject(
   projectId: string,
   vendorUid: string,
   serviceType: string,
-  message?: string
+  message?: string,
+  urgency?: 'standard' | 'rush' | 'asap',
+  desiredTimeline?: string
 ): Promise<{ success: boolean; assignmentId?: string; error?: string }> {
   try {
     const user = await verifyActionAuth(idToken);
@@ -83,7 +110,7 @@ export async function assignVendorToProject(
     }
     const projectData = projectSnap.data();
 
-    if (!hasProjectAccess(user, projectData?.organizationId)) {
+    if (!hasProjectAccess(user, projectData?.organizationId, projectId)) {
       return { success: false, error: 'Access denied for this project.' };
     }
 
@@ -129,6 +156,8 @@ export async function assignVendorToProject(
       requestedByName: user.displayName || user.email || 'Investor',
       status: 'PENDING' as AssignmentStatus,
       message: message?.trim() || null,
+      urgency: urgency ?? 'standard',
+      desiredTimeline: desiredTimeline?.trim() || null,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };
@@ -155,6 +184,8 @@ export async function assignVendorToProject(
       investorName: user.displayName || user.email || 'Investor',
       serviceType,
       message: message?.trim() || null,
+      urgency: urgency ?? 'standard',
+      desiredTimeline: desiredTimeline?.trim() || null,
       status: 'PENDING' as AssignmentStatus,
       createdAt: FieldValue.serverTimestamp(),
     });
@@ -170,6 +201,8 @@ export async function assignVendorToProject(
       projectId,
       vendorUid,
       message: message?.trim() || null,
+      urgency: urgency ?? 'standard',
+      desiredTimeline: desiredTimeline?.trim() || null,
       status: 'PENDING',
       requestedAt: FieldValue.serverTimestamp(),
       requestedBy: user.uid,
@@ -224,7 +257,7 @@ export async function getProjectVendorAssignments(
     }
     const projectData = projectSnap.data();
 
-    if (!hasProjectAccess(user, projectData?.organizationId)) {
+    if (!hasProjectAccess(user, projectData?.organizationId, projectId)) {
       return { success: false, error: 'Access denied for this project.' };
     }
 
@@ -325,14 +358,14 @@ export async function updateAssignmentStatus(
     if (!isInvestor) {
       const projectSnap = await adminDb.collection('projects').doc(projectId).get();
       if (projectSnap.exists) {
-        hasOrgAccess = hasProjectAccess(user, projectSnap.data()?.organizationId);
+        hasOrgAccess = hasProjectAccess(user, projectSnap.data()?.organizationId, projectId);
       }
     }
 
     // Validate authorization based on the action
     if (newStatus === 'ACCEPTED' || newStatus === 'DECLINED') {
-      if (!isVendor) {
-        return { success: false, error: 'Only the assigned vendor can accept or decline.' };
+      if (!isVendor && !isInvestor && !hasOrgAccess) {
+        return { success: false, error: 'Only the assigned vendor or requesting investor can accept or decline.' };
       }
     }
 
@@ -352,10 +385,10 @@ export async function updateAssignmentStatus(
     const currentStatus = assignment.status as AssignmentStatus;
     const validTransitions: Record<AssignmentStatus, AssignmentStatus[]> = {
       PENDING: ['ACCEPTED', 'DECLINED', 'CANCELLED'],
-      ACCEPTED: ['COMPLETED', 'CANCELLED'],
-      DECLINED: [],
-      COMPLETED: [],
-      CANCELLED: [],
+      ACCEPTED: ['ACCEPTED', 'COMPLETED', 'CANCELLED'],
+      DECLINED: ['DECLINED'],
+      COMPLETED: ['COMPLETED'],
+      CANCELLED: ['CANCELLED'],
     };
 
     if (!validTransitions[currentStatus]?.includes(newStatus)) {

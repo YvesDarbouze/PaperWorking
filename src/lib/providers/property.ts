@@ -26,6 +26,8 @@ export interface PropertyFacts {
   // ─── Tax & HOA (Prompt 2) ───────────────────────────────────────────────
   annualPropertyTaxCents?:  number;  // Most recent annual property tax (cents)
   taxAssessedValueCents?:   number;  // Most recent assessed value (cents)
+  taxAssessedLandValCents?: number;  // Assessed land value (cents)
+  taxAssessedImprovementsValCents?: number; // Assessed improvements value (cents)
   taxYear?:                 number;  // Year of the tax/assessment figure
   hoaMonthlyCents?:         number;  // Monthly HOA fee (cents), if any
   taxSource?:               string;  // e.g. 'rentcast' — so UI can label provenance
@@ -143,6 +145,10 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
     const daysAgo    = seeded(h + 8,   30, 730);
     const photoIdx   = h % UNSPLASH_HOUSES.length;
 
+    const landRatio = 0.15 + (h % 15) / 100; // 15% - 29% land allocation
+    const landValCents = Math.round(listPrice * 0.85 * landRatio) * 100;
+    const impValCents = Math.round(listPrice * 0.85) * 100 - landValCents;
+
     return {
       photoUrl:           UNSPLASH_HOUSES[photoIdx],
       beds,
@@ -157,6 +163,8 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       lastSoldDate:       new Date(Date.now() - daysAgo * 86_400_000),
       annualPropertyTaxCents: Math.round(listPrice * 0.015) * 100,
       taxAssessedValueCents:  Math.round(listPrice * 0.85) * 100,
+      taxAssessedLandValCents: landValCents,
+      taxAssessedImprovementsValCents: impValCents,
       taxYear:            new Date().getFullYear() - 1,
       hoaMonthlyCents:    (h % 3 === 0) ? seeded(h + 9, 50, 350) * 100 : undefined,
       taxSource:          'mock',
@@ -341,23 +349,33 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
       // ── Extract most recent tax assessment & property tax ───────────────────
       let annualPropertyTaxCents: number | undefined;
       let taxAssessedValueCents: number | undefined;
+      let taxAssessedLandValCents: number | undefined;
+      let taxAssessedImprovementsValCents: number | undefined;
       let taxYear: number | undefined;
 
       if (subject.propertyTaxes && typeof subject.propertyTaxes === 'object') {
         const taxEntries = Object.values(subject.propertyTaxes)
-          .sort((a, b) => b.year - a.year);
+          .sort((a: any, b: any) => b.year - a.year);
         if (taxEntries.length > 0) {
-          annualPropertyTaxCents = Math.round(taxEntries[0].total * 100);
-          taxYear = taxEntries[0].year;
+          const latestTax = taxEntries[0] as any;
+          annualPropertyTaxCents = Math.round(latestTax.total * 100);
+          taxYear = latestTax.year;
         }
       }
 
       if (subject.taxAssessments && typeof subject.taxAssessments === 'object') {
         const assessEntries = Object.values(subject.taxAssessments)
-          .sort((a, b) => b.year - a.year);
+          .sort((a: any, b: any) => b.year - a.year);
         if (assessEntries.length > 0) {
-          taxAssessedValueCents = Math.round(assessEntries[0].value * 100);
-          if (!taxYear) taxYear = assessEntries[0].year;
+          const latestAssess = assessEntries[0] as any;
+          taxAssessedValueCents = Math.round(latestAssess.value * 100);
+          if (latestAssess.land !== undefined && latestAssess.land !== null) {
+            taxAssessedLandValCents = Math.round(latestAssess.land * 100);
+          }
+          if (latestAssess.improvements !== undefined && latestAssess.improvements !== null) {
+            taxAssessedImprovementsValCents = Math.round(latestAssess.improvements * 100);
+          }
+          if (!taxYear) taxYear = latestAssess.year;
         }
       }
 
@@ -380,6 +398,8 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
         lastSoldDate,
         annualPropertyTaxCents,
         taxAssessedValueCents,
+        taxAssessedLandValCents,
+        taxAssessedImprovementsValCents,
         taxYear,
         hoaMonthlyCents,
         taxSource:          'rentcast',

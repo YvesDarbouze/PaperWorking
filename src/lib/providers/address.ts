@@ -55,6 +55,7 @@ const MOCK_ADDRESSES: AddressSuggestion[] = [
   { placeId: "mock_18", formattedAddress: "822 W 36th St, Baltimore, MD 21211",       lat: 39.3348, lng: -76.6412, components: { addressLine: "822 W 36th St",    city: "Baltimore",    state: "MD", zip: "21211" } },
   { placeId: "mock_19", formattedAddress: "1501 Delmar Blvd, St. Louis, MO 63103",    lat: 38.6341, lng: -90.2165, components: { addressLine: "1501 Delmar Blvd", city: "St. Louis",    state: "MO", zip: "63103" } },
   { placeId: "mock_20", formattedAddress: "4425 N Central Ave, Phoenix, AZ 85012",    lat: 33.5001, lng: -112.0732,components: { addressLine: "4425 N Central Ave", city: "Phoenix",   state: "AZ", zip: "85012" } },
+  { placeId: "mock_21", formattedAddress: "123 Main St, Los Angeles, CA 90001",   lat: 34.0522, lng: -118.2437,components: { addressLine: "123 Main St",    city: "Los Angeles", state: "CA", zip: "90001" } },
 ];
 
 export class MockAddressProvider implements AddressProvider {

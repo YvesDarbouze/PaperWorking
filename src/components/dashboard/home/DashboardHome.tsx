@@ -41,7 +41,6 @@ import type { ScopeMode, PeriodFilter } from './CommandCenterKPIStrip';
 import PerformanceMetrics from './PerformanceMetrics';
 import EquityGrowthChart from './EquityGrowthChart';
 import AssetBentoGrid from './AssetBentoGrid';
-import SystemActivityFeed from './SystemActivityFeed';
 import InvestorInviteModal from '../InvestorInviteModal';
 import PostDealModal from '../PostDealModal';
 import MobileBottomNav from '../MobileBottomNav';
@@ -350,8 +349,8 @@ export default function DashboardHome() {
           </section>
 
           <aside className="w-full xl:w-96 shrink-0">
-            <ErrorBoundary name="System Activity Feed">
-              <SystemActivityFeed />
+            <ErrorBoundary name="Activity Feed">
+              <ActivityFeed />
             </ErrorBoundary>
           </aside>
         </div>

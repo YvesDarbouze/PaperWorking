@@ -54,6 +54,7 @@
     "react-hook-form": "^7.72.1",
     "react-hot-toast": "^2.6.0",
     "react-is": "^19.2.6",
+    "react-qr-code": "^2.2.0",
     "recharts": "^3.8.1",
     "resend": "^6.12.3",
     "stripe": "^22.0.1",

@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { DSCRRiskStripTerminal } from '@/components/intelligence/DSCRRiskStripTerminal';
 import { DSCRThresholdCard } from '@/components/intelligence/DSCRThresholdCard';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    DSCR Intelligence Page
@@ -22,12 +22,12 @@ import { DSCRThresholdCard } from '@/components/intelligence/DSCRThresholdCard';
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_DSCR = 1.42;
-const DEMO_CHANGE = +0.04;
-const DEMO_TREND_VALUES = [1.18, 1.25, 1.31, 1.28, 1.35, 1.38, 1.42];
-const DEMO_TREND_LABELS = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultDscr = 1.42;
+const defaultChange = +0.04;
+const defaultTrendValues = [1.18, 1.25, 1.31, 1.28, 1.35, 1.38, 1.42];
+const defaultTrendLabels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
-const DEMO_PROPERTIES = [
+const defaultProperties = [
   { address: '421 Oak St, Brooklyn',  noi: 48200,  debtService: 32100, dscr: 1.50 },
   { address: '1248 Oakwood Ave',       noi: 36400,  debtService: 25600, dscr: 1.42 },
   { address: '77 Prospect Heights',    noi: 61800,  debtService: 48200, dscr: 1.28 },
@@ -102,7 +102,27 @@ function DSCRGauge({ value }: { value: number }) {
 }
 
 /* ── DSCR Trend Line Chart ── */
-function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[] }) {
+function DSCRTrendChart({ values, labels, whatIfDSCR }: { values: number[]; labels: string[]; whatIfDSCR?: number | null }) {
+  const markLineData: object[] = [
+    {
+      yAxis: 1.0,
+      lineStyle: { color: '#F06543', type: 'dashed', width: 1.5 },
+      label: { show: true, position: 'insideEndTop', color: '#F06543', fontSize: 10, formatter: 'Risk (1.0x)' },
+    },
+    {
+      yAxis: 1.25,
+      lineStyle: { color: '#f59e0b', type: 'dashed', width: 1.5 },
+      label: { show: true, position: 'insideEndTop', color: '#f59e0b', fontSize: 10, formatter: 'Lender Min (1.25x)' },
+    },
+  ];
+  if (whatIfDSCR != null && isFinite(whatIfDSCR) && whatIfDSCR > 0) {
+    markLineData.push({
+      yAxis: Number(whatIfDSCR.toFixed(2)),
+      lineStyle: { color: '#fb923c', type: 'solid', width: 2 },
+      label: { show: true, position: 'insideEndBottom', color: '#fb923c', fontSize: 10, fontWeight: 'bold', formatter: `What-If (${whatIfDSCR.toFixed(2)}x)` },
+    });
+  }
+
   const option = {
     backgroundColor: 'transparent',
     tooltip: {
@@ -157,18 +177,7 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
         markLine: {
           silent: true,
           symbol: ['none', 'none'],
-          data: [
-            {
-              yAxis: 1.0,
-              lineStyle: { color: '#F06543', type: 'dashed', width: 1.5 },
-              label: { show: true, position: 'insideEndTop', color: '#F06543', fontSize: 10, formatter: 'Risk (1.0x)' },
-            },
-            {
-              yAxis: 1.25,
-              lineStyle: { color: '#f59e0b', type: 'dashed', width: 1.5 },
-              label: { show: true, position: 'insideEndTop', color: '#f59e0b', fontSize: 10, formatter: 'Lender Min (1.25x)' },
-            },
-          ],
+          data: markLineData,
         },
       },
     ],
@@ -178,56 +187,128 @@ function DSCRTrendChart({ values, labels }: { values: number[]; labels: string[]
 
 export default function DSCRIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
 
-  /* ── Interactive state from DSCRRiskStripTerminal ── */
+  const dscrCurrentResult = useMetricCurrent('DSCR', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const dscrSeriesResult = useMetricSeries('DSCR', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+
+  /* ── Interactive state from DSCRRiskStripTerminal (starts from selector values) ── */
   const [interactiveNOI, setInteractiveNOI] = useState(0);
   const [interactiveDS, setInteractiveDS] = useState(0);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const initialNOIRef = useRef<number | null>(null);
+  const initialDSRef = useRef<number | null>(null);
 
-  /* ── Derive portfolio NOI and debt service ── */
-  const portfolioNOI = useMemo(() => {
-    const withNOI = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
-    if (withNOI.length > 0) {
-      return withNOI.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
+  const handleValuesChange = useCallback((values: any) => {
+    if (initialNOIRef.current === null || initialDSRef.current === null) {
+      initialNOIRef.current = values.annualNOI;
+      initialDSRef.current = values.monthlyDebtService;
+    } else {
+      const noiDiff = Math.abs(values.annualNOI - initialNOIRef.current) > 1;
+      const dsDiff = Math.abs(values.monthlyDebtService - initialDSRef.current) > 0.1;
+      if (noiDiff || dsDiff) {
+        setHasInteracted(true);
+      }
     }
-    return 12486; // seed
-  }, [projects]);
+    setInteractiveNOI(values.annualNOI);
+    setInteractiveDS(values.monthlyDebtService);
+  }, []);
 
-  const portfolioDebtService = useMemo(() => {
-    const withDS = projects.filter(p => (p.financials?.longTermMortgagePayment ?? p.financials?.financingDebtService ?? 0) > 0);
-    if (withDS.length > 0) {
-      return withDS.reduce((sum, p) => {
-        const monthly = p.financials?.longTermMortgagePayment ?? ((p.financials?.financingDebtService ?? 0) / 12);
-        return sum + monthly;
-      }, 0);
+  /* ── What-If DSCR: computed from terminal inputs when the user has typed values.
+     Only active when both NOI and monthly debt service are non-zero. Does NOT
+     mutate any portfolio record — this is a display-only hypothetical. ── */
+  const whatIfDSCR = useMemo(() => {
+    if (hasInteracted && interactiveNOI > 0 && interactiveDS > 0) {
+      const annualDS = interactiveDS * 12;
+      return annualDS > 0 ? interactiveNOI / annualDS : null;
     }
-    return 1410.85; // seed monthly
-  }, [projects]);
+    return null;
+  }, [hasInteracted, interactiveNOI, interactiveDS]);
 
+  // Rule 2+3: NOI and debt service from deriveAllMetrics — no hardcoded seeds
+  const { portfolioNOI, portfolioDebtService } = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return { portfolioNOI: 0, portfolioDebtService: 0 };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withPrice = projects.filter(p => (p.financials?.purchasePrice ?? 0) > 0);
+    const totalNOI = withPrice.reduce((sum, p) => {
+      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      return sum + d.noi;
+    }, 0);
+    const totalDS = withPrice.reduce((sum, p) => {
+      const d = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      // monthly debt service = annualDebtService / 12
+      return sum + d.annualDebtService / 12;
+    }, 0);
+    return { portfolioNOI: Math.round(totalNOI), portfolioDebtService: Math.round(totalDS * 100) / 100 };
+  }, [portfolioInputsResult]);
+
+  // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentDscr, dscrChange, trendValues, trendLabels } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots]
+    if (portfolioInputsResult.status === 'insufficient') {
+      return {
+        isUsingDemoData: true,
+        currentDscr: defaultDscr,
+        dscrChange: defaultChange,
+        trendValues: defaultTrendValues,
+        trendLabels: defaultTrendLabels,
+      };
+    }
+    if (
+      dscrSeriesResult.status === 'ready' &&
+      dscrCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
         .slice(-12);
       const vals   = sorted.map((s) => s.dscr ?? 0);
       const labels = sorted.map((s) =>
         s.date.toLocaleDateString('en-US', { month: 'short' })
       );
-      const last = vals[vals.length - 1] ?? 0;
-      const prev = vals[vals.length - 2] ?? 0;
+      const last = dscrCurrentResult.data;
+      const prev = vals[vals.length - 2] ?? last;
       return { isUsingDemoData: false, currentDscr: last, dscrChange: last - prev, trendValues: vals, trendLabels: labels };
     }
+    // Projects exist but fewer than 2 snapshots — show live current only
+    if (dscrCurrentResult.status === 'ready') {
+      return { isUsingDemoData: false, currentDscr: dscrCurrentResult.data, dscrChange: 0, trendValues: [], trendLabels: [] };
+    }
     return {
-      isUsingDemoData: true,
-      currentDscr: DEMO_DSCR,
-      dscrChange: DEMO_CHANGE,
-      trendValues: DEMO_TREND_VALUES,
-      trendLabels: DEMO_TREND_LABELS,
+      isUsingDemoData: false,
+      currentDscr: 0,
+      dscrChange: 0,
+      trendValues: [],
+      trendLabels: [],
     };
-  }, [snapshots]);
+  }, [dscrSeriesResult, dscrCurrentResult, portfolioInputsResult]);
+
+  const propertiesTableData = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultProperties;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
+    if (withEquity.length > 0) {
+      return withEquity.map((p) => {
+        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const propNoi = derived.noi;
+        const debtService = derived.annualDebtService;
+        const dscr = derived.dscr ?? (1.0);
+        return {
+          address: p.address || p.propertyName || 'Unknown Property',
+          noi: propNoi,
+          debtService,
+          dscr,
+        };
+      });
+    }
+    return defaultProperties;
+  }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
 
@@ -296,18 +377,30 @@ export default function DSCRIntelligencePage() {
             </div>
 
             <div className="flex items-baseline gap-3 mb-2">
-              <span className="text-6xl font-bold text-[#6E7480] tabular-nums tracking-tighter">
-                {currentDscr.toFixed(2)}x
+              <span className="text-6xl font-bold tabular-nums tracking-tighter" style={{ color: whatIfDSCR != null ? '#fb923c' : '#6E7480' }}>
+                {(whatIfDSCR ?? currentDscr).toFixed(2)}x
               </span>
+              {whatIfDSCR != null && (
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold tracking-widest uppercase" style={{ background: 'rgba(251,146,60,0.12)', color: '#fb923c', border: '1px solid rgba(251,146,60,0.3)' }}>
+                  WHAT-IF
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
-                <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
-              </div>
+              {whatIfDSCR != null ? (
+                <div className="px-2 py-0.5 rounded border border-orange-400/20 bg-orange-400/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-orange-400">HYPOTHETICAL</span>
+                </div>
+              ) : (
+                <div className="px-2 py-0.5 rounded border border-[#6E7480]/20 bg-[#6E7480]/10 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#6E7480] animate-pulse" />
+                  <span className="text-[9px] font-extrabold tracking-widest text-[#6E7480]">LIVE</span>
+                </div>
+              )}
               <span className="text-xs text-[#6B6870]">
-                {currentDscr >= 1.25 ? 'Above lender minimum' : currentDscr >= 1.0 ? 'At lender minimum' : 'Below threshold — review required'}
+                {(whatIfDSCR ?? currentDscr) >= 1.25 ? 'Above lender minimum' : (whatIfDSCR ?? currentDscr) >= 1.0 ? 'At lender minimum' : 'Below threshold — review required'}
               </span>
             </div>
           </div>
@@ -339,7 +432,8 @@ export default function DSCRIntelligencePage() {
                 </span>
               </div>
             </div>
-            <DSCRTrendChart values={trendValues} labels={trendLabels} />
+            <DSCRTrendChart values={trendValues} labels={trendLabels} whatIfDSCR={whatIfDSCR} />
+
           </div>
         </div>
       </div>
@@ -359,10 +453,7 @@ export default function DSCRIntelligencePage() {
           defaultAnnualNOI={portfolioNOI}
           defaultMonthlyDebtService={portfolioDebtService}
           lenderMinDSCR={1.25}
-          onValuesChange={(values) => {
-            setInteractiveNOI(values.annualNOI);
-            setInteractiveDS(values.monthlyDebtService);
-          }}
+          onValuesChange={handleValuesChange}
         />
       </div>
 
@@ -373,7 +464,7 @@ export default function DSCRIntelligencePage() {
             Property-Level DSCR Breakdown
           </span>
           <span className="text-[10px] text-slate-600 font-semibold uppercase tracking-wider">
-            {DEMO_PROPERTIES.length} properties
+            {propertiesTableData.length} properties
           </span>
         </div>
 
@@ -389,7 +480,7 @@ export default function DSCRIntelligencePage() {
               </tr>
             </thead>
             <tbody>
-              {DEMO_PROPERTIES.map((prop) => {
+              {propertiesTableData.map((prop) => {
                 const status =
                   prop.dscr >= 1.25 ? { label: 'Healthy', color: '#454955', bg: 'rgba(69, 73, 85,0.1)' } :
                   prop.dscr >= 1.0  ? { label: 'Marginal', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)' } :

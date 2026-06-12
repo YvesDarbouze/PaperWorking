@@ -5,6 +5,23 @@ export const dynamic = "force-dynamic";
 const MAX_RESULTS = 50;
 
 export async function GET(request: Request) {
+  // ── Auth Guard ───────────────────────────────────────
+  const authHeader = request.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const idToken = authHeader.split('Bearer ')[1];
+  let uid = '';
+  try {
+    const { adminAuth } = await import('@/lib/firebase/admin');
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    uid = decoded.uid;
+  } catch (err) {
+    console.error('[lawyers API] Auth token verification failed:', err);
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { searchParams } = new URL(request.url);
   const stateCode = searchParams.get('state');
 

@@ -86,7 +86,7 @@ export class FirestoreRateAdapter implements LenderRateProvider {
   }
 
   private async getDb() {
-    if (this.db) return this.db;
+    if (this.db !== undefined) return this.db;
     try {
       const { adminDb } = require('@/lib/firebase/admin');
       return adminDb;
@@ -99,16 +99,16 @@ export class FirestoreRateAdapter implements LenderRateProvider {
     try {
       const dbInstance = await this.getDb();
       if (!dbInstance) {
-        return DEFAULT_RATES;
+        return [];
       }
       const snap = await dbInstance.collection('systemConfig').doc('lenderRates').get();
       if (!snap.exists) {
-        return DEFAULT_RATES;
+        return [];
       }
       return parseRatesDoc(snap.data()!);
     } catch (err) {
       console.warn('[FirestoreRateAdapter] Failed to get rates, falling back:', err);
-      return DEFAULT_RATES;
+      return [];
     }
   }
 }
@@ -138,11 +138,12 @@ export class ZillowRatesAdapter implements LenderRateProvider {
 
 /**
  * Parses the raw Firestore document into typed LenderRate[].
+ * Returns [] when the document has no rates — callers must handle the empty case.
  * Exported for server-side API routes and unit tests.
  */
 export function parseRatesDoc(data: Record<string, any>): LenderRate[] {
   const raw: any[] = data.rates ?? [];
-  if (!Array.isArray(raw) || raw.length === 0) return DEFAULT_RATES;
+  if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((r) => ({
     id:              String(r.id ?? ''),
     name:            String(r.name ?? ''),

@@ -6,8 +6,7 @@ import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
 import { ArrowUpRight, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { DebtServiceInputForm } from '@/components/intelligence/DebtServiceInputForm';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -20,16 +19,16 @@ import { DebtServiceInputForm } from '@/components/intelligence/DebtServiceInput
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const DEMO_NET_CF       = 12140;
-const DEMO_CF_CHANGE    = 12.4;
-const DEMO_MONTHS_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultNetCf       = 12140;
+const defaultCfChange    = 12.4;
+const defaultMonthsLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
 // Diverging bars: positive = inflow, negative = outflow
-const DEMO_INFLOW  = [18200, 0,     19100, 0,     17900, 0,     21200, 0,     20400, 0,     22000, 0    ];
-const DEMO_OUTFLOW = [0,    -14800, 0,    -15200, 0,    -13600,  0,   -15800, 0,    -14100, 0,   -9860  ];
-const DEMO_NET     = [3400, -14800, 3900, -15200, 4300, -13600, 5400, -15800, 6300, -14100, 7000, 12140 ];
+const defaultInflow  = [18200, 0,     19100, 0,     17900, 0,     21200, 0,     20400, 0,     22000, 0    ];
+const defaultOutflow = [0,    -14800, 0,    -15200, 0,    -13600,  0,   -15800, 0,    -14100, 0,   -9860  ];
+const defaultNet     = [3400, -14800, 3900, -15200, 4300, -13600, 5400, -15800, 6300, -14100, 7000, 12140 ];
 
-const DEMO_SPARKLINE = [3400, 3900, 4300, 5400, 6300, 7000, 12140];
+const defaultSparkline = [3400, 3900, 4300, 5400, 6300, 7000, 12140];
 
 /* ── Diverging Bar Chart ── */
 function DivergingBarChart({
@@ -149,25 +148,33 @@ function CategoryDonut() {
 
 export default function CashFlowIntelligencePage() {
   useAllDealsSync();
-  useProjectStore((s) => s.projects);
   const [period, setPeriod] = useState<Period>('Year');
   const [scope, setScope]   = useState<Scope>('Property');
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+
+  const cfCurrentResult = useMetricCurrent('CASH_FLOW', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const cfSeriesResult = useMetricSeries('CASH_FLOW', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const noiCurrentResult = useMetricCurrent('NOI', { scope: scope === 'My Share' ? 'myShare' : 'property' });
 
   const { isUsingDemoData, netCashFlow, cfChange, chartLabels, inflowBars, outflowBars, sparkline, stats } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots]
+    if (
+      cfSeriesResult.status === 'ready' &&
+      cfCurrentResult.status === 'ready' &&
+      portfolioInputsResult.status === 'ready' &&
+      portfolioInputsResult.data.snapshots.length >= 2
+    ) {
+      const sorted = [...portfolioInputsResult.data.snapshots]
         .sort((a, b) => a.date.getTime() - b.date.getTime())
         .slice(-12);
       const labels  = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const mcfVals = sorted.map((s) => s.monthlyCashFlow ?? 0);
+      const mcfVals = sorted.map((s) => s.monthlyCashFlow ?? (0));
       const inflows = mcfVals.map((v) => (v > 0 ? v : 0));
       const outflows = mcfVals.map((v) => (v < 0 ? v : 0));
-      const last = mcfVals[mcfVals.length - 1];
-      const prev = mcfVals[mcfVals.length - 2];
+      const last = cfCurrentResult.data;
+      const prev = mcfVals[mcfVals.length - 2] ?? last;
       const pctChg = prev !== 0 ? ((last - prev) / Math.abs(prev)) * 100 : 0;
       const spark = mcfVals.slice(-7);
-      const ytd   = sorted.reduce((acc, s) => acc + (s.monthlyCashFlow ?? 0), 0);
+      const ytd   = sorted.reduce((acc, s) => acc + (s.monthlyCashFlow ?? (0)), 0);
       const avg   = ytd / sorted.length;
       const best  = Math.max(...mcfVals);
       const worst = Math.min(...mcfVals);
@@ -182,37 +189,30 @@ export default function CashFlowIntelligencePage() {
         stats: { avg, best, worst, ytd },
       };
     }
-    const ytd   = DEMO_NET.reduce((a, b) => a + b, 0);
-    const avg   = ytd / DEMO_MONTHS_LABELS.length;
-    const positiveVals = DEMO_NET.filter((v) => v > 0);
+    const ytd   = defaultNet.reduce((a, b) => a + b, 0);
+    const avg   = ytd / defaultMonthsLabels.length;
+    const positiveVals = defaultNet.filter((v) => v > 0);
     const best  = positiveVals.length > 0 ? Math.max(...positiveVals) : 0;
-    const worst = Math.min(...DEMO_NET);
+    const worst = Math.min(...defaultNet);
     return {
       isUsingDemoData: true,
-      netCashFlow: DEMO_NET_CF,
-      cfChange: DEMO_CF_CHANGE,
-      chartLabels: DEMO_MONTHS_LABELS,
-      inflowBars: DEMO_INFLOW,
-      outflowBars: DEMO_OUTFLOW,
-      sparkline: DEMO_SPARKLINE,
+      netCashFlow: defaultNetCf,
+      cfChange: defaultCfChange,
+      chartLabels: defaultMonthsLabels,
+      inflowBars: defaultInflow,
+      outflowBars: defaultOutflow,
+      sparkline: defaultSparkline,
       stats: { avg, best, worst, ytd },
     };
-  }, [snapshots]);
+  }, [cfSeriesResult, cfCurrentResult, portfolioInputsResult]);
 
   /* ── Portfolio NOI (distinct from cash flow) ── */
   const portfolioNoi = useMemo(() => {
-    if (snapshots && snapshots.length > 0) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
-      const latestNoi = sorted[sorted.length - 1]?.noi;
-      if (latestNoi && latestNoi > 0) return latestNoi;
+    if (noiCurrentResult.status === 'ready') {
+      return noiCurrentResult.data;
     }
-    const projects = useProjectStore.getState().projects;
-    const withNoi = projects.filter(p => (p.financials?.netOperatingIncome ?? 0) > 0);
-    if (withNoi.length > 0) {
-      return withNoi.reduce((sum, p) => sum + (p.financials?.netOperatingIncome ?? 0), 0);
-    }
-    return 12486; // seed
-  }, [snapshots]);
+    return 0; // honest: no data yet, do not seed a demo value
+  }, [noiCurrentResult]);
 
   const fmt = (n: number) => `${n < 0 ? '-' : ''}$${Math.abs(n).toLocaleString()}`;
 
@@ -296,7 +296,7 @@ export default function CashFlowIntelligencePage() {
                   const x = (i / (sparkline.length - 1)) * 70;
                   const minV = Math.min(...sparkline);
                   const maxV = Math.max(...sparkline);
-                  const range = maxV - minV || 1;
+                  const range = maxV - minV || (1);
                   const y = 28 - ((v - minV) / range) * 22;
                   const barH = Math.max(2, ((v - minV) / range) * 22);
                   const isFull = i === sparkline.length - 1;

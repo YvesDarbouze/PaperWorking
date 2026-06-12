@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma, sanitizeDbRecord } from "@/lib/prisma";
+import { logOrgActivity } from "@/lib/firebase/orgActivityWriter";
 
 export async function POST(req: Request) {
   try {
@@ -46,6 +47,18 @@ export async function POST(req: Request) {
     });
 
     const serializedLead = sanitizeDbRecord(lead);
+
+    // Emit activity event — failure-isolated, never blocks response
+    logOrgActivity({
+      organizationId: data.organizationId,
+      type: 'deal_created',
+      actorId: 'system',
+      actorName: data.sourceVendor || 'Sourcing Webhook',
+      summary: `Automated lead added: ${data.address || 'Unknown Address'}`,
+      projectName: data.address || 'Unknown Address',
+    }).catch((err) => {
+      console.error("[Sourcing Webhook] Activity logging failed:", err);
+    });
 
     return NextResponse.json({ success: true, lead: serializedLead });
   } catch (error) {

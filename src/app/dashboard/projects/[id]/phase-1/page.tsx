@@ -23,6 +23,7 @@ import { OfferPipelineTracker } from '@/components/project/OfferPipelineTracker'
 import { PurchaseReadinessChecklist } from '@/components/project/PurchaseReadinessChecklist';
 import { ContingencyCountdownWidget } from '@/components/project/ContingencyCountdownWidget';
 import { EMDVerificationWidget } from '@/components/project/EMDVerificationWidget';
+import FundingSourceTracker from '@/components/evaluation/FundingSourceTracker';
 import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
 /* ── Structured metric wrappers (MetricResult) ── */
 import { computeNOIMetric } from '@/lib/metrics/computeNOI';
@@ -943,6 +944,8 @@ export default function Phase1WorkspacePage() {
                   phaseColor={PHASE_COLOR}
                   readOnly={phase1Locked}
                 />
+                {/* Funding Sources — real per-project lenders persisted to Firestore */}
+                <FundingSourceTracker projectId={projectId} />
               </div>
             )}
           </div>

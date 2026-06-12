@@ -557,6 +557,8 @@ model ReilPropertyFacts {
   // ── Tax & HOA (Prompt 2) ───────────────────────────────────
   annualPropertyTaxCents  BigInt?     // Most recent annual property tax (cents)
   taxAssessedValueCents   BigInt?     // Most recent assessed value (cents)
+  taxAssessedLandValCents  BigInt?     // Assessed land value (cents)
+  taxAssessedImprovementsValCents BigInt?     // Assessed improvements value (cents)
   taxYear                 Int?        // Year of the tax/assessment figure
   hoaMonthlyCents         BigInt?     // Monthly HOA fee (cents)
   taxSource               String?     // e.g. 'rentcast' — provenance label

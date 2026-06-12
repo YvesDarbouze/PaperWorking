@@ -104,7 +104,12 @@ export async function persistTeamInvite(member: OrgTeamMember): Promise<void> {
   const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
   const inviteRef = adminDb.collection('teamInvitations').doc();
-  
+
+  const scopedProjectIds: string[] = Array.isArray(member.scopedProjectIds) && member.scopedProjectIds.length > 0
+    ? member.scopedProjectIds
+    : member.assignedProjectIds.length > 0 ? member.assignedProjectIds : [];
+  const isScoped = member.isScoped === true || (member.scope === 'project' && scopedProjectIds.length > 0);
+
   const inviteData = {
     id: inviteRef.id,
     token,
@@ -117,6 +122,10 @@ export async function persistTeamInvite(member: OrgTeamMember): Promise<void> {
     invitedByName: userData.displayName || userData.email,
     createdAt: now,
     expiresAt,
+    scopedProjectIds,
+    isScoped,
+    // Legacy compat: populate single-project field when exactly one project scoped
+    ...(scopedProjectIds.length === 1 ? { invitedToProjectId: scopedProjectIds[0] } : {}),
     day3ReminderSent: false,
     day6ReminderSent: false,
   };
@@ -128,7 +137,7 @@ export async function persistTeamInvite(member: OrgTeamMember): Promise<void> {
     callerUid,
     userData.displayName || userData.email,
     'MEMBER_INVITED',
-    { role: member.internalRole },
+    { role: member.internalRole, isScoped, scopedProjectIds },
     undefined,
     inviteData.email
   );
@@ -203,6 +212,16 @@ export async function resendTeamInvite(email: string): Promise<void> {
   const inviteData = inviteDoc.data() as TeamInvitation;
 
   const now = new Date();
+
+  // Enforce 60-second rate limit to prevent spam
+  const lastSent = inviteData.lastSentAt || inviteData.createdAt;
+  if (lastSent) {
+    const lastSentTime = (lastSent as any).toDate ? (lastSent as any).toDate().getTime() : new Date(lastSent).getTime();
+    if (now.getTime() - lastSentTime < 60 * 1000) {
+      throw new Error('Please wait at least 60 seconds between resend attempts.');
+    }
+  }
+
   const expiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days
   const token = crypto.randomBytes(32).toString('hex');
 
@@ -212,6 +231,7 @@ export async function resendTeamInvite(email: string): Promise<void> {
     day3ReminderSent: false,
     day6ReminderSent: false,
     createdAt: now,
+    lastSentAt: now,
   });
 
   await logAuditAction(
@@ -295,14 +315,25 @@ export async function acceptTeamInvitation(token: string): Promise<void> {
     if (!orgSnap.exists) throw new Error('Organization no longer exists.');
 
     t.update(inviteDoc.ref, { status: 'accepted' });
-    
+
+    // Resolve the authoritative scoped project list:
+    // prefer new scopedProjectIds field; fall back to legacy invitedToProjectId for old invites.
+    const resolvedScopedIds: string[] =
+      Array.isArray(tInviteData.scopedProjectIds) && tInviteData.scopedProjectIds.length > 0
+        ? tInviteData.scopedProjectIds
+        : tInviteData.invitedToProjectId ? [tInviteData.invitedToProjectId] : [];
+
+    const resolvedIsScoped = tInviteData.isScoped === true || resolvedScopedIds.length > 0;
+
     const newMember: OrgTeamMember = {
       id: callerUid,
       email: tInviteData.email,
       displayName: userData.displayName || userData.email,
       internalRole: tInviteData.role,
-      assignedProjectIds: tInviteData.invitedToProjectId ? [tInviteData.invitedToProjectId] : [],
-      scope: tInviteData.invitedToProjectId ? 'project' : 'tenant',
+      assignedProjectIds: resolvedScopedIds,
+      scopedProjectIds: resolvedScopedIds,
+      isScoped: resolvedIsScoped,
+      scope: resolvedIsScoped ? 'project' : 'tenant',
       invitedAt: tInviteData.createdAt,
       status: 'active',
     };
@@ -312,8 +343,14 @@ export async function acceptTeamInvitation(token: string): Promise<void> {
       updatedAt: FieldValue.serverTimestamp(),
     });
 
+    // Write scope onto the user's own document so per-project server actions
+    // can enforce access without fetching the full org document.
     t.update(userSnap.ref, {
       [`memberships.${tInviteData.organizationId}`]: tInviteData.role,
+      [`membershipScopes.${tInviteData.organizationId}`]: {
+        isScoped: resolvedIsScoped,
+        scopedProjectIds: resolvedScopedIds,
+      },
       updatedAt: FieldValue.serverTimestamp(),
     });
   });

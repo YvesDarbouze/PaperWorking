@@ -76,7 +76,9 @@ export function VendorRequestModal({ isOpen, onClose, vendor, projectId }: Vendo
         customProjectId.trim(),
         vendorUid,
         serviceType,
-        message.trim()
+        message.trim(),
+        urgency,
+        desiredTimeline.trim() || undefined
       );
 
       if (!res.success) {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Send, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
@@ -10,11 +10,75 @@ import type { InboxThread, InboxMessage } from '@/hooks/useInboxThreads';
    ThreadDetail — Right-pane message view with inline reply
    ═══════════════════════════════════════════════════════ */
 
+/* ── Thread-level MoreMenu ─────────────────────────────
+   Renders a ⋮ button that opens a small dropdown with
+   real actions. Actions must have an onClick handler.
+   ────────────────────────────────────────────────────── */
+interface MoreMenuProps {
+  onMarkUnread?: () => void;
+}
+
+function ThreadMoreMenu({ onMarkUnread }: MoreMenuProps) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        id="thread-more-menu-trigger"
+        onClick={() => setOpen((v) => !v)}
+        className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors"
+        aria-label="Thread actions"
+        aria-expanded={open}
+        aria-haspopup="true"
+      >
+        <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
+      </button>
+
+      {open && (
+        <div
+          id="thread-more-menu"
+          role="menu"
+          className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-white/10 bg-[#161318] shadow-[0_8px_32px_-4px_rgba(0,0,0,0.6)] z-50 py-1 overflow-hidden"
+        >
+          {onMarkUnread ? (
+            <button
+              id="thread-menu-mark-unread"
+              role="menuitem"
+              onClick={() => { onMarkUnread(); setOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#9E9DA0] hover:bg-white/5 hover:text-white transition-colors text-left"
+            >
+              <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 0" }}>mark_email_unread</span>
+              Mark as Unread
+            </button>
+          ) : (
+            <p className="px-4 py-2.5 text-xs text-[#9E9DA0]/40 select-none">No actions available</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ThreadDetailProps {
   thread: InboxThread;
   projectName?: string;
   onSendReply: (body: string) => Promise<void>;
   onBack?: () => void;
+  /** Called when the user selects "Mark as Unread" from the ⋮ menu. */
+  onMarkThreadUnread?: () => void;
 }
 
 function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean }) {
@@ -68,7 +132,7 @@ function MessageBubble({ message, isMe }: { message: InboxMessage; isMe: boolean
   );
 }
 
-export default function ThreadDetail({ thread, projectName, onSendReply, onBack }: ThreadDetailProps) {
+export default function ThreadDetail({ thread, projectName, onSendReply, onBack, onMarkThreadUnread }: ThreadDetailProps) {
   const { user } = useAuth();
   const [replyText, setReplyText] = useState('');
   const [sending, setSending] = useState(false);
@@ -138,9 +202,7 @@ export default function ThreadDetail({ thread, projectName, onSendReply, onBack 
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="p-2 rounded-lg hover:bg-white/5 text-[#9E9DA0] transition-colors">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 0" }}>more_vert</span>
-          </button>
+          <ThreadMoreMenu onMarkUnread={onMarkThreadUnread} />
         </div>
       </div>
 

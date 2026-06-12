@@ -191,6 +191,8 @@ export interface UpsertPropertyFactsInput {
   // Tax & HOA (Prompt 2)
   annualPropertyTaxCents?: bigint | null;
   taxAssessedValueCents?:  bigint | null;
+  taxAssessedLandValCents?: bigint | null;
+  taxAssessedImprovementsValCents?: bigint | null;
   taxYear?:                number | null;
   hoaMonthlyCents?:        bigint | null;
   taxSource?:              string | null;
@@ -211,29 +213,31 @@ export async function upsertPropertyFacts(input: UpsertPropertyFactsInput) {
     where:  { projectId: input.projectId },
     create: { ...input },
     update: {
-      photoUrl:               input.photoUrl,
-      beds:                   input.beds,
-      baths:                  input.baths,
-      sqft:                   input.sqft,
-      yearBuilt:              input.yearBuilt,
-      lotSqft:                input.lotSqft,
-      propertyType:           input.propertyType,
-      listPriceCents:         input.listPriceCents,
-      estRentCents:           input.estRentCents,
-      lastSoldPriceCents:     input.lastSoldPriceCents,
-      lastSoldDate:           input.lastSoldDate,
-      annualPropertyTaxCents: input.annualPropertyTaxCents,
-      taxAssessedValueCents:  input.taxAssessedValueCents,
-      taxYear:                input.taxYear,
-      hoaMonthlyCents:        input.hoaMonthlyCents,
-      taxSource:              input.taxSource,
-      estRentLowCents:        input.estRentLowCents,
-      estRentHighCents:       input.estRentHighCents,
-      avmPriceCents:          input.avmPriceCents,
-      avmPriceLowCents:       input.avmPriceLowCents,
-      avmPriceHighCents:      input.avmPriceHighCents,
-      sourceProvider:         input.sourceProvider,
-      fetchedAt:              input.fetchedAt,
+      photoUrl:                        input.photoUrl,
+      beds:                            input.beds,
+      baths:                           input.baths,
+      sqft:                            input.sqft,
+      yearBuilt:                       input.yearBuilt,
+      lotSqft:                         input.lotSqft,
+      propertyType:                    input.propertyType,
+      listPriceCents:                  input.listPriceCents,
+      estRentCents:                    input.estRentCents,
+      lastSoldPriceCents:              input.lastSoldPriceCents,
+      lastSoldDate:                    input.lastSoldDate,
+      annualPropertyTaxCents:          input.annualPropertyTaxCents,
+      taxAssessedValueCents:           input.taxAssessedValueCents,
+      taxAssessedLandValCents:         input.taxAssessedLandValCents,
+      taxAssessedImprovementsValCents: input.taxAssessedImprovementsValCents,
+      taxYear:                         input.taxYear,
+      hoaMonthlyCents:                 input.hoaMonthlyCents,
+      taxSource:                       input.taxSource,
+      estRentLowCents:                 input.estRentLowCents,
+      estRentHighCents:                input.estRentHighCents,
+      avmPriceCents:                   input.avmPriceCents,
+      avmPriceLowCents:                input.avmPriceLowCents,
+      avmPriceHighCents:               input.avmPriceHighCents,
+      sourceProvider:                  input.sourceProvider,
+      fetchedAt:                       input.fetchedAt,
     },
   });
 }

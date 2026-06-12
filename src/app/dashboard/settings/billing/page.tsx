@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import { useUserStore } from '@/store/userStore';
 import { CloudStorageMeter } from '@/components/settings/CloudStorageMeter';
+import AccountTierSettings from '@/components/settings/AccountTierSettings';
 
 /* ═══════════════════════════════════════════════════════
    Billing & Subscription Settings (Luminous Glass Terminal)
@@ -208,10 +208,10 @@ export default function BillingSettingsPage() {
 
   const currentPrice = CANONICAL_PRICES[plan] ?? 0;
 
-  const teamMembers = useUserStore((s) => s.teamMembers);
-  const maxSeats = useUserStore((s) => s.maxSeats) || 10;
-  const activeMembers = teamMembers.filter((m) => m.status !== 'removed');
-  const seatsUsed = activeMembers.length;
+  // maxSeats is derived from the Firestore-authoritative plan, not Zustand.
+  // The actual used-seat count lives in organizations/{orgId}/teamMembers;
+  // that data is managed on the Team settings page.
+  const maxSeats = plan === 'Team' ? 10 : 1;
 
   return (
     <div className="w-full space-y-8">
@@ -274,25 +274,20 @@ export default function BillingSettingsPage() {
               </div>
             )}
 
-            {/* Seat Usage Meter */}
+            {/* Seat Limit */}
             {plan !== 'None' && (
               <div className="bg-pw-glass-bg/50 rounded-lg p-6 border border-white/5">
                 <div className="flex justify-between items-end mb-4">
                   <div>
-                    <h4 className="font-label-md text-label-md text-pw-black mb-1">Seat Usage</h4>
+                    <h4 className="font-label-md text-label-md text-pw-black mb-1">Seat Limit</h4>
                     <p className="font-body-sm text-body-sm text-pw-muted">
-                      <span className="text-pw-primary font-bold">{seatsUsed}</span> of {maxSeats} Active Seats
+                      Up to{' '}
+                      <span className="text-pw-primary font-bold">{maxSeats}</span>{' '}
+                      {maxSeats === 1 ? 'seat' : 'seats'} on this plan
                     </p>
                   </div>
                 </div>
-                {/* Progress Bar */}
-                <div className="h-3 w-full rounded-full bg-pw-glass-bg overflow-hidden shadow-inner">
-                  <div
-                    className="h-full bg-pw-primary rounded-full shadow-[0_0_12px_theme(colors.pw-primary/0.5)] transition-all duration-500"
-                    style={{ width: `${(seatsUsed / maxSeats) * 100}%` }}
-                  />
-                </div>
-                <div className="mt-6 flex justify-between items-center">
+                <div className="mt-2 flex justify-between items-center">
                   <Link href="/dashboard/settings/team" className="font-label-md text-label-md text-pw-muted hover:text-pw-black flex items-center gap-2 transition-colors cursor-pointer">
                     <span className="material-symbols-outlined text-[18px]">group_add</span> Manage Team
                   </Link>
@@ -419,6 +414,11 @@ export default function BillingSettingsPage() {
             </div>
           </div>
         </section>
+
+        {/* ━━━ Account Tier (col-span-4) ━━━ */}
+        <div className="lg:col-span-4">
+          <AccountTierSettings />
+        </div>
 
         {/* ━━━ RentCast API Call Volume (col-span-4) ━━━ */}
         <section className="lg:col-span-4 glass-card rounded-2xl p-6 min-h-[220px] flex flex-col justify-between">

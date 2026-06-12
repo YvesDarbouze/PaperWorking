@@ -3,13 +3,13 @@
 import React, { useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { usePortfolioMetricSnapshots } from '@/hooks/usePortfolioMetricSnapshots';
+import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
 import { CashDeployedTerminal } from '@/components/intelligence/CashDeployedTerminal';
 import { CoCIntelligenceCard } from '@/components/intelligence/CoCIntelligenceCard';
+import { deriveAllMetrics, computeTotalCashInvested } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Cash-on-Cash Return Intelligence Page
@@ -18,10 +18,10 @@ import { CoCIntelligenceCard } from '@/components/intelligence/CoCIntelligenceCa
    Bottom: CoC by Investment Tranche table
    ═══════════════════════════════════════════════════════════════ */
 
-const DEMO_TREND   = [6.8, 7.1, 7.4, 7.6, 7.9, 8.1, 8.2, 8.42];
-const DEMO_MONTHS  = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
+const defaultTrend   = [6.8, 7.1, 7.4, 7.6, 7.9, 8.1, 8.2, 8.42];
+const defaultMonths  = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
-const DEMO_TRANCHES = [
+const defaultTranches = [
   { tranche: '421 Oak St, Brooklyn',       equityIn: 185000, annualCF: 15600, coc: 8.43, target: 8.0 },
   { tranche: '1248 Oakwood Ave, Queens',   equityIn: 220000, annualCF: 16500, coc: 7.5,  target: 8.0 },
   { tranche: '77 Prospect Heights, BK',    equityIn: 410000, annualCF: 38750, coc: 9.45, target: 8.0 },
@@ -131,56 +131,74 @@ const SCENARIOS = [
   },
 ];
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate Cash-on-Cash Return analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function CoCIntelligencePage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
-  const { snapshots } = usePortfolioMetricSnapshots('monthly');
+  // Rule 5: thread scope to all selectors
+  const [scope, setScope] = useState<'Property' | 'My Share'>('Property');
+  const selectorScope = scope === 'My Share' ? 'myShare' : 'property';
+  const cocSeriesResult = useMetricSeries('COC', undefined, { scope: selectorScope });
+  const cocCurrentResult = useMetricCurrent('COC', { scope: selectorScope });
+  const portfolioInputsResult = usePortfolioInputs({ scope: selectorScope });
 
   /* ── Interactive state for CashDeployedTerminal → CoCIntelligenceCard ── */
   const [interactiveCashInvested, setInteractiveCashInvested] = useState(0);
   const [interactiveCoCReturn, setInteractiveCoCReturn] = useState(0);
 
-  /* ── Derive annual cash flow from portfolio ── */
-  const portfolioAnnualCashFlow = useMemo(() => {
-    if (snapshots && snapshots.length > 0) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime());
-      const latestCF = sorted[sorted.length - 1]?.annualCashFlow;
-      if (latestCF && latestCF > 0) return latestCF;
-    }
-    const withCF = projects.filter(p => (p.financials?.netCashFlow ?? 0) > 0);
-    if (withCF.length > 0) {
-      return withCF.reduce((sum, p) => sum + (p.financials?.netCashFlow ?? 0), 0);
-    }
-    return 5052; // seed
-  }, [snapshots, projects]);
-
-  /* ── Derive total cash invested from portfolio ── */
-  const portfolioCashInvested = useMemo(() => {
-    const withInvested = projects.filter(p => (p.financials?.totalCashInvested ?? 0) > 0);
-    if (withInvested.length > 0) {
-      return withInvested.reduce((sum, p) => sum + (p.financials?.totalCashInvested ?? 0), 0);
-    }
-    return 60000; // seed
-  }, [projects]);
-
+  // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentCoC, cocChange, trendValues, trendLabels } = useMemo(() => {
-    if (snapshots && snapshots.length >= 2) {
-      const sorted = [...snapshots].sort((a, b) => a.date.getTime() - b.date.getTime()).slice(-12);
-      const vals   = sorted.map((s) => s.cashOnCashReturn ?? 0);
-      const labels = sorted.map((s) => s.date.toLocaleDateString('en-US', { month: 'short' }));
-      const last   = vals[vals.length - 1] ?? 0;
-      const prev   = vals[0] ?? 0; // vs Last Year = first in window
+    if (portfolioInputsResult.status === 'insufficient') {
+      return { isUsingDemoData: true, currentCoC: 8.42, cocChange: 1.2, trendValues: defaultTrend, trendLabels: defaultMonths };
+    }
+    if (cocSeriesResult.status === 'ready' && cocCurrentResult.status === 'ready') {
+      const vals   = cocSeriesResult.data.series;
+      const labels = cocSeriesResult.data.labels;
+      const last   = cocCurrentResult.data;
+      const prev   = vals[0] ?? 0;
       return { isUsingDemoData: false, currentCoC: last, cocChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    return { isUsingDemoData: true, currentCoC: 8.42, cocChange: 1.2, trendValues: DEMO_TREND, trendLabels: DEMO_MONTHS };
-  }, [snapshots, projects]);
+    // Projects exist but not enough snapshots — show live current, no history yet
+    if (cocCurrentResult.status === 'ready') {
+      return { isUsingDemoData: false, currentCoC: cocCurrentResult.data, cocChange: 0, trendValues: [], trendLabels: [] };
+    }
+    return { isUsingDemoData: false, currentCoC: 0, cocChange: 0, trendValues: [], trendLabels: [] };
+  }, [cocSeriesResult, cocCurrentResult, portfolioInputsResult]);
 
+  // Rule 2: tranche table uses deriveAllMetrics — same formula as useMetricCurrent('COC')
   const trancheRows = useMemo(() => {
-    const withEquity = projects.filter((p) => (p.financials?.totalCashInvested ?? 0) > 0);
-    if (withEquity.length >= 3) {
-      return withEquity.slice(0, 5).map((p) => {
-        const equity = p.financials?.totalCashInvested ?? 0;
-        const annualCF = (p.financials?.monthlyGrossRent ?? 0) * 12 - ((p.financials?.operatingExpenseTaxes ?? 0) + (p.financials?.operatingExpenseInsurance ?? 0)) * 12;
+    if (portfolioInputsResult.status !== 'ready') {
+      return defaultTranches;
+    }
+    const projects = portfolioInputsResult.data.projects;
+    // Use computeTotalCashInvested to find equity; filter to projects with any purchase price
+    const withPrice = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
+    if (withPrice.length > 0) {
+      return withPrice.slice(0, 5).map((p) => {
+        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+        const equity = computeTotalCashInvested(p.financials || {});
+        // Rule 2: NOI minus annual debt service = annual cash flow, same as selector arithmetic
+        const annualCF = derived.noi - derived.annualDebtService;
         const coc = equity > 0 ? (annualCF / equity) * 100 : 0;
         return {
           tranche: p.address || p.propertyName || 'Unknown',
@@ -191,13 +209,41 @@ export default function CoCIntelligencePage() {
         };
       });
     }
-    return DEMO_TRANCHES;
-  }, [projects]);
+    return defaultTranches;
+  }, [portfolioInputsResult]);
+
+  // Aggregate portfolio totals from the tranche rows (same authoritative source)
+  const portfolioAnnualCashFlow = trancheRows.reduce((s, r) => s + r.annualCF, 0);
+  const portfolioCashInvested   = trancheRows.reduce((s, r) => s + r.equityIn, 0);
 
   const benchmarkBadge = currentCoC >= 8
     ? 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]'
     : 'bg-amber-400/10 border-amber-400/20 text-amber-400';
   const benchmarkLabel = currentCoC >= 8 ? 'Above Benchmark' : 'Below Benchmark';
+
+  if (cocCurrentResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading CoC data...</p>
+      </div>
+    );
+  }
+
+  if (portfolioInputsResult.status === 'insufficient') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">CoC Return</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">Cash-on-Cash Return</h1>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>

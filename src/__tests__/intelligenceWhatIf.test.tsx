@@ -34,6 +34,27 @@ jest.mock('react-hot-toast', () => ({
   error: jest.fn(),
 }));
 
+jest.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: {
+      getIdToken: jest.fn().mockResolvedValue('mock-token'),
+    },
+  }),
+}));
+
+jest.mock('@tanstack/react-query', () => ({
+  useQueries: ({ queries }: any) =>
+    (queries || []).map(() => ({
+      status: 'success',
+      data: {
+        stats: {
+          saleData: { medianPrice: 300000 },
+          rentalData: { medianPrice: 2500 },
+        },
+      },
+    })),
+}));
+
 jest.mock('@/hooks/useAllProjectsSync', () => ({
   useAllDealsSync: jest.fn(),
 }));
@@ -138,17 +159,44 @@ describe('Intelligence Dashboard What-If Calculations and Interactions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Default mock implementation returning loading or basic data
-    mockUseMetricSeries.mockReturnValue({ status: 'insufficient', reason: 'No data' });
+    mockUseMetricSeries.mockReturnValue({
+      status: 'ready',
+      data: {
+        series: [10, 11],
+        labels: ['Jan', 'Feb'],
+        dates: [new Date(Date.now() - 30 * 24 * 3600 * 1000), new Date()],
+      },
+    });
     mockUseMetricCurrent.mockReturnValue({ status: 'ready', data: 0 });
     mockUsePortfolioInputs.mockReturnValue({
       status: 'ready',
       data: {
-        projects: [],
-        snapshots: [],
-        totalPropertyValue: 0,
-        totalDebt: 0,
-        totalEquity: 0,
+        projects: [
+          {
+            id: 'p1',
+            name: 'Test Project',
+            address: '123 Main St',
+            zipCode: '11201',
+            phase: 'hold',
+            strategyType: 'Rent',
+            currentPhase: 3,
+            financials: {
+              purchasePrice: 200000,
+              loanAmount: 150000,
+              loanInterestRate: 6.5,
+              loanTermYears: 30,
+              monthlyGrossRent: 2000,
+              ownershipPercentage: 100,
+            },
+          },
+        ],
+        snapshots: [
+          { date: new Date(Date.now() - 30 * 24 * 3600 * 1000), oer: 35, capRate: 5, coc: 6, dscr: 1.25, irr: 0.12, occupancy: 95, grm: 8.5 },
+          { date: new Date(), oer: 38.2, capRate: 5.2, coc: 6.2, dscr: 1.28, irr: 0.124, occupancy: 94.2, grm: 9.2 },
+        ],
+        totalPropertyValue: 200000,
+        totalDebt: 150000,
+        totalEquity: 50000,
       },
     });
   });

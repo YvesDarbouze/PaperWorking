@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
@@ -21,16 +21,7 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const defaultTrend = [4.8, 5.1, 4.9, 5.3, 5.6, 5.2, 5.7, 5.85];
-const defaultMonths = ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 const defaultTarget = [5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5, 5.5];
-
-const defaultProperties = [
-  { address: '421 Oak St, Brooklyn',   capRate: 6.42, value: '$1.2M',  change: +0.18, rank: 1 },
-  { address: '1248 Oakwood Ave',        capRate: 5.85, value: '$850k',  change: +0.12, rank: 2 },
-  { address: '77 Prospect Heights',     capRate: 5.21, value: '$2.1M',  change: -0.08, rank: 3 },
-  { address: '310 Atlantic Ave',        capRate: 4.97, value: '$680k',  change: +0.04, rank: 4 },
-];
 
 function TrendChart({ values, labels, target }: { values: number[]; labels: string[]; target: number[] }) {
   const option = {
@@ -143,6 +134,28 @@ function CapRateGauge({ value }: { value: number }) {
   );
 }
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate Cap Rate analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function CapRateIntelligencePage() {
   useAllDealsSync();
   const [period, setPeriod] = useState<Period>('Year');
@@ -183,9 +196,6 @@ export default function CapRateIntelligencePage() {
 
   // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentCapRate, capRateChange, trendValues, trendLabels } = useMemo(() => {
-    if (portfolioInputsResult.status === 'insufficient') {
-      return { isUsingDemoData: true, currentCapRate: 5.85, capRateChange: 0.12, trendValues: defaultTrend, trendLabels: defaultMonths };
-    }
     if (
       capSeriesResult.status === 'ready' &&
       capCurrentResult.status === 'ready' &&
@@ -201,33 +211,54 @@ export default function CapRateIntelligencePage() {
       const prev   = vals[vals.length - 2] ?? last;
       return { isUsingDemoData: false, currentCapRate: last, capRateChange: last - prev, trendValues: vals, trendLabels: labels };
     }
-    // Projects exist but no snapshot history — use live selector if ready
-    if (capCurrentResult.status === 'ready') {
-      return { isUsingDemoData: false, currentCapRate: capCurrentResult.data, capRateChange: 0, trendValues: [], trendLabels: [] };
-    }
     return { isUsingDemoData: false, currentCapRate: 0, capRateChange: 0, trendValues: [], trendLabels: [] };
   }, [capSeriesResult, capCurrentResult, portfolioInputsResult]);
 
   const propertyRankings = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return [];
     }
     const projects = portfolioInputsResult.data.projects;
     const withCapRate = projects.filter((p) => (p.financials?.capRate ?? (0)) > 0);
-    if (withCapRate.length > 0) {
-      return withCapRate
-        .sort((a, b) => (b.financials?.capRate ?? (0)) - (a.financials?.capRate ?? (0)))
-        .slice(0, 5)
-        .map((p, i) => ({
-          address: p.address || p.propertyName || 'Unknown',
-          capRate: p.financials?.capRate ?? (0),
-          value: p.financials?.estimatedARV ? `$${((p.financials.estimatedARV) / 1000).toFixed(0)}k` : '--',
-          change: 0,
-          rank: i + 1,
-        }));
-    }
-    return defaultProperties;
+    return withCapRate
+      .sort((a, b) => (b.financials?.capRate ?? (0)) - (a.financials?.capRate ?? (0)))
+      .slice(0, 5)
+      .map((p, i) => ({
+        address: p.address || p.propertyName || 'Unknown',
+        capRate: p.financials?.capRate ?? (0),
+        value: p.financials?.estimatedARV ? `$${((p.financials.estimatedARV) / 1000).toFixed(0)}k` : '--',
+        change: 0,
+        rank: i + 1,
+      }));
   }, [portfolioInputsResult]);
+
+  if (capCurrentResult.status === 'loading' || capSeriesResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading Cap Rate data...</p>
+      </div>
+    );
+  }
+
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    capCurrentResult.status === 'insufficient' ||
+    capSeriesResult.status === 'insufficient'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">Cap Rate Intelligence</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">Cap Rate Intelligence</h1>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>

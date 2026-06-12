@@ -4,10 +4,8 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight, Download } from 'lucide-react';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useProjectStore } from '@/store/projectStore';
-import { computeNOIMetric } from '@/lib/metrics/computeNOI';
-import { computeCashFlowMetric } from '@/lib/metrics/computeCashFlow';
-import { computeAnnualDebtService } from '@/lib/metrics/reiMetrics';
+import { usePortfolioInputs } from '@/lib/intelligence/selectors';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    Portfolio Comparison Matrix — Stitch screen b8ceb1c395c2458a979cb8feab4357e1
@@ -60,23 +58,49 @@ function metricScore(col: typeof METRIC_COLS[number], values: number[], v: numbe
   return 'mid';
 }
 
+type Scope = 'Property' | 'My Share';
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-24 text-center space-y-4 border border-dashed border-white/10 rounded-2xl bg-[#161318]/40 p-8 w-full">
+      <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2">
+        <span className="material-symbols-outlined text-3xl text-[#6B6870] select-none">compare</span>
+      </div>
+      <h3 className="text-lg font-bold text-white">No projects to compare yet</h3>
+      <p className="text-sm text-[#9E9DA0] max-w-sm">
+        Add at least two properties to your pipeline to see a side-by-side comparison of key metrics across your portfolio.
+      </p>
+      <Link
+        href="/dashboard/projects/new"
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
+      >
+        <span className="material-symbols-outlined text-base select-none">add</span>
+        Add Your First Project
+      </Link>
+    </div>
+  );
+}
+
 export default function PortfolioComparisonPage() {
   useAllDealsSync();
-  const projects = useProjectStore((s) => s.projects);
+  const [scope, setScope] = useState<Scope>('Property');
   const [sortKey, setSortKey] = useState<SortKey>('irr');
 
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+
   const properties: PropertyMetrics[] = useMemo(() => {
-    if (projects.length === 0) return [];
+    if (portfolioInputsResult.status !== 'ready') return [];
+    const projects = portfolioInputsResult.data.projects;
+
     return projects.map((p) => {
       const f = p.financials ?? {};
-      const arv       = f.arv ?? f.purchasePrice ?? 0;
-      const loan      = f.loanAmount ?? arv * 0.65;
-      const projectShape = { financials: f, currentPhase: p.currentPhase };
-      const noi      = Math.max(0, computeNOIMetric(projectShape).value ?? 0);
-      const netCF    = computeCashFlowMetric(projectShape).value ?? 0;
-      const equity     = Math.max(0, arv - loan);
-      const annualRent = (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? f.projectedRent ?? 0) * 12;
-      const annualDebt = computeAnnualDebtService(loan, f.loanInterestRate ?? 0, (f.loanTermYears ?? 30) * 12);
+      const ownFactor = scope === 'My Share' ? (f.ownershipPercentage ?? 100) / 100 : 1;
+      const derived = deriveAllMetrics(f, undefined, p.strategyType, p.currentPhase);
+      
+      const arv = (f.arv ?? f.purchasePrice ?? 0) * ownFactor;
+      const loan = (f.loanAmount ?? 0) * ownFactor;
+      const noi = derived.noi * ownFactor;
+      const grossRent = (f.monthlyGrossRent ?? f.projectedMonthlyRent ?? f.projectedRent ?? 0) * 12 * ownFactor;
 
       const phase = p.phase === 'acquisition' ? 'Acquisition'
                   : p.phase === 'exit'        ? 'Exit'
@@ -89,19 +113,19 @@ export default function PortfolioComparisonPage() {
         address:       p.address ?? '',
         phase,
         arv,
-        purchasePrice: f.purchasePrice ?? 0,
-        rehabCost:     f.rehabBudget ?? 0,
+        purchasePrice: (f.purchasePrice ?? 0) * ownFactor,
+        rehabCost:     (f.rehabBudget ?? 0) * ownFactor,
         noi,
-        capRate:       arv > 0 ? (noi / arv) * 100 : 0,
-        coc:           equity > 0 ? (netCF / equity) * 100 : 0,
-        ltv:           arv > 0 ? (loan / arv) * 100 : 0,
-        dscr:          annualDebt > 0 ? noi / annualDebt : 0,
-        irr:           f.cashOnCashReturn ?? 0,
-        occupancy:     f.occupancyRate ?? (p.phase === 'hold' ? 95 : 0),
-        grossRent:     annualRent,
+        capRate:       derived.capRate,
+        coc:           derived.cashOnCashReturn,
+        ltv:           derived.ltv,
+        dscr:          derived.dscr,
+        irr:           derived.irr ?? derived.cashOnCashReturn,
+        occupancy:     derived.occupancyRate,
+        grossRent,
       };
     });
-  }, [projects]);
+  }, [portfolioInputsResult, scope]);
 
   const sorted = useMemo(() => {
     const col = METRIC_COLS.find((c) => c.key === sortKey)!;
@@ -115,6 +139,34 @@ export default function PortfolioComparisonPage() {
       METRIC_COLS.map((col) => [col.key, properties.map((p) => p[col.key])])
     ) as Record<SortKey, number[]>
   , [properties]);
+
+  if (portfolioInputsResult.status === 'loading') {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading comparison data...</p>
+      </div>
+    );
+  }
+
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    (portfolioInputsResult.status === 'ready' && portfolioInputsResult.data.projects.length < 2)
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#454955] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#454955]">Comparison Matrix</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Portfolio Comparison</h1>
+          <p className="text-sm text-[#9E9DA0] mt-1">Side-by-side performance metrics across all properties</p>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -131,6 +183,19 @@ export default function PortfolioComparisonPage() {
           <p className="text-sm text-[#9E9DA0] mt-1">Side-by-side performance metrics across all properties</p>
         </div>
         <div className="flex gap-3">
+          <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            {(['Property', 'My Share'] as Scope[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setScope(s)}
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
           <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#454955] transition-all flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export
@@ -156,28 +221,7 @@ export default function PortfolioComparisonPage() {
         ))}
       </div>
 
-      {/* ── Empty state ── */}
-      {properties.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-24 text-center space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-2">
-            <span className="material-symbols-outlined text-3xl text-[#6B6870] select-none">compare</span>
-          </div>
-          <h3 className="text-lg font-bold text-white">No projects to compare yet</h3>
-          <p className="text-sm text-[#9E9DA0] max-w-sm">
-            Add at least two properties to your pipeline to see a side-by-side comparison of key metrics across your portfolio.
-          </p>
-          <Link
-            href="/dashboard/projects/new"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
-          >
-            <span className="material-symbols-outlined text-base select-none">add</span>
-            Add Your First Project
-          </Link>
-        </div>
-      )}
-
-      {/* ── Comparison Table — real data only ── */}
-      {properties.length > 0 && (
+      {/* ── Comparison Table ── */}
       <div className="rounded-2xl border border-white/10 overflow-x-auto" style={{ background: 'rgba(24,33,39,0.7)' }}>
         <table className="w-full min-w-[900px] text-sm">
           <thead>
@@ -263,7 +307,6 @@ export default function PortfolioComparisonPage() {
           </tfoot>
         </table>
       </div>
-      )}
 
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-[#6B6870]">
@@ -276,3 +319,4 @@ export default function PortfolioComparisonPage() {
     </div>
   );
 }
+

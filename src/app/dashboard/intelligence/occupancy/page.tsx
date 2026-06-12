@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
@@ -17,16 +17,7 @@ import type { OccupancyValues, UnitOccupancy } from '@/components/intelligence/O
    Bottom: Vacancy Risk Analysis table
    ═══════════════════════════════════════════════════════════════ */
 
-const defaultMonths = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const defaultOccupancy = [88, 89, 90, 91, 90, 92, 91, 92, 93, 93, 94, 94.2];
-
-const defaultProperties = [
-  { address: '421 Oak St, Brooklyn',       units: 12, occupied: 12, leaseRisk: 'Low'    },
-  { address: '1248 Oakwood Ave, Queens',   units: 8,  occupied: 7,  leaseRisk: 'Medium' },
-  { address: '77 Prospect Heights, BK',    units: 16, occupied: 14, leaseRisk: 'Low'    },
-  { address: '310 Atlantic Ave, Brooklyn', units: 6,  occupied: 6,  leaseRisk: 'Low'    },
-  { address: '2100 Bedford Ave, BK',       units: 8,  occupied: 8,  leaseRisk: 'High'   },
-];
+type Scope = 'Property' | 'My Share';
 
 const RISK_STYLES: Record<string, string> = {
   Low:    'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
@@ -141,11 +132,35 @@ function SmallDonut({ occupiedPct, whatIfActive }: { occupiedPct: number; whatIf
   );
 }
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate Occupancy analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function OccupancyIntelligencePage() {
   useAllDealsSync();
-  const occupancyCurrentResult = useMetricCurrent('OCCUPANCY');
-  const occupancySeriesResult = useMetricSeries('OCCUPANCY');
-  const portfolioInputsResult = usePortfolioInputs();
+  const [scope, setScope] = useState<Scope>('Property');
+
+  const occupancyCurrentResult = useMetricCurrent('OCCUPANCY', { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const occupancySeriesResult = useMetricSeries('OCCUPANCY', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
+  const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
 
   /* ── Reactive state from Collection Terminal ── */
   const [collectedValues, setCollectedValues] = useState<OccupancyValues | null>(null);
@@ -223,22 +238,16 @@ export default function OccupancyIntelligencePage() {
       };
     }
 
-    const totalU = portfolioInputsResult.status === 'ready'
-      ? portfolioInputsResult.data.projects.reduce((s, p) => s + (p.numberOfUnits ?? (0)), 0)
-      : (50);
-    const totalUOr50 = totalU || (50);
-    const occupiedU = Math.round(totalUOr50 * 0.942);
-
     return {
-      isUsingDemoData: true,
-      currentOcc: collectedValues?.occupancyRate ?? (94.2),
-      occChange: (1.8),
-      occupiedUnits: collectedValues?.occupiedUnitCount ?? occupiedU,
-      totalUnits: collectedValues?.totalUnitCount ?? totalUOr50,
-      trendPcts: defaultOccupancy,
-      trendMonths: defaultMonths,
+      isUsingDemoData: false,
+      currentOcc: 0,
+      occChange: 0,
+      occupiedUnits: 0,
+      totalUnits: 0,
+      trendPcts: [],
+      trendMonths: [],
     };
-  }, [occupancySeriesResult, occupancyCurrentResult, portfolioInputsResult, collectedValues]);
+  }, [occupancySeriesResult, occupancyCurrentResult, portfolioInputsResult]);
 
   const whatIfOccupancy = useMemo(() => {
     if (hasInteracted && collectedValues) {
@@ -257,21 +266,50 @@ export default function OccupancyIntelligencePage() {
 
   const propertyRows = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return [];
     }
     const projectsList = portfolioInputsResult.data.projects;
     const withUnits = projectsList.filter((p) => (p.numberOfUnits ?? (0)) > 0);
-    if (withUnits.length >= 3) {
-      return withUnits.slice(0, 5).map((p) => {
-        const units = p.numberOfUnits ?? (0);
-        const occ   = p.occupiedUnits ?? units;
-        const vRate = units > (0) ? ((units - occ) / units) * 100 : (0);
-        const risk  = vRate === (0) ? 'Low' : vRate < (15) ? 'Medium' : 'High';
-        return { address: p.address || p.propertyName || 'Unknown', units, occupied: occ, leaseRisk: risk };
-      });
-    }
-    return defaultProperties;
+    return withUnits.slice(0, 5).map((p) => {
+      const units = p.numberOfUnits ?? (0);
+      const occ   = p.occupiedUnits ?? units;
+      const vRate = units > (0) ? ((units - occ) / units) * 100 : (0);
+      const risk  = vRate === (0) ? 'Low' : vRate < (15) ? 'Medium' : 'High';
+      return { address: p.address || p.propertyName || 'Unknown', units, occupied: occ, leaseRisk: risk };
+    });
   }, [portfolioInputsResult]);
+
+  if (
+    occupancyCurrentResult.status === 'loading' ||
+    occupancySeriesResult.status === 'loading' ||
+    portfolioInputsResult.status === 'loading'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading Occupancy data...</p>
+      </div>
+    );
+  }
+
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    occupancyCurrentResult.status === 'insufficient' ||
+    occupancySeriesResult.status === 'insufficient'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">Occupancy Intelligence</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">Occupancy Intelligence</h1>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
@@ -286,10 +324,25 @@ export default function OccupancyIntelligencePage() {
           </div>
           <h1 className="text-4xl font-bold text-white tracking-tight">Occupancy Intelligence</h1>
         </div>
-        <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
-          <Download className="w-4 h-4" />
-          Export
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
+            {(['Property', 'My Share'] as Scope[]).map((s) => (
+              <button
+                key={s}
+                onClick={() => setScope(s)}
+                className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all ${
+                  scope === s ? 'bg-[#454955] text-black' : 'text-[#9E9DA0] hover:text-slate-200'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+          <button className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-semibold text-[#C0BEC2] hover:border-[#454955]/40 hover:text-[#6E7480] transition-all flex items-center gap-2 self-start md:self-auto">
+            <Download className="w-4 h-4" />
+            Export
+          </button>
+        </div>
       </div>
 
       <SampleDataBanner show={isUsingDemoData} />

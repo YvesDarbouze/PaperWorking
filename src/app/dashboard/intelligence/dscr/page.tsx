@@ -312,6 +312,27 @@ export default function DSCRIntelligencePage() {
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
 
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    dscrCurrentResult.status === 'insufficient' ||
+    dscrSeriesResult.status === 'insufficient'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">DSCR Intelligence</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">DSCR Intelligence</h1>
+          <p className="text-sm text-[#6B6870] mt-1">Debt Service Coverage Ratio — portfolio health signal</p>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
 

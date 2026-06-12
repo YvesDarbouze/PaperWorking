@@ -19,27 +19,6 @@ import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/int
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const default_LTV = 68.5;
-const default_LTV_CHANGE = -1.2;
-
-// Default trajectory: loan balance decreasing, property value appreciating — 12 periods
-const default_MONTHS_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const default_LOAN_BALANCE   = [275000, 272000, 269000, 266000, 263000, 260000, 257000, 254000, 251000, 248000, 245000, 242000];
-const default_PROPERTY_VALUE = [485000, 491000, 497000, 503000, 509000, 516000, 522000, 528000, 533000, 538000, 542000, 545000];
-
-// Projection data — 12 more months ahead
-const default_PROJ_LABELS = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr',
-                             'May+1', 'Jun+1', 'Jul+1', 'Aug+1', 'Sep+1', 'Oct+1', 'Nov+1', 'Dec+1', 'Jan+2', 'Feb+2', 'Mar+2', 'Apr+2'];
-const default_LOAN_PROJ   = [...default_LOAN_BALANCE,  239000, 236000, 233000, 230000, 227000, 224000, 221000, 218000, 215000, 213000, 211000, 210000];
-const default_VALUE_PROJ  = [...default_PROPERTY_VALUE, 549000, 554000, 559000, 564000, 569000, 575000, 581000, 587000, 592000, 597000, 602000, 607000];
-
-const default_PROPERTIES = [
-  { address: '421 Oak St, Brooklyn',  value: 545000, loan: 320000, ltv: 58.7, status: 'Safe'     },
-  { address: '1248 Oakwood Ave',       value: 420000, loan: 287900, ltv: 68.5, status: 'Target'   },
-  { address: '77 Prospect Heights',    value: 890000, loan: 712000, ltv: 80.0, status: 'Target'   },
-  { address: '310 Atlantic Ave',       value: 310000, loan: 264000, ltv: 85.2, status: 'High Risk' },
-];
-
 /* ── Radial SVG Circle Gauge ── */
 function LTVGauge({ value }: { value: number }) {
   // value is a percentage 0–100
@@ -254,40 +233,25 @@ export default function LTVIntelligencePage() {
 
   const propertiesTableData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return default_PROPERTIES;
+      return [];
     }
     const projects = portfolioInputsResult.data.projects;
     const validProjects = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
-    if (validProjects.length > 0) {
-      return validProjects.map((p) => {
-        const value = p.financials?.arv ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? (0);
-        const loan = p.financials?.loanAmount ?? (0);
-        const ltv = value > 0 ? (loan / value) * 100 : 0;
-        return {
-          address: p.address || p.propertyName || 'Unknown Property',
-          value,
-          loan,
-          ltv,
-          status: ltv < 65 ? 'Safe' : ltv < 80 ? 'Target' : 'High Risk',
-        };
-      });
-    }
-    return default_PROPERTIES;
+    return validProjects.map((p) => {
+      const value = p.financials?.arv ?? p.financials?.estimatedARV ?? p.financials?.purchasePrice ?? (0);
+      const loan = p.financials?.loanAmount ?? (0);
+      const ltv = value > 0 ? (loan / value) * 100 : 0;
+      return {
+        address: p.address || p.propertyName || 'Unknown Property',
+        value,
+        loan,
+        ltv,
+        status: ltv < 65 ? 'Safe' : ltv < 80 ? 'Target' : 'High Risk',
+      };
+    });
   }, [portfolioInputsResult]);
 
   const { isUsingDemoData, currentLtv, ltvChange, chartLabels, loanSeries, valueSeries, splitIndex } = useMemo(() => {
-    // Rule 4: demo ONLY when no projects at all
-    if (portfolioInputsResult.status === 'insufficient') {
-      return {
-        isUsingDemoData: true,
-        currentLtv: default_LTV,
-        ltvChange: default_LTV_CHANGE,
-        chartLabels: default_PROJ_LABELS,
-        loanSeries: default_LOAN_PROJ,
-        valueSeries: default_VALUE_PROJ,
-        splitIndex: default_LOAN_BALANCE.length - 1,
-      };
-    }
     if (ltvSeriesResult.status === 'ready' && ltvCurrentResult.status === 'ready' && portfolioInputsResult.status === 'ready') {
       const snapshots = portfolioInputsResult.data.snapshots;
       const sorted = [...snapshots]
@@ -309,18 +273,6 @@ export default function LTVIntelligencePage() {
         splitIndex: sorted.length - 1,
       };
     }
-    // Projects exist, selectors loading or insufficient history — show live current
-    if (ltvCurrentResult.status === 'ready') {
-      return {
-        isUsingDemoData: false,
-        currentLtv: ltvCurrentResult.data,
-        ltvChange: 0,
-        chartLabels: [],
-        loanSeries: [],
-        valueSeries: [],
-        splitIndex: 0,
-      };
-    }
     return {
       isUsingDemoData: false,
       currentLtv: 0,
@@ -338,7 +290,11 @@ export default function LTVIntelligencePage() {
   const ltvStatusColor = (ltv: number) =>
     ltv < 65 ? '#454955' : ltv < 80 ? '#f59e0b' : '#F06543';
 
-  if (ltvCurrentResult.status === 'loading' || portfolioInputsResult.status === 'loading') {
+  if (
+    ltvCurrentResult.status === 'loading' ||
+    ltvSeriesResult.status === 'loading' ||
+    portfolioInputsResult.status === 'loading'
+  ) {
     return (
       <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
         <p className="text-sm text-[#9E9DA0]">Loading LTV data...</p>
@@ -346,7 +302,11 @@ export default function LTVIntelligencePage() {
     );
   }
 
-  if (portfolioInputsResult.status === 'insufficient') {
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    ltvCurrentResult.status === 'insufficient' ||
+    ltvSeriesResult.status === 'insufficient'
+  ) {
     return (
       <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
         <div>

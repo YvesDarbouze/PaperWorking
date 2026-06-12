@@ -3,11 +3,12 @@
 import React, { useState, useMemo } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { NOIWaterfallHero } from '@/components/intelligence/NOIWaterfallHero';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
+import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 
 /* ═══════════════════════════════════════════════════════════════
    NOI Detail — Trend & Composition Page
@@ -154,6 +155,28 @@ function NOITrendChart({ values, labels }: { values: number[]; labels: string[] 
   return <ReactECharts option={option} style={{ height: 240, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate Net Operating Income analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function NOIIntelligencePage() {
   useAllDealsSync();
   const [period, setPeriod] = useState<Period>('Year');
@@ -162,6 +185,39 @@ export default function NOIIntelligencePage() {
   const noiCurrentResult = useMetricCurrent('NOI', { scope: scope === 'My Share' ? 'myShare' : 'property' });
   const noiSeriesResult = useMetricSeries('NOI', undefined, { scope: scope === 'My Share' ? 'myShare' : 'property' });
   const portfolioInputsResult = usePortfolioInputs({ scope: scope === 'My Share' ? 'myShare' : 'property' });
+
+  if (
+    noiCurrentResult.status === 'loading' ||
+    noiSeriesResult.status === 'loading' ||
+    portfolioInputsResult.status === 'loading'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 flex items-center justify-center" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <p className="text-sm text-[#9E9DA0]">Loading NOI data...</p>
+      </div>
+    );
+  }
+
+  if (
+    portfolioInputsResult.status === 'insufficient' ||
+    noiCurrentResult.status === 'insufficient' ||
+    noiSeriesResult.status === 'insufficient'
+  ) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">NOI Detail</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white tracking-tight">NOI Detail</h1>
+          <p className="text-sm text-[#6B6870] mt-1">Net Operating Income — trend &amp; composition</p>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
 
   const {
     isUsingDemoData,
@@ -254,16 +310,70 @@ export default function NOIIntelligencePage() {
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;
 
+  const derivedComponents = useMemo(() => {
+    if (portfolioInputsResult.status !== 'ready') {
+      return {
+        grossRentalIncome: 0,
+        otherIncome: 0,
+        vacancyLoss: 0,
+        propertyTaxes: 0,
+        insurance: 0,
+        utilities: 0,
+        propertyManagement: 0,
+        maintenance: 0,
+        hoa: 0,
+        totalOperatingExpenses: 0,
+        noi: 0,
+      };
+    }
+    const projects = portfolioInputsResult.data.projects;
+    let gr = 0, oi = 0, vl = 0, pt = 0, ins = 0, ut = 0, pm = 0, mt = 0, h = 0, oe = 0, n = 0;
+
+    for (const p of projects) {
+      const financials = p.financials || {};
+      const factor = scope === 'My Share' ? (financials.ownershipPercentage ?? 100) / 100 : 1;
+      const comp = deriveAllMetrics(financials, undefined, p.strategyType, p.currentPhase).noiComponents;
+
+      gr += comp.grossRentalIncome * factor;
+      oi += comp.otherIncome * factor;
+      vl += comp.vacancyLoss * factor;
+      pt += comp.propertyTaxes * factor;
+      ins += comp.insurance * factor;
+      ut += comp.utilities * factor;
+      pm += comp.propertyManagement * factor;
+      mt += comp.maintenance * factor;
+      h += comp.hoa * factor;
+      oe += comp.totalOperatingExpenses * factor;
+      n += comp.noi * factor;
+    }
+
+    return {
+      grossRentalIncome: Math.round(gr),
+      otherIncome: Math.round(oi),
+      vacancyLoss: Math.round(vl),
+      propertyTaxes: Math.round(pt),
+      insurance: Math.round(ins),
+      utilities: Math.round(ut),
+      propertyManagement: Math.round(pm),
+      maintenance: Math.round(mt),
+      hoa: Math.round(h),
+      totalOperatingExpenses: Math.round(oe),
+      noi: Math.round(n),
+    };
+  }, [portfolioInputsResult, scope]);
+
   // NOI components table rows
   const incomeRows = [
-    { label: 'Gross Rental Income', value: grossRent,   type: 'income' as const },
-    { label: 'Parking / Other',     value: otherIncome, type: 'income' as const },
+    { label: 'Gross Rental Income', value: derivedComponents.grossRentalIncome, type: 'income' as const },
+    { label: 'Parking / Other',     value: derivedComponents.otherIncome,         type: 'income' as const },
   ];
   const expenseRows = [
-    { label: 'Property Taxes',   value: Math.round(opExpenses * 0.33), type: 'expense' as const },
-    { label: 'Insurance',        value: Math.round(opExpenses * 0.12), type: 'expense' as const },
-    { label: 'Utilities',        value: Math.round(opExpenses * 0.18), type: 'expense' as const },
-    { label: 'Mgmt / Other',     value: Math.round(opExpenses * 0.37), type: 'expense' as const },
+    { label: 'Property Taxes',      value: derivedComponents.propertyTaxes,      type: 'expense' as const },
+    { label: 'Insurance',           value: derivedComponents.insurance,          type: 'expense' as const },
+    { label: 'Utilities',           value: derivedComponents.utilities,          type: 'expense' as const },
+    { label: 'Property Management', value: derivedComponents.propertyManagement, type: 'expense' as const },
+    { label: 'Maintenance',         value: derivedComponents.maintenance,         type: 'expense' as const },
+    { label: 'HOA',                 value: derivedComponents.hoa,                 type: 'expense' as const },
   ];
 
   return (
@@ -388,19 +498,7 @@ export default function NOIIntelligencePage() {
 
       {/* ── NOI Waterfall Hero (Stitch Design Integration) ── */}
       <NOIWaterfallHero
-        noiComponents={{
-          grossRentalIncome: grossRent,
-          otherIncome: otherIncome,
-          vacancyLoss: Math.round(grossRent * 0.07),
-          propertyTaxes: Math.round(opExpenses * 0.33),
-          insurance: Math.round(opExpenses * 0.12),
-          utilities: Math.round(opExpenses * 0.18),
-          propertyManagement: Math.round(opExpenses * 0.22),
-          maintenance: Math.round(opExpenses * 0.10),
-          hoa: Math.round(opExpenses * 0.05),
-          totalOperatingExpenses: opExpenses,
-          noi: currentNoi,
-        }}
+        noiComponents={derivedComponents}
       />
 
       {/* ── Bottom: NOI Components Table ── */}

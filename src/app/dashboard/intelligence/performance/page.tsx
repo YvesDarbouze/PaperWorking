@@ -203,6 +203,23 @@ export default function PortfolioPerformancePage() {
   const fmt = (v: number) =>
     v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(2)}M` : `$${(v / 1000).toFixed(0)}k`;
 
+  if (isInsufficient) {
+    return (
+      <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
+        <div>
+          <div className="flex items-center gap-2 mb-1 text-xs text-[#6B6870] font-semibold uppercase tracking-widest">
+            <Link href="/dashboard/reports" className="hover:text-[#6E7480] transition-colors">Reports</Link>
+            <span>›</span>
+            <span className="text-[#6E7480]">Portfolio Performance</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Portfolio Performance</h1>
+          <p className="text-sm text-[#9E9DA0] mt-1">Total portfolio value trajectory and ROI analytics</p>
+        </div>
+        <EmptyState />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-full px-6 lg:px-8 py-8 space-y-6" style={{ background: 'var(--bg-canvas)', color: 'var(--text-primary)' }}>
 
@@ -279,8 +296,6 @@ export default function PortfolioPerformancePage() {
       {/* Main Chart Panel */}
       {loading ? (
         <LoadingSkeleton />
-      ) : isInsufficient ? (
-        <EmptyState />
       ) : (
         <div
           className="rounded-2xl border border-white/10 p-6"

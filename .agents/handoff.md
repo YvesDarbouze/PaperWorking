@@ -1,3 +1,26 @@
+# Agent Handoff — Dashboard Data Honesty Sweep — Session 2 (2026-06-13)
+
+## ✅ COMPLETED THIS SESSION
+
+### 4. InsightsDashboard — removed DEFAULT_INPUTS mock constant
+- `src/app/dashboard/insights/page.tsx`: Removed `DEFAULT_INPUTS` constant (`{purchasePrice:300000,…}`). `getInputsFromProjects()` now returns `undefined` (not the constant) when no projects or financials are missing. Hardcoded fallbacks (`|| 300000`, `|| 36000`) removed from the return object.
+- Stress-test tab gated: `<StressTestProvider>` only mounts when `selectedInputs` is truthy; null → `<InsightsDashboard missingFields={REQUIRED_INSIGHTS_FIELDS}>` gate.
+- Added assumptions transparency panel inside `ProjectionsTabContent` showing the 8 real inputs driving the projection.
+- **Regression tests**: `src/__tests__/insightsDashboardNoDemo.test.ts` — 22 tests covering: no `DEFAULT_INPUTS`, no fallback constants, `!selectedInputs` gate, `REQUIRED_INSIGHTS_FIELDS` referenced, two-project divergence (different NOI/cap-rate/DSCR), hand-checks for Project A (NOI=12100, cap=6.05%, GRM=11.11, OER=29.24%).
+
+### 5. Reports Scenarios IRR — regression tests (implementation was already correct)
+- `src/lib/projections/scenarioIRR.ts` was already written with real year-by-year cash-flow modeling. No multiplier code existed.
+- **Regression tests**: `src/__tests__/scenarioIRRNoMultiplier.test.ts` — 27 tests covering: static absence of multiplier math in both source files, `projectScenarioCashFlows` missing-input gate (4 cases), series structure (length, Year-0 negative, exit year larger), assumption sensitivity (vacancy, rent growth, exit cap each independently change IRR), non-constant ratio proof, Conservative < Base < Aggressive ordering, trivial hand-check (-100→+110 = 10% IRR), assumptions prop attached and formatted with `%`.
+
+### Verification
+- Full suite: **94 suites, 1156 tests — all green** (commit `dcf2ddc7`)
+
+### Next Queued
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
+
+---
+
 # Agent Handoff — Dashboard Data Honesty Sweep (2026-06-13)
 
 ## ✅ COMPLETED THIS SESSION

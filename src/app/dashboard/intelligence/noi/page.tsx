@@ -21,17 +21,6 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const defaultNoi        = 482910;
-const defaultNoiChange = 12.4;
-
-const defaultLabels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
-const defaultNoiTrend = [398000, 411000, 419000, 428000, 435000, 441000, 448000, 455000, 461000, 469000, 476000, 482910];
-
-// Composition values
-const defaultGrossRent  = 612000;
-const defaultOtherInc   = 48000;
-const defaultOpExp      = 177090;
-// NOI = 612000 + 48000 - 177090 = 482910
 
 /* ── NOI Composition Stacked Horizontal Bars ── */
 function NOIComposition({
@@ -230,20 +219,6 @@ export default function NOIIntelligencePage() {
     opExpenses,
     vacancyRate,
   } = useMemo(() => {
-    // Rule 4: demo ONLY when no projects at all
-    if (portfolioInputsResult.status === 'insufficient') {
-      return {
-        isUsingDemoData: true,
-        currentNoi: defaultNoi,
-        noiChange: defaultNoiChange,
-        trendValues: defaultNoiTrend,
-        trendLabels: defaultLabels,
-        grossRent: defaultGrossRent,
-        otherIncome: defaultOtherInc,
-        opExpenses: defaultOpExp,
-        vacancyRate: 0,
-      };
-    }
     if (
       noiSeriesResult.status === 'ready' &&
       noiCurrentResult.status === 'ready' &&

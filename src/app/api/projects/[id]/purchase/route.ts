@@ -96,23 +96,12 @@ export async function PATCH(
     const projectData = dealSnap.data();
     const targetOrgId = projectData?.organizationId;
 
-    // Check org membership
+    // Check org membership and project scope
     const userSnap = await adminDb.collection('users').doc(uid).get();
-    const profile = userSnap.exists ? userSnap.data() : null;
+    const profile = userSnap.exists ? { uid, ...userSnap.data() } : null;
 
-    let hasAccess = false;
-    if (targetOrgId && profile) {
-      if (profile.personalOrganizationId === targetOrgId) hasAccess = true;
-      else if (profile.organizationId === targetOrgId) hasAccess = true;
-      else if (profile.memberships?.[targetOrgId]) hasAccess = true;
-    }
-
-    // Also check project-level membership
-    if (projectData?.members?.[uid]) {
-      hasAccess = true;
-    }
-
-    if (!hasAccess) {
+    const { hasProjectAccessSync } = await import('@/lib/auth/scopeGuard');
+    if (!hasProjectAccessSync(profile, projectData, projectId)) {
       return NextResponse.json(
         { error: 'Access denied. You do not have write access to this project.' },
         { status: 403 }

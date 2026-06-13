@@ -333,6 +333,13 @@ export default function DashboardHome() {
         </section>
       )}
 
+      {/* ── Portfolio KPI Summary Strip ── */}
+      {!isGuest && (
+        <ErrorBoundary name="KPI Grid">
+          <KPIGrid />
+        </ErrorBoundary>
+      )}
+
       {/* ── Stitch Command Center Layout ── */}
       {!isGuest && (
         <div className="flex flex-col xl:flex-row gap-6 mb-8 items-stretch w-full">

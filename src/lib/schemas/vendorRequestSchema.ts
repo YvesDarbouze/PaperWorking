@@ -99,6 +99,12 @@ export const vendorRequestSchema = z.object({
   /** Optional context message from the investor */
   message: z.string().optional(),
 
+  /** How quickly the investor needs the service */
+  urgency: z.enum(['standard', 'rush', 'asap']).optional(),
+
+  /** Freeform timeline text from the investor, e.g. "Within 5 days" */
+  desiredTimeline: z.string().nullable().optional(),
+
   // ── Extended Fields (for marketplace enrichment) ──
 
   /** Firebase UID of the investor who created this request */
@@ -144,6 +150,8 @@ export const createVendorRequestSchema = z.object({
   projectId: z.string().min(1),
   vendorUid: z.string().min(1),
   message: z.string().optional(),
+  urgency: z.enum(['standard', 'rush', 'asap']).default('standard'),
+  desiredTimeline: z.string().optional(),
   serviceType: vendorTypeEnum.optional(),
   requestedBy: z.string().min(1),
   requestedByName: z.string().optional(),

@@ -704,6 +704,7 @@ export interface Project {
   propertyName: string;
   address: string;
   zip?: string;
+  zipCode?: string;
   phase?: string;
   name?: string;
   numberOfUnits?: number;

@@ -218,9 +218,7 @@ export default function IRRIntelligencePage() {
       isUsingDemoData: false,
       currentIRR: irr,
       projectedGain: totalValue - totalCost,
-      // realizedToDate: not formally computable without actual hold dates;
-      // display as a proportional estimate of IRR accumulated to date
-      realizedToDate: irr * 0.45,
+      realizedToDate: totalCost > 0 ? ((totalValue - totalCost) / totalCost) * 100 : 0,
     };
   }, [irrCurrentResult, portfolioInputsResult]);
 
@@ -478,7 +476,7 @@ export default function IRRIntelligencePage() {
             </div>
             <div className="w-px h-10 bg-white/10" />
             <div>
-              <p className="text-xs text-[#6B6870] uppercase tracking-widest">Realized to Date</p>
+              <p className="text-xs text-[#6B6870] uppercase tracking-widest">Unrealized Gain</p>
               <p className="text-xl font-bold text-white tabular-nums">{realizedToDate.toFixed(1)}%</p>
             </div>
           </div>
@@ -523,7 +521,7 @@ export default function IRRIntelligencePage() {
         <IRRExitAssumptionsTerminal
           defaults={{
             totalCashInvested: portfolioDefaults.totalCashInvested,
-            annualCashFlow: portfolioDefaults.totalCashInvested > 0 ? Math.round(portfolioDefaults.totalCashInvested * 0.08) : 0,
+            annualCashFlow: portfolioDefaults.annualCashFlow,
             holdYears: 5,
             purchasePrice: portfolioDefaults.purchasePrice,
             appreciationPercent: 3,

@@ -36,6 +36,22 @@ service cloud.firestore {
       return hasTenantAccess(data.organizationId);
     }
 
+    // Check if the user has scoped project access (if scoped)
+    function hasProjectScopeAccess(projectId, projectData) {
+      let userDoc = getUserDoc();
+      let orgId = projectData.organizationId;
+      return userDoc == null
+        || !('membershipScopes' in userDoc)
+        || !(orgId in userDoc.membershipScopes)
+        || !userDoc.membershipScopes[orgId].isScoped
+        || (projectId in userDoc.membershipScopes[orgId].scopedProjectIds);
+    }
+
+    // Check if user belongs to the same organization as the project and has scope access
+    function canAccessProject(projectId, projectData) {
+      return hasTenantAccess(projectData.organizationId) && hasProjectScopeAccess(projectId, projectData);
+    }
+
     // Role hierarchy checks — returns true if user's project role is in the allowed set
     function hasRole(projectId, allowedRoles) {
       return isProjectMember(projectId) && (getProjectRole(projectId) in allowedRoles);
@@ -118,7 +134,7 @@ service cloud.firestore {
     // Only Lead Investor can delete.
     match /projects/{projectId} {
       allow read: if request.auth != null
-                  && isInProjectOrg(resource.data);
+                  && canAccessProject(projectId, resource.data);
 
       allow create: if request.auth != null
                     && request.resource.data.ownerUid == request.auth.uid
@@ -127,23 +143,24 @@ service cloud.firestore {
 
       allow update: if request.auth != null
                     && hasRole(projectId, ['Lead Investor', 'General Contractor'])
-                    && isInProjectOrg(resource.data)
+                    && canAccessProject(projectId, resource.data)
                     && !isProjectClosed(projectId);
 
       allow delete: if request.auth != null
                     && hasRole(projectId, ['Lead Investor'])
+                    && canAccessProject(projectId, resource.data)
                     && !isProjectClosed(projectId);
 
       // ─── Ledger Items (Sub-Collection) ─────────────────────────────
       // All project members can read. Only finance-authorized roles can write.
       match /ledgerItems/{itemId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Lead Investor, General Contractor, and Accountant can create items
         allow create: if request.auth != null
                       && hasRole(projectId, ['Lead Investor', 'General Contractor', 'Accountant'])
-                      && hasTenantAccess(request.resource.data.organizationId)
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                       && !isProjectClosed(projectId);
 
         // Only Lead Investor and Accountant can approve/reject (update)
@@ -161,7 +178,7 @@ service cloud.firestore {
       // Snapshots are immutable once captured to preserve historical accuracy.
       match /phaseSnapshots/{phaseKey} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Allow Lead Investor to create a snapshot, but not update or delete it
         allow create: if request.auth != null
@@ -178,17 +195,17 @@ service cloud.firestore {
       // Update: project org members (for status changes) OR the referenced vendor (for submitting quotes)
       match /vendorRequests/{requestId} {
         allow read: if request.auth != null
-                    && (isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                    && (canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                         || request.auth.uid == resource.data.vendorUid);
 
         allow create: if request.auth != null
-                      && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Vendors can update quote-related fields only; org members can update status
         allow update: if request.auth != null
                       && (
                         // Org members (Lead Investor etc.) can update any field
-                        isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                         // The vendor can only update quote-related fields
                         || (request.auth.uid == resource.data.vendorUid
                             && request.resource.data.diff(resource.data).affectedKeys()
@@ -202,19 +219,19 @@ service cloud.firestore {
       // Project-scoped vendor assignment lifecycle.
       match /vendorAssignments/{assignmentId} {
         allow read: if request.auth != null
-                    && (isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                    && (canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                         || request.auth.uid == resource.data.vendorId);
 
         // Only project org members can create assignments
         allow create: if request.auth != null
-                      && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                       && !isProjectClosed(projectId);
 
         // Vendors can accept/decline (status only); project members can update more
         allow update: if request.auth != null
                       && !isProjectClosed(projectId)
                       && (
-                        isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data)
+                        canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data)
                         || (request.auth.uid == resource.data.vendorId
                             && request.resource.data.diff(resource.data).affectedKeys()
                                .hasOnly(['status', 'respondedAt', 'quotedFee', 'updatedAt']))
@@ -230,7 +247,7 @@ service cloud.firestore {
       // as a fallback for the Engine Room recalculation.
       match /privateFinancials/{docId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if request.auth != null
                      && hasRole(projectId, ['Lead Investor'])
@@ -244,7 +261,7 @@ service cloud.firestore {
       // Update: investors can only update their own commitment entry.
       match /investors/{investorId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         // Lead Investor can create commitment entries (invitations)
         allow create: if request.auth != null
@@ -266,10 +283,10 @@ service cloud.firestore {
       // Project-level message board.
       match /messages/{messageId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow create: if request.auth != null
-                      && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                      && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow update, delete: if false; // Messages are immutable
       }
@@ -278,7 +295,7 @@ service cloud.firestore {
       // Audit trail for field-level changes.
       match /fieldHistory/{historyId} {
         allow read: if request.auth != null
-                    && isInProjectOrg(get(/databases/$(database)/documents/projects/$(projectId)).data);
+                    && canAccessProject(projectId, get(/databases/$(database)/documents/projects/$(projectId)).data);
 
         allow write: if false; // Server-side only
       }

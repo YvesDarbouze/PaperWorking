@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useMemo, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   Search,
   MapPin,
@@ -9,12 +9,7 @@ import {
   AlertTriangle,
   Loader2,
 } from 'lucide-react';
-import { useProjectStore } from '@/store/projectStore';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
-import { useAuth } from '@/context/AuthContext';
-import { isSubscriptionActive } from '@/lib/stripe/subscription';
-import { projectsService } from '@/lib/firebase/deals';
-import { deriveAllMetrics, computeIRR, buildIRRCashFlows } from '@/lib/metrics/reiMetrics';
 import { VendorRequestModal } from '@/components/marketplace/VendorRequestModal';
 import VendorSideSheet, { type VendorSideSheetData } from '@/components/marketplace/VendorSideSheet';
 import { VendorProfile } from '@/types/schema';
@@ -45,71 +40,27 @@ const CATEGORY_TO_API_TYPE: Record<FilterCategory, string> = {
   Agents: 'Listing Agent',
 };
 
-/* ── Demo vendor cards (shown when API returns empty) ── */
-const DEMO_VENDORS = [
-  {
-    id: 'demo-1',
-    companyName: 'Prime Structural Engineering',
-    category: 'Inspector',
-    location: 'Miami, FL',
-    rating: 4.8,
-    bio: 'Full-service structural and property inspection firm specializing in multi-family and commercial real estate due diligence.',
-    specialties: ['Structural', 'Multi-Family', 'Due Diligence'],
-  },
-  {
-    id: 'demo-2',
-    companyName: 'Capital Bridge Lending',
-    category: 'Lender',
-    location: 'New York, NY',
-    rating: 4.9,
-    bio: 'Bridge and hard-money lender for real estate investors with fast closings and competitive rates across the Tri-State area.',
-    specialties: ['Bridge Loans', 'Hard Money', 'Fast Close'],
-  },
-  {
-    id: 'demo-3',
-    companyName: 'Coastal Title & Escrow',
-    category: 'Attorney',
-    location: 'Fort Lauderdale, FL',
-    rating: 4.7,
-    bio: 'Full-service real estate law firm handling title, escrow, and closing services for residential and commercial transactions.',
-    specialties: ['Title', 'Escrow', 'Closings'],
-  },
-  {
-    id: 'demo-4',
-    companyName: 'ProBuild Contractors',
-    category: 'Contractor',
-    location: 'Brooklyn, NY',
-    rating: 4.6,
-    bio: 'Licensed general contractors focused on value-add renovations, BRRRR rehabs, and multi-unit upgrades across the NYC metro.',
-    specialties: ['BRRRR Rehab', 'Value-Add', 'Multi-Unit'],
-  },
-  {
-    id: 'demo-5',
-    companyName: 'Premier Property Group',
-    category: 'Property Manager',
-    location: 'Miami, FL',
-    rating: 4.8,
-    bio: 'Full-scope property management for residential portfolios — tenant screening, maintenance coordination, and financial reporting.',
-    specialties: ['Tenant Screening', 'Maintenance', 'Financials'],
-  },
-  {
-    id: 'demo-6',
-    companyName: 'NextGen Realty Partners',
-    category: 'Agent',
-    location: 'Newark, NJ',
-    rating: 4.7,
-    bio: 'Investor-focused real estate agents helping buyers identify off-market opportunities and negotiate acquisition deals.',
-    specialties: ['Off-Market', 'Buyer Rep', 'Negotiation'],
-  },
-];
+/** Normalized display shape derived from a real VendorProfile. */
+type DisplayVendor = {
+  id: string;
+  uid: string;
+  companyName: string;
+  category: string;
+  location: string;
+  rating: number;
+  bio: string;
+  specialties: string[];
+};
 
 const CATEGORY_BADGE_STYLES: Record<string, string> = {
-  Inspector:        'bg-sky-400/10 border-sky-400/20 text-sky-400',
-  Lender:           'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
-  Attorney:         'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
-  Contractor:       'bg-orange-400/10 border-orange-400/20 text-orange-400',
+  Inspector:          'bg-sky-400/10 border-sky-400/20 text-sky-400',
+  Lender:             'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
+  Attorney:           'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
+  Lawyer:             'bg-slate-400/10 border-slate-400/20 text-[#9E9DA0]',
+  Contractor:         'bg-orange-400/10 border-orange-400/20 text-orange-400',
   'Property Manager': 'bg-amber-400/10 border-amber-400/20 text-amber-400',
-  Agent:            'bg-pink-400/10 border-pink-400/20 text-pink-400',
+  Agent:              'bg-pink-400/10 border-pink-400/20 text-pink-400',
+  'Listing Agent':    'bg-pink-400/10 border-pink-400/20 text-pink-400',
 };
 
 function VendorCard({
@@ -117,18 +68,15 @@ function VendorCard({
   onRequestQuote,
   onViewProfile,
 }: {
-  vendor: typeof DEMO_VENDORS[number] & { id: string };
-  onRequestQuote: (v: any) => void;
+  vendor: DisplayVendor;
+  onRequestQuote: (v: DisplayVendor) => void;
   onViewProfile: (vendorId: string) => void;
 }) {
   const badgeClass = CATEGORY_BADGE_STYLES[vendor.category] ?? 'bg-white/5 border-white/10 text-[#9E9DA0]';
-  const stars = Math.round(vendor.rating * 2) / 2;
 
   return (
-    <div
-      className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#454955]/30 hover:shadow-[0_0_24px_rgba(69,73,85,0.06)]"
-    >
-      {/* Top row: category badge */}
+    <div className="glass-card rounded-xl border border-pw-border flex flex-col gap-4 p-5 transition-all duration-200 hover:border-[#454955]/30 hover:shadow-[0_0_24px_rgba(69,73,85,0.06)]">
+      {/* Top row: category badge + rating */}
       <div className="flex items-center justify-between">
         <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${badgeClass}`}>
           {vendor.category}
@@ -139,7 +87,7 @@ function VendorCard({
         </span>
       </div>
 
-      {/* Name */}
+      {/* Name + location */}
       <div>
         <h3 className="text-base font-bold text-white leading-snug">{vendor.companyName}</h3>
         <p className="flex items-center gap-1 text-xs text-[#6B6870] mt-0.5">
@@ -153,7 +101,7 @@ function VendorCard({
 
       {/* Specialty tags */}
       <div className="flex flex-wrap gap-1.5">
-        {(vendor.specialties ?? []).slice(0, 3).map((tag) => (
+        {vendor.specialties.slice(0, 3).map((tag) => (
           <span
             key={tag}
             className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#9E9DA0] border border-white/[0.06] bg-white/[0.03]"
@@ -181,7 +129,7 @@ function VendorCard({
         </button>
       </div>
 
-      {/* Vetting Disclaimer */}
+      {/* Vetting disclaimer */}
       <p className="text-[10px] text-[#6B6870] border-t border-white/5 pt-2 leading-relaxed">
         PaperWorking does not vet vendors. You must verify credentials and references before engaging.
       </p>
@@ -202,48 +150,34 @@ function mapTypeParamToCategory(type: string | null): FilterCategory {
 }
 
 function MarketplaceContent() {
-  /* ── Preserved Firestore / data hooks ── */
   useAllDealsSync();
 
-  const router = useRouter();
   const searchParams = useSearchParams();
   const typeParam = searchParams.get('type');
   const projectIdParam = searchParams.get('projectId');
   const cityParam = searchParams.get('city');
-
-  const { profile, user } = useAuth();
-  const projects = useProjectStore((state) => state.projects);
-  const hasActiveSub = isSubscriptionActive(profile);
 
   /* ── Search & filter state ── */
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
-  // Sync state from query parameters on mount or when parameters change
   useEffect(() => {
-    if (typeParam) {
-      setActiveFilter(mapTypeParamToCategory(typeParam));
-    }
-    if (cityParam) {
-      setSearchInput(cityParam);
-      setSearchQuery(cityParam);
-    }
+    if (typeParam) setActiveFilter(mapTypeParamToCategory(typeParam));
+    if (cityParam) { setSearchInput(cityParam); setSearchQuery(cityParam); }
   }, [typeParam, cityParam]);
 
-  /* ── Vendor data state (preserved from original) ── */
+  /* ── Real vendor data ── */
   const [vendors, setVendors] = useState<VendorProfile[]>([]);
   const [loadingVendors, setLoadingVendors] = useState(false);
 
-  /* ── Quote modal state (preserved from original) ── */
+  /* ── Modal / side-sheet state ── */
   const [selectedVendor, setSelectedVendor] = useState<VendorProfile | null>(null);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
-
-  /* ── Side sheet state ── */
   const [sideSheetVendor, setSideSheetVendor] = useState<VendorSideSheetData | null>(null);
   const [isSideSheetOpen, setIsSideSheetOpen] = useState(false);
 
-  /* ── Fetch vendors from API (preserved from original) ── */
+  /* ── Fetch real vendor profiles from Firestore via /api/vendors ── */
   useEffect(() => {
     const fetchVendors = async () => {
       setLoadingVendors(true);
@@ -268,34 +202,26 @@ function MarketplaceContent() {
     fetchVendors();
   }, [activeFilter, searchQuery]);
 
-  /* ── Track whether we're showing demo fallback data ── */
-  const isShowingDemoData = vendors.length === 0;
+  /* ── Map real VendorProfile[] to DisplayVendor[] — no demo fallback ── */
+  const displayVendors = useMemo((): DisplayVendor[] => {
+    let source: DisplayVendor[] = vendors.map((v) => ({
+      id: v.id ?? v.uid,
+      uid: v.uid ?? v.id,
+      companyName: v.companyName ?? 'Unknown',
+      category: (v.type as string) ?? 'Other',
+      location: (v.licensingStates ?? []).slice(0, 1).join(', ') || 'N/A',
+      rating: v.overallRating ?? 4.5,
+      bio: v.bio ?? '',
+      specialties: v.specialties ?? [],
+    }));
 
-  /* ── Derive display list: API results → demo fallback ── */
-  const displayVendors = useMemo(() => {
-    let source: typeof DEMO_VENDORS =
-      vendors.length > 0
-        ? vendors.map((v) => ({
-            id: v.id ?? String(Math.random()),
-            companyName: v.companyName ?? 'Unknown',
-            category: (v.type as string) ?? 'Other',
-            location: (v.licensingStates ?? []).slice(0, 1).join(', ') || 'N/A',
-            rating: v.overallRating ?? 4.5,
-            bio: v.bio ?? '',
-            specialties: v.specialties ?? [],
-          }))
-        : DEMO_VENDORS;
-
-    /* client-side filter on category pill */
     if (activeFilter !== 'All') {
       const apiType = CATEGORY_TO_API_TYPE[activeFilter];
       source = source.filter((v) => {
         const cat = v.category?.toLowerCase();
         return (
           cat === apiType.toLowerCase() ||
-          /* handle attorney/lawyer alias */
           (apiType === 'Lawyer' && (cat === 'attorney' || cat === 'lawyer')) ||
-          /* handle listing agent alias */
           (apiType === 'Listing Agent' && (cat === 'agent' || cat === 'listing agent'))
         );
       });
@@ -304,40 +230,32 @@ function MarketplaceContent() {
     return source;
   }, [vendors, activeFilter]);
 
-  const handleRequestQuote = (vendor: any) => {
-    setSelectedVendor(vendor as VendorProfile);
+  const handleRequestQuote = (dv: DisplayVendor) => {
+    const full = vendors.find((v) => v.id === dv.id || v.uid === dv.uid);
+    setSelectedVendor(full ?? (dv as unknown as VendorProfile));
     setIsQuoteModalOpen(true);
   };
 
   const handleViewProfile = (vendorId: string) => {
-    // Try to find vendor in API results first, then demo data
-    const apiVendor = vendors.find(v => v.id === vendorId);
-    if (apiVendor) {
-      setSideSheetVendor({
-        uid: apiVendor.uid ?? apiVendor.id,
-        companyName: apiVendor.companyName,
-        type: apiVendor.type ?? 'Other',
-        bio: apiVendor.bio ?? '',
-        specialties: apiVendor.specialties ?? [],
-        licensingStates: apiVendor.licensingStates ?? [],
-        serviceAreas: apiVendor.serviceAreas,
-        avgTurnaroundDays: apiVendor.avgTurnaroundDays ?? 3,
-        overallRating: apiVendor.overallRating ?? 4.5,
-        totalReviews: apiVendor.totalReviews ?? 0,
-        availability: apiVendor.availability ?? 'Available',
-        feeRangeLabel: apiVendor.feeRangeLabel ?? 'Contact for pricing',
-        verified: apiVendor.verified ?? false,
-        insuranceVerified: apiVendor.insuranceVerified ?? false,
-      });
-      setIsSideSheetOpen(true);
-    } else {
-      // Demo vendor — navigate to profile page
-      router.push(`/dashboard/marketplace/${vendorId}`);
-    }
-  };
-
-  const handleFindVendors = () => {
-    setSearchQuery(searchInput);
+    const v = vendors.find((vp) => vp.id === vendorId || vp.uid === vendorId);
+    if (!v) return;
+    setSideSheetVendor({
+      uid: v.uid ?? v.id,
+      companyName: v.companyName,
+      type: v.type ?? 'Other',
+      bio: v.bio ?? '',
+      specialties: v.specialties ?? [],
+      licensingStates: v.licensingStates ?? [],
+      serviceAreas: v.serviceAreas,
+      avgTurnaroundDays: v.avgTurnaroundDays ?? 3,
+      overallRating: v.overallRating ?? 4.5,
+      totalReviews: v.totalReviews ?? 0,
+      availability: v.availability ?? 'Available',
+      feeRangeLabel: v.feeRangeLabel ?? 'Contact for pricing',
+      verified: v.verified ?? false,
+      insuranceVerified: v.insuranceVerified ?? false,
+    });
+    setIsSideSheetOpen(true);
   };
 
   return (
@@ -359,14 +277,14 @@ function MarketplaceContent() {
             placeholder="Search by City or Zip Code..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleFindVendors()}
+            onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchInput)}
             className="w-full pl-11 pr-4 py-3.5 bg-white/5 border border-white/10 border-r-0 text-sm text-text-primary placeholder-text-secondary focus:outline-none focus:border-[#454955]/55 transition-colors"
             style={{ borderRadius: '0.5rem 0 0 0.5rem' }}
           />
         </div>
         <button
           type="button"
-          onClick={handleFindVendors}
+          onClick={() => setSearchQuery(searchInput)}
           className="pw-interactive px-6 py-3.5 bg-[#454955] text-black text-sm font-bold hover:bg-[#454955]/90 transition-colors"
           style={{ borderRadius: '0 0.5rem 0.5rem 0' }}
         >
@@ -376,23 +294,20 @@ function MarketplaceContent() {
 
       {/* ── Filter Pills ── */}
       <div className="flex flex-wrap gap-2">
-        {FILTER_PILLS.map((pill) => {
-          const isActive = activeFilter === pill;
-          return (
-            <button
-              key={pill}
-              type="button"
-              onClick={() => setActiveFilter(pill)}
-              className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                isActive
-                  ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
-                  : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
-              }`}
-            >
-              {pill}
-            </button>
-          );
-        })}
+        {FILTER_PILLS.map((pill) => (
+          <button
+            key={pill}
+            type="button"
+            onClick={() => setActiveFilter(pill)}
+            className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
+              activeFilter === pill
+                ? 'bg-[#454955]/10 border-[#454955] text-[#454955]'
+                : 'border-white/10 text-[#9E9DA0] hover:border-[#454955]/40 hover:text-[#454955] bg-transparent'
+            }`}
+          >
+            {pill}
+          </button>
+        ))}
       </div>
 
       {/* ── Disclaimer Banner ── */}
@@ -404,18 +319,6 @@ function MarketplaceContent() {
         </p>
       </div>
 
-      {/* ── Sample Data Banner (shown when falling back to demo vendors) ── */}
-      {!loadingVendors && isShowingDemoData && displayVendors.length > 0 && (
-        <div className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-sky-500/20 bg-sky-500/5">
-          <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-sky-400/15 border border-sky-400/30 text-sky-400">
-            Sample Data
-          </span>
-          <p className="text-xs text-sky-400/80">
-            These are example vendor profiles. Real vendors will appear once they register on the marketplace.
-          </p>
-        </div>
-      )}
-
       {/* ── Vendor Grid ── */}
       {loadingVendors ? (
         <div className="flex justify-center items-center py-24 gap-3 text-[#6B6870]">
@@ -423,16 +326,25 @@ function MarketplaceContent() {
           <span className="text-sm">Loading vendors...</span>
         </div>
       ) : displayVendors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6B6870]">
+        <div className="flex flex-col items-center justify-center py-24 gap-4 text-[#6B6870]">
           <Search className="w-8 h-8 opacity-30" />
-          <p className="text-sm">No vendors found for the selected filters.</p>
-          <button
-            type="button"
-            onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
-            className="text-xs text-[#454955] hover:underline"
-          >
-            Clear filters
-          </button>
+          <div className="text-center space-y-1">
+            <p className="text-sm font-semibold text-[#9E9DA0]">No vendors found</p>
+            <p className="text-xs text-[#6B6870]">
+              {activeFilter !== 'All' || searchQuery
+                ? 'Try clearing your filters or searching a different area.'
+                : 'Vendors will appear here once they register on the marketplace.'}
+            </p>
+          </div>
+          {(activeFilter !== 'All' || searchQuery) && (
+            <button
+              type="button"
+              onClick={() => { setActiveFilter('All'); setSearchQuery(''); setSearchInput(''); }}
+              className="text-xs text-[#454955] hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -447,34 +359,27 @@ function MarketplaceContent() {
         </div>
       )}
 
-      {/* ── Quote Modal (preserved from original) ── */}
+      {/* ── Quote Modal ── */}
       <VendorRequestModal
         isOpen={isQuoteModalOpen}
         vendor={selectedVendor}
         projectId={projectIdParam || undefined}
-        onClose={() => {
-          setIsQuoteModalOpen(false);
-          setSelectedVendor(null);
-        }}
+        onClose={() => { setIsQuoteModalOpen(false); setSelectedVendor(null); }}
       />
 
-      {/* ── Side Sheet for quick vendor preview ── */}
+      {/* ── Vendor profile side sheet ── */}
       <VendorSideSheet
         vendor={sideSheetVendor}
         open={isSideSheetOpen}
-        onClose={() => {
-          setIsSideSheetOpen(false);
-          setSideSheetVendor(null);
-        }}
+        onClose={() => { setIsSideSheetOpen(false); setSideSheetVendor(null); }}
         onRequestQuote={(v) => {
           setIsSideSheetOpen(false);
           setSideSheetVendor(null);
-          // Convert VendorSideSheetData to VendorProfile shape for the modal
           setSelectedVendor({
             id: v.uid,
             uid: v.uid,
             companyName: v.companyName,
-            type: v.type as any,
+            type: v.type as VendorProfile['type'],
             bio: v.bio,
             specialties: v.specialties,
             licensingStates: v.licensingStates,
@@ -482,7 +387,7 @@ function MarketplaceContent() {
             avgTurnaroundDays: v.avgTurnaroundDays,
             overallRating: v.overallRating,
             totalReviews: v.totalReviews,
-            availability: v.availability as any,
+            availability: v.availability as VendorProfile['availability'],
             feeRangeLabel: v.feeRangeLabel,
             verified: v.verified,
             insuranceVerified: v.insuranceVerified,

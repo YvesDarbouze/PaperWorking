@@ -9,18 +9,21 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ id: string }> };
 
+// GET /api/reil/projects/:id/valuation
 export async function GET(req: NextRequest, { params }: Params) {
   const auth = await requireAuth(req);
   if (isAuthError(auth)) return auth;
 
   const { id } = await params;
-  const project = await getProject(id);
+  
+  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
+  if (!(await hasProjectAccess(auth.uid, id))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
+  const project = await getProject(id);
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  if (project.createdById !== auth.uid) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const snapshots = await getValuationSnapshots(id);
@@ -45,13 +48,15 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (isAuthError(auth)) return auth;
 
   const { id } = await params;
-  const project = await getProject(id);
 
+  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
+  if (!(await hasProjectAccess(auth.uid, id))) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const project = await getProject(id);
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  if (project.createdById !== auth.uid) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const providerType = (process.env.PROPERTY_DATA_PROVIDER || "mock").toLowerCase();

@@ -19,13 +19,7 @@ import { useQueries } from '@tanstack/react-query';
    Bottom: GRM by Property table
    ═══════════════════════════════════════════════════════════════ */
 
-const defaultProperties = [
-  { address: '421 Oak St, Brooklyn',      value: 485000,  annualRent: 52800, grm: 9.2,  marketGRM: 10.5, signal: 'Buy'    },
-  { address: '1248 Oakwood Ave, Queens',  value: 620000,  annualRent: 59400, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
-  { address: '77 Prospect Heights, BK',   value: 890000,  annualRent: 72000, grm: 12.4, marketGRM: 10.5, signal: 'Review' },
-  { address: '310 Atlantic Ave, Brooklyn',value: 340000,  annualRent: 40800, grm: 8.3,  marketGRM: 10.5, signal: 'Buy'    },
-  { address: '2100 Bedford Ave, BK',      value: 575000,  annualRent: 55200, grm: 10.4, marketGRM: 10.5, signal: 'Hold'   },
-];
+type GRMPropertyRow = { address: string; value: number; annualRent: number; grm: number; marketGRM: number | null; signal: string };
 
 const SIGNAL_STYLES: Record<string, string> = {
   Buy:    'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]',
@@ -33,7 +27,7 @@ const SIGNAL_STYLES: Record<string, string> = {
   Review: 'bg-amber-400/10 border-amber-400/20 text-amber-400',
 };
 
-function GroupedBarChart({ properties, whatIfGRM }: { properties: typeof defaultProperties; whatIfGRM?: number | null }) {
+function GroupedBarChart({ properties, whatIfGRM }: { properties: GRMPropertyRow[]; whatIfGRM?: number | null }) {
   const labels = properties.map((p) => p.address.split(',')[0]);
   const option = {
     backgroundColor: 'transparent',
@@ -265,7 +259,7 @@ export default function GRMIntelligencePage() {
         return { isUsingDemoData: false, currentGRM: last, grmChange: last - prev };
       }
     }
-    return { isUsingDemoData: true, currentGRM: 9.2, grmChange: -0.3 };
+    return { isUsingDemoData: false, currentGRM: 0, grmChange: 0 };
   }, [grmSeriesResult, grmCurrentResult, portfolioInputsResult]);
 
   const isDecreasing = grmChange < 0;
@@ -281,8 +275,8 @@ export default function GRMIntelligencePage() {
       const value = financials.estimatedCurrentValue ?? financials.estimatedARV ?? purchasePrice;
       const annualRent = (financials.monthlyGrossRent ?? 0) * 12;
       const grm = annualRent > 0 ? value / annualRent : 0;
-      const marketGRM = zipToMarketGRM[p.zipCode?.trim()] ?? 10.5;
-      const signal = grm === 0 ? 'Review' : grm < marketGRM * 0.9 ? 'Buy' : grm < marketGRM * 1.1 ? 'Hold' : 'Review';
+      const marketGRM: number | null = zipToMarketGRM[p.zipCode?.trim() ?? ''] ?? null;
+      const signal = grm === 0 || marketGRM === null ? 'Review' : grm < marketGRM * 0.9 ? 'Buy' : grm < marketGRM * 1.1 ? 'Hold' : 'Review';
       return {
         address: p.address || p.propertyName || 'Unknown Property',
         value,
@@ -332,7 +326,7 @@ export default function GRMIntelligencePage() {
 
   const contextMetricsData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return { totalPropertyValue: 0, totalAnnualRent: 0, averageMarketGRM: 10.5 };
+      return { totalPropertyValue: 0, totalAnnualRent: 0, averageMarketGRM: 0 };
     }
     const projects = portfolioInputsResult.data.projects;
     let valSum = 0;
@@ -350,12 +344,14 @@ export default function GRMIntelligencePage() {
       valSum += propValue * factor;
       rentSum += rent * factor;
 
-      const mGrm = zipToMarketGRM[p.zipCode?.trim()] ?? 10.5;
-      marketGrmValSum += mGrm * propValue * factor;
-      marketGrmWeightSum += propValue * factor;
+      const mGrm = zipToMarketGRM[p.zipCode?.trim() ?? ''] ?? null;
+      if (mGrm !== null) {
+        marketGrmValSum += mGrm * propValue * factor;
+        marketGrmWeightSum += propValue * factor;
+      }
     }
 
-    const avgMarketGrm = marketGrmWeightSum > 0 ? marketGrmValSum / marketGrmWeightSum : 10.5;
+    const avgMarketGrm = marketGrmWeightSum > 0 ? marketGrmValSum / marketGrmWeightSum : 0;
 
     return {
       totalPropertyValue: valSum,
@@ -380,7 +376,7 @@ export default function GRMIntelligencePage() {
           : `$${(totalAnnualRent / 1000).toFixed(0)}k`,
       },
       { label: 'Portfolio GRM', value: `${currentGRM.toFixed(1)}x` },
-      { label: 'Market GRM', value: `${averageMarketGRM.toFixed(1)}x` },
+      { label: 'Market GRM', value: averageMarketGRM > 0 ? `${averageMarketGRM.toFixed(1)}x` : 'N/A' },
     ];
   }, [contextMetricsData, currentGRM]);
 
@@ -441,7 +437,7 @@ export default function GRMIntelligencePage() {
                 </div>
               )}
               <span className="text-xs text-[#6B6870]">
-                Lower is better (Market: {contextMetricsData.averageMarketGRM.toFixed(1)}x)
+                Lower is better{contextMetricsData.averageMarketGRM > 0 ? ` (Market: ${contextMetricsData.averageMarketGRM.toFixed(1)}x)` : ''}
               </span>
             </div>
 
@@ -517,7 +513,7 @@ export default function GRMIntelligencePage() {
             </thead>
             <tbody>
               {propertyRows.map((row) => {
-                const diff = row.grm - row.marketGRM;
+                const diff = row.marketGRM !== null ? row.grm - row.marketGRM : null;
                 return (
                   <tr key={row.address} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
                     <td className="py-3 px-3 text-[#C0BEC2] font-medium">{row.address}</td>
@@ -528,8 +524,8 @@ export default function GRMIntelligencePage() {
                       ${(row.annualRent / 1000).toFixed(1)}k
                     </td>
                     <td className="py-3 px-3 text-[#6E7480] font-bold tabular-nums">{row.grm.toFixed(1)}x</td>
-                    <td className={`py-3 px-3 font-bold tabular-nums ${diff <= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
-                      {diff > 0 ? '+' : ''}{diff.toFixed(1)}x
+                    <td className={`py-3 px-3 font-bold tabular-nums ${diff === null ? 'text-[#6B6870]' : diff <= 0 ? 'text-[#6E7480]' : 'text-red-400'}`}>
+                      {diff === null ? '—' : `${diff > 0 ? '+' : ''}${diff.toFixed(1)}x`}
                     </td>
                     <td className="py-3 px-3">
                       <span className={`px-2 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${SIGNAL_STYLES[row.signal] ?? SIGNAL_STYLES.Hold}`}>

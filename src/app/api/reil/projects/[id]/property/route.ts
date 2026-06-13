@@ -22,7 +22,8 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!project) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  if (project.createdById !== auth.uid) {
+  const { hasProjectAccess } = await import("@/lib/auth/scopeGuard");
+  if (!(await hasProjectAccess(auth.uid, id))) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

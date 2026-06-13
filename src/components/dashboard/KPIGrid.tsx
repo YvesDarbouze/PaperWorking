@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import KPICard from '@/components/dashboard/KPICard';
 import { DollarSign, TrendingUp, FolderOpen, PlusCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { useTenant } from '@/context/TenantContext';
 import { useProjectStore } from '@/store/projectStore';
 import { calculatePortfolioSummary } from '@/lib/analyticsUtils';
@@ -29,13 +30,20 @@ function KPICardSkeleton() {
 }
 
 export default function KPIGrid() {
+  const { loading: authLoading } = useAuth();
   const { activeTenantId } = useTenant();
   const projects = useProjectStore((s) => s.projects);
   const projectsSynced = useProjectStore((s) => s.projectsSynced);
 
+  // Show skeleton while:
+  //   (a) Firebase Auth is still resolving (activeTenantId will be null until profile loads)
+  //   (b) A real tenant ID is known but the first Firestore snapshot hasn't fired yet
   const isLoading =
-    !!activeTenantId && activeTenantId !== 'org_placeholder' && !projectsSynced;
-  const isEmpty = projectsSynced && projects.length === 0;
+    authLoading ||
+    (!!activeTenantId && activeTenantId !== 'org_placeholder' && !projectsSynced);
+
+  // Empty/onboarding once sync has confirmed zero projects
+  const isEmpty = !isLoading && projectsSynced && projects.length === 0;
 
   if (isLoading) {
     return (

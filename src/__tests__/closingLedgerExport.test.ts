@@ -69,6 +69,12 @@ describe('Closing Ledger Export API Route', () => {
         },
       }),
     });
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        role: 'Standard',
+      }),
+    });
 
     const res = await GET(req, routeParams);
     expect(res.status).toBe(403);
@@ -88,6 +94,7 @@ describe('Closing Ledger Export API Route', () => {
       exists: true,
       data: () => ({
         ownerUid: 'owner_123',
+        organizationId: 'org_123',
         address: '123 Main St, Anytown, USA',
         financials: {
           purchasePrice: 300000,
@@ -98,6 +105,14 @@ describe('Closing Ledger Export API Route', () => {
             transferTax: 1200,
           },
         },
+      }),
+    });
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        uid: 'owner_123',
+        role: 'Lead Investor',
+        personalOrganizationId: 'org_123',
       }),
     });
 
@@ -156,6 +171,12 @@ describe('Closing Ledger Export API Route', () => {
           loanInterestRate: 6.5,
           loanOriginationPoints: 1.0,
         },
+      }),
+    });
+    mockGet.mockResolvedValueOnce({
+      exists: true,
+      data: () => ({
+        role: 'Standard',
       }),
     });
 

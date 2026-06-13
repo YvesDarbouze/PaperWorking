@@ -21,8 +21,6 @@ const PERIOD_MAP: Record<Period, 'monthly' | 'quarterly' | 'annual' | 'monthly'>
   M: 'monthly', Q: 'quarterly', Y: 'annual', All: 'monthly',
 };
 
-const defaultMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const defaultValues = [920000, 940000, 910000, 970000, 985000, 1020000, 1050000, 1080000, 1100000, 1150000, 1190000, 1240000];
 
 function PerformanceChart({ labels, values }: { labels: string[]; values: number[] }) {
   const option = {
@@ -132,32 +130,21 @@ export default function PortfolioPerformancePage() {
     periodType: PERIOD_MAP[period],
   });
 
-  const { labels, values, totalValue, roiPct, hasData, isUsingDemoData } = useMemo(() => {
-    // Rule 4: demo data ONLY when no projects at all
-    if (portfolioInputsResult.status === 'insufficient') {
-      return { labels: defaultMonths, values: defaultValues, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
-    }
-
+  const { labels, values, totalValue, roiPct, isUsingDemoData } = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return { labels: defaultMonths, values: defaultValues, totalValue: 0, roiPct: 0, hasData: false, isUsingDemoData: false };
+      return { labels: [] as string[], values: [] as number[], totalValue: 0, roiPct: 0, isUsingDemoData: false };
     }
 
     const { snapshots, projects } = portfolioInputsResult.data;
     if (!snapshots || snapshots.length === 0) {
       const totalCost = projects.reduce((s, p) => s + ((p.financials?.purchasePrice ?? 0) + (p.financials?.rehabBudget ?? 0)), 0);
-      if (totalCost === 0) {
-        // No projects with any financial data — treat as demo
-        return { labels: defaultMonths, values: defaultValues, totalValue: 1_240_000, roiPct: 14.2, hasData: false, isUsingDemoData: true };
-      }
-      // Rule 4: Real projects exist; show real figures, just no historical chart yet
       const totalArv = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? 0), 0);
       return {
         labels: [],
         values: [],
         totalValue: totalArv,
         roiPct: totalCost > 0 ? ((totalArv - totalCost) / totalCost) * 100 : 0,
-        hasData: true,
-        isUsingDemoData: false,  // ←← RULE 4: real projects ⇒ not demo mode
+        isUsingDemoData: false,
       };
     }
 
@@ -169,17 +156,12 @@ export default function PortfolioPerformancePage() {
     const last = vals[vals.length - 1] ?? 0;
     const first = vals[0] ?? last;
     const roi = first > 0 ? ((last - first) / first) * 100 : 0;
-    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, hasData: vals.length > 0, isUsingDemoData: false };
+    return { labels: lbls, values: vals, totalValue: last, roiPct: roi, isUsingDemoData: false };
   }, [portfolioInputsResult, period]);
 
   const kpis = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return {
-        assets:  2_100_000,
-        equity:  760_000,
-        debt:    1_340_000,
-        deals:   4,
-      };
+      return { assets: 0, equity: 0, debt: 0, deals: 0 };
     }
     const { projects } = portfolioInputsResult.data;
     const totalArv    = projects.reduce((s, p) => s + (p.financials?.arv ?? p.financials?.purchasePrice ?? (0)), 0);

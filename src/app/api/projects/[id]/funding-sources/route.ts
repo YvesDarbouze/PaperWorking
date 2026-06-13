@@ -32,6 +32,15 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     );
   }
 
+  // Verify project scope & access
+  const { hasProjectAccess } = await import('@/lib/auth/scopeGuard');
+  if (!(await hasProjectAccess(auth.uid, projectId))) {
+    return NextResponse.json(
+      { success: false, error: 'Access denied. You do not have write access to this project.' },
+      { status: 403 }
+    );
+  }
+
   let body: { sources: CapitalSource[] };
   try {
     body = await req.json();

@@ -3,6 +3,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { adminDb } from '@/lib/firebase/admin';
 import { Resend } from 'resend';
 import { generateInvestorResponseEmail } from '@/lib/emails/templates/InvestorResponseEmail';
+import { logOrgActivity } from '@/lib/firebase/orgActivityWriter';
 
 /* ═══════════════════════════════════════════════════════════════
    POST /api/invitations/respond
@@ -156,6 +157,19 @@ export async function POST(request: NextRequest) {
       investorName: inv.name,
       at: now,
     });
+
+    // ── Org activity feed (non-blocking) ────────────────────
+    if (action === 'accept' && inv.organizationId) {
+      logOrgActivity({
+        organizationId: inv.organizationId,
+        type: 'member_joined',
+        actorId: inv.invitedByUid || 'system',
+        actorName: inv.name || 'An investor',
+        summary: `${inv.name || 'An investor'} accepted the investment invitation for ${dealName}`,
+        projectId: inv.projectId,
+        projectName: dealName,
+      });
+    }
 
     return NextResponse.json({ success: true, action, invitationId: invRef.id });
   } catch (err: unknown) {

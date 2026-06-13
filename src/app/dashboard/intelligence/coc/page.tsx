@@ -94,35 +94,6 @@ function CoCTrendChart({ values, labels }: { values: number[]; labels: string[] 
   return <ReactECharts option={option} style={{ height: 260, width: '100%' }} opts={{ renderer: 'canvas' }} />;
 }
 
-const SCENARIOS = [
-  {
-    label: 'Conservative',
-    coc: 6.5,
-    description: 'Higher vacancy, conservative rent',
-    borderClass: 'border-white/10',
-    textClass: 'text-[#9E9DA0]',
-    numClass: 'text-[#C0BEC2]',
-    active: false,
-  },
-  {
-    label: 'Current',
-    coc: 8.42,
-    description: 'Live portfolio performance',
-    borderClass: 'border-[#6E7480]/40',
-    textClass: 'text-[#6E7480]',
-    numClass: 'text-[#6E7480]',
-    active: true,
-  },
-  {
-    label: 'Aggressive',
-    coc: 11.8,
-    description: 'Full occupancy, rent optimization',
-    borderClass: 'border-white/10',
-    textClass: 'text-[#9E9DA0]',
-    numClass: 'text-[#C0BEC2]',
-    active: false,
-  },
-];
 
 function EmptyState() {
   return (
@@ -202,6 +173,36 @@ export default function CoCIntelligencePage() {
     ? 'bg-[#6E7480]/10 border-[#6E7480]/20 text-[#6E7480]'
     : 'bg-amber-400/10 border-amber-400/20 text-amber-400';
   const benchmarkLabel = currentCoC >= 8 ? 'Above Benchmark' : 'Below Benchmark';
+
+  const scenarios = useMemo(() => [
+    {
+      label: 'Conservative',
+      coc: 6.5,
+      description: 'Higher vacancy, conservative rent',
+      borderClass: 'border-white/10',
+      textClass: 'text-[#9E9DA0]',
+      numClass: 'text-[#C0BEC2]',
+      active: false,
+    },
+    {
+      label: 'Current',
+      coc: currentCoC,
+      description: 'Live portfolio performance',
+      borderClass: 'border-[#6E7480]/40',
+      textClass: 'text-[#6E7480]',
+      numClass: 'text-[#6E7480]',
+      active: true,
+    },
+    {
+      label: 'Aggressive',
+      coc: 11.8,
+      description: 'Full occupancy, rent optimization',
+      borderClass: 'border-white/10',
+      textClass: 'text-[#9E9DA0]',
+      numClass: 'text-[#C0BEC2]',
+      active: false,
+    },
+  ], [currentCoC]);
 
   if (
     cocCurrentResult.status === 'loading' ||
@@ -307,7 +308,7 @@ export default function CoCIntelligencePage() {
 
           {/* Scenario cards */}
           <div className="space-y-2">
-            {SCENARIOS.map((sc) => (
+            {scenarios.map((sc) => (
               <div
                 key={sc.label}
                 className={`rounded-xl border p-4 flex items-center justify-between transition-all ${sc.borderClass} ${sc.active ? 'ring-1 ring-[#6E7480]/20' : ''}`}

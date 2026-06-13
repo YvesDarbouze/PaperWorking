@@ -1,3 +1,35 @@
+# Agent Handoff — Dashboard Data Honesty Sweep (2026-06-13)
+
+## ✅ COMPLETED THIS SESSION
+
+Three dashboard components audited and regressed for fake-data artifacts.
+
+### 1. ActivityFeed (Prompt 26 cleanup)
+- **`SystemActivityFeed.tsx` deleted** — dead code with hardcoded fictional events ("Dividend payout", "Jane Cooper accessed Due Diligence folder"); was never imported anywhere.
+- **`src/actions/vendorAssignment.ts`** — added non-blocking `logOrgActivity` call after `batch.commit()` so vendor assignment requests appear in the org activity feed (`phase_change` type).
+- **`src/app/api/invitations/respond/route.ts`** — added `logOrgActivity` on `action === 'accept'` so member joins appear in the feed (`member_joined` type).
+- **Regression tests**: `src/__tests__/activityFeedNoDemo.test.ts` — 9 tests covering: no ACTIVITY_ITEMS constant, no [WARN] terminal UI, live Firestore listener, correct collection path, newest-first ordering, SystemActivityFeed deletion, vendor assignment emission, invite accept emission.
+
+### 2. KPIGrid — three-bug fix
+- **Bug 1**: `isLoading = !!activeTenantId && ...` was `false` when `activeTenantId` was `null` (Firebase Auth still resolving) → skeleton never shown, zeros visible immediately. Fixed by adding `authLoading` from `useAuth()` as first condition.
+- **Bug 2**: `useAllDealsSync` error callback only called `console.error`, never `setDeals`. For `org_placeholder` queries rejected by Firestore, `projectsSynced` never became `true` → perpetual skeleton. Fixed by calling `setDeals([])` in error callback.
+- **Bug 3**: `KPIGrid` was imported in `DashboardHome.tsx` but never rendered in JSX. Fixed by adding `<KPIGrid />` inside `ErrorBoundary` in the non-guest section.
+- **Regression tests**: `src/__tests__/kpiGridStates.test.ts` — 11 tests covering all three states (loading skeleton, empty onboarding CTA, real `calculatePortfolioSummary` values).
+
+### 3. AnalyticsWidget — regression tests only (was already clean)
+- The widget was already correct: `usePortfolioMetricSnapshots('monthly')` as data source, `InsufficientData` honest empty state, no `dummyData` constant, no Demo badge.
+- **Regression tests**: `src/__tests__/analyticsWidgetNoDemo.test.ts` — 20 tests covering: static absence of fake-data artifacts, all three `METRIC_FIELD` mappings, fixture-based series verification (values, `latestValue`, date labels), `MIN_POINTS = 2` gate, `MAX_POINTS = 12` cap, per-metric null filtering.
+
+### Verification
+- Full suite: **92 suites, 1107 tests — all green**
+- No TypeScript compile step run this session; no new types introduced.
+
+### Next Queued (from prior handoff)
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
+
+---
+
 # Agent Handoff — Closing Ledger Export (Prompt 19) (2026-06-11)
 
 ## ✅ COMPLETED THIS SESSION

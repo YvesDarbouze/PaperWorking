@@ -173,10 +173,11 @@ export async function GET(req: NextRequest, { params }: Params) {
   }
   const projectData = projectSnap.data()!;
 
-  // 3. Membership check — no writes; read-only snapshot
-  const isOwner  = projectData.ownerUid === uid;
-  const isMember = !!projectData.members?.[uid];
-  if (!isOwner && !isMember) {
+  const userSnap = await adminDb.collection('users').doc(uid).get();
+  const profile = userSnap.exists ? { uid, ...userSnap.data() } : null;
+
+  const { hasProjectAccessSync } = await import('@/lib/auth/scopeGuard');
+  if (!hasProjectAccessSync(profile, projectData, id)) {
     return NextResponse.json({ error: 'Access denied: not a project member' }, { status: 403 });
   }
 

@@ -23,16 +23,10 @@ async function verifyProjectMembership(projectId: string, uid: string) {
   const snap = await adminDb.collection('projects').doc(projectId).get();
   if (!snap.exists) return null;
   const data = snap.data()!;
-  const isOwner = data.ownerUid === uid;
-  const isMember = !!data.members?.[uid] || data.teamMemberIds?.includes(uid);
-  const isOrgMember = data.organizationId
-    ? await adminDb.collection('organizations').doc(data.organizationId).get().then((o) => {
-        if (!o.exists) return false;
-        const od = o.data()!;
-        return od.ownerUid === uid || od.teamMembers?.some((m: any) => m.id === uid && m.status === 'active');
-      })
-    : false;
-  if (!isOwner && !isMember && !isOrgMember) return null;
+
+  const { hasProjectAccess } = await import('@/lib/auth/scopeGuard');
+  const allowed = await hasProjectAccess(uid, projectId);
+  if (!allowed) return null;
   return data;
 }
 

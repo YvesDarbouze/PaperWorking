@@ -3,11 +3,20 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Helper: Check if user is a member of the project in Firestore
+    // Helper: Check if user is a member of the project in Firestore and respects scope
     function isProjectMember(projectId) {
+      let userUri = /databases/(default)/documents/users/$(request.auth.uid);
+      let projectUri = /databases/(default)/documents/projects/$(projectId);
       return request.auth != null
-        && firestore.exists(/databases/(default)/documents/projects/$(projectId))
-        && request.auth.uid in firestore.get(/databases/(default)/documents/projects/$(projectId)).data.members;
+        && firestore.exists(projectUri)
+        && request.auth.uid in firestore.get(projectUri).data.members
+        && (
+          !firestore.exists(userUri)
+          || !('membershipScopes' in firestore.get(userUri).data)
+          || !(firestore.get(projectUri).data.organizationId in firestore.get(userUri).data.membershipScopes)
+          || !firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].isScoped
+          || (projectId in firestore.get(userUri).data.membershipScopes[firestore.get(projectUri).data.organizationId].scopedProjectIds)
+        );
     }
 
     // Projects folder: project-scoped document and photography uploads

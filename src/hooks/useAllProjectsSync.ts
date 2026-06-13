@@ -46,13 +46,25 @@ export function useAllDealsSync() {
       snapshot.forEach((d) => {
         liveDeals.push({ id: d.id, ...d.data() } as Project);
       });
-      setDeals(liveDeals);
+
+      // Filter by project scopes if the user is scoped
+      let filteredDeals = liveDeals;
+      const scope = profile?.membershipScopes?.[activeTenantId];
+      if (scope?.isScoped && Array.isArray(scope.scopedProjectIds)) {
+        filteredDeals = liveDeals.filter((d) => scope.scopedProjectIds.includes(d.id));
+      }
+
+      setDeals(filteredDeals);
     }, (error) => {
       console.error('All Deals Sync Error:', error);
+      // On Firestore error (permission-denied, network, etc.), mark sync complete with
+      // empty results so the UI shows the honest empty/onboarding state instead of
+      // a perpetual loading skeleton. Firestore listeners are not auto-retried on error.
+      setDeals([]);
     });
 
     return () => unsubscribe();
-  }, [setDeals, activeTenantId, profile?.inviteToken, profile?.invitedToProjectId]);
+  }, [setDeals, activeTenantId, profile?.inviteToken, profile?.invitedToProjectId, profile?.membershipScopes]);
 
   // 2. Sync Active Deal's Ledger (Sub-collection)
   useEffect(() => {

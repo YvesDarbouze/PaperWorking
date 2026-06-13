@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import ReactECharts from 'echarts-for-react';
 import { SampleDataBanner } from '@/components/intelligence/SampleDataBanner';
-import { ArrowUpRight, Download } from 'lucide-react';
+import { ArrowUpRight, Download, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { useAllDealsSync } from '@/hooks/useAllProjectsSync';
 import { useMetricSeries, useMetricCurrent, usePortfolioInputs } from '@/lib/intelligence/selectors';
@@ -22,17 +22,28 @@ import { deriveAllMetrics } from '@/lib/metrics/reiMetrics';
 type Period = 'Month' | 'Quarter' | 'Year' | 'Overall';
 type Scope  = 'Property' | 'My Share';
 
-const defaultDscr = 1.42;
-const defaultChange = +0.04;
-const defaultTrendValues = [1.18, 1.25, 1.31, 1.28, 1.35, 1.38, 1.42];
-const defaultTrendLabels = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'];
 
-const defaultProperties = [
-  { address: '421 Oak St, Brooklyn',  noi: 48200,  debtService: 32100, dscr: 1.50 },
-  { address: '1248 Oakwood Ave',       noi: 36400,  debtService: 25600, dscr: 1.42 },
-  { address: '77 Prospect Heights',    noi: 61800,  debtService: 48200, dscr: 1.28 },
-  { address: '310 Atlantic Ave',       noi: 22100,  debtService: 19800, dscr: 1.12 },
-];
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-white/10 p-8" style={{ background: 'rgba(22,19,24,0.4)' }}>
+      <div className="flex flex-col items-center justify-center gap-4 text-center border border-dashed border-white/10 rounded-xl p-12 min-h-[300px]">
+        <TrendingUp className="w-12 h-12 text-slate-600" strokeWidth={1} />
+        <div>
+          <p className="text-sm font-semibold text-[#C0BEC2] mb-1">Awaiting Portfolio Data</p>
+          <p className="text-xs text-[#6B6870] max-w-xs leading-relaxed">
+            Import deal data or complete Purchase phase tasks to generate DSCR analytics.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/projects/new"
+          className="mt-2 px-5 py-2 rounded-full border border-[#454955]/30 text-[#6E7480] text-xs font-semibold hover:bg-[#454955]/10 transition-all"
+        >
+          Add First Deal
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 /* ── Horizontal Threshold Gauge ── */
 function DSCRGauge({ value }: { value: number }) {
@@ -246,17 +257,7 @@ export default function DSCRIntelligencePage() {
     return { portfolioNOI: Math.round(totalNOI), portfolioDebtService: Math.round(totalDS * 100) / 100 };
   }, [portfolioInputsResult]);
 
-  // Rule 4: isUsingDemoData = true ONLY when no projects at all
   const { isUsingDemoData, currentDscr, dscrChange, trendValues, trendLabels } = useMemo(() => {
-    if (portfolioInputsResult.status === 'insufficient') {
-      return {
-        isUsingDemoData: true,
-        currentDscr: defaultDscr,
-        dscrChange: defaultChange,
-        trendValues: defaultTrendValues,
-        trendLabels: defaultTrendLabels,
-      };
-    }
     if (
       dscrSeriesResult.status === 'ready' &&
       dscrCurrentResult.status === 'ready' &&
@@ -289,25 +290,19 @@ export default function DSCRIntelligencePage() {
 
   const propertiesTableData = useMemo(() => {
     if (portfolioInputsResult.status !== 'ready') {
-      return defaultProperties;
+      return [] as Array<{ address: string; noi: number; debtService: number; dscr: number }>;
     }
     const projects = portfolioInputsResult.data.projects;
-    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? (0)) > 0);
-    if (withEquity.length > 0) {
-      return withEquity.map((p) => {
-        const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
-        const propNoi = derived.noi;
-        const debtService = derived.annualDebtService;
-        const dscr = derived.dscr ?? (1.0);
-        return {
-          address: p.address || p.propertyName || 'Unknown Property',
-          noi: propNoi,
-          debtService,
-          dscr,
-        };
-      });
-    }
-    return defaultProperties;
+    const withEquity = projects.filter((p) => (p.financials?.purchasePrice ?? 0) > 0);
+    return withEquity.map((p) => {
+      const derived = deriveAllMetrics(p.financials, undefined, p.strategyType, p.currentPhase);
+      return {
+        address: p.address || p.propertyName || 'Unknown Property',
+        noi: derived.noi,
+        debtService: derived.annualDebtService,
+        dscr: derived.dscr ?? 0,
+      };
+    });
   }, [portfolioInputsResult]);
 
   const fmt = (n: number) => `$${n.toLocaleString()}`;

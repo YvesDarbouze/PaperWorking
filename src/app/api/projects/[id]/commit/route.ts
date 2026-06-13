@@ -50,8 +50,12 @@ export async function POST(
 
     const project = projectSnap.data()!;
 
-    // 3. Verify ownership
-    if (project.ownerUid !== uid && !project.members?.[uid]) {
+    // 3. Verify access
+    const userSnap = await adminDb.collection('users').doc(uid).get();
+    const profile = userSnap.exists ? { uid, ...userSnap.data() } : null;
+
+    const { hasProjectAccessSync } = await import('@/lib/auth/scopeGuard');
+    if (!hasProjectAccessSync(profile, project, projectId)) {
       return NextResponse.json(
         { error: 'Access denied. Only the project owner or members can commit.' },
         { status: 403 }

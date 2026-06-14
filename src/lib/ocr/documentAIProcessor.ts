@@ -48,32 +48,14 @@ export async function processDocument(
 ): Promise<OcrProcessingResult> {
   const startTime = Date.now();
 
-  // Simulate async processing delay (200–600ms)
-  await new Promise((resolve) => setTimeout(resolve, 200 + Math.random() * 400));
-
-  try {
-    const extractedFields = getStubFields(documentType);
-    const confidences = Object.values(extractedFields).map((f) => f.confidence);
-    const overallConfidence =
-      confidences.length > 0
-        ? confidences.reduce((a, b) => a + b, 0) / confidences.length
-        : 0;
-
-    return {
-      success: true,
-      extractedFields,
-      overallConfidence: Math.round(overallConfidence * 100) / 100,
-      processingTimeMs: Date.now() - startTime,
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      extractedFields: {},
-      overallConfidence: 0,
-      error: error?.message ?? 'Unknown OCR processing error',
-      processingTimeMs: Date.now() - startTime,
-    };
-  }
+  // Return honest coming soon failure
+  return {
+    success: false,
+    extractedFields: {},
+    overallConfidence: 0,
+    error: 'Google Document AI integration is coming soon.',
+    processingTimeMs: Date.now() - startTime,
+  };
 }
 
 // ── Stub Field Generators ────────────────────────────────

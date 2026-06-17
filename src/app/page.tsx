@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LandingHeader from '@/components/landing/LandingHeader';
 import LandingHero from '@/components/landing/LandingHero';
+
+import HowItWorks from '@/components/landing/HowItWorks';
 import LandingFooter from '@/components/landing/LandingFooter';
 import LandingNews from '@/components/landing/LandingNews';
 import FinalCTA from '@/components/landing/FinalCTA';
@@ -84,6 +86,22 @@ export default function LandingPage() {
     }
   }, [user, loading, router]);
 
+  /* Scroll to hash section after Next.js client-side navigation from another route */
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const attempt = (tries: number) => {
+      const el = document.getElementById(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      } else if (tries > 0) {
+        setTimeout(() => attempt(tries - 1), 120);
+      }
+    };
+    attempt(5);
+  }, []);
+
   const handleSelectPlan = useCallback(async (planIdentifier: string) => {
     setIsProcessing(planIdentifier);
 
@@ -154,10 +172,13 @@ export default function LandingPage() {
 
 
 
+      {/* ── How It Works — REIL walkthrough (scroll target) ── */}
+      <div id="how-it-works" className="scroll-mt-[72px]">
+        <HowItWorks />
+      </div>
+
       {/* ── Foreground Content ── */}
       <div className="relative z-10 w-full">
-
-
 
         {/* ── Final CTA — Risk Mitigation Reframe ── */}
         <FinalCTA />

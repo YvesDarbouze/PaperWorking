@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import AdminSidebar from '@/components/admin/AdminSidebar';
@@ -12,12 +12,13 @@ import Logo from '@/components/brand/Logo';
 
    Auth + Role guard:
    • Must be authenticated
-   • Must have Platform Admin or Lead Investor role
-   
+   • Must have admin custom claim (set via Firebase Admin SDK)
+   • Falls back to ADMIN_ROLES Firestore check during migration
+
    Structure: Sidebar (240px) + Header (64px) + Main content
    ═══════════════════════════════════════════════════════ */
 
-const ADMIN_ROLES = ['Platform Admin', 'Admin', 'Lead Investor'];
+const ADMIN_ROLES = ['Platform Admin', 'Admin'];
 
 function AdminSkeleton() {
   return (
@@ -86,20 +87,27 @@ function AccessDenied() {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
+  // null = still checking, true/false = resolved
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace('/login');
+      return;
     }
-  }, [loading, user, router]);
+    if (!user) return;
 
-  if (loading || !user) return <AdminSkeleton />;
+    // Primary: Firebase custom claim (token-level, cannot be spoofed by client writes)
+    user.getIdTokenResult().then((result) => {
+      const hasClaim = result.claims['admin'] === true;
+      // Fallback during migration: Firestore profile role (read server-side in server actions)
+      const hasRole = ADMIN_ROLES.includes((profile?.role as string) || '');
+      setIsAdmin(hasClaim || hasRole);
+    }).catch(() => setIsAdmin(false));
+  }, [loading, user, profile, router]);
 
-  // Role check — allow Platform Admin, Admin, and Lead Investor
-  const userRole = profile?.role || '';
-  if (!ADMIN_ROLES.includes(userRole)) {
-    return <AccessDenied />;
-  }
+  if (loading || !user || isAdmin === null) return <AdminSkeleton />;
+  if (!isAdmin) return <AccessDenied />;
 
   return (
     <div

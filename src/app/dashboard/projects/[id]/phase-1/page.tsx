@@ -31,6 +31,7 @@ import {
   Loader2,
   Lock,
 } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 /* ═══════════════════════════════════════════════════════════════
    /dashboard/projects/[id]/phase-1 — Acquisition Workspace
@@ -258,7 +259,8 @@ export default function Phase1WorkspacePage() {
       
       // Update the phase status so the badge and tracking correctly reflect Phase 2
       await projectsService.updateProject(project.id, { phaseStatus: 'Phase 2: Acquisition' });
-      
+      trackEvent('project_phase_advanced', { projectId: project.id, fromPhase: 1, toPhase: 2 });
+
       refresh();
       
       // Redirect the user to the Phase 2 workspace

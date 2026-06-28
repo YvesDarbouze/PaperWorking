@@ -22,6 +22,7 @@ import { RentalSetupForm } from '@/components/project/RentalSetupForm';
 import { DaysHeldClock } from '@/components/project/DaysHeldClock';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 export default function Phase3RehabPage() {
   const params    = useParams();
@@ -115,6 +116,7 @@ export default function Phase3RehabPage() {
         phaseStatus: 'Phase 4: Closing & Exit',
         updatedAt: new Date()
       });
+      trackEvent('project_phase_advanced', { projectId, fromPhase: 3, toPhase: 4 });
       toast.success('Phase 3 Complete! Transitioning to Phase 4...');
       router.push(`/dashboard/projects/${projectId}/phase-4`);
     } catch (error) {

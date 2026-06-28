@@ -3,6 +3,7 @@ import { useProjectStore } from '@/store/projectStore';
 import { projectsService } from '@/lib/firebase/deals';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { trackEvent } from '@/lib/analytics';
 import { Loader2 } from 'lucide-react';
 import { Project } from '@/types/schema';
 
@@ -58,6 +59,7 @@ export const ClosingHandoffModal: React.FC<Props> = ({ isOpen, project, onClose 
             costBasisLedger: updatedProject.costBasisLedger,
             financials: updatedProject.financials,
           });
+          trackEvent('project_phase_advanced', { projectId: updatedProject.id, fromPhase: 2, toPhase: 3 });
           toast.success("Property Closed Successfully");
           onClose();
           router.push(`/dashboard/projects/${updatedProject.id}/phase-3`);

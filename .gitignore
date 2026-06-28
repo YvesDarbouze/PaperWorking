@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -73,3 +74,35 @@ node_modules\ 2/
 # Embedded skill repos (cloned, not submodules)
 .agents/skills/BMAD-METHOD/
 .agents/skills/antigravity-awesome-skills/
+
+.codebuddy/
+.continue/
+.agents/skills/
+diagnostics_cache/
+
+.codebuddy/
+.continue/
+.agents/skills/
+diagnostics_cache/
+scratch/
+
+# Temp dependencies backups
+/node_modules.old/
+
+# Stitch mockup downloads
+/stitch_screens/
+/stitch_marketing_screens/
+
+# Test execution logs & fixtures
+/test-results/
+/test-fixtures/
+
+# Local credentials and screenshots
+firebase-key 2.json
+/screenshots/
+screenshot-dashboard.mjs
+jest.setup 2.ts
+/playwright-report/
+
+
+

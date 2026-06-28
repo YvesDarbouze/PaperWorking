@@ -5,10 +5,11 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
+import { loginSchema, type LoginFormValues, registerSchema, type RegisterFormValues } from '@/lib/validations/auth';
 import { useAuth } from '@/context/AuthContext';
 import { Eye, EyeOff, Loader2, AlertCircle, CheckCircle2, ShieldAlert } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { trackEvent } from '@/lib/analytics';
 
 export default function LoginPage() {
   return (
@@ -27,6 +28,7 @@ function LoginPageInner() {
 
   const {
     login,
+    register: authRegister,
     logout,
     loginWithGoogle,
     loginWithFacebook,
@@ -130,16 +132,24 @@ function LoginPageInner() {
   }, [user, loading, sessionReady, sessionReason, isAuthenticating]);
 
   const [showPassword, setShowPassword]       = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting]       = useState(false);
   const [loadingProvider, setLoadingProvider] = useState<'google' | 'facebook' | null>(null);
   const [loginMode, setLoginMode]             = useState<'password' | 'magic-link'>('password');
+  const [isSignUp, setIsSignUp]               = useState(false);
   const [magicLinkSent, setMagicLinkSent]     = useState(false);
   const [magicEmail, setMagicEmail]           = useState('');
 
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
+  const { register: registerLogin, handleSubmit: handleLoginSubmit, formState: { errors: loginErrors } } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onChange',
     defaultValues: { email: '', password: '' },
+  });
+
+  const { register: registerSignup, handleSubmit: handleSignupSubmit, formState: { errors: signupErrors } } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onChange',
+    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '', acceptTerms: true },
   });
 
   const onSubmitPassword = async (data: LoginFormValues) => {
@@ -147,8 +157,19 @@ function LoginPageInner() {
     clearError();
     try {
       await login(data.email, data.password);
-      // login() sets sessionReady=true and isAuthenticating=false before returning.
-      // Claim the navigation lock so the user-watcher doesn't double-navigate.
+      navigatingRef.current = true;
+      const dest = getRedirectDestination();
+      window.location.replace(dest);
+    } catch { /* error set via AuthContext */ }
+    finally { setIsSubmitting(false); }
+  };
+
+  const onSubmitSignup = async (data: RegisterFormValues) => {
+    setIsSubmitting(true);
+    clearError();
+    try {
+      trackEvent('signup_started');
+      await authRegister(data.email, data.password, data.fullName);
       navigatingRef.current = true;
       const dest = getRedirectDestination();
       window.location.replace(dest);
@@ -292,26 +313,26 @@ function LoginPageInner() {
       <div className="w-full relative overflow-hidden" style={{ minHeight: 210 }}>
 
         {/* Password form */}
-        {loginMode === 'password' && (
+        {loginMode === 'password' && !isSignUp && (
           <form
-            onSubmit={handleSubmit(onSubmitPassword)}
+            onSubmit={handleLoginSubmit(onSubmitPassword)}
             className="w-full space-y-3 animate-in fade-in slide-in-from-left-4 duration-250"
           >
             <input
               type="email"
-              {...register('email')}
+              {...registerLogin('email')}
               placeholder="Enter your email address"
               autoComplete="email"
               className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
             />
-            {errors.email && (
-              <p className="text-[11px] text-red-400 pl-1">{errors.email.message}</p>
+            {loginErrors.email && (
+              <p className="text-[11px] text-red-400 pl-1">{loginErrors.email.message}</p>
             )}
 
             <div className="relative">
               <input
                 type={showPassword ? 'text' : 'password'}
-                {...register('password')}
+                {...registerLogin('password')}
                 placeholder="Password"
                 autoComplete="current-password"
                 className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 pr-12 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
@@ -324,11 +345,18 @@ function LoginPageInner() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            {errors.password && (
-              <p className="text-[11px] text-red-400 pl-1">{errors.password.message}</p>
+            {loginErrors.password && (
+              <p className="text-[11px] text-red-400 pl-1">{loginErrors.password.message}</p>
             )}
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center mt-2">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(true)}
+                className="text-[12px] text-white font-medium hover:underline transition-colors"
+              >
+                Create an account
+              </button>
               <Link
                 href="/forgot-password"
                 className="text-[12px] text-[#555] hover:text-[#aaa] transition-colors"
@@ -343,6 +371,94 @@ function LoginPageInner() {
               className="w-full h-[52px] bg-[#2a2a2a] hover:bg-[#333] border border-[#3a3a3a] rounded-xl text-[14px] font-semibold text-white transition-colors flex items-center justify-center disabled:opacity-50"
             >
               {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Continue'}
+            </button>
+          </form>
+        )}
+
+        {/* Signup Password form */}
+        {loginMode === 'password' && isSignUp && (
+          <form
+            onSubmit={handleSignupSubmit(onSubmitSignup)}
+            className="w-full space-y-3 animate-in fade-in slide-in-from-right-4 duration-250"
+          >
+            <input
+              type="text"
+              {...registerSignup('fullName')}
+              placeholder="Full Name"
+              autoComplete="name"
+              className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
+            />
+            {signupErrors.fullName && (
+              <p className="text-[11px] text-red-400 pl-1">{signupErrors.fullName.message}</p>
+            )}
+
+            <input
+              type="email"
+              {...registerSignup('email')}
+              placeholder="Enter your email address"
+              autoComplete="email"
+              className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
+            />
+            {signupErrors.email && (
+              <p className="text-[11px] text-red-400 pl-1">{signupErrors.email.message}</p>
+            )}
+
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                {...registerSignup('password')}
+                placeholder="Password"
+                autoComplete="new-password"
+                className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 pr-12 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#555] hover:text-[#aaa] transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {signupErrors.password && (
+              <p className="text-[11px] text-red-400 pl-1">{signupErrors.password.message}</p>
+            )}
+
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                {...registerSignup('confirmPassword')}
+                placeholder="Confirm Password"
+                autoComplete="new-password"
+                className="w-full h-[52px] bg-[#1a1a1a] border border-[#2e2e2e] rounded-xl px-4 pr-12 text-[14px] text-white placeholder-[#555] focus:outline-none focus:border-[#555] transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#555] hover:text-[#aaa] transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {signupErrors.confirmPassword && (
+              <p className="text-[11px] text-red-400 pl-1">{signupErrors.confirmPassword.message}</p>
+            )}
+
+            <div className="flex justify-between items-center mt-2">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(false)}
+                className="text-[12px] text-white font-medium hover:underline transition-colors"
+              >
+                Already have an account? Sign in
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting || !!loadingProvider}
+              className="w-full h-[52px] bg-[#2a2a2a] hover:bg-[#333] border border-[#3a3a3a] rounded-xl text-[14px] font-semibold text-white transition-colors flex items-center justify-center disabled:opacity-50"
+            >
+              {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Account'}
             </button>
           </form>
         )}

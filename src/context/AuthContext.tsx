@@ -19,6 +19,8 @@ import { doc, setDoc, getDoc, deleteDoc, serverTimestamp, onSnapshot } from 'fir
 import { auth, db } from '@/lib/firebase/config';
 import type { UserProfile, AccountType } from '@/types/user';
 import toast from 'react-hot-toast';
+import { trackEvent } from '@/lib/analytics';
+import { logger } from '@/lib/logger';
 import { getTokenExpiryMinutes } from '@/lib/auth/sessionService';
 import SessionExpiredModal from '@/components/auth/SessionExpiredModal';
 
@@ -108,7 +110,7 @@ async function provisionSocialUser(user: User) {
   } catch (err) {
     // Non-fatal: user is already authenticated with Firebase Auth.
     // Profile doc can be created later via onSnapshot or server-side.
-    console.error('[provisionSocialUser] Firestore write failed (non-fatal):', err);
+    logger.error('[provisionSocialUser] Firestore write failed (non-fatal)', err);
   }
 }
 
@@ -138,12 +140,12 @@ async function reconcilePendingSubscription(uid: string, email: string): Promise
 
       // Clean up the pending record
       await deleteDoc(pendingRef);
-      console.log(`[reconcilePendingSubscription] Linked pending subscription to user ${uid}`);
+      logger.debug('[reconcilePendingSubscription] Linked pending subscription', { uid });
     }
   } catch (err) {
     // Non-fatal — the subscription will still exist in Stripe
     // and can be linked manually or on next webhook event.
-    console.error('[reconcilePendingSubscription] Failed (non-fatal):', err);
+    logger.error('[reconcilePendingSubscription] Failed (non-fatal)', err);
   }
 }
 
@@ -156,25 +158,34 @@ async function syncSessionCookie(user: User | null) {
     try {
       // Force-refresh ensures the token sent to createSessionCookie is
       // always fresh. Firebase requires the ID token to be recently issued.
+      logger.debug('[syncSessionCookie] Starting — force-refreshing token');
       const idToken = await user.getIdToken(true);
+      logger.debug('[syncSessionCookie] Token refreshed, posting to /api/auth/session');
       const res = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),
       });
+      logger.debug('[syncSessionCookie] Response received', { status: res.status });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(`Session API failed: ${res.status} ${errData.error || ''}`);
+        logger.error('[syncSessionCookie] API error', undefined, { status: res.status });
+        throw new Error(`Session API failed: ${res.status} ${data.error || ''} ${data.detail || ''}`);
       }
+      logger.info('[syncSessionCookie] Session synced', { status: res.status });
+      // Verify the cookie was actually set by checking document.cookie
+      const hasCookie = document.cookie.includes('__sub=') || document.cookie.includes('__session_id=');
+      logger.debug('[syncSessionCookie] Cookie presence check', { hasCookie });
     } catch (err) {
-      console.error('Failed to sync session cookie:', err);
+      logger.error('[syncSessionCookie] Failed', err);
       throw err; // Propagate the error so auth flows (login/register) can catch it
     }
   } else {
     try {
+      logger.debug('[syncSessionCookie] Clearing session');
       await fetch('/api/auth/session', { method: 'DELETE' });
     } catch (err) {
-      console.error('Failed to clear session cookie:', err);
+      logger.error('[syncSessionCookie] Failed to clear session cookie', err);
     }
   }
 }
@@ -233,7 +244,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await firebaseUser.getIdToken(true);
             await syncSessionCookie(firebaseUser);
           } catch (err: any) {
-            console.error('Token refresh failed:', err);
+            logger.error('Token refresh failed', err);
 
             if (err?.code === 'auth/network-request-failed') {
               // Transient network issue — surface a toast; session may still be valid
@@ -266,7 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setSessionReady(true);
             setUser(firebaseUser);
           } catch (cookieErr) {
-            console.error('[AuthContext] syncSessionCookie failed — signing out to prevent redirect loop:', cookieErr);
+            logger.error('[AuthContext] syncSessionCookie failed — signing out to prevent redirect loop', cookieErr);
             setSessionReady(false);
             setUser(null);
             signOut(auth).catch(() => {});
@@ -378,6 +389,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      trackEvent('user_registered', { accountType });
 
       if (newUser.email) {
         await reconcilePendingSubscription(newUser.uid, newUser.email);

@@ -5,17 +5,29 @@ import MarketingNavbar from '@/components/marketing/MarketingNavbar';
 import LandingFooter from '@/components/landing/LandingFooter';
 
 /* ═══════════════════════════════════════════════════════
-   /careers — Careers placeholder
-   
-   Lean page that communicates culture and directs
-   interested candidates to email. No open roles listed
-   until the hiring pipeline is live.
+   /careers — No current openings
+
+   Honest "no roles right now" state. The page is
+   intentionally NOT indexed (noindex) until real
+   positions are posted — prevents it appearing in
+   search as an empty/broken page.
+
+   TO GO LIVE:
+     1. Remove the `robots` export below.
+     2. Add role objects to the OPEN_ROLES array.
+     3. Update metadata description.
    ═══════════════════════════════════════════════════════ */
 
 export const metadata: Metadata = {
   title: 'Careers | PaperWorking',
   description:
     'Join the team building the deal-intelligence platform for modern real estate investors.',
+  // ── Noindex until real roles are posted ─────────────
+  // Remove this block when the first position goes live.
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function CareersPage() {

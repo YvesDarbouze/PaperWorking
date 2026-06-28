@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
 import { useUserStore } from '@/store/userStore';
+import { useAuth } from '@/context/AuthContext';
 import { Mail, X, UserPlus, Percent, DollarSign, Lock } from 'lucide-react';
 import type { FractionalInvestor } from '@/types/schema';
 import toast from 'react-hot-toast';
@@ -30,6 +31,7 @@ export default function CrowdfundInviteModal({
 }: Props) {
   const hasActiveSubscription = useUserStore((s) => s.hasActiveSubscription);
   const updateInvestors = useProjectStore((s) => s.updateInvestors);
+  const { user } = useAuth();
   const currentProject = useProjectStore((s) => s.projects.find((d) => d.id === projectId));
   const investors = currentProject?.fractionalInvestors || [];
 
@@ -60,13 +62,24 @@ export default function CrowdfundInviteModal({
       return;
     }
 
+    if (!user) {
+      toast.error('You must be signed in to send invitations.');
+      return;
+    }
+
     setSending(true);
 
     try {
-      // Create the invitation via API
+      const idToken = await user.getIdToken();
+
+      // invitedByUid / invitedByName are NOT sent — the server derives them
+      // from the verified token so the caller cannot forge their identity.
       const res = await fetch('/api/invitations/send', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`,
+        },
         body: JSON.stringify({
           projectId,
           dealName,

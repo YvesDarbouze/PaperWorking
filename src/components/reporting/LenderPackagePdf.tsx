@@ -4,6 +4,7 @@ import { FileDown, FileText, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
+import { computeFlipMetrics, computeAutopsyMetrics } from '@/lib/metrics';
 
 export default function LenderPackagePdf() {
   const projects = useProjectStore(state => state.projects);
@@ -18,11 +19,14 @@ export default function LenderPackagePdf() {
     setIsGenerating(true);
     toast.loading("Compiling Executive Summary...", { id: 'pdf-gen' });
 
-    // Simulate async WebWorker rendering payload
-    setTimeout(() => {
-      try {
+    try {
+      // ── @metrics engine — single source of truth ────────────────
+      // All metric math lives here; nothing is computed inline below.
+      const flip    = computeFlipMetrics(deal);
+      const autopsy = deal.status === 'Sold' ? computeAutopsyMetrics(deal) : null;
+
       const doc = new jsPDF();
-      
+
       // Header
       doc.setFontSize(22);
       doc.setTextColor(33, 33, 33);
@@ -31,7 +35,7 @@ export default function LenderPackagePdf() {
       doc.setFontSize(12);
       doc.setTextColor(100, 100, 100);
       doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
-      
+
       // Property Info
       doc.setFontSize(14);
       doc.setTextColor(33, 33, 33);
@@ -40,79 +44,43 @@ export default function LenderPackagePdf() {
       doc.text(`Address: ${deal.address}`, 14, 46);
       doc.text(`Current Phase: ${deal.status.toUpperCase()}`, 14, 52);
 
-      // Financials Extraction
+      // Financials table — all figures from @metrics, no inline math
       const purchasePrice = deal.financials.purchasePrice || 0;
-      const arv = deal.financials.estimatedARV || 0;
-      const baseBudget = deal.rehab?.baseBudget || 0;
-      
-      const approvedCosts = deal.financials.costs?.filter(c => c.approved) || [];
-      const actualRehabSpend = approvedCosts.reduce((acc, curr) => acc + curr.amount, 0);
 
-      // Simple metric calculations
-      // Projected ROI (Projected Profit / Burden)
-      const totalEstimatedBurden = purchasePrice + baseBudget;
-      const projectedProfit = arv - totalEstimatedBurden;
-      const projectedROI = totalEstimatedBurden > 0 ? (projectedProfit / totalEstimatedBurden) * 100 : 0;
+      const realizedROIHeadline = autopsy
+        ? `${autopsy.roi.toFixed(1)}% (Profit: $${Math.round(autopsy.netProfit).toLocaleString()})`
+        : 'N/A (Property Active)';
 
-      // Realized if sold
-      let realizedROIHeadline = "N/A (Property Active)";
-      if (deal.status === 'Sold') {
-        const pPrice = deal.financials.actualSalePrice || 0;
-        const buyerComm = pPrice * ((deal.financials.buyersAgentCommission || 0)/100);
-        const sellerComm = pPrice * ((deal.financials.sellersAgentCommission || 0)/100);
-        const basicClosingCosts = deal.financials.finalClosingCosts || 0;
-        
-        let ledgerExitCosts = 0;
-        deal.exitCosts?.forEach(ec => {
-          if (ec.isPercentage && ec.percentageRate) {
-            ledgerExitCosts += (ec.percentageRate / 100) * pPrice;
-          } else {
-            ledgerExitCosts += ec.amount;
-          }
-        });
-
-        const totalBurden = purchasePrice + actualRehabSpend + (deal.costBasisLedger ? [
-          ...(deal.costBasisLedger.directAcquisition || []),
-          ...(deal.costBasisLedger.financing || []),
-          ...(deal.costBasisLedger.preClosing || [])
-        ].reduce((s, i) => s + i.amount, 0) : 0);
-        
-        const netProceeds = pPrice - buyerComm - sellerComm - basicClosingCosts - ledgerExitCosts;
-        const realizedProfit = netProceeds - totalBurden;
-        const realROI = totalBurden > 0 ? (realizedProfit / totalBurden) * 100 : 0;
-        
-        realizedROIHeadline = `${realROI.toFixed(1)}% (Profit: $${realizedProfit.toLocaleString()})`;
-      }
-
-      // Tables
       autoTable(doc, {
         startY: 65,
         head: [['Metric', 'Value']],
         body: [
-          ['Purchase Price', `$${purchasePrice.toLocaleString()}`],
-          ['After-Repair Value (ARV)', `$${arv.toLocaleString()}`],
-          ['Estimated Rehab Budget', `$${baseBudget.toLocaleString()}`],
-          ['Actual Rehab Spend (To-Date)', `$${actualRehabSpend.toLocaleString()}`],
-          ['Projected Profit', `$${projectedProfit.toLocaleString()}`],
-          ['Projected ROI', `${projectedROI.toFixed(1)}%`],
-          ['Realized Performance', realizedROIHeadline]
+          ['Purchase Price',             `$${purchasePrice.toLocaleString()}`],
+          ['After-Repair Value (ARV)',   `$${flip.arv.toLocaleString()}`],
+          ['Estimated Rehab Budget',     `$${flip.rehabBudget.toLocaleString()}`],
+          ['Actual Rehab Spend (To-Date)', `$${flip.rehabActual.toLocaleString()}`],
+          ['All-In Cost',               `$${Math.round(flip.totalCost).toLocaleString()}`],
+          ['Projected Profit',          `$${Math.round(flip.netProjectedProfit).toLocaleString()}`],
+          ['Projected ROI',             `${flip.roi.toFixed(1)}%`],
+          ['Realized Performance',      realizedROIHeadline],
         ],
         theme: 'grid',
         headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-        styles: { fontSize: 11, cellPadding: 4 }
+        styles: { fontSize: 11, cellPadding: 4 },
       });
 
-      // Rehab Breakdown Line Items
+      // Rehab Breakdown Line Items (display data — no metric math)
+      const approvedCosts = deal.financials.costs?.filter(c => c.approved) || [];
       if (approvedCosts.length > 0) {
         const finalY = (doc as any).lastAutoTable.finalY || 65;
         doc.setFontSize(14);
         doc.text("Rehab & Value-Add Expenditures", 14, finalY + 15);
-        
+
         const costRows = approvedCosts.map(c => [
           new Date(c.createdAt).toLocaleDateString(),
           c.category || 'Other',
           c.description,
-          `$${c.amount.toLocaleString()}`
+          `$${c.amount.toLocaleString()}`,
         ]);
 
         autoTable(doc, {
@@ -120,7 +88,7 @@ export default function LenderPackagePdf() {
           head: [['Date', 'Category', 'Description', 'Amount']],
           body: costRows,
           theme: 'striped',
-          headStyles: { fillColor: [100, 100, 100] }
+          headStyles: { fillColor: [100, 100, 100] },
         });
       }
 
@@ -128,14 +96,12 @@ export default function LenderPackagePdf() {
       const filename = `Lender_Package_${deal.propertyName.replace(/\s+/g, '_')}.pdf`;
       doc.save(filename);
       toast.success(`Generated Lender Package: ${filename}`, { id: 'pdf-gen', icon: '📑' });
-
     } catch (e) {
       console.error(e);
       toast.error("Failed to generate PDF. Check console.", { id: 'pdf-gen' });
     } finally {
       setIsGenerating(false);
     }
-    }, 1500); // end of async simulated worker
   };
 
   return (

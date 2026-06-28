@@ -3,6 +3,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { projectsService } from '@/lib/firebase/projects';
+import { storage } from '@/lib/firebase/config';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { toast } from 'react-hot-toast';
 import { trackEvent } from '@/lib/analytics';
 import {
@@ -84,6 +86,10 @@ export default function ProjectCreationWizard({
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [useManualAddress, setUseManualAddress] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
 
   // Pre-populate lead email once user is loaded
   useEffect(() => {
@@ -94,6 +100,14 @@ export default function ProjectCreationWizard({
       }));
     }
   }, [user]);
+
+  // Reset upload UI state on question navigation
+  useEffect(() => {
+    setIsUploading(false);
+    setUploadProgress(0);
+    setUploadError(null);
+    setUploadedFileName(null);
+  }, [activeIndex]);
 
   // Compute active questions based on current answers
   const activeQuestions = useMemo(() => {
@@ -214,13 +228,55 @@ export default function ProjectCreationWizard({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && activeQuestion) {
-      // Simulate file upload and store file name/mock url
-      updateFormNested(activeQuestion.field, `/files/mock_${Date.now()}_${file.name}`);
-      toast.success(`File "${file.name}" uploaded successfully.`);
+    if (!file || !activeQuestion || !user) return;
+
+    // Reset the input so the same file can be re-selected after a failure
+    e.target.value = '';
+
+    // 25 MB client-side guard
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error('File too large — maximum size is 25 MB.');
+      return;
     }
+
+    // Sanitize filename before embedding in the Storage path
+    const sanitizedName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const storagePath = `users/${user.uid}/wizard_uploads/${Date.now()}_${sanitizedName}`;
+
+    setIsUploading(true);
+    setUploadProgress(0);
+    setUploadError(null);
+
+    const storageRef = ref(storage, storagePath);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        setUploadProgress(Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100));
+      },
+      (error) => {
+        setIsUploading(false);
+        const msg = 'Upload failed — please try again.';
+        setUploadError(msg);
+        toast.error(msg);
+        console.error('[wizard upload]', error);
+      },
+      async () => {
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          updateFormNested(activeQuestion.field, downloadURL);
+          setUploadedFileName(file.name);
+          toast.success(`"${file.name}" uploaded.`);
+        } catch (err) {
+          setUploadError('Upload complete but URL unavailable — please try again.');
+        } finally {
+          setIsUploading(false);
+        }
+      }
+    );
   };
 
   const handleFinalSubmit = async () => {
@@ -730,23 +786,57 @@ export default function ProjectCreationWizard({
                   )}
 
                   {activeQuestion.type === 'file-upload' && (
-                    <div className="border border-dashed border-border-ui bg-bg-primary p-8 flex flex-col items-center justify-center text-center relative group hover:border-pw-black transition-colors">
-                      <input
-                        type="file"
-                        onChange={handleFileChange}
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                      />
-                      <UploadCloud className="w-8 h-8 text-text-secondary mb-2 group-hover:text-pw-black transition-colors" />
-                      <span className="text-xs font-bold text-pw-black uppercase tracking-wider">
-                        {getNestedField(formData, activeQuestion.field)
-                          ? 'Replace file'
-                          : 'Choose file or drag here'}
-                      </span>
-                      {getNestedField(formData, activeQuestion.field) && (
-                        <span className="text-[10px] font-mono text-text-secondary mt-1 max-w-[280px] truncate">
-                          Uploaded: {getNestedField(formData, activeQuestion.field)}
-                        </span>
+                    <div>
+                      <div
+                        className={`border border-dashed border-border-ui bg-bg-primary p-8 flex flex-col items-center justify-center text-center relative group transition-colors ${
+                          isUploading ? 'opacity-60 pointer-events-none' : 'hover:border-pw-black cursor-pointer'
+                        }`}
+                      >
+                        {!isUploading && (
+                          <input
+                            type="file"
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            onChange={handleFileChange}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                          />
+                        )}
+                        <UploadCloud className="w-8 h-8 text-text-secondary mb-2 group-hover:text-pw-black transition-colors" />
+                        {isUploading ? (
+                          <>
+                            <span className="text-xs font-bold text-pw-black uppercase tracking-wider">
+                              Uploading… {uploadProgress}%
+                            </span>
+                            <div className="w-full max-w-[200px] h-1 bg-gray-200 mt-3 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-pw-black transition-all duration-300"
+                                style={{ width: `${uploadProgress}%` }}
+                              />
+                            </div>
+                          </>
+                        ) : (uploadedFileName || getNestedField(formData, activeQuestion.field)) ? (
+                          <>
+                            <span className="text-xs font-bold text-pw-black uppercase tracking-wider">
+                              Replace file
+                            </span>
+                            <span className="text-[10px] font-mono text-emerald-700 mt-1 max-w-[280px] truncate">
+                              ✓ {uploadedFileName ?? 'Contract uploaded'}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs font-bold text-pw-black uppercase tracking-wider">
+                            Choose file or drag here
+                          </span>
+                        )}
+                      </div>
+                      {uploadError && (
+                        <div className="border border-rose-200 bg-rose-50/50 p-3 mt-2 text-[10px] text-rose-800 font-mono flex items-center gap-2">
+                          <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                          {uploadError}
+                        </div>
                       )}
+                      <p className="text-[9px] text-text-secondary font-mono mt-2">
+                        PDF, DOC, DOCX, JPG accepted · Max 25 MB
+                      </p>
                     </div>
                   )}
                 </div>
@@ -795,11 +885,11 @@ export default function ProjectCreationWizard({
             ) : (
               <button
                 onClick={handleNext}
-                disabled={!isValid}
+                disabled={!isValid || isUploading}
                 className="pw-btn pw-btn--primary pw-btn--sm uppercase tracking-widest font-bold flex items-center gap-1.5"
               >
-                <span>Next</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <span>{isUploading ? 'Uploading…' : 'Next'}</span>
+                {!isUploading && <ChevronRight className="w-3.5 h-3.5" />}
               </button>
             )}
           </div>

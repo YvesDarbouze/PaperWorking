@@ -81,9 +81,20 @@ export async function GET(request: NextRequest) {
       imageUrl: p.Media?.[0]?.MediaURL,
     }));
 
-    return NextResponse.json(results);
+    return NextResponse.json({ results, source: 'Bridge Interactive MLS', fetchedAt: new Date().toISOString() });
   } catch (error: any) {
-    console.error('[MLS SEARCH] Query failed:', error?.message ?? error);
+    const msg: string = error?.message ?? '';
+    const isCredentialIssue =
+      msg.includes('BRIDGE_CONFIG_FAILURE') ||
+      msg.includes('Missing') ||
+      error?.status === 401 ||
+      error?.status === 403 ||
+      msg.includes('401') ||
+      msg.includes('403');
+    if (isCredentialIssue) {
+      return NextResponse.json({ results: [], credentialsMissing: true });
+    }
+    console.error('[MLS SEARCH] Query failed:', msg);
     return NextResponse.json(
       { error: 'Property search failed. Please try again.' },
       { status: 500 }

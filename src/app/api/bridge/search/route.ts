@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
         : null,
     }));
 
-    return NextResponse.json({ results });
+    return NextResponse.json({ results, source: 'Bridge Interactive MLS', fetchedAt: new Date().toISOString() });
   } catch (error: any) {
     const msg: string = error.message ?? '';
     const status: number | undefined = error.status;

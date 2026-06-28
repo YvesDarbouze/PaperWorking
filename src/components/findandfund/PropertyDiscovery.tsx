@@ -46,6 +46,8 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
   const [selectedProperty, setSelectedProperty] = useState<PropertyResult | null>(null);
   const [targetPrice, setTargetPrice] = useState('');
   const [rehabBudget, setRehabBudget] = useState('');
+  const [credentialsMissing, setCredentialsMissing] = useState(false);
+  const [mlsSource, setMlsSource] = useState<string | null>(null);
 
   useEffect(() => {
     if (!searchQuery.trim() || searchQuery.length < 2) {
@@ -57,12 +59,15 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
       setLoading(true);
       try {
         const res = await fetch(`/api/mls/search?q=${encodeURIComponent(searchQuery)}`);
-        if (res.ok) {
-          const data = await res.json();
-          setResults(Array.isArray(data) ? data : []);
-        } else {
+        const data = await res.json();
+        if (data.credentialsMissing) {
+          setCredentialsMissing(true);
           setResults([]);
+          return;
         }
+        setCredentialsMissing(false);
+        if (data.source) setMlsSource(data.source);
+        setResults(Array.isArray(data.results) ? data.results : []);
       } catch (err) {
         console.error('Search failed', err);
         setResults([]);
@@ -116,9 +121,20 @@ export default function PropertyDiscovery({ onPropertySelected }: Props) {
           className="w-full pl-11 pr-4 py-3 bg-bg-primary border border-border-accent rounded-xl text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition placeholder:text-text-secondary"
         />
 
+        {/* Credentials warning */}
+        {credentialsMissing && (
+          <div className="absolute z-20 top-full mt-2 w-full bg-amber-50 border border-amber-200 rounded-xl shadow-lg px-4 py-3">
+            <p className="text-xs font-semibold text-amber-800">MLS live search inactive — Bridge credentials not configured</p>
+            <p className="text-[10px] text-amber-700 mt-0.5">Contact your admin to enable live MLS data</p>
+          </div>
+        )}
+
         {/* Dropdown Results */}
         {showResults && results.length > 0 && (
           <div className="absolute z-20 top-full mt-2 w-full bg-bg-surface border border-border-accent rounded-xl shadow-lg overflow-hidden">
+            {mlsSource && (
+              <p className="text-[9px] text-text-secondary opacity-50 px-4 pt-2 pb-0">via {mlsSource}</p>
+            )}
             {results.map(p => (
               <button
                 key={p.id}

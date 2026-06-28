@@ -34,7 +34,7 @@ import GenerativeInsights from './GenerativeInsights';
 import RecentActivityTable from './RecentActivityTable';
 import ProfileWidget from './ProfileWidget';
 import ProjectsWidget from './ProjectsWidget';
-import MessagesWidget from './MessagesWidget';
+import UpcomingMeetingsWidget from './UpcomingMeetingsWidget';
 import AnalyticsWidget from './AnalyticsWidget';
 import ProjectsProgressWidget from './ProjectsProgressWidget';
 import InvestorInviteModal from '../InvestorInviteModal';
@@ -256,7 +256,7 @@ export default function DashboardHome() {
       {/* ── Page Header ── */}
       <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
          <div className="flex flex-col">
-           <h1 className="text-2xl font-semibold text-[#1A1A1A] tracking-tight">{profile?.firstName || 'Investor'}&apos;s Portfolio</h1>
+           <h1 className="text-2xl font-semibold text-[#1A1A1A] tracking-tight">{profile?.displayName || 'Investor'}&apos;s Portfolio</h1>
            <p className="text-sm text-[#7F7F7F] mt-1">Your deals at a glance · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
          </div>
          <div className="flex items-center gap-4">
@@ -311,12 +311,11 @@ export default function DashboardHome() {
         <section className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
             <div className="md:col-span-3">
-              <ProfileWidget 
+              <ProfileWidget
                 user={user}
                 profile={profile}
                 teamMembersCount={teamMembersCount}
                 completedDeals={dealsClosedCount}
-                winsCount={dealsClosedCount} // using dealsClosedCount as mock wins for now
                 onInviteTeam={() => setIsInviteModalOpen(true)}
               />
             </div>
@@ -328,7 +327,7 @@ export default function DashboardHome() {
               />
             </div>
             <div className="md:col-span-3">
-              <MessagesWidget />
+              <UpcomingMeetingsWidget />
             </div>
           </div>
           

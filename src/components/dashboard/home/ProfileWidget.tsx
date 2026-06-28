@@ -1,30 +1,27 @@
 'use client';
 
 import React from 'react';
-import { User as UserIcon, Users, CheckCircle2, Trophy, RotateCw, Plus } from 'lucide-react';
+import { User as UserIcon, Users, CheckCircle2, RotateCw, Plus } from 'lucide-react';
+import { usePermissions } from '@/hooks/usePermissions';
 
 interface ProfileWidgetProps {
   user: any;
   profile: any;
   teamMembersCount: number;
   completedDeals: number;
-  winsCount: number;
   onInviteTeam?: () => void;
 }
 
-export default function ProfileWidget({ 
-  user, 
-  profile, 
-  teamMembersCount, 
-  completedDeals, 
-  winsCount,
-  onInviteTeam 
+export default function ProfileWidget({
+  user,
+  profile,
+  teamMembersCount,
+  completedDeals,
+  onInviteTeam
 }: ProfileWidgetProps) {
   
-  // Basic heuristic: if the user created the org or has admin role, they are Lead Investor
-  // Let's assume for this mock that if they are paid/free and not a guest, they are a Lead Investor
-  const isLeadInvestor = profile?.role === 'admin' || profile?.role === 'owner' || true; // Using true for mock as requested
-  const displayRole = isLeadInvestor ? 'Lead Investor' : 'Team Member';
+  const { isLead, role } = usePermissions();
+  const displayRole = role || 'Team Member';
   const orgName = profile?.organizationName || 'Peachtree RE inc Team';
 
   return (
@@ -58,28 +55,24 @@ export default function ProfileWidget({
         </div>
 
         <h3 className="text-lg font-bold text-[#1A1A1A] tracking-tight text-center">
-          {profile?.firstName ? `${profile.firstName} ${profile.lastName}` : 'Kristin Watson'}
+          {profile?.displayName || 'Kristin Watson'}
         </h3>
         <p className="text-sm text-[#7F7F7F] font-medium text-center">{displayRole}</p>
         <p className="text-xs text-[#A5A5A5] mt-1 text-center">{orgName}</p>
       </div>
 
       <div className="flex items-center justify-center gap-4 mt-8 w-full">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F2F2] rounded-full border border-[#CCCCCC]">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F2F2] rounded-full border border-[#CCCCCC]" title="Team members">
           <Users className="w-3.5 h-3.5 text-[#595959]" />
           <span className="text-xs font-bold text-[#1A1A1A]">{teamMembersCount}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F2F2] rounded-full border border-[#CCCCCC]">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F2F2] rounded-full border border-[#CCCCCC]" title="Deals closed">
           <CheckCircle2 className="w-3.5 h-3.5 text-[#595959]" />
           <span className="text-xs font-bold text-[#1A1A1A]">{completedDeals}</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2F2F2] rounded-full border border-[#CCCCCC]">
-          <Trophy className="w-3.5 h-3.5 text-[#595959]" />
-          <span className="text-xs font-bold text-[#1A1A1A]">{winsCount}</span>
-        </div>
       </div>
 
-      {isLeadInvestor && onInviteTeam && (
+      {isLead && onInviteTeam && (
         <button 
           onClick={onInviteTeam}
           className="mt-6 w-full py-2.5 border border-[#1A1A1A] text-[#1A1A1A] rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-[#F2F2F2] transition-colors"

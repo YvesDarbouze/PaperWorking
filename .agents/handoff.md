@@ -1,258 +1,511 @@
-# PaperWorking — Product Vision & Architecture (Canonical Reference)
+# Agent Handoff — Mock-to-Real / Security / Hygiene Sweep (2026-06-28)
 
-**Last updated:** 2026-05-13 by Antigravity
-**Status:** Active — All agents must read before modifying core UX
+## ✅ COMPLETED THIS SESSION (commit bf847bcc)
 
----
+### P0-1 — invitations/send identity forgery (SECURITY)
+- `src/app/api/invitations/send/route.ts`: Added `requireAuth()` (401 on no/bad token).
+  `invitedByUid` and `invitedByName` now derived exclusively from the verified token +
+  Firestore profile — body values silently ignored. RBAC gate: caller must be in
+  `project.members` with Lead Investor / Admin / Platform Admin role or `team.invite`
+  permission; org-level fallback for legacy projects without members map (403 otherwise).
+- `src/components/team/CrowdfundInviteModal.tsx`: sends `Authorization: Bearer ${idToken}`.
 
-## What PaperWorking IS
+### P0-4 — Admin marketplace hardcoded (MOCK-TO-REAL)
+- `src/actions/marketplace.ts` (new file): `getFullMarketplaceData()` + `initiateMarketplaceAudit()`
+  server actions with `verifyAdmin()` auth gate. Computes activeProfessionals, matchRatePct,
+  avgResponseHours, grossProcuredVolume, jurisdiction variance, and CSV rows from real Firestore data.
+  Audit writes to `vendorAuditRuns` collection.
+- `src/app/admin/marketplace/page.tsx`: full rewrite — all hardcoded figures replaced with
+  real data; Export CSV and Initiate Audit buttons both wired.
 
-PaperWorking is a **project-based SaaS platform for Real Estate Investors (REIs)**. Each "Project" is a visual **file folder** that encapsulates the entire investment lifecycle of a single property — from finding the deal to filing taxes after selling it.
+### P1-9 — LenderPackagePdf fake async + inline metrics (BUG FIX)
+- `src/components/reporting/LenderPackagePdf.tsx`: removed `setTimeout` fake-async; all
+  metric math replaced with `computeFlipMetrics(deal)` and `computeAutopsyMetrics(deal)`.
 
-The folder metaphor is literal: you click it, it opens fullscreen, the background color reflects the current phase, and inside is everything — documents, financials, tasks, metrics, team assignments, and investor communications.
+### P1-10 — Address provider ships mock in production (MOCK-TO-REAL)
+- `src/lib/providers/address.ts`: Added `GooglePlacesAdapter` (calls `/api/places/autocomplete`
+  server proxy — key never touches client bundle). `defaultAddressProvider` gated by
+  `NEXT_PUBLIC_ADDRESS_PROVIDER` env flag (`google` | `mock`).
+- `.env.example`: documented `NEXT_PUBLIC_ADDRESS_PROVIDER=google`.
+- `.env.local`: added `NEXT_PUBLIC_ADDRESS_PROVIDER=google` (key already present).
 
----
+### P1-14 — Zero PostHog events (ANALYTICS)
+- `src/lib/analytics.ts`: added `signup_started`, `user_registered` to EventName union.
+- Instrumented at real lifecycle trigger points: `login/page.tsx` (signup_started),
+  `AuthContext.tsx` (user_registered), `ProjectCreationWizard.tsx` (project_created),
+  `phase-1/page.tsx`, `ClosingHandoffModal.tsx`, `phase-3/page.tsx` (project_phase_advanced).
 
-## The REI Lifecycle (4 Phases)
+### P2-15 — Careers page hollow placeholder (POLISH)
+- `src/app/careers/page.tsx`: already fixed in prior commit. Confirmed: `robots: { index: false }`
+  applied; honest "no openings" messaging; footer link to `/careers` kept (deliberate).
 
-Every project moves through these phases. Visualized as a **kanban-style menu** the user can always see.
+### P2-17 — 14 console.log calls in auth path (HYGIENE)
+- `src/context/AuthContext.tsx`: all 14 `console.log`/`console.error` calls replaced with
+  `logger.debug` / `logger.info` / `logger.error`. `GOOGLE_PLACES_API_KEY` and token values
+  never passed to the logger.
+- `src/lib/logger.ts`: now tracked in git (was untracked).
 
-### Phase 1: Acquisition
-- **MLS Property Scout**: Live Bridge Interactive MLS search embedded in Phase 1
-  - Search by address, city, or ZIP — results show thumbnail, price, beds/baths/sqft, status badge
-  - "+ Comp" button saves properties as comparables with running avg price & $/sqft
-  - Price delta comparison: each result shows % above/below the current deal
-  - ARV validation: comp market data bar shows average list price vs. deal price
-  - Lazy-loaded for performance, credential-missing fallback for unconfirmed Bridge configs
-- KPI strip: Purchase Price, ARV, MAO (70% Rule), Rehab Budget
-- Full NOI Deep Dive suite (10 analytics panels when rental data populated)
-- Flip Profitability Dashboard for flip exit strategy
-- Find and evaluate target properties
-- Crowdfund potential deals / formalize fundraising
-- Generate offer letters, track responses
-- *Explainer video underneath*
+### P2-18 — DEFAULT_TODOS masquerade as real activity (POLISH)
+- `src/lib/constants/todos.ts`: added `completedAt?: string` to `Todo` interface.
+- `src/components/project/ProjectTodoList.tsx`: runtime-only `TodoWithMeta._isDefault` flag
+  tags unacknowledged scaffolds; "Suggested" badge shown on unacknowledged items; `completedAt`
+  stamped on completion; `_isDefault` stripped before Firestore write.
 
-### Phase 2: Financing & Budget Planning
-- Secure capital (pre-approval, lending network, loan commitment)
-- Build a bulletproof budget with the **15% Contingency Rule**
-- Track **Daily Burn Rate** — every day past close costs money
-- Upload closing documents, verify EMD, confirm clear title
-- 12-item conversational checklist (3 financing, 3 budget, 3 closing docs, 3 verification)
-- KPI strip: Total Project Budget, Contingency Reserve, Daily Burn Rate, LTV
-- Budget breakdown panel with stacked distribution bar
-- Burn rate detail grid with urgency callout
-- *Explainer video underneath*
+### Infrastructure
+- `.gitignore`: added `!.env.example` exception so the template is tracked.
+- `src/lib/logger.ts`, `src/lib/analytics.ts`, `src/lib/constants/todos.ts`,
+  `src/lib/providers/address.ts`, `src/actions/marketplace.ts`: all now tracked in git.
 
-### Phase 3: Hold (Rehab & Renovation Scope)
-- **Yesterday Cost Thumbnail**: "Yesterday cost you $X" card with holding + approved spend breakdown, budget utilization meter
-- **Cumulative Cost Card**: Total project cost to date (holding + rehab) with projected total at current burn rate
-- **Critical Path Card**: CPM duration, critical task count, schedule status (on/behind schedule), overall progress bar
-- **3-Stage Renovation Timeline**: Planning & Permits → Structural & Mechanical → Finishes & Staging (matches CPM image)
-  - Per-stage progress bars, inspection counters, active stage pulse animation
-  - Timeline buffer (17.5%) absorbs inspections, weather, material delays
-- **Renovation ROI KPI Strip**: Budget Remaining, Highest-ROI Zone, Money Rooms %, Over-Improvement Risk
-- **5-Zone Budget Distribution**: Kitchen (blue), Bathroom (teal), Curb Appeal (emerald), Interior (gray), Structural (orange)
-- **Over-Improvement Risk Engine**: Flags when total rehab > 30% of ARV or single zone > 40% of budget
-- **Money Rooms Priority**: Kitchen + Bathroom should be 50-60% of total rehab budget
-- **Zone ROI Detail Grid**: Per-zone Cost vs. Estimated Value-Add with ROI percentages
-- **Daily Burn Rate**: Every day costs money — urgency callout with per-day/per-week holding cost
-- 14-item conversational checklist (4 design scope, 4 rehab mgmt, 4 budget discipline, 2 completion)
-- Schema: `RenovationZone`, `RehabScheduleTask`, `RehabStage`, `RehabTrade` types
-- Engine: `computeRenovationROI()`, `computeOverImprovementRisk()`, `computeCriticalPath()`, `computeRehabStageProgress()`, `computeYesterdayCost()` in reiMetrics.ts
-- **8→4 Mapping**: Phase 3 absorbs original steps 3 (Reno Scope), 4 (Contractor Mgmt), 5 (Timeline), 6 (Permits)
-- *Explainer video underneath*
+## ⚠️ KNOWN PRE-EXISTING TS ERRORS (not introduced this session)
+- 62 errors: vitest not found (`__tests__/*.test.ts`), `team.ts` missing schema properties,
+  `taxService.test.ts` missing `advertising` field. All predate this session.
 
-### Phase 4: Exit
-- AirBNB operation, long-term rental, or eventual sale of the property
-- Marketing costs, upkeep, tenant/guest management
-- Final performance metrics (charts & graphs)
-- Generate quarterly + yearly tax documents (earnings/losses)
-- *Explainer video underneath*
+## NEXT QUEUED
+- Remaining mock-to-real and security tickets from the original sweep list.
 
 ---
 
-## Project Folder Behavior
+# Agent Handoff — Dashboard Data Honesty Sweep — Session 2 (2026-06-13)
 
-- Click → opens fullscreen "workdesk" with phase-colored background
-- Closeable — returns to dashboard showing summary cards
-- Card exterior shows: current phase, % completion, key performance metric
-- Each project gets equal share of **500 MB storage** for uploaded files
-- **Backdating:** Users can create projects up to 1 year in the past (e.g., deals already in progress)
-- One of the first questions: "Date of sale" (supports past-tense projects)
+## ✅ COMPLETED THIS SESSION
 
----
+### 4. InsightsDashboard — removed DEFAULT_INPUTS mock constant
+- `src/app/dashboard/insights/page.tsx`: Removed `DEFAULT_INPUTS` constant (`{purchasePrice:300000,…}`). `getInputsFromProjects()` now returns `undefined` (not the constant) when no projects or financials are missing. Hardcoded fallbacks (`|| 300000`, `|| 36000`) removed from the return object.
+- Stress-test tab gated: `<StressTestProvider>` only mounts when `selectedInputs` is truthy; null → `<InsightsDashboard missingFields={REQUIRED_INSIGHTS_FIELDS}>` gate.
+- Added assumptions transparency panel inside `ProjectionsTabContent` showing the 8 real inputs driving the projection.
+- **Regression tests**: `src/__tests__/insightsDashboardNoDemo.test.ts` — 22 tests covering: no `DEFAULT_INPUTS`, no fallback constants, `!selectedInputs` gate, `REQUIRED_INSIGHTS_FIELDS` referenced, two-project divergence (different NOI/cap-rate/DSCR), hand-checks for Project A (NOI=12100, cap=6.05%, GRM=11.11, OER=29.24%).
 
-## Conversational Data Collection
+### 5. Reports Scenarios IRR — regression tests (implementation was already correct)
+- `src/lib/projections/scenarioIRR.ts` was already written with real year-by-year cash-flow modeling. No multiplier code existed.
+- **Regression tests**: `src/__tests__/scenarioIRRNoMultiplier.test.ts` — 27 tests covering: static absence of multiplier math in both source files, `projectScenarioCashFlows` missing-input gate (4 cases), series structure (length, Year-0 negative, exit year larger), assumption sensitivity (vacancy, rent growth, exit cap each independently change IRR), non-constant ratio proof, Conservative < Base < Aggressive ordering, trivial hand-check (-100→+110 = 10% IRR), assumptions prop attached and formatted with `%`.
 
-The project asks questions in a **conversational format**. Each phase surfaces a todo list where items either:
-1. **Ask a question** (financial data, dates, strategy)
-2. **Request a file** (contracts, inspections, closing docs)
-3. **Require a person** (find/assign a real estate attorney, loan processor, contractor)
+### Verification
+- Full suite: **94 suites, 1156 tests — all green** (commit `dcf2ddc7`)
 
-No data point is asked twice. Once captured, it flows through to all dependent metrics.
-
-### Phase 1 Wizard (Project Creation — Step 2)
-In addition to the NOI/debt service fields, Step 2 now collects **5 due diligence fields**:
-- Projected rehab budget → feeds MAO, flip ROI, cost waterfall
-- Estimated rehab timeline (days) → feeds holding cost projections
-- Lead source → CRM-lite pipeline tracking
-- Seller motivation → distress signal categorization
-- Earnest money deposit → capital stack tracking
-
-A live **MAO Preview** (70% rule) renders inline when ARV + rehab are populated.
-
-### Phase 1 Todo List (12 items)
-4 questions · 4 document uploads · 4 vendor delegation items covering neighborhood confirmation, property condition, title status, comps review, inspection report, title search, appraisal, survey, loan officer, home inspector, appraiser, and insurance agent.
+### Next Queued
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
 
 ---
 
-## Account Types & Roles
+# Agent Handoff — Dashboard Data Honesty Sweep (2026-06-13)
 
-### Standard Account (Solo)
-- Represented as a **person** (username)
-- Can create projects
-- Can respond to investment opportunities (must have Standard to invest)
-- Can offer services in the **vendor marketplace** from their profile
-- Can answer vendor work requests
+## ✅ COMPLETED THIS SESSION
 
-### Team Account
-- Represented as a **company or person**
-- Members can have roles: CEO/President, RE Attorney, any vendor type
-- Can assign tasks to team members within projects
+Three dashboard components audited and regressed for fake-data artifacts.
 
-### Vendor Account
-- **Cannot create projects**
-- Can be assigned tasks on specific projects they're invited to
-- Receives bid requests in their inbox
+### 1. ActivityFeed (Prompt 26 cleanup)
+- **`SystemActivityFeed.tsx` deleted** — dead code with hardcoded fictional events ("Dividend payout", "Jane Cooper accessed Due Diligence folder"); was never imported anywhere.
+- **`src/actions/vendorAssignment.ts`** — added non-blocking `logOrgActivity` call after `batch.commit()` so vendor assignment requests appear in the org activity feed (`phase_change` type).
+- **`src/app/api/invitations/respond/route.ts`** — added `logOrgActivity` on `action === 'accept'` so member joins appear in the feed (`member_joined` type).
+- **Regression tests**: `src/__tests__/activityFeedNoDemo.test.ts` — 9 tests covering: no ACTIVITY_ITEMS constant, no [WARN] terminal UI, live Firestore listener, correct collection path, newest-first ordering, SystemActivityFeed deletion, vendor assignment emission, invite accept emission.
 
-### Investment Access
-- To invest in a project you're invited to, you must have at least a **Standard** account
-- Users must be prompted clearly and cleverly to upgrade/create accounts
+### 2. KPIGrid — three-bug fix
+- **Bug 1**: `isLoading = !!activeTenantId && ...` was `false` when `activeTenantId` was `null` (Firebase Auth still resolving) → skeleton never shown, zeros visible immediately. Fixed by adding `authLoading` from `useAuth()` as first condition.
+- **Bug 2**: `useAllDealsSync` error callback only called `console.error`, never `setDeals`. For `org_placeholder` queries rejected by Firestore, `projectsSynced` never became `true` → perpetual skeleton. Fixed by calling `setDeals([])` in error callback.
+- **Bug 3**: `KPIGrid` was imported in `DashboardHome.tsx` but never rendered in JSX. Fixed by adding `<KPIGrid />` inside `ErrorBoundary` in the non-guest section.
+- **Regression tests**: `src/__tests__/kpiGridStates.test.ts` — 11 tests covering all three states (loading skeleton, empty onboarding CTA, real `calculatePortfolioSummary` values).
 
----
+### 3. AnalyticsWidget — regression tests only (was already clean)
+- The widget was already correct: `usePortfolioMetricSnapshots('monthly')` as data source, `InsufficientData` honest empty state, no `dummyData` constant, no Demo badge.
+- **Regression tests**: `src/__tests__/analyticsWidgetNoDemo.test.ts` — 20 tests covering: static absence of fake-data artifacts, all three `METRIC_FIELD` mappings, fixture-based series verification (values, `latestValue`, date labels), `MIN_POINTS = 2` gate, `MAX_POINTS = 12` cap, per-metric null filtering.
 
-## Task Assignment Logic
+### Verification
+- Full suite: **92 suites, 1107 tests — all green**
+- No TypeScript compile step run this session; no new types introduced.
 
-When a user assigns a task:
-- **If team account:** assign to team members directly
-- **If solo account:** the assignee must have their own account (Standard or Vendor)
-- Vendors receive assignments in their inbox
-- Users can post needs to the **vendor marketplace** → vendors bid → user receives bids in inbox
+### Next Queued (from prior handoff)
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
 
 ---
 
-## Vendor Marketplace — Contextual Surfacing
+# Agent Handoff — Closing Ledger Export (Prompt 19) (2026-06-11)
 
-Vendors aren't listed on a generic directory page. They surface **at the moment the project needs them:**
+## ✅ COMPLETED THIS SESSION
 
-| Phase | When Needed | Vendor Type |
+1. **Closing Ledger Export**:
+   - Updated the server-side export route at `/api/reil/projects/[id]/closing-ledger/export/route.ts` to support token-based re-authentication, membership/owner checks, and read-only validation.
+   - Added server-side telemetry capture (`closing_ledger_exported` event) with format and project ID parameters.
+   - Created a complete Jest test suite in `src/__tests__/closingLedgerExport.test.ts` checking token validation, member scoping, CSV/PDF formatting with override options, and read-only verification.
+   - Verified that the full test suite of 604 tests passes cleanly, and that `tsc --noEmit` returns 0 compilation errors.
+
+---
+
+# Agent Handoff — GDPR Account Deletion (Compliance) & Jest Fixes (2026-06-11)
+
+## ✅ COMPLETED THIS SESSION
+
+1. **GDPR Account Deletion (Prompt 23)**:
+   - Implemented the server-side deletion cascade API at `/api/account/data/delete/route.ts` with 5 resumable stages (Stripe subscription cancellation, Firestore workspace cleanup, Prisma REIL DB reassignments to `"deleted-user"`, Firebase Storage file purging, and Firebase Auth credential deletion).
+   - Created the Settings Danger Zone UI in `src/app/dashboard/settings/general/page.tsx` with a secure re-authentication modal, confirmation text input, and an interactive checklist overlay showing progress and supporting deletion resumption on failure.
+   - Emits PostHog telemetry on start, success, and failure, and dispatches confirmation emails on completion.
+
+2. **Jest Test Fixes**:
+   - Fixed `src/__tests__/accountDeletion.test.ts` by updating the `adminDb.collection(...)` mock to implement the root `get()` method.
+   - Resolved the `STRIPE_SECRET_KEY` initialization throw by defining the mock environment key in `beforeEach`.
+   - Verified that all 58 Jest test suites (600 tests total) pass successfully and that the compilation check (`npx tsc --noEmit`) passes cleanly with zero errors.
+
+---
+
+# Agent Handoff — Reversion of Green Backgrounds & Auth Cleanup (2026-06-07)
+
+## ✅ COMPLETED THIS SESSION
+
+1. **Authentication Pages Cleanup (Zero Green)**:
+   - Created a clean monochrome class variable style override `auth-clean-layout` in `src/app/globals.css` that maps theme color variables (like `--color-primary`, `--pw-muted`, `--pw-black`, `--pw-primary`, `--pw-btn-primary-bg`, `--pw-btn-primary-text`, etc.) to white and slate gray, preventing green backgrounds, green borders, and green button colors on any auth screens (`/login`, `/register`, `/forgot-password`, `/login/finish`).
+   - Attached `pw-interactive-custom` to toggles, icons, link buttons, input eye-toggles, and custom buttons in all auth pages to bypass global CSS rules that render native buttons with solid green backgrounds.
+   - Removed green success/error status indicators from the password-reset and magic-link confirmation screens, replacing them with slate gray and white check circles.
+   - Removed the "System Status: Active" banner text from the layout header.
+
+2. **Reversion of Green Background Palette**:
+   - Reverted all light and dark theme background, surface, bento, and border colors in `src/app/globals.css` from the green colors (`#CEFFEF` and `#01201A`) back to their grayscale/monochrome configurations.
+   - Retained the primary green accent colors (`#00DD94` and `#00CE8E`) for accents, outlines, trend pills, active outlines, and status info only.
+   - Swapped out the `#01201A` dark green primary button background on light surfaces for a dark black (`#0d0a0b`) background button.
+
+3. **Verification**:
+   - TypeScript verification (`npx tsc --noEmit`) completed with 0 errors.
+   - Next.js production build (`npm run build`) completed successfully.
+   - Changes committed and pushed to remote branch `PaperWorking`.
+
+## ⚠️ DEPLOYMENT NOTE
+- Gcloud auth credentials have expired on the local host. The user must run `gcloud auth login` in their terminal and then trigger deployment using:
+  ```bash
+  gcloud builds submit --config cloudbuild.yaml
+  ```
+
+---
+
+# Agent Handoff — Portfolio Dashboard Redesign Complete (2026-06-06)
+
+## ✅ COMPLETED PROMPT 2 ("Portfolio" Dashboard Landing Page Redesign)
+
+1. **Top Bar Search & Alerts (`TopAppBar.tsx`)**:
+   - Autocomplete search filtering projects and active marketplace vendors.
+   - Click-outside mouse down handlers to resolve blur conflicts.
+   - Notification bell dropdown containing Mentions, Document Updates, and "Join Team" Invites with inline Accept/Decline actions.
+
+2. **Hero Section Metrics (`CommandCenter.tsx`)**:
+   - Re-styled KPI Cards to support thin outlines, custom shadows, and hover transition states. Mapped accent colors to the grayscale design system.
+   - Set panel borders and dividers consistently to use `rgba(230, 234, 240, 0.12)` in dark mode and `rgba(33, 34, 38, 0.12)` in light mode.
+
+3. **Action Center (Needs Attention) (`NeedsAttentionFeed.tsx`)**:
+   - Verified priority level triggers (e.g. contingencies, budget overruns, transaction financing blocks).
+
+4. **Marketplace Sourcing Heatmap (`MarketHeatmap.tsx`)**:
+   - Replaced MLS placeholder with a high-fidelity interactive component containing a tab switcher: Yield Heatmap, Sourced Deals feed, and local Vendor Directory.
+
+5. **Recent Activity Feed (`CommandCenter.tsx`)**:
+   - Refactored `RecentActivityFeed` with thin border outlines, custom minimalist outline icons, and hover-triggered glass overlay backdrops.
+
+6. **Verification & Testing**:
+   - Verified TypeScript compilation safety (`tsc --noEmit` exits with 0 errors).
+   - Ran Jest test suite (`npm run test` is completely green).
+
+---
+
+# Agent Handoff — Portfolio Dashboard v2 + Nav v3 (2026-06-06)
+
+### Navigation — final contract (v3)
+Sidebar nav updated to: **Portfolio → Projects(folder) → Insights → Reports → Inbox → Team**
+- `Reports` replaces `Documents`; moved `Team` after `Inbox`
+- `Projects` icon changed from `assignment` → `folder` per spec
+- `Portfolio` icon: `space_dashboard`
+- AGENTS.md updated with full nav contract table and page descriptions
+
+### NeedsAttentionFeed — theme-adapted
+- Reads `useTheme()` internally; panel bg, borders, text, hover all respond to light/dark
+- "Needs Attention" heading renamed to "Action Center"
+- Critical/warning/info urgency levels preserved
+- Item rows use `itemHoverBg` + `itemDivider` theme tokens
+
+### CommandCenter (Portfolio Dashboard) — complete rewrite
+5-zone investor UX layout:
+1. **Page Header** — title, live pulse, Reports shortcut + New Project CTA
+2. **Hero Metrics Strip** — 5 KPI cards (IRR, Equity ×, Capital, NOI, CF) with left accent bar, trend pill, meta label
+3. **Action Center** — NeedsAttentionFeed; EmptyPortfolio if no projects
+4. **Active Pipeline + Top Performers** — hidden if no projects (no empty grid)
+5. **Marketplace Heatmap (2/3) + Recent Activity (1/3)** — static activity feed with 6 typed event items
+
+New shared design primitives:
+- `tokens(isDark)` — single source for all theme values (heading, subtext, muted, divider, link, panelBg, etc.)
+- `Panel` — glass/white surface wrapper
+- `SectionHeading` — title + optional badge + divider line + link
+- `EmptyPortfolio` — full-panel empty state with CTA
+- `RecentActivityFeed` — typed 6-item activity list
+
+TypeScript: `tsc --noEmit` exits 0.
+
+---
+
+# Agent Handoff — Portfolio Workspace Redesign (2026-06-06)
+
+## ✅ COMPLETED THIS SESSION
+
+### Workspace Shell & Navigation
+- **ThemeProvider** (`src/lib/utils/ThemeProvider.tsx`): upgraded from dark-only to full light/dark toggle. Persistent via `localStorage["pw-theme"]`. Exposes `useTheme()` hook with `{ theme, toggleTheme, setTheme }`.
+- **Sidebar** (`src/components/layout/Sidebar.tsx`): rebuilt with new nav contract: `Portfolio → Projects → Insights → Team → Inbox → Documents` + Account section. Added theme toggle button. Theme-adaptive surfaces (light/dark). Width: 240px.
+- **Logo** (`src/components/brand/Logo.tsx`): SVG replaced PNG. Uses `fill="currentColor"` — adapts to any theme surface automatically. Added `xl` size, `wordmarkOnly`, `iconOnly` props.
+- **TopAppBar** (`src/components/layout/TopAppBar.tsx`): theme-adaptive header background, breadcrumb, search input, kbd hint.
+- **AGENTS.md**: nav contract updated to reflect new spec. Locked: `Portfolio → Projects → Insights → Team → Inbox → Documents`.
+
+### Portfolio Dashboard (CommandCenter)
+- **5-zone layout** per investor UX spec:
+  - Zone 1: Page header + quick-action CTA (search/notifications in TopAppBar)
+  - Zone 2: Hero KPI strip (5 cards — IRR, Equity Multiple, Capital Deployed, NOI, Cash Flow)
+  - Zone 3: Action Center (NeedsAttentionFeed — urgent items BEFORE pipeline)
+  - Zone 4: Active Pipeline (8-col) + Top Performers (4-col)
+  - Zone 5: Marketplace Heatmap (2-col) + Recent Activity feed (1-col)
+- KPI cards: theme-adaptive (white bg light / glass dark), accent lines, clean badges
+- `RecentActivityFeed`: new lightweight activity feed component inside CommandCenter
+- `Panel` + `SectionHeading`: reusable theme-adaptive building blocks
+
+### TypeScript
+- `tsc --noEmit` exits 0. IDE false-positives are pre-existing `@types/react` resolution issue (types at user root, not project root) — does not affect build.
+
+### Plans
+- `plans/01-site-dna.md`: High-fidelity Site DNA written for Antigravity design reference.
+
+---
+
+# Agent Handoff — v3 Design System + Cloud Run Deployment (2026-06-05)
+
+## ✅ LIVE — Both URLs serving HTTP/2 200
+- **Cloud Run**: https://paperworker-779101817926.us-east4.run.app
+- **Custom Domain**: https://paperworking.co/
+- **Deploy command**: `gcloud builds submit --config cloudbuild.yaml`
+- **Hosting**: Google Cloud Run ONLY (Vercel banned — see DEPLOYS.md)
+
+## Design System v3 — Completed 2026-06-05 (225 files, tsc exit 0)
+
+### Color Token Contract (ALL agents must follow — see `src/app/globals.css`)
+| Token | Value | Usage |
 |---|---|---|
-| Purchase | Financing stage | Loan Processor, Appraiser, Inspector |
-| Purchase | Closing stage | Real Estate Attorney |
-| Hold | Rehab stage | Contractor, General Contractor |
-| Hold | Rental prep | Property Manager |
-| Exit | Sale/rental | Listing Agent, Property Manager |
+| Primary | `#454955` | Buttons, active states, branding |
+| Secondary | `#7A9EAA` | Borders, secondary elements, highlights |
+| Dark BG | `#0d0a0b` | Background (dark mode) |
+| Light BG | `#FDFFFC` | Background (light mode) |
+| Text dark | `rgba(253,255,252,0.95)` | Primary text on dark |
+| Text muted | `#9E9DA0` | Secondary/muted text on dark |
+| Semantic up | `#3f7d20` | Positive performance, market up |
+| Semantic down | `#F06543` | Negative, cancel, market down |
 
-Subscribed users (Standard+) can list their services in their profile. When another user's project reaches a phase that needs that service, the vendor appears as a suggested resource. The user can send a bid request → vendor receives it in their inbox → user reviews bids.
+### Phase Palette (charts, legends, pipeline — consistent everywhere)
+- Phase 1 Acquisition: `#454955`
+- Phase 2 Transaction: `#7A9EAA`
+- Phase 3 Rehab: `#ffac5a`
+- Phase 4 Hold/Exit: `#5aaa3f`
 
----
+### BANNED colors (never reintroduce)
+- Any teal/cyan: `#57f1db`, `#20B2AA`, `#62fae3`, `#3cddc7`
+- Any rgba teal: `rgba(32,178,170,...)`, `rgba(87,241,219,...)`
+- Any blue-grey text: `rgba(218,228,236,...)`, `#bacac5`
+- Tailwind `teal-*`, `cyan-*` classes
+- Purple / violet / magenta hues
 
-## Financial Analytics Engine (Current State)
+### Docker fix (2026-06-05)
+`COPY prisma ./prisma/` must appear **before** `npm install` in Dockerfile — ensures `prisma generate` postinstall hook succeeds.
 
-11 metrics + flip profitability dashboard, all derived from existing project fields:
-
-| # | Metric | Visualization | Engine Function |
-|---|---|---|---|
-| 1 | NOI | NOIDeepDive | `computeNOIComponents()` |
-| 2 | Cash Flow | CashFlowDeepDive | `computeCashFlow()` |
-| 3 | Cap Rate | CapRateDeepDive | `computeCapRate()` |
-| 4 | CoC Return | CoCReturnDeepDive | `computeCoCReturn()` |
-| 5 | GRM | GRMDeepDive | `computeGRM()` |
-| 6 | DSCR | DSCRDeepDive | `computeDSCR()` |
-| 7 | IRR | IRRDeepDive | `computeIRR()` + `buildIRRCashFlows()` |
-| 8 | Occupancy | OccupancyDeepDive | `computeOccupancyRate()` |
-| 9 | Expense Ratio | ExpenseRatioDeepDive | `computeOER()` |
-| 10 | Appreciation | AppreciationDeepDive | Compound growth projection |
-| 11 | Flip Profitability | FlipProfitabilityDashboard | `computeMAO()` + `computeFlipROI()` + `computeGrossMargin()` + `computeDOM()` + `computeRehabVariance()` |
-| 12 | Contingency Budget | Phase 2 Budget Breakdown | `computeContingencyBudget()` — 15% Rule |
-| 13 | Daily Burn Rate | Phase 2 Burn Rate Detail | `computeDailyBurnRate()` — holding cost urgency |
-
-The Flip Dashboard covers: ARV, MAO (70% rule), Net Profit, ROI (25% 2026 target), Gross Margin, DOM, cost waterfall, cost composition, MAO sensitivity, ROI sensitivity, comparable sales, and holding/financing detail.
-
-All visualized per-project across Phases 1–3. Zero redundant data collection.
+### Cloud Build fix (2026-06-05)
+Remove `--update-secrets` for vars already set as plain env vars — causes type-mismatch error in Cloud Run.
 
 ---
 
-## Storage & Tax Documents
+# Agent Handoff — Portfolio Dashboard Redesign (R-13 closed)
 
-- Every account: **500 MB** divided evenly across projects
-- Quarterly tax document generation
-- Yearly tax document generation (earnings/losses)
-- Exit phase generates final reporting package
+**Last Updated**: 2026-06-05  
+**Agent**: Antigravity (UI/UX & Deployment Optimization)
+
+## ⚠️ MANDATORY HOSTING POLICY
+- **Target**: **Google Cloud Run ONLY**.
+- **Vercel Banned**: Vercel is strictly banned for cost efficiency reasons. All agents must ignore references to deploying on Vercel and must NOT create or configure Vercel deployment workflows.
+- **Deployment Command**: Use `gcloud builds submit --config cloudbuild.yaml`. See [DEPLOYS.md](file:///Users/yvesdarbouze/Documents/PaperWorking/DEPLOYS.md) in the root directory for details.
+
+## Status: P1 R-13 Closed — Portfolio Dashboard 5-Zone Redesign
+
+### What Was Done This Session
+
+1. **Portfolio Dashboard redesign** — `CommandCenter.tsx` rebuilt as 5-zone layout:
+   - Zone A: Page header with live pulse + active deal count
+   - Zone B: 5-card KPI strip — IRR, Equity Multiple, Capital Deployed, **Total NOI** (new), **Portfolio Cash Flow** (new)
+   - Zone C: **NeedsAttentionFeed** (P1 R-13 — built fresh)
+   - Zone D: 8/12 + 4/12 two-col — ActivePipeline | InboxStrip + TopPerformersWidget
+   - Zone E: TerminalAuditFeed (1/3) + MarketHeatmap (2/3)
+
+2. **New files created** (TypeScript clean, 0 errors):
+   - `src/components/dashboard/command-center/NeedsAttentionFeed.tsx`
+     - Derives attention items from: contingency deadlines ≤7 days, rehab budget overruns, overdue actionItems, phase-gate blocks (phase 2 + no loan)
+     - Priority tiers: critical (red) / warning (warm) / info (blue)
+     - AnimatePresence expand/collapse, max 10 items
+   - `src/components/dashboard/command-center/TopPerformersWidget.tsx`
+     - Ranks projects by CoC (toggle: CoC / IRR) using `deriveAllMetrics`
+     - Top 5 sorted descending, empty state
+   - `src/components/dashboard/command-center/CommandCenter.tsx` (refactored)
+     - `usePortfolioKPIs` extended: adds `totalNOI` (rental/hold-phase projects via `computeNOIComponents`) and `portfolioCashFlow` (monthly sum)
+     - `grid-cols-3` → `grid-cols-5` for KPI strip
+     - InboxStrip inline component (pointer to /dashboard/inbox, real SmartInboxWidget lives in home/)
+
+### TypeScript Status
+- `tsc --noEmit --skipLibCheck`: **exit 0, zero errors**
+
+### Remaining Open Gaps (unchanged from prior session)
+- P1: R-09 Data completion outreach engine
+- P1: R-10 MFA not implemented
+- P1: R-11 Marketplace density gate
+- P1: R-12 PostHog funnel events not firing
+- P1: R-15 Phase URLs still `phase-1/2/3/4` — should be `/acquisition` etc.
+- P2: R-17 Project schema flat vs nested
+- P2: R-19 Property-based test suite
+
+**R-13 "Needs Attention feed" and "Top Performers" — CLOSED this session.**
 
 ---
 
-## Key UX Principles
+---
 
-1. **Conversational, not form-based** — the project "talks" to the user
-2. **No redundant questions** — ask once, compute everywhere
-3. **Phase-aware coloring** — visual state always reflects lifecycle position
-4. **Folder metaphor** — tangible, familiar, clickable
-5. **Clear upgrade prompts** — Standard users prompted to invest/bid; free users prompted to upgrade
-6. **Production-grade, not MVP** — institutional-quality charts, expert-level UX
+# Prior Session: REIL Wizard Prompts 1–9 (2026-06-04)
+
+## Status: Prompts 1–9 closed; property provider abstraction tested
+
+### New files this session (REIL acquisition wizard)
+- `src/lib/enums.ts` — AcquisitionStatus pipeline, OwnershipCards, STATUS_ENTRY_OPTIONS
+- `src/lib/db/projects.ts` — full CRUD + StatusEvent + PurchaseTerms + FieldAssignment + Collaborator helpers
+- `src/lib/providers/address.ts` — AddressProvider interface + MockAddressProvider (20 US addresses)
+- `src/lib/providers/property.ts` — PropertyDataProvider + Mock + RentCast/ATTOM/Mashvisor skeletons + getPropertyProvider() factory
+- `src/store/acquisitionWizardStore.ts` — Zustand persist store (address, status, ownership, terms)
+- `src/components/acquisition/` — AcquisitionWizard, StepRail, InviteModal, MembersPanel, AssignableField
+- `src/components/acquisition/steps/` — 6 steps: Address, Status, Property, Ownership, Terms, Review
+- `src/app/api/reil/projects/` — full REST: GET/POST projects, GET/PATCH project, POST property, GET/POST status, GET/POST/PATCH assignments, POST invite, GET/POST terms
+- `src/app/dashboard/projects/new/page.tsx` — replaced with AcquisitionWizard
+- `src/app/dashboard/projects/reil/[id]/page.tsx` — REIL project detail: photo, facts, 4 lifecycle stages (Acquisition active; Fund/Hold/Exit locked), edit links
+- `src/components/providers/QueryProvider.tsx` — TanStack Query provider
+- `prisma/schema.prisma` — REIL models added via `db push` (AppUser, ReilProject, ReilPropertyFacts, ReilComp, ReilPurchaseTerms, StatusEvent, ProjectCollaborator, FieldAssignment)
+
+### Tests
+- `src/__tests__/propertyProvider.test.ts` — 11/11 passing (getPropertyProvider factory + skeletons)
+
+### TypeScript: 0 errors (tsc --noEmit --skipLibCheck, excl .next/)
+
+### Open (not started this session)
+- Real geocoder (address provider, currently mock)
+- Real property data (env var PROPERTY_DATA_PROVIDER=rentcast|attom|mashvisor + API key)
+- Proper Prisma migration files (currently using db push)
+- Fund / Hold / Exit wizard steps (lifecycle stages 2–4)
+- FieldAssignment resolution on AssignableField save (client-side auto-resolve works; server sync on next load)
 
 ---
 
-## Agent Session Notes — 2026-05-17 (Claude Code)
+# Prior Session: P0 Reconciliation Complete
 
-### Sales Funnel & Auth Fixes
+## Status: All 8 P0 Gaps Closed
 
-**CTA routing**: All "Start Trial" buttons now route to `/pricing` (standalone page) instead of `/#pricing` (landing page anchor). Affected files:
-- `LandingHero.tsx`, `FinalCTA.tsx`, `LandingHeader.tsx` (desktop + mobile), `PlatformOverview.tsx`, `HowItWorks.tsx`, `PricingPreview.tsx`
+### What Was Done This Session
 
-**Trial copy**: Removed "no credit card required" messaging. All trust lines now read "Credit card required · No charge for 14 days · Cancel anytime" or similar. CC is collected at checkout but not charged until day 15.
+1. **PRD Reconciliation (`docs/reconciliation/gap-table-v1.md`)**
+   - 23 gaps documented at file-level specificity (P0→P3)
+   - PRD canonical seed property locked to Option B: 20% down, 6.5%/30yr, $223,200 loan
+   - PRD Amendment 1 incorporated: PaperWorking IS real-estate-native project management
 
-**Auth flow fix**: Login page "Sign up" link now passes `redirectTo` param to `/register` so the plan → login → register → `/pricing` (checkout resume) chain is preserved even if sessionStorage is cleared between steps.
+2. **Pricing aligned to Stripe catalog** (confirmed 2026-06-01)
+   - Vendor: $39/mo / $390/yr
+   - Investor: $59/mo / $499/yr  
+   - Investment Team: $99/mo / $999/yr
+   - Fixed across: `plans.ts`, `PricingCards.tsx`, `PricingSection.tsx`, `FeatureComparisonTable.tsx`, `billing/page.tsx`, `for-pros/page.tsx`, `VendorOnboardingWizard.tsx`
+   - Metro/Regional/National tiers removed — never existed in Stripe
 
-**Intended funnel**: CTA → `/pricing` → pick plan → (unauthenticated: save `pw_pending_plan` → `/login?redirectTo=/pricing`) → login or register → auto-resume checkout at `/pricing` → Stripe checkout with CC required.
+3. **Dashboard reskin** (Stitch Obsidian Glass)
+   - `CommandCenter.tsx` rebuilt: 8 noisy sections → 3-section Stitch layout (KPIs / Pipeline / Activity+Heatmap)
+   - `ActivePipeline.tsx` wired to real project store data (was DEMO_LANES mock)
+   - `TopAppBar.tsx`: "New Project" pill CTA added, routes to `/dashboard/projects/new`
+   - Projects page: `FolderCard` (Stitch design) now active in grid (was using `ProjectCard`)
+   - Phase filter selects → pill chips
+   - Wizard phase selection cards updated with real product copy from PRD phase descriptions
+
+4. **P0 correctness fixes**
+   - R-01: Golden test now asserts PRD locked values (NOI=$12,486, CF=-$4,444, CapRate=4.5%, COC=-7.41%, GRM=11.92, DSCR=0.74). GRM formula corrected: purchase price not ARV
+   - R-02: Inline metric math removed from EvaluationPanel, PurchasePanel, ExitPanel, intelligence/comparison — all route through /lib/metrics
+   - R-03: IRR proxy `CoC×1.35` → `computeIRRMetric()` (Newton-Raphson) in data-room
+   - R-04/R-05: GRM and IRR removed from portfolio scalar aggregation in data-room and insights
+   - R-06: DSCR aggregation excludes all-cash properties from both numerator and denominator
+   - R-23: `comparison/page.tsx` runtime bug fixed — `annualDebt` and `annualRent` were undefined
+
+5. **P0 security fixes**
+   - R-07: `DocumentHub.tsx` — real Firebase Storage upload implemented with `uploadBytesResumable`, progress bar, `getDownloadURL`, `fileUrl`+`storagePath` written to Firestore. `storagePath` added to `DealDocument` schema
+   - R-08: Resend webhook signature — HMAC-SHA256 via Node `crypto`, verified before processing
+   - R-16: FinalCTA denial copy removed ("risk mitigation platform")
+
+### Verification
+- Golden test: **15/15 passing**
+- TypeScript: **zero errors** across all changed files
+- All Stripe price IDs are correct in `.env.local`
+
+### Open Gaps (next priority)
+- P1: R-09 Data completion outreach engine (schema only, no engine)
+- P1: R-10 MFA not implemented in auth flow
+- P1: R-11 Marketplace density gate
+- P1: R-12 PostHog funnel: `signup_started`, `email_verified`, `trial_converted_to_paid` not firing
+- P1: R-13 Dashboard "Needs Attention" feed and "Top Performers" not yet built (PRD §4.4)
+- P1: R-15 Phase URLs still `phase-1/2/3/4` — should be `/acquisition`, `/transaction`, `/rehab`, `/hold-exit`
+- P2: R-17 Project schema flat vs PRD nested canonical shape
+- P2: R-19 Property-based test suite (≥10k random inputs per metric)
+
+### Key Files Changed This Session
+- `docs/reconciliation/gap-table-v1.md` — gap registry (23 gaps)
+- `src/lib/stripe/plans.ts` — Stripe-canonical pricing
+- `src/lib/metrics/__tests__/golden.test.ts` — locked PRD seed values
+- `src/lib/metrics/computeGRM.ts` — fixed: purchase price, not ARV
+- `src/components/dashboard/command-center/CommandCenter.tsx` — Stitch reskin
+- `src/components/dashboard/command-center/ActivePipeline.tsx` — real store data
+- `src/components/layout/TopAppBar.tsx` — New Project CTA
+- `src/app/dashboard/projects/page.tsx` — FolderCard, pill filters
+- `src/components/engine/DocumentHub.tsx` — real Firebase Storage upload
+- `src/app/api/webhooks/resend/route.ts` — HMAC signature verification
+- `src/app/dashboard/data-room/page.tsx` — R-03/R-04/R-06 metric fixes
+- `src/app/dashboard/insights/page.tsx` — R-05 distribution fix
+- `src/app/dashboard/intelligence/comparison/page.tsx` — R-02 + runtime bug fix
+
+## 2026-06-11 — Prompt 26: ActivityFeed Empty State
+
+### Completed Work
+- **ActivityFeed UI Upgrade**: Replaced the terminal-styled `[WARN] NO DATA DETECTED` warning in `ActivityFeed.tsx` with a design-system-aligned empty state displaying a friendly "No activity yet" headline and a hint grid explaining how document uploads, status changes, and deal creation generate activity.
+- **Removed Bypass**: Replaced the mock `SystemActivityFeed` with the live, Firestore-subscribing `ActivityFeed` in `DashboardHome.tsx` so real dynamic activity events are displayed.
+- **Theme Adaptation**: Integrated the `useTheme()` hook in `ActivityFeed.tsx` to automatically adapt background, borders, and text colors for dark and light modes.
+- **Mutation Emitters**: Confirmed that document uploads and status changes emit events, and added a failure-isolated `logOrgActivity` event emitter in the sourcing lead webhook (`/api/webhooks/sourcing`) to log `deal_created` on automated lead ingestion.
+- **Testing**: Added a dedicated component test suite in `src/__tests__/ActivityFeed.test.tsx` verifying loading, empty state, and active states. All 61 Jest test suites (611 tests) and typescript compilation check compile cleanly with zero errors.
 
 ---
 
-## Agent Session Notes — 2026-05-18 (Claude Code) — Auth Security Overhaul
+# Agent Handoff — Prompt 23: Account Deletion Cascade CLOSED (2026-06-12)
 
-### ⚠️ DO NOT re-implement or simplify the files listed below. C-1, C-2, C-3, H-1–H-5 are all resolved and deployed on `main`. Overwriting any of these will re-introduce the login loop or security regressions.
+## ✅ CLOSED THIS SESSION
 
-### Commits shipped this session
-- `f0a6f2ad` — enforce CC-at-checkout trial model, remove 'no credit card' copy
-- `2059ffb5` — fix: magic link finish respects sessionStorage checkout intent (H-4)
-- `8e790dae` — fix: H-3 session-expired modal, H-5 proactive token refresh on layout mount
+**Prompt 23 — GDPR Account Deletion** is complete and independently audited (21/21 criteria PASS).
 
-### `src/app/api/auth/session/route.ts` — COMPLETE (149 lines, not 3)
-This file is **not** a stub. It is the full production implementation. Do not replace it.
+### What Was Built
 
-Key facts:
-- **POST**: calls `adminAuth.verifyIdToken(idToken, true)` (checks revocation), then `adminAuth.createSessionCookie(idToken, { expiresIn: SESSION_MAX_AGE * 1000 })` to issue a **14-day Firebase-signed session cookie** — this is what fixed C-2 (60-min ID token in 14-day cookie).
-- **Cookies set**: `__session` (Firebase session cookie, HttpOnly), `__sub` (subscription gating, readable JS), `__acct` (account type, HttpOnly).
-- **Production fail-closed**: returns 503 if `FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY` are absent.
-- **Dev fallback**: issues an unverified cookie only when `NODE_ENV !== 'production'` — this is what fixed C-1 (Admin SDK bypass in prod).
-- **CSRF**: validated via `src/lib/auth/csrf.ts` (no wildcards, explicit allowlist + `Sec-Fetch-Site` check) — this is what fixed C-3.
+A production-grade, resumable 5-step account deletion cascade:
 
-### `src/middleware.ts` — cookie-existence gate only
-Does NOT parse or verify JWTs. Just checks `!!request.cookies.get('__session')?.value`. Token validation happens in the session API route via Admin SDK, not at the edge.
+| Step | Checkpoint | What is removed |
+|------|-----------|----------------|
+| 1 | `stripe_cancelled` | Active Stripe subscriptions cancelled |
+| 2 | `firestore_deleted` | Owned projects (7 subcollections: ledgerItems, activityLog, vendorRequests, phaseSnapshots, commitments, documents, financials) + propertyMetricSnapshots + projectFiles + projectFolders + org memberships + inboxItems + notifications + teamInvitations (cancelled) + users/{uid}/sessions + user profile doc |
+| 3 | `prisma_deleted` | statusEvent/fieldAssignment anonymized → deleted-user; projectCollaborator rows deleted; solely-owned reilProject rows deleted (cascade); appUser deleted |
+| 4 | `storage_deleted` | GCS objects under projects/{id}/ and users/{uid}/ |
+| 5 | `completed` | revokeRefreshTokens + deleteUser |
 
-### `src/context/AuthContext.tsx` — current shape
-- Uses `signInWithPopup` (not `signInWithRedirect`) for Google and Facebook.
-- `syncLockRef` (useRef) prevents `onAuthStateChanged` from firing a duplicate `syncSessionCookie` during a popup flow.
-- `isAuthenticating` state exposed in context — login page uses it to suppress double redirect.
-- `syncSessionCookie` always calls `getIdToken(true)` (force-refresh).
-- 50-min `setInterval` for token refresh. Fatal errors (non-network) set `sessionExpiredVisible` → triggers `SessionExpiredModal`.
-- `refreshSession()` method in context: checks token expiry, force-refreshes if <5 min remain.
+### Key Files
+- `src/app/api/account/data/delete/route.ts` — server-side cascade (GET status + POST trigger/resume)
+- `src/app/dashboard/settings/general/page.tsx` — full UX: reauth gate + DELETE typed confirmation + step progress tracker + resume-on-failure
+- `src/__tests__/accountDeletion.test.ts` — 4/4 passing (401 guard, full cascade, mid-cascade resume, shared project survival)
 
-### New files added this session
-- `src/lib/auth/csrf.ts` — CSRF validation utility, explicit allowlist.
-- `src/lib/auth/sessionService.ts` — `getTokenExpiryMinutes(user)`, `safeLogout()`.
-- `src/components/auth/SessionExpiredModal.tsx` — amber modal rendered inside `AuthProvider` on fatal token refresh failure.
+### Security Properties (verified)
+- UID from token only — never from request body
+- `requireAuth()` guard on every call; 401 on unauthenticated/forged requests
+- `revokeRefreshTokens` before `deleteUser` (closes session race window)
+- Stripe secret server-side only (no NEXT_PUBLIC_)
+- Shared projects owned by others are preserved — only membership removed
 
-### sessionStorage keys (auth redirect chain)
-- `pw_pending_plan` — JSON of pending plan intent; presence routes post-auth to `/pricing`
-- `pw_auth_redirect` — saved destination path before OAuth round-trip
+### Next Queued
+- **Prompt 79**: Phase 2 map — replace animated SVG placeholder with real coordinates via Google Static Maps proxy
+- **Prompt 34**: Marketplace Vendor Audit — remove fictional DEMO_VENDORS, implement honest empty state
+

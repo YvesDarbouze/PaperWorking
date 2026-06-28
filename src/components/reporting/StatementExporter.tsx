@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 import { FileDown, FileSpreadsheet, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -16,33 +17,34 @@ import toast from 'react-hot-toast';
 
 type StatementType = 'pl' | 'cashflow' | 'balance';
 
-function fmt(val: number): string {
-  const neg = val < 0;
-  return `${neg ? '-' : ''}$${Math.abs(val).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-}
-
 export default function StatementExporter({ activeStatement }: { activeStatement: StatementType }) {
   const projects = useProjectStore(s => s.projects);
   const currentProject = useProjectStore(s => s.currentProject);
+  const { user } = useAuth();
   const [generating, setGenerating] = useState<'pdf' | 'csv' | null>(null);
 
   const dateStr = new Date().toISOString().split('T')[0];
 
   const fetchExportData = async (format: 'pdf' | 'csv') => {
+    if (!user) throw new Error('You must be signed in to export financial data.');
+
     const targetDeals = currentProject ? [currentProject] : projects;
+    const projectIds = targetDeals.map(d => d.id).filter(Boolean);
+
+    const idToken = await user.getIdToken();
+
     const response = await fetch('/api/reporting/export', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        format,
-        type: activeStatement,
-        projects: targetDeals
-      })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({ format, type: activeStatement, projectIds }),
     });
 
-    if (!response.ok) {
-      throw new Error('Server returned an error while processing the export');
-    }
+    if (response.status === 401) throw new Error('Authentication required. Please sign in again.');
+    if (response.status === 403) throw new Error('Access denied: you do not have permission to export this data.');
+    if (!response.ok) throw new Error('Server returned an error while processing the export');
 
     return response;
   };

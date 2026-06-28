@@ -1,5 +1,27 @@
 # Agent Handoff — Mock-to-Real / Security / Hygiene Sweep (2026-06-28)
 
+## ✅ COMPLETED THIS SESSION (commit 49183bc4)
+
+### P0-2 — reporting/export serves financial data without auth (SECURITY)
+- `src/app/api/reporting/export/route.ts`: Complete security rewrite.
+  - `requireAuth()` gate → 401 on no/bad token.
+  - Body now accepts `projectIds: string[]` only — full project objects are never
+    accepted from the client (IDOR surface eliminated).
+  - Per-project ownership check: `members[callerUid]` must exist OR org-level fallback
+    for legacy projects. Any unowned project ID → 403 for the entire request.
+  - All financial figures computed server-side via `@metrics` engine:
+    `computeAutopsyMetrics` for P&L (works for both sold and active deals),
+    `computeFlipMetrics` for balance sheet inventory book value.
+  - `console.log`/`console.error` replaced with `logger.info`/`logger.error`.
+- `src/components/reporting/StatementExporter.tsx`:
+  - `useAuth()` → `user.getIdToken()` → `Authorization: Bearer` header on every request.
+  - Sends `projectIds: targetDeals.map(d => d.id)` instead of full project objects.
+  - Handles 401/403 with user-facing error messages.
+  - Removed unused `fmt()` helper (formatting is now server-side).
+
+---
+
+
 ## ✅ COMPLETED THIS SESSION (commit bf847bcc)
 
 ### P0-1 — invitations/send identity forgery (SECURITY)

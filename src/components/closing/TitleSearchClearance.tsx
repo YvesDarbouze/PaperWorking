@@ -28,54 +28,49 @@ const STATUS_CONFIG: Record<ClearanceStatus, { icon: React.ReactNode; bg: string
 };
 
 const INITIAL_CHECKS: TitleCheckItem[] = [
-  { id: 'ownership', name: 'Chain of Ownership Verification', status: 'Cleared', detail: 'Clear chain verified through 2003' },
-  { id: 'liens', name: 'Outstanding Liens & Judgments', status: 'In Review', detail: 'County records search in progress' },
-  { id: 'taxes', name: 'Property Tax Clearance', status: 'Cleared', detail: 'Current through Q2 2026' },
-  { id: 'easements', name: 'Easements & Encumbrances', status: 'Pending' },
-  { id: 'survey', name: 'Survey / Boundary Confirmation', status: 'Pending' },
-  { id: 'hoa', name: 'HOA/Condo Special Assessments', status: 'Cleared', detail: 'No HOA restrictions apply' },
+  { id: 'ownership', name: 'Chain of Ownership Verification', status: 'Pending' },
+  { id: 'liens',     name: 'Outstanding Liens & Judgments',   status: 'Pending' },
+  { id: 'taxes',     name: 'Property Tax Clearance',          status: 'Pending' },
+  { id: 'easements', name: 'Easements & Encumbrances',        status: 'Pending' },
+  { id: 'survey',    name: 'Survey / Boundary Confirmation',  status: 'Pending' },
+  { id: 'hoa',       name: 'HOA/Condo Special Assessments',   status: 'Pending' },
 ];
 
 export default function TitleSearchClearance() {
   const [checks, setChecks] = useState<TitleCheckItem[]>(INITIAL_CHECKS);
   const [searching, setSearching] = useState(false);
+  const [providerUnavailable, setProviderUnavailable] = useState(false);
   const currentProject = useProjectStore(s => s.currentProject);
-  const updateClosingRoom = useProjectStore(s => s.updateClosingRoom);
 
   const handleRunSearch = async () => {
     setSearching(true);
+    setProviderUnavailable(false);
     toast.loading('Contacting title registry...', { id: 'title-search' });
-    
+
     try {
       const response = await fetch('/api/closing/title-search', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          projectId: currentProject?.id || 'unknown-project',
-          propertyAddress: currentProject?.propertyName
+          projectId: currentProject?.id ?? 'unknown-project',
+          propertyAddress: currentProject?.address ?? currentProject?.propertyName,
         }),
       });
 
       const result = await response.json();
 
+      if (response.status === 503 && result.providerDecisionRequired) {
+        setProviderUnavailable(true);
+        toast.dismiss('title-search');
+        return;
+      }
+
       if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch title records');
+        throw new Error(result.error ?? 'Failed to fetch title records');
       }
 
+      // Only update checks from real provider data — never from fabricated results
       setChecks(result.data.findings);
-      
-      // Update global project store with title clearance status if project exists
-      if (currentProject) {
-        // Find if there are any issues
-        const hasIssues = result.data.findings.some((f: any) => f.status === 'Issue Found');
-        
-        updateClosingRoom(currentProject.id, {
-          chainOfTitleStatus: hasIssues ? 'failed' : 'verified'
-        });
-      }
-
       toast.success('Title search completed successfully', { id: 'title-search' });
     } catch (error) {
       console.error('Title search failed:', error);
@@ -152,8 +147,19 @@ export default function TitleSearchClearance() {
         })}
       </div>
 
-      {/* Action Button */}
-      {!isFullyCleared && (
+      {/* Action Button / Provider Notice */}
+      {providerUnavailable ? (
+        <div className="mt-5 flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-xs font-semibold text-amber-900 mb-1">Title search provider not configured</p>
+            <p className="text-xs text-amber-800 leading-relaxed">
+              Live title search requires a real provider integration (county records API, First American, Stewart Title, etc.).
+              A provider decision is required before this feature is available.
+            </p>
+          </div>
+        </div>
+      ) : !isFullyCleared && (
         <button
           onClick={handleRunSearch}
           disabled={searching}

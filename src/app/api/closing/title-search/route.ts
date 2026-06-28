@@ -1,97 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pingBlockchainTitleRegistry } from '@/lib/web3/titleVerify';
-import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
+import { logger } from '@/lib/logger';
 
-interface TitleSearchRequest {
-  idToken?: string;
-  projectId: string;
-  propertyAddress?: string;
-  borrowerName?: string;
-}
+/* ═══════════════════════════════════════════════════════
+   POST /api/closing/title-search
+
+   Title search requires a real provider integration
+   (county records API, First American, Westlaw PeopleMap, etc.).
+   No provider is currently configured.
+
+   Architecture decision required before this route can return
+   real data. See web3RegistryHooks.ts for the provider interface
+   design notes.
+   ═══════════════════════════════════════════════════════ */
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+
+  let body: { projectId?: string; propertyAddress?: string };
   try {
-    const body: TitleSearchRequest = await req.json();
-    
-    if (!body.propertyAddress) {
-      return NextResponse.json(
-        { success: false, error: 'Property address is required for title search' },
-        { status: 400 }
-      );
-    }
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+  }
 
-    // Optional: Authenticate the user if idToken is provided
-    if (body.idToken) {
-       try {
-         await adminAuth.verifyIdToken(body.idToken);
-       } catch (e) {
-         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-       }
-    }
-
-    // Call the "real" service layer
-    const verification = await pingBlockchainTitleRegistry(body.propertyAddress);
-    
-    let searchId = `TS-${verification.txHash.substring(2, 10).toUpperCase()}`;
-
-    // Generate dynamic findings based on the blockchain verification result
-    const findings = [
-      {
-        id: 'ownership',
-        name: 'Chain of Ownership Verification',
-        status: verification.success ? 'Cleared' : 'In Review',
-        detail: `Clear chain verified for ${body.propertyAddress}. Blockchain TxHash: ${verification.txHash}`
-      },
-      {
-        id: 'liens',
-        name: 'Outstanding Liens & Judgments',
-        status: 'Cleared',
-        detail: 'No active liens or judgments found against property or owner recorded on-chain.'
-      },
-      {
-        id: 'taxes',
-        name: 'Property Tax Clearance',
-        status: 'Cleared',
-        detail: 'Taxes current. Next installment due Q4.'
-      },
-      {
-        id: 'easements',
-        name: 'Easements & Encumbrances',
-        status: 'Cleared',
-        detail: 'Standard utility easements identified. No encroachments.'
-      },
-      {
-        id: 'survey',
-        name: 'Survey / Boundary Confirmation',
-        status: 'Cleared',
-        detail: 'Matches plat map recorded dynamically.'
-      },
-      {
-        id: 'hoa',
-        name: 'HOA/Condo Special Assessments',
-        status: 'Cleared',
-        detail: 'No active HOA/COA associated with parcel.'
-      }
-    ];
-
-    console.log(`[AUDIT] Title search performed for Project: ${body.projectId}, Address: ${body.propertyAddress}, Tx: ${verification.txHash}`);
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        searchId,
-        timestamp: verification.timestamp.toISOString(),
-        status: verification.success ? "COMPLETED" : "FAILED",
-        txHash: verification.txHash,
-        findings
-      }
-    });
-
-  } catch (error: any) {
-    console.error('Title Search API Error:', error);
+  if (!body.propertyAddress) {
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to complete title search' },
-      { status: 500 }
+      { success: false, error: 'propertyAddress is required' },
+      { status: 400 }
     );
   }
+
+  logger.info('[title-search] Provider not configured — returning unavailable', {
+    callerUid: auth.uid,
+    projectId: body.projectId,
+  });
+
+  return NextResponse.json(
+    {
+      success: false,
+      providerDecisionRequired: true,
+      error:
+        'Title search provider not configured. A real provider (county records API, First American, Stewart Title, etc.) must be integrated before live title data is available.',
+    },
+    { status: 503 }
+  );
 }

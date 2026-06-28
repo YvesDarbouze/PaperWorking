@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { ApplicationUser } from '@/types/schema';
 import { useProjectStore } from '@/store/projectStore';
 import { X, ShieldCheck, Link, UploadCloud, Users, CheckCircle, Search, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { pingDigitalRegistry } from '@/lib/web3RegistryHooks';
 import DealProgressTracker from '@/components/shared/DealProgressTracker';
 import ESignAction from '@/components/shared/ESignAction';
 import { usePermissions } from '@/hooks/usePermissions';
+import { useAuth } from '@/context/AuthContext';
 
 
 interface ClosingRoomProps {
@@ -19,11 +19,10 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
     const updateClosingRoom = useProjectStore(state => state.updateClosingRoom);
     const deal = projects.find(d => d.id === projectId);
     const { role } = usePermissions();
+    const { user } = useAuth();
 
-    const [isPinging, setIsPinging] = useState(false);
     const [matchingLawyers, setMatchingLawyers] = useState<ApplicationUser[]>([]);
     const [isSearchingLawyers, setIsSearchingLawyers] = useState(false);
-    const [isSigned, setIsSigned] = useState(false);
 
     useEffect(() => {
       if (!deal) return;
@@ -59,23 +58,6 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
         chainOfTitleStatus: 'pending'
     };
 
-    const handleWeb3Ping = async () => {
-        setIsPinging(true);
-        toast.loading('Verifying title on chain...', { id: 'web3' });
-        try {
-            const res = await pingDigitalRegistry(deal.address);
-            updateClosingRoom(deal.id, {
-                chainOfTitleStatus: res.chainOfTitleStatus,
-                blockchainTxHash: res.blockchainTxHash
-            });
-            toast.success(`Title Registry Verified! Hash: ${res.blockchainTxHash?.slice(0,10)}...`, { id: 'web3' });
-        } catch {
-            toast.error('Failed to communicate with title nodes', { id: 'web3' });
-        } finally {
-            setIsPinging(false);
-        }
-    };
-
     const handleFileUpload = () => {
         toast('Document upload — Firebase Storage integration pending.', { icon: '📎' });
     };
@@ -105,32 +87,20 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                     {/* Left Column: Checks & Lawyer */}
                     <div className="space-y-6">
                         
-                        {/* Web3 Title Check */}
+                        {/* Title Verification — provider decision required */}
                         <div className="bg-bg-surface border border-border-accent rounded-xl p-5 shadow-sm">
                             <h3 className="text-md font-medium flex items-center gap-2 mb-3">
-                                <Link className="w-5 h-5 text-indigo-500" /> Digital Chain of Title
+                                <Link className="w-5 h-5 text-text-secondary" /> Title Verification
                             </h3>
-                            <div className="bg-bg-primary p-4 rounded-lg flex flex-col gap-3">
-                                {closingRoom.chainOfTitleStatus === 'verified' ? (
-                                    <>
-                                       <div className="flex items-center text-green-700">
-                                            <ShieldCheck className="w-5 h-5 mr-2" />
-                                            <span className="font-medium text-sm">Title Cleared via Smart Contract</span>
-                                       </div>
-                                       <p className="text-xs text-text-secondary break-all font-mono">TX: {closingRoom.blockchainTxHash}</p>
-                                    </>
-                                ) : (
-                                    <>
-                                       <p className="text-sm text-text-secondary">Pending immutable verification of property transfer chain.</p>
-                                       <button 
-                                          onClick={handleWeb3Ping} 
-                                          disabled={isPinging}
-                                          className="w-full bg-indigo-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-indigo-700 transition disabled:opacity-50"
-                                       >
-                                          {isPinging ? 'Pinging Registry Nodes...' : 'Verify Chain of Title Now'}
-                                       </button>
-                                    </>
-                                )}
+                            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-amber-900 mb-1">Provider decision required</p>
+                                    <p className="text-xs text-amber-800 leading-relaxed">
+                                        On-chain title verification requires a real county registry or blockchain provider to be configured.
+                                        No provider is currently connected — this feature is not yet available.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -235,11 +205,12 @@ export default function ClosingRoomModal({ projectId, onClose }: ClosingRoomProp
                                    </div>
                                  </div>
                                  <div className="mt-2 pt-3 border-t border-green-200 flex justify-end">
-                                     <ESignAction 
-                                        documentName="Final Closing Disclosures" 
+                                     <ESignAction
+                                        projectId={projectId}
+                                        documentName="Final Closing Disclosures"
                                         signeeRole={role}
-                                        isSigned={isSigned}
-                                        onSigned={() => setIsSigned(true)}
+                                        signeeEmail={user?.email ?? undefined}
+                                        signeeName={user?.displayName ?? role}
                                      />
                                  </div>
                              </div>

@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { CheckCircle, UploadCloud, Search, ShieldCheck, Link as LinkIcon, Scale, FileSignature } from 'lucide-react';
-import { pingBlockchainTitleRegistry } from '@/lib/web3/titleVerify';
+import { CheckCircle, UploadCloud, Search, Link as LinkIcon, Scale, FileSignature, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Project, ClosingDocument } from '@/types/schema';
 import { storage } from '@/lib/firebase/config';
@@ -32,7 +31,6 @@ export default function ClosingPanel() {
   const setDeal = useProjectStore(state => state.setDeal);
   const setDeals = useProjectStore(state => state.setDeals);
 
-  const [isMining, setIsMining] = useState(false);
   const [searchingLawyers, setSearchingLawyers] = useState(false);
   const [availableLawyers, setAvailableLawyers] = useState<any[]>([]);
   const [uploading, setUploading] = useState<string | null>(null);
@@ -127,31 +125,6 @@ export default function ClosingPanel() {
       return d;
     }));
     toast.success(`Attorney verified ${type}.`);
-  };
-
-  const triggerBlockchainVerification = async () => {
-    if (!isDocVerified('Title Insurance')) {
-      toast.error('Title Insurance must be verified by Attorney before Web3 Ping.');
-      return;
-    }
-    setIsMining(true);
-    const result = await pingBlockchainTitleRegistry(currentProject.address);
-    setIsMining(false);
-    
-    setDeals(projects.map(d => {
-       if (d.id === currentProject.id) {
-         return {
-           ...d,
-           closingPortal: {
-             ...d.closingPortal!,
-             blockchainTitleVerified: true,
-             blockchainTxHash: result.txHash
-           }
-         }
-       }
-       return d;
-    }));
-    toast.success('Smart Contract synchronized successfully!');
   };
 
   const searchLawyersData = async () => {
@@ -272,34 +245,21 @@ export default function ClosingPanel() {
               <TitleSearchClearance />
             </Suspense>
 
-           {/* Web3 Ping Interface */}
-           <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-xl shadow-lg border border-indigo-800 p-8 text-white relative overflow-hidden">
-             <div className="relative z-10">
-               <div className="flex items-center space-x-2 mb-2">
-                 <LinkIcon className="w-5 h-5 text-indigo-300" />
-                 <h3 className="text-lg font-medium tracking-tight">Smart Contract Title Integrity</h3>
+           {/* Title Verification — provider decision required */}
+           <div className="bg-bg-surface border border-border-accent rounded-xl p-6">
+             <div className="flex items-center space-x-2 mb-3">
+               <LinkIcon className="w-5 h-5 text-text-secondary" />
+               <h3 className="text-lg font-medium tracking-tight text-text-primary">Title Verification</h3>
+             </div>
+             <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+               <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+               <div>
+                 <p className="text-sm font-medium text-amber-900 mb-1">Provider decision required</p>
+                 <p className="text-xs text-amber-800 leading-relaxed">
+                   On-chain title verification requires a real county registry or blockchain provider to be configured.
+                   No provider is currently connected — this feature is not yet available.
+                 </p>
                </div>
-               <p className="text-indigo-200 text-sm mb-6 max-w-lg">
-                  Before releasing capital to wire, we check digital title hashes against the immutable ledger to confirm clean title before wiring funds.
-               </p>
-
-               {portal.blockchainTitleVerified ? (
-                 <div className="p-4 bg-black/30 border border-indigo-500/30 rounded-lg flex items-center space-x-4">
-                    <ShieldCheck className="w-8 h-8 text-green-400" />
-                    <div>
-                      <p className="text-sm font-medium text-white">Title Verified on Ledger</p>
-                      <p className="text-xs font-mono text-indigo-300 mt-1 break-all tracking-tighter">TxHash: {portal.blockchainTxHash}</p>
-                    </div>
-                 </div>
-               ) : (
-                 <button 
-                   onClick={triggerBlockchainVerification}
-                   disabled={isMining}
-                   className={`px-6 py-3 bg-bg-surface text-indigo-900 font-medium rounded-lg text-sm shadow-md transition ${isMining ? 'opacity-70' : 'hover:scale-105'} flex items-center`}
-                 >
-                    {isMining ? 'Verifying...' : 'Verify Title on Chain'}
-                 </button>
-               )}
              </div>
            </div>
         </div>

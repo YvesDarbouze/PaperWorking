@@ -3,8 +3,33 @@
 import { useState, useEffect, useCallback, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProjectStore } from '@/store/projectStore';
+import { useAuth } from '@/context/AuthContext';
 import { ComparableSale, LeadSource } from '@/types/schema';
 import { Plus, Trash2, TrendingUp, AlertTriangle, CheckCircle2, MapPin, Calendar } from 'lucide-react';
+import { AvmBadge } from '@/components/shared/AvmBadge';
+
+// Minimal client-side shape — avoids importing server-only PropertyFacts
+interface AvmResult {
+  noCoverage?: boolean;
+  facts?: {
+    avmPriceCents?:     number;
+    avmPriceLowCents?:  number;
+    avmPriceHighCents?: number;
+    estRentCents?:      number;
+    estRentLowCents?:   number;
+    estRentHighCents?:  number;
+    sourceProvider?:    string;
+    asOf?:              string;
+  };
+  comps?: Array<{
+    address?: string;
+    price?:   number;
+    distanceMiles?: number;
+    daysOnMarket?:  number;
+  }>;
+  asOf?:     string;
+  provider?: string;
+}
 
 /* ═══════════════════════════════════════════════════════
    Deal Analyzer — Phase 01 Sourcing
@@ -105,6 +130,7 @@ function ReadOnlyLine({ label, value, emphasis, positive, negative }: {
 export default function ProjectAnalyzer() {
   const currentProject = useProjectStore(state => state.currentProject);
   const updateProjectFinancials = useProjectStore(state => state.updateProjectFinancials);
+  const { user } = useAuth();
   const uid = useId();
 
   // ── Local form state ──
@@ -116,6 +142,11 @@ export default function ProjectAnalyzer() {
   const [sellerMotivation, setSellerMotivation] = useState('');
   const [emdAmount, setEmdAmount] = useState(0);
   const [emdGoHardDate, setEmdGoHardDate] = useState('');
+
+  // ── Live AVM / rent reference panel ──
+  const [avmResult, setAvmResult]   = useState<AvmResult | null>(null);
+  const [avmLoading, setAvmLoading] = useState(false);
+  const [avmError, setAvmError]     = useState<string | null>(null);
 
   // Sync from project when it changes
   useEffect(() => {
@@ -134,6 +165,38 @@ export default function ProjectAnalyzer() {
         : ''
     );
   }, [currentProject?.id]);
+
+  // Fetch live AVM + rent data whenever the project (or the address) changes
+  useEffect(() => {
+    if (!currentProject?.id || !currentProject.address || !user) return;
+    let cancelled = false;
+
+    async function fetchAvm() {
+      setAvmLoading(true);
+      setAvmError(null);
+      try {
+        const idToken = await user!.getIdToken();
+        const res = await fetch('/api/property/enrich', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${idToken}` },
+          body:    JSON.stringify({ projectId: currentProject!.id, address: currentProject!.address }),
+        });
+        if (cancelled) return;
+        if (res.status === 401) { setAvmError('Sign-in required'); return; }
+        if (res.status === 403) { setAvmError('Access denied'); return; }
+        if (!res.ok)            { setAvmError('Could not fetch property data'); return; }
+        const data: AvmResult = await res.json();
+        setAvmResult(data);
+      } catch {
+        if (!cancelled) setAvmError('Network error — property data unavailable');
+      } finally {
+        if (!cancelled) setAvmLoading(false);
+      }
+    }
+
+    void fetchAvm();
+    return () => { cancelled = true; };
+  }, [currentProject?.id, currentProject?.address, user]);
 
   if (!currentProject) return null;
 
@@ -235,6 +298,49 @@ export default function ProjectAnalyzer() {
               disabled={isLocked}
               hint="Estimated market value after full renovation"
             />
+
+            {/* ── Live AVM / Rent Reference Panel ── */}
+            {currentProject.address && (
+              <div className="border border-border-accent bg-bg-primary p-4 space-y-3">
+                <p className="text-[9px] font-black text-text-secondary uppercase tracking-[0.3em]">
+                  Live Reference · {currentProject.address}
+                </p>
+
+                {avmLoading && (
+                  <p className="text-[10px] text-text-secondary animate-pulse">Fetching property data…</p>
+                )}
+
+                {avmError && !avmLoading && (
+                  <p className="text-[10px] text-red-500 font-medium">{avmError}</p>
+                )}
+
+                {!avmLoading && !avmError && avmResult?.noCoverage && (
+                  <AvmBadge label="Est. Value" noCoverage />
+                )}
+
+                {!avmLoading && !avmError && avmResult?.facts && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <AvmBadge
+                      label="Est. Value"
+                      valueCents={avmResult.facts.avmPriceCents}
+                      lowCents={avmResult.facts.avmPriceLowCents}
+                      highCents={avmResult.facts.avmPriceHighCents}
+                      sourceProvider={avmResult.facts.sourceProvider ?? avmResult.provider}
+                      asOf={avmResult.facts.asOf ?? avmResult.asOf}
+                    />
+                    <AvmBadge
+                      label="Est. Rent / mo"
+                      valueCents={avmResult.facts.estRentCents}
+                      lowCents={avmResult.facts.estRentLowCents}
+                      highCents={avmResult.facts.estRentHighCents}
+                      sourceProvider={avmResult.facts.sourceProvider ?? avmResult.provider}
+                      asOf={avmResult.facts.asOf ?? avmResult.asOf}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
             <CurrencyInput
               label="Rehab Estimate"
               value={rehabEst}

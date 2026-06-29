@@ -4,7 +4,7 @@ import { FileDown, FileText, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
-import { computeFlipMetrics, computeAutopsyMetrics } from '@/lib/metrics';
+import { computeFlipMetrics, computeFlipNetProfit, computeFlipROI } from '@/lib/metrics';
 
 export default function LenderPackagePdf() {
   const projects = useProjectStore(state => state.projects);
@@ -20,11 +20,6 @@ export default function LenderPackagePdf() {
     toast.loading("Compiling Executive Summary...", { id: 'pdf-gen' });
 
     try {
-      // ── @metrics engine — single source of truth ────────────────
-      // All metric math lives here; nothing is computed inline below.
-      const flip    = computeFlipMetrics(deal);
-      const autopsy = deal.status === 'Sold' ? computeAutopsyMetrics(deal) : null;
-
       const doc = new jsPDF();
 
       // Header
@@ -44,39 +39,67 @@ export default function LenderPackagePdf() {
       doc.text(`Address: ${deal.address}`, 14, 46);
       doc.text(`Current Phase: ${deal.status.toUpperCase()}`, 14, 52);
 
-      // Financials table — all figures from @metrics, no inline math
-      const purchasePrice = deal.financials.purchasePrice || 0;
+      // Projected metrics via @metrics
+      const flip = computeFlipMetrics(deal);
+      const approvedCostEntries = deal.financials.costs?.filter(c => c.approved) || [];
 
-      const realizedROIHeadline = autopsy
-        ? `${autopsy.roi.toFixed(1)}% (Profit: $${Math.round(autopsy.netProfit).toLocaleString()})`
-        : 'N/A (Property Active)';
+      // Realized metrics via @metrics (Sold deals only)
+      let realizedROIHeadline = "N/A (Property Active)";
+      if (deal.status === 'Sold') {
+        const pPrice = deal.financials.actualSalePrice || 0;
+        const buyerComm = pPrice * ((deal.financials.buyersAgentCommission || 0) / 100);
+        const sellerComm = pPrice * ((deal.financials.sellersAgentCommission || 0) / 100);
+        const basicClosingCosts = deal.financials.finalClosingCosts || 0;
 
+        let ledgerExitCosts = 0;
+        deal.exitCosts?.forEach(ec => {
+          ledgerExitCosts += ec.isPercentage && ec.percentageRate
+            ? (ec.percentageRate / 100) * pPrice
+            : (ec.amount || 0);
+        });
+
+        const costBasisExtra = deal.costBasisLedger ? [
+          ...(deal.costBasisLedger.directAcquisition || []),
+          ...(deal.costBasisLedger.financing || []),
+          ...(deal.costBasisLedger.preClosing || []),
+        ].reduce((s, i) => s + (i.amount || 0), 0) : 0;
+
+        const totalAllInCost =
+          (deal.financials.purchasePrice || 0) +
+          flip.rehabActual +
+          costBasisExtra +
+          buyerComm + sellerComm + basicClosingCosts + ledgerExitCosts;
+
+        const realizedProfit = computeFlipNetProfit(pPrice, totalAllInCost);
+        const realROI = computeFlipROI(realizedProfit, totalAllInCost);
+        realizedROIHeadline = `${realROI.toFixed(1)}% (Profit: $${realizedProfit.toLocaleString()})`;
+      }
+
+      // Tables
       autoTable(doc, {
         startY: 65,
         head: [['Metric', 'Value']],
         body: [
-          ['Purchase Price',             `$${purchasePrice.toLocaleString()}`],
-          ['After-Repair Value (ARV)',   `$${flip.arv.toLocaleString()}`],
-          ['Estimated Rehab Budget',     `$${flip.rehabBudget.toLocaleString()}`],
+          ['Purchase Price', `$${(deal.financials.purchasePrice || 0).toLocaleString()}`],
+          ['After-Repair Value (ARV)', `$${flip.arv.toLocaleString()}`],
+          ['Estimated Rehab Budget', `$${flip.rehabBudget.toLocaleString()}`],
           ['Actual Rehab Spend (To-Date)', `$${flip.rehabActual.toLocaleString()}`],
-          ['All-In Cost',               `$${Math.round(flip.totalCost).toLocaleString()}`],
-          ['Projected Profit',          `$${Math.round(flip.netProjectedProfit).toLocaleString()}`],
-          ['Projected ROI',             `${flip.roi.toFixed(1)}%`],
-          ['Realized Performance',      realizedROIHeadline],
+          ['Projected Profit', `$${Math.round(flip.netProjectedProfit).toLocaleString()}`],
+          ['Projected ROI', `${flip.roi.toFixed(1)}%`],
+          ['Realized Performance', realizedROIHeadline],
         ],
         theme: 'grid',
         headStyles: { fillColor: [41, 128, 185], textColor: 255 },
         styles: { fontSize: 11, cellPadding: 4 },
       });
 
-      // Rehab Breakdown Line Items (display data — no metric math)
-      const approvedCosts = deal.financials.costs?.filter(c => c.approved) || [];
-      if (approvedCosts.length > 0) {
+      // Rehab Breakdown Line Items
+      if (approvedCostEntries.length > 0) {
         const finalY = (doc as any).lastAutoTable.finalY || 65;
         doc.setFontSize(14);
         doc.text("Rehab & Value-Add Expenditures", 14, finalY + 15);
 
-        const costRows = approvedCosts.map(c => [
+        const costRows = approvedCostEntries.map(c => [
           new Date(c.createdAt).toLocaleDateString(),
           c.category || 'Other',
           c.description,

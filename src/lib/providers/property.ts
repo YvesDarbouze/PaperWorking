@@ -45,6 +45,7 @@ export interface PropertyFacts {
   avmPriceHighCents?:       number;  // AVM value estimate high bound
   // ─── Multi-family ────────────────────────────────────────────────────────
   units?:                   number;  // Total unit count (multi-family only). estRentCents is per-unit.
+  totalBuildingRentCents?:  number;  // estRentCents × units (multi-family only). Absent for SFR.
   // ─── Meta ───────────────────────────────────────────────────────────────
   sourceProvider:           string;
   fetchedAt:                Date;
@@ -146,11 +147,18 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
     const yearBuilt  = seeded(h + 3,   1940, 2020);
     const lotSqft    = seeded(h + 4,   3_000, 12_000);
     const typeIdx    = h % PROPERTY_TYPES.length;
+    const propType   = PROPERTY_TYPES[typeIdx];
     const listPrice  = seeded(h + 5,   250_000, 1_200_000);
     const estRent    = seeded(h + 6,   1_200, 4_500);
     const lastSold   = seeded(h + 7,   180_000, 950_000);
     const daysAgo    = seeded(h + 8,   30, 730);
     const photoIdx   = h % UNSPLASH_HOUSES.length;
+
+    // Multi-family: populate unit count so callers can distinguish per-unit vs building rent
+    const unitCount: number | undefined =
+      propType === 'Multi-Family' ? seeded(h + 10, 4, 8) :
+      propType === 'Duplex'       ? 2                    :
+      undefined;
 
     const landRatio = 0.15 + (h % 15) / 100; // 15% - 29% land allocation
     const landValCents = Math.round(listPrice * 0.85 * landRatio) * 100;
@@ -163,9 +171,11 @@ export class MockPropertyDataProvider implements PropertyDataProvider {
       sqft,
       yearBuilt,
       lotSqft,
-      propertyType:       PROPERTY_TYPES[typeIdx],
+      propertyType:       propType,
+      units:              unitCount,
       listPriceCents:     listPrice * 100,
       estRentCents:       estRent * 100,
+      totalBuildingRentCents: unitCount ? estRent * 100 * unitCount : undefined,
       lastSoldPriceCents: lastSold * 100,
       lastSoldDate:       new Date(Date.now() - daysAgo * 86_400_000),
       annualPropertyTaxCents: Math.round(listPrice * 0.015) * 100,
@@ -392,6 +402,8 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
 
       // For multi-family, estRentCents is per-unit (RentCast lookupSubjectAttributes=true default).
       const unitCount: number | undefined = (subject.units ?? 0) > 1 ? subject.units : undefined;
+      const estRentPerUnit = rentData?.rent ? Math.round(rentData.rent * 100) : undefined;
+      const totalBuildingRentCents = (estRentPerUnit && unitCount) ? estRentPerUnit * unitCount : undefined;
 
       return {
         photoUrl: undefined,
@@ -402,8 +414,9 @@ export class RentCastPropertyProvider implements PropertyDataProvider {
         lotSqft:            subject.lotSize   || undefined,
         propertyType:       subject.propertyType || undefined,
         units:              unitCount,
+        totalBuildingRentCents,
         listPriceCents:     undefined,
-        estRentCents:       rentData?.rent ? Math.round(rentData.rent * 100) : undefined,
+        estRentCents:       estRentPerUnit,
         lastSoldPriceCents: lastSoldPrice ? Math.round(lastSoldPrice * 100) : undefined,
         lastSoldDate,
         annualPropertyTaxCents,

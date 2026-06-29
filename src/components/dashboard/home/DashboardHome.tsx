@@ -10,7 +10,7 @@ const GlobalTodoWidget = lazy(() => import('./GlobalTodoWidget'));
 const PortfolioKPIStrip = lazy(() => import('./PortfolioKPIStrip'));
 const MAOGaugeTracker = lazy(() => import('./MAOGaugeTracker'));
 const BurnRateMonitor = lazy(() => import('./BurnRateMonitor'));
-import { LayoutGrid, ArrowRight, Plus, Lock, Building2, TrendingUp, ChevronRight, Search, User, Users, CheckCircle2, Target, RotateCw, Clock, ArrowUpRight, ArrowDownCircle, ArrowUpCircle, MoreHorizontal, Calendar } from 'lucide-react';
+import { LayoutGrid, ArrowRight, Plus, Lock, Building2, TrendingUp, ChevronRight, Search, User, Users, CheckCircle2, Target, RotateCw, Clock, ArrowUpRight, ArrowDownCircle, ArrowUpCircle, MoreHorizontal, Calendar, Terminal, PlusCircle, Tag, UserSearch } from 'lucide-react';
 import {
   PortfolioSummaryBar,
   PhaseDistributionChart,
@@ -23,21 +23,29 @@ import CreateProjectCTA from '@/components/dashboard/CreateProjectCTA';
 import { useUIStore } from '@/store/uiStore';
 import { usePaywall } from '@/hooks/usePaywall';
 import { useAuth } from '@/context/AuthContext';
+import { useTenant } from '@/context/TenantContext';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 const LifecycleMetricsDashboard = lazy(() => import('@/components/dashboard/charts/LifecycleMetricsDashboard'));
 const AgentDirectory = lazy(() => import('@/components/listing/AgentDirectory'));
 const OpenHouseCalendar = lazy(() => import('@/components/listing/OpenHouseCalendar'));
 
-import DashboardKPIHeader from './DashboardKPIHeader';
 import GenerativeInsights from './GenerativeInsights';
-import RecentActivityTable from './RecentActivityTable';
+import ActivityFeed from './ActivityFeed';
 import ProfileWidget from './ProfileWidget';
 import ProjectsWidget from './ProjectsWidget';
 import UpcomingMeetingsWidget from './UpcomingMeetingsWidget';
 import AnalyticsWidget from './AnalyticsWidget';
-import ProjectsProgressWidget from './ProjectsProgressWidget';
+import CommandCenterKPIStrip from './CommandCenterKPIStrip';
+import type { ScopeMode, PeriodFilter } from './CommandCenterKPIStrip';
+import PerformanceMetrics from './PerformanceMetrics';
+import EquityGrowthChart from './EquityGrowthChart';
+import AssetBentoGrid from './AssetBentoGrid';
 import InvestorInviteModal from '../InvestorInviteModal';
+import PostDealModal from '../PostDealModal';
+import MobileBottomNav from '../MobileBottomNav';
+
+const PerformanceChart = lazy(() => import('./PerformanceChart'));
 
 import toast from 'react-hot-toast';
 import { Project } from '@/types/schema';
@@ -60,9 +68,9 @@ const AssetMixChart = lazy(() => import('./AssetMixChart'));
 
 function ChartSkeleton() {
   return (
-    <div className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-2xl animate-pulse p-6">
-      <div className="h-4 bg-[#A5A5A5]/20 rounded w-1/3 mb-4" />
-      <div className="h-[280px] bg-[#F2F2F2] rounded-md" />
+    <div className="glass-card rounded-3xl animate-pulse p-6">
+      <div className="h-4 bg-white/10 rounded w-1/3 mb-4" />
+      <div className="h-[280px] bg-white/5 rounded-2xl" />
     </div>
   );
 }
@@ -71,22 +79,22 @@ function ChartSkeleton() {
 
 function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
   return (
-    <div className="mb-8 flex items-center justify-between bg-[#595959] text-[#FFFFFF] rounded-2xl px-8 py-5">
+    <div className="mb-8 flex items-center justify-between glass-card text-on-surface rounded-3xl px-8 py-5">
       <div className="flex items-center gap-4">
-        <TrendingUp className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
+        <TrendingUp className="w-5 h-5 flex-shrink-0 text-primary" aria-hidden="true" />
         <div>
-          <p className="text-sm font-bold tracking-tight">Stop guessing. Start tracking every dollar.</p>
-          <p className="text-xs text-[#FFFFFF]/70 mt-0.5 leading-snug">
+          <p className="font-label-md text-label-md">Stop guessing. Start tracking every dollar.</p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
             Every day without data costs you money. Upgrade for real-time deal intelligence.
           </p>
         </div>
       </div>
       <button
         onClick={onUpgrade}
-        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-[#FFFFFF] text-[#1A1A1A] rounded text-xs font-bold uppercase tracking-widest hover:bg-[#F2F2F2] transition-colors"
+        className="flex-shrink-0 flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-xl font-label-md text-label-md uppercase tracking-widest hover:brightness-110 luminous-teal transition-all"
       >
         See What You&apos;re Missing
-        <ChevronRight className="w-3 h-3" aria-hidden="true" />
+        <ChevronRight className="w-4 h-4" aria-hidden="true" />
       </button>
     </div>
   );
@@ -96,12 +104,12 @@ function FreeTierBanner({ onUpgrade }: { onUpgrade: () => void }) {
 
 function dealStatusStyle(status: string): string {
   switch (status) {
-    case 'Lead':           return 'bg-[#F2F2F2] text-[#7F7F7F]';
-    case 'Under Contract': return 'bg-[#CCCCCC] text-[#595959]';
-    case 'Renovating':     return 'bg-[#A5A5A5] text-[#1A1A1A]';
-    case 'Listed':         return 'bg-[#7F7F7F] text-[#FFFFFF]';
-    case 'Sold':           return 'bg-[#595959] text-[#FFFFFF]';
-    default:               return 'bg-[#F2F2F2] text-[#7F7F7F]';
+    case 'Lead':           return 'bg-surface-variant text-on-surface-variant';
+    case 'Under Contract': return 'bg-secondary-container/20 text-secondary-container';
+    case 'Renovating':     return 'bg-tertiary-container/20 text-tertiary-container';
+    case 'Listed':         return 'bg-primary/20 text-primary';
+    case 'Sold':           return 'bg-white/10 text-white';
+    default:               return 'bg-surface-variant text-on-surface-variant';
   }
 }
 
@@ -109,27 +117,27 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
   const memberInfo = project.members?.[userUid];
   const role = memberInfo?.role ?? 'Collaborator';
   return (
-    <article className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+    <article className="glass-card rounded-3xl p-6 group transition-all duration-300">
       <div className="flex items-start justify-between mb-4">
-        <div className="w-10 h-10 rounded-md bg-[#F2F2F2] flex items-center justify-center">
-          <Building2 className="w-5 h-5 text-[#7F7F7F]" aria-hidden="true" />
+        <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+          <Building2 className="w-5 h-5 text-primary" aria-hidden="true" />
         </div>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded ${dealStatusStyle(project.status)}`}>
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${dealStatusStyle(project.status)}`}>
           {project.status}
         </span>
       </div>
-      <h3 className="text-xl font-normal text-[#1A1A1A] tracking-tight mb-1 leading-tight">
+      <h3 className="font-headline-md text-headline-md text-on-surface mb-1 truncate">
         {project.propertyName || 'Unnamed Property'}
       </h3>
-      <p className="text-sm text-[#7F7F7F] mb-5 leading-snug">{project.address}</p>
-      <div className="flex items-end justify-between pt-4 border-t border-[#A5A5A5]/30">
+      <p className="font-body-sm text-body-sm text-on-surface-variant mb-5 truncate">{project.address}</p>
+      <div className="flex items-end justify-between pt-4 border-t border-white/5">
         <div>
-          <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold">Your Role</p>
-          <p className="text-sm font-medium text-[#1A1A1A] mt-0.5">{role}</p>
+          <p className="font-label-sm text-label-sm text-on-surface-variant opacity-60">Your Role</p>
+          <p className="font-label-md text-label-md text-on-surface mt-0.5">{role}</p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold">Phase</p>
-          <p className="text-sm font-medium text-[#1A1A1A] mt-0.5 max-w-[140px] truncate">
+          <p className="font-label-sm text-label-sm text-on-surface-variant opacity-60">Phase</p>
+          <p className="font-label-md text-label-md text-on-surface mt-0.5 max-w-[140px] truncate">
             {project.phaseStatus ?? '—'}
           </p>
         </div>
@@ -141,13 +149,13 @@ function GuestProjectCard({ project, userUid }: { project: Project; userUid: str
 /** Shown in place of the KPI / chart column for guest-tier users. */
 function GuestAccessPanel() {
   return (
-    <div className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-2xl flex flex-col items-center justify-center py-16 text-center gap-5">
-      <div className="w-14 h-14 rounded-md bg-[#F2F2F2] border border-[#A5A5A5]/50 flex items-center justify-center">
-        <Lock className="w-6 h-6 text-[#7F7F7F]" />
+    <div className="glass-card rounded-3xl flex flex-col items-center justify-center py-16 text-center gap-5">
+      <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center">
+        <Lock className="w-6 h-6 text-on-surface-variant" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-[#1A1A1A] tracking-tight">Viewer Access</p>
-        <p className="text-xs text-[#7F7F7F] max-w-[240px] leading-relaxed">
+        <p className="font-headline-md text-headline-md text-on-surface tracking-tight">Viewer Access</p>
+        <p className="font-body-sm text-body-sm text-on-surface-variant max-w-[240px] leading-relaxed">
           You&apos;re viewing deals shared with you. Portfolio analytics are available to account holders.
         </p>
       </div>
@@ -172,6 +180,7 @@ export default function DashboardHome() {
   const allProjects = useProjectStore(s => s.projects);
   const setViewMode = useUIStore(s => s.setViewMode);
   const { user, profile } = useAuth();
+  const { activeTenantId } = useTenant();
   const { isPaid, isFree, isGuest, requireSubscription } = usePaywall();
 
   // ── Portfolio chart data shapes ──────────────────────────────
@@ -188,11 +197,15 @@ export default function DashboardHome() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [inviteProjectId, setInviteProjectId] = useState<string | undefined>();
+  const [isPostDealOpen, setIsPostDealOpen] = useState(false);
+  const [scope, setScope] = useState<ScopeMode>('property');
+  const [period, setPeriod] = useState<PeriodFilter>('ALL');
 
   // State 2 (free): enforce empty-state teaser — widgets show "—" / no data.
   // State 3 (paid): full live portfolio.
   // State 4 (guest): widgets receive empty; invited projects shown separately.
-  const portfolioProjects: Project[] = isPaid ? allProjects : [];
+  const portfolioProjects: Project[] = useMemo(() => isPaid ? allProjects : [], [isPaid, allProjects]);
 
   // Derived shapes for portfolio metric charts
   const phaseDeals = useMemo(
@@ -239,7 +252,7 @@ export default function DashboardHome() {
 
   const handleCreateProject = () => {
     requireSubscription(() => {
-      if (!profile?.organizationId || profile.organizationId === 'org_placeholder') {
+      if (!activeTenantId || activeTenantId === 'org_placeholder') {
         toast.error('Organization sync in progress. Please wait a moment…');
         return;
       }
@@ -248,44 +261,59 @@ export default function DashboardHome() {
   };
 
   return (
-    <div className="dashboard-context min-h-full bg-[#F2F2F2] px-4 md:px-8 py-8 overflow-y-auto">
+    <div className="dashboard-context min-h-full pt-8 pb-24 px-margin-mobile lg:px-margin-desktop flex flex-col gap-gutter-mobile lg:gap-gutter-desktop max-w-container-max mx-auto w-full overflow-y-auto">
 
       {/* State 2 — Free tier upgrade prompt */}
       {isFree && <FreeTierBanner onUpgrade={() => router.push('/pricing')} />}
 
       {/* ── Page Header ── */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-         <div className="flex flex-col">
-           <h1 className="text-2xl font-semibold text-[#1A1A1A] tracking-tight">{profile?.displayName || 'Investor'}&apos;s Portfolio</h1>
-           <p className="text-sm text-[#7F7F7F] mt-1">Your deals at a glance · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-         </div>
-         <div className="flex items-center gap-4">
-            <div className="relative">
-               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7F7F7F]" />
-               <input 
-                 type="text" 
-                 placeholder="Search deals, documents, team…" 
-                 value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)}
-                 className="pl-9 pr-4 py-2 bg-[#FFFFFF] border border-[#A5A5A5] rounded-full text-sm focus:outline-none focus:ring-1 focus:ring-[#1A1A1A] text-[#1A1A1A] placeholder:text-[#7F7F7F] w-full md:w-64" 
-               />
+      <header className="flex flex-col mb-8 gap-6">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 mb-2">
+              <Terminal className="w-5 h-5 text-primary" />
+              <span className="font-headline-md text-[20px] font-extrabold text-primary tracking-tighter">COMMAND_CENTER</span>
             </div>
-            <button className="w-10 h-10 rounded-full bg-[#FFFFFF] border border-[#A5A5A5] flex flex-shrink-0 items-center justify-center hover:bg-[#F2F2F2] transition-colors">
-               <User className="w-5 h-5 text-[#7F7F7F]" />
-            </button>
-         </div>
+            <h1 className="font-headline-lg text-headline-lg text-on-surface">{profile?.displayName || 'Investor'}&apos;s Portfolio</h1>
+            <p className="font-body-sm text-body-sm text-on-surface-variant mt-1 opacity-80">Your deals at a glance · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+             <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
+                <input 
+                  type="text" 
+                  placeholder="Search deals, documents, team…" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant w-full md:w-64 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all" 
+                />
+             </div>
+             <button className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex flex-shrink-0 items-center justify-center hover:bg-white/10 transition-colors" title="Notifications">
+                <Calendar className="w-4 h-4 text-on-surface-variant" />
+             </button>
+             <button className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:opacity-90 cursor-pointer transition-opacity flex flex-shrink-0 items-center justify-center" title="Profile">
+                <img 
+                  alt="User Profile" 
+                  className="w-full h-full object-cover" 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfpWRLrfBGAP8PBiImG329fs2zBftW6rRDu3DiyDbzd6cy5qSnm5wjv5MKVxeqpVwYSByBvavyZiqZdzMKGyjXsHCO8fHPmoSoOtam05OTcWoSKIxxnZV_JhZHIhvLHlz-kMYYuDGIjS2qURVm05X1vrGBROFIc0NbGckkepOlGaufp8zHTH8hhYz37vUZRPjioH_gII-70VUr4YRoNyLndZPqR3fyl_nEWcLQVDN4ZgbqfSGdYlFSJzaqogPWzhLhne8KzI2k5qDk" 
+                />
+             </button>
+          </div>
+        </div>
+
+
       </header>
 
       {/* ── State 4: Guest invited-project cards ── */}
       {isGuest && (
         <section className="mb-10">
-          <p className="text-xs uppercase tracking-widest text-[#7F7F7F] font-bold mb-6">Deals Shared With You</p>
+          <p className="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant opacity-60 mb-6">Deals Shared With You</p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guestLoading
               ? [0, 1].map(i => (
                   <div
                     key={i}
-                    className="bg-[#FFFFFF] border border-[#A5A5A5] rounded-2xl animate-pulse h-52"
+                    className="glass-card rounded-3xl animate-pulse h-52"
                     style={{ animationDelay: `${i * 80}ms` }}
                   />
                 ))
@@ -294,9 +322,9 @@ export default function DashboardHome() {
                   <GuestProjectCard key={p.id} project={p} userUid={user?.uid ?? ''} />
                 ))
               : (
-                  <div className="col-span-3 bg-[#FFFFFF] border border-dashed border-[#A5A5A5] rounded-2xl flex flex-col items-center justify-center py-16 text-center">
-                    <p className="text-sm font-bold text-[#1A1A1A] uppercase tracking-widest mb-2">No deals yet</p>
-                    <p className="text-xs text-[#7F7F7F] max-w-xs leading-relaxed">
+                  <div className="col-span-3 glass-card border-dashed rounded-3xl flex flex-col items-center justify-center py-16 text-center">
+                    <p className="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-2">No deals yet</p>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant max-w-xs leading-relaxed">
                       When a team member shares a deal with you, it will appear here. Check your inbox for an invite link.
                     </p>
                   </div>
@@ -306,40 +334,40 @@ export default function DashboardHome() {
         </section>
       )}
 
-      {/* ── Dashboard Top Section (Wireframe UI) ── */}
+      {/* ── Stitch Command Center Layout ── */}
       {!isGuest && (
-        <section className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
-            <div className="md:col-span-3">
-              <ProfileWidget
-                user={user}
-                profile={profile}
-                teamMembersCount={teamMembersCount}
-                completedDeals={dealsClosedCount}
-                onInviteTeam={() => setIsInviteModalOpen(true)}
-              />
-            </div>
-            <div className="md:col-span-6">
-              <ProjectsWidget 
-                projects={portfolioProjects} 
-                onCreateProject={handleCreateProject}
-                isGuest={isGuest}
-              />
-            </div>
-            <div className="md:col-span-3">
-              <UpcomingMeetingsWidget />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-9">
-              <AnalyticsWidget projects={portfolioProjects} />
-            </div>
-            <div className="md:col-span-3">
-              <ProjectsProgressWidget projects={portfolioProjects} />
-            </div>
-          </div>
-        </section>
+        <div className="flex flex-col xl:flex-row gap-6 mb-8 items-stretch w-full">
+          <section className="flex-1 flex flex-col space-y-6">
+            <ErrorBoundary name="Performance Metrics">
+              <PerformanceMetrics />
+            </ErrorBoundary>
+            <ErrorBoundary name="Equity Growth Chart">
+              <EquityGrowthChart />
+            </ErrorBoundary>
+            <ErrorBoundary name="Asset Bento Grid">
+              <AssetBentoGrid />
+            </ErrorBoundary>
+          </section>
+
+          <aside className="w-full xl:w-96 shrink-0">
+            <ErrorBoundary name="Activity Feed">
+              <ActivityFeed />
+            </ErrorBoundary>
+          </aside>
+        </div>
+      )}
+
+      {/* Contextual FAB (Restricted to Home/Dashboard) */}
+      {!isGuest && (
+        <div className="fixed bottom-10 right-8 lg:right-[420px] z-[60]">
+          <button
+            onClick={handleCreateProject}
+            className="flex items-center gap-3 px-6 py-4 bg-primary text-on-primary-container rounded-full font-bold shadow-lg luminous-glow hover:scale-105 active:scale-95 transition-all group"
+          >
+            <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" strokeWidth={2} />
+            <span className="font-label-md hidden sm:inline">New Investment</span>
+          </button>
+        </div>
       )}
 
       {/* ── Dashboard Content ── */}
@@ -352,23 +380,7 @@ export default function DashboardHome() {
           </ErrorBoundary>
         )}
 
-        {/* KPI Header */}
-        {!isGuest && (
-          <ErrorBoundary name="KPI Header">
-            <DashboardKPIHeader />
-          </ErrorBoundary>
-        )}
 
-        {/* ── Portfolio Summary Bar ── */}
-        {!isGuest && (
-          <ErrorBoundary name="Portfolio Summary Bar">
-            <PortfolioSummaryBar
-              projects={portfolioProjects}
-              isLoading={false}
-              className="w-full"
-            />
-          </ErrorBoundary>
-        )}
 
         {/* ── Lifecycle Metrics Dashboard ── */}
         {!isGuest && (
@@ -376,6 +388,13 @@ export default function DashboardHome() {
             <Suspense fallback={<ChartSkeleton />}>
               <LifecycleMetricsDashboard projects={portfolioProjects} />
             </Suspense>
+          </ErrorBoundary>
+        )}
+
+        {/* ── Analytics Widget — real metric history from snapshots ── */}
+        {!isGuest && (
+          <ErrorBoundary name="Analytics Widget">
+            <AnalyticsWidget />
           </ErrorBoundary>
         )}
 
@@ -415,20 +434,25 @@ export default function DashboardHome() {
           </div>
         )}
 
-        {/* Recent Activity Table */}
-        <ErrorBoundary name="Recent Activity">
-          <RecentActivityTable />
-        </ErrorBoundary>
+
 
       </div>
       
+      {/* Mobile Bottom Nav */}
+      <MobileBottomNav />
+
       {/* ── Modals ── */}
       {isInviteModalOpen && (
         <InvestorInviteModal
           isOpen={isInviteModalOpen}
-          onClose={() => setIsInviteModalOpen(false)}
+          onClose={() => { setIsInviteModalOpen(false); setInviteProjectId(undefined); }}
+          projectId={inviteProjectId}
         />
       )}
+      <PostDealModal
+        isOpen={isPostDealOpen}
+        onClose={() => setIsPostDealOpen(false)}
+      />
     </div>
   );
 }

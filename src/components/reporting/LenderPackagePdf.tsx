@@ -1,23 +1,19 @@
 import React, { useState } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { FileDown, FileText, Loader2 } from 'lucide-react';
+import { FileDown, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import toast from 'react-hot-toast';
-import { computeFlipMetrics, computeFlipNetProfit, computeFlipROI } from '@/lib/metrics';
+import { computeFlipMetrics, computeAutopsyMetrics } from '@/lib/metrics';
 
 export default function LenderPackagePdf() {
   const projects = useProjectStore(state => state.projects);
   const [selectedDealId, setSelectedDealId] = useState<string>('');
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGeneratePdf = () => {
     if (!selectedDealId) return toast.error("Select a deal to generate a package.");
     const deal = projects.find(d => d.id === selectedDealId);
     if (!deal) return;
-
-    setIsGenerating(true);
-    toast.loading("Compiling Executive Summary...", { id: 'pdf-gen' });
 
     try {
       const doc = new jsPDF();
@@ -46,33 +42,8 @@ export default function LenderPackagePdf() {
       // Realized metrics via @metrics (Sold deals only)
       let realizedROIHeadline = "N/A (Property Active)";
       if (deal.status === 'Sold') {
-        const pPrice = deal.financials.actualSalePrice || 0;
-        const buyerComm = pPrice * ((deal.financials.buyersAgentCommission || 0) / 100);
-        const sellerComm = pPrice * ((deal.financials.sellersAgentCommission || 0) / 100);
-        const basicClosingCosts = deal.financials.finalClosingCosts || 0;
-
-        let ledgerExitCosts = 0;
-        deal.exitCosts?.forEach(ec => {
-          ledgerExitCosts += ec.isPercentage && ec.percentageRate
-            ? (ec.percentageRate / 100) * pPrice
-            : (ec.amount || 0);
-        });
-
-        const costBasisExtra = deal.costBasisLedger ? [
-          ...(deal.costBasisLedger.directAcquisition || []),
-          ...(deal.costBasisLedger.financing || []),
-          ...(deal.costBasisLedger.preClosing || []),
-        ].reduce((s, i) => s + (i.amount || 0), 0) : 0;
-
-        const totalAllInCost =
-          (deal.financials.purchasePrice || 0) +
-          flip.rehabActual +
-          costBasisExtra +
-          buyerComm + sellerComm + basicClosingCosts + ledgerExitCosts;
-
-        const realizedProfit = computeFlipNetProfit(pPrice, totalAllInCost);
-        const realROI = computeFlipROI(realizedProfit, totalAllInCost);
-        realizedROIHeadline = `${realROI.toFixed(1)}% (Profit: $${realizedProfit.toLocaleString()})`;
+        const autopsy = computeAutopsyMetrics(deal);
+        realizedROIHeadline = `${autopsy.roi.toFixed(1)}% (Profit: $${Math.round(autopsy.netProfit).toLocaleString()})`;
       }
 
       // Tables
@@ -118,12 +89,10 @@ export default function LenderPackagePdf() {
       // Output Document
       const filename = `Lender_Package_${deal.propertyName.replace(/\s+/g, '_')}.pdf`;
       doc.save(filename);
-      toast.success(`Generated Lender Package: ${filename}`, { id: 'pdf-gen', icon: '📑' });
+      toast.success(`Generated Lender Package: ${filename}`);
     } catch (e) {
       console.error(e);
-      toast.error("Failed to generate PDF. Check console.", { id: 'pdf-gen' });
-    } finally {
-      setIsGenerating(false);
+      toast.error("Failed to generate PDF. Check console.");
     }
   };
 
@@ -134,7 +103,7 @@ export default function LenderPackagePdf() {
          <p className="text-sm text-text-secondary mt-1">Export professional PDF reports combining ARV, actual rehabs, and ROI to secure funding.</p>
       </div>
       <div className="flex gap-3">
-         <select 
+         <select
            value={selectedDealId}
            onChange={(e) => setSelectedDealId(e.target.value)}
            className="border border-border-accent rounded-lg text-sm p-2 bg-bg-primary focus:ring-2 focus:ring-blue-500 focus:outline-none min-w-[200px]"
@@ -144,13 +113,13 @@ export default function LenderPackagePdf() {
               <option key={d.id} value={d.id}>{d.propertyName} ({d.status})</option>
            ))}
          </select>
-         <button 
+         <button
            onClick={handleGeneratePdf}
-           disabled={!selectedDealId || isGenerating}
+           disabled={!selectedDealId}
            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[150px]"
          >
-           {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-           {isGenerating ? 'Compiling...' : 'Download PDF'}
+           <FileDown className="w-4 h-4" />
+           Download PDF
          </button>
       </div>
     </div>

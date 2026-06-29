@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import Stripe from 'stripe';
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +7,7 @@ export const dynamic = 'force-dynamic';
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new Error('STRIPE_SECRET_KEY is not set');
-  return new Stripe(key, { apiVersion: '2026-03-25.dahlia' });
+  return new Stripe(key, { apiVersion: '2026-04-22.dahlia' });
 }
 
 /**
@@ -24,7 +25,10 @@ function getStripe() {
  * Returns:
  *   { status, plan, customerEmail, subscriptionId, subscriptionStatus }
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const url = new URL(request.url);
   const sessionId = url.searchParams.get('session_id');
 

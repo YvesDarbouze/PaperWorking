@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,9 @@ function oDataString(value: string): string {
  * Returns up to 8 simplified PropertyResult objects.
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
+
   const q = request.nextUrl.searchParams.get('q')?.trim() ?? '';
 
   if (q.length < 2) {
@@ -81,20 +85,9 @@ export async function GET(request: NextRequest) {
       imageUrl: p.Media?.[0]?.MediaURL,
     }));
 
-    return NextResponse.json({ results, source: 'Bridge Interactive MLS', fetchedAt: new Date().toISOString() });
+    return NextResponse.json(results);
   } catch (error: any) {
-    const msg: string = error?.message ?? '';
-    const isCredentialIssue =
-      msg.includes('BRIDGE_CONFIG_FAILURE') ||
-      msg.includes('Missing') ||
-      error?.status === 401 ||
-      error?.status === 403 ||
-      msg.includes('401') ||
-      msg.includes('403');
-    if (isCredentialIssue) {
-      return NextResponse.json({ results: [], credentialsMissing: true });
-    }
-    console.error('[MLS SEARCH] Query failed:', msg);
+    console.error('[MLS SEARCH] Query failed:', error?.message ?? error);
     return NextResponse.json(
       { error: 'Property search failed. Please try again.' },
       { status: 500 }

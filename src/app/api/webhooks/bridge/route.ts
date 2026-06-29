@@ -30,16 +30,18 @@ function verifyHmacSignature(body: string, signature: string | null, secret: str
 
 export async function POST(request: Request) {
   const webhookSecret = process.env.BRIDGE_WEBHOOK_SECRET;
-  const rawBody = await request.text();
+  if (!webhookSecret) {
+    console.error('[Bridge Webhook] BRIDGE_WEBHOOK_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
+  }
 
-  if (webhookSecret) {
-    const sig =
-      request.headers.get('x-bridge-signature') ??
-      request.headers.get('x-hub-signature-256');
-    if (!verifyHmacSignature(rawBody, sig, webhookSecret)) {
-      console.warn('⚠️ [BRIDGE WEBHOOK] HMAC signature mismatch. Rejecting payload.');
-      return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
-    }
+  const rawBody = await request.text();
+  const sig =
+    request.headers.get('x-bridge-signature') ??
+    request.headers.get('x-hub-signature-256');
+  if (!verifyHmacSignature(rawBody, sig, webhookSecret)) {
+    console.warn('⚠️ [BRIDGE WEBHOOK] HMAC signature mismatch. Rejecting payload.');
+    return NextResponse.json({ error: 'invalid_signature' }, { status: 401 });
   }
 
   let payload: unknown;

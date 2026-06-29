@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import type { ZipDemographics, MarketDataPoint } from '@/types/marketVitals';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -98,6 +99,9 @@ function computeGrowth(trend: MarketDataPoint[], lookbackYears: number): number 
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (isAuthError(auth)) return auth;
+
   const zip = req.nextUrl.searchParams.get('zip')?.trim();
 
   if (!zip || !/^\d{5}$/.test(zip)) {

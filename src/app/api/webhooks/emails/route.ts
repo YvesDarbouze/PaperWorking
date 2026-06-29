@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Force dynamic rendering — Firebase Admin cannot initialize at build time
 export const dynamic = 'force-dynamic';
@@ -6,8 +6,23 @@ export const dynamic = 'force-dynamic';
 /**
  * Inbound Email Webhook
  * Optimized for SendGrid / Postmark Inbound Parse payload extraction.
+ *
+ * Auth: INBOUND_EMAIL_WEBHOOK_SECRET bearer token (required).
+ * Without this env var the endpoint returns 503 — never open by default.
+ * Set the webhook URL in SendGrid/Postmark and include:
+ *   Authorization: Bearer <INBOUND_EMAIL_WEBHOOK_SECRET>
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const emailSecret = process.env.INBOUND_EMAIL_WEBHOOK_SECRET;
+  if (!emailSecret) {
+    console.error('[Inbound Email Webhook] INBOUND_EMAIL_WEBHOOK_SECRET not configured — rejecting request');
+    return NextResponse.json({ error: 'Webhook endpoint not configured' }, { status: 503 });
+  }
+  const authHeader = request.headers.get('Authorization') ?? '';
+  if (authHeader !== `Bearer ${emailSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     // Dynamic import to prevent Firebase from initializing at build time
     const { inboundEmailHandler } = await import('@/lib/services/inboundEmailHandler');

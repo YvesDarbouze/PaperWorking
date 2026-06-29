@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,8 @@ export const dynamic = 'force-dynamic';
  * - ?key=xyz     → Single open house lookup by OpenHouseKey
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
   const listingKey = request.nextUrl.searchParams.get('listingKey')?.trim();
   const key = request.nextUrl.searchParams.get('key')?.trim();
   const top = Math.min(parseInt(request.nextUrl.searchParams.get('top') ?? '20', 10), 100);

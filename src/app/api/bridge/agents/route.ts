@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,6 +12,8 @@ export const dynamic = 'force-dynamic';
  * - ?key=abc123&listings=true → Fetch agent + their active listings
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
   const q = request.nextUrl.searchParams.get('q')?.trim();
   const key = request.nextUrl.searchParams.get('key')?.trim();
   const includeListings = request.nextUrl.searchParams.get('listings') === 'true';

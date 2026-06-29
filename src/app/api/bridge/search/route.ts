@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireAuth, isAuthError } from '@/lib/firebase-admin/auth-guard';
 import type { BridgeSearchResult } from '@/types/bridge';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,8 @@ export type { BridgeSearchResult };
  * Falls back gracefully when Bridge credentials are not yet configured.
  */
 export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request);
+  if (isAuthError(auth)) return auth;
   const q = request.nextUrl.searchParams.get('q')?.trim();
 
   if (!q || q.length < 3) {
@@ -68,7 +71,7 @@ export async function GET(request: NextRequest) {
         : null,
     }));
 
-    return NextResponse.json({ results, source: 'Bridge Interactive MLS', fetchedAt: new Date().toISOString() });
+    return NextResponse.json({ results });
   } catch (error: any) {
     const msg: string = error.message ?? '';
     const status: number | undefined = error.status;

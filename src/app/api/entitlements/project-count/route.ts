@@ -16,13 +16,16 @@ export async function GET(request: NextRequest) {
     if (isAuthError(auth)) return auth;
     const { uid } = auth;
 
+    // Single-field equality filter — needs no composite index. Exclude archived
+    // in memory (a user's own project set is small) to avoid deploying an index.
     const projectsSnap = await adminDb
       .collection('projects')
       .where('ownerUid', '==', uid)
-      .where('status', '!=', 'archived')
       .get();
 
-    return NextResponse.json({ count: projectsSnap.size });
+    const count = projectsSnap.docs.filter((d) => d.data().status !== 'archived').length;
+
+    return NextResponse.json({ count });
   } catch (error: unknown) {
     const errMsg = error instanceof Error ? error.message : 'Unknown error';
     console.error('[Entitlements project-count] Error:', errMsg);

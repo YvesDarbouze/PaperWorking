@@ -140,15 +140,7 @@ export async function PATCH(
 
     // 4. Return updated snapshot after successful transaction
     const updatedSnap = await projectRef.get();
-    const updatedProject = { id: updatedSnap.id, ...updatedSnap.data() } as any;
-
-    // 5. Keep REIL-plane (Postgres) consistent
-    try {
-      const { financialsSyncService } = await import('@/lib/services/financialsSyncService');
-      await financialsSyncService.syncProjectFinancials(updatedProject);
-    } catch (err) {
-      console.error('[Projects PATCH] Failed to sync financials to Postgres:', err);
-    }
+    const updatedProject = { id: updatedSnap.id, ...updatedSnap.data() };
 
     return NextResponse.json({
       success: true,

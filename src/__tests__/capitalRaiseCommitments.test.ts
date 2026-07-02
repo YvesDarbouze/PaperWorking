@@ -183,7 +183,7 @@ describe('CrowdfundingTracker.tsx — no hardcoded investor data', () => {
   it('st_no_hardcoded_names: no string literals that look like fictional bios ("Pledged", "Daniel", etc. in a data array)', () => {
     // A hardcoded list would appear as a JS array literal with name: 'John Smith'
     // We check that the text "name: '" does not appear inside a data constant
-    expect(TRACKER).not.toMatch(/(?:const|let|var)\s+\w+[\s\S]*\[\s*\{[^}]*name:\s*['"][A-Z]/);
+    expect(TRACKER).not.toMatch(/(?:const|let|var)\s+\w+.*\[\s*\{[^}]*name:\s*['"][A-Z]/s);
   });
 
   it('st_uses_onsnapshot: reads commitments from Firestore onSnapshot, not a constant', () => {
